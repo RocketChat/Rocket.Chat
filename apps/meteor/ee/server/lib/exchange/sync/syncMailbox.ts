@@ -9,7 +9,7 @@ import { isExchangeError } from '../errors';
 import { logger } from '../logger';
 import { scrubForLog, scrubText } from '../scrub';
 
-const MAX_PAGES = 50;
+export const MAX_PAGES = 50;
 
 const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 

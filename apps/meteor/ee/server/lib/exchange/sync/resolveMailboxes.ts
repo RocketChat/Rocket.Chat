@@ -6,7 +6,7 @@ const PAGE_SIZE = 500;
 
 type SyncCandidate = Pick<IUser, '_id' | 'emails'>;
 
-export type MailboxCandidate = { uid: IUser['_id']; mailbox?: string };
+type MailboxCandidate = { uid: IUser['_id']; mailbox?: string };
 
 const buildQuery = (lastId?: string): Filter<IUser> => ({
 	type: { $nin: ['app', 'bot'] },

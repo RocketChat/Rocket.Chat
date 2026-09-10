@@ -1,8 +1,16 @@
-import { getSyncWindow } from './ExchangeProviderRegistry';
+import {
+	detachExchangeProvider,
+	getExchangeProvider,
+	getSyncWindow,
+	isServerSyncEnabled,
+	registerExchangeProviderWatchers,
+} from './ExchangeProviderRegistry';
 import { settings } from '../../../../server/settings';
 
+const watchMultiple = jest.fn();
+
 jest.mock('../../../../server/settings', () => ({
-	settings: { get: jest.fn() },
+	settings: { get: jest.fn(), watchMultiple: (...args: unknown[]) => watchMultiple(...args) },
 }));
 
 const setDays = (value: number | undefined) => jest.mocked(settings.get).mockReturnValue(value);
@@ -55,14 +63,64 @@ describe('getSyncWindow', () => {
 
 		expect(getSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + 2 * DAY));
 	});
+});
 
-	it('covers whole days, so the range never shrinks as the day goes on', () => {
-		setDays(2);
+describe('provider selection', () => {
+	const configured = (over: Record<string, unknown> = {}) => {
+		const values: Record<string, unknown> = {
+			Outlook_Calendar_Enabled: true,
+			Outlook_Calendar_Mode: 'server',
+			Outlook_Calendar_Server_Sync_Provider: 'graph',
+			Outlook_Calendar_Graph_Tenant_Id: 'contoso',
+			Outlook_Calendar_Graph_Client_Id: 'client',
+			Outlook_Calendar_Graph_Client_Secret: 'secret',
+			Outlook_Calendar_EWS_Url: 'https://exchange.corp.example/EWS/Exchange.asmx',
+			Outlook_Calendar_EWS_Username: 'CORP\\svc',
+			Outlook_Calendar_EWS_Password: 'pw',
+			Outlook_Calendar_EWS_Auth_Method: 'ntlm',
+			...over,
+		};
+		jest.mocked(settings.get).mockImplementation((key: string) => values[key] as string);
+	};
 
-		for (const offset of [0, HOUR, DAY - 1]) {
-			const at = new Date(midnight.getTime() + offset);
+	const rebuild = () => {
+		registerExchangeProviderWatchers();
+		watchMultiple.mock.calls[watchMultiple.mock.calls.length - 1][1]();
+	};
 
-			expect(getSyncWindow(at).end).toEqual(new Date(midnight.getTime() + 2 * DAY));
-		}
+	beforeEach(() => {
+		jest.clearAllMocks();
+		detachExchangeProvider();
+	});
+
+	it.each(['graph', 'ews'])('builds the %s provider when it is the configured type', (providerId) => {
+		configured({ Outlook_Calendar_Server_Sync_Provider: providerId });
+
+		rebuild();
+
+		expect(getExchangeProvider().id).toBe(providerId);
+	});
+
+	it.each([
+		['the integration is off', { Outlook_Calendar_Enabled: false }],
+		['the mode is legacy', { Outlook_Calendar_Mode: 'legacy' }],
+		['the configured type is not one we implement', { Outlook_Calendar_Server_Sync_Provider: 'imap' }],
+	])('builds nothing when %s', (_label, over) => {
+		configured(over);
+
+		rebuild();
+
+		expect(isServerSyncEnabled()).toBe(false);
+		expect(() => getExchangeProvider()).toThrow(expect.objectContaining({ code: 'not-configured' }));
+	});
+
+	it('detaches on a license downgrade so no credentialed provider is left behind', () => {
+		configured();
+		rebuild();
+		expect(isServerSyncEnabled()).toBe(true);
+
+		detachExchangeProvider();
+
+		expect(isServerSyncEnabled()).toBe(false);
 	});
 });

@@ -10,7 +10,7 @@ export const EXCHANGE_SYNC_JOB = 'Outlook_Calendar_Server_Sync';
 
 const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Outlook_Calendar_Mode', 'Outlook_Calendar_Server_Sync_Interval'];
 
-const DEFAULT_INTERVAL_MINUTES = 15;
+export const DEFAULT_INTERVAL_MINUTES = 15;
 
 const stopExchangeSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(EXCHANGE_SYNC_JOB)) {
@@ -18,7 +18,7 @@ const stopExchangeSyncJob = async (): Promise<void> => {
 	}
 };
 
-export const intervalToCron = (minutes: number): string => {
+const intervalToCron = (minutes: number): string => {
 	const value = Math.trunc(minutes) > 0 ? Math.trunc(minutes) : DEFAULT_INTERVAL_MINUTES;
 
 	if (value < 60) {
