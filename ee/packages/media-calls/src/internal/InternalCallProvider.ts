@@ -5,6 +5,7 @@ import { BaseCallProvider } from '../base/BaseCallProvider';
 import { CallRejectedError, type InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
+import { assertCallReachesSelectedDevice } from '../server/selectedDevice';
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
@@ -23,6 +24,7 @@ export class InternalCallProvider extends BaseCallProvider {
 		if (await MediaCalls.hasUnfinishedCallsByUid(params.callee.id)) {
 			throw new CallRejectedError('unavailable');
 		}
+		await assertCallReachesSelectedDevice(params.callee.id, 'webrtc');
 
 		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		const calleeAgent = await mediaCallDirector.cast.getAgentForActorAndRole(params.callee, 'callee');

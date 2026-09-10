@@ -1,3 +1,4 @@
+import { callControlFeatureList } from '@rocket.chat/media-signaling';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
@@ -30,7 +31,7 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteHeld: false,
 		confirmed: false,
 		callId: 'call-1',
-		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
+		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer', ...callControlFeatureList],
 	} as SessionState;
 
 	const streams = localScreenActive ? { localScreen: { active: true, stream: null } } : {};

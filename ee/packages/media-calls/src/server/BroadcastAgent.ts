@@ -53,6 +53,16 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
 
+	public async onMute(callId: string, muted: boolean): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onMute', callId, muted, role: this.role });
+		// SIP calls apply mute on the client's own webrtc leg; nothing to broadcast to the SIP side.
+	}
+
+	public async onHold(callId: string, held: boolean): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onHold', callId, held, role: this.role });
+		// SIP calls apply hold on the client's own webrtc leg; nothing to broadcast to the SIP side.
+	}
+
 	protected reportCallUpdated(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		const { callId, ...otherParams } = params;
 

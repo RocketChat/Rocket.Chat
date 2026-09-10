@@ -55,6 +55,10 @@ const OngoingCall = () => {
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
 	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const dialpadAvailable = supportedFeatures.includes('dialpad');
+	const directMessageAvailable = supportedFeatures.includes('direct-message');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
 	const appActions = useVisibleAppActions();
 
@@ -64,23 +68,23 @@ const OngoingCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
-				{onClickDirectMessage && (
+				{directMessageAvailable && onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
-				<DevicePicker />
+				{devicePickerAvailable && <DevicePicker />}
 			</WidgetHeader>
 			<WidgetContent>
 				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
-				{isInline && isSip && <Dialpad autoFocus={false} />}
+				{dialpadAvailable && isInline && isSip && <Dialpad autoFocus={false} />}
 				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{!isInline && dialpadOpen && <Dialpad />}
+				{dialpadAvailable && !isInline && dialpadOpen && <Dialpad />}
 				<AppActions actions={appActions} vertical />
 				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
-					{!isInline && (
+					{dialpadAvailable && !isInline && (
 						<ActionButton
 							disabled={connecting || reconnecting}
 							icon='dialpad'
@@ -89,7 +93,15 @@ const OngoingCall = () => {
 							onClick={() => setDialpadOpen((open) => !open)}
 						/>
 					)}
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					{muteAvailable && (
+						<ToggleButton
+							label={t('Mute')}
+							icons={['mic', 'mic-off']}
+							titles={[t('Mute'), t('Unmute')]}
+							pressed={muted}
+							onToggle={onMute}
+						/>
+					)}
 					{holdAvailable && (
 						<ToggleButton
 							label={t('Hold')}

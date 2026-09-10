@@ -4,8 +4,10 @@ import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './a
 import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
 import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
+import { clientMediaSignalHoldSchema, type ClientMediaSignalHold } from './hold';
 import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
 import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
+import { clientMediaSignalMuteSchema, type ClientMediaSignalMute } from './mute';
 import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
@@ -23,7 +25,9 @@ export type ClientMediaSignal =
 	| ClientMediaSignalLocalState
 	| ClientMediaSignalRegister
 	| ClientMediaSignalNegotiationNeeded
-	| ClientMediaSignalTransfer;
+	| ClientMediaSignalTransfer
+	| ClientMediaSignalMute
+	| ClientMediaSignalHold;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -41,6 +45,8 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalRegisterSchema,
 		clientMediaSignalNegotiationNeededSchema,
 		clientMediaSignalTransferSchema,
+		clientMediaSignalMuteSchema,
+		clientMediaSignalHoldSchema,
 	],
 };
 

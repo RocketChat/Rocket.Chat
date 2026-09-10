@@ -52,6 +52,8 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const showAppActions = appActions.length > 0;
 
 	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
 	const showHeaderActions = escalationAvailable && !escalated;
 
@@ -94,11 +96,13 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 								danger={false}
 							/>
 						)}
-						<DevicePicker secondary />
+						{devicePickerAvailable && <DevicePicker secondary />}
 					</ButtonGroup>
 				}
 			>
-				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				{muteAvailable && (
+					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+				)}
 				{allowedFeatures.includes('hold') && (
 					<ToggleButton
 						label={t('Hold')}

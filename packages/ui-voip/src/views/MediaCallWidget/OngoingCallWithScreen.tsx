@@ -52,6 +52,10 @@ const OngoingCall = () => {
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
 	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const dialpadAvailable = supportedFeatures.includes('dialpad');
+	const directMessageAvailable = supportedFeatures.includes('direct-message');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -69,7 +73,7 @@ const OngoingCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
-				{onClickDirectMessage && (
+				{directMessageAvailable && onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 
@@ -84,13 +88,13 @@ const OngoingCall = () => {
 					tiny
 				/>
 
-				<DevicePicker />
+				{devicePickerAvailable && <DevicePicker />}
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
 					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
-					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
+					{dialpadAvailable && isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
@@ -131,7 +135,15 @@ const OngoingCall = () => {
 				<AppActions actions={appActions} vertical />
 				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					{muteAvailable && (
+						<ToggleButton
+							label={t('Mute')}
+							icons={['mic', 'mic-off']}
+							titles={[t('Mute'), t('Unmute')]}
+							pressed={muted}
+							onToggle={onMute}
+						/>
+					)}
 
 					{holdAvailable && (
 						<ToggleButton

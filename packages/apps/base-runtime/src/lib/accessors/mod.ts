@@ -41,6 +41,7 @@ import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
 import { ServerSettingsModify } from './environment/ServerSettingsModify';
 import { SettingRead } from './environment/SettingRead';
 import { SettingUpdater } from './environment/SettingUpdater';
+import { MediaCallModify } from './modify/MediaCallModify';
 import { ModerationModify } from './modify/ModerationModify';
 import { ModifyCreator } from './modify/ModifyCreator';
 import { ModifyDeleter } from './modify/ModifyDeleter';
@@ -324,6 +325,7 @@ export class AppAccessors {
 				getScheduler: () => new SchedulerModify(this.senderFn),
 				getOAuthAppsModifier: () => new OAuthAppsModify(this.senderFn),
 				getModerationModifier: () => new ModerationModify(this.senderFn),
+				getMediaCallModifier: () => new MediaCallModify(this.senderFn),
 			};
 		}
 

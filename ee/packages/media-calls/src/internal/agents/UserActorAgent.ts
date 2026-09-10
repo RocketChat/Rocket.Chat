@@ -201,6 +201,16 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		// internal calls have nothing to do with DTMFs
 	}
 
+	public async onMute(callId: string, muted: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onMute', callId, muted, role: this.role });
+		// A user actor handles its own mute state locally; nothing to relay for webrtc/internal calls.
+	}
+
+	public async onHold(callId: string, held: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onHold', callId, held, role: this.role });
+		// A user actor handles its own hold state locally; nothing to relay for webrtc/internal calls.
+	}
+
 	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
 		getMediaCallServer().sendPushNotification(params);
 	}
