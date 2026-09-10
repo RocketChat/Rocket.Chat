@@ -596,6 +596,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
+	/**
+	 * What the thread on a call's message should be called, or nothing where the question doesn't arise: a call
+	 * whose chat is not a thread, a direct call, or a group call nobody named.
+	 */
+	private threadTitleFor(call: VideoConference): string {
+		if (!isGroupVideoConference(call) || !this.chatLivesInAThread()) {
+			return '';
+		}
+
+		return call.title?.trim() || '';
+	}
+
 	private async getTypeForNewVideoConference(
 		rid: IRoom['_id'],
 		allowRinging: boolean,
@@ -614,7 +626,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
 		const record = {
 			t: 'videoconf',
-			msg: '',
+			// The call's name, where the call's chat is a thread on this message — because a thread is titled after
+			// its parent, and with nothing to read there every call in a room was listed as `Video Conference`, the
+			// message type's generic name. Three calls in a channel were three threads with one name between them.
+			//
+			// It costs nothing in the room: a message carrying blocks renders those and never its text
+			// (`RoomMessageContent` draws a body only when there are no blocks), so the readers are the two places
+			// that name a thread from its parent — the room's thread list and the thread's own header, both of
+			// which check `msg` before falling back to the message type. A direct call has no name of its own to
+			// use, and a group call whose creator left the field empty keeps the generic one.
+			msg: this.threadTitleFor(call),
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
 		} satisfies Partial<IMessage>;
