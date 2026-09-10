@@ -2288,7 +2288,7 @@
   "Start_of_conversation": "开始交谈",
   "Start_video_call": "开始视频通话",
   "Start_video_conference": "开始视频会议？",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "对于用户或<code>@</code>，请为频道开始<code>#</code> 例如：<code>@john</code> 或<code>#general</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "用戶請以 <code>@</code> 開頭，頻道請以 <code>#</code> 開頭。例如：<code>@john</code> 或 <code>#general</code>",
   "Started_a_video_call": "开始视频通话",
   "Started_At": "开始于",
   "Statistics": "统计",
