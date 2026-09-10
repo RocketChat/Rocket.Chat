@@ -41,8 +41,13 @@ describe('VideoConfService: the call message that names a thread', () => {
 		service = new VideoConfService();
 		// Persistent chat on and in thread mode, which is what makes the call's message a thread parent. Each case
 		// below takes one of these answers away.
+		//
+		// The window is part of "thread mode" rather than incidental to it: without it the mode answers
+		// `main_room` whatever the setting says, because a thread off the call message is what the call window's
+		// chat panel is built around and nothing else reads one.
 		settingsValues = {
 			VideoConf_Enable_Persistent_Chat: true,
+			VideoConf_Conference_Window_Enabled: true,
 			VideoConf_Persistent_Chat_Mode: 'thread',
 			Discussion_enabled: true,
 		};
@@ -73,6 +78,16 @@ describe('VideoConfService: the call message that names a thread', () => {
 		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
 
 		expect(sentRecord().msg).to.equal('Sprint planning');
+	});
+
+	// Without the window there is no thread — `getPersistentChatMode` answers `main_room` whatever the mode says
+	// — so a name on this message would be a name on nothing, rendered nowhere.
+	it('says nothing while the call window is off', async () => {
+		settingsValues.VideoConf_Conference_Window_Enabled = false;
+
+		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
+
+		expect(sentRecord().msg).to.equal('');
 	});
 
 	// In main-room mode the chat is the room itself and no thread is opened, so there is nothing to name.
