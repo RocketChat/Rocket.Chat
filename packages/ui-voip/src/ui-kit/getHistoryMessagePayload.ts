@@ -1,6 +1,7 @@
 import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
 import type { IconButtonElement, FrameableIconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
-import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
+import { intervalToDuration } from 'date-fns/intervalToDuration';
+import { secondsToMilliseconds } from 'date-fns/secondsToMilliseconds';
 
 const APP_ID = 'media-call-core';
 

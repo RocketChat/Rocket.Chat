@@ -1,4 +1,5 @@
-import { format, addHours } from 'date-fns';
+import { addHours } from 'date-fns/addHours';
+import { format } from 'date-fns/format';
 
 export const getMomentCurrentLabel = (timestamp = Date.now()) => {
 	const m = new Date(timestamp);

@@ -1,7 +1,12 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, FlexContainer, FlexItem, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { endOfDay } from 'date-fns/endOfDay';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
+import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

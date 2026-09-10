@@ -1,7 +1,7 @@
 import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
 import type { DataAPI } from './ChatAPI';
 import { Messages, Rooms, Subscriptions } from '../../stores';
