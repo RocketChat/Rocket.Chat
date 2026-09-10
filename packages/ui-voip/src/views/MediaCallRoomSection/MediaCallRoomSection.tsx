@@ -45,17 +45,29 @@ const reactionPickerWrapStyles = css`
 `;
 
 const reactionPickerStyles = css`
-	position: absolute;
-	bottom: 48px;
-	left: 50%;
-	transform: translateX(-50%);
 	display: flex;
+	flex-wrap: nowrap;
 	gap: 4px;
 	padding: 8px;
 	background-color: rgba(20, 20, 25, 0.95);
 	border-radius: 10px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 	z-index: 100;
+
+	/* One row, always — a grid of reactions reads as a keyboard, a row reads as a shortcut. Where the row is
+	   wider than the window it scrolls instead of wrapping or spilling: capped to the viewport, and the buttons
+	   below refuse to shrink so the overflow becomes scroll rather than eight squeezed emoji. */
+	max-width: calc(100vw - 24px);
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	-webkit-overflow-scrolling: touch;
+
+	/* No scrollbar: on a strip this short it costs more height than it explains. */
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
 `;
 
 const reactionButtonStyles = css`
@@ -63,7 +75,8 @@ const reactionButtonStyles = css`
 	align-items: center;
 	justify-content: center;
 	/* A touch target rather than a mouse target: the controls beside it are 40px, and an emoji is aimed at with
-	   a thumb. */
+	   a thumb. Fixed, so a row too long to fit scrolls rather than squeezing every emoji. */
+	flex: 0 0 auto;
 	width: 44px;
 	height: 44px;
 	border-radius: 8px;
@@ -107,22 +120,23 @@ const callHeaderTimerStyles = css`
 // The selector sits first, on the inline start, where it is out of the way of
 // the toggle the user actually reaches for — and its chevron points *up*,
 // toward where its menu opens from a bottom bar.
+/**
+ * Both of these sit in one column above the controls — see `controlNoticesStyles` — so neither positions itself
+ * any more. The notice used to hang off the mic button, which put it partly off the screen on a phone and in the
+ * way of the reaction picker; now they stack, notice above picker.
+ */
 const speakingWhileMutedTooltip = css`
 	@keyframes swm-fade-in {
 		from {
 			opacity: 0;
-			transform: translate(-50%, 4px);
+			transform: translateY(4px);
 		}
 		to {
 			opacity: 1;
-			transform: translate(-50%, 0);
+			transform: translateY(0);
 		}
 	}
 
-	position: absolute;
-	bottom: calc(100% + 8px);
-	left: 50%;
-	transform: translateX(-50%);
 	padding: 6px 12px;
 	border-radius: 4px;
 	background: rgba(245, 69, 69, 0.95);
@@ -134,16 +148,33 @@ const speakingWhileMutedTooltip = css`
 	pointer-events: auto;
 	cursor: pointer;
 	animation: swm-fade-in 200ms ease-out;
+`;
+
+/**
+ * The column of things a control can raise above the strip: the muted-while-talking notice, and the reaction
+ * picker under it. Centred on the row rather than on whichever button opened it, which is what keeps both of
+ * them on screen at any width, and stacked so one never lands on top of the other.
+ */
+const controlNoticesStyles = css`
+	position: absolute;
+	bottom: calc(100% + 8px);
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+
+	/* Above the buttons in the row, and deliberately below the side panels: a panel opened over the call sits at
+	   100, and the control bar is rendered after it — so at equal footing this would have painted a red alert
+	   over somebody's chat. Losing that race is the correct outcome. */
 	z-index: 10;
 
-	&::after {
-		content: '';
-		position: absolute;
-		top: 100%;
-		left: 50%;
-		transform: translateX(-50%);
-		border: 5px solid transparent;
-		border-top-color: rgba(245, 69, 69, 0.95);
+	/* The column is only a layout: what is in it takes its own clicks. */
+	pointer-events: none;
+
+	& > * {
+		pointer-events: auto;
 	}
 `;
 
@@ -294,6 +325,9 @@ const MediaCallRoomSection = ({
 	const isLiveKitCall = Boolean(onToggleHand);
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
+	// The popover is no longer inside the button's wrapper — it hangs off the controls row — so "outside" has to
+	// be asked of both, or every click on an emoji would dismiss the picker that offered it.
+	const reactionPopoverRef = useRef<HTMLDivElement>(null);
 
 	const [stageLayout, setStageLayout] = useLocalStorage<StageLayout>('videoconf-stage-layout', 'grid');
 
@@ -303,8 +337,9 @@ const MediaCallRoomSection = ({
 	useEffect(() => {
 		if (!reactionPickerOpen) return undefined;
 		const onPointerDown = (e: PointerEvent) => {
-			const node = reactionPickerRef.current;
-			if (node && !node.contains(e.target as Node)) {
+			const target = e.target as Node;
+			const nodes = [reactionPickerRef.current, reactionPopoverRef.current].filter(Boolean) as HTMLDivElement[];
+			if (nodes.length && !nodes.some((node) => node.contains(target))) {
 				setReactionPickerOpen(false);
 			}
 		};
@@ -419,7 +454,7 @@ const MediaCallRoomSection = ({
 				<Box>
 					<DevicePicker chevron danger={muted} large />
 				</Box>
-				<Box position='relative'>
+				<Box>
 					<ToggleButton
 						label={t('Mute')}
 						icons={['mic', 'mic-off']}
@@ -429,11 +464,6 @@ const MediaCallRoomSection = ({
 						large
 						onToggle={onMute}
 					/>
-					{speakingWhileMuted && (
-						<Box className={speakingWhileMutedTooltip} onClick={onMute}>
-							{t('You_are_muted')}
-						</Box>
-					)}
 				</Box>
 			</Box>
 			{onToggleCamera && (
@@ -492,22 +522,6 @@ const MediaCallRoomSection = ({
 						large
 						onToggle={() => setReactionPickerOpen((p) => !p)}
 					/>
-					{reactionPickerOpen && (
-						<Box className={reactionPickerStyles}>
-							{REACTION_EMOJIS.map((emoji) => (
-								<Box
-									key={emoji}
-									is='button'
-									type='button'
-									title={`Send ${emoji}`}
-									className={reactionButtonStyles}
-									onClick={() => onSendReaction(emoji)}
-								>
-									{emoji}
-								</Box>
-							))}
-						</Box>
-					)}
 				</Box>
 			)}
 			{isOneOnOne && !isLiveKitCall && (
@@ -543,6 +557,31 @@ const MediaCallRoomSection = ({
 				);
 			})()}
 			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={onEndCall} />
+			{(speakingWhileMuted || (onSendReaction && reactionPickerOpen)) && (
+				<Box className={controlNoticesStyles}>
+					{speakingWhileMuted && (
+						<Box className={speakingWhileMutedTooltip} onClick={onMute}>
+							{t('You_are_muted')}
+						</Box>
+					)}
+					{onSendReaction && reactionPickerOpen && (
+						<Box className={reactionPickerStyles} ref={reactionPopoverRef}>
+							{REACTION_EMOJIS.map((emoji) => (
+								<Box
+									key={emoji}
+									is='button'
+									type='button'
+									title={`Send ${emoji}`}
+									className={reactionButtonStyles}
+									onClick={() => onSendReaction(emoji)}
+								>
+									{emoji}
+								</Box>
+							))}
+						</Box>
+					)}
+				</Box>
+			)}
 		</>
 	);
 
@@ -593,7 +632,7 @@ const MediaCallRoomSection = ({
 			    otherwise they sit in the call's own strip below the stage. */}
 			{actionsContainer ? (
 				createPortal(
-					<ButtonGroup large style={{ gap: 8 }}>
+					<ButtonGroup large style={{ position: 'relative', gap: 8 }}>
 						{callControls}
 					</ButtonGroup>,
 					actionsContainer,
