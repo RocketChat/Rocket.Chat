@@ -7,8 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
-import { handleProfileFields } from './handleProfileFields';
 import { handleNickname } from './handleNickname';
+import { handleProfileFields } from './handleProfileFields';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { setPasswordUpdater } from './setPasswordUpdater';
