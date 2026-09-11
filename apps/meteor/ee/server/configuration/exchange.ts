@@ -3,7 +3,7 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
-import { addSettings } from '../settings/outlookCalendar';
+import { addSettings } from '../settings/exchange';
 
 Meteor.startup(() =>
 	License.onLicense('outlook-calendar', async () => {
