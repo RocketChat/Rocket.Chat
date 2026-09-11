@@ -1,5 +1,41 @@
 import { create } from 'zustand';
 
+const bytesToHex = (bytes: Uint8Array): string => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+
+/**
+ * Documents are identified by a string `_id`, but a document can reach the store
+ * carrying another representation of the same id, e.g. a BSON ObjectId or the raw
+ * bytes of an EJSON binary. Those are not stable map keys: every merge of such a
+ * document stores a new entry instead of replacing the previous one, which makes
+ * repeated records pile up in the store (and in the persisted cache).
+ *
+ * @param id - The id of a document, in any of the representations it may arrive in.
+ * @returns The id as a string.
+ */
+export const toRecordId = (id: unknown): string => {
+	if (typeof id === 'string') {
+		return id;
+	}
+
+	if (ArrayBuffer.isView(id)) {
+		return bytesToHex(new Uint8Array(id.buffer, id.byteOffset, id.byteLength));
+	}
+
+	return JSON.stringify(id) ?? String(id);
+};
+
+const withStringId = <T extends { _id: string }>(record: T): T => {
+	const _id = toRecordId(record._id);
+
+	return _id === record._id ? record : { ...record, _id };
+};
+
+const toEntry = <T extends { _id: string }>(record: T): [string, T] => {
+	const stored = withStringId(record);
+
+	return [stored._id, stored];
+};
+
 export interface IDocumentMapStore<T extends { _id: string }> {
 	readonly records: ReadonlyMap<T['_id'], T>;
 	/**
@@ -169,8 +205,8 @@ export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate, onInvalidateAll }: IDocumentMapStoreHooks<T> = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
-		has: (id: T['_id']) => get().records.has(id),
-		get: (id: T['_id']) => get().records.get(id),
+		has: (id: T['_id']) => get().records.has(toRecordId(id)),
+		get: (id: T['_id']) => get().records.get(toRecordId(id)),
 		some: (predicate: (record: T) => boolean) => {
 			for (const record of get().records.values()) {
 				if (predicate(record)) return true;
@@ -213,31 +249,39 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			return index;
 		},
 		replaceAll: (records: T[]) => {
-			set({ records: new Map(records.map((record) => [record._id, record])) });
+			set({ records: new Map(records.map(toEntry)) });
 			onInvalidateAll?.();
 		},
 		store: (doc) => {
-			set((state) => ({ records: new Map(state.records).set(doc._id, doc) }));
-			onInvalidate?.(doc);
+			const record = withStringId(doc);
+
+			set((state) => ({ records: new Map(state.records).set(record._id, record) }));
+			onInvalidate?.(record);
 		},
 		storeMany: (docs) => {
+			const stored: T[] = [];
+
 			set((state) => {
 				const records = new Map(state.records);
 
 				for (const doc of docs) {
-					records.set(doc._id, doc);
+					const entry = toEntry(doc);
+
+					records.set(...entry);
+					stored.push(entry[1]);
 				}
 
 				return { records };
 			});
-			onInvalidate?.(...docs);
+			onInvalidate?.(...stored);
 		},
 		delete: (_id) => {
 			const affected: T[] = [];
+			const key = toRecordId(_id);
 			set((state) => {
 				const records = new Map(state.records);
-				if (onInvalidate) affected.push(state.records.get(_id)!);
-				records.delete(_id);
+				if (onInvalidate) affected.push(state.records.get(key)!);
+				records.delete(key);
 				return { records };
 			});
 			onInvalidate?.(...affected);
