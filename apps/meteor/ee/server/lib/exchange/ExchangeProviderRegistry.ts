@@ -10,51 +10,51 @@ import { settings } from '../../../../server/settings';
 
 const WATCHED_SETTINGS = [
 	'Outlook_Calendar_Enabled',
-	'Outlook_Calendar_Mode',
-	'Outlook_Calendar_Server_Sync_Provider',
-	'Outlook_Calendar_Graph_Tenant_Id',
-	'Outlook_Calendar_Graph_Client_Id',
-	'Outlook_Calendar_Graph_Client_Secret',
-	'Outlook_Calendar_Graph_Authority_Host',
-	'Outlook_Calendar_Graph_Host',
-	'Outlook_Calendar_EWS_Url',
-	'Outlook_Calendar_EWS_Username',
-	'Outlook_Calendar_EWS_Password',
-	'Outlook_Calendar_EWS_Auth_Method',
-	'Outlook_Calendar_EWS_CA_Cert',
-	'Outlook_Calendar_EWS_Reject_Unauthorized',
+	'Exchange_Mode',
+	'Exchange_Sync_Provider',
+	'Exchange_Graph_Tenant_Id',
+	'Exchange_Graph_Client_Id',
+	'Exchange_Graph_Client_Secret',
+	'Exchange_Graph_Authority_Host',
+	'Exchange_Graph_Host',
+	'Exchange_EWS_Url',
+	'Exchange_EWS_Username',
+	'Exchange_EWS_Password',
+	'Exchange_EWS_Auth_Method',
+	'Exchange_EWS_CA_Cert',
+	'Exchange_EWS_Reject_Unauthorized',
 ];
 
 let current: IExchangeProvider | undefined;
 
 const buildExchangeProvider = (): IExchangeProvider | undefined => {
-	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Outlook_Calendar_Mode') !== 'server') {
+	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
 		return undefined;
 	}
 
-	const providerId = settings.get<string>('Outlook_Calendar_Server_Sync_Provider');
+	const providerId = settings.get<string>('Exchange_Sync_Provider');
 
 	switch (providerId) {
 		case 'graph':
 			return new MicrosoftGraphProvider({
-				tenantId: settings.get<string>('Outlook_Calendar_Graph_Tenant_Id'),
-				clientId: settings.get<string>('Outlook_Calendar_Graph_Client_Id'),
-				clientSecret: settings.get<string>('Outlook_Calendar_Graph_Client_Secret'),
-				authorityHost: settings.get<string>('Outlook_Calendar_Graph_Authority_Host') || undefined,
-				graphHost: settings.get<string>('Outlook_Calendar_Graph_Host') || undefined,
+				tenantId: settings.get<string>('Exchange_Graph_Tenant_Id'),
+				clientId: settings.get<string>('Exchange_Graph_Client_Id'),
+				clientSecret: settings.get<string>('Exchange_Graph_Client_Secret'),
+				authorityHost: settings.get<string>('Exchange_Graph_Authority_Host') || undefined,
+				graphHost: settings.get<string>('Exchange_Graph_Host') || undefined,
 			});
 
 		case 'ews':
 			return new ExchangeEwsProvider(
 				new EwsTransport({
-					url: settings.get<string>('Outlook_Calendar_EWS_Url'),
-					username: settings.get<string>('Outlook_Calendar_EWS_Username'),
-					password: settings.get<string>('Outlook_Calendar_EWS_Password'),
-					authMethod: settings.get<string>('Outlook_Calendar_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
-					caCert: settings.get<string>('Outlook_Calendar_EWS_CA_Cert') || undefined,
-					rejectUnauthorized: settings.get<boolean>('Outlook_Calendar_EWS_Reject_Unauthorized') !== false,
+					url: settings.get<string>('Exchange_EWS_Url'),
+					username: settings.get<string>('Exchange_EWS_Username'),
+					password: settings.get<string>('Exchange_EWS_Password'),
+					authMethod: settings.get<string>('Exchange_EWS_Auth_Method') === 'basic' ? 'basic' : 'ntlm',
+					caCert: settings.get<string>('Exchange_EWS_CA_Cert') || undefined,
+					rejectUnauthorized: settings.get<boolean>('Exchange_EWS_Reject_Unauthorized') !== false,
 				}),
-				settings.get<string>('Outlook_Calendar_EWS_Username'),
+				settings.get<string>('Exchange_EWS_Username'),
 			);
 
 		default:
@@ -83,7 +83,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * identical for every run of the same day, which is what makes a Graph delta link reusable.
  */
 export const getSyncWindow = (from: Date = new Date()): DateRange => {
-	const configured = Math.trunc(settings.get<number>('Outlook_Calendar_Server_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
+	const configured = Math.trunc(settings.get<number>('Exchange_Calendar_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
 	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
 
 	const start = new Date(from);
