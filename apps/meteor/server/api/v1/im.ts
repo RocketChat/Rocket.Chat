@@ -913,7 +913,6 @@ const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typ
 
 const dmCreateEndpointsProps = {
 	authRequired: true,
-	rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000, bypassPermissions: ['send-many-messages'] as string[] },
 	body: isDmCreateProps,
 	response: {
 		400: validateBadRequestErrorResponse,

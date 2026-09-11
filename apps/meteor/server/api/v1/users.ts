@@ -1166,7 +1166,6 @@ API.v1
 		'users.forgotPassword',
 		{
 			authRequired: false,
-			rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
 			body: ajv.compile<{ email: string }>({
 				type: 'object',
 				properties: {
