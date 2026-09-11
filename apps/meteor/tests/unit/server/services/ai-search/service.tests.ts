@@ -322,13 +322,13 @@ describe('AISearchService', () => {
 					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
 				},
 				{
+					// keyword-sourced: carries no similarity, because the pipeline's full-text rank is not one
 					_id: 'keyword-msg',
 					rid: 'allowed',
 					msgId: 'keyword-msg',
 					text: 'keyword-msg from db',
 					ts: '2026-01-05T12:00:00.000Z',
 					u: { username: 'alice', name: 'Alice' },
-					score: 0.6,
 					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
 				},
 			]);

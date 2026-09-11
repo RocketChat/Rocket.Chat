@@ -72,8 +72,14 @@ The two retrievers report scores on incompatible scales, verified empirically ag
 - Full-text `score` is a **rank**: *higher is better*.
 
 `normalizeIntelligentSearchCandidates` converts distance to similarity (`similarity = 1 - distance`) for
-display and for the similarity guardrail. Fusion deliberately never compares the two raw scores — it
-works on **rank positions only**, which is what makes the incompatible scales a non-problem.
+display and for the similarity guardrail, and does so **only for semantic candidates**. Both retrievers
+report their number in the same `score` field, so reading a keyword hit's rank as a distance would invert
+it and fabricate a confident similarity — the best lexical hit would display the lowest score. Keyword
+candidates therefore carry `keywordScore` for observability and no `score` at all; the UI shows a match
+percentage only where one genuinely exists.
+
+Fusion deliberately never compares the two raw scores — it works on **rank positions only**, which is
+what makes the incompatible scales a non-problem.
 
 ## Weighted RRF
 

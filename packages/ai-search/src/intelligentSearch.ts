@@ -66,10 +66,18 @@ const normalizePipelineScore = (value: number): number => {
 	return Math.min(1, Math.max(0, normalizedValue));
 };
 
+// Only the semantic retriever reports a cosine distance. The keyword retriever reuses the same `score`
+// field for a full-text rank, where *higher* is better, so interpreting it as a distance would invert it
+// and surface a confident-looking similarity for a weak lexical match.
 const extractPipelineSimilarityScores = (
 	result: Record<string, unknown>,
 	metadata: Record<string, unknown>,
+	source: IntelligentSearchCandidateSource,
 ): { semanticSimilarity?: number; semanticDistance?: number } => {
+	if (source === 'keyword') {
+		return {};
+	}
+
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
 		const semanticSimilarity = normalizePipelineScore(similarity);
@@ -159,7 +167,8 @@ export const normalizeIntelligentSearchCandidates = (
 			continue;
 		}
 
-		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata);
+		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
+		const keywordScore = source === 'keyword' ? firstNumber(result.score, metadata.score) : undefined;
 		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
 			_id: msgId || `intelligent-${index}`,
@@ -172,6 +181,7 @@ export const normalizeIntelligentSearchCandidates = (
 				semanticSimilarity,
 				semanticDistance,
 			}),
+			...(typeof keywordScore === 'number' && { keywordScore }),
 			...(source && { source }),
 		});
 	}

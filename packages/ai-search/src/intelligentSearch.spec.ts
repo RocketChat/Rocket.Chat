@@ -114,12 +114,50 @@ describe('AI Search intelligent search helpers', () => {
 					rid: 'r1',
 					msgId: 'm1',
 					pipelineText: 'keyword match',
-					score: 0.58,
-					semanticSimilarity: 0.58,
-					semanticDistance: 0.42,
+					keywordScore: 0.42,
 					source: 'keyword',
 				},
 			]);
+		});
+	});
+
+	describe('keyword candidate scores', () => {
+		it('never reports a full-text rank as a semantic similarity', () => {
+			// the pipeline reuses `score` for a full-text rank where higher is better, so reading it as a
+			// cosine distance would both invert the ordering and fabricate a confident similarity
+			const [best, worst] = normalizeIntelligentSearchCandidates(
+				{
+					results: [
+						{ metadata: { room_id: 'r1', msg_id: 'm1' }, score: 0.2803 },
+						{ metadata: { room_id: 'r2', msg_id: 'm2' }, score: 0.0183 },
+					],
+				},
+				[],
+				10,
+				undefined,
+				'keyword',
+			);
+
+			expect(best).not.toHaveProperty('score');
+			expect(best).not.toHaveProperty('semanticSimilarity');
+			expect(best).not.toHaveProperty('semanticDistance');
+			expect(best.keywordScore).toBe(0.2803);
+			expect(worst.keywordScore).toBe(0.0183);
+			expect(best.source).toBe('keyword');
+		});
+
+		it('still reports semantic similarity for semantic candidates', () => {
+			const [candidate] = normalizeIntelligentSearchCandidates(
+				{ results: [{ metadata: { room_id: 'r1', msg_id: 'm1' }, score: 0.2 }] },
+				[],
+				10,
+				undefined,
+				'semantic',
+			);
+
+			expect(candidate.score).toBe(0.8);
+			expect(candidate.semanticSimilarity).toBe(0.8);
+			expect(candidate).not.toHaveProperty('keywordScore');
 		});
 	});
 
