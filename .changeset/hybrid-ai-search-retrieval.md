@@ -6,15 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds hybrid retrieval and optional temporal reranking to AI Search.
-
-A single **Search balance** setting (0-100) now controls retrieval: 0 searches by keyword only, 100 by
-meaning only, and anything in between runs both retrievers in parallel and fuses them with weighted
-Reciprocal Rank Fusion. Fusion works on rank positions, so the retrievers' incompatible score scales are
-never compared directly.
-
-The minimum semantic similarity guardrail now applies only to semantic candidates, so an exact match on
-an error code or ticket id is no longer discarded for being semantically unremarkable.
-
-An optional **Recency boost** reranks results by age after relevance ranking, using an exponential decay
-with a 30-day half-life. It is disabled by default and leaves ranking unchanged until an admin opts in.
+Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
