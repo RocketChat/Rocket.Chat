@@ -1,0 +1,9 @@
+.changeset/tall-pandas-repeat.md
+  ai_agent 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "87703140dddfb3c8b335edaaa770005f8481806d",
+  "prompts": {}
+}
