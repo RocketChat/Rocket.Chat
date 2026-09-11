@@ -17,7 +17,7 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/exchange.testConnection');
 	const outlookEnabled = useSetting('Outlook_Calendar_Enabled', false);
-	const serverMode = useSetting('Outlook_Calendar_Mode') === 'server';
+	const serverMode = useSetting('Exchange_Mode') === 'server';
 
 	const editableSettings = useEditableSettings(useMemo(() => ({ group: _id }), [_id]));
 
