@@ -65,17 +65,21 @@ const UsersUpdateParamsPostSchema = {
 				},
 				title: {
 					type: 'string',
+					maxLength: 260,
 					nullable: true,
 				},
 				nationality: {
 					type: 'string',
+					maxLength: 260,
 					nullable: true,
 				},
 				languages: {
 					type: 'array',
 					items: {
 						type: 'string',
+						maxLength: 260,
 					},
+					maxItems: 20,
 					nullable: true,
 				},
 				nickname: {
