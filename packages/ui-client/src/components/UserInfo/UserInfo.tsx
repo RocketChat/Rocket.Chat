@@ -128,21 +128,21 @@ const UserInfo = ({
 							<InfoPanelLabel is='dt' id={usernameId}>
 								{t('Username')}
 							</InfoPanelLabel>
-							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} />
+							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} label={t('Username')} />
 						</InfoPanelField>
 					)}
 
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<UserInfoCopyableText text={reason} />
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} />
 						</InfoPanelField>
 					)}
 
 					{nickname && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
-							<UserInfoCopyableText text={nickname} />
+							<UserInfoCopyableText text={nickname} label={t('Nickname')} />
 						</InfoPanelField>
 					)}
 
@@ -151,7 +151,7 @@ const UserInfo = ({
 							text && (
 								<InfoPanelField key={label}>
 									<InfoPanelLabel>{label}</InfoPanelLabel>
-									<UserInfoCopyableText text={text} withTruncatedText={false} wordBreak='break-word' />
+									<UserInfoCopyableText text={text} label={label} withTruncatedText={false} wordBreak='break-word' />
 								</InfoPanelField>
 							),
 					)}
@@ -182,7 +182,7 @@ const UserInfo = ({
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<UserInfoCopyableText text={bio} withTruncatedText={false}>
+							<UserInfoCopyableText text={bio} label={t('Bio')} withTruncatedText={false}>
 								<MarkdownText variant='inline' content={bio} />
 							</UserInfoCopyableText>
 						</InfoPanelField>
@@ -198,7 +198,7 @@ const UserInfo = ({
 					{phone && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<UserInfoCopyableText text={phone}>
+							<UserInfoCopyableText text={phone} label={t('Phone')}>
 								<Box is='a' withTruncatedText href={`tel:${phone}`}>
 									{phone}
 								</Box>
@@ -209,7 +209,7 @@ const UserInfo = ({
 					{email && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-							<UserInfoCopyableText text={email}>
+							<UserInfoCopyableText text={email} label={t('Email')}>
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
@@ -223,7 +223,7 @@ const UserInfo = ({
 					{freeSwitchExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<UserInfoCopyableText text={freeSwitchExtension} />
+							<UserInfoCopyableText text={freeSwitchExtension} label={t('Voice_call_extension')} />
 						</InfoPanelField>
 					)}
 
@@ -238,7 +238,7 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
-									<UserInfoCopyableText text={customField.value}>
+									<UserInfoCopyableText text={customField.value} label={t(customField.label as TranslationKey)}>
 										<MarkdownText content={customField.value} variant='inline' />
 									</UserInfoCopyableText>
 								</InfoPanelField>

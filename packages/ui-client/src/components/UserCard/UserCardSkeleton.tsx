@@ -1,11 +1,14 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import UserCardDialog from './UserCardDialog';
 
 const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
+	const { t } = useTranslation();
+
 	return (
-		<UserCardDialog {...props}>
+		<UserCardDialog aria-label={t('User_card')} {...props}>
 			<Box display='flex' alignItems='center'>
 				<Skeleton borderRadius='x4' width='x36' height='x36' variant='rect' />
 				<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x4'>
