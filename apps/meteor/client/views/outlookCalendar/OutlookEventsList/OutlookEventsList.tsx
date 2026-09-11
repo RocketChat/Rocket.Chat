@@ -29,7 +29,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
-	const isServerManaged = useSetting('Outlook_Calendar_Mode', 'legacy') === 'server';
+	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 
 	const hasOutlookMethods = isServerManaged || !(isError && error instanceof NotOnDesktopError);
 

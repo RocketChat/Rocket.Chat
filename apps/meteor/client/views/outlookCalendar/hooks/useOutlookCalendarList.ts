@@ -26,7 +26,7 @@ export const useMutationOutlookCalendarSync = () => {
 	const t = useTranslation();
 	const queryClient = useQueryClient();
 
-	const isServerManaged = useSetting('Outlook_Calendar_Mode', 'legacy') === 'server';
+	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 	const syncMyCalendar = useEndpoint('POST', '/v1/exchange.syncMyCalendar');
 
 	const checkOutlookCredentials = useOutlookAuthenticationMutation();

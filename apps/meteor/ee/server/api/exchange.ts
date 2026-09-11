@@ -110,7 +110,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!isServerSyncEnabled()) {
-			return API.v1.failure('Outlook_Calendar_Server_Sync_Disabled');
+			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}
 
 		try {
