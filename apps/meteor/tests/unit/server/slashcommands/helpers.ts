@@ -15,14 +15,14 @@ type Dependencies = Record<string, unknown> & {
 	};
 };
 
-/** Capture registration and invoke the actual callback without involving the dispatcher. */
-export function loadCommand(path: string, dependencies: Dependencies = {}) {
-	const commands = new Map<string, Registration>();
+export function loadSlashCommand(path: string, dependencies: Dependencies = {}) {
+	const registeredCommands = new Map<string, Registration>();
 	const coreServices = dependencies['@rocket.chat/core-services'];
 	const broadcast = coreServices?.api?.broadcast ?? sinon.stub().resolves();
 	const translate = sinon.stub().callsFake((key: string) => `translated:${key}`);
 	const settings = { get: sinon.stub() };
-	let invocation: SlashCommandCallbackParams<string> | undefined;
+	let lastInvocation: SlashCommandCallbackParams<string> | undefined;
+
 	proxyquire
 		.noCallThru()
 		.noPreserveCache()
@@ -33,31 +33,38 @@ export function loadCommand(path: string, dependencies: Dependencies = {}) {
 			...dependencies,
 			'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
 			'../../lib/utils/slashCommand': {
-				slashCommands: { add: (registration: Registration) => commands.set(registration.command, registration) },
+				slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
 			},
 		});
+
 	return {
 		broadcast,
 		translate,
 		settings,
-		commands,
-		/** Invoke a registered command, retaining its arguments for feedback assertions. */
-		async run(command: string, overrides: Partial<SlashCommandCallbackParams<string>> = {}) {
-			const registration = commands.get(command);
-			if (!registration) throw new Error(`Command /${command} was not registered`);
-			invocation = {
+		registeredCommands,
+		async runCommand(command: string, overrides: Partial<SlashCommandCallbackParams<string>> = {}) {
+			const registration = registeredCommands.get(command);
+
+			if (!registration) {
+				throw new Error(`Command /${command} was not registered`);
+			}
+
+			lastInvocation = {
 				command,
 				params: '',
 				userId: 'actor',
 				message: { _id: 'message', rid: 'current-room' },
 				...overrides,
 			};
-			return registration.callback(invocation);
+
+			return registration.callback(lastInvocation);
 		},
-		/** Assert translated feedback was sent to the user and room from the latest invocation. */
-		expectFeedback(key: string) {
-			if (!invocation) throw new Error('Run a command before asserting feedback');
-			sinon.assert.calledWithExactly(broadcast, 'notify.ephemeralMessage', invocation.userId, invocation.message.rid, {
+		expectTranslatedFeedback(key: string) {
+			if (!lastInvocation) {
+				throw new Error('Run a command before asserting feedback');
+			}
+
+			sinon.assert.calledWithExactly(broadcast, 'notify.ephemeralMessage', lastInvocation.userId, lastInvocation.message.rid, {
 				msg: `translated:${key}`,
 			});
 		},

@@ -2,61 +2,68 @@ import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { loadCommand } from './helpers';
+import { loadSlashCommand } from './helpers';
 
 describe('/hide', () => {
 	const actor = { _id: 'actor', username: 'alice', language: 'pt' };
 	let findUser: sinon.SinonStub;
-	let byName: sinon.SinonStub;
+	let findRoomByName: sinon.SinonStub;
 	let findDirect: sinon.SinonStub;
 	let subscription: sinon.SinonStub;
 	let hide: sinon.SinonStub;
-	let harness: ReturnType<typeof loadCommand>;
+	let slashCommand: ReturnType<typeof loadSlashCommand>;
+
 	beforeEach(() => {
 		findUser = sinon.stub().resolves(actor);
-		byName = sinon.stub().resolves({ _id: 'channel' });
+		findRoomByName = sinon.stub().resolves({ _id: 'channel' });
 		findDirect = sinon.stub().resolves({ _id: 'direct' });
 		subscription = sinon.stub().resolves({ _id: 'subscription' });
 		hide = sinon.stub().resolves();
-		harness = loadCommand('hide/hide', {
+		slashCommand = loadSlashCommand('hide/hide', {
 			'@rocket.chat/models': {
 				Users: { findOneById: findUser },
-				Rooms: { findOneByName: byName, findOne: findDirect },
+				Rooms: { findOneByName: findRoomByName, findOne: findDirect },
 				Subscriptions: { findOneByRoomIdAndUserId: subscription },
 			},
 			'../../meteor-methods/rooms/hideRoom': { hideRoomMethod: hide },
 		});
 	});
+
 	it('hides the current room without a room lookup when no parameter is provided', async () => {
-		await harness.run('hide', { params: '  ' });
+		await slashCommand.runCommand('hide', { params: '  ' });
 		sinon.assert.calledOnceWithExactly(hide, 'actor', 'current-room');
-		sinon.assert.notCalled(byName);
+		sinon.assert.notCalled(findRoomByName);
 		sinon.assert.notCalled(findDirect);
 	});
+
 	it('hides a named channel after verifying membership', async () => {
-		await harness.run('hide', { params: ' #general ignored ' });
-		sinon.assert.calledOnceWithExactly(byName, 'general');
+		await slashCommand.runCommand('hide', { params: ' #general ignored ' });
+		sinon.assert.calledOnceWithExactly(findRoomByName, 'general');
 		sinon.assert.calledOnceWithExactly(subscription, 'channel', 'actor', { projection: { _id: 1 } });
 		sinon.assert.calledOnceWithExactly(hide, 'actor', 'channel');
 	});
+
 	it('hides a direct conversation with the named user', async () => {
-		await harness.run('hide', { params: '@bob' });
+		await slashCommand.runCommand('hide', { params: '@bob' });
 		sinon.assert.calledOnceWithExactly(findDirect, { t: 'd', usernames: { $all: ['alice', 'bob'] } });
 		sinon.assert.calledOnceWithExactly(subscription, 'direct', 'actor', { projection: { _id: 1 } });
 		sinon.assert.calledOnceWithExactly(hide, 'actor', 'direct');
-		sinon.assert.notCalled(byName);
+		sinon.assert.notCalled(findRoomByName);
 	});
+
 	it('does nothing without an authenticated actor', async () => {
-		await harness.run('hide', { userId: '' });
+		await slashCommand.runCommand('hide', { userId: '' });
 		sinon.assert.notCalled(findUser);
 		sinon.assert.notCalled(hide);
 	});
+
 	it('does nothing for an unknown actor', async () => {
 		findUser.resolves(null);
-		await harness.run('hide');
+		await slashCommand.runCommand('hide');
 		sinon.assert.calledOnce(findUser);
 		sinon.assert.notCalled(hide);
 	});
+
 	[
 		{ user: actor, language: 'de', expected: 'pt' },
 		{ user: { _id: 'actor', username: 'alice' }, language: 'de', expected: 'de' },
@@ -64,32 +71,35 @@ describe('/hide', () => {
 	].forEach(({ user, language, expected }) => {
 		it(`reports missing membership in ${expected} without hiding the channel`, async () => {
 			findUser.resolves(user);
-			harness.settings.get.withArgs('Language').returns(language);
+			slashCommand.settings.get.withArgs('Language').returns(language);
 			subscription.resolves(null);
-			await harness.run('hide', { params: '#general' });
+			await slashCommand.runCommand('hide', { params: '#general' });
 			sinon.assert.calledOnce(subscription);
-			harness.expectFeedback('error-logged-user-not-in-room');
-			expect(harness.translate.firstCall.args[1]).to.include({ roomName: '#general', lng: expected });
+			slashCommand.expectTranslatedFeedback('error-logged-user-not-in-room');
+			expect(slashCommand.translate.firstCall.args[1]).to.include({ roomName: '#general', lng: expected });
 			sinon.assert.notCalled(hide);
 		});
 	});
+
 	it('reports a missing channel without hiding another room', async () => {
-		byName.resolves(null);
+		findRoomByName.resolves(null);
 		subscription.resolves(null);
-		await harness.run('hide', { params: '#missing' });
-		sinon.assert.calledOnceWithExactly(byName, 'missing');
-		harness.expectFeedback('Channel_doesnt_exist');
+		await slashCommand.runCommand('hide', { params: '#missing' });
+		sinon.assert.calledOnceWithExactly(findRoomByName, 'missing');
+		slashCommand.expectTranslatedFeedback('Channel_doesnt_exist');
 		sinon.assert.notCalled(hide);
 	});
+
 	it('reports a named-channel hide failure to the actor in the originating room', async () => {
 		hide.rejects(new Error('storage failed'));
-		harness.translate.returns('localized hide error');
-		await harness.run('hide', { params: '#general' });
+		slashCommand.translate.returns('localized hide error');
+		await slashCommand.runCommand('hide', { params: '#general' });
 		sinon.assert.calledOnceWithExactly(hide, 'actor', 'channel');
-		sinon.assert.calledOnceWithExactly(harness.broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
+		sinon.assert.calledOnceWithExactly(slashCommand.broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
 			msg: 'localized hide error',
 		});
-		sinon.assert.calledOnce(harness.translate);
-		expect(harness.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
+
+		sinon.assert.calledOnce(slashCommand.translate);
+		expect(slashCommand.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
 	});
 });
