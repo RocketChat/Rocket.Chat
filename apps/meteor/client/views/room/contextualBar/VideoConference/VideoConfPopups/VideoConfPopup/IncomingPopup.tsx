@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
@@ -18,12 +19,15 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupCallerInfo from './VideoConfPopupCallerInfo';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
+import { useConferenceWindowEnabled } from '../../../../../conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type IncomingPopupProps = {
 	id: string;
-	room: IRoom;
+	/** Absent when the call reaches a conference member who has no access to the room it belongs to. */
+	room?: IRoom;
 	position: number;
 	onClose: (id: string) => void;
 	onMute: (id: string) => void;
@@ -42,8 +46,25 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 		queryFn: async () => videoConfInfo({ callId: id }),
 	});
 
-	const showMic = Boolean(data?.capabilities?.mic);
-	const showCam = Boolean(data?.capabilities?.cam);
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there. Without that window
+	// this popup is still where mic and camera are chosen.
+	const preflight = useConferenceWindowEnabled();
+	const showMic = !preflight && Boolean(data?.capabilities?.mic);
+	const showCam = !preflight && Boolean(data?.capabilities?.cam);
+
+	// Without the room there is nothing to name the call after until the conference itself loads. Only group
+	// conferences carry a title, and `data` is still serialized here, so narrow structurally.
+	const conferenceTitle = data && 'title' in data ? data.title : '';
+
+	// A popup with a room is named after the room, which is the only case there is without the call window.
+	const callName = room ? roomName : conferenceTitle;
+
+	// What the popup is announced as. A direct call carries no title, so without a room `callName` is empty and
+	// the dialog would be announced as "Incoming call from" and nothing at all — while naming the caller on
+	// screen right below it. Named the way the body names them, so the two agree about who is calling.
+	const callerName = useUserDisplayName({ name: data?.createdBy.name, username: data?.createdBy.username });
+	const announcedName = callName || callerName || '';
 
 	const handleJoinCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
@@ -51,7 +72,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	});
 
 	return (
-		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName })}>
+		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName: announcedName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{isPending && <Skeleton />}
@@ -77,7 +98,8 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 				)}
 			</VideoConfPopupHeader>
 			<VideoConfPopupContent>
-				<VideoConfPopupRoomInfo room={room} />
+				{room && <VideoConfPopupRoomInfo room={room} />}
+				{!room && data && <VideoConfPopupCallerInfo caller={data.createdBy} title={callName} />}
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
