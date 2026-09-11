@@ -461,6 +461,7 @@ const chatEndpoints = API.v1
 		'chat.followMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 5000 },
 			body: isChatFollowMessageLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -494,6 +495,7 @@ const chatEndpoints = API.v1
 		'chat.unfollowMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 5000 },
 			body: isChatUnfollowMessageLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,

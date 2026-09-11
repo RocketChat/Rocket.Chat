@@ -288,6 +288,7 @@ API.v1
 		'users.setAvatar',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 1, intervalTimeInMS: 5000 },
 			body: isUsersSetAvatarProps,
 			response: {
 				200: voidSuccessResponse,
@@ -1166,6 +1167,7 @@ API.v1
 		'users.forgotPassword',
 		{
 			authRequired: false,
+			rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
 			body: ajv.compile<{ email: string }>({
 				type: 'object',
 				properties: {
@@ -1989,8 +1991,8 @@ API.v1
 		{
 			authRequired: true,
 			rateLimiterOptions: {
-				numRequestsAllowed: 5,
-				intervalTimeInMS: 60000,
+				numRequestsAllowed: 1,
+				intervalTimeInMS: 1000,
 			},
 			body: ajv.compile<{
 				status?: Exclude<UserStatus, UserStatus.DISABLED>;

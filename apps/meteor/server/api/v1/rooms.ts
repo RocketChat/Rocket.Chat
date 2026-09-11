@@ -524,6 +524,7 @@ API.v1.get(
 	'rooms.info',
 	{
 		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
 		response: {
 			200: ajv.compile<{ room: IRoom | null }>({
 				type: 'object',
