@@ -39,7 +39,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 	const triggerRef = useRef<Element | null>(null);
 	const cardRef = useRef<HTMLElement | null>(null);
-	const openedViaKeyboardRef = useRef(false);
 
 	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -57,10 +56,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		if (open) return;
 		clearTimers();
 		setUserCardData(null);
-		if (openedViaKeyboardRef.current) {
-			openedViaKeyboardRef.current = false;
-			(triggerRef.current as HTMLElement | null)?.focus?.();
-		}
 	});
 
 	const state = useOverlayTriggerState({ onOpenChange: handleOpenChange });
@@ -120,26 +115,23 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			});
 		};
 
-		if (e.type === 'click' || e.type === 'keydown') {
-			openedViaKeyboardRef.current = e.type === 'keydown';
+		// A click (the collapsed role tag) opens immediately; hover waits out
+		// the intent delay. Keyboard triggers open the full profile instead,
+		// so the card is only ever pointer-driven.
+		if (e.type === 'click') {
 			open();
 			return;
 		}
 
-		openedViaKeyboardRef.current = false;
 		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
 		openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
 	});
 
 	const isOpen = state.isOpen && !!userCardData;
 
-	// The card content is lazy-loaded, so focus is moved on mount via a ref
-	// callback rather than an effect (which could run before Suspense resolves).
+	// Track the card node for the geometric hover tracker below.
 	const handleCardRef = useCallback((node: HTMLElement | null) => {
 		cardRef.current = node;
-		if (node && openedViaKeyboardRef.current) {
-			node.focus();
-		}
 	}, []);
 
 	useEffect(() => {
@@ -161,9 +153,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		};
 
 		const handleMouseMove = (e: MouseEvent) => {
-			// A keyboard-opened card must not be dismissed by stray pointer
-			// movement; it closes via Escape, the close button or an action.
-			if (openedViaKeyboardRef.current) return;
 			if (isPointerOverCard(e.clientX, e.clientY)) {
 				clearTimeout(closeTimerRef.current);
 				closeTimerRef.current = undefined;
@@ -180,21 +169,25 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
 		};
 
-		// The card is a non-modal popover, so react-aria only handles Escape
-		// while focus is inside it; a hover-opened card keeps focus wherever it
-		// was, so Escape is also handled at the document level (WCAG 1.4.13).
+		// The card is a non-modal popover that never holds focus (it opens on
+		// hover), so react-aria's focus-scoped Escape never fires — Escape is
+		// handled at the document level instead (WCAG 1.4.13). Listen in the
+		// capture phase and stop the event there so dismissing the card
+		// consumes the Escape before it reaches an underlying contextual bar or
+		// search panel, which would otherwise close on the same keystroke.
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
+				e.stopImmediatePropagation();
 				closeUserCard();
 			}
 		};
 
 		document.addEventListener('mousemove', handleMouseMove);
-		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keydown', handleKeyDown, { capture: true });
 		document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
 		return () => {
 			document.removeEventListener('mousemove', handleMouseMove);
-			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keydown', handleKeyDown, { capture: true });
 			document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
 		};
 	}, [isOpen, closeUserCard]);
