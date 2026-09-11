@@ -140,48 +140,50 @@ class UserPresence {
 export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	static getInstance(StreamerClass: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
-		return new (class StreamPresence extends StreamerClass<'user-presence'> {
-			override async _publish(
-				publication: IPublication,
-				_eventName: string,
-				options: boolean | { useCollection?: boolean; args?: any } = false,
-			): Promise<void> {
-				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
+		return new (
+			class StreamPresence extends StreamerClass<'user-presence'> {
+				override async _publish(
+					publication: IPublication,
+					_eventName: string,
+					options: boolean | { useCollection?: boolean; args?: any } = false,
+				): Promise<void> {
+					const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
-				const [client, main] = UserPresence.getClient(publication, this);
+					const [client, main] = UserPresence.getClient(publication, this);
 
-				if (client.isStale) {
-					try {
-						await client.refreshHiddenFrom();
-					} catch (error) {
-						if (main) {
-							client.stop();
-							throw error;
+					if (client.isStale) {
+						try {
+							await client.refreshHiddenFrom();
+						} catch (error) {
+							if (main) {
+								client.stop();
+								throw error;
+							}
 						}
 					}
-				}
 
-				if (!Streamer.isPublicationActive(publication)) {
-					if (main) {
-						client.stop();
+					if (!Streamer.isPublicationActive(publication)) {
+						if (main) {
+							client.stop();
+						}
+
+						return;
 					}
 
-					return;
+					added?.forEach((uid) => client.listen(uid));
+					removed?.forEach((uid) => client.off(uid));
+
+					if (!main) {
+						publication.stop();
+						return;
+					}
+
+					publication.ready();
+
+					publication.onStop(() => client.stop());
 				}
-
-				added?.forEach((uid) => client.listen(uid));
-				removed?.forEach((uid) => client.off(uid));
-
-				if (!main) {
-					publication.stop();
-					return;
-				}
-
-				publication.ready();
-
-				publication.onStop(() => client.stop());
-			}
-		} as any)(name);
+			} as any
+		)(name);
 	}
 }
 

@@ -7,7 +7,9 @@ export type ContainerProps = { templates: templateType[] };
 
 const Container = ({ templates }: ContainerProps) => (
 	<Box maxWidth='800px' margin='80px' width='90%' height='max-content'>
-		{templates?.map((template, i) => <Section key={i} template={template} index={i} />)}
+		{templates?.map((template, i) => (
+			<Section key={i} template={template} index={i} />
+		))}
 	</Box>
 );
 

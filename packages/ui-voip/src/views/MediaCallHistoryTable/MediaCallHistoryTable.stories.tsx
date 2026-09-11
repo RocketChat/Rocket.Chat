@@ -78,18 +78,16 @@ const getContact = (index: number): CallHistoryContact => {
 	};
 };
 
-const results = Array.from({ length: 100 }).map(
-	(_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
-		_id: `call_${index}`,
-		contact: getContact(index) as CallHistoryInternalContact,
-		type: index % 2 ? 'outbound' : 'inbound',
-		status: getStatus(index),
-		duration: index % 2 ? 120 : 0,
-		timestamp: getDate(index).toISOString(),
-		onClick: action(`onClick call_${index}`),
-		menu: <GenericMenu title='Menu' sections={[]} />,
-	}),
-);
+const results = Array.from({ length: 100 }).map((_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
+	_id: `call_${index}`,
+	contact: getContact(index) as CallHistoryInternalContact,
+	type: index % 2 ? 'outbound' : 'inbound',
+	status: getStatus(index),
+	duration: index % 2 ? 120 : 0,
+	timestamp: getDate(index).toISOString(),
+	onClick: action(`onClick call_${index}`),
+	menu: <GenericMenu title='Menu' sections={[]} />,
+}));
 
 export const MediaCallHistoryTableStory: StoryObj<typeof MediaCallHistoryTable> = {
 	render: () => {
