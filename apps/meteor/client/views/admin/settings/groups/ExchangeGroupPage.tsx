@@ -8,15 +8,15 @@ import BaseGroupPage from './BaseGroupPage';
 import { getEndpointErrorMessage } from '../../../../lib/errorHandling';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
-export type OutlookCalendarGroupPageProps = ISetting & {
+export type ExchangeGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
-function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: OutlookCalendarGroupPageProps) {
+function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGroupPageProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/exchange.testConnection');
-	const outlookEnabled = useSetting('Outlook_Calendar_Enabled', false);
+	const exchangeEnabled = useSetting('Outlook_Calendar_Enabled', false);
 	const serverMode = useSetting('Exchange_Mode') === 'server';
 
 	const editableSettings = useEditableSettings(useMemo(() => ({ group: _id }), [_id]));
@@ -28,7 +28,7 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_Calendar_Test_Connection_failed') });
+			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Exchange_Test_Connection_failed') });
 		}
 	};
 
@@ -39,7 +39,7 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 			onClickBack={onClickBack}
 			{...group}
 			headerButtons={
-				<Button disabled={!outlookEnabled || !serverMode || changed} onClick={handleTestConnectionButtonClick}>
+				<Button disabled={!exchangeEnabled || !serverMode || changed} onClick={handleTestConnectionButtonClick}>
 					{t('Test_Connection')}
 				</Button>
 			}
@@ -47,4 +47,4 @@ function OutlookCalendarGroupPage({ _id, i18nLabel, onClickBack, ...group }: Out
 	);
 }
 
-export default memo(OutlookCalendarGroupPage);
+export default memo(ExchangeGroupPage);
