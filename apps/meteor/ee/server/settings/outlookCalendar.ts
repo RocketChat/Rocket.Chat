@@ -2,11 +2,11 @@ import { settingsRegistry } from '../../../server/settings';
 
 const enabled = { _id: 'Outlook_Calendar_Enabled', value: true };
 
-const legacyOnly = [enabled, { _id: 'Outlook_Calendar_Mode', value: 'legacy' }];
-const serverOnly = [enabled, { _id: 'Outlook_Calendar_Mode', value: 'server' }];
+const legacyOnly = [enabled, { _id: 'Exchange_Mode', value: 'legacy' }];
+const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
 
-const graphOnly = [...serverOnly, { _id: 'Outlook_Calendar_Server_Sync_Provider', value: 'graph' }];
-const ewsOnly = [...serverOnly, { _id: 'Outlook_Calendar_Server_Sync_Provider', value: 'ews' }];
+const graphOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
+const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
 
 export function addSettings(): void {
 	void settingsRegistry.addGroup('Outlook_Calendar', async function () {
@@ -22,18 +22,18 @@ export function addSettings(): void {
 					invalidValue: false,
 				});
 
-				await this.add('Outlook_Calendar_Mode', 'legacy', {
+				await this.add('Exchange_Mode', 'legacy', {
 					type: 'select',
 					public: true,
 					invalidValue: 'legacy',
 					values: [
-						{ key: 'legacy', i18nLabel: 'Outlook_Calendar_Mode_Legacy' },
-						{ key: 'server', i18nLabel: 'Outlook_Calendar_Mode_Server' },
+						{ key: 'legacy', i18nLabel: 'Exchange_Mode_Legacy' },
+						{ key: 'server', i18nLabel: 'Exchange_Mode_Server' },
 					],
 					enableQuery: { _id: 'Outlook_Calendar_Enabled', value: true },
 				});
 
-				await this.section('Outlook_Calendar_Legacy', async function () {
+				await this.section('Exchange_Desktop', async function () {
 					await this.add('Outlook_Calendar_Exchange_Url', '', {
 						type: 'string',
 						public: true,
@@ -84,45 +84,45 @@ export function addSettings(): void {
 					});
 				});
 
-				await this.section('Outlook_Calendar_Server_Sync', async function () {
-					await this.add('Outlook_Calendar_Server_Sync_Provider', 'graph', {
+				await this.section('Exchange_Server_Sync', async function () {
+					await this.add('Exchange_Sync_Provider', 'graph', {
 						type: 'select',
 						values: [
-							{ key: 'graph', i18nLabel: 'Outlook_Calendar_Server_Sync_Provider_Graph' },
-							{ key: 'ews', i18nLabel: 'Outlook_Calendar_Server_Sync_Provider_EWS' },
+							{ key: 'graph', i18nLabel: 'Exchange_Sync_Provider_Graph' },
+							{ key: 'ews', i18nLabel: 'Exchange_Sync_Provider_EWS' },
 						],
 						enableQuery: serverOnly,
 						invalidValue: 'graph',
 					});
 
-					await this.add('Outlook_Calendar_Server_Sync_Interval', 15, {
+					await this.add('Exchange_Calendar_Sync_Interval', 15, {
 						type: 'int',
 						enableQuery: serverOnly,
 						invalidValue: 15,
 					});
 
-					await this.add('Outlook_Calendar_Server_Sync_Window_Days', 2, {
+					await this.add('Exchange_Calendar_Sync_Window_Days', 2, {
 						type: 'int',
 						enableQuery: serverOnly,
 						invalidValue: 2,
 					});
 				});
 
-				await this.section('Outlook_Calendar_Server_Sync_Graph', async function () {
-					await this.add('Outlook_Calendar_Graph_Tenant_Id', '', {
+				await this.section('Exchange_Graph', async function () {
+					await this.add('Exchange_Graph_Tenant_Id', '', {
 						type: 'string',
 						enableQuery: graphOnly,
 						placeholder: 'contoso.onmicrosoft.com',
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_Graph_Client_Id', '', {
+					await this.add('Exchange_Graph_Client_Id', '', {
 						type: 'string',
 						enableQuery: graphOnly,
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_Graph_Client_Secret', '', {
+					await this.add('Exchange_Graph_Client_Secret', '', {
 						type: 'password',
 						secret: true,
 						autocomplete: false,
@@ -130,21 +130,21 @@ export function addSettings(): void {
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_Graph_Authority_Host', 'https://login.microsoftonline.com', {
+					await this.add('Exchange_Graph_Authority_Host', 'https://login.microsoftonline.com', {
 						type: 'string',
 						enableQuery: graphOnly,
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_Graph_Host', 'https://graph.microsoft.com', {
+					await this.add('Exchange_Graph_Host', 'https://graph.microsoft.com', {
 						type: 'string',
 						enableQuery: graphOnly,
 						invalidValue: '',
 					});
 				});
 
-				await this.section('Outlook_Calendar_Server_Sync_EWS', async function () {
-					await this.add('Outlook_Calendar_EWS_Url', '', {
+				await this.section('Exchange_EWS', async function () {
+					await this.add('Exchange_EWS_Url', '', {
 						type: 'string',
 						enableQuery: ewsOnly,
 						placeholder: 'https://exchange.example.com/EWS/Exchange.asmx',
@@ -152,14 +152,14 @@ export function addSettings(): void {
 					});
 
 					// The service account holding `ApplicationImpersonation`, not an end user's account.
-					await this.add('Outlook_Calendar_EWS_Username', '', {
+					await this.add('Exchange_EWS_Username', '', {
 						type: 'string',
 						enableQuery: ewsOnly,
 						placeholder: 'CORP\\svc-rocketchat',
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_EWS_Password', '', {
+					await this.add('Exchange_EWS_Password', '', {
 						type: 'password',
 						secret: true,
 						autocomplete: false,
@@ -167,18 +167,18 @@ export function addSettings(): void {
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_EWS_Auth_Method', 'ntlm', {
+					await this.add('Exchange_EWS_Auth_Method', 'ntlm', {
 						type: 'select',
 						values: [
-							{ key: 'ntlm', i18nLabel: 'Outlook_Calendar_EWS_Auth_Method_NTLM' },
-							{ key: 'basic', i18nLabel: 'Outlook_Calendar_EWS_Auth_Method_Basic' },
+							{ key: 'ntlm', i18nLabel: 'Exchange_EWS_Auth_Method_NTLM' },
+							{ key: 'basic', i18nLabel: 'Exchange_EWS_Auth_Method_Basic' },
 						],
 						enableQuery: ewsOnly,
 						invalidValue: 'ntlm',
 					});
 
 					// An opt-in for a private authority
-					await this.add('Outlook_Calendar_EWS_CA_Cert', '', {
+					await this.add('Exchange_EWS_CA_Cert', '', {
 						type: 'string',
 						multiline: true,
 						secret: true,
@@ -186,7 +186,7 @@ export function addSettings(): void {
 						invalidValue: '',
 					});
 
-					await this.add('Outlook_Calendar_EWS_Reject_Unauthorized', true, {
+					await this.add('Exchange_EWS_Reject_Unauthorized', true, {
 						type: 'boolean',
 						enableQuery: ewsOnly,
 						invalidValue: true,
