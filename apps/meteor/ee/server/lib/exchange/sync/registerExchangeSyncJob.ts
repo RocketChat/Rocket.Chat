@@ -6,9 +6,9 @@ import { settings } from '../../../../../server/settings';
 import { logger } from '../logger';
 import { scrubForLog } from '../scrub';
 
-export const EXCHANGE_SYNC_JOB = 'Outlook_Calendar_Server_Sync';
+export const EXCHANGE_SYNC_JOB = 'Exchange_Server_Sync';
 
-const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Outlook_Calendar_Mode', 'Outlook_Calendar_Server_Sync_Interval'];
+const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
 
 export const DEFAULT_INTERVAL_MINUTES = 15;
 
@@ -34,11 +34,11 @@ export const configureExchangeSyncJob = async (): Promise<void> => {
 		await cronJobs.remove(EXCHANGE_SYNC_JOB);
 	}
 
-	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Outlook_Calendar_Mode') !== 'server') {
+	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
 		return;
 	}
 
-	const schedule = intervalToCron(settings.get<number>('Outlook_Calendar_Server_Sync_Interval'));
+	const schedule = intervalToCron(settings.get<number>('Exchange_Calendar_Sync_Interval'));
 
 	// An invalid expression does not throw at add() time, it yields no next run and the job never fires.
 	if (!isValidCron(schedule)) {

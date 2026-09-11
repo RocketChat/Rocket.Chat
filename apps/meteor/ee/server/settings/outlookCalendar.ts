@@ -8,6 +8,8 @@ const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
 const graphOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
 const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
 
+const contactsOnly = [...serverOnly, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
+
 export function addSettings(): void {
 	void settingsRegistry.addGroup('Outlook_Calendar', async function () {
 		await this.with(
@@ -105,6 +107,25 @@ export function addSettings(): void {
 						type: 'int',
 						enableQuery: serverOnly,
 						invalidValue: 2,
+					});
+
+					await this.add('Exchange_Contacts_Sync_Enabled', false, {
+						type: 'boolean',
+						enableQuery: serverOnly,
+						invalidValue: false,
+					});
+
+					await this.add('Exchange_Contacts_Sync_Interval_Days', 1, {
+						type: 'int',
+						enableQuery: contactsOnly,
+						invalidValue: 1,
+					});
+
+					await this.add('Exchange_Contacts_Default_Region', '', {
+						type: 'string',
+						enableQuery: contactsOnly,
+						placeholder: 'DE',
+						invalidValue: '',
 					});
 				});
 

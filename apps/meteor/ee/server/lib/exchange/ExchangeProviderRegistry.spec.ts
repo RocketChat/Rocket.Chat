@@ -69,15 +69,15 @@ describe('provider selection', () => {
 	const configured = (over: Record<string, unknown> = {}) => {
 		const values: Record<string, unknown> = {
 			Outlook_Calendar_Enabled: true,
-			Outlook_Calendar_Mode: 'server',
-			Outlook_Calendar_Server_Sync_Provider: 'graph',
-			Outlook_Calendar_Graph_Tenant_Id: 'contoso',
-			Outlook_Calendar_Graph_Client_Id: 'client',
-			Outlook_Calendar_Graph_Client_Secret: 'secret',
-			Outlook_Calendar_EWS_Url: 'https://exchange.corp.example/EWS/Exchange.asmx',
-			Outlook_Calendar_EWS_Username: 'CORP\\svc',
-			Outlook_Calendar_EWS_Password: 'pw',
-			Outlook_Calendar_EWS_Auth_Method: 'ntlm',
+			Exchange_Mode: 'server',
+			Exchange_Sync_Provider: 'graph',
+			Exchange_Graph_Tenant_Id: 'contoso',
+			Exchange_Graph_Client_Id: 'client',
+			Exchange_Graph_Client_Secret: 'secret',
+			Exchange_EWS_Url: 'https://exchange.corp.example/EWS/Exchange.asmx',
+			Exchange_EWS_Username: 'CORP\\svc',
+			Exchange_EWS_Password: 'pw',
+			Exchange_EWS_Auth_Method: 'ntlm',
 			...over,
 		};
 		jest.mocked(settings.get).mockImplementation((key: string) => values[key] as string);
@@ -94,7 +94,7 @@ describe('provider selection', () => {
 	});
 
 	it.each(['graph', 'ews'])('builds the %s provider when it is the configured type', (providerId) => {
-		configured({ Outlook_Calendar_Server_Sync_Provider: providerId });
+		configured({ Exchange_Sync_Provider: providerId });
 
 		rebuild();
 
@@ -103,8 +103,8 @@ describe('provider selection', () => {
 
 	it.each([
 		['the integration is off', { Outlook_Calendar_Enabled: false }],
-		['the mode is legacy', { Outlook_Calendar_Mode: 'legacy' }],
-		['the configured type is not one we implement', { Outlook_Calendar_Server_Sync_Provider: 'imap' }],
+		['the mode is legacy', { Exchange_Mode: 'legacy' }],
+		['the configured type is not one we implement', { Exchange_Sync_Provider: 'imap' }],
 	])('builds nothing when %s', (_label, over) => {
 		configured(over);
 
