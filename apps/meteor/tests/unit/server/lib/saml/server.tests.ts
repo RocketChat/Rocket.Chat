@@ -1160,6 +1160,18 @@ describe('SAML', () => {
 				const encoded = SAMLUtils.encodeAuthorizeRelayState('a b&c=d', 'mobile');
 				expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'a b&c=d', loginClient: 'mobile' });
 			});
+
+			it('should handle URL-encoded RelayState strings from multi-step IdPs', () => {
+				const encoded = encodeURIComponent('provider=test-sp&loginClient=mobile');
+				expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'test-sp', loginClient: 'mobile' });
+			});
+
+			it('should handle reordered RelayState parameters', () => {
+				expect(SAMLUtils.decodeAuthorizeRelayState('loginClient=mobile&provider=test-sp')).to.be.deep.equal({
+					provider: 'test-sp',
+					loginClient: 'mobile',
+				});
+			});
 		});
 	});
 
