@@ -51,6 +51,20 @@ describe('normalizeMessages', () => {
 		expect(result[0].threadMsg).toMatchObject({ _id: 'parent1' });
 	});
 
+	it('resolves a reply whose parent is in the same batch without fetching', async () => {
+		mockState.messages = [];
+		const { Livechat } = jest.requireMock('../api');
+
+		const result = await normalizeMessages([
+			{ _id: 'parent1', replies: ['reply1'], msg: 'parent text', attachments: [] },
+			{ _id: 'reply1', tmid: 'parent1' },
+		]);
+
+		expect(result.map((message) => message._id)).toEqual(['reply1']);
+		expect(result[0].threadMsg).toMatchObject({ _id: 'parent1' });
+		expect(Livechat.message).not.toHaveBeenCalled();
+	});
+
 	it('returns an empty array for no messages', async () => {
 		await expect(normalizeMessages([])).resolves.toEqual([]);
 		await expect(normalizeMessages()).resolves.toEqual([]);

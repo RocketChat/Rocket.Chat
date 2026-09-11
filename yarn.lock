@@ -9909,6 +9909,7 @@ __metadata:
     html-webpack-plugin: "npm:~5.6.8"
     i18next: "npm:~23.4.9"
     if-env: "npm:^1.0.4"
+    jest: "npm:~30.2.0"
     lorem-ipsum: "npm:^2.0.10"
     mem: "npm:^8.1.1"
     mini-css-extract-plugin: "npm:~2.9.4"

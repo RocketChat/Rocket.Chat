@@ -77,6 +77,14 @@ export const normalizeMessage = async (message: any) => {
 };
 
 export const normalizeMessages = async (messages: any[] = []): Promise<any[]> => {
-	const normalized = await Promise.all(messages.map((message) => normalizeMessage(message)));
-	return normalized.filter((message) => message != null);
+	// Sequential on purpose: a thread reply whose parent appears earlier in the
+	// batch must see it registered in parentMessages before it normalizes.
+	const normalized: any[] = [];
+	for (const message of messages) {
+		const result = await normalizeMessage(message);
+		if (result != null) {
+			normalized.push(result);
+		}
+	}
+	return normalized;
 };
