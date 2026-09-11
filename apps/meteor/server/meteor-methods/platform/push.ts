@@ -64,8 +64,9 @@ Meteor.methods<ServerMethods>({
 			...(options.metadata && { metadata: options.metadata }),
 		});
 	},
-	// Deprecated
 	async 'raix:push-setuser'(id) {
+		methodDeprecationLogger.method('raix:push-setuser', '9.0.0', []);
+
 		check(id, String);
 		if (!this.userId) {
 			throw new Meteor.Error(403, 'Forbidden access');
