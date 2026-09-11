@@ -4237,7 +4237,7 @@
   "Message_Audio_bitRate": "Audio Message Bit Rate",
   "Message_Audio_Recording_Disabled": "Audio message - message audio recording disabled",
   "Message_AudioRecorderEnabled": "Audio Recorder Enabled",
-  "Message_AudioRecorderEnabled_Description": "Requires 'audio/mp3' files to be an accepted media type within 'File Upload' settings.",
+  "Message_AudioRecorderEnabled_Description": "Requires 'audio/mpeg' files to be an accepted media type within 'File Upload' settings.",
   "Message_audit": "Message auditing",
   "Message_auditing": "Audit messages",
   "Message_auditing_log": "Audit logs",
