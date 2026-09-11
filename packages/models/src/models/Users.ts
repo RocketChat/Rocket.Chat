@@ -2717,6 +2717,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	findAllBySipIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipIdentifiers: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				$or: [{ freeSwitchExtension: { $in: sipIdentifiers } }, { 'phones.number': { $in: sipIdentifiers } }],
+			},
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);

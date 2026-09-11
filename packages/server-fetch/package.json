@@ -17,7 +17,6 @@
 	},
 	"dependencies": {
 		"@rocket.chat/logger": "workspace:^",
-		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@types/proxy-from-env": "^1.0.4",
 		"abort-controller": "^3.0.0",
