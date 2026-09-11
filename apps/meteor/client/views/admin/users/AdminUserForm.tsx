@@ -57,8 +57,8 @@ export type AdminUserFormProps = {
 
 export type UserFormProps = Omit<
 	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
-	'fields' | 'languages'
-> & { languages: string };
+	'fields' | 'languages' | 'title' | 'nationality'
+> & { languages: string; title?: string; nationality?: string };
 
 const getInitialValue = ({
 	data,
@@ -124,6 +124,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
+		// The reactive `values` recompute when the async SMTP query resolves;
+		// keep whatever the admin has already typed instead of resetting it.
+		resetOptions: { keepDirtyValues: true },
 	});
 
 	const showVoipExtension = useShowVoipExtension();
