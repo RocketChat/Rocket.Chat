@@ -75,7 +75,7 @@
   "Accounts_EmailVerification_Description": "ត្រូវប្រាកដថាអ្នកមានការកំណត់ SMTP ត្រឹមត្រូវដើម្បីប្រើលក្ខណៈពិសេសនេះ។",
   "Accounts_Enrollment_Email": "អ៊ីម៉ែលចុះឈ្មោះ។",
   "Accounts_Enrollment_Email_Default": "<h1>ស្វាគមន៍មកកាន់ <strong>[Site_Name]</strong></h1><p> ចូរទៅទៅ <a href=\"[Site_URL]\">[Site_URL]</a> និងព្យាយាមដំណោះស្រាយប្រភពបើកចំហជជែកកំសាន្តដែលអាចប្រើបានល្អបំផុតនាពេលបច្ចុប្បន្ននេះ! </p>",
-  "Accounts_Enrollment_Email_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម:  \n - `[name]`, `[fname]`, `[lname]` សម្រាប់ឈ្មោះពេញនាមនាមត្រកូលឬនាមត្រកូលរបស់អ្នកប្រើរៀង ៗ ខ្លួន </li> <li>[email] សម្រាប់អ៊ីមែលរបស់អ្នកប្រើ.  \n -  [Site_Name] និង `[Site_URL]` សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។  ",
+  "Accounts_Enrollment_Email_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម:  \n - `[name]`, `[fname]`, `[lname]` សម្រាប់ឈ្មោះពេញនាមនាមត្រកូលឬនាមត្រកូលរបស់អ្នកប្រើរៀង ៗ ខ្លួន.  \n - `[email]` សម្រាប់អ៊ីមែលរបស់អ្នកប្រើ.  \n - `[Site_Name]` និង `[Site_URL]` សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។  ",
   "Accounts_Enrollment_Email_Subject_Default": "សូមស្វាគមន៍មកកាន់ _Site_Name_",
   "Accounts_ForgetUserSessionOnWindowClose": "បំភ្លេចសម័យអ្នកប្រើនៅលើបង្អួចបិទ",
   "Accounts_Iframe_api_method": "វិធីសាស្រ្ត API",

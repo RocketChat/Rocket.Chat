@@ -1891,7 +1891,7 @@
   "error-archived-duplicate-name": "'{{room_name}}' नाम से एक संग्रहीत चैनल है",
   "error-avatar-invalid-url": "अमान्य अवतार URL: {{url}}",
   "error-avatar-url-handling": "{{username}} के लिए URL ({{url}}) से अवतार सेटिंग को संभालते समय त्रुटि",
-  "error-blocked-username": "<strong>{{field}}</strong> अवरुद्ध है और इसका उपयोग नहीं किया जा सकता!",
+  "error-blocked-username": "**{{field}}** अवरुद्ध है और इसका उपयोग नहीं किया जा सकता!",
   "error-business-hour-finish-time-before-start-time": "समाप्ति का समय प्रारंभ समय के बाद का होना चाहिए",
   "error-business-hour-finish-time-equals-start-time": "प्रारंभ और समाप्ति का समय एक समान नहीं हो सकता",
   "error-business-hours-are-closed": "व्यावसायिक घंटे बंद हैं",
