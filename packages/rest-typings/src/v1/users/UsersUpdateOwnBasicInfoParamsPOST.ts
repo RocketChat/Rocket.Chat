@@ -7,9 +7,9 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		username?: string;
 		nickname?: string;
 		bio?: string;
-		title?: string;
-		nationality?: string;
-		languages?: string[];
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 		statusText?: string;
 		statusType?: string;
 		currentPassword?: string;

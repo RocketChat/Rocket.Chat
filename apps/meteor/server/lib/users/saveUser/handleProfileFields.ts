@@ -25,11 +25,17 @@ export const normalizeLanguages = (languages: string[]): string[] => {
  * Size/type validation for the profile fields, shared by every write path.
  * Runs in validateUserData BEFORE the user document is inserted/updated so a
  * failure cannot leave a half-created user behind.
+ *
+ * Values are checked as received (before trim/dedup) so this matches the REST
+ * schema bounds exactly: every entrypoint — the ajv-guarded endpoints and the
+ * schema-less DDP method — rejects the same inputs. Normalization only ever
+ * shrinks the values, so anything that passes here still fits once stored.
  */
 export const validateProfileFields = (userData: ProfileFieldsData, method = 'saveUser'): void => {
 	for (const field of ['title', 'nationality'] as const) {
 		const value = userData[field];
-		if (value === undefined) {
+		// undefined = don't touch, null = clear — neither needs a size check
+		if (value === undefined || value === null) {
 			continue;
 		}
 		if (typeof value !== 'string') {
@@ -42,14 +48,13 @@ export const validateProfileFields = (userData: ProfileFieldsData, method = 'sav
 		}
 	}
 
-	if (userData.languages !== undefined) {
+	if (userData.languages !== undefined && userData.languages !== null) {
 		if (!Array.isArray(userData.languages) || userData.languages.some((language) => typeof language !== 'string')) {
 			throw new MeteorError('error-invalid-field', 'languages', { method });
 		}
-		const languages = normalizeLanguages(userData.languages);
 		if (
-			languages.length > USER_PROFILE_LANGUAGES_MAX_COUNT ||
-			languages.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)
+			userData.languages.length > USER_PROFILE_LANGUAGES_MAX_COUNT ||
+			userData.languages.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)
 		) {
 			throw new MeteorError('error-field-size-exceeded', 'languages size exceeded', { method });
 		}
@@ -61,11 +66,11 @@ export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Profi
 
 	for (const field of ['title', 'nationality'] as const) {
 		const value = userData[field];
-		// absent means "don't touch" — only an explicit empty value clears the field
+		// absent means "don't touch"; null or an empty string clears the field
 		if (value === undefined) {
 			continue;
 		}
-		if (value.trim()) {
+		if (value && value.trim()) {
 			userUpdater.set(field, value.trim());
 		} else {
 			userUpdater.unset(field);
@@ -76,7 +81,7 @@ export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Profi
 		return;
 	}
 
-	const languages = normalizeLanguages(userData.languages);
+	const languages = userData.languages ? normalizeLanguages(userData.languages) : [];
 	if (languages.length) {
 		userUpdater.set('languages', languages);
 	} else {
