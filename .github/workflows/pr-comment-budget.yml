@@ -1,0 +1,27 @@
+name: 'Comment Budget'
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  comment-budget:
+    name: Comment Budget
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # Advisory only — the script never exits non-zero. It surfaces the ratio and the
+      # worst files as an annotation so a reviewer can decide; see docs/code-comments.md.
+      - name: Check comment budget
+        run: node .github/scripts/comment-budget.mjs "origin/${{ github.base_ref }}"

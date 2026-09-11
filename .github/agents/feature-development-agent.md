@@ -65,6 +65,29 @@ The agent must **focus only on the specified feature scope** and avoid scope cre
 
 ---
 
+## Comment Discipline
+
+The agent must keep comments scarce and load-bearing. See
+[docs/code-comments.md](../../docs/code-comments.md) for the full rules.
+
+- A comment explains **why**, never what. If the line below already says it, delete it.
+- No comment block over **6 lines**. No more than **3** consecutive `//` lines above a statement.
+- Comment lines must stay under **~10%** of the production (non-test) lines added.
+  The repository's own average is 4.3%.
+- Never commit: session narration (`// Now we need to...`), change history
+  (`// Changed from X to Y`), analysis output (alternatives weighed, edge cases
+  enumerated, "verified that..."), or commented-out code.
+- The same explanation repeated at several call sites belongs on the shared function,
+  once.
+- Never create `*_SUMMARY.md`, `*_ANALYSIS.md`, `FINDINGS.md`, `NOTES.md` or similar
+  files describing how the change was reached. That reasoning goes in the PR
+  description; a design decision goes in `docs/adr/`.
+
+Before opening the PR, re-read the diff looking only at comments and delete every one
+that does not answer a question the code leaves open.
+
+---
+
 ## Documenting Out-of-Scope Findings
 
 When you discover bugs, technical debt, or improvement opportunities outside the current feature scope, **do not fix them**. Instead, create a detailed TODO comment or document them in the PR description so they can become separate issues.

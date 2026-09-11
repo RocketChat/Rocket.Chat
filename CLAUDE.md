@@ -2,12 +2,23 @@
 
 Monorepo: the main Meteor app lives in `apps/meteor/`, shared libraries in `packages/`, other services in `apps/` and `ee/`.
 
+## Writing code here
+
+Comments explain **why**, never what. Keep blocks under 6 lines and comment lines
+under ~10% of the production code you add — the repository's own average is 4.3%.
+No narration, no change history, no analysis dumps, no commented-out code. Never
+commit `*_SUMMARY.md` / `*_ANALYSIS.md` files describing how a change was reached:
+that reasoning goes in the PR description, or in an ADR if it is a design decision.
+
+Full rules, with examples: [docs/code-comments.md](docs/code-comments.md).
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Cross-cutting
 
+- [docs/code-comments.md](docs/code-comments.md) — when a comment earns its place, length budgets, register, what never goes in a comment or a committed analysis doc
 - [docs/i18n.md](docs/i18n.md) — translation keys: where they live, naming, namespaces, interpolation, plurals, server-side `lng`, what the i18n linter enforces
 
 ### Frontend

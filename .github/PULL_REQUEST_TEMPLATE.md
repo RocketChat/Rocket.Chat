@@ -18,6 +18,7 @@
   - Lint and unit tests pass locally with my changes
   - I have added tests that prove my fix is effective or that my feature works (if applicable)
   - I have added necessary documentation (if applicable)
+  - Comments in my diff explain *why*, not *what*, and I have not committed analysis or summary markdown files - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/code-comments.md
   - Any dependent changes have been merged and published in downstream modules
 -->
 

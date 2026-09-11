@@ -13,6 +13,8 @@ import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+import maxCommentBlockLines from './rules/max-comment-block-lines.js';
+
 export default defineConfig(
 	{
 		name: 'rocket.chat/linter',
@@ -120,6 +122,20 @@ export default defineConfig(
 		},
 	},
 	...storybookPlugin.configs['flat/recommended'],
+	{
+		name: 'rocket.chat/comments',
+		plugins: {
+			'rocket-chat': {
+				meta: { name: '@rocket.chat/eslint-config' },
+				rules: { 'max-comment-block-lines': maxCommentBlockLines },
+			},
+		},
+		rules: {
+			// Length budget from docs/code-comments.md. Warn-level: the linter can judge
+			// how long a comment is, not whether it earns its place — that stays a review call.
+			'rocket-chat/max-comment-block-lines': 'warn',
+		},
+	},
 	{
 		name: 'rocket.chat/anti-trojan',
 		plugins: {

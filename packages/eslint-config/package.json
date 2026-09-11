@@ -13,7 +13,8 @@
 		".": "./index.js"
 	},
 	"files": [
-		"/index.js"
+		"/index.js",
+		"/rules"
 	],
 	"scripts": {
 		"lint": "eslint .",
