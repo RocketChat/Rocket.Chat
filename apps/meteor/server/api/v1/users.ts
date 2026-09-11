@@ -288,7 +288,6 @@ API.v1
 		'users.setAvatar',
 		{
 			authRequired: true,
-			rateLimiterOptions: { numRequestsAllowed: 1, intervalTimeInMS: 5000 },
 			body: isUsersSetAvatarProps,
 			response: {
 				200: voidSuccessResponse,
