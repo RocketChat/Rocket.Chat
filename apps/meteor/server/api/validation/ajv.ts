@@ -24,8 +24,10 @@ if (components) {
 		}
 		const schema = components[key] as { properties?: Record<string, unknown> };
 		const props = schema?.properties;
-		const typeEnum = (props?.type as { enum?: unknown[] } | undefined)?.enum;
-		const isFileBranch = Array.isArray(typeEnum) && typeEnum.length === 1 && typeEnum[0] === 'file';
+		// typia 9 emitted single-literal types as `enum: ['file']`; typia 13 emits `const: 'file'`
+		const typeSchema = props?.type as { enum?: unknown[]; const?: unknown } | undefined;
+		const typeEnum = typeSchema?.enum;
+		const isFileBranch = (Array.isArray(typeEnum) && typeEnum.length === 1 && typeEnum[0] === 'file') || typeSchema?.const === 'file';
 		const hasMediaUrl = !!props && ('image_url' in props || 'video_url' in props || 'audio_url' in props);
 		if (isFileBranch && !hasMediaUrl) {
 			(schema as Record<string, unknown>).additionalProperties = false;

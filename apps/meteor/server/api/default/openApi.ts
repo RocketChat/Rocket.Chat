@@ -42,7 +42,8 @@ const getTypedRoutes = (
 };
 
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
-	openapi: '3.0.3',
+	// 3.1: the component schemas are typia's JSON Schema 2020-12 output (prefixItems, etc.).
+	openapi: '3.1.0',
 	info: {
 		title: 'Rocket.Chat API',
 		description: 'Rocket.Chat API',
