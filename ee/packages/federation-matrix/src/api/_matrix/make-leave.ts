@@ -25,9 +25,6 @@ const isMakeLeaveSuccessResponseProps = ajv.compile({
 						},
 					},
 				},
-				origin: {
-					type: 'string',
-				},
 				origin_server_ts: {
 					type: 'number',
 				},
