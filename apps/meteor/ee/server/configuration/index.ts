@@ -1,7 +1,7 @@
 import './contact-verification';
+import './exchange';
 import './ldap';
 import './oauth';
-import './outlookCalendar';
 import './saml';
 import './videoConference';
 import './voip';
