@@ -1,9 +1,9 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 
 export class OmnichannelCannedResponses extends OmnichannelAdmin {
-	protected readonly route = 'canned-responses';
+	protected readonly route = OmnichannelSectionsHref.cannedResponses;
 
 	protected readonly title = 'Canned Responses';
 

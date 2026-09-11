@@ -16,47 +16,26 @@ import { settings } from '../../settings';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		registerUser(
-			formData:
-				| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
-				| { email?: null },
-		):
-			| {
-					token: string;
-					when: Date;
-			  }
-			| string;
+		registerUser(formData: {
+			email: string;
+			pass: string;
+			username: IUser['username'];
+			name?: string;
+			secretURL?: string;
+			reason?: string;
+		}): string;
 	}
 }
 
-export const registerUser = async (
-	formData:
-		| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
-		| { email?: null },
-): Promise<
-	| {
-			token: string;
-			when: Date;
-	  }
-	| string
-> => {
-	const AllowAnonymousRead = settings.get<boolean>('Accounts_AllowAnonymousRead');
-	const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
+export const registerUser = async (formData: {
+	email: string;
+	pass: string;
+	username: IUser['username'];
+	name?: string;
+	secretURL?: string;
+	reason?: string;
+}): Promise<string> => {
 	const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
-	if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-		const userId = await Accounts.insertUserDoc(
-			{},
-			{
-				globalRoles: ['anonymous'],
-				active: true,
-			},
-		);
-
-		const stampedLoginToken = await Accounts._generateStampedLoginToken();
-
-		await Accounts._insertLoginToken(userId, stampedLoginToken);
-		return stampedLoginToken;
-	}
 	check(
 		formData,
 		Match.ObjectIncluding({

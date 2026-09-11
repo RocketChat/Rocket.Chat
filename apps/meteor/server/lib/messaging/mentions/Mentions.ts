@@ -59,6 +59,10 @@ export class MentionsServer extends MentionsParser {
 		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = new Set<string>();
 
+		// A message may mention both @all and @here; fetch the member count at
+		// most once per message instead of once per mention.
+		let totalChannelMembers: number | undefined;
+
 		for (const m of mentions) {
 			let mention: string;
 			if (m.includes(':')) {
@@ -72,9 +76,12 @@ export class MentionsServer extends MentionsParser {
 				userMentions.add(mention);
 				continue;
 			}
-			if (this.messageMaxAll() > 0 && (await this.getTotalChannelMembers(rid)) > this.messageMaxAll()) {
-				await this.onMaxRoomMembersExceeded({ sender, rid });
-				continue;
+			if (this.messageMaxAll() > 0) {
+				totalChannelMembers ??= await this.getTotalChannelMembers(rid);
+				if (totalChannelMembers > this.messageMaxAll()) {
+					await this.onMaxRoomMembersExceeded({ sender, rid });
+					continue;
+				}
 			}
 			mentionsAll.push({
 				_id: mention,
@@ -96,6 +103,12 @@ export class MentionsServer extends MentionsParser {
 	}
 
 	async convertMentionsToChannels(channels: string[]): Promise<Pick<IRoom, '_id' | 'name' | 'fname' | 'federated'>[]> {
+		// Most messages don't mention any channel; skip the (empty) database
+		// query entirely in that case. An empty $in matches nothing anyway.
+		if (channels.length === 0) {
+			return [];
+		}
+
 		return this.getChannels(channels.map((c) => (c.startsWith('#') ? c.substring(1) : c)));
 	}
 

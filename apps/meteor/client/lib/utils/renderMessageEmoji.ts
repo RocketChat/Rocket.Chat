@@ -1,3 +1,3 @@
-import { emojiParser } from '../../../app/emoji/client/emojiParser';
+import { emojiParser } from '../emoji/emojiParser';
 
 export const renderMessageEmoji = (html: string) => emojiParser(html);

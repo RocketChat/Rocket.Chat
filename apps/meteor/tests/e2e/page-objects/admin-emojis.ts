@@ -1,12 +1,16 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 import { AddEmojiFlexTab, EditEmojiFlexTab } from './fragments/flextabs';
 
 export class AdminEmoji extends Admin {
 	readonly addEmojiFlexTab: AddEmojiFlexTab;
 
 	readonly editEmojiFlexTab: EditEmojiFlexTab;
+
+	protected readonly route = AdminSectionsHref.emoji;
+
+	protected readonly title = 'Emoji';
 
 	constructor(page: Page) {
 		super(page);

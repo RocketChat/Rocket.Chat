@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getURL } from '../../../../../../../app/utils/client';
 import GenericUpsellModal from '../../../../../../components/GenericUpsellModal';
 import { useExternalLink } from '../../../../../../hooks/useExternalLink';
+import { getURL } from '../../../../../../lib/getURL';
 import { CONTACT_SALES_LINK, OUTBOUND_DOCS_LINK } from '../../constants';
 
 export type OutboundMessageUpsellModalProps = {

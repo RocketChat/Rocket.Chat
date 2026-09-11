@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UserAction, USER_ACTIVITIES } from '../../../../../app/ui/client/lib/UserAction';
+import { UserAction, USER_ACTIVITIES } from '../../../../lib/UserAction';
 
 const maxUsernames = 5;
 

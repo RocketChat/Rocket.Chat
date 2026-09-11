@@ -1,6 +1,7 @@
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
 import { Navbar } from '../page-objects/fragments';
 import { OmnichannelContactCenterChats } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
@@ -170,7 +171,7 @@ test.describe('OC - Contact Center', async () => {
 		poOmniChats = new OmnichannelContactCenterChats(page);
 		poNavbar = new Navbar(page);
 
-		await page.goto('/');
+		await new HomeOmnichannel(page).goto();
 		await poNavbar.btnContactCenter.click();
 		await poOmniChats.tabChats.click();
 		await page.waitForURL(URL.contactCenterChats);

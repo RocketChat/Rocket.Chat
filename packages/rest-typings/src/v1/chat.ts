@@ -99,6 +99,31 @@ const ChatGetMessageSchema = {
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
+type ChatGetMessages = {
+	messageIds: IMessage['_id'][];
+};
+
+const ChatGetMessagesSchema = {
+	type: 'object',
+	description: 'Fetch several messages at once, possibly spanning different rooms.',
+	properties: {
+		messageIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+				minLength: 1,
+			},
+			minItems: 1,
+			maxItems: 100,
+			description: 'The message ids to fetch.',
+		},
+	},
+	required: ['messageIds'],
+	additionalProperties: false,
+};
+
+export const isChatGetMessagesProps = ajv.compile<ChatGetMessages>(ChatGetMessagesSchema);
+
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;

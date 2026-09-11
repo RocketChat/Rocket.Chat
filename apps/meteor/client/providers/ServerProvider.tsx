@@ -15,8 +15,8 @@ import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
+import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
@@ -45,15 +45,19 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 
 	switch (method) {
 		case 'GET':
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
 
 		case 'POST':
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
 
 		case 'PUT':
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
 
 		case 'DELETE':
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
 			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
 
 		default:
@@ -77,7 +81,7 @@ const getStream =
 const getStreamAll =
 	<N extends StreamNames>(streamName: N) =>
 	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
-		sdk.onAnyStreamEvent(streamName, callback as (eventName: string, args: unknown[]) => void).stop;
+		sdk.onAnyStreamEvent(streamName, callback).stop;
 
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);

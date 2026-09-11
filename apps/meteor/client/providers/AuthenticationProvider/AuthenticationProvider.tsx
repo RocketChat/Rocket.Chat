@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
@@ -59,11 +58,8 @@ const getLoggingInSnapshot = (): boolean => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
-	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
-	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
-
-	useLDAPAndCrowdCollisionWarning();
+	const loginMethod: LoginMethods = isLdapEnabled ? 'loginWithLDAP' : 'loginWithPassword';
 
 	const isLoggingIn = useSyncExternalStore(subscribeLoggingIn, getLoggingInSnapshot);
 
@@ -122,8 +118,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
 				const methodName = `loginWith${capitalizeService(service, true)}`;
 				const method = (Meteor as any)[methodName] as
-					| ((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void)
-					| undefined;
+					((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void) | undefined;
 				if (!method) {
 					return;
 				}

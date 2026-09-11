@@ -6,8 +6,8 @@ import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-context
 import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
 
-import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
-import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
+import { UserAction, USER_ACTIVITIES } from '../../../lib/UserAction';
+import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../lib/videoRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
 export type VideoMessageRecorderProps = {
@@ -114,7 +114,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	}, [dispatchToastMessage, handleCancel, t]);
 
 	return (
-		<PositionAnimated visible='visible' anchor={reference as RefObject<HTMLElement>} placement='top-end'>
+		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
 			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />

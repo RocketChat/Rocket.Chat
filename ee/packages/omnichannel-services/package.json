@@ -28,7 +28,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",

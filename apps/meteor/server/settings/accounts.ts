@@ -179,15 +179,6 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
-		await this.add('Accounts_AllowAnonymousWrite', false, {
-			type: 'boolean',
-			public: true,
-			alert: 'Accounts_AllowAnonymousWrite_Deprecation_Alert',
-			enableQuery: {
-				_id: 'Accounts_AllowAnonymousRead',
-				value: true,
-			},
-		});
 		await this.add('Accounts_AllowDeleteOwnAccount', false, {
 			type: 'boolean',
 			public: true,
@@ -818,6 +809,7 @@ export const createAccountSettings = () =>
 
 			return this.add('Accounts_SetDefaultAvatar', true, {
 				type: 'boolean',
+				alert: 'Accounts_SetDefaultAvatar_Deprecation_Alert',
 			});
 		});
 

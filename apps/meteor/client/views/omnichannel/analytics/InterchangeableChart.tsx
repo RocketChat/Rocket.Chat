@@ -4,8 +4,8 @@ import type * as chartjs from 'chart.js';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
+import { drawLineChart } from '../chartHandler';
 import Chart from '../realTimeMonitoring/charts/Chart';
 
 const getChartTooltips = (chartName: string) => {

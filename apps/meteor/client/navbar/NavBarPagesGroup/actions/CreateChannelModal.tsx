@@ -39,6 +39,7 @@ export type CreateChannelModalProps = {
 	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
+	onSuccess?: (rid: string) => void | Promise<void>;
 };
 
 type CreateChannelModalPayload = {
@@ -70,7 +71,7 @@ const getFederationHintKey = (federationModule: boolean, featureToggle: boolean,
 
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
-const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps) => {
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -175,16 +176,20 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			},
 		};
 
+		let rid: string;
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
+				rid = roomData.group._id;
 				if (!teamId) goToRoom(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
+				rid = roomData.channel._id;
 				if (!teamId) goToRoom(roomData.channel._id);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+			void onSuccess?.(rid);
 			reload?.();
 			onClose();
 		} catch (error) {

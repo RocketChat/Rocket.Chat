@@ -167,6 +167,41 @@ export interface IUserSettings {
 	calendar?: IUserCalendar;
 }
 
+export const SIDEBAR_SYSTEM_GROUP_KEYS = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+] as const;
+
+export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
+
+export const isSidebarSystemGroupKey = (key: string): key is SidebarSystemGroupKey =>
+	SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as SidebarSystemGroupKey);
+
+export interface ISidebarCategory {
+	_id: string;
+	name: string;
+	default?: boolean;
+	showUnreads?: boolean;
+	keepUnreadsOnTop?: boolean;
+}
+
+/**
+ * An entry left behind by a system group that no longer exists (e.g. `Drafts`). Read-time guard
+ * until a migration can rewrite `Accounts_Default_User_Preferences_sidebarSectionsOrder` and the
+ * per-user `sidebarCategories` arrays; drop this together with `useSidebarSectionsOrder`.
+ */
+export const isStaleSidebarCategory = ({ _id, default: isDefault }: ISidebarCategory): boolean =>
+	Boolean(isDefault) && !isSidebarSystemGroupKey(_id);
+
 export interface IUser extends IRocketChatRecord {
 	createdAt: Date;
 	roles: IRole['_id'][];

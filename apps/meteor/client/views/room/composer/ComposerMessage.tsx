@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { memo, useMemo, useSyncExternalStore } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';

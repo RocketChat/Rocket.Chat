@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';

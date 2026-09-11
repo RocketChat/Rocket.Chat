@@ -3,7 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { capitalize } from '@rocket.chat/tools';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 
 type LoginServicesEvents = {
 	changed: undefined;

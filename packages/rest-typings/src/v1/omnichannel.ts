@@ -3023,23 +3023,6 @@ const POSTCannedResponsesPropsSchema = {
 
 export const isPOSTCannedResponsesProps = ajv.compile<POSTCannedResponsesProps>(POSTCannedResponsesPropsSchema);
 
-type DELETECannedResponsesProps = {
-	_id: string;
-};
-
-const DELETECannedResponsesPropsSchema = {
-	type: 'object',
-	properties: {
-		_id: {
-			type: 'string',
-		},
-	},
-	required: ['_id'],
-	additionalProperties: false,
-};
-
-export const isDELETECannedResponsesProps = ajv.compile<DELETECannedResponsesProps>(DELETECannedResponsesPropsSchema);
-
 type POSTLivechatUsersTypeProps = {
 	username: string;
 };
@@ -4810,7 +4793,6 @@ export type OmnichannelEndpoints = {
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 		POST: (params: POSTCannedResponsesProps) => void;
-		DELETE: (params: DELETECannedResponsesProps) => void;
 	};
 
 	'/v1/canned-responses/:_id': {

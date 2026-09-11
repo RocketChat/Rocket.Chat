@@ -1,8 +1,10 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 
+import type { MessageListProps } from './MessageList';
 import { MessageList } from './MessageList';
 import { useMessages } from './hooks/useMessages';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -18,19 +20,27 @@ const mockVirtualizerHandle = {
 };
 
 jest.mock('virtua', () => {
-	const { forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
+	const { Children, forwardRef, useImperativeHandle } = jest.requireActual<typeof import('react')>('react');
 
 	return {
+		// `virtua` renders a plain container and wraps every child in a `div` of its own, so the list markup
+		// under test cannot rely on `ul`/`li` semantics.
 		VList: forwardRef(
 			(
-				{ children, onScroll, shift: _shift, ...props }: { children: ReactNode; onScroll?: (offset: number) => void; shift?: boolean },
+				{
+					children,
+					onScroll,
+					shift: _shift,
+					keepMounted: _keepMounted,
+					...props
+				}: { children: ReactNode; onScroll?: (offset: number) => void; shift?: boolean; keepMounted?: number[] },
 				ref: any,
 			) => {
 				useImperativeHandle(ref, () => mockVirtualizerHandle);
 				return (
-					<ul data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
-						{children}
-					</ul>
+					<div data-testid='message-list' onScroll={() => onScroll?.(mockVirtualizerHandle.scrollOffset)} {...props}>
+						{Children.map(children, (child) => (child ? <div>{child}</div> : child))}
+					</div>
 				);
 			},
 		),
@@ -70,7 +80,11 @@ jest.mock('../contexts/ChatContext', () => ({
 }));
 
 jest.mock('./MessageListItem', () => ({
-	MessageListItem: ({ message }: { message: IMessage }) => <li data-testid='message-list-item'>{message.msg}</li>,
+	MessageListItem: ({ message }: { message: IMessage }) => (
+		<div role='listitem' data-testid='message-list-item'>
+			{message.msg}
+		</div>
+	),
 }));
 
 jest.mock('./providers/MessageListProvider', () => ({ children }: { children: ReactNode }) => <>{children}</>);
@@ -209,5 +223,44 @@ describe('MessageList scroll position', () => {
 		await waitFor(() => {
 			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false });
 		});
+	});
+});
+
+describe('MessageList accessibility', () => {
+	let root: ReturnType<typeof mockAppRoot>;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2')]);
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+		root = mockAppRoot().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true);
+	});
+
+	it('should render a labelled list exposing every message as a list item', () => {
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		const list = screen.getByRole('list');
+
+		expect(list).toHaveAccessibleName();
+		// the two messages plus the foreword
+		expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+	});
+
+	const states: [string, Partial<MessageListProps>][] = [
+		['default', {}],
+		['loading previous messages', { hasMorePreviousMessages: true, isLoadingMoreMessages: true }],
+		['loading next messages', { hasMoreNextMessages: true, isLoadingMoreMessages: true }],
+		[
+			'showing the retention policy warning',
+			{ retentionPolicy: { enabled: true, isActive: true, filesOnly: false, excludePinned: false, ignoreThreads: false, maxAge: 30 } },
+		],
+		['without preview permission', { canPreview: false }],
+	];
+
+	it.each(states)('should have no accessibility violations when %s', async (_state, props) => {
+		const { container } = render(<MessageList {...defaultProps} {...props} />, { wrapper: root.build() });
+
+		expect(await axe(container)).toHaveNoViolations();
 	});
 });

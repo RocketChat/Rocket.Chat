@@ -23,10 +23,10 @@ import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha2
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const log = createLogger('E2E:Room');

@@ -187,6 +187,20 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.composer.inputMessage.fill('');
 	});
 
+	test('should clear the composer after running a client-only slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/shrug');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('(ツ)');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+	});
+
+	test('should clear the composer after an unrecognized slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/notaslashcommand');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('No such command');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+	});
+
 	test.describe('audio recorder', () => {
 		test('should open audio recorder', async () => {
 			await test.step('should be able to record an audio with text content in composer ', async () => {

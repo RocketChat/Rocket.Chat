@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
-import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { AccountBox } from '../../../lib/AccountBox';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
 import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';

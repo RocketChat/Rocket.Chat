@@ -19,9 +19,9 @@ import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
-import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
+import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
 export type EmojiPickerProps = {

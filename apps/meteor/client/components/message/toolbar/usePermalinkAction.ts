@@ -4,7 +4,7 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageActionConfig, MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig, MessageActionContext } from '../../../lib/MessageAction';
 import { getPermaLink } from '../../../lib/getPermaLink';
 
 export const usePermalinkAction = (

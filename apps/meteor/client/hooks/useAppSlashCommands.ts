@@ -4,8 +4,8 @@ import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { slashCommands } from '../../app/utils/client/slashCommand';
 import { appsQueryKeys } from '../lib/queryKeys';
+import { slashCommands } from '../lib/slashCommand';
 
 type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
 

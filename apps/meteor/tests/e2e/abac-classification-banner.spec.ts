@@ -98,7 +98,7 @@ test.describe.serial('abac-classification-banner', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('should show the classification banner built from the config in an ABAC room', async ({ page }) => {

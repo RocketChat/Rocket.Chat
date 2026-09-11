@@ -22,7 +22,6 @@ import type {
 	IBanner,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccount,
 	MessageAttachment,
 	ISession,
 	PresenceStatusCode,
@@ -166,10 +165,6 @@ export interface StreamerEvents {
 
 		{ key: `${string}/message`; args: [IMessage] },
 		{ key: `${string}/force_logout`; args: [ISession['sessionId'] | undefined] },
-		{
-			key: `${string}/webdav`;
-			args: [{ type: 'changed'; account: Partial<IWebdavAccount> } | { type: 'removed'; account: { _id: IWebdavAccount['_id'] } }];
-		},
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },

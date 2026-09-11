@@ -11,7 +11,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	},
 }));
 
-jest.mock('../../../app/utils/client', () => ({
+jest.mock('../../../client/lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));
 

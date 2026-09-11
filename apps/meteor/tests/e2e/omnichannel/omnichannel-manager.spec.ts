@@ -9,7 +9,7 @@ test.describe.serial('omnichannel-manager', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelManagers = new OmnichannelManager(page);
-		await poOmnichannelManagers.goTo();
+		await poOmnichannelManagers.goto();
 	});
 
 	test('OC - Manage Managers - Add, Search and Remove', async ({ page }) => {

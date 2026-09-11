@@ -1,12 +1,12 @@
 import * as Aes from './crypto/aes';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
-jest.mock('../../../app/utils/client/lib/SDKClient', () => ({
+jest.mock('../../../client/lib/SDKClient', () => ({
 	sdk: { rest: { post: jest.fn() } },
 }));
-jest.mock('../../../app/utils/client/index', () => ({
+jest.mock('../../../app/utils/rocketchat.info', () => ({
 	Info: { version: '8.7.0' },
 }));
 

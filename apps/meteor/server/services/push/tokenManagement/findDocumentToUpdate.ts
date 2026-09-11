@@ -9,13 +9,8 @@ export async function findDocumentToUpdate(data: Partial<IPushToken>): Promise<I
 		}
 	}
 
-	// VoIP tokens MUST match the id
-	if (data.voipToken) {
-		return null;
-	}
-
-	if (data.token && data.appName) {
-		return PushToken.findOneByTokenAndAppName(data.token, data.appName);
+	if (data.tokenValue && data.appName) {
+		return PushToken.findOneByTokenAndAppName(data.tokenValue, data.appName);
 	}
 
 	return null;

@@ -35,6 +35,10 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 - [docs/npm-publishing.md](docs/npm-publishing.md) — how the public packages reach npm: `release.yml`, changesets, OIDC trusted publishing, provenance
 
+### Testing
+
+- [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
+
 ### Other
 
 - [docs/adr/](docs/adr/) — architecture decision records

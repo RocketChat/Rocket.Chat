@@ -9,7 +9,7 @@ test.describe.parallel('Reset Password', () => {
 		poRegistration = new Registration(page);
 		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', true);
 
-		await page.goto('/reset-password/someToken');
+		await poRegistration.gotoResetPassword('someToken');
 	});
 
 	test.afterAll(async ({ api }) => {

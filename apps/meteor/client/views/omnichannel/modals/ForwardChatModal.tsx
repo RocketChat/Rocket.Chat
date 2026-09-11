@@ -6,7 +6,7 @@ import { useCallback, useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 

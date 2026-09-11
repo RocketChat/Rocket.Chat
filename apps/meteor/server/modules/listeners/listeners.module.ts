@@ -455,10 +455,6 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
 		});
 
-		service.onEvent('notify.webdav', (uid, data): void => {
-			notifications.notifyUserInThisInstance(uid, 'webdav', data);
-		});
-
 		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
 			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
 		});
