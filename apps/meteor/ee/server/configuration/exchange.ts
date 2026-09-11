@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
 import { registerExchangeSyncJob } from '../lib/exchange/sync/registerExchangeSyncJob';
-import { addSettings } from '../settings/outlookCalendar';
+import { addSettings } from '../settings/exchange';
 
 Meteor.startup(async () => {
 	let stopProviderWatcher: (() => void) | undefined;

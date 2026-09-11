@@ -15,16 +15,16 @@ import { scrubForLog } from '../lib/exchange/scrub';
 import { syncUserMailbox } from '../lib/exchange/sync/syncUserMailbox';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
-	'not-configured': 'Outlook_Calendar_Test_Connection_not_configured',
-	'authentication-failed': 'Outlook_Calendar_Test_Connection_authentication_failed',
-	'authorization-failed': 'Outlook_Calendar_Test_Connection_authorization_failed',
-	'mailbox-not-found': 'Outlook_Calendar_Test_Connection_mailbox_not_found',
-	'email-not-verified': 'Outlook_Calendar_Sync_email_not_verified',
-	'connection-failed': 'Outlook_Calendar_Test_Connection_connection_failed',
-	'host-not-allowed': 'Outlook_Calendar_Test_Connection_host_not_allowed',
-	'rate-limited': 'Outlook_Calendar_Test_Connection_rate_limited',
-	'unexpected-response': 'Outlook_Calendar_Test_Connection_unexpected_response',
-	'sync-state-invalid': 'Outlook_Calendar_Test_Connection_sync_state_invalid',
+	'not-configured': 'Exchange_Test_Connection_not_configured',
+	'authentication-failed': 'Exchange_Test_Connection_authentication_failed',
+	'authorization-failed': 'Exchange_Test_Connection_authorization_failed',
+	'mailbox-not-found': 'Exchange_Test_Connection_mailbox_not_found',
+	'email-not-verified': 'Exchange_Sync_email_not_verified',
+	'connection-failed': 'Exchange_Test_Connection_connection_failed',
+	'host-not-allowed': 'Exchange_Test_Connection_host_not_allowed',
+	'rate-limited': 'Exchange_Test_Connection_rate_limited',
+	'unexpected-response': 'Exchange_Test_Connection_unexpected_response',
+	'sync-state-invalid': 'Exchange_Test_Connection_sync_state_invalid',
 };
 
 const TEST_CONNECTION_SERVER_FAULTS: ReadonlySet<ExchangeErrorCode> = new Set(['unexpected-response', 'sync-state-invalid']);
@@ -66,7 +66,7 @@ API.v1.post(
 			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
 
 			if (!isExchangeError(err)) {
-				return API.v1.internalError('Outlook_Calendar_Test_Connection_failed');
+				return API.v1.internalError('Exchange_Test_Connection_failed');
 			}
 
 			return TEST_CONNECTION_SERVER_FAULTS.has(err.code)
@@ -76,7 +76,7 @@ API.v1.post(
 
 		return API.v1.success({
 			provider: provider.id,
-			message: 'Outlook_Calendar_Test_Connection_successful',
+			message: 'Exchange_Test_Connection_successful',
 		});
 	},
 );
