@@ -1161,15 +1161,25 @@ describe('SAML', () => {
 				expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'a b&c=d', loginClient: 'mobile' });
 			});
 
-			it('should handle URL-encoded RelayState strings from multi-step IdPs', () => {
+			it('should handle fully URL-encoded RelayState from multi-step IdPs', () => {
+				// IdP wrapped the entire RelayState in encodeURIComponent
 				const encoded = encodeURIComponent('provider=test-sp&loginClient=mobile');
 				expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'test-sp', loginClient: 'mobile' });
 			});
 
-			it('should handle reordered RelayState parameters', () => {
-				expect(SAMLUtils.decodeAuthorizeRelayState('loginClient=mobile&provider=test-sp')).to.be.deep.equal({
+			it('should handle mixed-encoded RelayState where only "=" is encoded but "&" is literal', () => {
+				
+				expect(SAMLUtils.decodeAuthorizeRelayState('provider%3Dtest-sp&loginClient%3Dmobile')).to.be.deep.equal({
 					provider: 'test-sp',
 					loginClient: 'mobile',
+				});
+			});
+
+			it('should not misread a raw provider name that contains query-like substrings', () => {
+				// A provider named 'tenant&provider=other&loginClient=mobile' must not be
+				// parsed as a compound RelayState — it does not start with 'provider='.
+				expect(SAMLUtils.decodeAuthorizeRelayState('tenant&provider=other&loginClient=mobile')).to.be.deep.equal({
+					provider: 'tenant&provider=other&loginClient=mobile',
 				});
 			});
 		});
