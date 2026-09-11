@@ -32,6 +32,18 @@ type CurrentCallParams = {
 	providerName?: string;
 };
 
+/** What an embedded provider needs to mount a call that has no URL to open. */
+type CurrentEmbeddedCallParams = {
+	callId: string;
+	rid: string;
+	providerName: string;
+	/**
+	 * The same preferences the server was given, so the provider publishes or skips the mic and camera tracks the
+	 * user chose on the preflight rather than defaulting to mic on, camera off.
+	 */
+	preferences?: { mic?: boolean; cam?: boolean };
+};
+
 type VideoConfEvents = {
 	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
@@ -66,6 +78,12 @@ type VideoConfEvents = {
 
 	// When join call
 	'call/join': CurrentCallParams;
+
+	/**
+	 * A call to be mounted in place rather than opened: an embedded provider returns no URL, so the URL-handling
+	 * path has nothing to act on. Consumers route this to the provider's own React context.
+	 */
+	'call/joinEmbedded': CurrentEmbeddedCallParams;
 
 	'error': { error: string };
 
@@ -444,12 +462,20 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
+		const { url, providerName, rid } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			console.error(`[VideoConf] Failed to join call ${callId}`, e);
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
 			return Promise.reject(e);
 		});
+
+		// An embedded provider answers with no URL and a room instead: its call is mounted inline by its own React
+		// provider, so the URL path below has nothing to open and must not run.
+		if (!url && providerName && rid) {
+			this.debugLog(`[VideoConf] Joining embedded ${providerName} call ${callId} in room ${rid}.`);
+			this.emit('call/joinEmbedded', { callId, rid, providerName, preferences: { ...this._preferences } });
+			return;
+		}
 
 		if (!url) {
 			this.emitError('error-videoconf-missing-url');

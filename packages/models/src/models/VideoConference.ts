@@ -448,7 +448,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	/**
 	 * Every call that is still open, with what the presence sweep needs to judge it: who is on the roster, and
-	 * which provider is running the media — the one that may be able to say who is in the room.
+	 * which provider is running the media — which is what says whether the call is held in a window of ours and
+	 * so has leases worth judging at all.
 	 *
 	 * Deliberately not scoped to a provider or to an age. Any open call has leases to check, and one whose
 	 * members all vanished ten seconds ago is exactly as stuck as one that has been that way for hours.
