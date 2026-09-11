@@ -1,4 +1,5 @@
-import type { ClipboardEvent } from 'react';
+import { sanitizeUrl } from '@rocket.chat/gazzodown-alt';
+import type { ClipboardEvent, MouseEvent } from 'react';
 
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
@@ -15,16 +16,26 @@ export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }
 	return (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 };
 
+export const getClickedLink = (event: MouseEvent<HTMLElement>): HTMLAnchorElement | null => (event.target as HTMLElement).closest('a');
+
+// A contenteditable swallows link navigation, so Cmd/Ctrl+click has to be resolved by hand.
+export const getModifierClickHref = (event: MouseEvent<HTMLElement>): string | undefined => {
+	if (!isCmdOrCtrlPressed(event)) {
+		return undefined;
+	}
+
+	const href = getClickedLink(event)?.getAttribute('href');
+
+	return href ? sanitizeUrl(href) : undefined;
+};
+
 export const handleFormattingShortcut = (
 	event: KeyboardEvent,
 	formattingButtons: FormattingButton[],
 	composer: ComposerAPI,
 	preventDefault = false,
 ) => {
-	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
-
-	if (!isCmdOrCtrlPressed) {
+	if (!isCmdOrCtrlPressed(event)) {
 		return false;
 	}
 
@@ -42,6 +53,27 @@ export const handleFormattingShortcut = (
 
 	composer.wrapSelection(formatter.pattern);
 	return true;
+};
+
+// The composer renders its own markup from plain text, so a paste carrying HTML must never reach the
+// contenteditable: the browser would insert that markup verbatim.
+export const extractPastedPlainText = (event: ClipboardEvent<HTMLElement>): string | undefined => {
+	const { clipboardData } = event;
+
+	if (!clipboardData || !Array.from(clipboardData.types).includes('text/html')) {
+		return undefined;
+	}
+
+	const plainText = clipboardData.getData('text/plain');
+
+	if (plainText) {
+		return plainText;
+	}
+
+	// A clipboard carrying only HTML would otherwise paste nothing; DOMParser neither runs scripts nor loads resources.
+	const html = clipboardData.getData('text/html');
+
+	return html ? (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '') : '';
 };
 
 export const extractImageFilesFromClipboard = (event: ClipboardEvent<HTMLElement>, format: (date: Date) => string): File[] => {
