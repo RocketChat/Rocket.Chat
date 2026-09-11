@@ -24,8 +24,8 @@ export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boo
 					!isMicrophoneDenied &&
 					isFileUploadEnabled &&
 					isAudioRecorderEnabled &&
-					!fileUploadMediaTypeBlackList?.match(/audio\/mp3|audio\/\*/i) &&
-					(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mp3|audio\/\*/i)),
+					!fileUploadMediaTypeBlackList?.match(/audio\/mpeg|audio\/\*/i) &&
+					(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mpeg|audio\/\*/i)),
 			),
 		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled, isMicrophoneDenied],
 	);
