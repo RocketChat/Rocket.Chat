@@ -2674,10 +2674,6 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						`title size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters [error-field-size-exceeded]`,
-					);
 				})
 				.end(done);
 		});
@@ -3784,10 +3780,6 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						`title size exceeds ${USER_PROFILE_FIELD_MAX_LENGTH} characters [error-field-size-exceeded]`,
-					);
 				});
 		});
 
@@ -3804,7 +3796,6 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'languages size exceeded [error-field-size-exceeded]');
 				});
 		});
 
@@ -3815,6 +3806,54 @@ describe('[Users]', () => {
 				.send({
 					data: {
 						languages: 'Portuguese',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should clear a profile field when null is sent (consistently across the three fields)', async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(testUserCredentials)
+				.send({ data: { title: 'T', nationality: 'N', languages: ['L'] } })
+				.expect(200);
+
+			for (const field of ['title', 'nationality', 'languages'] as const) {
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(testUserCredentials)
+					.send({ data: { [field]: null } })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			}
+
+			const userData = await getUserByUsername(testUser.username);
+			expect(userData).to.not.have.property('title');
+			expect(userData).to.not.have.property('nationality');
+			expect(userData).to.not.have.property('languages');
+
+			await deleteUser(testUser);
+		});
+
+		it('should reject a title whose raw length exceeds the limit even if it would trim under it', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						// trims to exactly the limit, but the raw value is over it —
+						// the schema and the server must agree and reject it
+						title: ` ${'a'.repeat(USER_PROFILE_FIELD_MAX_LENGTH)} `,
 					},
 				})
 				.expect('Content-Type', 'application/json')

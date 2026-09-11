@@ -12,9 +12,9 @@ export type UsersUpdateParamsPOST = {
 		active?: boolean;
 		bio?: string;
 		nickname?: string;
-		title?: string;
-		nationality?: string;
-		languages?: string[];
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 		statusText?: string;
 		roles?: string[];
 		requirePasswordChange?: boolean;

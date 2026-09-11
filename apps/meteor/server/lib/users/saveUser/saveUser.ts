@@ -43,9 +43,9 @@ export type SaveUserData = {
 
 	bio?: string;
 	nickname?: string;
-	title?: string;
-	nationality?: string;
-	languages?: string[];
+	title?: string | null;
+	nationality?: string | null;
+	languages?: string[] | null;
 
 	roles?: IRole['_id'][];
 	settings?: Partial<IUserSettings>;

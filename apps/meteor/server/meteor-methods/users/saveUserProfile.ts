@@ -35,9 +35,9 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
-		title?: string;
-		nationality?: string;
-		languages?: string[];
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -128,10 +128,11 @@ async function saveUserProfile(
 
 		for (const field of ['title', 'nationality'] as const) {
 			const value = settings[field];
+			// absent = don't touch; null or empty string = clear
 			if (value === undefined) {
 				continue;
 			}
-			const trimmed = value.trim();
+			const trimmed = value?.trim();
 			if (trimmed) {
 				$set[field] = trimmed;
 			} else {
@@ -140,7 +141,7 @@ async function saveUserProfile(
 		}
 
 		if (settings.languages !== undefined) {
-			const languages = normalizeLanguages(settings.languages);
+			const languages = settings.languages ? normalizeLanguages(settings.languages) : [];
 			if (languages.length) {
 				$set.languages = languages;
 			} else {
@@ -254,6 +255,9 @@ declare module '@rocket.chat/ddp-client' {
 				statusType?: string;
 				bio?: string;
 				nickname?: string;
+				title?: string | null;
+				nationality?: string | null;
+				languages?: string[] | null;
 			},
 			customFields: Record<string, any>,
 			...args: unknown[]
@@ -273,6 +277,9 @@ export function executeSaveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 	},
 	customFields: Record<string, any> = {},
 	...args: unknown[]
