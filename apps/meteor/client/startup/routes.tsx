@@ -210,7 +210,9 @@ router.defineRoutes([
 	{
 		path: '/conference/:id',
 		id: 'conference',
-		element: appLayout.wrap(<ConferenceRoute />),
+		// Dark whatever the reader's appearance preference says: a call surface is dark in every product that
+		// has one, and the panels beside it put the preference back for the room UI they carry.
+		element: appLayout.wrap(<ConferenceRoute />, { standalone: true, theme: 'dark' }),
 	},
 	{
 		path: '/setup-wizard/:step?',
