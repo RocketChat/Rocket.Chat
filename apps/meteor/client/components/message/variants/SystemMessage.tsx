@@ -83,7 +83,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						style={{ cursor: 'pointer' }}
 						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 						onClick={() => openUserInfo(message.u.username)}
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}

@@ -128,9 +128,9 @@ exports[`renders Default without crashing 1`] = `
                           guilherme.gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -159,9 +159,9 @@ exports[`renders Default without crashing 1`] = `
                           gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -233,9 +233,9 @@ exports[`renders Default without crashing 1`] = `
                           </div>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -278,9 +278,9 @@ exports[`renders Default without crashing 1`] = `
                           </span>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -490,9 +490,9 @@ exports[`renders InvitedUser without crashing 1`] = `
                           guilherme.gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -521,9 +521,9 @@ exports[`renders InvitedUser without crashing 1`] = `
                           gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -595,9 +595,9 @@ exports[`renders InvitedUser without crashing 1`] = `
                           </div>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -640,9 +640,9 @@ exports[`renders InvitedUser without crashing 1`] = `
                           </span>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -866,9 +866,9 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           guilherme.gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -897,9 +897,9 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -971,9 +971,9 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           </div>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1016,9 +1016,9 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           </span>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1288,9 +1288,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           guilherme.gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1319,9 +1319,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           gazzo
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1393,9 +1393,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           </div>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1438,9 +1438,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           </span>
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i
@@ -1469,9 +1469,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           1234567890
                         </div>
                         <button
-                          aria-label="Copy"
+                          aria-label="Copy_field"
                           class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
-                          title="Copy"
+                          title="Copy_field"
                           type="button"
                         >
                           <i

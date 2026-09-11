@@ -19,10 +19,12 @@ const revealOnHoverStyle = css`
 
 type UserInfoCopyableTextProps = {
 	text: string;
+	/** Field name for the copy button's accessible name — a profile renders many "Copy" buttons, so each needs to say what it copies. */
+	label?: string;
 	children?: ReactNode;
 } & ComponentProps<typeof InfoPanelText>;
 
-const UserInfoCopyableText = ({ text, children, ...props }: UserInfoCopyableTextProps) => {
+const UserInfoCopyableText = ({ text, label, children, ...props }: UserInfoCopyableTextProps) => {
 	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(text);
 
@@ -36,8 +38,8 @@ const UserInfoCopyableText = ({ text, children, ...props }: UserInfoCopyableText
 				marginInlineStart='x4'
 				tiny
 				icon='copy'
-				title={t('Copy')}
-				aria-label={t('Copy')}
+				title={label ? t('Copy_field', { field: label }) : t('Copy')}
+				aria-label={label ? t('Copy_field', { field: label }) : t('Copy')}
 				onClick={() => copy()}
 			/>
 		</InfoPanelText>

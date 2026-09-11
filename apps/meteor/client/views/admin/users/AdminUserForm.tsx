@@ -562,7 +562,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										id={titleId}
 										error={errors?.title?.message}
 										aria-invalid={errors.title ? 'true' : 'false'}
-										aria-describedby={`${titleId}-error`}
+										aria-describedby={errors.title ? `${titleId}-error` : undefined}
 										flexGrow={1}
 									/>
 								)}
@@ -589,7 +589,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										id={nationalityId}
 										error={errors?.nationality?.message}
 										aria-invalid={errors.nationality ? 'true' : 'false'}
-										aria-describedby={`${nationalityId}-error`}
+										aria-describedby={errors.nationality ? `${nationalityId}-error` : undefined}
 										flexGrow={1}
 									/>
 								)}
@@ -628,13 +628,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										id={languagesId}
 										error={errors?.languages?.message}
 										aria-invalid={errors.languages ? 'true' : 'false'}
-										aria-describedby={`${languagesId}-error`}
+										aria-describedby={errors.languages ? `${languagesId}-hint ${languagesId}-error` : `${languagesId}-hint`}
 										flexGrow={1}
 									/>
 								)}
 							/>
 						</FieldRow>
-						<FieldHint>{t('Languages_hint')}</FieldHint>
+						<FieldHint id={`${languagesId}-hint`}>{t('Languages_hint')}</FieldHint>
 						{errors?.languages && (
 							<FieldError aria-live='assertive' id={`${languagesId}-error`}>
 								{errors.languages.message}

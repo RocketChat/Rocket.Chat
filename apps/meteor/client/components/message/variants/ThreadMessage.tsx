@@ -27,7 +27,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	// Checks if is videoconf message to limit toolbox actions
@@ -59,7 +59,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}
