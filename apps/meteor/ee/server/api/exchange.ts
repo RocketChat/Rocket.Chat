@@ -14,14 +14,14 @@ import { logger } from '../lib/exchange/logger';
 import { scrubForLog } from '../lib/exchange/scrub';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
-	'not-configured': 'Outlook_Calendar_Test_Connection_not_configured',
-	'authentication-failed': 'Outlook_Calendar_Test_Connection_authentication_failed',
-	'authorization-failed': 'Outlook_Calendar_Test_Connection_authorization_failed',
-	'mailbox-not-found': 'Outlook_Calendar_Test_Connection_mailbox_not_found',
-	'connection-failed': 'Outlook_Calendar_Test_Connection_connection_failed',
-	'host-not-allowed': 'Outlook_Calendar_Test_Connection_host_not_allowed',
-	'rate-limited': 'Outlook_Calendar_Test_Connection_rate_limited',
-	'unexpected-response': 'Outlook_Calendar_Test_Connection_unexpected_response',
+	'not-configured': 'Exchange_Test_Connection_not_configured',
+	'authentication-failed': 'Exchange_Test_Connection_authentication_failed',
+	'authorization-failed': 'Exchange_Test_Connection_authorization_failed',
+	'mailbox-not-found': 'Exchange_Test_Connection_mailbox_not_found',
+	'connection-failed': 'Exchange_Test_Connection_connection_failed',
+	'host-not-allowed': 'Exchange_Test_Connection_host_not_allowed',
+	'rate-limited': 'Exchange_Test_Connection_rate_limited',
+	'unexpected-response': 'Exchange_Test_Connection_unexpected_response',
 };
 
 const TEST_CONNECTION_SERVER_FAULTS: ReadonlySet<ExchangeErrorCode> = new Set(['unexpected-response']);
@@ -63,7 +63,7 @@ API.v1.post(
 			logger.error({ msg: 'Exchange test connection failed', provider: provider.id, err: scrubForLog(err) });
 
 			if (!isExchangeError(err)) {
-				return API.v1.internalError('Outlook_Calendar_Test_Connection_failed');
+				return API.v1.internalError('Exchange_Test_Connection_failed');
 			}
 
 			return TEST_CONNECTION_SERVER_FAULTS.has(err.code)
@@ -73,7 +73,7 @@ API.v1.post(
 
 		return API.v1.success({
 			provider: provider.id,
-			message: 'Outlook_Calendar_Test_Connection_successful',
+			message: 'Exchange_Test_Connection_successful',
 		});
 	},
 );
