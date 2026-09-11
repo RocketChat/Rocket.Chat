@@ -146,7 +146,7 @@ API.v1.post(
 		const { userId: uid } = this;
 		const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
-		if (settings.get<string>('Outlook_Calendar_Mode') === 'server') {
+		if (settings.get<string>('Exchange_Mode') === 'server') {
 			return API.v1.failure('error-calendar-import-disabled-in-server-mode');
 		}
 
