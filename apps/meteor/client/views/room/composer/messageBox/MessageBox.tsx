@@ -141,7 +141,8 @@ const MessageBox = ({
 			return;
 		}
 
-		const text = chat.composer?.text ?? '';
+		const { composer } = chat;
+		const text = composer?.text ?? '';
 		popup.clear();
 
 		void onSend?.({
@@ -150,7 +151,11 @@ const MessageBox = ({
 			previewUrls,
 			isSlashCommandAllowed,
 		}).then(() => {
-			flushDraft(chat.composer?.text ?? '');
+			if (!composer) {
+				return;
+			}
+
+			flushDraft(composer.text);
 		});
 	});
 
