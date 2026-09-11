@@ -114,7 +114,6 @@ describe('AI Search intelligent search helpers', () => {
 					rid: 'r1',
 					msgId: 'm1',
 					pipelineText: 'keyword match',
-					keywordScore: 0.42,
 					source: 'keyword',
 				},
 			]);
@@ -141,8 +140,7 @@ describe('AI Search intelligent search helpers', () => {
 			expect(best).not.toHaveProperty('score');
 			expect(best).not.toHaveProperty('semanticSimilarity');
 			expect(best).not.toHaveProperty('semanticDistance');
-			expect(best.keywordScore).toBe(0.2803);
-			expect(worst.keywordScore).toBe(0.0183);
+			expect(worst).not.toHaveProperty('score');
 			expect(best.source).toBe('keyword');
 		});
 
@@ -157,7 +155,6 @@ describe('AI Search intelligent search helpers', () => {
 
 			expect(candidate.score).toBe(0.8);
 			expect(candidate.semanticSimilarity).toBe(0.8);
-			expect(candidate).not.toHaveProperty('keywordScore');
 		});
 	});
 

@@ -99,6 +99,18 @@ describe('AI Search fusion helpers', () => {
 			expect(ids(fuseCandidatesWithWeightedRRF(semantic, keyword, -20, 2))).toEqual(['shared', 'k1']);
 		});
 
+		it('does not fuse branch-local synthetic ids into a single candidate', () => {
+			// normalizeIntelligentSearchCandidates qualifies its fallback ids by source precisely so that
+			// these two unrelated messages cannot be mistaken for one agreed-upon hit
+			const semanticOnly = { _id: 'intelligent-semantic-0', rid: 'r1', pipelineText: 'a' };
+			const keywordOnly = { _id: 'intelligent-keyword-0', rid: 'r2', pipelineText: 'b' };
+
+			const fused = fuseCandidatesWithWeightedRRF([semanticOnly], [keywordOnly], 50, 10);
+
+			expect(fused).toHaveLength(2);
+			expect(fused.every(({ rrfScore }) => rrfScore === 0.5 / (INTELLIGENT_SEARCH_RRF_CONSTANT + 1))).toBe(true);
+		});
+
 		it('ignores candidates without any usable identifier', () => {
 			const unidentified = { _id: '', msgId: '', rid: 'room', pipelineText: '' };
 

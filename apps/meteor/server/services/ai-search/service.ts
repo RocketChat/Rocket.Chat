@@ -169,7 +169,9 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 	/**
 	 * The 0-100 balance is the whole retrieval control: 0 is keyword only, 100 is semantic only, anything
-	 * between fuses both. A per-request `searchType` pins an endpoint of that range without an admin change.
+	 * between fuses both. A per-request `searchType` pins an endpoint of that range without an admin
+	 * change; `hybrid` deliberately defers to the configured balance rather than forcing a mid value, so
+	 * a workspace pinned to one retriever stays pinned.
 	 */
 	private resolveSemanticWeight(searchType: IntelligentSearchType | undefined): number {
 		if (searchType === 'keyword') {
@@ -249,14 +251,32 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return toRankedCandidates(filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent));
 		}
 
-		const [semanticCandidates, keywordCandidates] = await Promise.all([queryBranch('semantic'), queryBranch('keyword')]);
+		// a retriever that throws must not take the other one down with it: a flaky keyword branch
+		// should degrade hybrid to semantic-only results rather than to an empty result set
+		const [semanticResult, keywordResult] = await Promise.allSettled([queryBranch('semantic'), queryBranch('keyword')]);
+		const keywordCandidates = keywordResult.status === 'fulfilled' ? keywordResult.value : undefined;
+		const semanticCandidates =
+			semanticResult.status === 'fulfilled'
+				? filterSemanticCandidatesByMinimumSimilarity(semanticResult.value, minimumSimilarityPercent)
+				: undefined;
 
-		return fuseCandidatesWithWeightedRRF(
-			filterSemanticCandidatesByMinimumSimilarity(semanticCandidates, minimumSimilarityPercent),
-			keywordCandidates,
-			semanticWeight,
-			candidateLimit,
-		);
+		if (!semanticCandidates) {
+			if (!keywordCandidates) {
+				throw semanticResult.status === 'rejected' ? semanticResult.reason : new Error('error-ai-search-retrieval-failed');
+			}
+
+			logger.warn({ msg: 'Intelligent search branch failed, serving the surviving retriever', failedBranch: 'semantic' });
+
+			return toRankedCandidates(keywordCandidates);
+		}
+
+		if (!keywordCandidates) {
+			logger.warn({ msg: 'Intelligent search branch failed, serving the surviving retriever', failedBranch: 'keyword' });
+
+			return toRankedCandidates(semanticCandidates);
+		}
+
+		return fuseCandidatesWithWeightedRRF(semanticCandidates, keywordCandidates, semanticWeight, candidateLimit);
 	}
 
 	/**

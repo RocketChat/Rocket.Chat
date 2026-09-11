@@ -168,10 +168,11 @@ export const normalizeIntelligentSearchCandidates = (
 		}
 
 		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
-		const keywordScore = source === 'keyword' ? firstNumber(result.score, metadata.score) : undefined;
 		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
-			_id: msgId || `intelligent-${index}`,
+			// branch-qualified: the index is per-retriever, so an unqualified fallback would make
+			// semantic result #0 and keyword result #0 fuse as if they were the same message
+			_id: msgId || `intelligent-${source}-${index}`,
 			rid,
 			msgId,
 			pipelineText: firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '',
@@ -181,7 +182,6 @@ export const normalizeIntelligentSearchCandidates = (
 				semanticSimilarity,
 				semanticDistance,
 			}),
-			...(typeof keywordScore === 'number' && { keywordScore }),
 			...(source && { source }),
 		});
 	}

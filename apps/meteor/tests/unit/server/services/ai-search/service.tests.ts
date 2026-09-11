@@ -411,6 +411,38 @@ describe('AISearchService', () => {
 			expect(withBoost.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['fresh', 'stale']);
 		});
 
+		it('serves the surviving retriever when one hybrid branch fails', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+			serverFetch.reset();
+			serverFetch
+				.onCall(0)
+				.resolves({
+					ok: true,
+					status: 200,
+					json: async () => ({ results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, score: 0.2 }] }),
+					text: async () => '',
+				})
+				.onCall(1)
+				.rejects(new Error('keyword branch timed out'));
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+
+			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['allowed-msg']);
+		});
+
+		it('gives up only when both hybrid branches fail', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+			serverFetch.reset();
+			serverFetch.rejects(new Error('pipeline unreachable'));
+
+			await createService()
+				.search({ query: 'fruit', userId: 'user-id', limit: 5 })
+				.then(
+					() => expect.fail('expected the search to reject'),
+					(error: Error) => expect(error.message).to.equal('pipeline unreachable'),
+				);
+		});
+
 		it('lets an explicit searchType pin an endpoint of the balance without an admin change', async () => {
 			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 			serverFetch.resolves({

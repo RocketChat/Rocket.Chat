@@ -75,8 +75,9 @@ The two retrievers report scores on incompatible scales, verified empirically ag
 display and for the similarity guardrail, and does so **only for semantic candidates**. Both retrievers
 report their number in the same `score` field, so reading a keyword hit's rank as a distance would invert
 it and fabricate a confident similarity — the best lexical hit would display the lowest score. Keyword
-candidates therefore carry `keywordScore` for observability and no `score` at all; the UI shows a match
-percentage only where one genuinely exists.
+candidates therefore carry no `score` at all, and the results UI renders a match percentage only where one
+genuinely exists. In a fused list that means the badge appears on semantically-found hits and is absent on
+keyword-only hits — an honest gap rather than a fabricated number.
 
 Fusion deliberately never compares the two raw scores — it works on **rank positions only**, which is
 what makes the incompatible scales a non-problem.
@@ -91,6 +92,10 @@ score(d) = (1 - w) / (C + rank_fulltext(d)) + w / (C + rank_semantic(d))
 
 A branch that did not return `d` contributes nothing. `w = 0` and `w = 100` short-circuit to a single
 retriever, so the other branch is never even requested.
+
+The two branches are issued with `Promise.allSettled`, not `Promise.all`: if one retriever throws
+(network failure, or the pipeline's 10s timeout) the search degrades to the surviving retriever rather
+than returning nothing. Only a double failure propagates.
 
 `C` and the candidate pool size are implementation parameters and are intentionally **not** admin
 settings.

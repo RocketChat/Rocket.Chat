@@ -59,12 +59,14 @@ export type IntelligentSearchCandidate = {
 	rid?: string;
 	msgId?: string;
 	pipelineText: string;
-	/** normalized cosine similarity; only ever set for semantic candidates */
+	/**
+	 * Normalized cosine similarity, set only for semantic candidates. Keyword candidates deliberately
+	 * carry no score: the pipeline reports their full-text rank in the same field, and it is not a
+	 * similarity, so there is no honest value to show.
+	 */
 	score?: number;
 	semanticSimilarity?: number;
 	semanticDistance?: number;
-	/** raw full-text rank reported by the pipeline, kept for observability and never shown as a similarity */
-	keywordScore?: number;
 	source?: IntelligentSearchCandidateSource;
 	/** message timestamp reported by the pipeline, used by the temporal rerank stage */
 	ts?: string;
