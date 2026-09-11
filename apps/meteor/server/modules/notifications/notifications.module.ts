@@ -1,11 +1,12 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
 import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
+import { canAccessConference } from '../../lib/videoConfAccess';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
@@ -46,6 +47,8 @@ export class NotificationsModule {
 	public readonly streamLocal: IStreamer<'local'>;
 
 	public readonly streamPresence: IStreamer<'user-presence'>;
+
+	public readonly streamVideoConference: IStreamer<'video-conference'>;
 
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
@@ -91,6 +94,7 @@ export class NotificationsModule {
 
 		this.streamUser = new this.Streamer('notify-user');
 		this.streamLocal = new this.Streamer('local');
+		this.streamVideoConference = new this.Streamer('video-conference');
 	}
 
 	configure(): void {
@@ -459,6 +463,27 @@ export class NotificationsModule {
 			}
 		});
 
+		this.streamVideoConference.allowWrite('none');
+		// Conference membership authorizes following the call — members may have no access to the room it
+		// originated in — and so does access to a room the chat lives in. `canAccessConference` is the same rule
+		// the REST endpoints apply, shared so the stream and the endpoints cannot drift into different answers
+		// for the same person: membership alone would refuse a room member who opens the conference before their
+		// join lands, and a refused subscription is never retried.
+		this.streamVideoConference.allowRead(async function (eventName) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
+				return false;
+			}
+
+			const [callId] = eventName.split('/');
+			const call = await VideoConference.findOneById(callId, { projection: { users: 1, rid: 1, discussionRid: 1 } });
+			if (!call) {
+				return false;
+			}
+
+			return canAccessConference(call, user._id);
+		});
+
 		this.streamLocal.serverOnly = true;
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
@@ -526,6 +551,11 @@ export class NotificationsModule {
 
 	progressUpdated(progress: { rate: number } | ImporterProgress): void {
 		this.streamImporters.emit('progress', progress);
+	}
+
+	/** Tells whoever is watching this conference that it changed and is worth reading again. */
+	notifyVideoConferenceUpdated(callId: string): void {
+		this.streamVideoConference.emit(`${callId}/updated`);
 	}
 }
 
