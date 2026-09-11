@@ -24,7 +24,7 @@ import {
 	useUser,
 	useLayout,
 } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -42,6 +42,7 @@ import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
 
@@ -157,23 +158,39 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomDate ||
 			dirtyFields.statusCustomTime;
 
+		// Only dirty fields are sent: untouched fields can't be affected by the
+		// save (empty values clear them server-side), and a status-only save
+		// doesn't rewrite identity fields.
+		const emailChanged = user ? getUserEmailAddress(user) !== email : false;
+		const basicInfoData = {
+			...(dirtyFields.name && { name }),
+			...(emailChanged && { email }),
+			...(dirtyFields.username && { username }),
+			...(dirtyFields.nickname && { nickname }),
+			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.title && { title }),
+			...(dirtyFields.nationality && { nationality }),
+			...(dirtyFields.languages && {
+				languages: languages
+					.split(',')
+					.map((language) => language.trim())
+					.filter(Boolean),
+			}),
+		};
+		const customFieldsDirty = Boolean(dirtyFields.customFields);
+
 		try {
-			await updateOwnBasicInfo({
-				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					nickname,
-					bio,
-					title,
-					nationality,
-					languages: languages
-						.split(',')
-						.map((language) => language.trim())
-						.filter(Boolean),
-				},
-				customFields,
-			});
+			if (Object.keys(basicInfoData).length || customFieldsDirty) {
+				await updateOwnBasicInfo({
+					data: basicInfoData,
+					...(customFieldsDirty && { customFields }),
+				});
+
+				// users.info answers the user card, the full profile and the admin
+				// info panel — refresh them all so an open panel reflects the save.
+				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+				await queryClient.invalidateQueries({ queryKey: ['users'] });
+			}
 
 			if (statusDirty) {
 				await setUserStatus({
