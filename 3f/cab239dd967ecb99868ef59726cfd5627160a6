@@ -1,0 +1,30 @@
+.changeset/tall-pandas-repeat.md
+  s_ee2c471df0bcef::t_7db2635ba4ed3c 1-4
+  s_ee2c471df0bcef::t_34c531ae603b34 5
+apps/meteor/server/api/v1/misc.ts
+  s_ee2c471df0bcef::t_a09e1b72b85d20 396,446
+apps/meteor/server/api/v1/users.ts
+  s_ee2c471df0bcef::t_a09e1b72b85d20 291,1170,1994-1995
+apps/meteor/server/api/v1/im.ts
+  s_ee2c471df0bcef::t_a09e1b72b85d20 916
+apps/meteor/server/api/v1/rooms.ts
+  s_ee2c471df0bcef::t_a09e1b72b85d20 527
+apps/meteor/server/api/v1/chat.ts
+  s_ee2c471df0bcef::t_a09e1b72b85d20 464,498
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3fcab239dd967ecb99868ef59726cfd5627160a6",
+  "prompts": {},
+  "sessions": {
+    "s_ee2c471df0bcef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fc4b9eb3-216e-452b-b7df-32b840aa44e3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

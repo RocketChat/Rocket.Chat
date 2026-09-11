@@ -1,0 +1,21 @@
+apps/meteor/server/api/v1/users.ts
+  s_0b629496cd2846::t_cb5e6278b50eaf 1994-1995
+.changeset/tall-pandas-repeat.md
+  s_0b629496cd2846::t_cb5e6278b50eaf 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a24763c6c09b89669e431c6a87388f1834eed245",
+  "prompts": {},
+  "sessions": {
+    "s_0b629496cd2846": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "07e411f7-362a-4708-ab51-6635763604c6",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
