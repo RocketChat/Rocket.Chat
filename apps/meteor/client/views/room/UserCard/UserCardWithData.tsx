@@ -53,7 +53,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
 			etag: avatarETag,
-			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			localTime: typeof utcOffset === 'number' && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
