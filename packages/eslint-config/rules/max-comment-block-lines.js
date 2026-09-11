@@ -1,9 +1,7 @@
 /**
- * Flags comment blocks longer than the budget in `docs/code-comments.md`.
- *
- * Length is the only part of that standard a linter can judge; whether a comment
- * earns its place stays a review call. Directive comments (`eslint-*`, `@ts-*`,
- * `prettier-ignore`, `istanbul ignore`, …) are exempt, as are file-leading headers.
+ * Flags comment blocks longer than the budget in `docs/code-comments.md`. Length is
+ * the only part of that standard a linter can judge; whether a comment earns its
+ * place stays a review call. Directive comments and license banners are exempt.
  */
 
 const DIRECTIVE = /^\s*(eslint|@ts-|prettier-ignore|istanbul ignore|c8 ignore|v8 ignore|webpack|globals?\s|jshint|jslint|type-coverage)/;
@@ -12,13 +10,9 @@ const LICENSE = /\b(copyright|licen[cs]e|SPDX-License-Identifier|all rights rese
 
 const isDirective = (comment) => DIRECTIVE.test(comment.value);
 
-/** A license banner, not documentation — exempt wherever it sits, which in practice is the top of the file. */
 const isLicenseHeader = (comment) => LICENSE.test(comment.value);
 
-/**
- * Whether the comment starts its own line. Trailing comments on consecutive code
- * lines are not a block, however many of them line up.
- */
+/** Trailing comments on consecutive code lines are not a block, however many line up. */
 const startsItsOwnLine = (comment, sourceCode) =>
 	sourceCode.lines[comment.loc.start.line - 1].slice(0, comment.loc.start.column).trim() === '';
 
@@ -49,7 +43,7 @@ export default {
 	},
 
 	create(context) {
-		const { maxBlockLines = 6, maxConsecutiveLineComments = 3 } = context.options[0] ?? {};
+		const { maxBlockLines = 6, maxConsecutiveLineComments = 4 } = context.options[0] ?? {};
 		const sourceCode = context.sourceCode ?? context.getSourceCode();
 
 		return {

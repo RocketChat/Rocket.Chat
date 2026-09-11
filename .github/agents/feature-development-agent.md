@@ -71,7 +71,7 @@ The agent must keep comments scarce and load-bearing. See
 [docs/code-comments.md](../../docs/code-comments.md) for the full rules.
 
 - A comment explains **why**, never what. If the line below already says it, delete it.
-- No comment block over **6 lines**. No more than **3** consecutive `//` lines above a statement.
+- No comment block over **6 lines**. No more than **4** consecutive `//` lines above a statement.
 - Comment lines must stay under **~10%** of the production (non-test) lines added.
   The repository's own average is 4.3%.
 - Never commit: session narration (`// Now we need to...`), change history

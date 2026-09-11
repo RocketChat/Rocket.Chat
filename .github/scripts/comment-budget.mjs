@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 /**
- * Reports the share of added lines that are comments, against the budget in
- * `docs/code-comments.md`.
- *
- * Advisory only: it never exits non-zero. Volume is a signal reviewers asked for,
- * not a thing to block a merge on — a PR that is genuinely all documentation should
- * pass, and a reviewer reading the annotation can tell the difference.
- *
+ * Reports the share of added lines that are comments, against `docs/code-comments.md`.
+ * Advisory only — never exits non-zero: only a reviewer can tell a genuinely
+ * documentation-heavy PR from an over-commented one.
  *   node .github/scripts/comment-budget.mjs [base-ref]   # default: origin/develop
  */
 

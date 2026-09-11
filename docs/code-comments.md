@@ -41,13 +41,14 @@ has to be worth defending in review.
 | --- | --- |
 | A single comment block | **≤ 6 lines.** Longer needs a reason. |
 | Comment lines in a PR's non-test production code | **≤ 10% of added lines.** |
-| Consecutive `//` lines above one statement | **≤ 3.** More means the code needs a named function, not prose. |
+| Consecutive `//` lines above one statement | **≤ 4.** More means the code needs a named function, not prose. |
 
 For calibration, measured on this repository's `apps/meteor/server`,
 `apps/meteor/lib` and `packages/*/src` TypeScript (tests excluded):
 
 - comment lines are **4.3%** of all lines;
-- the median JSDoc block is **5 lines**, the 90th percentile is **10**.
+- the median JSDoc block is **5 lines**, the 90th percentile is **10**;
+- a run of `//` lines is **1 line** at the median and **3** at the 95th percentile.
 
 [PR #41934][pr] sat at **32.8%** on production code — roughly 7.6× the repository's
 own norm — with 408 added comment lines in a single file. That ratio, not any
