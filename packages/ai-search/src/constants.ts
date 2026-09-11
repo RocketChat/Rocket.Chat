@@ -6,11 +6,13 @@ export const AI_SEARCH_FILTER_SUGGESTION_LIMIT = 5;
 export const AI_SEARCH_ROOM_LOOKUP_LIMIT = 20;
 export const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
 // Candidate pool retrieved from each retriever before fusion. Implementation detail, never exposed to
-// admins. The floor of 50 is where offline nDCG@10 peaked: 20 starves fusion, 100 dilutes conceptual
-// queries with weak neighbours. See docs/features/ai-search-hybrid-benchmark.md.
+// admins, and tuned on the measured quality/latency frontier rather than on quality alone:
+// a pool of 20 costs the same as the old pool of 5 (p50 584ms vs 588ms) but lifts nDCG@10 by ~7%,
+// while 100 is both slower (p50 1490ms) and *worse* than 50. Hence floor 20, cap 50.
+// See docs/features/ai-search-hybrid-benchmark.md.
 export const INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER = 3;
-export const MIN_INTELLIGENT_SEARCH_CANDIDATES = 50;
-export const MAX_INTELLIGENT_SEARCH_CANDIDATES = 100;
+export const MIN_INTELLIGENT_SEARCH_CANDIDATES = 20;
+export const MAX_INTELLIGENT_SEARCH_CANDIDATES = 50;
 export const INTELLIGENT_SEARCH_RRF_CONSTANT = 60;
 export const DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT = 50;
 export const DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS = 30;

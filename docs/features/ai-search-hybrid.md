@@ -2,15 +2,28 @@
 
 ## Overview
 
-AI Search retrieves messages from an external Intelligent Search pipeline. It supports three retrieval
-modes, selected by the `AI_Intelligent_Search_Mode` setting and overridable per request via the
-`searchType` query parameter on `GET /v1/ai.search`:
+AI Search retrieves messages from an external Intelligent Search pipeline. Both retrievers are the *same*
+pipeline endpoint (`POST /pipelines/{id}/search`), distinguished only by the request body:
 
-| Mode | Pipeline request | Notes |
+| Retriever | Pipeline request | Threshold sent |
 | --- | --- | --- |
-| `semantic` (default) | `type: "similarity"`, `search_type: 2` | Vector retrieval. The only mode before this feature. |
-| `keyword` | `type: "search"`, `search_type: 1` | Full-text retrieval. |
-| `hybrid` | both, in parallel | Fused client-side with weighted RRF. |
+| semantic | `type: "similarity"`, `classification.search_type: 2` | yes |
+| keyword | `type: "search"`, `classification.search_type: 1` | no |
+
+Which of them runs is decided by a single setting, `AI_Intelligent_Search_Semantic_Weight` (0-100):
+
+| Balance | Behaviour |
+| --- | --- |
+| `0` | keyword only - the semantic retriever is never called |
+| `1`-`99` | both in parallel, fused with weighted RRF |
+| `100` | semantic only - the keyword retriever is never called |
+
+There is deliberately **no separate "search mode" setting**: the balance already expresses every mode,
+and a second control would only let the two disagree.
+
+A caller can pin an endpoint of that range per request with the `searchType` query parameter on
+`GET /v1/ai.search` (`keyword` maps to 0, `semantic` to 100, `hybrid` to whatever the setting says),
+which is useful for evaluation without changing workspace configuration.
 
 ## Pipeline retrieval
 
@@ -94,8 +107,10 @@ Applied after fusion, so relevance selects the candidates and freshness only reo
 final(d) = score(d) × (1 + recencyWeight × 2^(-ageInDays / halfLifeDays))
 ```
 
-- `AI_Intelligent_Search_Recency_Weight` (0-100, default **0** = disabled).
-- `AI_Intelligent_Search_Recency_Half_Life_Days` (default 30).
+`AI_Intelligent_Search_Recency_Weight` (0-100, default **0** = disabled) is the only control. The
+half-life is fixed at 30 days (`DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS`): offline sweeps found
+the 30-90 day range essentially flat, so exposing it would add a setting without adding reachable
+quality.
 
 Timestamps come from the pipeline fragment metadata, so the boost costs no extra database work.
 Candidates without a usable timestamp keep their relevance score rather than being penalised.

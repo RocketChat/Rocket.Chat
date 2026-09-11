@@ -52,23 +52,6 @@ export const createAISettings = async (): Promise<void> => {
 		i18nDescription: 'AI_Intelligent_Search_Enabled_Description',
 	});
 
-	await settingsRegistry.add('AI_Intelligent_Search_Mode', 'semantic', {
-		group: AI_SETTINGS_GROUP,
-		section: 'Intelligent_Search',
-		type: 'select',
-		values: [
-			{ key: 'semantic', i18nLabel: 'AI_Intelligent_Search_Mode_Semantic' },
-			{ key: 'keyword', i18nLabel: 'AI_Intelligent_Search_Mode_Keyword' },
-			{ key: 'hybrid', i18nLabel: 'AI_Intelligent_Search_Mode_Hybrid' },
-		],
-		i18nLabel: 'AI_Intelligent_Search_Mode',
-		i18nDescription: 'AI_Intelligent_Search_Mode_Description',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: 'semantic',
-		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
-	});
-
 	await settingsRegistry.add('AI_Intelligent_Search_Semantic_Weight', 50, {
 		group: AI_SETTINGS_GROUP,
 		section: 'Intelligent_Search',
@@ -78,7 +61,7 @@ export const createAISettings = async (): Promise<void> => {
 		enterprise: true,
 		modules: [AI_LICENSE_MODULE],
 		invalidValue: 50,
-		enableQuery: { _id: 'AI_Intelligent_Search_Mode', value: 'hybrid' },
+		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
 	});
 
 	await settingsRegistry.add('AI_Intelligent_Search_Recency_Weight', 0, {
@@ -91,18 +74,6 @@ export const createAISettings = async (): Promise<void> => {
 		modules: [AI_LICENSE_MODULE],
 		invalidValue: 0,
 		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
-	});
-
-	await settingsRegistry.add('AI_Intelligent_Search_Recency_Half_Life_Days', 30, {
-		group: AI_SETTINGS_GROUP,
-		section: 'Intelligent_Search',
-		type: 'int',
-		i18nLabel: 'AI_Intelligent_Search_Recency_Half_Life_Days',
-		i18nDescription: 'AI_Intelligent_Search_Recency_Half_Life_Days_Description',
-		enterprise: true,
-		modules: [AI_LICENSE_MODULE],
-		invalidValue: 30,
-		enableQuery: { _id: 'AI_Intelligent_Search_Recency_Weight', value: { $gt: 0 } },
 	});
 
 	await settingsRegistry.add('AI_Intelligent_Search_Pipeline_Base_URL', '', {

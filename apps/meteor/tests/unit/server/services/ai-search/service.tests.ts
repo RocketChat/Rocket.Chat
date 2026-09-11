@@ -71,10 +71,8 @@ const cursor = <T>(items: T[]): CursorResult<T> => ({
 
 const settings: Record<string, unknown> = {
 	AI_Intelligent_Search_Enabled: true,
-	AI_Intelligent_Search_Mode: 'semantic',
-	AI_Intelligent_Search_Semantic_Weight: 50,
+	AI_Intelligent_Search_Semantic_Weight: 100,
 	AI_Intelligent_Search_Recency_Weight: 0,
-	AI_Intelligent_Search_Recency_Half_Life_Days: 30,
 	AI_Intelligent_Search_Pipeline_Base_URL: 'https://pipeline.example.com',
 	AI_Intelligent_Search_Pipeline_ID: 'workspace',
 	AI_Intelligent_Search_API_Key: 'key',
@@ -202,7 +200,7 @@ describe('AISearchService', () => {
 			const [, options] = serverFetch.firstCall.args;
 			const body = JSON.parse(options.body);
 			// the retriever is asked for a candidate pool, not the requested page
-			expect(body.params.k).to.equal(50);
+			expect(body.params.k).to.equal(20);
 			expect(body.filters).to.deep.equal({
 				room_id: { $in: subscribedRoomIds },
 			});
@@ -245,17 +243,8 @@ describe('AISearchService', () => {
 			expect(requestBody.params).to.not.have.property('threshold');
 		});
 
-		it('falls back to keyword path when hybrid semantic weight is 0', async () => {
-			cachedSettings.get.callsFake((key: string) => {
-				if (key === 'AI_Intelligent_Search_Semantic_Weight') {
-					return 0;
-				}
-				if (key === 'AI_Intelligent_Search_Mode') {
-					return 'hybrid';
-				}
-
-				return settings[key];
-			});
+		it('queries only the keyword retriever when the balance is 0', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 0 : settings[key]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -265,24 +254,15 @@ describe('AISearchService', () => {
 				text: async () => '',
 			});
 
-			await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid' });
+			await createService().search({ query: 'fruit', userId: 'user-id' });
 
 			expect(serverFetch.callCount).to.equal(1);
 			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
 			expect(requestBody.type).to.equal('search');
 		});
 
-		it('falls back to semantic path when hybrid semantic weight is 100', async () => {
-			cachedSettings.get.callsFake((key: string) => {
-				if (key === 'AI_Intelligent_Search_Semantic_Weight') {
-					return 100;
-				}
-				if (key === 'AI_Intelligent_Search_Mode') {
-					return 'hybrid';
-				}
-
-				return settings[key];
-			});
+		it('queries only the semantic retriever when the balance is 100', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 100 : settings[key]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -292,7 +272,7 @@ describe('AISearchService', () => {
 				text: async () => '',
 			});
 
-			await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid' });
+			await createService().search({ query: 'fruit', userId: 'user-id' });
 
 			expect(serverFetch.callCount).to.equal(1);
 			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
@@ -301,9 +281,7 @@ describe('AISearchService', () => {
 		});
 
 		it('uses weighted hybrid with semantic threshold filtering only on semantic branch', async () => {
-			cachedSettings.get.callsFake((key: string) =>
-				key === 'AI_Intelligent_Search_Mode' || key === 'AI_Intelligent_Search_Semantic_Weight' ? settings[key] : settings[key],
-			);
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 
 			serverFetch.reset();
 			serverFetch
@@ -329,12 +307,7 @@ describe('AISearchService', () => {
 					text: async () => '',
 				});
 
-			const results = await createService().search({
-				query: 'fruit',
-				userId: 'user-id',
-				searchType: 'hybrid',
-				limit: 5,
-			});
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
 
 			expect(serverFetch.callCount).to.equal(2);
 			expect(results).to.deep.equal([
@@ -365,15 +338,15 @@ describe('AISearchService', () => {
 			serverFetch.resolves({ ok: true, status: 200, json: async () => ({ results: [] }), text: async () => '' });
 
 			const service = createService();
-			await service.search({ query: 'fruit', userId: 'user-id', limit: 20 });
-			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(60);
+			await service.search({ query: 'fruit', userId: 'user-id', limit: 9 });
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(27);
 
 			await service.search({ query: 'fruit', userId: 'user-id', limit: 50 });
-			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(100);
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(50);
 		});
 
 		it('keeps a full page of hybrid results when fusion candidates are not visible', async () => {
-			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Mode' ? 'hybrid' : settings[key]));
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 			// only the last two candidates resolve to a visible message
 			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
 				cursor(
@@ -401,7 +374,7 @@ describe('AISearchService', () => {
 				.onCall(1)
 				.resolves({ ok: true, status: 200, json: async () => ({ results: keywordResults }), text: async () => '' });
 
-			const results = await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid', limit: 2 });
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 2 });
 
 			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['visible-b', 'visible-a']);
 		});
@@ -438,17 +411,8 @@ describe('AISearchService', () => {
 			expect(withBoost.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['fresh', 'stale']);
 		});
 
-		it('falls back to a sane half-life when the setting is not usable', async () => {
-			cachedSettings.get.callsFake((key: string) => {
-				if (key === 'AI_Intelligent_Search_Recency_Weight') {
-					return 50;
-				}
-				if (key === 'AI_Intelligent_Search_Recency_Half_Life_Days') {
-					return 0;
-				}
-
-				return settings[key];
-			});
+		it('lets an explicit searchType pin an endpoint of the balance without an admin change', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -456,9 +420,19 @@ describe('AISearchService', () => {
 				text: async () => '',
 			});
 
-			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			const service = createService();
+			await service.search({ query: 'fruit', userId: 'user-id', searchType: 'semantic' });
+			expect(serverFetch.callCount).to.equal(1);
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).type).to.equal('similarity');
 
-			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['allowed-msg']);
+			serverFetch.resetHistory();
+			await service.search({ query: 'fruit', userId: 'user-id', searchType: 'keyword' });
+			expect(serverFetch.callCount).to.equal(1);
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).type).to.equal('search');
+
+			serverFetch.resetHistory();
+			await service.search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid' });
+			expect(serverFetch.callCount).to.equal(2);
 		});
 
 		it('resolves room-name filters before querying the pipeline', async () => {

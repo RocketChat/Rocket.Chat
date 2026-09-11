@@ -4,6 +4,15 @@ Measurements behind the hybrid search defaults. Re-run these before changing
 `INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER`, `MIN_INTELLIGENT_SEARCH_CANDIDATES`,
 `INTELLIGENT_SEARCH_RRF_CONSTANT`, or the shipped setting defaults.
 
+## Latency
+
+Hybrid issues both retriever requests with `Promise.all`, so its latency is the *slower* branch, not the
+sum. At the shipped pool sizes both branches sit in the same 550-700 ms p50 band, so hybrid costs
+roughly one retrieval, plus fusion and reranking which are in-memory over at most 100 candidates.
+
+The extremes of the balance (`0` and `100`) issue **one** request, not two — the unused retriever is
+never called.
+
 ## Method
 
 - **Corpus**: 547 synthetic Rocket.Chat messages ingested into a QA Intelligent Search pipeline —
@@ -41,17 +50,30 @@ Absolute numbers are only meaningful relative to each other: the corpus is synth
 of a 20-query synthetic set. 50 is the neutral, defensible midpoint; revisit with judged production
 queries rather than promoting 60 on this evidence.
 
-## Candidate pool sweep (w = 60)
+## Candidate pool: the quality/latency frontier
 
-| candidate pool | best nDCG@10 | conceptual |
-| --- | --- | --- |
-| 20 | 0.6881 | 0.6014 |
-| **50** | **0.7152** | 0.6303 |
-| 100 | 0.6987 | 0.5677 |
+Quality alone would pick a pool of 50. Latency says otherwise. Pipeline round-trip measured over
+20 queries × 3 repetitions:
 
-50 per branch is the peak. 20 starves fusion; 100 dilutes conceptual queries with weak neighbours.
-Hence `MIN_INTELLIGENT_SEARCH_CANDIDATES = 50` — the default page size of 5 lands exactly on the
-optimum, and larger pages scale by ×3 up to the cap of 100.
+| pool (k) | semantic nDCG@10 | best hybrid nDCG@10 | semantic p50 | semantic p95 |
+| --- | --- | --- | --- | --- |
+| 5 (pre-feature default) | 0.6377 | 0.6438 | 588 ms | 820 ms |
+| **20** | **0.6819** | **0.6881** | **584 ms** | 709 ms |
+| 50 | 0.7091 | 0.7152 | 910 ms | 1342 ms |
+| 100 | 0.6925 | 0.6987 | 1490 ms | 2638 ms |
+
+- **20 is free**: it costs the same as the old pool of 5 (584 ms vs 588 ms p50) and lifts nDCG@10 by
+  **6.9%**. Below ~20 the pipeline's vector index is clearly not searching hard enough.
+- **50 is not free**: +4.0% nDCG for **+56% latency**. Wrong trade for navbar typeahead, which fires on
+  every debounced keystroke.
+- **100 is strictly worse**: slower *and* lower quality than 50.
+
+Hence `MIN_INTELLIGENT_SEARCH_CANDIDATES = 20`, `MAX_INTELLIGENT_SEARCH_CANDIDATES = 50`, multiplier ×3.
+The navbar (`limit` 5) lands on 20 — same latency as before the feature, better relevance. The search
+page (`limit` 9, growing to 50 on *Show more*) scales to the 50 cap, where the extra latency is paid by a
+deliberate full-page search rather than by typeahead.
+
+Keyword-branch latency is flat across k (547-666 ms p50), so the pool size is a semantic-side cost.
 
 ## Temporal boost sweep (w = 60, candidate pool 50)
 
@@ -73,8 +95,14 @@ the boost never displaces an exact-identifier match.
 Aggressive settings are actively harmful: weight 100 with a 7-day half-life drops conceptual queries
 from 0.6303 to 0.4695. Short half-lives are sharp and unforgiving; 30-90 days are stable.
 
-**Shipped default: weight 0 (disabled), half-life 30.** Hybrid relevance ships first and ranking stays
-unchanged unless an admin opts in. Recommended starting point when enabling: **weight 25, half-life 30**.
+**Shipped default: weight 0 (disabled).** Hybrid relevance ships first and ranking stays unchanged
+unless an admin opts in. Recommended starting point when enabling: **weight 25**.
+
+The half-life is **not** an admin setting - it is fixed at 30 days. Across the useful weight range the
+30-day and 90-day columns differ by well under 1% nDCG (0.7507 vs 0.7510 at weight 25), so the knob buys
+no reachable quality. Only the 7-day column behaves differently, and it behaves *worse*. If half-life
+ever needs to move, change the constant on the evidence of a fresh sweep rather than delegating it to
+admins.
 
 ## Backend limitations found while benchmarking
 

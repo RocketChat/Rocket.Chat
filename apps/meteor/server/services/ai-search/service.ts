@@ -167,24 +167,19 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
-	private getSearchMode(): IntelligentSearchType {
-		const configuredMode = settings.get<string>('AI_Intelligent_Search_Mode');
-		if (configuredMode === 'hybrid' || configuredMode === 'keyword' || configuredMode === 'semantic') {
-			return configuredMode;
+	/**
+	 * The 0-100 balance is the whole retrieval control: 0 is keyword only, 100 is semantic only, anything
+	 * between fuses both. A per-request `searchType` pins an endpoint of that range without an admin change.
+	 */
+	private resolveSemanticWeight(searchType: IntelligentSearchType | undefined): number {
+		if (searchType === 'keyword') {
+			return 0;
 		}
 
-		return 'semantic';
-	}
-
-	private normalizeSearchType(searchType: IntelligentSearchType | undefined): IntelligentSearchType {
-		if (searchType === 'hybrid' || searchType === 'keyword' || searchType === 'semantic') {
-			return searchType;
+		if (searchType === 'semantic') {
+			return 100;
 		}
 
-		return this.getSearchMode();
-	}
-
-	private getHybridWeight(): number {
 		const configuredWeight = Number(settings.get<number>('AI_Intelligent_Search_Semantic_Weight'));
 		if (!Number.isFinite(configuredWeight)) {
 			return DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT;
@@ -200,15 +195,6 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		}
 
 		return Math.min(100, Math.max(0, Math.floor(configuredWeight)));
-	}
-
-	private getRecencyHalfLifeDays(): number {
-		const configuredHalfLife = Number(settings.get<number>('AI_Intelligent_Search_Recency_Half_Life_Days'));
-		if (!Number.isFinite(configuredHalfLife) || configuredHalfLife <= 0) {
-			return DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS;
-		}
-
-		return Math.floor(configuredHalfLife);
 	}
 
 	private async queryPipelineCandidates({
@@ -246,21 +232,20 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		classifications: string[],
 		pipelineFilters: IntelligentSearchPipelineFilters,
 		limit: number,
-		searchMode: IntelligentSearchType,
+		semanticWeight: number,
 	): Promise<FusedIntelligentSearchCandidate[]> {
 		const candidateLimit = this.getSearchCandidateLimit(limit);
 		const queryBranch = (sourceMode: 'semantic' | 'keyword') =>
 			this.queryPipelineCandidates({ query, config, classifications, pipelineFilters, limit: candidateLimit, sourceMode });
 
 		const minimumSimilarityPercent = Number(config.minimumSimilarityPercent || 0);
-		const semanticWeight = searchMode === 'hybrid' ? this.getHybridWeight() : undefined;
 
-		// a hybrid search collapses to a single retriever at the extremes of the balance slider
-		if (searchMode === 'keyword' || semanticWeight === 0) {
+		// at the extremes only one retriever is worth paying for, so the other is never requested
+		if (semanticWeight === 0) {
 			return toRankedCandidates(await queryBranch('keyword'));
 		}
 
-		if (searchMode === 'semantic' || semanticWeight === 100) {
+		if (semanticWeight === 100) {
 			return toRankedCandidates(filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent));
 		}
 
@@ -269,7 +254,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return fuseCandidatesWithWeightedRRF(
 			filterSemanticCandidatesByMinimumSimilarity(semanticCandidates, minimumSimilarityPercent),
 			keywordCandidates,
-			semanticWeight ?? DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT,
+			semanticWeight,
 			candidateLimit,
 		);
 	}
@@ -498,12 +483,12 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return [];
 		}
 
-		const requestedMode = this.normalizeSearchType(searchType);
-		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, requestedMode);
+		const semanticWeight = this.resolveSemanticWeight(searchType);
+		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, semanticWeight);
 		// relevance first, freshness second: the temporal boost only reorders what fusion already selected
 		const rerankedCandidates = applyTemporalRerank(candidates, {
 			recencyWeight: this.getRecencyWeight(),
-			halfLifeDays: this.getRecencyHalfLifeDays(),
+			halfLifeDays: DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS,
 		});
 
 		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit);
