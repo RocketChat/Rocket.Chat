@@ -43,10 +43,37 @@ describe('AI Search intelligent search helpers', () => {
 			);
 
 			expect(results).toEqual([
-				{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: 'metadata text', score: 0.89 },
-				{ _id: 'm2', rid: 'r2', msgId: 'm2', pipelineText: 'content text', score: 0.49 },
-				{ _id: 'm3', rid: 'r3', msgId: 'm3', pipelineText: 'document text', score: 0.88 },
-				{ _id: 'm4', rid: 'r4', msgId: 'm4', pipelineText: 'no numeric score' },
+				{
+					_id: 'm1',
+					rid: 'r1',
+					msgId: 'm1',
+					pipelineText: 'metadata text',
+					score: 0.89,
+					semanticSimilarity: 0.89,
+					semanticDistance: 0.11,
+					source: 'semantic',
+				},
+				{
+					_id: 'm2',
+					rid: 'r2',
+					msgId: 'm2',
+					pipelineText: 'content text',
+					score: 0.49,
+					semanticSimilarity: 0.49,
+					semanticDistance: 0.51,
+					source: 'semantic',
+				},
+				{
+					_id: 'm3',
+					rid: 'r3',
+					msgId: 'm3',
+					pipelineText: 'document text',
+					score: 0.88,
+					semanticSimilarity: 0.88,
+					semanticDistance: 0.12,
+					source: 'semantic',
+				},
+				{ _id: 'm4', rid: 'r4', msgId: 'm4', pipelineText: 'no numeric score', source: 'semantic' },
 			]);
 		});
 
@@ -58,7 +85,7 @@ describe('AI Search intelligent search helpers', () => {
 
 			expect(normalizeIntelligentSearchCandidates(rawResults, [], 10)).toHaveLength(2);
 			expect(normalizeIntelligentSearchCandidates(rawResults, ['allowed'], 10)).toEqual([
-				{ _id: 'm1', rid: 'allowed', msgId: 'm1', pipelineText: 'allowed' },
+				{ _id: 'm1', rid: 'allowed', msgId: 'm1', pipelineText: 'allowed', source: 'semantic' },
 			]);
 		});
 
@@ -69,7 +96,50 @@ describe('AI Search intelligent search helpers', () => {
 				1,
 			);
 
-			expect(results).toEqual([{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: '' }]);
+			expect(results).toEqual([{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: '', source: 'semantic' }]);
+		});
+
+		it('optionally marks the semantic source for caller-provided source input', () => {
+			expect(
+				normalizeIntelligentSearchCandidates(
+					{ results: [{ metadata: { room_id: 'r1', msg_id: 'm1' }, text: 'keyword match', score: 0.42 }] },
+					['r1'],
+					10,
+					undefined,
+					'keyword',
+				),
+			).toEqual([
+				{
+					_id: 'm1',
+					rid: 'r1',
+					msgId: 'm1',
+					pipelineText: 'keyword match',
+					score: 0.58,
+					semanticSimilarity: 0.58,
+					semanticDistance: 0.42,
+					source: 'keyword',
+				},
+			]);
+		});
+	});
+
+	describe('candidate timestamps', () => {
+		it('carries the pipeline timestamp through for the temporal rerank stage', () => {
+			const [withMetadataTs, withResultTs, withoutTs] = normalizeIntelligentSearchCandidates(
+				{
+					results: [
+						{ metadata: { room_id: 'r1', msg_id: 'm1', timestamp: '2026-01-05T12:00:00.000Z' } },
+						{ metadata: { room_id: 'r2', msg_id: 'm2' }, timestamp: '2026-02-05T12:00:00.000Z' },
+						{ metadata: { room_id: 'r3', msg_id: 'm3' } },
+					],
+				},
+				[],
+				10,
+			);
+
+			expect(withMetadataTs.ts).toBe('2026-01-05T12:00:00.000Z');
+			expect(withResultTs.ts).toBe('2026-02-05T12:00:00.000Z');
+			expect(withoutTs).not.toHaveProperty('ts');
 		});
 	});
 
@@ -163,6 +233,49 @@ describe('AI Search intelligent search helpers', () => {
 				params: {
 					k: 8,
 					threshold: 0.39,
+				},
+			});
+		});
+
+		it('requests keyword mode and omits threshold when semantic filtering is not applicable', async () => {
+			let requestBody = '';
+			const fetch: AIServiceFetch = async (_url, options) => {
+				requestBody = String(options.body);
+
+				return {
+					ok: true,
+					status: 200,
+					json: async () => ({ results: [] }),
+					text: async () => '',
+				};
+			};
+
+			await searchIntelligentPipeline({
+				query: 'service health',
+				config: {
+					baseUrl: 'https://pipeline.example.com/',
+					pipelineId: 'workspace',
+					apiKey: 'key',
+					apiKeySecret: 'secret',
+					minimumSimilarityPercent: 70,
+				},
+				classifications: ['user'],
+				pipelineFilters: { room_id: { $in: ['r1'] } },
+				limit: 5,
+				fetch,
+				mode: 'keyword',
+			});
+
+			expect(JSON.parse(requestBody)).toEqual({
+				query: 'service health',
+				type: 'search',
+				classification: {
+					classifications: ['user'],
+					search_type: 1,
+				},
+				filters: { room_id: { $in: ['r1'] } },
+				params: {
+					k: 5,
 				},
 			});
 		});

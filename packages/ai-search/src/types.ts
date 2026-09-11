@@ -50,6 +50,36 @@ export type IntelligentSearchPipelineConfig = {
 	minimumSimilarityPercent?: number;
 };
 
+export type IntelligentSearchType = 'semantic' | 'keyword' | 'hybrid';
+
+export type IntelligentSearchCandidateSource = 'semantic' | 'keyword';
+
+export type IntelligentSearchCandidate = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	pipelineText: string;
+	score?: number;
+	semanticSimilarity?: number;
+	semanticDistance?: number;
+	source?: IntelligentSearchCandidateSource;
+	/** message timestamp reported by the pipeline, used by the temporal rerank stage */
+	ts?: string;
+};
+
+export type FusedIntelligentSearchCandidate = IntelligentSearchCandidate & {
+	rrfScore: number;
+	semanticRank?: number;
+	fulltextRank?: number;
+};
+
+export type TemporalRerankOptions = {
+	/** 0 disables the boost, 100 gives the freshest candidate double the relevance score */
+	recencyWeight: number;
+	halfLifeDays: number;
+	now?: Date;
+};
+
 export type IntelligentSearchFilters = {
 	rid?: string;
 	rids?: string[];
@@ -62,14 +92,6 @@ export type IntelligentSearchFilters = {
 
 export type IntelligentSearchPipelineFilters = Record<string, unknown>;
 
-export type IntelligentSearchCandidate = {
-	_id: string;
-	rid?: string;
-	msgId?: string;
-	pipelineText: string;
-	score?: number;
-};
-
 export type IntelligentSearchPipelineRequest = {
 	query: string;
 	config: IntelligentSearchPipelineConfig;
@@ -78,4 +100,5 @@ export type IntelligentSearchPipelineRequest = {
 	limit: number;
 	fetch: AIServiceFetch;
 	logger?: AIServiceLogger;
+	mode?: IntelligentSearchType;
 };

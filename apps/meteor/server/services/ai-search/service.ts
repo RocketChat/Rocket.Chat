@@ -1,14 +1,27 @@
 import {
 	AI_LICENSE_MODULE,
 	AI_SEARCH_PAGE_SIZE,
+	applyTemporalRerank,
 	buildIntelligentSearchPipelineFilters,
+	DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS,
+	DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT,
+	filterSemanticCandidatesByMinimumSimilarity,
+	fuseCandidatesWithWeightedRRF,
 	generateOpenAICompatibleSearchAnswer,
+	INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER,
 	listOpenAICompatibleModels,
+	MAX_INTELLIGENT_SEARCH_CANDIDATES,
 	MAX_SEARCH_ANSWER_MESSAGES,
 	MAX_SEARCH_ANSWER_TEXT_LENGTH,
 	MAX_SEARCH_FILTER_VALUES,
+	MIN_INTELLIGENT_SEARCH_CANDIDATES,
 	normalizeIntelligentSearchCandidates,
+	toRankedCandidates,
+	type FusedIntelligentSearchCandidate,
+	type IntelligentSearchCandidate,
+	type IntelligentSearchType,
 	searchIntelligentPipeline,
+	type IntelligentSearchPipelineFilters,
 	type IntelligentSearchFilters,
 	type IntelligentSearchPipelineConfig,
 	type OpenAICompatibleProviderConfig,
@@ -154,6 +167,123 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
+	private getSearchMode(): IntelligentSearchType {
+		const configuredMode = settings.get<string>('AI_Intelligent_Search_Mode');
+		if (configuredMode === 'hybrid' || configuredMode === 'keyword' || configuredMode === 'semantic') {
+			return configuredMode;
+		}
+
+		return 'semantic';
+	}
+
+	private normalizeSearchType(searchType: IntelligentSearchType | undefined): IntelligentSearchType {
+		if (searchType === 'hybrid' || searchType === 'keyword' || searchType === 'semantic') {
+			return searchType;
+		}
+
+		return this.getSearchMode();
+	}
+
+	private getHybridWeight(): number {
+		const configuredWeight = Number(settings.get<number>('AI_Intelligent_Search_Semantic_Weight'));
+		if (!Number.isFinite(configuredWeight)) {
+			return DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT;
+		}
+
+		return Math.min(100, Math.max(0, Math.floor(configuredWeight)));
+	}
+
+	private getRecencyWeight(): number {
+		const configuredWeight = Number(settings.get<number>('AI_Intelligent_Search_Recency_Weight'));
+		if (!Number.isFinite(configuredWeight)) {
+			return 0;
+		}
+
+		return Math.min(100, Math.max(0, Math.floor(configuredWeight)));
+	}
+
+	private getRecencyHalfLifeDays(): number {
+		const configuredHalfLife = Number(settings.get<number>('AI_Intelligent_Search_Recency_Half_Life_Days'));
+		if (!Number.isFinite(configuredHalfLife) || configuredHalfLife <= 0) {
+			return DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS;
+		}
+
+		return Math.floor(configuredHalfLife);
+	}
+
+	private async queryPipelineCandidates({
+		query,
+		config,
+		classifications,
+		pipelineFilters,
+		limit,
+		sourceMode,
+	}: {
+		query: string;
+		config: IntelligentSearchPipelineConfig;
+		classifications: string[];
+		pipelineFilters: IntelligentSearchPipelineFilters;
+		limit: number;
+		sourceMode: 'semantic' | 'keyword';
+	}): Promise<IntelligentSearchCandidate[]> {
+		const raw = await searchIntelligentPipeline({
+			query,
+			config,
+			classifications,
+			pipelineFilters,
+			limit,
+			fetch: fetchWithSsrfValidation,
+			logger,
+			mode: sourceMode,
+		});
+
+		return normalizeIntelligentSearchCandidates(raw, [], limit, logger, sourceMode);
+	}
+
+	private async buildSearchCandidatesForMode(
+		query: string,
+		config: IntelligentSearchPipelineConfig,
+		classifications: string[],
+		pipelineFilters: IntelligentSearchPipelineFilters,
+		limit: number,
+		searchMode: IntelligentSearchType,
+	): Promise<FusedIntelligentSearchCandidate[]> {
+		const candidateLimit = this.getSearchCandidateLimit(limit);
+		const queryBranch = (sourceMode: 'semantic' | 'keyword') =>
+			this.queryPipelineCandidates({ query, config, classifications, pipelineFilters, limit: candidateLimit, sourceMode });
+
+		const minimumSimilarityPercent = Number(config.minimumSimilarityPercent || 0);
+		const semanticWeight = searchMode === 'hybrid' ? this.getHybridWeight() : undefined;
+
+		// a hybrid search collapses to a single retriever at the extremes of the balance slider
+		if (searchMode === 'keyword' || semanticWeight === 0) {
+			return toRankedCandidates(await queryBranch('keyword'));
+		}
+
+		if (searchMode === 'semantic' || semanticWeight === 100) {
+			return toRankedCandidates(filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent));
+		}
+
+		const [semanticCandidates, keywordCandidates] = await Promise.all([queryBranch('semantic'), queryBranch('keyword')]);
+
+		return fuseCandidatesWithWeightedRRF(
+			filterSemanticCandidatesByMinimumSimilarity(semanticCandidates, minimumSimilarityPercent),
+			keywordCandidates,
+			semanticWeight ?? DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT,
+			candidateLimit,
+		);
+	}
+
+	/**
+	 * Retrieval depth per branch. Deliberately larger than the requested page so that fusion has something
+	 * to fuse and so that permission filtering does not eat into the page. Not admin configurable.
+	 */
+	private getSearchCandidateLimit(requestedLimit: number): number {
+		const scaledLimit = Math.max(requestedLimit, AI_SEARCH_PAGE_SIZE) * INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER;
+
+		return Math.min(MAX_INTELLIGENT_SEARCH_CANDIDATES, Math.max(MIN_INTELLIGENT_SEARCH_CANDIDATES, scaledLimit));
+	}
+
 	async status(): Promise<AISearchStatus> {
 		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
 		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
@@ -217,13 +347,14 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	private async normalizeIntelligentResults(
-		rawSearchResults: unknown,
+		searchCandidates: IntelligentSearchCandidate[],
 		userId: string,
 		limit = AI_SEARCH_PAGE_SIZE,
 	): Promise<AISearchResult[]> {
-		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, [], limit, logger);
+		// the whole candidate pool is resolved, not just the first page: permission filtering below can
+		// drop any candidate, and pre-slicing here would silently return a short page
 		const msgIdSet = new Set<string>();
-		for (const { msgId } of candidates) {
+		for (const { msgId } of searchCandidates) {
 			if (msgId) {
 				msgIdSet.add(msgId);
 			}
@@ -249,7 +380,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		]);
 
 		const normalizedResults: AISearchResult[] = [];
-		for (const result of candidates) {
+		for (const result of searchCandidates) {
 			// candidates without a visible database message could surface stale pipeline text
 			const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
 			if (!dbMessage) {
@@ -315,11 +446,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		userId,
 		filters: rawFilters,
 		limit = AI_SEARCH_PAGE_SIZE,
+		searchType,
 	}: {
 		query: string;
 		userId: string;
 		filters?: AISearchFilters;
 		limit?: number;
+		searchType?: IntelligentSearchType;
 	}): Promise<AISearchResult[]> {
 		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
 		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
@@ -365,17 +498,15 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return [];
 		}
 
-		const json = await searchIntelligentPipeline({
-			query,
-			config,
-			classifications,
-			pipelineFilters,
-			limit,
-			fetch: fetchWithSsrfValidation,
-			logger,
+		const requestedMode = this.normalizeSearchType(searchType);
+		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, requestedMode);
+		// relevance first, freshness second: the temporal boost only reorders what fusion already selected
+		const rerankedCandidates = applyTemporalRerank(candidates, {
+			recencyWeight: this.getRecencyWeight(),
+			halfLifeDays: this.getRecencyHalfLifeDays(),
 		});
 
-		return this.normalizeIntelligentResults(json, userId, limit);
+		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit);
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {

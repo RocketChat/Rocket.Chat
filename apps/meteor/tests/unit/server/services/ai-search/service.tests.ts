@@ -71,6 +71,10 @@ const cursor = <T>(items: T[]): CursorResult<T> => ({
 
 const settings: Record<string, unknown> = {
 	AI_Intelligent_Search_Enabled: true,
+	AI_Intelligent_Search_Mode: 'semantic',
+	AI_Intelligent_Search_Semantic_Weight: 50,
+	AI_Intelligent_Search_Recency_Weight: 0,
+	AI_Intelligent_Search_Recency_Half_Life_Days: 30,
 	AI_Intelligent_Search_Pipeline_Base_URL: 'https://pipeline.example.com',
 	AI_Intelligent_Search_Pipeline_ID: 'workspace',
 	AI_Intelligent_Search_API_Key: 'key',
@@ -115,6 +119,7 @@ describe('AISearchService', () => {
 		Subscriptions.findByUserIdAndRoomIds.callsFake((_userId: string, roomIds: string[]) =>
 			cursor(roomIds.filter((roomId) => roomId === 'allowed' || roomId === 'room-general').map((rid) => ({ rid }))),
 		);
+		Subscriptions.findByUserId.callsFake(() => cursor([{ rid: 'allowed' }]));
 		Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
 			cursor(
 				msgIds.map((msgId) => ({
@@ -196,7 +201,8 @@ describe('AISearchService', () => {
 
 			const [, options] = serverFetch.firstCall.args;
 			const body = JSON.parse(options.body);
-			expect(body.params.k).to.equal(5);
+			// the retriever is asked for a candidate pool, not the requested page
+			expect(body.params.k).to.equal(50);
 			expect(body.filters).to.deep.equal({
 				room_id: { $in: subscribedRoomIds },
 			});
@@ -214,6 +220,245 @@ describe('AISearchService', () => {
 					projection: { rid: 1, status: 1 },
 				}),
 			).to.be.true;
+		});
+
+		it('uses explicit searchType keyword when requested', async () => {
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, text: 'keyword pipeline text', score: 0.77 }],
+				}),
+				text: async () => '',
+			});
+
+			await createService().search({
+				query: 'fruit',
+				userId: 'user-id',
+				limit: 5,
+				searchType: 'keyword',
+			});
+
+			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
+			expect(requestBody.type).to.equal('search');
+			expect(requestBody.classification).to.deep.equal({ classifications: ['user', 'admin'], search_type: 1 });
+			expect(requestBody.params).to.not.have.property('threshold');
+		});
+
+		it('falls back to keyword path when hybrid semantic weight is 0', async () => {
+			cachedSettings.get.callsFake((key: string) => {
+				if (key === 'AI_Intelligent_Search_Semantic_Weight') {
+					return 0;
+				}
+				if (key === 'AI_Intelligent_Search_Mode') {
+					return 'hybrid';
+				}
+
+				return settings[key];
+			});
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'keyword-msg' }, text: 'keyword text', score: 0.9 }],
+				}),
+				text: async () => '',
+			});
+
+			await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid' });
+
+			expect(serverFetch.callCount).to.equal(1);
+			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
+			expect(requestBody.type).to.equal('search');
+		});
+
+		it('falls back to semantic path when hybrid semantic weight is 100', async () => {
+			cachedSettings.get.callsFake((key: string) => {
+				if (key === 'AI_Intelligent_Search_Semantic_Weight') {
+					return 100;
+				}
+				if (key === 'AI_Intelligent_Search_Mode') {
+					return 'hybrid';
+				}
+
+				return settings[key];
+			});
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'semantic-msg' }, text: 'semantic text', score: 0.88 }],
+				}),
+				text: async () => '',
+			});
+
+			await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid' });
+
+			expect(serverFetch.callCount).to.equal(1);
+			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
+			expect(requestBody.type).to.equal('similarity');
+			expect(requestBody.params).to.have.property('threshold');
+		});
+
+		it('uses weighted hybrid with semantic threshold filtering only on semantic branch', async () => {
+			cachedSettings.get.callsFake((key: string) =>
+				key === 'AI_Intelligent_Search_Mode' || key === 'AI_Intelligent_Search_Semantic_Weight' ? settings[key] : settings[key],
+			);
+
+			serverFetch.reset();
+			serverFetch
+				.onCall(0)
+				.resolves({
+					ok: true,
+					status: 200,
+					json: async () => ({
+						results: [
+							{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, text: 'semantic good', score: 0.2 },
+							{ metadata: { room_id: 'allowed', msg_id: 'filtered-msg' }, text: 'semantic filtered', score: 0.49 },
+						],
+					}),
+					text: async () => '',
+				})
+				.onCall(1)
+				.resolves({
+					ok: true,
+					status: 200,
+					json: async () => ({
+						results: [{ metadata: { room_id: 'allowed', msg_id: 'keyword-msg' }, text: 'keyword text', score: 0.4 }],
+					}),
+					text: async () => '',
+				});
+
+			const results = await createService().search({
+				query: 'fruit',
+				userId: 'user-id',
+				searchType: 'hybrid',
+				limit: 5,
+			});
+
+			expect(serverFetch.callCount).to.equal(2);
+			expect(results).to.deep.equal([
+				{
+					_id: 'allowed-msg',
+					rid: 'allowed',
+					msgId: 'allowed-msg',
+					text: 'allowed-msg from db',
+					ts: '2026-01-05T12:00:00.000Z',
+					u: { username: 'alice', name: 'Alice' },
+					score: 0.8,
+					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
+				},
+				{
+					_id: 'keyword-msg',
+					rid: 'allowed',
+					msgId: 'keyword-msg',
+					text: 'keyword-msg from db',
+					ts: '2026-01-05T12:00:00.000Z',
+					u: { username: 'alice', name: 'Alice' },
+					score: 0.6,
+					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
+				},
+			]);
+		});
+
+		it('scales the candidate pool with the requested page and caps it', async () => {
+			serverFetch.resolves({ ok: true, status: 200, json: async () => ({ results: [] }), text: async () => '' });
+
+			const service = createService();
+			await service.search({ query: 'fruit', userId: 'user-id', limit: 20 });
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(60);
+
+			await service.search({ query: 'fruit', userId: 'user-id', limit: 50 });
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(100);
+		});
+
+		it('keeps a full page of hybrid results when fusion candidates are not visible', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Mode' ? 'hybrid' : settings[key]));
+			// only the last two candidates resolve to a visible message
+			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
+				cursor(
+					msgIds
+						.filter((msgId) => msgId === 'visible-a' || msgId === 'visible-b')
+						.map((msgId) => ({
+							_id: msgId,
+							rid: 'allowed',
+							msg: `${msgId} from db`,
+							ts: new Date('2026-01-05T12:00:00.000Z'),
+							u: { username: 'alice', name: 'Alice' },
+						})),
+				),
+			);
+			const semanticResults = [
+				{ metadata: { room_id: 'allowed', msg_id: 'hidden-1' }, score: 0.2 },
+				{ metadata: { room_id: 'allowed', msg_id: 'hidden-2' }, score: 0.25 },
+				{ metadata: { room_id: 'allowed', msg_id: 'visible-a' }, score: 0.3 },
+			];
+			const keywordResults = [{ metadata: { room_id: 'allowed', msg_id: 'visible-b' }, score: 0.4 }];
+			serverFetch.reset();
+			serverFetch
+				.onCall(0)
+				.resolves({ ok: true, status: 200, json: async () => ({ results: semanticResults }), text: async () => '' })
+				.onCall(1)
+				.resolves({ ok: true, status: 200, json: async () => ({ results: keywordResults }), text: async () => '' });
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', searchType: 'hybrid', limit: 2 });
+
+			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['visible-b', 'visible-a']);
+		});
+
+		it('promotes fresher messages once the recency boost is enabled', async () => {
+			const timestamps: Record<string, string> = {
+				stale: '2020-01-01T12:00:00.000Z',
+				fresh: new Date().toISOString(),
+			};
+			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
+				cursor(
+					msgIds.map((msgId) => ({
+						_id: msgId,
+						rid: 'allowed',
+						msg: `${msgId} from db`,
+						ts: new Date(timestamps[msgId]),
+						u: { username: 'alice', name: 'Alice' },
+					})),
+				),
+			);
+			const pipelineResults = {
+				results: [
+					{ metadata: { room_id: 'allowed', msg_id: 'stale', timestamp: timestamps.stale }, score: 0.2 },
+					{ metadata: { room_id: 'allowed', msg_id: 'fresh', timestamp: timestamps.fresh }, score: 0.21 },
+				],
+			};
+			serverFetch.resolves({ ok: true, status: 200, json: async () => pipelineResults, text: async () => '' });
+
+			const withoutBoost = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			expect(withoutBoost.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['stale', 'fresh']);
+
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Recency_Weight' ? 100 : settings[key]));
+			const withBoost = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			expect(withBoost.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['fresh', 'stale']);
+		});
+
+		it('falls back to a sane half-life when the setting is not usable', async () => {
+			cachedSettings.get.callsFake((key: string) => {
+				if (key === 'AI_Intelligent_Search_Recency_Weight') {
+					return 50;
+				}
+				if (key === 'AI_Intelligent_Search_Recency_Half_Life_Days') {
+					return 0;
+				}
+
+				return settings[key];
+			});
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({ results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, score: 0.2 }] }),
+				text: async () => '',
+			});
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+
+			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['allowed-msg']);
 		});
 
 		it('resolves room-name filters before querying the pipeline', async () => {
