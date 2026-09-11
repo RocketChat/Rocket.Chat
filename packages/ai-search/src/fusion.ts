@@ -17,11 +17,8 @@ const clampPercent = (value: unknown): number => {
 
 const getCandidateId = (candidate: IntelligentSearchCandidate): string => candidate.msgId || candidate._id;
 
-/**
- * Drops semantic candidates whose similarity is below the configured guardrail. Keyword candidates are
- * never scored by the embedding model, so the guardrail deliberately does not apply to them: an exact
- * error code or ticket id must not be discarded because it is semantically unremarkable.
- */
+// Deliberately does not apply to keyword candidates: an exact error code or ticket id must not be
+// dropped for being semantically unremarkable.
 export const filterSemanticCandidatesByMinimumSimilarity = (
 	candidates: IntelligentSearchCandidate[],
 	minimumSimilarityPercent: number,
@@ -35,13 +32,8 @@ export const filterSemanticCandidatesByMinimumSimilarity = (
 	return candidates.filter((candidate) => candidate.semanticSimilarity === undefined || candidate.semanticSimilarity >= threshold);
 };
 
-/**
- * Weighted Reciprocal Rank Fusion.
- *
- * The two retrievers report scores on incompatible scales (the pipeline returns cosine *distance* for
- * semantic hits and a full-text rank for keyword hits), so fusion works on ranks only and the raw scores
- * never meet. `semanticWeight` is the admin-facing 0-100 balance: 0 is keyword-only, 100 semantic-only.
- */
+// Fuses on rank only: the retrievers report cosine distance and full-text rank respectively, so their
+// raw scores are not comparable and must never meet. `semanticWeight` is the 0-100 admin balance.
 export const fuseCandidatesWithWeightedRRF = (
 	semanticCandidates: IntelligentSearchCandidate[],
 	keywordCandidates: IntelligentSearchCandidate[],
@@ -74,7 +66,6 @@ export const fuseCandidatesWithWeightedRRF = (
 			}
 
 			fused.set(candidateId, {
-				// a candidate found by both retrievers keeps the semantic similarity for display
 				...existing,
 				...(branch === 'semantic' && {
 					score: candidate.score ?? existing.score,
@@ -107,10 +98,8 @@ export const fuseCandidatesWithWeightedRRF = (
 		.slice(0, limit);
 };
 
-/**
- * Turns an already relevance-ordered list into fused candidates so that every retrieval mode reaches the
- * temporal stage with a comparable rank-based score.
- */
+// Gives single-retriever results the same rank-based score as fusion, so every mode reaches the
+// temporal stage comparably scored.
 export const toRankedCandidates = (
 	candidates: IntelligentSearchCandidate[],
 	rrfConstant: number = INTELLIGENT_SEARCH_RRF_CONSTANT,
@@ -129,11 +118,9 @@ export const getRecencyDecay = (ageInDays: number, halfLifeDays: number): number
 	return 2 ** (-Math.max(0, ageInDays) / halfLifeDays);
 };
 
-/**
- * Multiplicative temporal boost applied after relevance fusion. A candidate posted right now scores
- * `1 + recencyWeight` times its relevance, decaying by half every `halfLifeDays`. Candidates without a
- * usable timestamp are left untouched rather than penalised, so a missing `ts` can never demote a hit.
- */
+// Multiplicative and bounded by `1 + recencyWeight`, so freshness reorders near-ties but cannot
+// overturn a real relevance gap. A missing or unparseable `ts` keeps the relevance score rather than
+// being penalised.
 export const applyTemporalRerank = (
 	candidates: FusedIntelligentSearchCandidate[],
 	{ recencyWeight, halfLifeDays, now = new Date() }: TemporalRerankOptions,

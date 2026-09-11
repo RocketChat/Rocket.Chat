@@ -122,8 +122,7 @@ describe('AI Search intelligent search helpers', () => {
 
 	describe('keyword candidate scores', () => {
 		it('never reports a full-text rank as a semantic similarity', () => {
-			// the pipeline reuses `score` for a full-text rank where higher is better, so reading it as a
-			// cosine distance would both invert the ordering and fabricate a confident similarity
+			// 0.2803 is the stronger lexical hit; read as a distance it would display as the weaker one
 			const [best, worst] = normalizeIntelligentSearchCandidates(
 				{
 					results: [

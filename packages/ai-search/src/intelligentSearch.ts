@@ -56,19 +56,16 @@ export const normalizeSimilarityPercent = (value: unknown): number => {
 export const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number =>
 	Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
-// pipeline contract (verified against the Intelligent Search API):
-// - `score`/`distance` are cosine *distances* - lower is better, in [0,1]
-// - `similarity` values are cosine *similarities* - higher is better, in [0,1]
-// Both are clamped to [0,1]; percentages are accepted for resilience against provider drift.
+// Pipeline contract, verified against a live pipeline: `score`/`distance` are cosine distances (lower is
+// better), `similarity` values are cosine similarities. Percentages are accepted for provider drift.
 const normalizePipelineScore = (value: number): number => {
 	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
 
 	return Math.min(1, Math.max(0, normalizedValue));
 };
 
-// Only the semantic retriever reports a cosine distance. The keyword retriever reuses the same `score`
-// field for a full-text rank, where *higher* is better, so interpreting it as a distance would invert it
-// and surface a confident-looking similarity for a weak lexical match.
+// The keyword retriever reuses `score` for a full-text rank where higher is better, so reading it as a
+// distance would invert it and fabricate a confident similarity.
 const extractPipelineSimilarityScores = (
 	result: Record<string, unknown>,
 	metadata: Record<string, unknown>,
@@ -170,8 +167,7 @@ export const normalizeIntelligentSearchCandidates = (
 		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
 		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
-			// branch-qualified: the index is per-retriever, so an unqualified fallback would make
-			// semantic result #0 and keyword result #0 fuse as if they were the same message
+			// source-qualified: the index is per-retriever, so a bare index would fuse unrelated candidates
 			_id: msgId || `intelligent-${source}-${index}`,
 			rid,
 			msgId,

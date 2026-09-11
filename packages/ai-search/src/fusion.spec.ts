@@ -100,8 +100,6 @@ describe('AI Search fusion helpers', () => {
 		});
 
 		it('does not fuse branch-local synthetic ids into a single candidate', () => {
-			// normalizeIntelligentSearchCandidates qualifies its fallback ids by source precisely so that
-			// these two unrelated messages cannot be mistaken for one agreed-upon hit
 			const semanticOnly = { _id: 'intelligent-semantic-0', rid: 'r1', pipelineText: 'a' };
 			const keywordOnly = { _id: 'intelligent-keyword-0', rid: 'r2', pipelineText: 'b' };
 

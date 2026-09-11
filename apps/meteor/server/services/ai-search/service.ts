@@ -167,12 +167,8 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
-	/**
-	 * The 0-100 balance is the whole retrieval control: 0 is keyword only, 100 is semantic only, anything
-	 * between fuses both. A per-request `searchType` pins an endpoint of that range without an admin
-	 * change; `hybrid` deliberately defers to the configured balance rather than forcing a mid value, so
-	 * a workspace pinned to one retriever stays pinned.
-	 */
+	// `hybrid` defers to the configured balance rather than forcing a mid value, so a workspace pinned to
+	// one retriever stays pinned.
 	private resolveSemanticWeight(searchType: IntelligentSearchType | undefined): number {
 		if (searchType === 'keyword') {
 			return 0;
@@ -242,7 +238,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const minimumSimilarityPercent = Number(config.minimumSimilarityPercent || 0);
 
-		// at the extremes only one retriever is worth paying for, so the other is never requested
+		// at the extremes the other retriever is never requested
 		if (semanticWeight === 0) {
 			return toRankedCandidates(await queryBranch('keyword'));
 		}
@@ -251,8 +247,8 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return toRankedCandidates(filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent));
 		}
 
-		// a retriever that throws must not take the other one down with it: a flaky keyword branch
-		// should degrade hybrid to semantic-only results rather than to an empty result set
+		// allSettled, not all: searchIntelligentPipeline rethrows on network failure and timeout, and one
+		// flaky branch must degrade hybrid to the survivor rather than to an empty result set
 		const [semanticResult, keywordResult] = await Promise.allSettled([queryBranch('semantic'), queryBranch('keyword')]);
 		const keywordCandidates = keywordResult.status === 'fulfilled' ? keywordResult.value : undefined;
 		const semanticCandidates =
@@ -279,10 +275,8 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return fuseCandidatesWithWeightedRRF(semanticCandidates, keywordCandidates, semanticWeight, candidateLimit);
 	}
 
-	/**
-	 * Retrieval depth per branch. Deliberately larger than the requested page so that fusion has something
-	 * to fuse and so that permission filtering does not eat into the page. Not admin configurable.
-	 */
+	// Larger than the requested page so fusion has overlap to work with and permission filtering below
+	// cannot eat into the page.
 	private getSearchCandidateLimit(requestedLimit: number): number {
 		const scaledLimit = Math.max(requestedLimit, AI_SEARCH_PAGE_SIZE) * INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER;
 
@@ -356,8 +350,8 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		userId: string,
 		limit = AI_SEARCH_PAGE_SIZE,
 	): Promise<AISearchResult[]> {
-		// the whole candidate pool is resolved, not just the first page: permission filtering below can
-		// drop any candidate, and pre-slicing here would silently return a short page
+		// the whole pool is resolved, not just the first page: pre-slicing here returns short pages once
+		// permission filtering below drops a candidate
 		const msgIdSet = new Set<string>();
 		for (const { msgId } of searchCandidates) {
 			if (msgId) {
@@ -505,7 +499,6 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const semanticWeight = this.resolveSemanticWeight(searchType);
 		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, semanticWeight);
-		// relevance first, freshness second: the temporal boost only reorders what fusion already selected
 		const rerankedCandidates = applyTemporalRerank(candidates, {
 			recencyWeight: this.getRecencyWeight(),
 			halfLifeDays: DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS,

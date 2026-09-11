@@ -59,16 +59,11 @@ export type IntelligentSearchCandidate = {
 	rid?: string;
 	msgId?: string;
 	pipelineText: string;
-	/**
-	 * Normalized cosine similarity, set only for semantic candidates. Keyword candidates deliberately
-	 * carry no score: the pipeline reports their full-text rank in the same field, and it is not a
-	 * similarity, so there is no honest value to show.
-	 */
+	/** Normalized cosine similarity. Unset for keyword candidates, which have no comparable score. */
 	score?: number;
 	semanticSimilarity?: number;
 	semanticDistance?: number;
 	source?: IntelligentSearchCandidateSource;
-	/** message timestamp reported by the pipeline, used by the temporal rerank stage */
 	ts?: string;
 };
 
@@ -79,7 +74,7 @@ export type FusedIntelligentSearchCandidate = IntelligentSearchCandidate & {
 };
 
 export type TemporalRerankOptions = {
-	/** 0 disables the boost, 100 gives the freshest candidate double the relevance score */
+	/** 0 disables the boost, 100 doubles the freshest candidate's score */
 	recencyWeight: number;
 	halfLifeDays: number;
 	now?: Date;
