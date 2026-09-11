@@ -52,7 +52,7 @@ const successSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const isServerManaged = (): boolean => settings.get<string>('Outlook_Calendar_Mode') === 'server';
+const isServerManaged = (): boolean => settings.get<string>('Exchange_Mode') === 'server';
 
 API.v1.get(
 	'calendar-events.list',
