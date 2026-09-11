@@ -2782,7 +2782,7 @@
   "Exchange_Sync_Provider_Description": "Exchange Online uses Microsoft Graph. Exchange on-premises uses EWS. Each deployment supports only one of them, so this is set by an administrator and never detected automatically.",
   "Exchange_Sync_Provider_EWS": "Exchange on-premises (EWS)",
   "Exchange_Sync_Provider_Graph": "Exchange Online (Microsoft Graph)",
-  "Exclude_Botnames": "Exclude bots",
+  "Exclude_Botnames": "Exclude Bots",
   "Exclude_Botnames_Description": "Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.",
   "Exclude_pinned": "Exclude pinned messages",
   "Execute_Synchronization_Now": "Execute synchronization now",
