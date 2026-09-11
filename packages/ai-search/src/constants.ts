@@ -6,10 +6,11 @@ export const AI_SEARCH_FILTER_SUGGESTION_LIMIT = 5;
 export const AI_SEARCH_ROOM_LOOKUP_LIMIT = 20;
 export const MAX_INTELLIGENT_SEARCH_RESULTS = 50;
 // Per-retriever candidate pool. Internal, and sized on a measured quality/latency frontier rather than
-// quality alone - see docs/features/ai-search-hybrid-benchmark.md before changing these.
+// quality alone. The cap must stay above MAX_INTELLIGENT_SEARCH_RESULTS, otherwise the largest page
+// over-fetches nothing and permission filtering can return a short page.
 export const INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER = 3;
 export const MIN_INTELLIGENT_SEARCH_CANDIDATES = 20;
-export const MAX_INTELLIGENT_SEARCH_CANDIDATES = 50;
+export const MAX_INTELLIGENT_SEARCH_CANDIDATES = 100;
 export const INTELLIGENT_SEARCH_RRF_CONSTANT = 60;
 export const DEFAULT_INTELLIGENT_SEARCH_SEMANTIC_WEIGHT = 50;
 export const DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS = 30;

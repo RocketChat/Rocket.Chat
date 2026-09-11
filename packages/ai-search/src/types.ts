@@ -100,5 +100,6 @@ export type IntelligentSearchPipelineRequest = {
 	limit: number;
 	fetch: AIServiceFetch;
 	logger?: AIServiceLogger;
-	mode?: IntelligentSearchType;
+	/** a single request targets one retriever; `hybrid` is resolved before reaching this layer */
+	mode?: IntelligentSearchCandidateSource;
 };

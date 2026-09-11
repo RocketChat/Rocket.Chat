@@ -341,8 +341,9 @@ describe('AISearchService', () => {
 			await service.search({ query: 'fruit', userId: 'user-id', limit: 9 });
 			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(27);
 
+			// the cap stays above the largest page so permission filtering cannot shorten it
 			await service.search({ query: 'fruit', userId: 'user-id', limit: 50 });
-			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(50);
+			expect(JSON.parse(serverFetch.lastCall.args[1].body).params.k).to.equal(100);
 		});
 
 		it('keeps a full page of hybrid results when fusion candidates are not visible', async () => {
