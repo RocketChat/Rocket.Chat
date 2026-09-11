@@ -165,33 +165,31 @@ export class SAMLUtils {
 			return {};
 		}
 
-		let decodedState = relayState;
-		try {
-			if (decodedState.includes('%3D') || decodedState.includes('%26')) {
-				decodedState = decodeURIComponent(decodedState);
-			}
-		} catch (err) {
-			this.log({ msg: 'Failed to decode relay state', err });
-		}
+		// CASE 1: relayState is a simple string, which is the provider name
 
-		// If the relay state contains a loginClient, it will be in the format of a query string, so we need to parse it
-		// relayState.startsWith('provider=') deliberately because of how Identity Providers handle RelayState parameters during multi-step MFA flows
-		// relied on provider= being at index 0 of the string. During multi-step MFA, IdPs frequently modify the RelayState string in ways that break startsWith:
-		// - Okta adds a prefix to the RelayState string, so it no longer starts with provider=
-		// - Azure AD adds a suffix to the RelayState string, so it no longer starts with provider=
-		// - PingFederate adds a prefix to the RelayState string, so it no longer starts with provider=
-		// Not AI generated: The following check is a workaround to handle these cases by checking for the presence of &loginClient= in the decodedState string, which indicates that the relay state contains a loginClient parameter.
-		if (decodedState.includes('&loginClient=')) {
-			const params = new URLSearchParams(decodedState);
-
-			// If the provider is not present in the relay state, we will use the decodedState as the provider value
-			// provider is not omitted from extraction, it is parsed dynamically using URLSearchParams:
+		if (relayState.includes('loginClient=') || relayState.includes('provider=')) {
+			const params = new URLSearchParams(relayState);
 			const provider = params.get('provider') ?? undefined;
-			const loginClient = params.get('loginClient');
-			return {
-				provider: provider || decodedState,
-				loginClient: this.isSupportedLoginClient(loginClient) ? loginClient : undefined,
-			};
+			const loginClient = params.get('loginClient') ?? undefined;
+			if (provider && this.isSupportedLoginClient(loginClient)) {
+				return { provider, loginClient };
+			}
+		}
+		// CASE 2: relayState is a query string, which contains the provider name and the loginClient
+
+		if (!relayState.includes('&') && !relayState.includes('=') && relayState.includes('%')) {
+			try {
+				const decoded = decodeURIComponent(relayState);
+				const params = new URLSearchParams(decoded);
+				const provider = params.get('provider') ?? undefined;
+				const loginClient = params.get('loginClient') ?? undefined;
+				if (provider && this.isSupportedLoginClient(loginClient)) {
+					return { provider, loginClient };
+				}
+			} catch (err) {
+				// Fallback to treating as plain provider string below
+				this.log({ msg: 'Failed to decode relay state', err });
+			}
 		}
 
 		return { provider: relayState };
