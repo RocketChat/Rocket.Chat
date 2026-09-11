@@ -144,14 +144,14 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		popup.clear();
 
-		await onSend?.({
+		void onSend?.({
 			value: text,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
+		}).then(() => {
+			flushDraft(chat.composer?.text ?? '');
 		});
-
-		flushDraft(chat.composer?.text ?? '');
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
