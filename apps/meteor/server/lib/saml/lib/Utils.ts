@@ -245,7 +245,7 @@ export class SAMLUtils {
 		// CASE 2: The IdP URL-encoded the complete RelayState.
 		// Example:
 		// 'provider%3Dtest-sp%26loginClient%3Dmobile'
-		if (relayState.includes('%3D') || relayState.includes('%3d') && !relayState.includes('&')) {
+		if ((relayState.includes('%3D') || relayState.includes('%3d')) && !relayState.includes('&')) {
 			try {
 				const decoded = decodeURIComponent(relayState);
 				const params = new URLSearchParams(decoded);
