@@ -1,5 +1,5 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -122,8 +122,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
 				const methodName = `loginWith${capitalizeService(service, true)}`;
 				const method = (Meteor as any)[methodName] as
-					| ((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void)
-					| undefined;
+					((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void) | undefined;
 				if (!method) {
 					return;
 				}

@@ -14,6 +14,7 @@ import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from '../../oauth/passportOAuthCallback';
+import { removeOAuthRoutes } from '../../oauth/removeOAuthRoutes';
 
 new AppleCustomOAuth('apple', config);
 
@@ -52,6 +53,7 @@ settings.watchMultiple(
 	],
 	async ([enabled, clientId, serverSecret, iss, kid, useModernFlow]) => {
 		passport.unuse('apple');
+		removeOAuthRoutes('apple');
 
 		if (!useModernFlow) {
 			return;

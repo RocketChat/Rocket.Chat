@@ -17,12 +17,10 @@ export const useUsersData = ({ filter }: useUsersDataProps) => {
 			const users = await getUsers({
 				selector: JSON.stringify({ term: filter }),
 			});
-			const options = users.items.map(
-				(item): UserAutoCompleteOptionType => ({
-					value: item.username,
-					label: item.name || item.username,
-				}),
-			);
+			const options = users.items.map((item): UserAutoCompleteOptionType => ({
+				value: item.username,
+				label: item.name || item.username,
+			}));
 
 			return options || [];
 		},

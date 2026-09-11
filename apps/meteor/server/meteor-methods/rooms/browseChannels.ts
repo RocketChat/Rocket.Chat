@@ -2,8 +2,7 @@ import { Team } from '@rocket.chat/core-services';
 import type { IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
@@ -98,10 +97,11 @@ const getChannelsAndGroups = async (
 
 	const teamIds = result.map(({ teamId }) => teamId).filter(isTruthy);
 	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
+	const teamsById = new Map(teamsMains.map((team) => [team._id, team]));
 
 	const results = result.map((room) => {
 		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			const team = teamsById.get(room.teamId);
 			if (team) {
 				return { ...room, belongsTo: team.name };
 			}
@@ -348,7 +348,7 @@ export const browseChannelsMethod = async (
 Meteor.methods<ServerMethods>({
 	async browseChannels(params: BrowseChannelsParams) {
 		methodDeprecationLogger.method('browseChannels', '9.0.0', '/v1/directory');
-		return browseChannelsMethod(params, (await Meteor.userAsync()) as IUser | null);
+		return browseChannelsMethod(params, await Meteor.userAsync());
 	},
 });
 

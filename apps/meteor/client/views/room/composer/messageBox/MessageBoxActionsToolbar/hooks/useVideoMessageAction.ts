@@ -3,7 +3,7 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
-import { VideoRecorder } from '../../../../../../../app/ui/client/lib/recorderjs/videoRecorder';
+import { VideoRecorder } from '../../../../../../lib/videoRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';
@@ -19,13 +19,13 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		() =>
 			Boolean(
 				!isPermissionDenied &&
-					navigator.mediaDevices &&
-					window.MediaRecorder &&
-					isFileUploadEnabled &&
-					isVideoRecorderEnabled &&
-					!fileUploadMediaTypeBlackList?.match(/video\/webm|video\/\*/i) &&
-					(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/video\/webm|video\/\*/i)) &&
-					Boolean(VideoRecorder.getSupportedMimeTypes()),
+				navigator.mediaDevices &&
+				window.MediaRecorder &&
+				isFileUploadEnabled &&
+				isVideoRecorderEnabled &&
+				!fileUploadMediaTypeBlackList?.match(/video\/webm|video\/\*/i) &&
+				(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/video\/webm|video\/\*/i)) &&
+				Boolean(VideoRecorder.getSupportedMimeTypes()),
 			),
 		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isFileUploadEnabled, isPermissionDenied, isVideoRecorderEnabled],
 	);

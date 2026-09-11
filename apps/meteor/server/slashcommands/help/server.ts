@@ -58,8 +58,8 @@ slashCommands.add({
 		let msg = '';
 		keys.forEach((key) => {
 			msg = `${msg}\n${i18n.t(key.key, {
-				postProcess: 'sprintf',
-				sprintf: [key.command],
+				interpolation: { escapeValue: false },
+				shortcut: key.command,
 				lng: user?.language || settings.get('language') || 'en',
 			})}`;
 		});

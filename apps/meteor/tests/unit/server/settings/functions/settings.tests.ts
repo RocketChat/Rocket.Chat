@@ -4,6 +4,7 @@ import { beforeEach, describe, it } from 'mocha';
 import { CachedSettings } from '../../../../../server/settings/CachedSettings';
 import { SettingsRegistry } from '../../../../../server/settings/SettingsRegistry';
 import { getSettingDefaults } from '../../../../../server/settings/functions/getSettingDefaults';
+import { getSettingSchemaValidator, registerSettingSchema } from '../../../../../server/settings/functions/settingSchemas';
 import { Settings } from '../../../../../server/settings/functions/settings.mocks';
 
 const testSetting = getSettingDefaults({
@@ -81,6 +82,28 @@ describe('Settings', () => {
 
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
+	});
+
+	it('should keep the schema option in memory instead of persisting it', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('group', async function () {
+			await this.add('my_json_setting', ' ', {
+				type: 'code',
+				code: 'application/json',
+				schema: { type: 'object' },
+			});
+		});
+
+		expect(Settings.findOne({ _id: 'my_json_setting' })).to.not.have.property('schema');
+		expect(getSettingSchemaValidator('my_json_setting')).to.be.a('function');
+	});
+
+	it('should throw at registration when the schema does not compile', () => {
+		expect(() => registerSettingSchema('my_broken_setting', { type: 'not-a-type' })).to.throw();
 	});
 
 	it('should respect override via environment as int', async () => {

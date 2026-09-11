@@ -1,12 +1,16 @@
 import type { IAppServerOrchestrator, IAppUploadsConverter, IAppsUpload } from '@rocket.chat/apps';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
+import * as z from 'zod';
 
-import { transformMappedData } from './transformMappedData';
+import { createUploadsCodec } from './codecs/uploads';
 
 export class AppUploadsConverter implements IAppUploadsConverter {
+	private readonly codec: ReturnType<typeof createUploadsCodec>;
+
 	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
+		this.codec = createUploadsCodec(orch);
 	}
 
 	async convertById(id: string): Promise<IAppsUpload | undefined> {
@@ -26,54 +30,7 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 			return undefined;
 		}
 
-		const map = {
-			id: '_id',
-			name: 'name',
-			size: 'size',
-			type: 'type',
-			store: 'store',
-			description: 'description',
-			complete: 'complete',
-			uploading: 'uploading',
-			extension: 'extension',
-			progress: 'progress',
-			etag: 'etag',
-			path: 'path',
-			token: 'token',
-			url: 'url',
-			updatedAt: '_updatedAt',
-			uploadedAt: 'uploadedAt',
-			room: async (upload: IUpload) => {
-				if (!upload.rid) {
-					return undefined;
-				}
-
-				const result = await this.orch.getConverters().get('rooms').convertById(upload.rid);
-				delete (upload as { rid?: string }).rid;
-				return result;
-			},
-			user: async (upload: IUpload) => {
-				if (!upload.userId) {
-					return undefined;
-				}
-
-				const result = await this.orch.getConverters().get('users').convertById(upload.userId);
-				delete (upload as { userId?: string }).userId;
-				return result;
-			},
-			visitor: async (upload: IUpload) => {
-				const { visitorToken } = upload as { visitorToken?: string };
-				if (!visitorToken) {
-					return undefined;
-				}
-
-				const result = await this.orch.getConverters().get('visitors').convertByToken(visitorToken);
-				delete (upload as { visitorToken?: string }).visitorToken;
-				return result;
-			},
-		} as const;
-
-		return transformMappedData(upload, map) as unknown as Promise<IAppsUpload>;
+		return z.decodeAsync(this.codec, upload);
 	}
 
 	convertToRocketChat(upload: undefined | null): undefined;
@@ -87,34 +44,6 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 			return undefined;
 		}
 
-		const { id: userId } = upload.user || {};
-		const { token: visitorToken } = upload.visitor || {};
-		const { id: rid } = upload.room || {};
-
-		const newUpload = {
-			_id: upload.id,
-			name: upload.name,
-			size: upload.size,
-			type: upload.type,
-			extension: upload.extension,
-			description: (upload as { description?: string }).description,
-			store: upload.store,
-			etag: upload.etag,
-			complete: upload.complete,
-			uploading: upload.uploading,
-			progress: upload.progress,
-			token: upload.token,
-			url: upload.url,
-			_updatedAt: upload.updatedAt,
-			uploadedAt: upload.uploadedAt,
-			rid,
-			userId,
-			visitorToken,
-		};
-
-		return Object.assign(
-			newUpload,
-			(upload as { _unmappedProperties_?: Record<string, unknown> })._unmappedProperties_,
-		) as unknown as IUpload;
+		return z.encode(this.codec, upload);
 	}
 }

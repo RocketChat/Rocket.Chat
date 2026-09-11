@@ -1,10 +1,11 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
 	ExternalLink,
 	ContextualbarHeader,
+	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,

@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import Chart from './Chart';
 import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
-import { drawLineChart, resetChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import { drawLineChart, resetChart } from '../../chartHandler';
 
 const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefined, t: TFunction) =>
 	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {

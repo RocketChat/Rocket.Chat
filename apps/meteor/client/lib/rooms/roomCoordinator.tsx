@@ -1,7 +1,6 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../app/authorization/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -18,6 +17,7 @@ import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
 import { absoluteUrl } from '../absoluteUrl';
 import { appLayout } from '../appLayout';
+import { hasPermission } from '../authorization';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {

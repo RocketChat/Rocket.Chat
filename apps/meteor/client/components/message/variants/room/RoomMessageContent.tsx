@@ -57,7 +57,12 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</MessageBody>
 			)}
 
-			{!!quotes?.length && <Attachments attachments={quotes} />}
+			{!!quotes?.length && (
+				<Attachments
+					attachments={quotes}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>

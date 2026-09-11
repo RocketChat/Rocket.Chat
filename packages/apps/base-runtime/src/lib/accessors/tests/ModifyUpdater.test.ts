@@ -42,7 +42,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doGetById',
-				params: ['123', 'deno-test'],
+				params: ['123', 'APP_ID'],
 			},
 		]);
 
@@ -61,7 +61,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doUpdate',
-				params: [{ id: '123', ...(messageBuilder as any).getChanges() }, 'deno-test'],
+				params: [{ id: '123', ...(messageBuilder as any).getChanges() }, 'APP_ID'],
 			},
 		]);
 
@@ -76,7 +76,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doGetById',
-				params: ['123', 'deno-test'],
+				params: ['123', 'APP_ID'],
 			},
 		]);
 
@@ -98,36 +98,54 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doUpdate',
-				params: [{ id: '123', ...roomBuilder.getChanges() }, roomBuilder.getMembersToBeAddedUsernames(), 'deno-test'],
+				params: [{ id: '123', ...roomBuilder.getChanges() }, roomBuilder.getMembersToBeAddedUsernames(), 'APP_ID'],
 			},
 		]);
 	});
 
 	it('correctly formats requests to UserUpdater methods', async () => {
-		const result = (await modifyUpdater.getUserUpdater().updateStatusText({ id: '123' } as IUser, 'Hello World')) as any;
+		const _spy = mock.method(modifyUpdater, 'senderFn' as any);
 
-		assert.deepStrictEqual(result, {
-			method: 'accessor:getModifier:getUpdater:getUserUpdater:updateStatusText',
-			params: [{ id: '123' }, 'Hello World'],
-		});
+		await modifyUpdater.getUserUpdater().updateStatusText({ id: '123' } as IUser, 'Hello World');
+
+		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
+			{
+				method: 'bridges:getUserBridge:doUpdate',
+				params: [{ id: '123' }, { statusText: 'Hello World' }, 'APP_ID'],
+			},
+		]);
+
+		_spy.mock.restore();
 	});
 
 	it('correctly formats requests to LivechatUpdater methods', async () => {
-		const result = (await modifyUpdater.getLivechatUpdater().closeRoom({ id: '123' } as IRoom, 'close it!')) as any;
+		const _spy = mock.method(modifyUpdater, 'senderFn' as any);
 
-		assert.deepStrictEqual(result, {
-			method: 'accessor:getModifier:getUpdater:getLivechatUpdater:closeRoom',
-			params: [{ id: '123' }, 'close it!'],
-		});
+		await modifyUpdater.getLivechatUpdater().closeRoom({ id: '123' } as IRoom, 'close it!');
+
+		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
+			{
+				method: 'bridges:getLivechatBridge:doCloseRoom',
+				params: [{ id: '123' }, 'close it!', undefined, 'APP_ID'],
+			},
+		]);
+
+		_spy.mock.restore();
 	});
 
 	it('correctly formats requests to MessageUpdater methods', async () => {
-		const result = (await modifyUpdater.getMessageUpdater().addReaction('message-id', 'user-id', ':smile:')) as any;
+		const _spy = mock.method(modifyUpdater, 'senderFn' as any);
 
-		assert.deepStrictEqual(result, {
-			method: 'accessor:getModifier:getUpdater:getMessageUpdater:addReaction',
-			params: ['message-id', 'user-id', ':smile:'],
-		});
+		await modifyUpdater.getMessageUpdater().addReaction('message-id', 'user-id', ':smile:' as any);
+
+		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
+			{
+				method: 'bridges:getMessageBridge:doAddReaction',
+				params: ['message-id', 'user-id', ':smile:', 'APP_ID'],
+			},
+		]);
+
+		_spy.mock.restore();
 	});
 
 	describe('Error Handling', () => {

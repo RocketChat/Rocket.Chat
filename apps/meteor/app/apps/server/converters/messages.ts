@@ -6,8 +6,8 @@ import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
 
 import { cachedFunction } from './cachedFunction';
+import { mappedDecodeAsync } from './codecs/mappedData';
 import { convertMessageFiles } from './convertMessageFiles';
-import { transformMappedData } from './transformMappedData';
 
 // The stored message documents and the app-side payloads carry many optional/dynamic fields that are
 // awkward to express against the base `IMessage`/`IAppsMessage` types. The legacy converter accessed
@@ -66,7 +66,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			type: 't',
 		} as const;
 
-		return transformMappedData(message, map) as unknown as Promise<IAppsMesssageRaw>;
+		return mappedDecodeAsync<IAppsMesssageRaw>(message, map);
 	}
 
 	convertMessage(msgObj: undefined | null): Promise<undefined>;
@@ -164,7 +164,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			},
 		} as const;
 
-		return transformMappedData(msgObj, map) as unknown as Promise<IAppsMessage>;
+		return mappedDecodeAsync<IAppsMessage>(msgObj, map);
 	}
 
 	convertAppMessage(message: undefined | null): Promise<undefined>;
@@ -373,6 +373,6 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			},
 		} as const;
 
-		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
+		return Promise.all(attachments.map(async (attachment) => mappedDecodeAsync(attachment, map)));
 	}
 }

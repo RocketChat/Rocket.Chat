@@ -1,5 +1,4 @@
-import { ContextualbarTitle } from '@rocket.chat/fuselage';
-import { ContextualbarClose, ContextualbarHeader } from '@rocket.chat/ui-client';
+import { ContextualbarClose, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';

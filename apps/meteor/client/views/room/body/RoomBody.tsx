@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -17,6 +17,7 @@ import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
+import { useIsAtBottomRef } from './hooks/useIsAtBottomRef';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
@@ -48,7 +49,7 @@ const RoomBody = () => {
 	const subscription = useRoomSubscription();
 
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(false);
-	const isAtBottom = useRef<boolean>(true);
+	const isAtBottom = useIsAtBottomRef(room._id);
 	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
 
 	const retentionPolicy = useRetentionPolicy(room);

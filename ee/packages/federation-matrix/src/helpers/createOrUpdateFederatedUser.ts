@@ -1,4 +1,11 @@
-import { type IUser, UserStatus } from '@rocket.chat/core-typings';
+import {
+	type IRegisterUser,
+	type IUserNativeFederated,
+	isRegisterUser,
+	isUserNativeFederated,
+	UserStatus,
+} from '@rocket.chat/core-typings';
+import type { UserID } from '@rocket.chat/federation-sdk';
 import { Users } from '@rocket.chat/models';
 
 /**
@@ -9,11 +16,11 @@ import { Users } from '@rocket.chat/models';
  */
 
 export async function createOrUpdateFederatedUser(options: {
-	username: string;
+	username: UserID;
 	name?: string;
 	origin: string;
 	asId?: string;
-}): Promise<IUser> {
+}): Promise<IUserNativeFederated & IRegisterUser> {
 	const { username, name = username, origin, asId } = options;
 
 	// TODO: Have a specific method to handle this upsert
@@ -45,12 +52,12 @@ export async function createOrUpdateFederatedUser(options: {
 		},
 		{
 			upsert: true,
-			projection: { _id: 1, username: 1 },
 			returnDocument: 'after',
 		},
 	);
 
-	if (!user) {
+	// the upsert above writes every field these guards check, so they should never reject a returned document
+	if (!user || !isUserNativeFederated(user) || !isRegisterUser(user)) {
 		throw new Error(`Failed to create or update federated user: ${username}`);
 	}
 

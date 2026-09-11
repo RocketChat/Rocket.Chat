@@ -4,6 +4,7 @@ import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -12,7 +13,7 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('miscellaneous', () => {
 	before((done) => getCredentials(done));
@@ -21,33 +22,22 @@ describe('miscellaneous', () => {
 		// Required by mobile apps
 		describe('/info', () => {
 			let version: string;
-			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', (done) => {
-				void request
-					.get('/api/info')
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('version').and.to.be.a('string');
-						expect(res.body.info).to.have.property('version').and.to.be.a('string');
-						expect(res.body.info).to.have.property('build').and.to.be.an('object');
-						expect(res.body.info).to.have.property('commit').and.to.be.an('object');
-						expect(res.body.info).to.have.property('marketplaceApiVersion').and.to.be.a('string');
-						version = res.body.info.version;
-					})
-					.end(done);
+			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', async () => {
+				const res = await request.get('/api/info').set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+				expect(res.body).to.have.property('version').and.to.be.a('string');
+				expect(res.body.info).to.have.property('version').and.to.be.a('string');
+				expect(res.body.info).to.have.property('build').and.to.be.an('object');
+				expect(res.body.info).to.have.property('commit').and.to.be.an('object');
+				expect(res.body.info).to.have.property('marketplaceApiVersion').and.to.be.a('string');
+				version = res.body.info.version;
 			});
-			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
-				void request
-					.get('/api/info')
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('version');
-						expect(res.body).to.not.have.property('info');
-						expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+).*/, '$1'));
-					})
-					.end(done);
+			it('should return only "version" and the version should not have patch info when the user is not logged in', async () => {
+				const res = await request.get('/api/info').expect('Content-Type', 'application/json').expect(200);
+
+				expect(res.body).to.have.property('version');
+				expect(res.body).to.not.have.property('info');
+				expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+).*/, '$1'));
 			});
 		});
 	});
@@ -57,8 +47,8 @@ describe('miscellaneous', () => {
 		expect(credentials).to.have.property('X-User-Id').with.lengthOf.at.least(1);
 	});
 
-	it('/login (wrapper username)', (done) => {
-		void request
+	it('/login (wrapper username)', async () => {
+		const res = await request
 			.post(api('login'))
 			.send({
 				user: {
@@ -67,19 +57,17 @@ describe('miscellaneous', () => {
 				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
-				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
-				expect(res.body.data).to.have.property('me');
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('status', 'success');
+		expect(res.body).to.have.property('data').and.to.be.an('object');
+		expect(res.body.data).to.have.property('userId');
+		expect(res.body.data).to.have.property('authToken');
+		expect(res.body.data).to.have.property('me');
 	});
 
-	it('/login (wrapper email)', (done) => {
-		void request
+	it('/login (wrapper email)', async () => {
+		const res = await request
 			.post(api('login'))
 			.send({
 				user: {
@@ -88,57 +76,51 @@ describe('miscellaneous', () => {
 				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
-				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
-				expect(res.body.data).to.have.property('me');
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('status', 'success');
+		expect(res.body).to.have.property('data').and.to.be.an('object');
+		expect(res.body.data).to.have.property('userId');
+		expect(res.body.data).to.have.property('authToken');
+		expect(res.body.data).to.have.property('me');
 	});
 
-	it('/login by user', (done) => {
-		void request
+	it('/login by user', async () => {
+		const res = await request
 			.post(api('login'))
 			.send({
 				user: adminEmail,
 				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
-				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
-				expect(res.body.data).to.have.property('me');
-				expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
-				expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('status', 'success');
+		expect(res.body).to.have.property('data').and.to.be.an('object');
+		expect(res.body.data).to.have.property('userId');
+		expect(res.body.data).to.have.property('authToken');
+		expect(res.body.data).to.have.property('me');
+		expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
+		expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
 	});
 
-	it('/login by username', (done) => {
-		void request
+	it('/login by username', async () => {
+		const res = await request
 			.post(api('login'))
 			.send({
 				username: adminUsername,
 				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
-				expect(res.body).to.have.property('data').and.to.be.an('object');
-				expect(res.body.data).to.have.property('userId');
-				expect(res.body.data).to.have.property('authToken');
-				expect(res.body.data).to.have.property('me');
-				expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
-				expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
-			})
-			.end(done);
+			.expect(200);
+
+		expect(res.body).to.have.property('status', 'success');
+		expect(res.body).to.have.property('data').and.to.be.an('object');
+		expect(res.body.data).to.have.property('userId');
+		expect(res.body.data).to.have.property('authToken');
+		expect(res.body.data).to.have.property('me');
+		expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
+		expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
 	});
 
 	it('/me', async () => {
@@ -215,6 +197,7 @@ describe('miscellaneous', () => {
 
 	describe('/directory', () => {
 		let user: TestUser<IUser>;
+		let userWithLeftoverFederationData: TestUser<IUser>;
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let normalUserCredentials: Credentials;
@@ -224,26 +207,36 @@ describe('miscellaneous', () => {
 		before(async () => {
 			await updatePermission('create-team', ['admin', 'user']);
 			user = await createUser();
+			userWithLeftoverFederationData = await createUser();
 			normalUserCredentials = await doLogin(user.username, password);
 			[testChannel, testGroup, teamCreated] = await Promise.all([
 				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
 				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
 				createTeam(normalUserCredentials, teamName, TeamType.PUBLIC),
 			]);
+
+			const connection = await MongoClient.connect(URL_MONGODB);
+			const updateResult = await connection
+				.db()
+				.collection('users')
+				.updateOne({ _id: userWithLeftoverFederationData._id as any }, { $set: { federation: { origin: 'example.com' } } });
+			await connection.close();
+			expect(updateResult.modifiedCount).to.equal(1);
 		});
 
 		after(async () => {
 			await Promise.all([
 				deleteTeam(normalUserCredentials, teamName),
 				deleteUser(user),
+				deleteUser(userWithLeftoverFederationData),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('create-team', ['admin', 'user']),
 			]);
 		});
 
-		it('should return an array(result) when search by user and execute successfully', (done) => {
-			void request
+		it('should return an array(result) when search by user and execute successfully', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -251,24 +244,22 @@ describe('miscellaneous', () => {
 					type: 'users',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('result').and.to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-					expect(res.body.result[0]).to.have.property('_id');
-					expect(res.body.result[0]).to.have.property('createdAt');
-					expect(res.body.result[0]).to.have.property('username');
-					expect(res.body.result[0]).to.have.property('emails').and.to.be.an('array');
-					expect(res.body.result[0]).to.have.property('name');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result').and.to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
+			expect(res.body.result[0]).to.have.property('_id');
+			expect(res.body.result[0]).to.have.property('createdAt');
+			expect(res.body.result[0]).to.have.property('username');
+			expect(res.body.result[0]).to.have.property('emails').and.to.be.an('array');
+			expect(res.body.result[0]).to.have.property('name');
 		});
 
-		it('should not return the emails field for non admins', (done) => {
-			void request
+		it('should not return the emails field for non admins', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
@@ -276,23 +267,37 @@ describe('miscellaneous', () => {
 					type: 'users',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('result').and.to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-					expect(res.body.result[0]).to.have.property('_id');
-					expect(res.body.result[0]).to.have.property('createdAt');
-					expect(res.body.result[0]).to.have.property('username');
-					expect(res.body.result[0]).to.not.have.property('emails');
-					expect(res.body.result[0]).to.have.property('name');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result').and.to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
+			expect(res.body.result[0]).to.have.property('_id');
+			expect(res.body.result[0]).to.have.property('createdAt');
+			expect(res.body.result[0]).to.have.property('username');
+			expect(res.body.result[0]).to.not.have.property('emails');
+			expect(res.body.result[0]).to.have.property('name');
 		});
-		it('should return an array(result) when search by channel and execute successfully', (done) => {
-			void request
+		it('should find local users that still have leftover federation data', async () => {
+			const res = await request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					text: userWithLeftoverFederationData.username,
+					type: 'users',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.have.lengthOf(1);
+			expect(res.body.result[0]).to.have.property('_id', userWithLeftoverFederationData._id);
+		});
+
+		it('should return an array(result) when search by channel and execute successfully', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -300,19 +305,17 @@ describe('miscellaneous', () => {
 					type: 'channels',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('result').and.to.be.an('array');
-					expect(res.body.result[0]).to.have.property('_id');
-					expect(res.body.result[0]).to.have.property('name');
-					expect(res.body.result[0]).to.have.property('usersCount').and.to.be.an('number');
-					expect(res.body.result[0]).to.have.property('ts');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('result').and.to.be.an('array');
+			expect(res.body.result[0]).to.have.property('_id');
+			expect(res.body.result[0]).to.have.property('name');
+			expect(res.body.result[0]).to.have.property('usersCount').and.to.be.an('number');
+			expect(res.body.result[0]).to.have.property('ts');
 		});
 
 		it('should return private group when search by channel and execute successfully', async () => {
@@ -339,8 +342,8 @@ describe('miscellaneous', () => {
 				});
 		});
 
-		it('should return an array(result) when search by channel with sort params correctly and execute successfully', (done) => {
-			void request
+		it('should return an array(result) when search by channel with sort params correctly and execute successfully', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -351,22 +354,20 @@ describe('miscellaneous', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('result').and.to.be.an('array');
-					expect(res.body.result[0]).to.have.property('_id');
-					expect(res.body.result[0]).to.have.property('name');
-					expect(res.body.result[0]).to.have.property('usersCount').and.to.be.an('number');
-					expect(res.body.result[0]).to.have.property('ts');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('result').and.to.be.an('array');
+			expect(res.body.result[0]).to.have.property('_id');
+			expect(res.body.result[0]).to.have.property('name');
+			expect(res.body.result[0]).to.have.property('usersCount').and.to.be.an('number');
+			expect(res.body.result[0]).to.have.property('ts');
 		});
-		it('should return an error when send invalid query', (done) => {
-			void request
+		it('should return an error when send invalid query', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -374,14 +375,12 @@ describe('miscellaneous', () => {
 					type: 'invalid',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
-		it('should return an error when have more than one sort parameter', (done) => {
-			void request
+		it('should return an error when have more than one sort parameter', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -393,15 +392,13 @@ describe('miscellaneous', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should return an object containing rooms and totalCount from teams', (done) => {
-			void request
+		it('should return an object containing rooms and totalCount from teams', async () => {
+			const res = await request
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
@@ -412,24 +409,22 @@ describe('miscellaneous', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('result');
-					expect(res.body.result).to.be.an(`array`);
-					expect(res.body).to.have.property('total');
-					expect(res.body.total).to.be.an('number');
-					expect(res.body.result[0]).to.have.property('_id', teamCreated.roomId);
-					expect(res.body.result[0]).to.have.property('fname');
-					expect(res.body.result[0]).to.have.property('teamMain');
-					expect(res.body.result[0]).to.have.property('name');
-					expect(res.body.result[0]).to.have.property('t');
-					expect(res.body.result[0]).to.have.property('usersCount');
-					expect(res.body.result[0]).to.have.property('ts');
-					expect(res.body.result[0]).to.have.property('teamId');
-					expect(res.body.result[0]).to.have.property('default');
-					expect(res.body.result[0]).to.have.property('roomsCount');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('result');
+			expect(res.body.result).to.be.an(`array`);
+			expect(res.body).to.have.property('total');
+			expect(res.body.total).to.be.an('number');
+			expect(res.body.result[0]).to.have.property('_id', teamCreated.roomId);
+			expect(res.body.result[0]).to.have.property('fname');
+			expect(res.body.result[0]).to.have.property('teamMain');
+			expect(res.body.result[0]).to.have.property('name');
+			expect(res.body.result[0]).to.have.property('t');
+			expect(res.body.result[0]).to.have.property('usersCount');
+			expect(res.body.result[0]).to.have.property('ts');
+			expect(res.body.result[0]).to.have.property('teamId');
+			expect(res.body.result[0]).to.have.property('default');
+			expect(res.body.result[0]).to.have.property('roomsCount');
 		});
 	});
 
@@ -459,98 +454,84 @@ describe('miscellaneous', () => {
 			]);
 		});
 
-		it('should fail when does not have query param', (done) => {
-			void request
-				.get(api('spotlight'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+		it('should fail when does not have query param', async () => {
+			const res = await request.get(api('spotlight')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
-		it('should return object inside users array when search by a valid user', (done) => {
-			void request
+		it('should return object inside users array when search by a valid user', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					query: `@${adminUsername}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-					expect(res.body.users[0]).to.have.property('_id');
-					expect(res.body.users[0]).to.have.property('name');
-					expect(res.body.users[0]).to.have.property('username');
-					expect(res.body.users[0]).to.have.property('status');
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array');
+			expect(res.body.users[0]).to.have.property('_id');
+			expect(res.body.users[0]).to.have.property('name');
+			expect(res.body.users[0]).to.have.property('username');
+			expect(res.body.users[0]).to.have.property('status');
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
 		});
-		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', (done) => {
-			void request
+		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					query: `#${testChannel.name}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-					expect(res.body.rooms[0]).to.have.property('_id');
-					expect(res.body.rooms[0]).to.have.property('name');
-					expect(res.body.rooms[0]).to.have.property('t');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array');
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
+			expect(res.body.rooms[0]).to.have.property('_id');
+			expect(res.body.rooms[0]).to.have.property('name');
+			expect(res.body.rooms[0]).to.have.property('t');
 		});
-		it('must return the teamMain property when searching for a valid team that the user is not a member of', (done) => {
-			void request
+		it('must return the teamMain property when searching for a valid team that the user is not a member of', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					query: `${testTeam.name}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-					expect(res.body.rooms[0]).to.have.property('_id');
-					expect(res.body.rooms[0]).to.have.property('name');
-					expect(res.body.rooms[0]).to.have.property('t');
-					expect(res.body.rooms[0]).to.have.property('teamMain');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array');
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
+			expect(res.body.rooms[0]).to.have.property('_id');
+			expect(res.body.rooms[0]).to.have.property('name');
+			expect(res.body.rooms[0]).to.have.property('t');
+			expect(res.body.rooms[0]).to.have.property('teamMain');
 		});
-		it('must return rooms when searching for a valid fname', (done) => {
-			void request
+		it('must return rooms when searching for a valid fname', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					query: `#${fnameSpecialCharsRoom}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-					expect(res.body.rooms[0]).to.have.property('_id', testChannelSpecialChars._id);
-					expect(res.body.rooms[0]).to.have.property('name', testChannelSpecialChars.name);
-					expect(res.body.rooms[0]).to.have.property('t', testChannelSpecialChars.t);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array');
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
+			expect(res.body.rooms[0]).to.have.property('_id', testChannelSpecialChars._id);
+			expect(res.body.rooms[0]).to.have.property('name', testChannelSpecialChars.name);
+			expect(res.body.rooms[0]).to.have.property('t', testChannelSpecialChars.t);
 		});
-		it('should not return users when the type param disables user search', (done) => {
-			void request
+		it('should not return users when the type param disables user search', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					query: `${adminUsername}`,
@@ -558,16 +539,14 @@ describe('miscellaneous', () => {
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
 		});
-		it('should exclude usernames passed in the usernames param from the results', (done) => {
-			void request
+		it('should exclude usernames passed in the usernames param from the results', async () => {
+			const res = await request
 				.get(api('spotlight'))
 				.query({
 					// Use a non-exact (prefix) query so the regex search path runs; the exact-username
@@ -577,28 +556,80 @@ describe('miscellaneous', () => {
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-					expect(res.body.users.map((u: { username: string }) => u.username)).to.not.include(adminUsername);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('users').and.to.be.an('array');
+			expect(res.body.users.map((u: { username: string }) => u.username)).to.not.include(adminUsername);
 		});
-		it('should allow anonymous (unauthenticated) requests', (done) => {
-			void request
-				.get(api('spotlight'))
-				.query({
-					query: `#${testChannel.name}`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('rooms').and.to.be.an('array');
-					expect(res.body).to.have.property('users').and.to.be.an('array');
-				})
-				.end(done);
+		describe('anonymous (unauthenticated) requests', () => {
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+
+			it('should return no rooms when anonymous read is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			// An unprefixed query keeps `type.users` enabled, so it also runs the user search with no
+			// user id - the code path that used to throw before the anonymous callers were guarded.
+			it('should return no rooms or users for an unprefixed query when anonymous read is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: testChannel.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			it('should return public rooms but no users when anonymous read is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.rooms.map((r: { _id: string }) => r._id)).to.include(testChannel._id);
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			it('should return public rooms but no users for an unprefixed query when anonymous read is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: testChannel.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.rooms.map((r: { _id: string }) => r._id)).to.include(testChannel._id);
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
 		});
 	});
 
@@ -609,76 +640,62 @@ describe('miscellaneous', () => {
 			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
 		});
 
-		it('should fail if user is logged in but is unauthorized', (done) => {
-			void request
+		it('should fail if user is logged in but is unauthorized', async () => {
+			const res = await request
 				.get(api('instances.get'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				})
-				.end(done);
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 
-		it('should fail if not logged in', (done) => {
-			void request
-				.get(api('instances.get'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+		it('should fail if not logged in', async () => {
+			const res = await request.get(api('instances.get')).expect('Content-Type', 'application/json').expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return instances if user is logged in and is authorized', (done) => {
-			void request
-				.get(api('instances.get'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+		it('should return instances if user is logged in and is authorized', async () => {
+			const res = await request.get(api('instances.get')).set(credentials).expect(200);
 
-					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
+			expect(res.body).to.have.property('success', true);
 
-					const instances = res.body.instances as IInstance[];
+			expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
+			const instances = res.body.instances as IInstance[];
 
-					const instance = instances.find(
-						(i): i is IInstance & { instanceRecord: IInstanceStatus } => i.instanceRecord?.name === instanceName,
-					);
+			const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
 
-					if (!instance) throw new AssertionError(`no instance named "${instanceName}"`);
+			const instance = instances.find((i): i is IInstance & { instanceRecord: IInstanceStatus } => i.instanceRecord?.name === instanceName);
 
-					expect(instance).to.have.property('instanceRecord');
-					expect(instance).to.have.property('currentStatus');
+			if (!instance) throw new AssertionError(`no instance named "${instanceName}"`);
 
-					expect(instance.currentStatus).to.have.property('connected');
+			expect(instance).to.have.property('instanceRecord');
+			expect(instance).to.have.property('currentStatus');
 
-					expect(instance.instanceRecord).to.have.property('_id');
-					expect(instance.instanceRecord).to.have.property('extraInformation');
-					expect(instance.instanceRecord).to.have.property('name');
-					expect(instance.instanceRecord).to.have.property('pid');
+			expect(instance.currentStatus).to.have.property('connected');
 
-					if (!IS_EE) {
-						expect(instance).to.have.property('address');
+			expect(instance.instanceRecord).to.have.property('_id');
+			expect(instance.instanceRecord).to.have.property('extraInformation');
+			expect(instance.instanceRecord).to.have.property('name');
+			expect(instance.instanceRecord).to.have.property('pid');
 
-						expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
-						expect(instance.currentStatus).to.have.property('local');
+			if (!IS_EE) {
+				expect(instance).to.have.property('address');
 
-						const { extraInformation } = instance.instanceRecord;
+				expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+				expect(instance.currentStatus).to.have.property('local');
 
-						expect(extraInformation).to.have.property('host');
-						expect(extraInformation).to.have.property('port');
-						expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
-						expect(extraInformation).to.have.property('nodeVersion');
-					}
-				})
-				.end(done);
+				const { extraInformation } = instance.instanceRecord;
+
+				expect(extraInformation).to.have.property('host');
+				expect(extraInformation).to.have.property('port');
+				expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
+				expect(extraInformation).to.have.property('nodeVersion');
+			}
 		});
 	});
 
@@ -687,8 +704,8 @@ describe('miscellaneous', () => {
 
 		after(() => updateSetting('API_Enable_Shields', true));
 
-		it('should fail if API_Enable_Shields is disabled', (done) => {
-			void request
+		it('should fail if API_Enable_Shields is disabled', async () => {
+			const res = await request
 				.get(api('shield.svg'))
 				.query({
 					type: 'online',
@@ -697,44 +714,35 @@ describe('miscellaneous', () => {
 					name: 'Rocket.Chat',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
 		});
 
-		it('should succeed if API_Enable_Shields is enabled', (done) => {
-			void updateSetting('API_Enable_Shields', true).then(() => {
-				void request
-					.get(api('shield.svg'))
-					.query({
-						type: 'online',
-						icon: true,
-						channel: 'general',
-						name: 'Rocket.Chat',
-					})
-					.expect('Content-Type', 'image/svg+xml;charset=utf-8')
-					.expect(200)
-					.end(done);
-			});
+		it('should succeed if API_Enable_Shields is enabled', async () => {
+			await updateSetting('API_Enable_Shields', true);
+
+			await request
+				.get(api('shield.svg'))
+				.query({
+					type: 'online',
+					icon: true,
+					channel: 'general',
+					name: 'Rocket.Chat',
+				})
+				.expect('Content-Type', 'image/svg+xml;charset=utf-8')
+				.expect(200);
 		});
 	});
 
 	describe('/pw.getPolicy', () => {
-		it('should return policies', (done) => {
-			void request
-				.get(api('pw.getPolicy'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('enabled');
-					expect(res.body).to.have.property('policy').and.to.be.an('array');
-				})
-				.end(done);
+		it('should return policies', async () => {
+			const res = await request.get(api('pw.getPolicy')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('enabled');
+			expect(res.body).to.have.property('policy').and.to.be.an('array');
 		});
 	});
 

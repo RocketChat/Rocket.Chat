@@ -21,6 +21,10 @@ const AICenterRoute = (): ReactElement => {
 		return <AISettingsSection section='AI_LLM_Provider' />;
 	}
 
+	if (section === 'mcp') {
+		return <AISettingsSection section='MCP' />;
+	}
+
 	return <AICenterOverview />;
 };
 

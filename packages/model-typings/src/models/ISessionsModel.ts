@@ -7,9 +7,10 @@ import type {
 	DeviceManagementPopulatedSession,
 	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
-import type { BulkWriteResult, Document, FindOptions, UpdateResult, FindCursor, OptionalId } from 'mongodb';
+import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export type DestructuredDate = { year: number; month: number; day: number };
 export type DestructuredDateWithType = {
@@ -143,9 +144,9 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 
-	getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
+	getLoggedInByUserIdAndSessionId<T extends Document = ISession, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		sessionId: string,
-		options?: FindOptions<T>,
-	): Promise<T | null>;
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 }

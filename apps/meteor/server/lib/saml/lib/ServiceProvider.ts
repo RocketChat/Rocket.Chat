@@ -119,7 +119,7 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public async requestToUrl(request: string, operation: string): Promise<string | undefined> {
+	public async requestToUrl(request: string, operation: string, loginClient?: string): Promise<string | undefined> {
 		const buffer = await util.promisify(zlib.deflateRaw)(request);
 		try {
 			const base64 = buffer.toString('base64');
@@ -143,7 +143,7 @@ export class SAMLServiceProvider {
 				// in case of logout we want to be redirected back to the Meteor app.
 				relayState = Meteor.absoluteUrl();
 			} else {
-				relayState = this.serviceProviderOptions.provider;
+				relayState = SAMLUtils.encodeAuthorizeRelayState(this.serviceProviderOptions.provider, loginClient);
 			}
 
 			const samlRequest = this.maybeSignRequest({
@@ -165,11 +165,11 @@ export class SAMLServiceProvider {
 		}
 	}
 
-	public async getAuthorizeUrl(credentialToken: string): Promise<string | undefined> {
+	public async getAuthorizeUrl(credentialToken: string, loginClient?: string): Promise<string | undefined> {
 		const request = this.generateAuthorizeRequest(credentialToken);
 		SAMLUtils.log({ request, msg: 'getAuthorizeUrl' });
 
-		return this.requestToUrl(request, 'authorize');
+		return this.requestToUrl(request, 'authorize', loginClient);
 	}
 
 	public async validateLogoutRequest(

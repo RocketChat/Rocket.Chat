@@ -6,12 +6,13 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
+import { toPlainTextRoot } from './toPlainTextRoot';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import GazzodownText from '../components/GazzodownText';
 
 const tryParseWithLimit = (text: string): Root | undefined => {
 	if (text.length > getMarkdownParserLimit()) {
-		return [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: text }] }] as Root;
+		return toPlainTextRoot(text);
 	}
 
 	const filtered = filterMarkdown(text);

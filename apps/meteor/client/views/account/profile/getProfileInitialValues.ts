@@ -16,6 +16,7 @@ export type AccountProfileFormValues = {
 	languages: string;
 	customFields: Record<string, string>;
 	nickname: string;
+	statusVisibilityDenied: string[];
 } & UserStatusInitialValues;
 
 export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => {
@@ -31,6 +32,7 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 		languages: user?.languages?.join(', ') ?? '',
 		customFields: user?.customFields ?? {},
 		nickname: user?.nickname ?? '',
+		statusVisibilityDenied: user?.settings?.preferences?.statusVisibilityDenied ?? [],
 		...getUserStatusInitialValues(user),
 	};
 };

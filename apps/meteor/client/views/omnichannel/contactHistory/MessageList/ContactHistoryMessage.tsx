@@ -3,7 +3,6 @@ import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
 	MessageContainer,
-	MessageBody,
 	MessageDivider,
 	MessageName,
 	MessageUsername,
@@ -30,6 +29,7 @@ import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 export type ContactHistoryMessageProps = {
 	message: IMessage;
@@ -117,14 +117,14 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						</MessageHeaderTemplate>
 					)}
 					{!!quotes?.length && <Attachments attachments={quotes} />}
-					{!message.blocks &&
-						(message.md ? (
-							<MessageContentBody data-qa-type='message-body' md={message.md} mentions={message.mentions} channels={message.channels} />
-						) : (
-							<MessageBody data-qa-type='message-body' dir='auto'>
-								{message.msg}
-							</MessageBody>
-						))}
+					{!message.blocks && (
+						<MessageContentBody
+							data-qa-type='message-body'
+							md={message.md ?? toPlainTextRoot(message.msg)}
+							mentions={message.mentions}
+							channels={message.channels}
+						/>
+					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					{!!attachments && <Attachments attachments={attachments} />}
 				</MessageContainer>

@@ -3,9 +3,9 @@ import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
+import { getBoundingClientRect } from '../../../../lib/scrolling';
 
 export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 	const msgId = useSearchParameter('msg');
@@ -41,6 +41,10 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
+					if (clientHeight === 0) {
+						return;
+					}
+
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
 					const hasMore = RoomHistoryManager.hasMore(rid);
@@ -62,6 +66,17 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 						});
 					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
 						await RoomHistoryManager.getMoreNext(rid);
+					}
+				});
+
+				// A window rebuild (jump to a message, jump to recent) re-enters that same cascade
+				// mid-session: messages reinsert and the pending programmatic scroll hasn't run, so an
+				// observer pass would page off a stale scrollTop of 0. Require fresh input after each
+				// one, and drop any trailing invocation already scheduled against the dead window.
+				const offRoomCleared = RoomHistoryManager.on('room-cleared', (clearedRid: string) => {
+					if (clearedRid === rid) {
+						userInteracted = false;
+						checkPositionAndGetMore.cancel();
 					}
 				});
 
@@ -113,6 +128,7 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 				element.addEventListener('scroll', handleScroll, { passive: true });
 
 				return () => {
+					offRoomCleared();
 					observer.disconnect();
 					mutationObserver.disconnect();
 					checkPositionAndGetMore.cancel();

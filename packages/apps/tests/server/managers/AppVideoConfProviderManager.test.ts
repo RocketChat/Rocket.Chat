@@ -5,7 +5,7 @@ import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, AppSlashCommandManager } from '../../../src/server/managers';
-import { AppAccessorManager, AppVideoConfProviderManager } from '../../../src/server/managers';
+import { AppVideoConfProviderManager } from '../../../src/server/managers';
 import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
@@ -16,7 +16,6 @@ import { TestData } from '../../test-data/utilities';
 describe('AppVideoConfProviderManager', () => {
 	let mockBridges: TestsAppBridges;
 	let mockApp: ProxiedApp;
-	let mockAccessors: AppAccessorManager;
 	let mockManager: AppManager;
 
 	beforeEach(() => {
@@ -55,12 +54,6 @@ describe('AppVideoConfProviderManager', () => {
 				return {} as AppVideoConfProviderManager;
 			},
 		} as AppManager;
-
-		mockAccessors = new AppAccessorManager(mockManager);
-		const ac = mockAccessors;
-		mockManager.getAccessorManager = function _getAccessorManager(): AppAccessorManager {
-			return ac;
-		};
 	});
 
 	afterEach(() => {
@@ -73,7 +66,6 @@ describe('AppVideoConfProviderManager', () => {
 
 		const manager = new AppVideoConfProviderManager(mockManager);
 		assert.strictEqual((manager as any).manager, mockManager);
-		assert.strictEqual((manager as any).accessors, mockManager.getAccessorManager());
 		assert.ok((manager as any).videoConfProviders !== undefined);
 		assert.strictEqual((manager as any).videoConfProviders.size, 0);
 	});

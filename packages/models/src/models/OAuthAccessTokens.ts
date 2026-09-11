@@ -1,6 +1,6 @@
 import type { IOAuthAccessToken, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IOAuthAccessTokensModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, DeleteResult, FindOptions, IndexDescription } from 'mongodb';
+import type { IOAuthAccessTokensModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, Collection, DeleteResult, IndexDescription, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -19,18 +19,24 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		];
 	}
 
-	async findOneByAccessToken(accessToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+	async findOneByAccessToken<T extends Document = IOAuthAccessToken, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		accessToken: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof accessToken !== 'string' || !accessToken) {
 			return null;
 		}
-		return this.findOne({ accessToken }, options);
+		return this.findOne<T, O>({ accessToken }, options);
 	}
 
-	async findOneByRefreshToken(refreshToken: string, options?: FindOptions<IOAuthAccessToken>): Promise<IOAuthAccessToken | null> {
+	async findOneByRefreshToken<
+		T extends Document = IOAuthAccessToken,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(refreshToken: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
 		if (typeof refreshToken !== 'string' || !refreshToken) {
 			return null;
 		}
-		return this.findOne({ refreshToken }, options);
+		return this.findOne<T, O>({ refreshToken }, options);
 	}
 
 	async deleteByUserId(userId: string): Promise<DeleteResult> {

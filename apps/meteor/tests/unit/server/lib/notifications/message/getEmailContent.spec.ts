@@ -4,7 +4,7 @@ import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 
 const mocks = {
-	'@rocket.chat/string-helpers': {
+	'@rocket.chat/tools': {
 		escapeHTML: (str: string) => str,
 	},
 	'meteor/meteor': {

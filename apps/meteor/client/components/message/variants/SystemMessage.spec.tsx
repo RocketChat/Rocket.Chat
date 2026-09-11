@@ -6,13 +6,6 @@ import { render, screen } from '@testing-library/react';
 
 import SystemMessage from './SystemMessage';
 
-jest.mock('../../../../app/ui-utils/client', () => {
-	const actual = jest.requireActual('../../../../app/ui-utils/lib/MessageTypes');
-	return {
-		MessageTypes: actual.MessageTypes,
-	};
-});
-
 jest.mock('../content/Attachments', () => ({
 	default: () => <div>attachments</div>,
 }));

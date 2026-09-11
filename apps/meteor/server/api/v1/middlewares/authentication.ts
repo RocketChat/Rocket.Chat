@@ -25,7 +25,8 @@ export function authenticationMiddleware(
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = (await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string))) || undefined;
+			const user = await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string));
+			req.user = user || undefined;
 		} else {
 			const { authorization } = req.headers;
 			const accessToken = typeof req.query.access_token === 'string' ? req.query.access_token : undefined;

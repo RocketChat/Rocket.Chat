@@ -43,7 +43,7 @@ export const useRemoveUserFromRole = ({
 
 		setModal(
 			<GenericModal variant='danger' onConfirm={remove} onCancel={() => setModal(null)} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', { postProcess: 'sprintf', sprintf: [username, roleDescription || roleName] })}
+				{t('The_user_s_will_be_removed_from_role_s', { username, role: roleDescription || roleName })}
 			</GenericModal>,
 		);
 	});

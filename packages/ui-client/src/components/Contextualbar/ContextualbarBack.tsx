@@ -1,10 +1,8 @@
-import type { ComponentProps } from 'react';
+import { ContextualbarAction, type ContextualbarActionProps } from '@rocket.chat/fuselage';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ContextualbarAction from './ContextualbarAction';
-
-export type ContextualbarBackProps = Partial<ComponentProps<typeof ContextualbarAction>>;
+export type ContextualbarBackProps = Partial<ContextualbarActionProps>;
 
 const ContextualbarBack = (props: ContextualbarBackProps) => {
 	const { t } = useTranslation();

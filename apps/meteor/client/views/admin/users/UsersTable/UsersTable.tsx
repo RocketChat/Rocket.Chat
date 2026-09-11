@@ -174,10 +174,7 @@ const UsersTable = ({
 			{isSuccess && users.length === 0 && (
 				<GenericNoResults
 					icon='user'
-					title={t('Users_Table_Generic_No_users', {
-						postProcess: 'sprintf',
-						sprintf: [tab !== 'all' ? t(tab as TranslationKey) : ''],
-					})}
+					title={t('Users_Table_Generic_No_users', { status: tab !== 'all' ? t(tab as TranslationKey) : '' })}
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}

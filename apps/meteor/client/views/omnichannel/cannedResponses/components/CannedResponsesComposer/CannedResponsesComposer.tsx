@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
 export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
 	onChange: (value: string) => void;
@@ -61,11 +62,12 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 			}
 		}, [char]);
 
-	const onClickEmoji = (emoji: string): void => {
+	const onClickEmoji = (emojiName: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;
-			const emojiValue = `:${emoji}: `;
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const emojiValue = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? `${emojiEntry.unicode} ` : `:${emojiName}: `;
 
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
@@ -85,7 +87,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 			throw new Error('Missing textAreaRef');
 		}
 
-		openEmojiPicker(textAreaRef.current, (emoji: string) => onClickEmoji(emoji));
+		openEmojiPicker(textAreaRef.current, (emojiName: string) => onClickEmoji(emojiName));
 	};
 
 	const openPlaceholderSelect = (): void => {

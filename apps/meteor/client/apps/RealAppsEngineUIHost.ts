@@ -2,10 +2,10 @@ import { AppsEngineUIHost } from '@rocket.chat/apps/dist/client/AppsEngineUIHost
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentRoomInfo';
 import type { IExternalComponentUserInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentUserInfo';
 
-import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { RoomManager } from '../lib/RoomManager';
+import { sdk } from '../lib/SDKClient';
 import { baseURI } from '../lib/baseURI';
+import { getUserAvatarURL } from '../lib/getUserAvatarURL';
 import { getUser } from '../lib/user';
 import { Rooms } from '../stores';
 
@@ -41,13 +41,11 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(
-				({ _id, username }): IExternalComponentUserInfo => ({
-					id: _id,
-					username: username!,
-					avatarUrl: this.getUserAvatarUrl(username!),
-				}),
-			);
+			cachedMembers = members.map(({ _id, username }): IExternalComponentUserInfo => ({
+				id: _id,
+				username: username!,
+				avatarUrl: this.getUserAvatarUrl(username!),
+			}));
 		} catch (error) {
 			console.warn(error);
 		}

@@ -13,3 +13,9 @@ export const getConfig = <T>(key: string, defaultValue?: T): string | null | T =
 
 	return storedItem ?? defaultValue ?? null;
 };
+
+export const getNumericConfig = (key: string, defaultValue: number): number => {
+	const parsed = Number(getConfig(key, defaultValue));
+
+	return Number.isFinite(parsed) ? parsed : defaultValue;
+};

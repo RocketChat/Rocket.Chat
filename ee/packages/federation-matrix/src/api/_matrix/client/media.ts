@@ -22,10 +22,12 @@ const isMediaParamsProps = ajv.compile(MediaParamsSchema);
 const ThumbnailQuerySchema = {
 	type: 'object',
 	properties: {
-		width: { oneOf: [{ type: 'number' }, { type: 'string' }] },
-		height: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		// union type lists rather than `oneOf`: ajvQuery coerces between number and string, so both
+		// `oneOf` branches would match a numeric value and fail validation
+		width: { type: ['number', 'string'] },
+		height: { type: ['number', 'string'] },
 		method: { type: 'string', enum: ['crop', 'scale'] },
-		timeout_ms: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		timeout_ms: { type: ['number', 'string'] },
 	},
 };
 

@@ -6,6 +6,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
+import type { AudioAttachmentSource } from './file/AudioAttachment';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './structure/AttachmentAuthorName';
@@ -14,6 +15,7 @@ import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
 import AttachmentMessageLink from './structure/AttachmentMessageLink';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
@@ -34,9 +36,12 @@ const quoteStyles = css`
 
 export type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
+	source?: AudioAttachmentSource;
+	/** This quote's own path, used to prefix its nested attachments' collapse-state keys. */
+	path?: string;
 };
 
-export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
+export const QuoteAttachment = ({ attachment, source, path }: QuoteAttachmentProps) => {
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -65,10 +70,15 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 					</AttachmentAuthor>
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} />
+							<Attachments
+								attachments={attachment.attachments}
+								id={attachment.attachments[0]?.title_link}
+								source={source && { rid: source.rid, mid: source.mid, name: attachment.author_name }}
+								keyPrefix={path}
+							/>
 						</AttachmentInner>
 					)}
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
+					<MessageContentBody md={attachment.md ?? toPlainTextRoot(attachment.text)} />
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>

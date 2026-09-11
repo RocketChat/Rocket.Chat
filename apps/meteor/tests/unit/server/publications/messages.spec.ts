@@ -21,6 +21,9 @@ const messagesMock = {
 	trashFind: sinon.stub(),
 };
 
+const canAccessRoomIdAsyncStub = sinon.stub().resolves(true);
+const getChannelHistoryStub = sinon.stub();
+
 const {
 	extractTimestampFromCursor,
 	mountCursorQuery,
@@ -29,12 +32,16 @@ const {
 	mountPreviousCursor,
 	handleWithoutPagination,
 	handleCursorPagination,
+	getMessageHistory,
 } = proxyquire.noCallThru().load('../../../../server/publications/messages', {
 	'meteor/check': {
 		check: sinon.stub(),
 	},
+	'../lib/authorization/canAccessRoom': {
+		canAccessRoomIdAsync: canAccessRoomIdAsyncStub,
+	},
 	'../meteor-methods/messages/getChannelHistory': {
-		getChannelHistory: sinon.stub(),
+		getChannelHistory: getChannelHistoryStub,
 	},
 	'meteor/meteor': {
 		'Meteor': {
@@ -213,11 +220,30 @@ describe('handleWithoutPagination', () => {
 			deleted: deletedMessages,
 		});
 
-		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { $gt: lastUpdate }, { sort: { ts: -1 } });
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: undefined }, { sort: { ts: -1 } });
 		sinon.assert.calledWith(
 			messagesMock.trashFindDeletedAfter,
 			lastUpdate,
 			{ rid },
+			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
+		);
+	});
+
+	it('should bound both queries by `ts` when fromTs is provided', async () => {
+		const rid = 'roomId';
+		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
+		const fromTs = new Date('2024-01-01T00:00:00.000Z');
+
+		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+
+		await handleWithoutPagination(rid, lastUpdate, fromTs);
+
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
+		sinon.assert.calledWith(
+			messagesMock.trashFindDeletedAfter,
+			lastUpdate,
+			{ rid, ts: { $gte: fromTs } },
 			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
 		);
 	});
@@ -248,6 +274,8 @@ describe('handleCursorPagination', () => {
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
 		expect(messagesMock.findForUpdates.calledOnce).to.be.true;
+		// the cursor path has no `ts` bound to apply — it paginates on `_updatedAt` alone
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: new Date(0) } }, { sort: { _updatedAt: 1 } });
 		expect(result.updated).to.deep.equal(messages);
 		expect(result.cursor).to.have.keys(['next', 'previous']);
 	});
@@ -274,5 +302,53 @@ describe('handleCursorPagination', () => {
 
 		expect(result.updated).to.deep.equal([]);
 		expect(result.cursor).to.deep.equal({ next: null, previous: null });
+	});
+});
+
+describe('getMessageHistory', () => {
+	const rid = 'roomId';
+	const fromId = 'userId';
+
+	const catchError = async (promise: Promise<unknown>): Promise<any> => {
+		try {
+			await promise;
+		} catch (error) {
+			return error;
+		}
+
+		throw new Error('expected the call to be rejected');
+	};
+
+	beforeEach(() => {
+		messagesMock.findForUpdates.reset();
+		messagesMock.trashFindDeletedAfter.reset();
+		messagesMock.trashFind.reset();
+		getChannelHistoryStub.reset();
+	});
+
+	it('should reject "fromTs" when combined with cursor pagination', async () => {
+		const error = await catchError(getMessageHistory(rid, fromId, { fromTs: new Date(), type: 'UPDATED', next: '1704067200000' }));
+
+		expect(error).to.have.property('error', 'error-fromTs-requires-lastUpdate');
+		sinon.assert.notCalled(messagesMock.findForUpdates);
+	});
+
+	it('should reject "fromTs" when it would fall through to the channel history', async () => {
+		const error = await catchError(getMessageHistory(rid, fromId, { fromTs: new Date() }));
+
+		expect(error).to.have.property('error', 'error-fromTs-requires-lastUpdate');
+		sinon.assert.notCalled(getChannelHistoryStub);
+	});
+
+	it('should bound the query by "fromTs" when "lastUpdate" is provided', async () => {
+		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
+		const fromTs = new Date('2024-01-01T00:00:00.000Z');
+
+		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+
+		await getMessageHistory(rid, fromId, { lastUpdate, fromTs });
+
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
 	});
 });

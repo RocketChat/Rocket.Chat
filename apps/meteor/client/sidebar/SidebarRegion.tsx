@@ -39,7 +39,7 @@ const SidebarRegion = () => {
 		width: var(--sidebar-width);
 		min-width: var(--sidebar-width);
 
-		> .rcx-sidebar:not(:last-child) {
+		> .sidebar-region-item:not(:last-child) {
 			visibility: hidden;
 		}
 

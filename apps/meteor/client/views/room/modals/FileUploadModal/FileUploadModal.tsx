@@ -25,8 +25,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
 import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
+import { fileUploadIsValidContentType } from '../../../../lib/utils/restrictions';
 
 export type FileUploadModalProps = {
 	onClose: () => void;

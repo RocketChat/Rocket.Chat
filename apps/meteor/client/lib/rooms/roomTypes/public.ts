@@ -1,12 +1,12 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { Rooms } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { getRoomAvatarURL } from '../../getRoomAvatarURL';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -19,7 +19,7 @@ roomCoordinator.add(
 	},
 	{
 		allowRoomSettingChange(room, setting) {
-			if (isRoomFederated(room as IRoom)) {
+			if (isRoomFederated(room)) {
 				return Federation.isRoomSettingAllowed(room, setting);
 			}
 			switch (setting) {
@@ -38,7 +38,7 @@ roomCoordinator.add(
 		},
 
 		allowMemberAction(_room, action, showingUserId, userSubscription) {
-			if (isRoomFederated(_room as IRoom)) {
+			if (isRoomFederated(_room)) {
 				return Federation.actionAllowed(_room, action, showingUserId, userSubscription);
 			}
 			switch (action) {

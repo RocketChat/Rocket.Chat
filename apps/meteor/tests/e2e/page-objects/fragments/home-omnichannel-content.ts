@@ -22,12 +22,8 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	get header(): Locator {
-		return this.page.locator('header');
-	}
-
 	get btnReturn(): Locator {
-		return this.header.getByRole('button', { name: 'Back' });
+		return this.header.root.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {

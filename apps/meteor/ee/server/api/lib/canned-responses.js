@@ -1,5 +1,5 @@
 import { CannedResponse } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { getDepartmentsWhichUserCanAccess } from '../v1/omnichannel/lib/departments';

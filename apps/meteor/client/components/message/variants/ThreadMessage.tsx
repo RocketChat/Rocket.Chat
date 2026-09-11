@@ -5,7 +5,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
@@ -20,13 +20,15 @@ export type ThreadMessageProps = {
 	unread: boolean;
 	sequential: boolean;
 	showUserAvatar: boolean;
+	ignoredUser?: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps) => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
@@ -70,7 +72,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleIgnoring} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<ThreadMessageContent message={message} />
 				)}

@@ -1,4 +1,3 @@
-import { useContext } from 'preact/hooks';
 import { route } from 'preact-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,13 +12,12 @@ import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
-import type { StoreState } from '../../store';
-import { StoreContext } from '../../store';
+import { useStore } from '../../store';
 
 type SwitchDepartmentFormData = { department: string };
 
 export type SwitchDepartmentProps = {
-	path: string;
+	path?: string;
 };
 
 const SwitchDepartment = (_: SwitchDepartmentProps) => {
@@ -37,7 +35,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		dispatch,
 		alerts,
 		token,
-	} = useContext(StoreContext);
+	} = useStore();
 
 	const {
 		handleSubmit,
@@ -64,7 +62,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
 			dispatch({
-				user: user as StoreState['user'],
+				user,
 				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
 			});
 			route('/');
@@ -81,7 +79,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 				throw t('no_available_agents_to_transfer');
 			}
 
-			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
+			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });
 			await loadConfig();
 
 			await ModalManager.alert({
@@ -103,13 +101,10 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		route('/');
 	};
 
-	const defaultTitle = t('change_department_1');
-	const defaultMessage = t('choose_a_department_1');
-
 	return (
-		<Screen title={defaultTitle} className={createClassName(styles, 'switch-department')}>
+		<Screen title={t('change_department_1')} className={createClassName(styles, 'switch-department')}>
 			<ScreenContent>
-				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
+				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || t('choose_a_department_1')}</p>
 
 				<Form
 					id='switchDepartment'

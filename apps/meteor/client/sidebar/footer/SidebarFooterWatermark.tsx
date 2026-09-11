@@ -1,4 +1,4 @@
-import { Box, SidebarV2FooterContent as FooterContent } from '@rocket.chat/fuselage';
+import { Box, SidebarFooterContent as FooterContent } from '@rocket.chat/fuselage';
 import { useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 

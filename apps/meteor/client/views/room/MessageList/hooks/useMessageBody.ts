@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useAutoLinkDomains } from './useAutoLinkDomains';
 import { useMessageListAutoTranslate } from '../../../../components/message/list/MessageListContext';
 import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 export const useMessageBody = (message: IMessage | undefined): string | Root => {
 	const autoTranslateOptions = useMessageListAutoTranslate();
@@ -27,7 +28,7 @@ export const useMessageBody = (message: IMessage | undefined): string | Root => 
 		}
 
 		if (message.msg) {
-			return message.msg;
+			return toPlainTextRoot(message.msg);
 		}
 
 		if (message.attachments) {

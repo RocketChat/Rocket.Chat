@@ -7,6 +7,7 @@ import styles from './styles.scss';
 export type ImageAttachmentProps = {
 	url: string;
 	className?: string;
+	quoted?: boolean;
 };
 
 export const ImageAttachment = memo(({ url, className, ...messageBubbleProps }: ImageAttachmentProps) => (

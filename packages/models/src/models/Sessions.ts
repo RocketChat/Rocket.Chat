@@ -11,7 +11,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { ISessionsModel } from '@rocket.chat/model-typings';
+import type { ISessionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
@@ -25,7 +25,6 @@ import type {
 	IndexDescription,
 	UpdateResult,
 	OptionalId,
-	FindOptions,
 } from 'mongodb';
 
 import { getCollectionName } from '../index';
@@ -1572,11 +1571,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
-		userId: string,
-		sessionId: string,
-		options?: FindOptions<T>,
-	): Promise<T | null> {
-		return this.findOne({ userId, sessionId, logoutAt: { $exists: false } }, options);
+	async getLoggedInByUserIdAndSessionId<
+		T extends Document = ISession,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(userId: string, sessionId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ userId, sessionId, logoutAt: { $exists: false } }, options);
 	}
 }

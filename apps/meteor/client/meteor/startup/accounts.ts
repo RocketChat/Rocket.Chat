@@ -1,6 +1,6 @@
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { sdk } from '../../lib/SDKClient';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
 import { settings } from '../../lib/settings';

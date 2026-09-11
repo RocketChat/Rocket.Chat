@@ -1,4 +1,3 @@
-import type { JSX as JSXInternal } from 'preact';
 import { useContext, useRef } from 'preact/hooks';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
@@ -21,8 +20,15 @@ import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 
+type LeaveMessageFormValues = {
+	name: string;
+	email: string;
+	department?: string;
+	message: string;
+};
+
 export type LeaveMessageProps = {
-	path: string;
+	path?: string;
 };
 
 const LeaveMessage = (_: LeaveMessageProps) => {
@@ -47,13 +53,11 @@ const LeaveMessage = (_: LeaveMessageProps) => {
 		handleSubmit,
 		formState: { errors, isDirty, isValid, isSubmitting },
 		control,
-	} = useForm({ mode: 'onChange' });
+	} = useForm<LeaveMessageFormValues>({ mode: 'onChange' });
 
 	const customOfflineTitle = iframe?.theme?.offlineTitle;
 
-	type FormValues = { name: string; email: string; department?: string; message: string };
-
-	const onSubmit = async ({ name, email, department, message }: FormValues) => {
+	const onSubmit = async ({ name, email, department, message }: LeaveMessageFormValues) => {
 		const fields = {
 			name,
 			email,
@@ -65,7 +69,7 @@ const LeaveMessage = (_: LeaveMessageProps) => {
 
 		try {
 			// TODO: Remove intersection after ts refactor of parseOfflineMessage
-			const payload = parseOfflineMessage(fields) as FormValues & { host: string };
+			const payload = parseOfflineMessage(fields) as LeaveMessageFormValues & { host: string };
 			const text = await Livechat.sendOfflineMessage(payload);
 			await ModalManager.alert({
 				text: offlineSuccessMessage || text,
@@ -100,7 +104,7 @@ const LeaveMessage = (_: LeaveMessageProps) => {
 
 						<Form
 							// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-							onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+							onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
 							id='leaveMessage'
 						>
 							<FormField required label={t('name')} error={errors.name?.message?.toString()}>

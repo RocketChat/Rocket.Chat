@@ -29,7 +29,7 @@ export const attachMessage = function (
 		author_name: getUserDisplayName(name, username, useRealName),
 		author_icon: getUserAvatarURL(username) as string,
 		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
-		attachments,
+		...(attachments && { attachments }),
 		ts,
 	};
 };

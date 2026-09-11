@@ -1,6 +1,7 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent } from 'react';
 
@@ -20,6 +21,8 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
 	const contextValue = useModalContextValue({ view, errors, values, updateValues });
+	const useEmoji = useUserPreference<boolean>('useEmojis', true);
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
@@ -69,6 +72,8 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			<MarkupInteractionContext.Provider
 				value={{
 					detectEmoji,
+					useEmoji,
+					convertAsciiToEmoji,
 				}}
 			>
 				<ModalBlock view={view} errors={errors} appId={view.appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />

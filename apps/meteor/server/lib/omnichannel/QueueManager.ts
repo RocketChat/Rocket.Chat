@@ -58,7 +58,8 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
  *  @deprecated
  */
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
-	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
+	// No projection: requeueInquiry forwards the room into the routing pipeline, which expects a full room.
+	const room = await LivechatRooms.findOneById(inquiry.rid);
 
 	if (!room) {
 		await saveQueueInquiry(inquiry);

@@ -1,8 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import { validateEmail } from '@rocket.chat/tools';
+import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
 import { Email } from 'meteor/email';
 import { Meteor } from 'meteor/meteor';

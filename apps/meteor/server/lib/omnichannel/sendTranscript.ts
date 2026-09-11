@@ -229,7 +229,8 @@ export async function requestTranscript({
 	subject: string;
 	user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
 }) {
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
+	// `v` is required by the MAC-limit check below
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1, v: 1 } });
 
 	if (!room?.open) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room');

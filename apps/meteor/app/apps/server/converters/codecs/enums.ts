@@ -23,7 +23,7 @@ import * as z from 'zod';
  * Rocket.Chat `IUser['type']` <-> Apps-Engine `UserType`.
  * Mirrors `AppUsersConverter._convertUserTypeToEnum`.
  */
-export const UserTypeCodec = z.codec(z.string().optional(), z.string(), {
+export const UserTypeCodec = z.codec(z.any(), z.any(), {
 	decode: (type): string => {
 		switch (type) {
 			case 'user':
@@ -36,7 +36,6 @@ export const UserTypeCodec = z.codec(z.string().optional(), z.string(), {
 			case undefined:
 				return UserType.UNKNOWN;
 			default:
-				// eslint-disable-next-line no-console
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
 				return type.toUpperCase();
 		}
@@ -51,7 +50,7 @@ export const UserTypeCodec = z.codec(z.string().optional(), z.string(), {
  * `console.warn` (which includes the affected user's id/username) stays in the converter, since
  * that context is not available to a standalone codec.
  */
-export const UserStatusConnectionCodec = z.codec(z.string().optional(), z.string(), {
+export const UserStatusConnectionCodec = z.codec(z.any(), z.any(), {
 	decode: (status): string => {
 		switch (status) {
 			case 'offline':
@@ -76,7 +75,7 @@ export const UserStatusConnectionCodec = z.codec(z.string().optional(), z.string
  * Rocket.Chat `IRoom['t']` <-> Apps-Engine `RoomType`.
  * Mirrors `AppRoomsConverter._convertTypeToApp`. Unknown type characters pass through unchanged.
  */
-export const RoomTypeCodec = z.codec(z.string(), z.string(), {
+export const RoomTypeCodec = z.codec(z.any(), z.any(), {
 	decode: (typeChar): string => {
 		switch (typeChar) {
 			case 'c':
@@ -99,7 +98,7 @@ export const RoomTypeCodec = z.codec(z.string(), z.string(), {
  * Rocket.Chat `ISetting['type']` <-> Apps-Engine `SettingType`.
  * Mirrors `AppSettingsConverter._convertTypeToApp`. Unknown types pass through unchanged.
  */
-export const SettingTypeCodec = z.codec(z.string(), z.string(), {
+export const SettingTypeCodec = z.codec(z.any(), z.any(), {
 	decode: (type): string => {
 		switch (type) {
 			case 'boolean':

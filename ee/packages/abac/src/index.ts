@@ -15,8 +15,7 @@ import type {
 	AbacUserIdentifiers,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
@@ -351,7 +350,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		filters?: { key?: string; values?: string; offset?: number; count?: number },
 		actor?: AbacActor,
 	): Promise<{
-		attributes: IAbacAttribute[];
+		attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];
 		offset: number;
 		count: number;
 		total: number;

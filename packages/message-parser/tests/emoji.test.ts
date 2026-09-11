@@ -1,4 +1,5 @@
 import { parse } from '../src';
+import { ALL_EMOJI, EMOJIBASE_VERSION } from './fixtures/allEmoji';
 import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers';
 
 test.each([
@@ -123,4 +124,37 @@ test.each([
 	['England 🏴󠁧󠁢󠁥󠁮󠁧󠁿 and Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿', [paragraph([plain('England '), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), plain(' and Scotland '), emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
+});
+
+// KNOWN_UNSUPPORTED: the 26 regional indicators. Alone they're just letters, not emojis; combined
+// in a pair they form a flag (🇺 + 🇸 = 🇺🇸). Real letter emojis (🅰️ Ⓜ️) are supported. Stale check
+// below keeps the list honest.
+// prettier-ignore
+const KNOWN_UNSUPPORTED = new Set('🇦 🇧 🇨 🇩 🇪 🇫 🇬 🇭 🇮 🇯 🇰 🇱 🇲 🇳 🇴 🇵 🇶 🇷 🇸 🇹 🇺 🇻 🇼 🇽 🇾 🇿'.split(' '));
+
+function parsesWhole(input: string): boolean {
+	const nodes = parse(input);
+
+	if (!Array.isArray(nodes) || nodes.length !== 1) {
+		return false;
+	}
+
+	const [node] = nodes;
+	if (node.type !== 'BIG_EMOJI' || node.value.length !== 1) {
+		return false;
+	}
+
+	const [child] = node.value;
+	if (child.type !== 'EMOJI' || !('unicode' in child)) {
+		return false;
+	}
+
+	return child.unicode === input;
+}
+
+test(`every emoji parses as one token, except documented components (emojibase@${EMOJIBASE_VERSION})`, () => {
+	expect(ALL_EMOJI.length).toBeGreaterThan(3000);
+	const inFixture = new Set(ALL_EMOJI);
+	expect(ALL_EMOJI.filter((e) => !KNOWN_UNSUPPORTED.has(e) && !parsesWhole(e))).toEqual([]);
+	expect([...KNOWN_UNSUPPORTED].filter((e) => !inFixture.has(e) || parsesWhole(e))).toEqual([]);
 });

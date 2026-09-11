@@ -1,7 +1,7 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatUnitModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms, BaseRaw } from '@rocket.chat/models';
-import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
+import type { Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}, unitsFromUser?: string[]) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
@@ -21,32 +21,28 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		super(db, 'livechat_department');
 	}
 
-	findPaginatedUnits(
+	findPaginatedUnits<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		query: Filter<IOmnichannelBusinessUnit>,
-		options?: FindOptions<IOmnichannelBusinessUnit>,
-	): FindPaginated<FindCursor<IOmnichannelBusinessUnit>> {
-		return super.findPaginated({ ...query, type: 'u' }, options);
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+		return super.findPaginated<T, O>({ ...query, type: 'u' }, options);
 	}
 
 	// @ts-expect-error - Overriding base types :)
-	async findOne<P extends Document = IOmnichannelBusinessUnit>(
+	async findOne<P extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
+		options?: O,
 		extra?: Record<string, any>,
-	): Promise<P | null> {
+	): Promise<DocumentWithProjection<P, O> | null> {
 		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
-		return this.col.findOne<P>(query, options);
+		return super.findOne<P, O>(query, options);
 	}
 
-	override async findOneById<P extends Document = IOmnichannelBusinessUnit>(
-		_id: IOmnichannelBusinessUnit['_id'],
-		options: FindOptions<IOmnichannelBusinessUnit>,
-		extra?: Record<string, any>,
-	): Promise<P | null> {
-		if (options) {
-			return this.findOne<P>({ _id }, options, extra);
-		}
-		return this.findOne<P>({ _id }, {}, extra);
+	override async findOneById<
+		P extends Document = IOmnichannelBusinessUnit,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(_id: IOmnichannelBusinessUnit['_id'], options?: O, extra?: Record<string, any>): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ _id }, options, extra);
 	}
 
 	async createOrUpdateUnit(
@@ -162,7 +158,10 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return result;
 	}
 
-	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null> {
+	findOneByIdOrName<T extends Document = IOmnichannelBusinessUnit, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			$or: [
 				{
@@ -174,7 +173,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 			],
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	async findByMonitorId(monitorId: string): Promise<string[]> {

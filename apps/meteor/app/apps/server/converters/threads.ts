@@ -1,4 +1,11 @@
-import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type {
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppThreadsConverter,
+	IAppUsersConverter,
+	IAppsMessage,
+	IAppsUser,
+} from '@rocket.chat/apps';
 import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { isEditedMessage, isFileAttachment } from '@rocket.chat/core-typings';
@@ -6,8 +13,8 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { cachedFunction } from './cachedFunction';
+import { mappedDecodeAsync, type AsyncFieldMap } from './codecs/mappedData';
 import { convertMessageFiles } from './convertMessageFiles';
-import { transformMappedData } from './transformMappedData';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
@@ -21,13 +28,7 @@ interface Orchestrator {
 }
 
 export class AppThreadsConverter implements IAppThreadsConverter {
-	constructor(
-		private readonly orch: {
-			getConverters: () => {
-				get: <O extends keyof Orchestrator>(key: O) => ReturnType<Orchestrator[O]>;
-			};
-		},
-	) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
@@ -51,7 +52,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 		const replies = await Messages.find(query).toArray();
 
-		const room = (await this.orch.getConverters().get('rooms').convertById(mainMessage.rid)) as IRoom | undefined;
+		const room = await this.orch.getConverters().get('rooms').convertById(mainMessage.rid);
 
 		if (!room) {
 			return [];
@@ -120,7 +121,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 					user = await convertToApp(message.u as unknown as IUser);
 				}
 
-				return user as IAppsUser;
+				return user;
 			},
 			files: async (message: IMessage) => convertMessageFiles(message.files, attachments),
 		} as const;
@@ -131,7 +132,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			reactions: msgObj.reactions as unknown as AppsEngineMessage['reactions'],
 		} as IMessage & { reactions?: AppsEngineMessage['reactions'] };
 
-		return transformMappedData(msgData, map);
+		return mappedDecodeAsync<AppsEngineMessage>(msgData, map as unknown as AsyncFieldMap);
 	}
 
 	async _convertAttachmentsToApp(
@@ -201,6 +202,8 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			},
 		} as const;
 
-		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
+		return Promise.all(
+			attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)),
+		) as unknown as Promise<NonNullable<IAppsMessage['attachments']>>;
 	}
 }

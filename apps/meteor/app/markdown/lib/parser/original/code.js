@@ -2,7 +2,7 @@
  * code() is a named function that will parse `inline code` and ```codeblock``` syntaxes
  * @param {Object} message - The message object
  */
-import { unescapeHTML } from '@rocket.chat/string-helpers';
+import { unescapeHTML } from '@rocket.chat/tools';
 
 import { addAsToken } from './token';
 import hljs, { register } from '../../hljs';

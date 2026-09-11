@@ -24,7 +24,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document, FindOptions, Filter } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../lib/notifyListener';
@@ -33,6 +33,7 @@ import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWi
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
@@ -177,21 +178,22 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				projection: { _id: 1 },
 			}).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
-			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIds.includes(teamId));
+			const publicTeamIdsSet = new Set(publicTeamIds);
+			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIdsSet.has(teamId));
 
 			const privateTeams = await TeamMember.findByUserIdAndTeamIds(callerId, privateTeamIds, {
 				projection: { teamId: 1 },
 			}).toArray();
-			const visibleTeamIds = privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds);
-			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.includes(teamId));
+			const visibleTeamIds = new Set(privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds));
+			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.has(teamId));
 		}
 
-		const ownedTeams = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
+		const ownedTeams = new Set(unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId));
 
 		const results = await Team.findByIds(teamIds).toArray();
 		return results.map((team) => ({
 			...team,
-			isOwner: ownedTeams.includes(team._id),
+			isOwner: ownedTeams.has(team._id),
 		}));
 	}
 
@@ -421,17 +423,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
-
-		if (!room) {
-			throw new Error('invalid-room');
-		}
-
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
-		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+		if (room) {
+			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		}
 
 		await Rooms.unsetTeamId(team._id);
 	}
@@ -575,7 +574,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 
-		const teamRooms: (IRoom & {
+		const teamRooms: (Pick<IRoom, '_id' | 't'> & {
 			userCanDelete?: boolean;
 		})[] = await Rooms.findByTeamId(teamId, {
 			projection: { _id: 1, t: 1 },
@@ -683,7 +682,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
-					settings: user.settings,
+					settings: omitStatusVisibilityConfig(user.settings),
 				},
 				roles: record.roles,
 				createdBy: {
@@ -783,9 +782,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const membersIds = members.map((m) => m.userId);
-		const usersToRemove = await Users.findByIds(membersIds, {
-			projection: { _id: 1, username: 1 },
-		}).toArray();
+		const usersToRemove = await Users.findByIds(membersIds).toArray();
 		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {

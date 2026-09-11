@@ -1,6 +1,6 @@
 import type { Readable, Stream } from 'node:stream';
 
-import type sharp from 'sharp';
+import type { FitEnum } from 'sharp';
 
 export type ResizeResult = {
 	data: Buffer;
@@ -16,7 +16,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof FitEnum | undefined,
 	): Promise<ResizeResult>;
 	resizeFromStream(
 		input: Readable,
@@ -25,7 +25,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof FitEnum | undefined,
 	): Promise<ResizeResult>;
 	isImage(buff: Buffer): Promise<boolean>;
 	stripExifFromImageStream(stream: Stream): Readable;

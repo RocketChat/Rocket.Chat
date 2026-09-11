@@ -3,9 +3,9 @@ import { memo, useContext, useCallback, useState, useRef, useEffect } from 'prea
 
 import { useDispatchAction } from './Surface';
 
-const BlockContext = createContext({
-	appId: null,
-	blockId: null,
+const BlockContext = createContext<{ appId?: string; blockId?: string }>({
+	appId: undefined,
+	blockId: undefined,
 });
 
 export type BlockProps = {

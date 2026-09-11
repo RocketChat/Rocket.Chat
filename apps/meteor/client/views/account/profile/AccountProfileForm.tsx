@@ -23,6 +23,7 @@ import {
 	useEndpoint,
 	useUser,
 	useLayout,
+	useSetting,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
@@ -33,6 +34,7 @@ import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from '../../../../lib/constants';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -46,6 +48,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
 
+	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
@@ -143,6 +147,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			nationality,
 			languages,
 			customFields,
+			statusVisibilityDenied,
 		} = values;
 
 		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
@@ -190,6 +195,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				// info panel — refresh them all so an open panel reflects the save.
 				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
 				await queryClient.invalidateQueries({ queryKey: ['users'] });
+			}
+
+			if (dirtyFields.statusVisibilityDenied) {
+				await setPreferences({ data: { statusVisibilityDenied } });
 			}
 
 			if (statusDirty) {
@@ -281,7 +290,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							rules={{
 								maxLength: {
 									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+									message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
 								},
 							}}
 							render={({ field }) => (
@@ -365,6 +374,26 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
 				</Field>
+				{statusVisibilityEnabled && (
+					<Field>
+						<FieldLabel>{t('Accounts_StatusVisibility_HideStatusFromUsers')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='statusVisibilityDenied'
+								render={({ field: { onChange, value } }) => (
+									<UserAutoCompleteMultiple
+										value={value}
+										onChange={onChange}
+										exceptions={user?.username ? [user.username] : undefined}
+										placeholder={t('Select_users')}
+									/>
+								)}
+							/>
+						</FieldRow>
+						<FieldHint>{t('Accounts_StatusVisibility_HideFromUsers_Description')}</FieldHint>
+					</Field>
+				)}
 				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
@@ -383,7 +412,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='bio'
 							rules={{
-								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) },
+								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) },
 							}}
 							render={({ field }) => (
 								<TextAreaInput

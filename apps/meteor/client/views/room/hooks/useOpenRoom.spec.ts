@@ -6,7 +6,7 @@ import { createFakeRoom, createFakeSubscription } from '../../../../tests/mocks/
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { Rooms, Subscriptions } from '../../../stores';
 
-jest.mock('../../../../app/ui-utils/client', () => ({
+jest.mock('../../../lib/LegacyRoomManager', () => ({
 	LegacyRoomManager: { open: jest.fn(), close: jest.fn() },
 }));
 

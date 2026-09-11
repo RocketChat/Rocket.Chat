@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { hasPermissionAsync } from '../../../../../../server/lib/authorization/hasPermission';
 import type { IPaginatedResponse, IPagination } from '../../../../api/v1/omnichannel/lib/definition';
@@ -30,7 +30,7 @@ export async function findBusinessHours(userId: string, { offset, count, sort }:
 	const businessHoursWithDepartments = await Promise.all(
 		businessHours.map(async (businessHour) => {
 			const currentDepartments = await LivechatDepartment.findByBusinessHourId(businessHour._id, {
-				projection: { _id: 1 },
+				projection: { _id: 1, name: 1 },
 			}).toArray();
 
 			if (currentDepartments.length) {

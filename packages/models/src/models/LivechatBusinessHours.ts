@@ -1,7 +1,7 @@
 import type { ILivechatBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions } from 'mongodb';
+import type { ILivechatBusinessHoursModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -20,20 +20,18 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		super(db, 'livechat_business_hours', trash);
 	}
 
-	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
-
-	async findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
-
-	async findOneDefaultBusinessHour<P extends Document>(
-		options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>,
-	): Promise<P | null>;
-
-	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null> {
-		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
+	findOneDefaultBusinessHour<
+		P extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(options?: O): Promise<DocumentWithProjection<P, O> | null> {
+		return this.findOne<P, O>({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
-	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
-		return this.find(
+	findActiveAndOpenBusinessHoursByDay<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(day: string, options?: O): Promise<DocumentWithProjection<T, O>[]> {
+		return this.find<T, O>(
 			{
 				active: true,
 				workHours: {
@@ -47,8 +45,11 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		).toArray();
 	}
 
-	findActiveBusinessHours(options: FindOptions<ILivechatBusinessHour> = {}): Promise<ILivechatBusinessHour[]> {
-		return this.find(
+	findActiveBusinessHours<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(options?: O): Promise<DocumentWithProjection<T, O>[]> {
+		return this.find<T, O>(
 			{
 				active: true,
 			},

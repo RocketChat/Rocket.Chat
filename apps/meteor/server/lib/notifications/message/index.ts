@@ -1,6 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../callbacks';

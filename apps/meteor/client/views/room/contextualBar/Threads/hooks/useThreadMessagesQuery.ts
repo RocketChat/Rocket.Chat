@@ -1,12 +1,12 @@
 import type { IRoom, IMessage, IThreadMainMessage, IThreadMessage, Serialized } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
-import { getConfig } from '../../../../../lib/utils/getConfig';
+import { getNumericConfig } from '../../../../../lib/utils/getConfig';
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
@@ -36,17 +36,16 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 	const queryClient = useQueryClient();
 	const queryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
-	// REST has no per-thread read-marker endpoint yet; fall back to the
-	// `readThreads` DDP method so the side effect that DDP getThreadMessages
-	// used to do server-side keeps happening for callers.
-	const readThreads = useMethod('readThreads');
+	// `chat.getThreadMessages` is a plain read, so marking the thread as read is an
+	// explicit call — the DDP method it replaced did both server-side.
+	const readThread = useEndpoint('POST', '/v1/chat.readThread');
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	const unprocessedReadMessagesEvent = useRef<{ tmid: string; until: Date } | null>(null);
 
-	const count = parseInt(`${getConfig('threadMessagesSize', 50)}`, 10);
+	const count = getNumericConfig('threadMessagesSize', 50);
 
 	useEffect(() => {
 		const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
@@ -129,7 +128,8 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const filtered = filterThreadMessages(messages, tmid);
 			const processed = (await processMessages(filtered)) as IThreadMessage[];
 
-			const pageParam = Math.max(0, total - offset - count);
+			const pageSize = Math.min(processed.length, count);
+			const pageParam = Math.max(0, total - offset - pageSize);
 
 			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
 				pages: [{ items: processed, itemCount: total }],
@@ -139,11 +139,15 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		[queryClient, getThreadMessages, roomId, tmid, count],
 	);
 
+	const jumpToRecent = useCallback(async () => {
+		await queryClient.resetQueries({ queryKey: roomsQueryKeys.threadMessages(roomId, tmid) });
+	}, [queryClient, roomId, tmid]);
+
 	const query = useInfiniteQuery({
 		queryKey,
 		queryFn: async ({ pageParam: offset }) => {
 			if (offset === 0) {
-				void Promise.resolve(readThreads(tmid)).catch(() => undefined);
+				void Promise.resolve(readThread({ tmid })).catch(() => undefined);
 			}
 
 			const cachedData = offset === 0 ? queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey) : undefined;
@@ -175,8 +179,15 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
-			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			if (lastPageParam <= 0) {
+				return undefined;
+			}
+			const pageSize = Math.min(lastPage.items.length, count);
+			if (pageSize <= 0) {
+				return undefined;
+			}
+			return Math.max(0, lastPageParam - pageSize);
 		},
 		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
 			const pageSize = Math.min(firstPage.items.length, count);
@@ -202,5 +213,5 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		refetchOnWindowFocus: false,
 	});
 
-	return { ...query, loadMessageAround };
+	return { ...query, loadMessageAround, jumpToRecent };
 };

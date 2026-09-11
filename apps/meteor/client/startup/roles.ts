@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from '../lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
 import { userIdStore } from '../lib/user';
 import { Roles } from '../stores';

@@ -230,7 +230,7 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 });
@@ -250,7 +250,7 @@ it('renders a code block with language', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
@@ -344,6 +344,87 @@ it('renders plain text instead of ASCII emojis based on useEmojis preference', (
 	);
 
 	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
+});
+
+describe('unicode emojis with the useEmojis preference disabled', () => {
+	const detectEmoji = (text: string) =>
+		text === '🐕' ? [{ name: ':dog2:', className: 'emoji', content: '🐕' }] : [{ name: '', className: 'emoji', content: text }];
+
+	it('renders the shortcode of an emoji sent as unicode', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji,
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{ type: 'PLAIN_TEXT', value: 'Hey! ' },
+								{ type: 'EMOJI', value: undefined, unicode: '🐕' },
+							],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByText('Hey! :dog2:')).toBeInTheDocument();
+	});
+
+	it('renders the glyph when no shortcode is known for the emoji', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji: () => [],
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'PARAGRAPH',
+							value: [{ type: 'EMOJI', value: undefined, unicode: '🫩' }],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByText('🫩')).toBeInTheDocument();
+	});
+
+	it('renders a big emoji block as plain text', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji,
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'BIG_EMOJI',
+							value: [
+								{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'dog2' }, shortCode: 'dog2' },
+								{ type: 'EMOJI', value: undefined, unicode: '🐕' },
+							],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByRole('presentation')).toHaveTextContent(':dog2::dog2:');
+		expect(screen.queryAllByRole('img')).toHaveLength(0);
+	});
 });
 
 describe('ImageElement sanitization', () => {

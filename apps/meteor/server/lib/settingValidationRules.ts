@@ -1,9 +1,11 @@
 import type { ISetting, SettingValidationRule } from '@rocket.chat/core-typings';
+import { isSettingCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isRecord } from '@rocket.chat/tools';
 
 import { settings } from '../settings';
+import { getSettingSchemaValidator } from '../settings/functions/settingSchemas';
 
 const logger = new Logger('SettingValidation');
 
@@ -44,6 +46,24 @@ const parseValidationRules = (settingId: ISetting['_id'], validation: NonNullabl
 
 const isSettingReference = (value: unknown): value is { $setting: ISetting['_id'] } =>
 	isRecord(value) && typeof value.$setting === 'string';
+
+// an empty value means the setting is unconfigured and always passes
+const validatesSchema = (setting: ISetting, value: unknown): boolean => {
+	const validate = getSettingSchemaValidator(setting._id);
+	if (!validate || !isSettingCode(setting) || setting.code !== 'application/json' || value === '') {
+		return true;
+	}
+
+	if (typeof value !== 'string') {
+		return false;
+	}
+
+	try {
+		return !!validate(JSON.parse(value));
+	} catch {
+		return false;
+	}
+};
 
 /**
  * Evaluates a setting's validation rule against the value being saved. Returns `false` only when the rule's filter
@@ -111,9 +131,17 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 		return beingSaved ? beingSaved.value : settings.get(id);
 	};
 
-	for (const { _id } of changes) {
+	for (const { _id, value } of changes) {
 		const setting = settings.getSetting(_id);
-		if (!setting?.validation) {
+		if (!setting) {
+			continue;
+		}
+
+		if (!validatesSchema(setting, value)) {
+			throw new SettingValidationError(`${setting._id}_Invalid`);
+		}
+
+		if (!setting.validation) {
 			continue;
 		}
 

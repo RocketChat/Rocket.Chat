@@ -6,6 +6,7 @@ import { i18n } from '../i18n';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { SystemLogger } from '../logger/system';
+import { warnUnlicensedAuthService } from '../premiumAuthDeprecation';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -21,6 +22,8 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 	) {
 		return undefined;
 	}
+
+	warnUnlicensedAuthService('SAML', 'saml-enterprise');
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 

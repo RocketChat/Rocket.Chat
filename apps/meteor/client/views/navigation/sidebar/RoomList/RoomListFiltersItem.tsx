@@ -1,4 +1,4 @@
-import { Icon, SidebarV2Item, SidebarV2ItemIcon, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import { Icon, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
@@ -33,17 +33,17 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item
+		<SidebarItem
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle }) : roomTitle}
 			selected={group === currentTab}
 			aria-selected={group === currentTab}
 			{...buttonProps}
 			role='tab'
 		>
-			<SidebarV2ItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
-			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
+			<SidebarItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
+			<SidebarItemTitle unread={highlighted}>{t(roomTitle)}</SidebarItemTitle>
 			{showUnread && <RoomListFiltersItemBadge roomTitle={roomTitle} unreadGroupCount={unreadGroupCount} />}
-		</SidebarV2Item>
+		</SidebarItem>
 	);
 };
 

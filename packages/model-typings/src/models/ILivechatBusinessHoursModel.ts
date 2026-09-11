@@ -1,7 +1,8 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { Document, FindOptions } from 'mongodb';
+import type { Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IWorkHoursCronJobsItem {
 	day: string;
@@ -14,14 +15,25 @@ export interface IWorkHoursCronJobsWrapper {
 }
 
 export interface ILivechatBusinessHoursModel extends IBaseModel<ILivechatBusinessHour> {
-	findActiveBusinessHours(options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
-	findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
-	findOneDefaultBusinessHour(options: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour | null>;
-	findOneDefaultBusinessHour<P extends Document>(
-		options: FindOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>,
-	): Promise<P | null>;
-	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null>;
-	findActiveAndOpenBusinessHoursByDay(day: string, options?: FindOptions<ILivechatBusinessHour>): Promise<ILivechatBusinessHour[]>;
+	findActiveBusinessHours<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		options?: O,
+	): Promise<DocumentWithProjection<T, O>[]>;
+	findOneDefaultBusinessHour<
+		P extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
+	findActiveAndOpenBusinessHoursByDay<
+		T extends Document = ILivechatBusinessHour,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		day: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O>[]>;
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
 	insertOne(data: Omit<ILivechatBusinessHour, '_id' | '_updatedAt'>): Promise<any>;
 	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]>;

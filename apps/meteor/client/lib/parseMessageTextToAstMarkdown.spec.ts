@@ -640,4 +640,35 @@ describe('parser limit handling', () => {
 
 		expect(result.md).toBe(existingMd);
 	});
+
+	it('should return one block per line when the message exceeds the limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const result = parseMessageTextToAstMarkdown({ ...baseMessage, msg: 'line one\nline two' }, parseOptions, autoTranslateOptions);
+
+		expect(result.md).toStrictEqual([
+			{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'line one' }] },
+			{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'line two' }] },
+		]);
+	});
+
+	it('should keep blank lines as line breaks when the message exceeds the limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const result = parseMessageTextToAstMarkdown({ ...baseMessage, msg: 'line one\n\nline three' }, parseOptions, autoTranslateOptions);
+
+		expect(result.md).toStrictEqual([
+			{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'line one' }] },
+			{ type: 'LINE_BREAK', value: undefined },
+			{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'line three' }] },
+		]);
+	});
+
+	it('should drop a leading line break past the limit, as the parser path does', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(10);
+
+		const result = parseMessageTextToAstMarkdown({ ...baseMessage, msg: '\nline one\nline two' }, parseOptions, autoTranslateOptions);
+
+		expect(result.md[0]).toStrictEqual({ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'line one' }] });
+	});
 });

@@ -1,5 +1,5 @@
-import { Contextualbar } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 

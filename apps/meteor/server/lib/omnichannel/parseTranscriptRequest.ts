@@ -35,7 +35,9 @@ export const parseTranscriptRequest = async (
 		return options;
 	}
 
-	const defOptions = { projection: { _id: 1, username: 1, name: 1 } };
+	// `as const` keeps the projection statically readable so the return type narrows;
+	// `utcOffset` is part of the `requestedBy` contract.
+	const defOptions = { projection: { _id: 1, username: 1, name: 1, utcOffset: 1 } } as const;
 	const requestedBy =
 		user ||
 		(room.servedBy && (await Users.findOneById(room.servedBy._id, defOptions))) ||

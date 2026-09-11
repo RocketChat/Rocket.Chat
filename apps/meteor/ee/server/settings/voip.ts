@@ -13,7 +13,6 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
-						alert: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Alert',
 						i18nDescription: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Description',
 					});
 

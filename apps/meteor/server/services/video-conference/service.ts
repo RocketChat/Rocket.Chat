@@ -1115,7 +1115,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private isPersistentChatEnabled(): boolean {
-		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled');
+		// Persistent chat discussions are always created unencrypted, so persistent chat is treated as disabled
+		// while the workspace enforces encryption on private rooms.
+		const encryptionEnforced = settings.get<boolean>('E2E_Enable') && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms');
+
+		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled') && !encryptionEnforced;
 	}
 
 	private async maybeCreateDiscussion(callId: VideoConference['_id'], createdBy?: IUser): Promise<void> {

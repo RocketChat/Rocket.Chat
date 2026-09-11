@@ -1,5 +1,17 @@
 # @rocket.chat/tools
 
+## 0.4.0
+
+### Minor Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
 ## 0.3.0
 
 ### Minor Changes

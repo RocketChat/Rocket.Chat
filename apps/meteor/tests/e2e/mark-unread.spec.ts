@@ -17,7 +17,7 @@ test.describe.serial('mark-unread', () => {
 		targetChannel = result.channel as Required<IRoom>;
 
 		await page.emulateMedia({ reducedMotion: 'reduce' });
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterEach(async ({ api }) => {

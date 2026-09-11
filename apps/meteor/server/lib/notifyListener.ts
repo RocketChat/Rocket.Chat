@@ -431,6 +431,14 @@ const getUserNameCached = mem(
 
 const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
+const getUsersByUsernamesCached = mem(
+	async (usernames: string[]): Promise<Map<string, string | undefined>> => {
+		const users = await Users.findByUsernames(usernames, { projection: { username: 1, name: 1 } }).toArray();
+		return new Map(users.filter((u): u is IUser & { username: string } => !!u.username).map((u) => [u.username, u.name]));
+	},
+	{ maxAge: 10000, cacheKey: ([usernames]) => JSON.stringify([...usernames].sort()) },
+);
+
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
@@ -467,6 +475,16 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 				}
 			}
 		}
+
+		if (message.reactions) {
+			const allUsernames = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
+			if (allUsernames.length > 0) {
+				const nameByUsername = await getUsersByUsernamesCached(allUsernames);
+				for (const reaction of Object.values(message.reactions)) {
+					reaction.names = reaction.usernames.map((username) => nameByUsername.get(username) || username);
+				}
+			}
+		}
 	}
 
 	return message;
@@ -490,6 +508,18 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserId = async (
 	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> => {
 	const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
+
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
+
+export const notifyOnSubscriptionsChangedByRoomIdsAndUserId = async (
+	roomIds: ISubscription['rid'][],
+	uid: ISubscription['u']['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserIdAndRoomIds(uid, roomIds, { projection: subscriptionFields });
 
 	void cursor.forEach((subscription) => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });

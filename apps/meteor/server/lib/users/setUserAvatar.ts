@@ -40,7 +40,7 @@ export const setAvatarFromServiceWithValidation = async (
 		});
 	}
 
-	let user: IUser | null;
+	let user: Pick<IUser, '_id' | 'username'> | null;
 
 	if (targetUserId && targetUserId !== userId) {
 		if (!(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {

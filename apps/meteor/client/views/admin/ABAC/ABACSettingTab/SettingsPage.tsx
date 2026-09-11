@@ -32,6 +32,13 @@ const SettingsPage = () => {
 				)}
 
 				<Accordion>
+					<AccordionItem title={t('ABAC_Classification_Banners')}>
+						<FieldGroup>
+							<SettingField settingId='ABAC_Classification_Banners_Enabled' />
+							<SettingField settingId='ABAC_Classification_Banners_Config' />
+						</FieldGroup>
+					</AccordionItem>
+
 					<AccordionItem title={t('LDAP_DataSync_ABAC')}>
 						<FieldGroup>
 							<SettingField settingId='LDAP_Background_Sync_ABAC_Attributes' />

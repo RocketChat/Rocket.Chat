@@ -29,6 +29,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadsList' });
 		}
 
+		if (typeof rid !== 'string') {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getThreadsList' });
+		}
+
 		const user = await Meteor.userAsync();
 		const room = await Rooms.findOneById(rid);
 
@@ -36,6 +40,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Messages.findThreadsByRoomId(rid, skip, limit).toArray();
+		return Messages.findThreadsByRoomId(room._id, skip, limit).toArray();
 	},
 });

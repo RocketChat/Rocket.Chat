@@ -13,6 +13,7 @@ test.describe.serial('Global Search', () => {
 	let targetChannel: { name: string; _id: string };
 	let targetGroup: { name: string; _id: string };
 	let threadMessage: IMessage;
+	let regularMessage: IMessage;
 	let poHomeChannel: HomeChannel;
 
 	const fillMessages = async (api: BaseTest['api']) => {
@@ -24,6 +25,11 @@ test.describe.serial('Global Search', () => {
 			await api.post('/chat.postMessage', { roomId: targetChannel._id, text: `This is thread message in channel`, tmid: parentMessage._id })
 		).json();
 		threadMessage = childMessage;
+
+		const { message: standaloneMessage } = await (
+			await api.post('/chat.postMessage', { roomId: targetChannel._id, text: 'This is regular message in channel' })
+		).json();
+		regularMessage = standaloneMessage;
 	};
 
 	test.beforeAll(async ({ api }) => {
@@ -58,26 +64,26 @@ test.describe.serial('Global Search', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.gotoGroup(targetGroup.name);
 	});
 
-	test('should open the correct message when jumping from global search in group to channel thread', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetGroup.name);
+	test('should open the correct message when jumping from global search in group to channel thread', async () => {
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); // fill partial text to match search
+		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true });
+		await poHomeChannel.tabs.searchMessages.jumpToMessage(threadMessage.msg);
 
-		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
-		await message.hover();
+		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
+		await expect(poHomeChannel.tabs.threads.getThreadMessageByText(threadMessage.msg)).toBeVisible();
+	});
 
-		// Message lists inside the contextual bar do not open the user card on
-		// hover, so the row actions stay reachable without dismissing anything.
-		await expect(page.getByRole('dialog', { name: 'User card' })).toBeHidden();
+	test('should open the correct message when jumping from global search in group to channel message', async () => {
+		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
-		await jumpToMessageButton.click();
+		await poHomeChannel.tabs.searchMessages.search(regularMessage.msg.slice(10), { global: true });
+		await poHomeChannel.tabs.searchMessages.jumpToMessage(regularMessage.msg);
 
-		await expect(page.locator('header').getByRole('button').filter({ hasText: targetChannel.name })).toBeVisible(); // match channel name in room header
-		await expect(page.getByText(threadMessage.msg)).toBeVisible();
+		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
+		await expect(poHomeChannel.content.getMessageByText(regularMessage.msg)).toBeVisible();
 	});
 });

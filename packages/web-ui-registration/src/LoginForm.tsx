@@ -182,6 +182,8 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 										{...register('usernameOrEmail', {
 											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
+										autoCapitalize='none'
+										autoCorrect='off'
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message || (hasAuthError ? errors.password?.message : undefined)}
 										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}

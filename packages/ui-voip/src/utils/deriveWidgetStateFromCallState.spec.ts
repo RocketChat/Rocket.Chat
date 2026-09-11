@@ -4,7 +4,7 @@ import { deriveWidgetStateFromCallState } from './deriveWidgetStateFromCallState
 
 describe('deriveWidgetStateFromCallState', () => {
 	describe('when call state indicates an ongoing call', () => {
-		const ongoingStates: CallState[] = ['active', 'accepted', 'renegotiating'];
+		const ongoingStates: CallState[] = ['active', 'renegotiating'];
 
 		it.each(ongoingStates)("returns 'ongoing' for callState '%s' regardless of role", (callState) => {
 			expect(deriveWidgetStateFromCallState(callState, 'caller')).toBe('ongoing');
@@ -12,8 +12,8 @@ describe('deriveWidgetStateFromCallState', () => {
 		});
 	});
 
-	describe("when call state is 'none' or 'ringing'", () => {
-		const pendingStates: CallState[] = ['none', 'ringing'];
+	describe("when call state is 'none', 'ringing' or 'accepted'", () => {
+		const pendingStates: CallState[] = ['none', 'ringing', 'accepted'];
 
 		it.each(pendingStates)("returns 'ringing' for callState '%s' when role is callee", (callState) => {
 			expect(deriveWidgetStateFromCallState(callState, 'callee')).toBe('ringing');

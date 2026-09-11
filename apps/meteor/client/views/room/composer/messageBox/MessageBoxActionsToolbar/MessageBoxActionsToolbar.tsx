@@ -14,8 +14,8 @@ import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
-import { messageBox } from '../../../../../../app/ui-utils/client';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
+import { messageBox } from '../../../../../lib/messageBox';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 

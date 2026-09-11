@@ -1,7 +1,7 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Roles } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../server/api/api';
@@ -88,86 +88,103 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
-API.v1.addRoute(
+const roleResponseSchema = ajv.compile<{ role: IRole }>({
+	type: 'object',
+	properties: {
+		role: { $ref: '#/components/schemas/IRole' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['role', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'roles.create',
-	{ authRequired: true, license: ['custom-roles'] },
 	{
-		async post() {
-			if (!License.hasModule('custom-roles')) {
-				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
-			}
-
-			if (!isRoleCreateProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
-			const { userId } = this;
-
-			if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
-			}
-
-			const { name, scope, description, mandatory2fa } = this.bodyParams;
-
-			if (await Roles.findOneByIdOrName(name)) {
-				throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
-			}
-
-			const roleData = {
-				description: description || '',
-				...(mandatory2fa !== undefined && { mandatory2fa }),
-				name,
-				scope: scope || 'Users',
-				protected: false,
-			};
-
-			const options = {
-				broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
-			};
-
-			const role = await insertRoleAsync(roleData, options);
-
-			return API.v1.success({ role });
+		authRequired: true,
+		license: ['custom-roles'],
+		body: isRoleCreateProps,
+		response: {
+			200: roleResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('custom-roles')) {
+			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+		}
+
+		const { userId } = this;
+
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
+			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+		}
+
+		const { name, scope, description, mandatory2fa } = this.bodyParams;
+
+		if (await Roles.findOneByIdOrName(name)) {
+			throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
+		}
+
+		const roleData = {
+			description: description || '',
+			...(mandatory2fa !== undefined && { mandatory2fa }),
+			name,
+			scope: scope || 'Users',
+			protected: false,
+		};
+
+		const options = {
+			broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
+		};
+
+		const role = await insertRoleAsync(roleData, options);
+
+		return API.v1.success({ role });
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'roles.update',
-	{ authRequired: true, license: ['custom-roles'] },
 	{
-		async post() {
-			if (!isRoleUpdateProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
-			if (!(await hasPermissionAsync(this.user, 'access-permissions'))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
-			}
-
-			const { roleId, name, scope, description, mandatory2fa } = this.bodyParams;
-
-			const role = await Roles.findOne(roleId);
-
-			if (!License.hasModule('custom-roles') && !role?.protected) {
-				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
-			}
-
-			const roleData = {
-				description: description || '',
-				...(mandatory2fa !== undefined && { mandatory2fa }),
-				name,
-				scope: scope || 'Users',
-				protected: false,
-			};
-
-			const options = {
-				broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
-			};
-
-			const updatedRole = await updateRole(roleId, roleData, options);
-
-			return API.v1.success({ role: updatedRole });
+		authRequired: true,
+		// No route-level `license` gate: the license middleware would reject before the handler,
+		// but updating a protected role is allowed without custom-roles (handled in-action below).
+		body: isRoleUpdateProps,
+		response: {
+			200: roleResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		if (!(await hasPermissionAsync(this.user, 'access-permissions'))) {
+			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+		}
+
+		const { roleId, name, scope, description, mandatory2fa } = this.bodyParams;
+
+		const role = await Roles.findOne(roleId);
+
+		if (!License.hasModule('custom-roles') && !role?.protected) {
+			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+		}
+
+		const roleData = {
+			description: description || '',
+			...(mandatory2fa !== undefined && { mandatory2fa }),
+			name,
+			scope: scope || 'Users',
+			protected: false,
+		};
+
+		const options = {
+			broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
+		};
+
+		const updatedRole = await updateRole(roleId, roleData, options);
+
+		return API.v1.success({ role: updatedRole });
 	},
 );
