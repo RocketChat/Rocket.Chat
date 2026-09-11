@@ -1,6 +1,6 @@
 const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
 
-const hostPortPattern = /^[^\s:/?#]+\.[^\s:/?#]+:\d+(?:[/?#]|$)/;
+const hostPortPattern = /^[^\s.:/?#]+(?:\.[^\s.:/?#]+)+\.?:\d+(?:[/?#]|$)/;
 const rootRelativePattern = /^\/(?![/\\])[^\s]*$/;
 
 const parseUrl = (href: string): URL | undefined => {
