@@ -1991,8 +1991,8 @@ API.v1
 		{
 			authRequired: true,
 			rateLimiterOptions: {
-				numRequestsAllowed: 1,
-				intervalTimeInMS: 1000,
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
 			},
 			body: ajv.compile<{
 				status?: Exclude<UserStatus, UserStatus.DISABLED>;
