@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import useClipboardWithToast from '../../hooks/useClipboardWithToast';
 
 const revealOnHoverStyle = css`
+	/* InfoPanelText's own class is replaced by this one, so carry its word-break over */
+	word-break: break-word;
+
 	& .rcx-user-info-copy {
 		opacity: 0;
 	}
@@ -14,6 +17,13 @@ const revealOnHoverStyle = css`
 	&:hover .rcx-user-info-copy,
 	&:focus-within .rcx-user-info-copy {
 		opacity: 1;
+	}
+
+	/* no hover to reveal it on touch devices: keep the button visible there */
+	@media (hover: none) {
+		& .rcx-user-info-copy {
+			opacity: 1;
+		}
 	}
 `;
 
