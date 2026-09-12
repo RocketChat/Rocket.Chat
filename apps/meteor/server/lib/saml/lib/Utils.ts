@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import zlib from 'node:zlib';
@@ -159,12 +160,78 @@ export class SAMLUtils {
 		return new URLSearchParams({ provider, loginClient }).toString();
 	}
 
+	// public static decodeAuthorizeRelayState(relayState?: string | null): { provider?: string; loginClient?: 'desktop' | 'mobile' } {
+	// 	if (!relayState) {
+	// 		return {};
+	// 	}
+
+	// 	// CASE 1: Compound RelayState in the format produced by encodeAuthorizeRelayState.
+	// 	// 'tenant&provider=other&loginClient=mobile' — will never begin with 'provider='.
+
+	// 	if (relayState.includes('loginClient=')) {
+	// 		const params = new URLSearchParams(relayState);
+	// 		const provider = params.get('provider') ?? undefined;
+	// 		const loginClient = params.get('loginClient');
+	// 		return {
+	// 			provider,
+	// 			loginClient: this.isSupportedLoginClient(loginClient) ? loginClient : undefined,
+	// 		};
+	// 	}
+
+	// 	// CASE 2: The IdP wrapped the entire RelayState in encodeURIComponent, producing a
+	// 	// single opaque blob with no literal separators (e.g. 'provider%3Dtest-sp%26loginClient%3Dmobile').
+
+	// 	if (!relayState.includes('&') && !relayState.includes('=') && relayState.includes('%')) {
+	// 		try {
+	// 			const decoded = decodeURIComponent(relayState);
+	// 			if (decoded.startsWith('provider=') && decoded.includes('&loginClient=')) {
+	// 				const params = new URLSearchParams(decoded);
+	// 				const provider = params.get('provider') ?? undefined;
+	// 				const loginClient = params.get('loginClient');
+	// 				if (provider && this.isSupportedLoginClient(loginClient)) {
+	// 					return { provider, loginClient };
+	// 				}
+	// 			}
+	// 		} catch (err) {
+	// 			this.log({ msg: 'Failed to decode relay state', err });
+	// 		}
+	// 	}
+
+	// 	// CASE 3: The IdP encoded the '=' signs within each segment but kept literal '&'
+	// 	// as the outer separator (e.g. 'provider%3Dtest-sp&loginClient%3Dmobile').
+
+	// 	if ((relayState.includes('%3D') || relayState.includes('%3d')) && relayState.includes('&')) {
+	// 		try {
+	// 			const rebuilt = relayState
+	// 				.split('&')
+	// 				.map((s) => s.replace(/%3D/i, '='))
+	// 				.join('&');
+
+	// 			const params = new URLSearchParams(rebuilt);
+	// 			const provider = params.get('provider') ?? undefined;
+	// 			const loginClient = params.get('loginClient');
+
+	// 			if (provider && this.isSupportedLoginClient(loginClient)) {
+	// 				return { provider, loginClient };
+	// 			}
+	// 		} catch (err) {
+	// 			this.log({ msg: 'Failed to decode relay state', err });
+	// 		}
+	// 	}
+
+	// 	return { provider: relayState };
+	// }
+
 	public static decodeAuthorizeRelayState(relayState?: string | null): { provider?: string; loginClient?: 'desktop' | 'mobile' } {
 		if (!relayState) {
 			return {};
 		}
 
-		if (relayState.startsWith('provider=') && relayState.includes('&loginClient=')) {
+		// CASE 1: Compound RelayState in the format produced by encodeAuthorizeRelayState.
+		// Parameter order is irrelevant:
+		// 'provider=test-sp&loginClient=mobile'
+		// 'loginClient=mobile&provider=test-sp'
+		if (relayState.includes('loginClient=')) {
 			const params = new URLSearchParams(relayState);
 			const provider = params.get('provider') ?? undefined;
 			const loginClient = params.get('loginClient');
@@ -173,6 +240,53 @@ export class SAMLUtils {
 				provider,
 				loginClient: this.isSupportedLoginClient(loginClient) ? loginClient : undefined,
 			};
+		}
+
+		// CASE 2: The IdP URL-encoded the complete RelayState.
+		// Example:
+		// 'provider%3Dtest-sp%26loginClient%3Dmobile'
+		if ((relayState.includes('%3D') || relayState.includes('%3d')) && !relayState.includes('&')) {
+			try {
+				const decoded = decodeURIComponent(relayState);
+				const params = new URLSearchParams(decoded);
+
+				const provider = params.get('provider') ?? undefined;
+				const loginClient = params.get('loginClient');
+
+				if (provider && this.isSupportedLoginClient(loginClient)) {
+					return { provider, loginClient };
+				}
+			} catch (err) {
+				this.log({ msg: 'Failed to decode relay state', err });
+			}
+		}
+
+		// CASE 3: The IdP encoded the '=' separators within each segment
+		// but kept '&' as the outer separator.
+		//
+		// Example:
+		// 'provider%3Dtest-sp&loginClient%3Dmobile'
+		//
+		// Decode only the '=' separator instead of decoding the whole segment.
+		// This prevents an encoded '%26' inside a value from becoming a new
+		// query separator.
+		if ((relayState.includes('%3D') || relayState.includes('%3d')) && relayState.includes('&')) {
+			try {
+				const rebuilt = relayState
+					.split('&')
+					.map((segment) => segment.replace(/%3D/gi, '='))
+					.join('&');
+
+				const params = new URLSearchParams(rebuilt);
+				const provider = params.get('provider') ?? undefined;
+				const loginClient = params.get('loginClient');
+
+				if (provider && this.isSupportedLoginClient(loginClient)) {
+					return { provider, loginClient };
+				}
+			} catch (err) {
+				this.log({ msg: 'Failed to decode relay state', err });
+			}
 		}
 
 		return { provider: relayState };
@@ -198,7 +312,7 @@ export class SAMLUtils {
 
 	public static async inflateXml(deflatedXml: Buffer<ArrayBuffer>): Promise<Buffer<ArrayBuffer>> {
 		return new Promise((resolve, reject) => {
-			zlib.inflateRaw(deflatedXml, (err, inflatedXml) => {
+			zlib.inflateRaw(deflatedXml, (err: Error | null, inflatedXml: Buffer<ArrayBuffer>) => {
 				if (err) {
 					this.log({ msg: 'Error while inflating.', err });
 					return reject(err);
