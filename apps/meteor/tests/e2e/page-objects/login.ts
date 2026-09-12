@@ -53,7 +53,9 @@ export class LoginPage {
 				window.localStorage.setItem(name, value);
 			});
 
-			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
+			const { Accounts } = require('meteor/accounts-base');
+			Accounts._lastLoginTokenWhenPolled = null;
+			Accounts._pollStoredLoginToken();
 		}, localStorageItems);
 
 		await this.waitForLogin();
