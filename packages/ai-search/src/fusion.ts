@@ -46,14 +46,18 @@ export const fuseCandidatesWithWeightedRRF = (
 
 	const fused = new Map<string, FusedIntelligentSearchCandidate>();
 	const addBranch = (candidates: IntelligentSearchCandidate[], branch: IntelligentSearchCandidateSource, branchWeight: number): void => {
-		for (let index = 0; index < candidates.length; index++) {
-			const candidate = candidates[index];
+		if (!branchWeight) {
+			return;
+		}
+		const seen = new Set<string>();
+		for (const candidate of candidates) {
 			const candidateId = getCandidateId(candidate);
-			if (!candidateId) {
+			if (!candidateId || seen.has(candidateId)) {
 				continue;
 			}
+			seen.add(candidateId);
 
-			const rank = index + 1;
+			const rank = seen.size;
 			const contribution = branchWeight / (rrfConstant + rank);
 			const existing = fused.get(candidateId);
 			if (!existing) {
@@ -67,11 +71,6 @@ export const fuseCandidatesWithWeightedRRF = (
 
 			fused.set(candidateId, {
 				...existing,
-				...(branch === 'semantic' && {
-					score: candidate.score ?? existing.score,
-					semanticSimilarity: candidate.semanticSimilarity ?? existing.semanticSimilarity,
-					semanticDistance: candidate.semanticDistance ?? existing.semanticDistance,
-				}),
 				ts: existing.ts || candidate.ts,
 				rrfScore: existing.rrfScore + contribution,
 				...(branch === 'semantic' ? { semanticRank: rank } : { fulltextRank: rank }),
@@ -118,9 +117,7 @@ export const getRecencyDecay = (ageInDays: number, halfLifeDays: number): number
 	return 2 ** (-Math.max(0, ageInDays) / halfLifeDays);
 };
 
-// Multiplicative and bounded by `1 + recencyWeight`, so freshness reorders near-ties but cannot
-// overturn a real relevance gap. A missing or unparseable `ts` keeps the relevance score rather than
-// being penalised.
+// The boost is bounded by `1 + recencyWeight`. Missing or unparseable timestamps keep the RRF score.
 export const applyTemporalRerank = (
 	candidates: FusedIntelligentSearchCandidate[],
 	{ recencyWeight, halfLifeDays, now = new Date() }: TemporalRerankOptions,

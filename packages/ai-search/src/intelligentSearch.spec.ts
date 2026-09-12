@@ -27,6 +27,23 @@ describe('AI Search intelligent search helpers', () => {
 	});
 
 	describe('normalizeIntelligentSearchCandidates', () => {
+		it.each(['semantic', 'keyword'] as const)('counts unique messages toward the %s candidate limit', (source) => {
+			const results = normalizeIntelligentSearchCandidates(
+				[
+					{ id: 'm1', score: 0.1 },
+					{ id: 'm1', score: 0.2 },
+					{ id: 'm2', score: 0.3 },
+				],
+				[],
+				2,
+				undefined,
+				source,
+			);
+
+			expect(results.map(({ msgId }) => msgId)).toEqual(['m1', 'm2']);
+			expect(results[0].semanticSimilarity).toBe(source === 'semantic' ? 0.9 : undefined);
+		});
+
 		it('normalizes supported pipeline response shapes and score formats', () => {
 			const results = normalizeIntelligentSearchCandidates(
 				{
@@ -99,7 +116,7 @@ describe('AI Search intelligent search helpers', () => {
 			expect(results).toEqual([{ _id: 'm1', rid: 'r1', msgId: 'm1', pipelineText: '', source: 'semantic' }]);
 		});
 
-		it('optionally marks the semantic source for caller-provided source input', () => {
+		it('marks keyword candidates without adding a semantic score', () => {
 			expect(
 				normalizeIntelligentSearchCandidates(
 					{ results: [{ metadata: { room_id: 'r1', msg_id: 'm1' }, text: 'keyword match', score: 0.42 }] },
@@ -314,7 +331,7 @@ describe('AI Search intelligent search helpers', () => {
 			});
 		});
 
-		it('returns an empty result set for non-2xx pipeline responses', async () => {
+		it('rejects non-2xx responses so orchestration can distinguish failure from no matches', async () => {
 			const fetch: AIServiceFetch = async () => ({
 				ok: false,
 				status: 500,
@@ -322,7 +339,7 @@ describe('AI Search intelligent search helpers', () => {
 				text: async () => 'failed',
 			});
 
-			const result = await searchIntelligentPipeline({
+			const result = searchIntelligentPipeline({
 				query: 'fruit colors',
 				config: {
 					baseUrl: 'https://pipeline.example.com',
@@ -336,7 +353,7 @@ describe('AI Search intelligent search helpers', () => {
 				fetch,
 			});
 
-			expect(result).toEqual([]);
+			await expect(result).rejects.toThrow('Intelligent search pipeline returned HTTP 500');
 		});
 	});
 });

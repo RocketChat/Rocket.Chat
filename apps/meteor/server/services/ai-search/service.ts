@@ -272,11 +272,16 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return toRankedCandidates(semanticCandidates);
 		}
 
-		return fuseCandidatesWithWeightedRRF(semanticCandidates, keywordCandidates, semanticWeight, candidateLimit);
+		// Preserve the union until visibility filtering and temporal reranking have run.
+		return fuseCandidatesWithWeightedRRF(
+			semanticCandidates,
+			keywordCandidates,
+			semanticWeight,
+			semanticCandidates.length + keywordCandidates.length,
+		);
 	}
 
-	// Larger than the requested page so fusion has overlap to work with and permission filtering below
-	// cannot eat into the page.
+	// Over-fetch to improve fusion overlap and reduce short pages after permission filtering.
 	private getSearchCandidateLimit(requestedLimit: number): number {
 		const scaledLimit = Math.max(requestedLimit, AI_SEARCH_PAGE_SIZE) * INTELLIGENT_SEARCH_CANDIDATE_MULTIPLIER;
 

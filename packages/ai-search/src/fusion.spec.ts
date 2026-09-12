@@ -37,7 +37,7 @@ describe('AI Search fusion helpers', () => {
 			expect(ids(filterSemanticCandidatesByMinimumSimilarity(candidates, 70))).toEqual(['m1', 'm3']);
 		});
 
-		it('keeps candidates that carry no semantic similarity, so keyword hits survive the guardrail', () => {
+		it('preserves unscored semantic candidates if the pipeline omits similarity metadata', () => {
 			const candidates = [candidate('m1'), candidate('m2', { semanticSimilarity: 0.1 })];
 
 			expect(ids(filterSemanticCandidatesByMinimumSimilarity(candidates, 70))).toEqual(['m1']);
@@ -62,6 +62,24 @@ describe('AI Search fusion helpers', () => {
 			expect(fused[0].msgId).toBe('shared');
 			expect(fused[0].semanticRank).toBe(3);
 			expect(fused[0].fulltextRank).toBe(1);
+		});
+
+		it('counts a message once per branch and assigns consecutive unique-message ranks', () => {
+			const fused = fuseCandidatesWithWeightedRRF(
+				[candidate('repeated'), candidate('repeated'), candidate('shared')],
+				[candidate('shared')],
+				50,
+				10,
+			);
+
+			expect(ids(fused)).toEqual(['shared', 'repeated']);
+			expect(fused[0].semanticRank).toBe(2);
+			expect(fused[1].rrfScore).toBeCloseTo(0.5 / (INTELLIGENT_SEARCH_RRF_CONSTANT + 1), 10);
+		});
+
+		it('excludes candidates from a branch with zero weight', () => {
+			expect(ids(fuseCandidatesWithWeightedRRF(semantic, keyword, 100, 10))).toEqual(['s1', 's2', 'shared']);
+			expect(ids(fuseCandidatesWithWeightedRRF(semantic, keyword, 0, 10))).toEqual(['shared', 'k1', 'k2']);
 		});
 
 		it('shifts the ordering as the balance moves towards semantic', () => {

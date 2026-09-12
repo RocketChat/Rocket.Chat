@@ -51,20 +51,23 @@ Fusion works on **rank positions only**, which is what makes the incompatible sc
 branch that did not return `d` contributes nothing.
 
 The two branches are issued with `Promise.allSettled`, not `Promise.all`: if one retriever throws
-(network failure, or the pipeline's 10s timeout) the search degrades to the surviving retriever rather
-than returning nothing. Only a double failure propagates.
+(HTTP error, network failure, or the pipeline's 10s timeout) the search degrades to the surviving retriever rather
+than returning nothing. A double failure rejects the service call. The existing REST handler logs
+that error and returns an empty result list.
 
 `C` and the candidate pool size are implementation parameters and are intentionally not admin settings.
 
 ## The similarity guardrail
 
-`AI_Intelligent_Search_Min_Similarity_Percent` applies **only to semantic candidates**, and only after
-retrieval. A keyword hit is never discarded for being semantically unremarkable - that is precisely the
+`AI_Intelligent_Search_Min_Similarity_Percent` applies **only to semantic candidates**, through the
+pipeline request's distance threshold and again after retrieval. A keyword hit is never discarded for
+being semantically unremarkable - that is precisely the
 case hybrid search exists to serve (exact error codes, ticket ids, function names).
 
 It defaults to `0` (disabled) and should stay that way for most workspaces: a fixed embedding threshold
 is brittle across embedding models, query length, language and corpus, whereas ranking is stable. Treat
-it as a garbage-result guardrail, not a quality control.
+it as a garbage-result guardrail, not a quality control. If the pipeline omits all similarity metadata,
+unscored semantic candidates are preserved for compatibility.
 
 ## Temporal reranking
 
@@ -82,13 +85,16 @@ essentially flat, so exposing it would add a setting without adding reachable qu
 Timestamps come from the pipeline fragment metadata, so the boost costs no extra database work.
 Candidates without a usable timestamp keep their relevance score rather than being penalised.
 
-Because the boost is multiplicative and bounded by `1 + w`, it can reorder near-ties but cannot overturn
-a large relevance gap.
+The boost is bounded by `1 + w`, at most doubling a candidate's RRF score. RRF compresses rank
+differences, so a high recency weight can move a fresh message substantially up the candidate list.
+It cannot overturn an RRF score gap greater than that multiplier.
 
 ## Candidate pool
 
 Each branch is asked for more candidates than the caller requested (`limit × 3`, clamped to
 `[20, 100]`). Fusion needs overlap to work with, and results are filtered for visibility and room
 subscription **after** retrieval, so a pool the size of the page would return short pages. The cap stays
-above `MAX_INTELLIGENT_SEARCH_RESULTS` for that reason. Neither fusion nor normalization truncates
-before that filtering runs.
+above `MAX_INTELLIGENT_SEARCH_RESULTS` for that reason. Each branch retains its highest-ranked fragment
+per message. The complete fused union (at most 200 messages) reaches temporal reranking and visibility
+filtering before the requested page is selected. Over-fetching reduces short pages but cannot guarantee
+a full page if too few retrieved messages remain accessible.

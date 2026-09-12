@@ -380,6 +380,25 @@ describe('AISearchService', () => {
 			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['visible-b', 'visible-a']);
 		});
 
+		it('retains the other branch beyond the candidate cap when higher-ranked messages are inaccessible', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 90 : settings[key]));
+			serverFetch.callsFake(async (_url: string, options: { body: string }) => {
+				const { type, params } = JSON.parse(options.body);
+				const results = Array.from({ length: params.k }, (_, index) => ({
+					metadata: { room_id: type === 'similarity' ? 'forbidden' : 'allowed', msg_id: `${type}-${index}` },
+					score: 0.2,
+				}));
+				return { ok: true, status: 200, json: async () => ({ results }), text: async () => '' };
+			});
+			Messages.findVisibleByIds.callsFake((msgIds: string[]) =>
+				cursor(msgIds.map((_id) => ({ _id, rid: _id.startsWith('similarity-') ? 'forbidden' : 'allowed', msg: _id }))),
+			);
+
+			const results = await createService().search({ query: 'fruit', userId: 'user-id', limit: 2 });
+
+			expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['search-0', 'search-1']);
+		});
+
 		it('promotes fresher messages once the recency boost is enabled', async () => {
 			const timestamps: Record<string, string> = {
 				stale: '2020-01-01T12:00:00.000Z',
@@ -441,6 +460,37 @@ describe('AISearchService', () => {
 				.then(
 					() => expect.fail('expected the search to reject'),
 					(error: Error) => expect(error.message).to.equal('pipeline unreachable'),
+				);
+		});
+
+		for (const failedType of ['similarity', 'search']) {
+			it(`serves the surviving retriever when ${failedType} returns HTTP 503`, async () => {
+				cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+				serverFetch.callsFake(async (_url: string, options: { body: string }) => {
+					const failed = JSON.parse(options.body).type === failedType;
+					return {
+						ok: !failed,
+						status: failed ? 503 : 200,
+						json: async () => ({ results: [{ id: 'allowed-msg', score: 0.2 }] }),
+						text: async () => '',
+					};
+				});
+
+				const results = await createService().search({ query: 'fruit', userId: 'user-id' });
+
+				expect(results.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['allowed-msg']);
+			});
+		}
+
+		it('rejects when both retrievers return HTTP errors', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+			serverFetch.resolves({ ok: false, status: 503, text: async () => '' });
+
+			await createService()
+				.search({ query: 'fruit', userId: 'user-id' })
+				.then(
+					() => expect.fail('expected the search to reject'),
+					(error: Error) => expect(error.message).to.equal('Intelligent search pipeline returned HTTP 503'),
 				);
 		});
 

@@ -152,6 +152,7 @@ export const normalizeIntelligentSearchCandidates = (
 	const shouldFilterByRoomIds = userRoomIdSet.size > 0;
 
 	const candidates: IntelligentSearchCandidate[] = [];
+	const seenMessageIds = new Set<string>();
 	for (let index = 0; index < rawResults.length && candidates.length < limit; index++) {
 		const result = asRecord(rawResults[index]);
 		const metadata = asRecord(result.metadata);
@@ -162,6 +163,13 @@ export const normalizeIntelligentSearchCandidates = (
 		if (shouldFilterByRoomIds && rid && !userRoomIdSet.has(rid)) {
 			logger?.debug?.({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid });
 			continue;
+		}
+		// A message can have several indexed fragments. Keep its highest-ranked fragment.
+		if (msgId) {
+			if (seenMessageIds.has(msgId)) {
+				continue;
+			}
+			seenMessageIds.add(msgId);
 		}
 
 		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
@@ -313,7 +321,7 @@ export const searchIntelligentPipeline = async ({
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
 		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, bodyLength: body.length });
-		return [];
+		throw new Error(`Intelligent search pipeline returned HTTP ${response.status}`);
 	}
 
 	const json = await response.json();
