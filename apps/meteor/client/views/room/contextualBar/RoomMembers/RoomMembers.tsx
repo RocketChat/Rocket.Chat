@@ -48,6 +48,8 @@ export type RoomMembersProps = {
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 	isABACRoom?: boolean;
+	/** ABAC-P4 M1 — the room is locked by enforcement, so no member may be added by any route. */
+	isLocked?: boolean;
 };
 
 const RoomMembers = ({
@@ -71,6 +73,7 @@ const RoomMembers = ({
 	isDirect,
 	reload,
 	isABACRoom = false,
+	isLocked = false,
 }: RoomMembersProps) => {
 	const { t } = useTranslation();
 	const membersListId = useId();
@@ -221,15 +224,26 @@ const RoomMembers = ({
 								icon='link'
 								onClick={onClickInvite}
 								width='50%'
-								disabled={isABACRoom}
-								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+								disabled={isABACRoom || isLocked}
+								title={
+									(isLocked && t('ABAC_Cannot_add_members_to_locked_room')) ||
+									(isABACRoom && t('Not_available_for_ABAC_enabled_rooms')) ||
+									undefined
+								}
 								aria-label={t('Invite_Link')}
 							>
 								{t('Invite_Link')}
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
+							<Button
+								icon='user-plus'
+								onClick={onClickAdd}
+								width='50%'
+								primary
+								disabled={isLocked}
+								title={isLocked ? t('ABAC_Cannot_add_members_to_locked_room') : undefined}
+							>
 								{t('Add')}
 							</Button>
 						)}

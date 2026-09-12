@@ -2,6 +2,7 @@ import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rock
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
+import ComposerAbacLocked from './ComposerAbacLocked';
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
@@ -19,6 +20,7 @@ import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchiv
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
+import { useIsRoomLocked } from '../../admin/ABAC/hooks/useIsRoomLocked';
 import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
@@ -32,6 +34,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 	const isArchived = useMessageComposerIsArchived(room, props.subscription);
 	const isReadOnly = useMessageComposerIsReadOnly(room);
+	const isAbacLocked = useIsRoomLocked(room);
 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);
@@ -54,6 +57,14 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 
 	if (isAnonymous) {
 		return <ComposerAnonymous />;
+	}
+
+	// ABAC-P4 §7.3 — locked is a distinct state from read-only and a room can be both. It is
+	// resolved first because its callout is the one carrying the way out of the state. Omnichannel
+	// and federated rooms have already returned above, which is what keeps them excluded (D8) by
+	// structure rather than by a condition someone has to remember.
+	if (isAbacLocked) {
+		return <ComposerAbacLocked />;
 	}
 
 	if (isReadOnly) {

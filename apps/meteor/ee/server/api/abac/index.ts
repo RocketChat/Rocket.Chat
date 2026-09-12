@@ -25,6 +25,7 @@ import {
 	GETAbacAuditEventsResponseSchema,
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
+	GETAbacAttributeKeysResponseSchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
@@ -463,6 +464,45 @@ const abacEndpoints = API.v1
 				offset,
 				total,
 			});
+		},
+	)
+
+	.get(
+		'abac/attribute-keys',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-abac-admin-settings'],
+			license: ['abac'],
+			response: {
+				200: GETAbacAttributeKeysResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			// Option source for the `ABAC_Required_Attributes` multiLookup setting. Returns keys only —
+			// the required-attribute set is expressed in keys, not key/value pairs. Scoped by actor, so
+			// under an external attribute store an admin sees only the keys they possess.
+			const actor = getActorFromUser(this.user);
+			const PAGE = 150;
+			const MAX_PAGES = 20;
+
+			const keys: string[] = [];
+			let offset = 0;
+
+			for (let page = 0; page < MAX_PAGES; page++) {
+				const { attributes, total } = await Abac.listAbacAttributes({ offset, count: PAGE }, actor);
+				keys.push(...attributes.map(({ key }) => key));
+				offset += PAGE;
+
+				if (offset >= total || attributes.length === 0) {
+					break;
+				}
+			}
+
+			const data = [...new Set(keys)].sort((a, b) => a.localeCompare(b)).map((key) => ({ key, label: key }));
+
+			return API.v1.success({ data });
 		},
 	);
 

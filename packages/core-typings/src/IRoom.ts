@@ -158,6 +158,68 @@ export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t ===
 export const isABACManagedRoom = (room: Partial<IRoom>): room is IRoom & { abacAttributes: IAbacAttributeDefinition[] } =>
 	room?.t === 'p' && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
 
+/**
+ * The room fields the locked predicate needs. `prid` and `teamMain` are not read as exclusions —
+ * discussions (ABAC-P4/D7) and teams (ABAC-P4/D4) are explicitly in scope — they are part of the
+ * shape so callers cannot pass a projection that omits them and silently get `false`.
+ */
+export type LockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid' | 'teamMain'>;
+
+export type RoomLockContext = {
+	/** `ABAC_Enabled` AND `ABAC_Enforce_All_Rooms` AND the `abac` license module. */
+	enforcementOn: boolean;
+	/** `ABAC_Required_Attributes` — attribute keys every ABAC room must carry. */
+	requiredAttributeKeys: string[];
+};
+
+/**
+ * The single "is this room locked" predicate (ABAC-P4 §7.1). Every guard must call this rather
+ * than re-deriving the condition, which is how room-type behaviours drift apart.
+ *
+ * Deliberately pure, synchronous and isomorphic: it takes the resolved policy instead of reading
+ * settings or the license, so the server guards, the client composer and a unit test covering every
+ * room type all share one implementation.
+ *
+ * Note this is NOT the negation of `isABACManagedRoom`. That predicate requires `t === 'p'`, so a
+ * public channel created before enforcement is never "managed" — yet it is exactly the room that
+ * must be locked. The room sets differ.
+ */
+export const isRoomLocked = (room: LockableRoom, { enforcementOn, requiredAttributeKeys }: RoomLockContext): boolean => {
+	if (!enforcementOn) {
+		return false;
+	}
+
+	// Excluded room types (ABAC-P4 §7.1). `d` covers both 1-on-1 and Group DMs (D1); `l` is
+	// Omnichannel/Livechat, out of scope entirely.
+	if (room.t !== 'c' && room.t !== 'p') {
+		return false;
+	}
+
+	// Federated rooms are excluded (D8) — remote members cannot be evaluated against the PDP.
+	if (room.federated === true) {
+		return false;
+	}
+
+	const attributes = room.abacAttributes;
+
+	// No attributes at all: locked.
+	if (!Array.isArray(attributes) || attributes.length === 0) {
+		return true;
+	}
+
+	// Missing a currently-required attribute: locked under the same rules (D3).
+	//
+	// Keys are compared trimmed and case-sensitively, matching `validateAndNormalizeAttributes`,
+	// which trims but does not fold case. An attribute key carrying no values does not satisfy a
+	// requirement.
+	const presentKeys = new Set(attributes.filter((attribute) => attribute.values?.length > 0).map((attribute) => attribute.key));
+
+	return requiredAttributeKeys.some((requiredKey) => {
+		const key = requiredKey.trim();
+		return key.length > 0 && !presentKeys.has(key);
+	});
+};
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
