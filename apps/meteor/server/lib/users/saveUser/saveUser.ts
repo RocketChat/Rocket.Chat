@@ -251,7 +251,7 @@ const _saveUser = (session?: ClientSession) =>
 				clientAction: 'updated',
 				id: userData._id,
 				diff,
-				...(clearedProfileFields.length > 0 && { unset: Object.fromEntries(clearedProfileFields.map((field) => [field, true])) }),
+				...(clearedProfileFields.length > 0 && { unset: Object.fromEntries(clearedProfileFields.map((field) => [field, 1])) }),
 			});
 		}, session);
 

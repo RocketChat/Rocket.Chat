@@ -123,8 +123,8 @@ async function saveUserProfile(
 
 		// All three fields land in a single write: no per-field _updatedAt
 		// churn and no partial state if a later step throws.
-		const $set: Partial<Record<ProfileField, string | string[]>> = {};
-		const $unset: Partial<Record<ProfileField, 1>> = {};
+		const $set: Record<string, string | string[]> = {};
+		const $unset: Record<string, 1> = {};
 
 		for (const field of ['title', 'nationality'] as const) {
 			const value = settings[field];
