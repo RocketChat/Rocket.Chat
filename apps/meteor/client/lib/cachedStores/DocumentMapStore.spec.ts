@@ -10,6 +10,7 @@ interface ITestRecord {
 
 const fromBinary = { _id: binaryId as unknown as string, rid: hexId };
 const fromString = { _id: hexId, rid: hexId };
+const objectId = { toHexString: () => hexId };
 
 describe('cachedStores/DocumentMapStore', () => {
 	describe('toRecordId', () => {
@@ -19,6 +20,10 @@ describe('cachedStores/DocumentMapStore', () => {
 
 		it('should read the hexadecimal id out of a binary id', () => {
 			expect(toRecordId(binaryId)).toBe(hexId);
+		});
+
+		it('should read the hexadecimal id out of an ObjectId', () => {
+			expect(toRecordId(objectId)).toBe(hexId);
 		});
 	});
 
@@ -64,6 +69,51 @@ describe('cachedStores/DocumentMapStore', () => {
 
 			store.getState().store(fromBinary);
 			store.getState().delete(fromBinary._id);
+
+			expect(store.getState().records.size).toBe(0);
+		});
+
+		it('should merge a document carrying an ObjectId with the same document carrying a string id', () => {
+			const store = createDocumentMapStore<ITestRecord>();
+
+			store.getState().store({ _id: objectId as unknown as string, rid: hexId });
+			store.getState().store(fromString);
+
+			expect(store.getState().records.size).toBe(1);
+			expect([...store.getState().records.keys()]).toEqual([hexId]);
+		});
+
+		it('should keep an updated document keyed by its hexadecimal id', () => {
+			const store = createDocumentMapStore<ITestRecord>();
+
+			store.getState().store(fromBinary);
+			store.getState().update(
+				(record) => record.rid === hexId,
+				(record) => ({ ...record }),
+			);
+
+			expect(store.getState().records.size).toBe(1);
+			expect([...store.getState().records.keys()]).toEqual([hexId]);
+		});
+
+		it('should keep an asynchronously updated document keyed by its hexadecimal id', async () => {
+			const store = createDocumentMapStore<ITestRecord>();
+
+			store.getState().store(fromBinary);
+			await store.getState().updateAsync(
+				(record) => record.rid === hexId,
+				async (record) => ({ ...record }),
+			);
+
+			expect(store.getState().records.size).toBe(1);
+			expect([...store.getState().records.keys()]).toEqual([hexId]);
+		});
+
+		it('should remove a document that was stored under a binary id', () => {
+			const store = createDocumentMapStore<ITestRecord>();
+
+			store.getState().store(fromBinary);
+			store.getState().remove((record) => record.rid === hexId);
 
 			expect(store.getState().records.size).toBe(0);
 		});

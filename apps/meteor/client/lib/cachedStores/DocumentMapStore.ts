@@ -17,6 +17,11 @@ export const toRecordId = (id: unknown): string => {
 		return id;
 	}
 
+	// an ObjectId carries the same 24-character id in its hexadecimal form
+	if (typeof (id as { toHexString?: unknown })?.toHexString === 'function') {
+		return (id as { toHexString: () => string }).toHexString();
+	}
+
 	if (ArrayBuffer.isView(id)) {
 		return bytesToHex(new Uint8Array(id.buffer, id.byteOffset, id.byteLength));
 	}
@@ -293,9 +298,10 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 				const records = new Map<T['_id'], T>();
 				for (const record of state.records.values()) {
 					if (predicate(record)) {
-						const newRecord = modifier(record);
-						records.set(record._id, newRecord);
-						if (onInvalidate) affected.push(newRecord);
+						const entry = toEntry(modifier(record));
+
+						records.set(...entry);
+						if (onInvalidate) affected.push(entry[1]);
 					} else {
 						records.set(record._id, record);
 					}
@@ -312,9 +318,10 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 
 			for await (const record of get().records.values()) {
 				if (predicate(record)) {
-					const newRecord = await modifier(record);
-					records.set(record._id, newRecord);
-					if (onInvalidate) affected.push(newRecord);
+					const entry = toEntry(await modifier(record));
+
+					records.set(...entry);
+					if (onInvalidate) affected.push(entry[1]);
 				} else {
 					records.set(record._id, record);
 				}
