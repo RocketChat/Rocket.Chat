@@ -50,7 +50,11 @@ const UserInfoZoomableAvatar = ({ username, etag }: UserInfoZoomableAvatarProps)
 			</Box>
 			{isZoomed && (
 				<Suspense fallback={null}>
-					<ImageGallery images={[{ _id: avatarUrl, url: avatarUrl }]} onClose={() => setIsZoomed(false)} />
+					{/* the gallery uses `description` as the image's alt text */}
+					<ImageGallery
+						images={[{ _id: avatarUrl, url: avatarUrl, description: t('Avatar_of', { username }) }]}
+						onClose={() => setIsZoomed(false)}
+					/>
 				</Suspense>
 			)}
 		</>
