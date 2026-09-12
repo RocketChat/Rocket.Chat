@@ -1,14 +1,35 @@
-import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
-import { Popover } from '@rocket.chat/fuselage';
+import { Box, Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 
 const UserCard = lazy(() => import('../UserCard'));
+
+const HOVER_OPEN_DELAY = 500;
+const HOVER_CLOSE_DELAY = 300;
+
+// Anchored elements sit 0.25rem (4px at the default root font size) away
+// from their trigger. The positioning engine takes px, so the offset is
+// derived from the current root font size to stay rem-based.
+const getPopoverOffset = () => 0.25 * parseFloat(window.getComputedStyle(document.documentElement).fontSize || '16');
+
+// Static trigger attributes shared by every trigger in the room. Stateful
+// attributes (aria-expanded/aria-controls) are deliberately left out: with a
+// single provider serving hundreds of triggers, they would be announced on
+// all of them whenever any one card opens.
+const cardTriggerProps = { 'aria-haspopup': 'dialog' } as const;
+
+const isPointInside = (el: Element | null, x: number, y: number): boolean => {
+	if (!el) {
+		return false;
+	}
+	const rect = el.getBoundingClientRect();
+	return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+};
 
 export type UserCardProviderProps = { children: ReactNode };
 
@@ -17,9 +38,33 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 
 	const triggerRef = useRef<Element | null>(null);
-	const state = useOverlayTriggerState({});
-	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
-	delete triggerProps.onPress;
+	const cardRef = useRef<HTMLElement | null>(null);
+
+	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+	const clearTimers = useCallback(() => {
+		clearTimeout(openTimerRef.current);
+		clearTimeout(closeTimerRef.current);
+		openTimerRef.current = undefined;
+		closeTimerRef.current = undefined;
+	}, []);
+
+	// Single close path for every dismissal (Escape, outside interaction,
+	// hover-out tracking and programmatic closes all funnel through here).
+	// Only the close timer is cleared: when the pointer goes straight from an
+	// open card to another author's name, that trigger's pending open must
+	// survive the previous card closing, or the second card never shows up.
+	const handleOpenChange = useStableCallback((open: boolean) => {
+		if (open) return;
+		clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = undefined;
+		setUserCardData(null);
+	});
+
+	const state = useOverlayTriggerState({ onOpenChange: handleOpenChange });
+
+	useEffect(() => clearTimers, [clearTimers]);
 
 	const { openTab } = useRoomToolbox();
 
@@ -39,38 +84,149 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
-	const handleSetUserCard = useCallback(
-		(e: UIEvent, username: string) => {
-			triggerRef.current = e.target as Element | null;
+	const closeUserCard = useStableCallback(() => {
+		state.close();
+	});
+
+	// Opens the full profile straight from a message trigger (avatar/name
+	// click), dismissing any pending or open card on the way.
+	const handleOpenUserInfo = useStableCallback((username?: string) => {
+		clearTimers();
+		state.close();
+		openUserInfo(username);
+	});
+
+	const handleTriggerLeave = useStableCallback(() => {
+		// Only cancels a pending open; once the card is open, closing is
+		// handled by the document mousemove tracking below.
+		clearTimeout(openTimerRef.current);
+		openTimerRef.current = undefined;
+	});
+
+	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
+		const trigger = (e.currentTarget ?? e.target) as Element | null;
+
+		clearTimers();
+
+		const open = () => {
+			triggerRef.current = trigger;
 			state.open();
 			setUserCardData({
 				username,
 				rid: room._id,
 				onOpenUserInfo: () => openUserInfo(username),
-				onClose: () => setUserCardData(null),
+				onClose: closeUserCard,
 			});
-		},
-		[openUserInfo, room._id, state],
-	);
+		};
 
+		// A click (the collapsed role tag) opens immediately; hover waits out
+		// the intent delay. Keyboard triggers open the full profile instead,
+		// so the card is only ever pointer-driven.
+		if (e.type === 'click') {
+			open();
+			return;
+		}
+
+		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
+		openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
+	});
+
+	const isOpen = state.isOpen && !!userCardData;
+
+	// Track the card node for the geometric hover tracker below.
+	const handleCardRef = useCallback((node: HTMLElement | null) => {
+		cardRef.current = node;
+	}, []);
+
+	useEffect(() => {
+		if (!isOpen) {
+			return;
+		}
+
+		// Synthetic mouseenter/mouseleave are unreliable on the popover (it is
+		// portaled and re-renders under a resting pointer), so hover intent is
+		// tracked geometrically: the card stays open while the pointer is over
+		// the card, its trigger, or a menu popup spawned from the card (e.g.
+		// the kebab actions menu, which is portaled outside the card's rect),
+		// and closes shortly after it leaves them all.
+		const isPointerOverCard = (x: number, y: number) => {
+			if (isPointInside(cardRef.current, x, y) || isPointInside(triggerRef.current, x, y)) {
+				return true;
+			}
+			return Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y));
+		};
+
+		const handleMouseMove = (e: MouseEvent) => {
+			if (isPointerOverCard(e.clientX, e.clientY)) {
+				clearTimeout(closeTimerRef.current);
+				closeTimerRef.current = undefined;
+				return;
+			}
+
+			if (closeTimerRef.current === undefined) {
+				closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
+			}
+		};
+
+		const handleDocumentLeave = () => {
+			clearTimeout(closeTimerRef.current);
+			closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
+		};
+
+		// The card is a non-modal popover that never holds focus (it opens on
+		// hover), so react-aria's focus-scoped Escape never fires — Escape is
+		// handled at the document level instead (WCAG 1.4.13). Listen in the
+		// capture phase and stop the event there so dismissing the card
+		// consumes the Escape before it reaches an underlying contextual bar or
+		// search panel, which would otherwise close on the same keystroke.
+		// A menu popup spawned from the card (the kebab actions) owns the
+		// Escape while it is open: let it dismiss itself and keep the card.
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key !== 'Escape') {
+				return;
+			}
+			if (document.querySelector('[role="menu"]')) {
+				return;
+			}
+			e.stopImmediatePropagation();
+			closeUserCard();
+		};
+
+		document.addEventListener('mousemove', handleMouseMove);
+		document.addEventListener('keydown', handleKeyDown, { capture: true });
+		document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
+		return () => {
+			document.removeEventListener('mousemove', handleMouseMove);
+			document.removeEventListener('keydown', handleKeyDown, { capture: true });
+			document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
+		};
+	}, [isOpen, closeUserCard]);
+
+	// Every entry is identity-stable, so consumers subscribed to the context
+	// (every message header, avatar and mention in the room) never re-render
+	// because a card opened or closed elsewhere.
 	const contextValue = useMemo(
 		() => ({
 			openUserCard: handleSetUserCard,
-			closeUserCard: () => setUserCardData(null),
-			triggerProps,
-			triggerRef,
-			state,
+			openUserInfo: handleOpenUserInfo,
+			closeUserCard,
+			triggerProps: cardTriggerProps,
 		}),
-		[handleSetUserCard, state, triggerProps],
+		[handleSetUserCard, handleOpenUserInfo, closeUserCard],
 	);
 
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{state.isOpen && userCardData && (
+			{isOpen && userCardData && (
 				<Suspense fallback={null}>
-					<Popover placement='top left' triggerRef={triggerRef} state={state}>
-						<UserCard {...userCardData} {...overlayProps} />
+					{/* isNonModal: a modal popover would aria-hide the rest of the page
+					    and lock scroll — hostile to a card that opens on mere hover
+					    while focus stays in the message list. */}
+					<Popover isNonModal placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
+						<Box ref={handleCardRef} tabIndex={-1}>
+							<UserCard {...userCardData} />
+						</Box>
 					</Popover>
 				</Suspense>
 			)}

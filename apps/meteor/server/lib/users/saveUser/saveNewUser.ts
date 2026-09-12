@@ -10,6 +10,7 @@ import { warnGravatarDeprecation } from '../gravatarDeprecation';
 import { setUserAvatar } from '../setUserAvatar';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
+import { handleProfileFields } from './handleProfileFields';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 import { getNewUserRoles } from '../../../services/user/lib/getNewUserRoles';
@@ -59,6 +60,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
+	handleProfileFields(updater, userData);
 
 	await Users.updateFromUpdater({ _id }, updater);
 

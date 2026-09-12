@@ -10,13 +10,15 @@ export default {
 
 export const AdministratorExample: StoryObj<typeof MessageRoles> = {
 	args: {
-		roles: ['admin', 'user'],
+		workspaceRoles: ['Admin', 'Livechat Manager', 'Auditor'],
+		roomRoles: ['Owner', 'Leader'],
 	},
 };
 
 export const BotExample: StoryObj<typeof MessageRoles> = {
 	args: {
-		roles: ['user'],
+		workspaceRoles: [],
+		roomRoles: [],
 		isBot: true,
 	},
 };

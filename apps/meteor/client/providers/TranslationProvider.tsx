@@ -112,15 +112,28 @@ const useI18next = (lng: string): typeof i18next => {
 			},
 		});
 
+		// Formatters are registered right after init() rather than on the
+		// 'initialized' event: with English bundled in `resources`, init
+		// completes synchronously and the event fires before a listener could
+		// be attached — so event-registered formatters never exist for
+		// English sessions.
 		// In some cases, the language will require a word to be in a different position than the default
 		// This enables the capitalization of words that are moved to the start of the sentence directly in the translation file
-		i18n.on('initialized', () => {
-			i18n.services.formatter?.add('capitalize', (value) => {
-				if (typeof value !== 'string') {
-					return value;
-				}
-				return capitalize(value);
-			});
+		i18n.services.formatter?.add('capitalize', (value) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return capitalize(value);
+		});
+		// The inverse case: a label interpolated mid-sentence (e.g. "Copy
+		// {{field}}") drops its label capitalization in languages that don't
+		// capitalize nouns; locales that do (e.g. German) simply don't use
+		// the formatter in their translation.
+		i18n.services.formatter?.add('lowercase', (value, lng) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return value.toLocaleLowerCase(lng);
 		});
 	}
 

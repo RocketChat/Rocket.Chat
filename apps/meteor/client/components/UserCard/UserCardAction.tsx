@@ -1,8 +1,12 @@
-import { IconButton } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import { Button } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactNode } from 'react';
 
-export type UserCardActionProps = ComponentProps<typeof IconButton>;
+export type UserCardActionProps = { label?: ReactNode } & ComponentProps<typeof Button>;
 
-const UserCardAction = ({ label, icon, ...props }: UserCardActionProps) => <IconButton icon={icon} small title={label} {...props} />;
+const UserCardAction = ({ label, ...props }: UserCardActionProps) => (
+	<Button small flexGrow={1} flexShrink={1} flexBasis={0} {...props}>
+		{label}
+	</Button>
+);
 
 export default UserCardAction;

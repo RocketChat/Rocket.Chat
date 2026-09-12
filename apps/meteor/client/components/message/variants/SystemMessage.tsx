@@ -8,20 +8,17 @@ import {
 	MessageSystemTimestamp,
 	MessageSystemBlock,
 	CheckBox,
-	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
+import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -31,12 +28,7 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import {
-	useMessageListShowRealName,
-	useMessageListShowUsername,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-} from '../list/MessageListContext';
+import { useMessageListFormatDateAndTime, useMessageListFormatTime, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -47,13 +39,10 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
-	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const normalizedUsername = normalizeUsername(user.username);
-	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
 
 	const messageType = MessageTypes.getType(message);
@@ -62,7 +51,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;
@@ -87,19 +75,39 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && (
+					<UserAvatar
+						username={message.u.username}
+						size='x18'
+						title=''
+						style={{ cursor: 'pointer' }}
+						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
+						onClick={() => openUserInfo(message.u.username)}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
+					/>
+				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+					{/* Same as the avatar above: while selecting, the row is the click target, so the name stops being a button. */}
+					<MessageNameContainer
+						{...(!isSelecting && {
+							role: 'button' as const,
+							tabIndex: 0,
+							onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined,
+							onClick: () => openUserInfo(user.username),
+							onKeyDown: (e: KeyboardEvent) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.preventDefault();
+									openUserInfo(user.username);
+								}
+							},
+							...triggerProps,
+						})}
+					>
 						<MessageSystemName>{displayName}</MessageSystemName>
-						{showUsername && (
-							<>
-								{' '}
-								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-							</>
-						)}
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>

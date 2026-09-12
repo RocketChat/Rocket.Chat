@@ -3,6 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import escape from 'lodash.escape';
 
+import { validateProfileFields } from './handleProfileFields';
 import type { SaveUserData } from './saveUser';
 import { isUpdateUserData } from './saveUser';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -66,6 +67,10 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 			field: 'Username',
 		});
 	}
+
+	// Sizes are checked before any write so a failure cannot leave a
+	// half-created user behind (the insert happens before the updater runs).
+	validateProfileFields(userData, 'insertOrUpdateUser');
 
 	let nameValidation;
 

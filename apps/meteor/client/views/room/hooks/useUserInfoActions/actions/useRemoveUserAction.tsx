@@ -128,7 +128,7 @@ export const useRemoveUserAction = (
 	}, [invited, room?.teamMain, t]);
 
 	const removeUserOption = useMemo(() => {
-		if (!roomCanRemove || !userCanRemove) {
+		if (!roomCanRemove || !userCanRemove || uid === currentUser?._id) {
 			return undefined;
 		}
 
@@ -139,7 +139,7 @@ export const useRemoveUserAction = (
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content]);
+	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content, uid, currentUser?._id]);
 
 	return removeUserOption;
 };
