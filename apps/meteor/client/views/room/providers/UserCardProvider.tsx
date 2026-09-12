@@ -52,9 +52,13 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 	// Single close path for every dismissal (Escape, outside interaction,
 	// hover-out tracking and programmatic closes all funnel through here).
+	// Only the close timer is cleared: when the pointer goes straight from an
+	// open card to another author's name, that trigger's pending open must
+	// survive the previous card closing, or the second card never shows up.
 	const handleOpenChange = useStableCallback((open: boolean) => {
 		if (open) return;
-		clearTimers();
+		clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = undefined;
 		setUserCardData(null);
 	});
 
