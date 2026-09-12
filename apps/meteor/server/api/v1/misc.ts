@@ -393,6 +393,7 @@ API.v1.get(
 		// Keep parity so anonymous-user / embedded-layout flows can still
 		// resolve a public channel through the navbar search.
 		authRequired: false,
+		rateLimiterOptions: { numRequestsAllowed: 100, intervalTimeInMS: 100000 },
 		query: isSpotlightProps,
 		response: {
 			200: spotlightResponseSchema,
@@ -442,6 +443,7 @@ API.v1.get(
 	'directory',
 	{
 		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 100, intervalTimeInMS: 100000 },
 		query: isDirectoryProps,
 		response: {
 			200: directoryResponseSchema,
