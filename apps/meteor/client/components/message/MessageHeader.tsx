@@ -8,7 +8,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, type KeyboardEvent, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
@@ -21,6 +21,7 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
+import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -42,23 +43,30 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
 	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
 
-	return (
-		<FuselageMessageHeader>
-			<MessageNameContainer
-				id={`${message._id}-displayName`}
-				role='button'
-				tabIndex={0}
-				aria-haspopup='dialog'
-				onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
-				onClick={() => openUserInfo(message.u.username)}
-				onKeyDown={(e) => {
+	// While messages are being selected the whole row is the click target
+	// (toggling the selection), so the author affordances step aside the same
+	// way the avatar does: the name stops being a button and the role tag stops
+	// opening the card, otherwise a click would do both.
+	const isSelecting = useIsSelecting();
+	const authorTriggerProps = isSelecting
+		? {}
+		: {
+				role: 'button' as const,
+				tabIndex: 0,
+				onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, message.u.username) : undefined,
+				onClick: () => openUserInfo(message.u.username),
+				onKeyDown: (e: KeyboardEvent) => {
 					if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
 						openUserInfo(message.u.username);
 					}
-				}}
-				{...triggerProps}
-			>
+				},
+				...triggerProps,
+			};
+
+	return (
+		<FuselageMessageHeader>
+			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
 				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 			</MessageNameContainer>
 			{shouldShowRolesList && (
@@ -66,7 +74,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 					workspaceRoles={workspaceRoles}
 					roomRoles={roomRoles}
 					isBot={!!message.bot}
-					onClick={(e) => openUserCard(e, message.u.username)}
+					onClick={isSelecting ? undefined : (e) => openUserCard(e, message.u.username)}
 				/>
 			)}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>

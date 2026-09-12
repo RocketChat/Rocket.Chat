@@ -15,7 +15,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
+import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -91,19 +91,21 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
+					{/* Same as the avatar above: while selecting, the row is the click target, so the name stops being a button. */}
 					<MessageNameContainer
-						role='button'
-						tabIndex={0}
-						aria-haspopup='dialog'
-						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, user.username) : undefined}
-						onClick={() => openUserInfo(user.username)}
-						onKeyDown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								e.preventDefault();
-								openUserInfo(user.username);
-							}
-						}}
-						{...triggerProps}
+						{...(!isSelecting && {
+							role: 'button' as const,
+							tabIndex: 0,
+							onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined,
+							onClick: () => openUserInfo(user.username),
+							onKeyDown: (e: KeyboardEvent) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.preventDefault();
+									openUserInfo(user.username);
+								}
+							},
+							...triggerProps,
+						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>
