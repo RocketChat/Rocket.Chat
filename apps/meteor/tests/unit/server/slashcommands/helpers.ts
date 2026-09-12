@@ -23,16 +23,19 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 	const settings = { get: sinon.stub() };
 	let lastInvocation: SlashCommandCallbackParams<string> | undefined;
 
-	proxyquire.noCallThru().load(`../../../../server/slashcommands/${path}`, {
-		'meteor/meteor': { Meteor: { Error: MeteorError } },
-		'../../lib/i18n': { i18n: { t: translate } },
-		'../../settings': { settings },
-		...dependencies,
-		'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
-		'../../lib/utils/slashCommand': {
-			slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
-		},
-	});
+	proxyquire
+		.noCallThru()
+		.noPreserveCache()
+		.load(`../../../../server/slashcommands/${path}`, {
+			'meteor/meteor': { Meteor: { Error: MeteorError } },
+			'../../lib/i18n': { i18n: { t: translate } },
+			'../../settings': { settings },
+			...dependencies,
+			'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
+			'../../lib/utils/slashCommand': {
+				slashCommands: { add: (registration: Registration) => registeredCommands.set(registration.command, registration) },
+			},
+		});
 
 	return {
 		broadcast,
