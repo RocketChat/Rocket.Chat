@@ -559,7 +559,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								control={control}
 								name='title'
 								rules={{
-									maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH) },
+									maxLength: {
+										value: USER_PROFILE_FIELD_MAX_LENGTH,
+										message: t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH }),
+									},
 								}}
 								render={({ field }) => (
 									<TextInput
@@ -586,7 +589,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								control={control}
 								name='nationality'
 								rules={{
-									maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH) },
+									maxLength: {
+										value: USER_PROFILE_FIELD_MAX_LENGTH,
+										message: t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH }),
+									},
 								}}
 								render={({ field }) => (
 									<TextInput
@@ -619,10 +625,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											.map((language) => language.trim())
 											.filter(Boolean);
 										if (items.length > USER_PROFILE_LANGUAGES_MAX_COUNT) {
-											return t('Max_number_of_items_is', USER_PROFILE_LANGUAGES_MAX_COUNT);
+											return t('Max_number_of_items_is', { limit: USER_PROFILE_LANGUAGES_MAX_COUNT });
 										}
 										if (items.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)) {
-											return t('Max_length_is', USER_PROFILE_FIELD_MAX_LENGTH);
+											return t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH });
 										}
 										return true;
 									},
