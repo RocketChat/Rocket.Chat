@@ -97,7 +97,7 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 	});
 
 	test('OC - Livechat Triggers - setDepartment should affect agent.next call', async () => {
-		await poLiveChat.page.goto('/packages/rocketchat_livechat/assets/demo.html');
+		await poLiveChat.goto();
 
 		const depId = departmentB._id;
 
@@ -113,7 +113,7 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 	test('OC - Livechat Triggers - setDepartment should affect agent.next call - Register Form Disabled', async ({ api }) => {
 		await api.post('/settings/Livechat_registration_form', { value: false });
 
-		await poLiveChat.page.goto('/packages/rocketchat_livechat/assets/demo.html');
+		await poLiveChat.goto();
 
 		const depId = departmentB._id;
 

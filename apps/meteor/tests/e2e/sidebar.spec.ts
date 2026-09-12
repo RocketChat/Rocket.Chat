@@ -1,5 +1,5 @@
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { AdminInfo, HomeChannel } from './page-objects';
 import { deleteChannel, createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -20,8 +20,7 @@ test.describe.serial('Sidebar', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test.describe('global header', async () => {
@@ -229,13 +228,8 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('embedded layout', async () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.waitForHome();
-		});
-
 		test('should not show Navbar', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
 			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
 			await page.goto(embeddedLayoutURL);
@@ -243,7 +237,7 @@ test.describe.serial('Sidebar', () => {
 		});
 
 		test('should show burger menu', async ({ page }) => {
-			await page.goto('admin/info?layout=embedded');
+			await new AdminInfo(page).gotoEmbedded();
 			await page.setViewportSize({ width: 767, height: 510 });
 
 			await expect(poHomeChannel.content.burgerButton).toBeVisible();

@@ -42,8 +42,7 @@ test.describe.serial('Thread persistence on navigation', () => {
 	});
 
 	test('expect thread content to persist after clicking Jump to recent messages', async ({ page }) => {
-		await page.goto(`/channel/${targetChannel.name}?msg=${threadParentMessageId}`);
-		await poHomeChannel.content.waitForChannel();
+		await poHomeChannel.gotoChannelMessage(targetChannel.name as string, threadParentMessageId, true);
 
 		await expect(page).toHaveURL(/.*thread/);
 		await expect(poHomeChannel.content.threadMessageList).toBeVisible();

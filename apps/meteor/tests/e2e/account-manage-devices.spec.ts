@@ -5,6 +5,7 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
 import { Login } from './page-objects';
+import { AccountSectionsHref } from './page-objects/account';
 import { AccountManageDevices } from './page-objects/account.manage-devices';
 import { test, expect } from './utils/test';
 
@@ -20,7 +21,7 @@ test.describe('Account Manage Devices Page', () => {
 		({ page } = await createAuxContext(browser, Users.user1));
 		accountDevices = new AccountManageDevices(page);
 		poLogin = new Login(page);
-		await page.goto('/account/manage-devices');
+		await accountDevices.goto();
 	});
 
 	test.afterEach(async () => {
@@ -29,7 +30,7 @@ test.describe('Account Manage Devices Page', () => {
 	});
 
 	test('should show Manage Devices page', async () => {
-		await expect(accountDevices.devicesPageContent).toBeVisible();
+		await expect(accountDevices.pageContent).toBeVisible();
 	});
 
 	test('should logout current device and redirect to login page', async () => {
@@ -47,9 +48,9 @@ test.describe('Account Manage Devices Page', () => {
 		const accountDevices2 = new AccountManageDevices(page2);
 
 		await test.step('should login same user in another session', async () => {
-			await page2.goto('/account/manage-devices');
+			await loginPage2.goto(AccountSectionsHref.manageDevices);
 			await loginPage2.login('user1', 'password');
-			await expect(accountDevices2.devicesPageContent).toBeVisible();
+			await expect(accountDevices2.pageContent).toBeVisible();
 		});
 
 		await test.step('should logout device 1 from session 2', async () => {

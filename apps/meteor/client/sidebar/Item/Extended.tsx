@@ -53,7 +53,7 @@ const Extended = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarItem href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarItem level={2} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			<SidebarItemCol>
 				<SidebarItemRow>

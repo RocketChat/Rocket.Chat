@@ -20,39 +20,37 @@ export const useAppsRoomActions = () => {
 
 	return useMemo(
 		() =>
-			result.data?.filter(applyButtonFilters).map(
-				(action): RoomToolboxActionConfig => ({
-					id: action.actionId,
-					variant: action.variant,
-					icon: undefined as unknown as RoomToolboxActionConfig['icon'],
-					order: 300,
-					title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
-					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
-					// Filters were applied in the applyButtonFilters function
-					// if the code made it this far, the button should be shown
-					action: () => {
-						void actionManager
-							.emitInteraction(action.appId, {
-								type: 'actionButton',
-								actionId: action.actionId,
-								rid: room._id,
-								payload: { context: action.context },
-							})
-							.catch(async (reason) => {
-								if (reason instanceof UiKitTriggerTimeoutError) {
-									dispatchToastMessage({
-										type: 'error',
-										message: t('UIKit_Interaction_Timeout'),
-									});
-									return;
-								}
+			result.data?.filter(applyButtonFilters).map((action): RoomToolboxActionConfig => ({
+				id: action.actionId,
+				variant: action.variant,
+				icon: undefined as unknown as RoomToolboxActionConfig['icon'],
+				order: 300,
+				title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
+				groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
+				// Filters were applied in the applyButtonFilters function
+				// if the code made it this far, the button should be shown
+				action: () => {
+					void actionManager
+						.emitInteraction(action.appId, {
+							type: 'actionButton',
+							actionId: action.actionId,
+							rid: room._id,
+							payload: { context: action.context },
+						})
+						.catch(async (reason) => {
+							if (reason instanceof UiKitTriggerTimeoutError) {
+								dispatchToastMessage({
+									type: 'error',
+									message: t('UIKit_Interaction_Timeout'),
+								});
+								return;
+							}
 
-								return reason;
-							});
-					},
-					type: 'apps',
-				}),
-			) ?? [],
+							return reason;
+						});
+				},
+				type: 'apps',
+			})) ?? [],
 		[actionManager, applyButtonFilters, dispatchToastMessage, result.data, room._id, t],
 	);
 };

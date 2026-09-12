@@ -35,10 +35,7 @@ export interface IListenerBridge {
 
 	livechatEvent(
 		int:
-			| 'IPostLivechatAgentAssigned'
-			| 'IPostLivechatAgentUnassigned'
-			| 'IPostLivechatDepartmentRemoved'
-			| 'IPostLivechatDepartmentDisabled',
+			'IPostLivechatAgentAssigned' | 'IPostLivechatAgentUnassigned' | 'IPostLivechatDepartmentRemoved' | 'IPostLivechatDepartmentDisabled',
 		data: { user: IUser; room: IOmnichannelRoom },
 	): Promise<void>;
 	livechatEvent(

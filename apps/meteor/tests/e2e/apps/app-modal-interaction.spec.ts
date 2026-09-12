@@ -18,11 +18,10 @@ test.describe.skip('app-surfaces-interaction', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test('expect to submit an success modal', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="success"]').click();
 		await page.locator('role=button[name="success"]').click();
@@ -32,7 +31,6 @@ test.describe.skip('app-surfaces-interaction', () => {
 	});
 
 	test('expect to not close the modal and there is an error in the modal', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="error"]').click();
 		await page.locator('role=button[name="error"]').click();
@@ -50,7 +48,6 @@ test.describe.skip('app-surfaces-interaction', () => {
 	});
 
 	test('expect to show the toaster error for modal that timeout the execution', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="timeout"]').click();
 		await page.locator('role=button[name="timeout"]').click();
@@ -62,7 +59,6 @@ test.describe.skip('app-surfaces-interaction', () => {
 	});
 
 	test('expect change the modal and then submit the updated modal', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.locator('role=button[name="Options"]').click();
 		await page.locator('[data-key="update"]').click();
 		await page.locator('role=button[name="update"]').click();

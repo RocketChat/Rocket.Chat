@@ -26,7 +26,7 @@ test.describe.serial('Join rooms', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.gotoChannel(targetChannel);
 		});
 
 		test.afterEach(async ({ api }) => {

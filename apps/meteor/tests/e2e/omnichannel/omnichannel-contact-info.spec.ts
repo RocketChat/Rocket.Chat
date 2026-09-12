@@ -33,9 +33,9 @@ test.describe('Omnichannel contact info', () => {
 		await agent.page.close();
 	});
 
-	test('Receiving a message from visitor, and seeing its information', async ({ page }) => {
+	test('Receiving a message from visitor, and seeing its information', async () => {
 		await test.step('Expect send a message as a visitor', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');

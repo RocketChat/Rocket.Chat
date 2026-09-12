@@ -370,7 +370,7 @@ export class GainAnalysis {
 		if (elems === 0) return GainAnalysis.GAIN_NOT_ENOUGH_SAMPLES;
 
 		let upper = Math.ceil(elems * (1 - GainAnalysis.RMS_PERCENTILE));
-		for (i = len; i-- > 0; ) {
+		for (i = len; i-- > 0;) {
 			if ((upper -= Array[i]) <= 0) break;
 		}
 
