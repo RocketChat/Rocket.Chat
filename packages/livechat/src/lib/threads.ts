@@ -76,13 +76,15 @@ export const normalizeMessage = async (message: any) => {
 	return message;
 };
 
-export const normalizeMessages = (messages: any[] = []): Promise<any[]> =>
-	Promise.all(
-		// FIXME: the async predicate makes `filter` keep every message (a Promise is always truthy), so no
-		// filtering actually happens here. Preserved as-is during the JS->TS migration; revisit separately.
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		messages.filter(async (message) => {
-			const result = await normalizeMessage(message);
-			return result;
-		}),
-	);
+export const normalizeMessages = async (messages: any[] = []): Promise<any[]> => {
+	// Sequential on purpose: a thread reply whose parent appears earlier in the
+	// batch must see it registered in parentMessages before it normalizes.
+	const normalized: any[] = [];
+	for (const message of messages) {
+		const result = await normalizeMessage(message);
+		if (result != null) {
+			normalized.push(result);
+		}
+	}
+	return normalized;
+};
