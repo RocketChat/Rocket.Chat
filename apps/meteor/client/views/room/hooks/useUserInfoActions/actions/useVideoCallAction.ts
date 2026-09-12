@@ -21,7 +21,7 @@ import { useMemo } from 'react';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
+export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'federated'>): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
@@ -55,8 +55,11 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 			}
 		};
 
+		// Without a DM yet, the call creates one on click (im.create returns the
+		// existing room if the subscription simply hasn't resolved). Federated
+		// users are excluded either way: calls are not supported over federation.
 		const shouldShowStartCall =
-			(room ? !isRoomFederated(room) : canCreateDirectMessage) &&
+			(room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated) &&
 			user._id !== ownUserId &&
 			enabledForDMs &&
 			permittedToCallManagement &&

@@ -10,7 +10,7 @@ import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserIn
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 export type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension' | 'federated'>;
 	rid: IRoom['_id'];
 	isInvited?: boolean;
 	backToList?: () => void;
@@ -26,11 +26,11 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
 	const isMember = membershipCheckSuccess && isMemberData?.isMember;
-	const { _id: userId, username, name, freeSwitchExtension } = user;
+	const { _id: userId, username, name, freeSwitchExtension, federated } = user;
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id: userId, username, name, freeSwitchExtension },
+		user: { _id: userId, username, name, freeSwitchExtension, federated },
 		size: 2,
 		isMember,
 		isInvited,
