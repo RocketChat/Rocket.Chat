@@ -5,7 +5,9 @@ import type { Updater } from '@rocket.chat/model-typings';
 import type { SaveUserData } from './saveUser';
 import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from '../../../../lib/constants';
 
-type ProfileFieldsData = Pick<SaveUserData, 'title' | 'nationality' | 'languages'>;
+export type ProfileField = 'title' | 'nationality' | 'languages';
+
+type ProfileFieldsData = Pick<SaveUserData, ProfileField>;
 
 /** Trims entries, drops empties and case-insensitive duplicates (first casing wins). */
 export const normalizeLanguages = (languages: string[]): string[] => {
@@ -61,8 +63,17 @@ export const validateProfileFields = (userData: ProfileFieldsData, method = 'sav
 	}
 };
 
-export const handleProfileFields = (userUpdater: Updater<IUser>, userData: ProfileFieldsData) => {
+/**
+ * Applies the profile fields to the updater.
+ *
+ * @returns the fields that ended up cleared ($unset), so the caller can mirror
+ * them in the `watch.users` notification — the raw `null`/`''`/`[]` in the
+ * request must not reach connected clients as the new value.
+ */
+export const handleProfileFields = (userUpdater: Updater<IUser>, userData: ProfileFieldsData): ProfileField[] => {
 	validateProfileFields(userData);
+
+	const cleared: ProfileField[] = [];
 
 	for (const field of ['title', 'nationality'] as const) {
 		const value = userData[field];
@@ -74,11 +85,12 @@ export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Profi
 			userUpdater.set(field, value.trim());
 		} else {
 			userUpdater.unset(field);
+			cleared.push(field);
 		}
 	}
 
 	if (userData.languages === undefined) {
-		return;
+		return cleared;
 	}
 
 	const languages = userData.languages ? normalizeLanguages(userData.languages) : [];
@@ -86,5 +98,8 @@ export const handleProfileFields = (userUpdater: Updater<IUser>, userData: Profi
 		userUpdater.set('languages', languages);
 	} else {
 		userUpdater.unset('languages');
+		cleared.push('languages');
 	}
+
+	return cleared;
 };
