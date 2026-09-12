@@ -9,6 +9,8 @@ export type ExchangeErrorCode =
 	| 'authorization-failed'
 	/** The mailbox address does not resolve on the server. */
 	| 'mailbox-not-found'
+	/** No verified email to use as the mailbox, and no custom field configured to replace it. */
+	| 'email-not-verified'
 	/** Transport level: DNS, TLS, timeout, connection refused. */
 	| 'connection-failed'
 	/** The host is not on the provider's allowlist. This is the air-gap invariant refusing a request. */
@@ -16,7 +18,9 @@ export type ExchangeErrorCode =
 	/** Rate limited and out of retries. */
 	| 'rate-limited'
 	/** The server answered, but not in a shape we understand. */
-	| 'unexpected-response';
+	| 'unexpected-response'
+	/** The persisted delta cursor is no longer valid. Discard it and resync from scratch. */
+	| 'sync-state-invalid';
 
 export class ExchangeError extends Error {
 	public readonly code: ExchangeErrorCode;
