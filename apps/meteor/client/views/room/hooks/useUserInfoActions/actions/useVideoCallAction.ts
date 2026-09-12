@@ -61,14 +61,11 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 			}
 		};
 
-		// The entry appears where it always did — in a room, and never a federated one. With the call window it
-		// also appears with no room at all, since one can be created on the way to the call — but only for someone
-		// a room can be created *with*: `im.create` speaks usernames, and offering the call to a user without one
-		// would end in a warning toast instead of a call.
-		const hasCallableRoom = room ? !isRoomFederated(room) : conferenceWindowEnabled && !!user.username;
-
+		// Without a DM yet, the call creates one on click (im.create returns the
+		// existing room if the subscription simply hasn't resolved). Federated
+		// users are excluded either way: calls are not supported over federation.
 		const shouldShowStartCall =
-			(room ? !isRoomFederated(room) : canCreateDirectMessage) &&
+			(room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated) &&
 			user._id !== ownUserId &&
 			enabledForDMs &&
 			permittedToCallManagement &&

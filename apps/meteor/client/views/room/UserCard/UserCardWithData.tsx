@@ -42,7 +42,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
+		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension, federated } = data?.user || {};
 
 		return {
 			_id,
@@ -67,7 +67,13 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
+		user: {
+			_id: user._id ?? '',
+			username: user.username,
+			name: user.name,
+			freeSwitchExtension: user.freeSwitchExtension,
+			federated: user.federated,
+		},
 		size: 2,
 		isMember,
 		reload: refetch,
