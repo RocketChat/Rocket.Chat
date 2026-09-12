@@ -159,7 +159,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		handleBio(updater, userData.bio);
 		handleNickname(updater, userData.nickname);
-		handleProfileFields(updater, userData);
+		const clearedProfileFields = handleProfileFields(updater, userData);
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);
@@ -237,13 +237,21 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+			// Cleared profile fields were $unset in Mongo; announce them as unset
+			// too, otherwise clients would keep the stale value (or receive the
+			// raw null/[] from the request as if it were the new one).
+			const diff = {
+				...userData,
+				emails: userUpdated?.emails,
+			};
+			for (const field of clearedProfileFields) {
+				delete diff[field];
+			}
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
-				diff: {
-					...userData,
-					emails: userUpdated?.emails,
-				},
+				diff,
+				...(clearedProfileFields.length > 0 && { unset: Object.fromEntries(clearedProfileFields.map((field) => [field, true])) }),
 			});
 		}, session);
 

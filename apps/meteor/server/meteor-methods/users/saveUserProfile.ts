@@ -17,7 +17,7 @@ import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
-import { normalizeLanguages, validateProfileFields } from '../../lib/users/saveUser/handleProfileFields';
+import { normalizeLanguages, validateProfileFields, type ProfileField } from '../../lib/users/saveUser/handleProfileFields';
 import { saveUserIdentity } from '../../lib/users/saveUserIdentity';
 import { settings as rcSettings } from '../../settings';
 
@@ -123,8 +123,8 @@ async function saveUserProfile(
 
 		// All three fields land in a single write: no per-field _updatedAt
 		// churn and no partial state if a later step throws.
-		const $set: Record<string, string | string[]> = {};
-		const $unset: Record<string, 1> = {};
+		const $set: Partial<Record<ProfileField, string | string[]>> = {};
+		const $unset: Partial<Record<ProfileField, 1>> = {};
 
 		for (const field of ['title', 'nationality'] as const) {
 			const value = settings[field];
@@ -157,6 +157,13 @@ async function saveUserProfile(
 					...(Object.keys($unset).length && { $unset }),
 				},
 			);
+		}
+
+		// The change notification below diffs the fresh document, where a
+		// cleared field is simply absent — mirror the $unset so clients drop
+		// the stale value instead of keeping it.
+		for (const field of Object.keys($unset) as ProfileField[]) {
+			unset[field] = true;
 		}
 	}
 
