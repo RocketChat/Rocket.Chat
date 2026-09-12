@@ -27,7 +27,7 @@ const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
 			status: <UserStatus.Online />,
 			customStatus: statusText ?? <></>,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			localTime: typeof utcOffset === 'number' && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 		}),
 		[avatarETag, getRoles, name, nickname, roles, showRealNames, statusText, username, utcOffset],
 	);
