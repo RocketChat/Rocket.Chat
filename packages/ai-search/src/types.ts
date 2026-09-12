@@ -50,6 +50,36 @@ export type IntelligentSearchPipelineConfig = {
 	minimumSimilarityPercent?: number;
 };
 
+export type IntelligentSearchType = 'semantic' | 'keyword' | 'hybrid';
+
+export type IntelligentSearchCandidateSource = 'semantic' | 'keyword';
+
+export type IntelligentSearchCandidate = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	pipelineText: string;
+	/** Normalized cosine similarity. Unset for keyword candidates, which have no comparable score. */
+	score?: number;
+	semanticSimilarity?: number;
+	semanticDistance?: number;
+	source?: IntelligentSearchCandidateSource;
+	ts?: string;
+};
+
+export type FusedIntelligentSearchCandidate = IntelligentSearchCandidate & {
+	rrfScore: number;
+	semanticRank?: number;
+	fulltextRank?: number;
+};
+
+export type TemporalRerankOptions = {
+	/** 0 disables the boost, 100 doubles the freshest candidate's score */
+	recencyWeight: number;
+	halfLifeDays: number;
+	now?: Date;
+};
+
 export type IntelligentSearchFilters = {
 	rid?: string;
 	rids?: string[];
@@ -62,14 +92,6 @@ export type IntelligentSearchFilters = {
 
 export type IntelligentSearchPipelineFilters = Record<string, unknown>;
 
-export type IntelligentSearchCandidate = {
-	_id: string;
-	rid?: string;
-	msgId?: string;
-	pipelineText: string;
-	score?: number;
-};
-
 export type IntelligentSearchPipelineRequest = {
 	query: string;
 	config: IntelligentSearchPipelineConfig;
@@ -78,4 +100,6 @@ export type IntelligentSearchPipelineRequest = {
 	limit: number;
 	fetch: AIServiceFetch;
 	logger?: AIServiceLogger;
+	/** a single request targets one retriever; `hybrid` is resolved before reaching this layer */
+	mode?: IntelligentSearchCandidateSource;
 };

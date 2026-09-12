@@ -52,6 +52,30 @@ export const createAISettings = async (): Promise<void> => {
 		i18nDescription: 'AI_Intelligent_Search_Enabled_Description',
 	});
 
+	await settingsRegistry.add('AI_Intelligent_Search_Semantic_Weight', 50, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Intelligent_Search',
+		type: 'int',
+		i18nLabel: 'AI_Intelligent_Search_Semantic_Weight',
+		i18nDescription: 'AI_Intelligent_Search_Semantic_Weight_Description',
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: 50,
+		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
+	});
+
+	await settingsRegistry.add('AI_Intelligent_Search_Recency_Weight', 0, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Intelligent_Search',
+		type: 'int',
+		i18nLabel: 'AI_Intelligent_Search_Recency_Weight',
+		i18nDescription: 'AI_Intelligent_Search_Recency_Weight_Description',
+		enterprise: true,
+		modules: [AI_LICENSE_MODULE],
+		invalidValue: 0,
+		enableQuery: { _id: 'AI_Intelligent_Search_Enabled', value: true },
+	});
+
 	await settingsRegistry.add('AI_Intelligent_Search_Pipeline_Base_URL', '', {
 		group: AI_SETTINGS_GROUP,
 		section: 'Intelligent_Search',

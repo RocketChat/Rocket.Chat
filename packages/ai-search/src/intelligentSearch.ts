@@ -3,6 +3,7 @@ import type {
 	AIServiceFetch,
 	AIServiceLogger,
 	IntelligentSearchCandidate,
+	IntelligentSearchCandidateSource,
 	IntelligentSearchFilters,
 	IntelligentSearchPipelineFilters,
 	IntelligentSearchPipelineRequest,
@@ -55,26 +56,47 @@ export const normalizeSimilarityPercent = (value: unknown): number => {
 export const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number =>
 	Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
-// pipeline contract: `score`/`distance` are cosine distances (lower is better, similarity = 1 - distance)
-const normalizePipelineSimilarityScore = (value: number, type: 'distance' | 'similarity'): number => {
+// Pipeline contract, verified against a live pipeline: `score`/`distance` are cosine distances (lower is
+// better), `similarity` values are cosine similarities. Percentages are accepted for provider drift.
+const normalizePipelineScore = (value: number): number => {
 	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
-	const similarity = type === 'distance' ? 1 - normalizedValue : normalizedValue;
 
-	return Math.min(1, Math.max(0, similarity));
+	return Math.min(1, Math.max(0, normalizedValue));
 };
 
-const extractPipelineSimilarityScore = (result: Record<string, unknown>, metadata: Record<string, unknown>): number | undefined => {
+// The keyword retriever reuses `score` for a full-text rank where higher is better, so reading it as a
+// distance would invert it and fabricate a confident similarity.
+const extractPipelineSimilarityScores = (
+	result: Record<string, unknown>,
+	metadata: Record<string, unknown>,
+	source: IntelligentSearchCandidateSource,
+): { semanticSimilarity?: number; semanticDistance?: number } => {
+	if (source === 'keyword') {
+		return {};
+	}
+
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
-		return normalizePipelineSimilarityScore(similarity, 'similarity');
+		const semanticSimilarity = normalizePipelineScore(similarity);
+		const semanticDistance = Number((1 - semanticSimilarity).toFixed(4));
+
+		return {
+			semanticSimilarity,
+			semanticDistance,
+		};
 	}
 
 	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
 	if (typeof distance === 'number') {
-		return normalizePipelineSimilarityScore(distance, 'distance');
+		const semanticDistance = normalizePipelineScore(distance);
+
+		return {
+			semanticSimilarity: Number((1 - semanticDistance).toFixed(4)),
+			semanticDistance,
+		};
 	}
 
-	return undefined;
+	return {};
 };
 
 const extractIntelligentResultIds = (result: Record<string, unknown>): { rid?: string; msgId?: string } => {
@@ -101,6 +123,7 @@ export const normalizeIntelligentSearchCandidates = (
 	userRoomIds: string[] = [],
 	limit: number,
 	logger?: AIServiceLogger,
+	source: IntelligentSearchCandidateSource = 'semantic',
 ): IntelligentSearchCandidate[] => {
 	let rawResults: unknown[] = [];
 	const rawSearchResultsRecord = asRecord(rawSearchResults);
@@ -129,6 +152,7 @@ export const normalizeIntelligentSearchCandidates = (
 	const shouldFilterByRoomIds = userRoomIdSet.size > 0;
 
 	const candidates: IntelligentSearchCandidate[] = [];
+	const seenMessageIds = new Set<string>();
 	for (let index = 0; index < rawResults.length && candidates.length < limit; index++) {
 		const result = asRecord(rawResults[index]);
 		const metadata = asRecord(result.metadata);
@@ -140,14 +164,29 @@ export const normalizeIntelligentSearchCandidates = (
 			logger?.debug?.({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid });
 			continue;
 		}
+		// A message can have several indexed fragments. Keep its highest-ranked fragment.
+		if (msgId) {
+			if (seenMessageIds.has(msgId)) {
+				continue;
+			}
+			seenMessageIds.add(msgId);
+		}
 
-		const score = extractPipelineSimilarityScore(result, metadata);
+		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
+		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
-			_id: msgId || `intelligent-${index}`,
+			// source-qualified: the index is per-retriever, so a bare index would fuse unrelated candidates
+			_id: msgId || `intelligent-${source}-${index}`,
 			rid,
 			msgId,
 			pipelineText: firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '',
-			...(typeof score === 'number' && { score }),
+			...(ts && { ts }),
+			...(typeof semanticSimilarity === 'number' && {
+				score: semanticSimilarity,
+				semanticSimilarity,
+				semanticDistance,
+			}),
+			...(source && { source }),
 		});
 	}
 
@@ -228,19 +267,24 @@ export const searchIntelligentPipeline = async ({
 	limit,
 	fetch,
 	logger,
+	mode = 'semantic',
 }: IntelligentSearchPipelineRequest): Promise<unknown> => {
 	const minimumSimilarity = normalizeSimilarityPercent(config.minimumSimilarityPercent);
 	const formattedQuery = config.queryTemplate ? config.queryTemplate.replace('{query}', query) : query;
 	const url = buildEndpointUrl(config.baseUrl, `pipelines/${encodeURIComponent(config.pipelineId)}/search`);
+	const searchType = mode === 'keyword' ? 'search' : 'similarity';
+	const shouldApplyThreshold = mode !== 'keyword';
+	const threshold = shouldApplyThreshold ? getSemanticDistanceThreshold(minimumSimilarity) : undefined;
 
 	logger?.debug?.({
 		msg: 'Intelligent search request',
 		url,
 		queryLength: formattedQuery.length,
 		hasQueryTemplate: Boolean(config.queryTemplate),
+		searchType,
 		filterKeys: Object.keys(pipelineFilters),
 		classificationCount: classifications.length,
-		threshold: getSemanticDistanceThreshold(minimumSimilarity),
+		threshold,
 	});
 
 	let response: Awaited<ReturnType<AIServiceFetch>>;
@@ -257,15 +301,15 @@ export const searchIntelligentPipeline = async ({
 			},
 			body: JSON.stringify({
 				query: formattedQuery,
-				type: 'similarity',
+				type: searchType,
 				classification: {
 					classifications,
-					search_type: 2,
+					search_type: mode === 'keyword' ? 1 : 2,
 				},
 				filters: pipelineFilters,
 				params: {
 					k: limit,
-					threshold: getSemanticDistanceThreshold(minimumSimilarity),
+					...(typeof threshold === 'number' && { threshold }),
 				},
 			}),
 		});
@@ -277,7 +321,7 @@ export const searchIntelligentPipeline = async ({
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
 		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, bodyLength: body.length });
-		return [];
+		throw new Error(`Intelligent search pipeline returned HTTP ${response.status}`);
 	}
 
 	const json = await response.json();
