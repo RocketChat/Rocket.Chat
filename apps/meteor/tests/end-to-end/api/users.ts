@@ -2542,6 +2542,20 @@ describe('[Users]', () => {
 		});
 
 		it('should keep title, nationality and languages when a partial update omits them', async () => {
+			// set the fields here so the test doesn't depend on the previous one having run
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						title: 'Staff Engineer',
+						nationality: 'Brazilian',
+						languages: ['Portuguese', 'English'],
+					},
+				})
+				.expect(200);
+
 			await request
 				.post(api('users.update'))
 				.set(credentials)
