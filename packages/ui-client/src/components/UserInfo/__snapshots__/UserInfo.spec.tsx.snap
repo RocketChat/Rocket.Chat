@@ -120,7 +120,7 @@ exports[`renders Default without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_1_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -151,7 +151,7 @@ exports[`renders Default without crashing 1`] = `
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -221,7 +221,7 @@ exports[`renders Default without crashing 1`] = `
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -256,7 +256,7 @@ exports[`renders Default without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -482,7 +482,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_3_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -513,7 +513,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -583,7 +583,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -618,7 +618,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -858,7 +858,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_5_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -889,7 +889,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -959,7 +959,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -994,7 +994,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1280,7 +1280,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_7_"
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1311,7 +1311,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1381,7 +1381,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -1416,7 +1416,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
@@ -1461,7 +1461,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Voice_call_extension
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1aewkgk"
