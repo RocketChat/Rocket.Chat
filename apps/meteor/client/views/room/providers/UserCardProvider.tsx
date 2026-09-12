@@ -175,11 +175,17 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		// capture phase and stop the event there so dismissing the card
 		// consumes the Escape before it reaches an underlying contextual bar or
 		// search panel, which would otherwise close on the same keystroke.
+		// A menu popup spawned from the card (the kebab actions) owns the
+		// Escape while it is open: let it dismiss itself and keep the card.
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				e.stopImmediatePropagation();
-				closeUserCard();
+			if (e.key !== 'Escape') {
+				return;
 			}
+			if (document.querySelector('[role="menu"]')) {
+				return;
+			}
+			e.stopImmediatePropagation();
+			closeUserCard();
 		};
 
 		document.addEventListener('mousemove', handleMouseMove);

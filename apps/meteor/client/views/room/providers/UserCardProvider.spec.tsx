@@ -62,3 +62,26 @@ it('consumes Escape while the card is open so an underlying handler does not als
 	await waitFor(() => expect(screen.queryByTestId('user-card')).not.toBeInTheDocument());
 	expect(underlyingEscape).not.toHaveBeenCalled();
 });
+
+it('lets an open menu handle Escape instead of closing the card', async () => {
+	const underlyingEscape = jest.fn();
+
+	render(
+		<EscapeListener onEscape={underlyingEscape}>
+			<UserCardProvider>
+				<Trigger />
+			</UserCardProvider>
+			{/* Stands in for the kebab actions menu, which is portaled outside the card */}
+			<div role='menu' />
+		</EscapeListener>,
+	);
+
+	fireEvent.click(screen.getByText('open'));
+	await screen.findByTestId('user-card');
+
+	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+
+	// The menu owns this Escape: the event goes through untouched and the card stays.
+	expect(underlyingEscape).toHaveBeenCalledTimes(1);
+	expect(screen.getByTestId('user-card')).toBeInTheDocument();
+});
