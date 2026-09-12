@@ -1,4 +1,4 @@
-import { Agenda } from './Agenda';
+import { Agenda, DEFAULT_LOCK_LIFETIME } from './Agenda';
 import { Job } from './Job';
 
-export { Agenda, Job };
+export { Agenda, Job, DEFAULT_LOCK_LIFETIME };

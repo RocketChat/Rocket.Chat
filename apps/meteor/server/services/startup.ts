@@ -10,6 +10,7 @@ import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
 import { CallHistoryService } from './call-history/service';
+import { CronJobsService } from './cron-jobs/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
@@ -65,6 +66,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new MediaCallService());
 	api.registerService(new CallHistoryService());
 	api.registerService(new AISearchService());
+	api.registerService(new CronJobsService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {

@@ -1,7 +1,8 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
+import { withCronHistory } from '@rocket.chat/cron';
 import type { MainLogger } from '@rocket.chat/logger';
-import { LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatRooms, Users, OmnichannelAutoTransferScheduler } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
@@ -64,7 +65,8 @@ export class AutoTransferChatSchedulerClass {
 		when.setSeconds(when.getSeconds() + timeout);
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
-		await this.scheduler.schedule(when, jobName, { roomId });
+		const job = await this.scheduler.schedule(when, jobName, { roomId });
+		await OmnichannelAutoTransferScheduler.updateOne({ _id: job.attrs._id, status: { $exists: false } }, { $set: { status: 'scheduled' } });
 		await LivechatRooms.setAutoTransferOngoingById(roomId);
 	}
 
@@ -124,16 +126,15 @@ export class AutoTransferChatSchedulerClass {
 		});
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
+	private async executeJob({ attrs: { data, name } }: any = {}): Promise<void> {
 		const { roomId } = data;
-
-		try {
+		await withCronHistory(name, 'omnichannel', async () => {
 			await this.transferRoom(roomId);
-
 			await Promise.all([LivechatRooms.setAutoTransferredAtById(roomId), this.unscheduleRoom(roomId)]);
-		} catch (error) {
+		}).catch((error: unknown) => {
 			this.logger.error({ msg: 'Error while executing auto-transfer job', schedulerName: SCHEDULER_NAME, roomId, err: error });
-		}
+			throw error;
+		});
 	}
 }
 

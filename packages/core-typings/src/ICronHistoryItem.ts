@@ -7,4 +7,5 @@ export interface ICronHistoryItem extends IRocketChatRecord {
 	finishedAt?: Date;
 	result?: any;
 	error?: any;
+	type?: 'system' | 'app' | 'omnichannel';
 }

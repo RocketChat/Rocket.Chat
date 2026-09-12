@@ -20,6 +20,13 @@ const mockLivechatRooms = {
 const mockUsers = {
 	findOneById: sinon.stub(),
 };
+const mockCronHistory = {
+	insertOne: sinon.stub().resolves({ insertedId: 'mockId' }),
+	updateOne: sinon.stub().resolves(),
+};
+const mockOmnichannelAutoCloseScheduler = {
+	updateOne: sinon.stub().resolves(),
+};
 
 class MockAgendaClass {
 	constructor(opts: Record<string, any>) {
@@ -31,7 +38,8 @@ class MockAgendaClass {
 	}
 
 	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
+		mockAgendaScheduler(...args);
+		return { attrs: { _id: 'mock-job-id' } };
 	}
 
 	async cancel(...args: any) {
@@ -69,7 +77,10 @@ const mocks = {
 	'@rocket.chat/models': {
 		LivechatRooms: mockLivechatRooms,
 		Users: mockUsers,
+		CronHistory: mockCronHistory,
+		OmnichannelAutoCloseScheduler: mockOmnichannelAutoCloseScheduler,
 	},
+	'@rocket.chat/random': { Random: { id: sinon.stub().returns('mock-random-id') } },
 };
 
 const { AutoCloseOnHoldSchedulerClass } = proxyquire
