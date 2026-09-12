@@ -1,0 +1,7 @@
+{
+	"extends": "@rocket.chat/tsconfig/client.json",
+	"compilerOptions": {
+		"jsx": "react"
+	},
+	"include": ["src/**/*"]
+}
