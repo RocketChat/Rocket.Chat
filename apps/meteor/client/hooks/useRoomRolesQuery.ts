@@ -33,6 +33,8 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 			switch (role.type) {
 				case 'added': {
 					const { _id: roleId, scope, u } = role;
+					// The stream carries every room's role changes for the logged user;
+					// only apply the ones scoped to the room this cache belongs to.
 					if (!scope || !u || scope !== rid) return;
 
 					// Updates must not mutate the cached records in place: react-query's
@@ -52,7 +54,9 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 
 				case 'removed': {
 					const { _id: roleId, scope, u } = role;
-					if (!scope || !u) return;
+					// The stream carries every room's role changes for the logged user;
+					// only apply the ones scoped to the room this cache belongs to.
+					if (!scope || !u || scope !== rid) return;
 
 					queryClient.setQueryData(roomsQueryKeys.roles(rid), (data: RoomRoles[] | undefined = []) => {
 						const index = data?.findIndex((record) => record.rid === rid && record.u._id === u._id) ?? -1;
