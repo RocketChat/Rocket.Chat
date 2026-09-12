@@ -378,7 +378,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
-				<MessageListProvider>
+				{/* Contextual bar lists open the full profile on click; the hover card would cover the rows. */}
+				<MessageListProvider hoverUserCardEnabled={false}>
 					<VList
 						ref={virtualizerRef}
 						shift={isPrependRef.current}
