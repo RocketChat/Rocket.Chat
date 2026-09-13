@@ -2530,6 +2530,29 @@ describe('Meteor.methods', () => {
 		});
 	});
 
+	describe('[@registerUser]', () => {
+		before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+
+		it('should not register a user without an email', async () => {
+			const res = await request
+				.post(methodCallAnon('registerUser'))
+				.send({
+					message: JSON.stringify({ msg: 'method', id: 'id', method: 'registerUser', params: [{ email: null }] }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.property('error');
+			expect(data).to.not.have.property('result');
+		});
+
+		it('should no longer expose the Accounts_AllowAnonymousWrite setting', async () => {
+			await request.get(api('settings/Accounts_AllowAnonymousWrite')).set(credentials).expect(400);
+		});
+	});
+
 	describe('[@getRoomByTypeAndName]', () => {
 		let testUser: TestUser<IUser>;
 		let testUser2: TestUser<IUser>;

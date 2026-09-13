@@ -281,17 +281,17 @@ describe('setUsername', () => {
 			expect(stubs.callbacks.runAsync.calledWith('afterCreateUser')).to.be.false;
 		});
 
-		it('should set avatar if Accounts_SetDefaultAvatar is enabled', async () => {
+		it('should set avatar with the first available suggestion if Accounts_SetDefaultAvatar is enabled', async () => {
 			const mockUser = { _id: userId, username: null };
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
-			stubs.getAvatarSuggestionForUser.resolves({ gravatar: { blob: 'blobData', contentType: 'image/png' } });
+			stubs.getAvatarSuggestionForUser.resolves({ google: { blob: 'blobData', contentType: 'image/png' } });
 
 			await _setUsername(userId, username, mockUser);
 
-			expect(stubs.setUserAvatar.calledOnceWith(mockUser, 'blobData', 'image/png', 'gravatar')).to.be.true;
+			expect(stubs.setUserAvatar.calledOnceWith(mockUser, 'blobData', 'image/png', 'google')).to.be.true;
 		});
 
 		it('should not set avatar if Accounts_SetDefaultAvatar is disabled', async () => {
@@ -325,7 +325,7 @@ describe('setUsername', () => {
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
-			stubs.getAvatarSuggestionForUser.resolves({ gravatar: { blob: 'blobData', contentType: 'image/png' } });
+			stubs.getAvatarSuggestionForUser.resolves({ google: { blob: 'blobData', contentType: 'image/png' } });
 			stubs.Invites.findOneById.resolves({ rid: 'room id' });
 
 			await _setUsername(userId, username, mockUser);

@@ -1,20 +1,9 @@
 import type { IRole } from '@rocket.chat/core-typings';
 
 type PriorityRoleName =
-	'custom-role' | 'admin' | 'livechat-manager' | 'livechat-monitor' | 'livechat-agent' | 'user' | 'app' | 'bot' | 'guest' | 'anonymous';
+	'custom-role' | 'admin' | 'livechat-manager' | 'livechat-monitor' | 'livechat-agent' | 'user' | 'app' | 'bot' | 'guest';
 
-const order = [
-	'admin',
-	'livechat-manager',
-	'livechat-monitor',
-	'livechat-agent',
-	'custom-role',
-	'user',
-	'app',
-	'bot',
-	'guest',
-	'anonymous',
-] as const;
+const order = ['admin', 'livechat-manager', 'livechat-monitor', 'livechat-agent', 'custom-role', 'user', 'app', 'bot', 'guest'] as const;
 
 const rolesToConsiderAsUser = ['auditor', 'auditor-log'];
 
