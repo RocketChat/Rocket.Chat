@@ -79,6 +79,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
+			disableBalancer: !isTransporterTCP,
 			serializer: new EJSONSerializer(),
 			heartbeatInterval: defaultPingInterval,
 			heartbeatTimeout: indexExpire,
@@ -211,7 +212,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {
-		return this.broker.call('$node.list', { onlyAvailable: true });
+		return this.broker.call('$node.list', { onlyAvailable: true }, { nodeID: this.broker.nodeID });
 	}
 
 	async getAppsStatusInInstances(): Promise<AppStatusReport> {
