@@ -16,7 +16,7 @@ const PriorityField = ({ id }: PriorityFieldProps) => {
 	const { data, isLoading, isError } = usePriorityInfo(id);
 
 	if (isLoading) {
-		return <FormSkeleton />;
+		return <FormSkeleton pi={24} />;
 	}
 
 	if (isError || !data) {
