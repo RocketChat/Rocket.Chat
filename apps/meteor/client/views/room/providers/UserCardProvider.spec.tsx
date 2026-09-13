@@ -1,5 +1,5 @@
 import { useUserCard } from '@rocket.chat/ui-contexts';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { useEffect, useRef, type ReactNode, type UIEvent } from 'react';
 
 import UserCardProvider from './UserCardProvider';
@@ -63,7 +63,7 @@ it('consumes Escape while the card is open so an underlying handler does not als
 	expect(underlyingEscape).not.toHaveBeenCalled();
 });
 
-it('lets an open menu handle Escape instead of closing the card', async () => {
+it('does not consume Escape while a menu is open, leaving the card as it is', async () => {
 	const underlyingEscape = jest.fn();
 
 	render(
@@ -71,7 +71,8 @@ it('lets an open menu handle Escape instead of closing the card', async () => {
 			<UserCardProvider>
 				<Trigger />
 			</UserCardProvider>
-			{/* Stands in for the kebab actions menu, which is portaled outside the card */}
+			{/* Inert stand-in for the kebab actions menu (portaled outside the card in production,
+			    where it handles and stops the Escape itself). Here it only signals "a menu is open". */}
 			<div role='menu' />
 		</EscapeListener>,
 	);
@@ -81,7 +82,48 @@ it('lets an open menu handle Escape instead of closing the card', async () => {
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
-	// The menu owns this Escape: the event goes through untouched and the card stays.
+	// The provider neither stops the event nor closes the card: the stand-in is inert,
+	// so the event reaching the underlying listener proves it went through untouched.
 	expect(underlyingEscape).toHaveBeenCalledTimes(1);
 	expect(screen.getByTestId('user-card')).toBeInTheDocument();
+});
+
+const HoverTrigger = () => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onMouseEnter={(e: UIEvent) => openUserCard(e, 'jane')}>
+			hover
+		</button>
+	);
+};
+
+it('cancels a pending hover open when Escape dismisses the card', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<Trigger />
+				<HoverTrigger />
+			</UserCardProvider>,
+		);
+
+		fireEvent.click(screen.getByText('open'));
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(0);
+		});
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		// pointer reaches another author: an open is now pending behind the hover delay
+		fireEvent.mouseEnter(screen.getByText('hover'));
+		fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(1000);
+		});
+
+		// the explicit dismissal wins: no card comes back once the hover delay elapses
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
 });
