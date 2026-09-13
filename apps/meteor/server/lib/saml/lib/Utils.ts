@@ -476,7 +476,10 @@ export class SAMLUtils {
 		const name = this.getProfileValue(profile, userDataMap.name, true);
 
 		// Even if we're not using the email to identify the user, it is still mandatory because it's a mandatory information on Rocket.Chat
-		if (!email) {
+		// An attribute with no values is parsed into an empty array, which is truthy, so the values have to be
+		// inspected individually to keep a blank email from reaching the user lookup.
+		const emailList = ensureArray<string>(email).filter((address) => typeof address === 'string' && address.trim() !== '');
+		if (!emailList.length) {
 			throw new Error('SAML Profile did not contain an email address');
 		}
 
@@ -487,7 +490,7 @@ export class SAMLUtils {
 				idpSession: profile.sessionIndex,
 				nameID: profile.nameID,
 			},
-			emailList: ensureArray<string>(email),
+			emailList,
 			fullName: name || profile.displayName || profile.username,
 			eppn: profile.eppn,
 			attributeList,
