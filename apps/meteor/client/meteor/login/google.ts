@@ -1,111 +1,46 @@
-import { Random } from '@rocket.chat/random';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
-// eslint-disable-next-line import-x/no-duplicates
-import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import-x/no-duplicates
-import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { createOAuthLoginFunctionForMeteor, launchLogin, redirectUri, stateParam, wrapRequestCredentialFn } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
 
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function loginWithGoogle(
-			options?: Meteor.LoginWithExternalServiceOptions & {
-				loginUrlParameters?: {
-					include_granted_scopes?: boolean;
-					hd?: string;
-				};
-			},
-			callback?: LoginCallback,
-		): void;
-	}
-}
-
-const { loginWithGoogle } = Meteor;
-
-const innerLoginWithGoogleAndTOTP = createOAuthTotpLoginMethod(Google);
-
-const loginWithGoogleAndTOTP = (
-	options:
-		| (Meteor.LoginWithExternalServiceOptions & {
-				loginUrlParameters?: {
-					include_granted_scopes?: boolean;
-					hd?: string;
-				};
-		  })
-		| undefined,
-	code: string,
-	callback?: LoginCallback,
-) => {
-	if (Meteor.isCordova && Google.signIn) {
-		// After 20 April 2017, Google OAuth login will no longer work from
-		// a WebView, so Cordova apps must use Google Sign-In instead.
-		// https://github.com/meteor/meteor/issues/8253
-		Google.signIn(options, callback);
-		return;
-	} // Use Google's domain-specific login page if we want to restrict creation to
-
-	// a particular email domain. (Don't use it if restrictCreationByEmailDomain
-	// is a function.) Note that all this does is change Google's UI ---
-	// accounts-base/accounts_server.js still checks server-side that the server
-	// has the proper email address after the OAuth conversation.
-	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
-		options = Object.assign({}, options || {});
-		options.loginUrlParameters = Object.assign({}, options.loginUrlParameters || {});
-		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
-	}
-
-	innerLoginWithGoogleAndTOTP(options, code, callback);
+type LoginWithGoogleOptions = LoginWithExternalServiceOptions & {
+	loginUrlParameters?: {
+		include_granted_scopes?: boolean;
+		hd?: string;
+	};
+	prompt?: string;
 };
 
-Meteor.loginWithGoogle = (options, callback) => {
-	overrideLoginMethod(loginWithGoogle, [options], callback, loginWithGoogleAndTOTP);
-};
-
-Google.requestCredential = wrapRequestCredentialFn(
+const requestCredential = wrapRequestCredentialFn<Partial<OAuthConfiguration>, LoginWithGoogleOptions>(
 	'google',
-	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
-		const credentialToken = Random.secret();
-		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
-			loginUrlParameters?: {
-				include_granted_scopes?: boolean;
-				hd?: string;
-			};
-			prompt?: string;
-		};
+	({ config, loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
+		const loginUrl = new URL('https://accounts.google.com/o/oauth2/auth');
+		if (options.loginUrlParameters) {
+			for (const [key, value] of Object.entries(options.loginUrlParameters)) {
+				loginUrl.searchParams.append(key, String(value));
+			}
+		}
+		// Use Google's domain-specific login page if we want to restrict creation to
+		// a particular email domain. (Don't use it if restrictCreationByEmailDomain
+		// is a function.) Note that all this does is change Google's UI ---
+		// accounts-base/accounts_server.js still checks server-side that the server
+		// has the proper email address after the OAuth conversation.
+		if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
+			loginUrl.searchParams.set('hd', Accounts._options.restrictCreationByEmailDomain);
+		}
+		if (options.requestOfflineToken !== undefined)
+			loginUrl.searchParams.append('access_type', options.requestOfflineToken ? 'offline' : 'online');
+		if (options.prompt || options.forceApprovalPrompt) loginUrl.searchParams.append('prompt', options.prompt || 'consent');
+		if (options.loginHint) loginUrl.searchParams.append('login_hint', options.loginHint);
+		loginUrl.searchParams.append('response_type', 'code');
+		loginUrl.searchParams.append('client_id', config.clientId ?? '');
+		loginUrl.searchParams.append('scope', ['email', ...(options.requestPermissions || ['profile'])].join(' '));
+		loginUrl.searchParams.append('redirect_uri', redirectUri('google', config));
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
 
-		const scope = ['email', ...(options.requestPermissions || ['profile'])].join(' ');
-
-		const loginUrlParameters: Record<string, any> = {
-			...options.loginUrlParameters,
-			...(options.requestOfflineToken !== undefined && {
-				access_type: options.requestOfflineToken ? 'offline' : 'online',
-			}),
-			...((options.prompt || options.forceApprovalPrompt) && { prompt: options.prompt || 'consent' }),
-			...(options.loginHint && { login_hint: options.loginHint }),
-			response_type: 'code',
-			client_id: config.clientId,
-			scope,
-			redirect_uri: OAuth._redirectUri('google', config),
-			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
-		};
-
-		Object.assign(loginUrlParameters, {
-			response_type: 'code',
-			client_id: config.clientId,
-			scope,
-			redirect_uri: OAuth._redirectUri('google', config),
-			state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
-		});
-		const loginUrl = `https://accounts.google.com/o/oauth2/auth?${Object.keys(loginUrlParameters)
-			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
-			.join('&')}`;
-
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'google',
 			loginStyle,
 			loginUrl,
@@ -115,3 +50,11 @@ Google.requestCredential = wrapRequestCredentialFn(
 		});
 	},
 );
+
+const loginWithGoogle = createOAuthLoginFunctionForMeteor(requestCredential);
+
+Accounts.oauth.registerService('google');
+Accounts.registerClientLoginFunction('google', loginWithGoogle);
+Object.assign(Meteor, {
+	loginWithGoogle: (...args: Parameters<typeof loginWithGoogle>) => Accounts.applyLoginFunction('google', args),
+});

@@ -3,12 +3,10 @@ import { Random } from '@rocket.chat/random';
 import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { OAuth } from 'meteor/oauth';
 
 import { CustomOAuthError } from './CustomOAuthError';
-import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
-import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
+import type { IOAuthProvider, LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
+import { launchLogin, getLoginStyle, redirectUri, stateParam, createOAuthLoginFunctionForMeteor } from '../../meteor/login/oauth';
 import { loginServices } from '../loginServices';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
@@ -53,56 +51,45 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${capitalize(this.name)}` as const;
+		const loginWithOAuthTokenForMeteor = createOAuthLoginFunctionForMeteor(this.requestCredential.bind(this));
 
-		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
-
-		const loginWithOAuthToken = async (options?: Meteor.LoginWithExternalServiceOptions, callback?: LoginCallback) => {
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
-			await this.requestCredential(options, credentialRequestCompleteCallback);
-		};
-
-		(Meteor as any)[loginWithService] = (options: Meteor.LoginWithExternalServiceOptions, callback: LoginCallback) => {
-			overrideLoginMethod(loginWithOAuthToken, [options], callback, loginWithOAuthTokenAndTOTP);
-		};
+		Object.assign(Meteor, { [`loginWith${capitalize(this.name)}` as const]: loginWithOAuthTokenForMeteor });
 	}
 
 	async requestCredential(
-		options: Meteor.LoginWithExternalServiceOptions = {},
+		options: LoginWithExternalServiceOptions = {},
 		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
 	) {
-		const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
-		if (!config) {
-			if (credentialRequestCompleteCallback) {
-				credentialRequestCompleteCallback(new Accounts.ConfigError());
-			}
-			return;
+		try {
+			const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
+			if (!config) throw new Accounts.ConfigError();
+
+			const credentialToken = Random.secret();
+			const loginStyle = getLoginStyle(config);
+
+			const loginUrl = new URL(this.authorizePath);
+			loginUrl.searchParams.append('client_id', config.clientId);
+			loginUrl.searchParams.append('redirect_uri', redirectUri(this.name, config));
+			loginUrl.searchParams.append('response_type', this.responseType);
+			loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options.redirectUrl));
+			loginUrl.searchParams.append('scope', this.scope);
+
+			launchLogin({
+				loginService: this.name,
+				loginStyle,
+				loginUrl,
+				credentialRequestCompleteCallback,
+				credentialToken,
+				popupOptions: {
+					width: 900,
+					height: 450,
+				},
+			});
+		} catch (error) {
+			credentialRequestCompleteCallback?.(
+				error instanceof Accounts.ConfigError ? error : new Accounts.ConfigError(undefined, { cause: error }),
+			);
 		}
-
-		const credentialToken = Random.secret();
-		const loginStyle = OAuth._loginStyle(this.name, config);
-
-		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
-
-		const loginUrl =
-			`${this.authorizePath}${separator}client_id=${config.clientId}&redirect_uri=${encodeURIComponent(
-				OAuth._redirectUri(this.name, config),
-			)}&response_type=${encodeURIComponent(this.responseType)}` +
-			`&state=${encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(
-				this.scope,
-			)}`;
-
-		OAuth.launchLogin({
-			loginService: this.name,
-			loginStyle,
-			loginUrl,
-			credentialRequestCompleteCallback,
-			credentialToken,
-			popupOptions: {
-				width: 900,
-				height: 450,
-			},
-		});
 	}
 
 	static configureOAuthService<TServiceName extends string = string>(
