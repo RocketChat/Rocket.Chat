@@ -22,8 +22,14 @@ describe('getContentDisposition', () => {
 		);
 	});
 
-	it('replaces control characters before constructing the header value', () => {
-		expect(getContentDisposition('inline', 'report\r\nX-Test: value.txt')).to.equal('inline; filename="report__X-Test: value.txt"');
+	it('replaces C0 and C1 control characters before constructing the header value', () => {
+		expect(getContentDisposition('inline', 'report\r\n\u0085X-Test: value.txt')).to.equal('inline; filename="report___X-Test: value.txt"');
+	});
+
+	it('normalizes unpaired UTF-16 surrogates before encoding the filename', () => {
+		expect(getContentDisposition('inline', 'bad\uD800name.txt')).to.equal(
+			'inline; filename="bad_name.txt"; filename*=UTF-8\'\'bad%EF%BF%BDname.txt',
+		);
 	});
 
 	it('preserves simple ASCII filenames', () => {
