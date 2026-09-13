@@ -23,6 +23,10 @@ import {
 	isUsersRequestDataDownloadParamsGET,
 	isUsersGetPresenceParamsGET,
 	isUsersGetStatusParamsGET,
+	isUsersGetAvatarParamsGET,
+	isUsersDeleteOwnAccountParamsPOST,
+	isUsersResetAvatarParamsPOST,
+	isUsersForgotPasswordParamsPOST,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -92,21 +96,22 @@ import { isValidQuery } from '../lib/isValidQuery';
 import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getAvatar',
-	{ authRequired: true },
 	{
-		async get() {
-			const user = await getUserFromParams(this.queryParams);
+		authRequired: true,
+		query: isUsersGetAvatarParamsGET,
+	},
+	async function action() {
+		const user = await getUserFromParams(this.queryParams);
 
-			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.headers.set('Location', url);
+		const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		this.response.headers.set('Location', url);
 
-			return {
-				statusCode: 307,
-				body: url,
-			};
-		},
+		return {
+			statusCode: 307,
+			body: url,
+		};
 	},
 );
 
@@ -464,24 +469,9 @@ API.v1.post(
 	'users.deleteOwnAccount',
 	{
 		authRequired: true,
-		body: ajv.compile<{ password: string; confirmRelinquish?: boolean }>({
-			type: 'object',
-			properties: {
-				password: { type: 'string' },
-				confirmRelinquish: { type: 'boolean', nullable: true },
-			},
-			required: ['password'],
-			additionalProperties: false,
-		}),
+		body: isUsersDeleteOwnAccountParamsPOST,
 		response: {
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			200: voidSuccessResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
@@ -966,15 +956,7 @@ API.v1.post(
 	'users.resetAvatar',
 	{
 		authRequired: true,
-		body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
-			type: 'object',
-			properties: {
-				userId: { type: 'string' },
-				username: { type: 'string' },
-				user: { type: 'string' },
-			},
-			additionalProperties: false,
-		}),
+		body: isUsersResetAvatarParamsPOST,
 		response: {
 			200: voidSuccessResponse,
 			400: validateBadRequestErrorResponse,
@@ -1166,23 +1148,9 @@ API.v1
 		'users.forgotPassword',
 		{
 			authRequired: false,
-			body: ajv.compile<{ email: string }>({
-				type: 'object',
-				properties: {
-					email: { type: 'string' },
-				},
-				required: ['email'],
-				additionalProperties: false,
-			}),
+			body: isUsersForgotPasswordParamsPOST,
 			response: {
-				200: ajv.compile<void>({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
-					additionalProperties: false,
-				}),
+				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,
 			},
 		},
