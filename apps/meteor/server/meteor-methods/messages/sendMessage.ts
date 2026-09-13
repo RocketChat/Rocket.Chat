@@ -63,6 +63,16 @@ export async function executeSendMessage(
 		}
 	}
 
+	if (typeof message.msg === 'string') {
+		message.msg = message.msg.replace(/\0/g, '');
+	}
+
+	if ((typeof message.msg !== 'string' || !message.msg.trim()) && !message.attachments?.length && !message.blocks?.length) {
+		throw new Meteor.Error('error-invalid-message', 'Message cannot be empty', {
+			method: 'sendMessage',
+		});
+	}
+
 	if (message.msg) {
 		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
