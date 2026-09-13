@@ -8,6 +8,7 @@ import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useInstanceState } from './useInstanceState';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import { AppActionOverridesProvider } from '../experimental/AppActionButtons';
 
 export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
@@ -61,13 +62,15 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 
 	return (
 		<MediaCallInstanceContext.Provider value={value}>
-			{createPortal(
-				<audio ref={remoteStreamRefCallback}>
-					<track kind='captions' />
-				</audio>,
-				document.body,
-			)}
-			{children}
+			<AppActionOverridesProvider>
+				{createPortal(
+					<audio ref={remoteStreamRefCallback}>
+						<track kind='captions' />
+					</audio>,
+					document.body,
+				)}
+				{children}
+			</AppActionOverridesProvider>
 		</MediaCallInstanceContext.Provider>
 	);
 };
