@@ -185,14 +185,31 @@ export async function findPaginatedUsersByStatus({
 		freeSwitchExtension: 1,
 	};
 
-	if (searchTerm?.trim()) {
+	const normalizedSearchTerm = searchTerm?.trim();
+
+	if (normalizedSearchTerm) {
 		match.$or = [
-			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+			...(canSeeAllUserInfo
+				? [
+					{
+						'emails.address': {
+							$regex: escapeRegExp(normalizedSearchTerm),
+							$options: 'i',
+						},
+					},
+				]
+				: []),
 			{
-				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+				username: {
+					$regex: escapeRegExp(normalizedSearchTerm),
+					$options: 'i',
+				},
 			},
 			{
-				name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+				name: {
+					$regex: escapeRegExp(normalizedSearchTerm),
+					$options: 'i',
+				},
 			},
 		];
 	}
