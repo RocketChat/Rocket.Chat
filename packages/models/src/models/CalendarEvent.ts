@@ -50,7 +50,18 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime, endTime, meetingUrl, reminderMinutesBeforeStart, reminderTime, busy }: Partial<ICalendarEvent>,
+		{
+			subject,
+			description,
+			startTime,
+			endTime,
+			meetingUrl,
+			reminderMinutesBeforeStart,
+			reminderTime,
+			busy,
+			provider,
+			iCalUId,
+		}: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -64,7 +75,26 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
 					...(typeof busy === 'boolean' && { busy }),
+					...(provider !== undefined ? { provider } : {}),
+					...(iCalUId !== undefined ? { iCalUId } : {}),
 				},
+			},
+		);
+	}
+
+	public findServerSyncedByUserIdBetweenDates(
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime: Date,
+	): FindCursor<Pick<ICalendarEvent, '_id' | 'externalId' | 'provider'>> {
+		return this.find(
+			{
+				uid,
+				provider: { $exists: true },
+				startTime: { $gte: startTime, $lt: endTime },
+			},
+			{
+				projection: { _id: 1, externalId: 1, provider: 1 },
 			},
 		);
 	}
