@@ -28,7 +28,10 @@ const findParentMessage = (() => {
 		resolve(
 			Promise.all(
 				batches.map((ids) =>
-					sdk.rest.post('/v1/chat.getMessages', { messageIds: ids }).then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg))),
+					sdk.rest
+						.post('/v1/chat.getMessages', { messageIds: ids })
+						.then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg)))
+						.catch(() => []),
 				),
 			).then((results) => results.flat()),
 		);
