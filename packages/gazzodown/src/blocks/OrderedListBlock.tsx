@@ -8,8 +8,8 @@ export type OrderedListBlockProps = {
 
 const OrderedListBlock = ({ items }: OrderedListBlockProps) => (
 	<ol>
-		{items.map(({ value, number }, index) => (
-			<li key={index} value={number}>
+		{items.map(({ value, number, indentLevel }, index) => (
+			<li key={index} value={number} style={indentLevel ? { marginInlineStart: `${indentLevel * 0.5}rem` } : undefined}>
 				<InlineElements>{value}</InlineElements>
 			</li>
 		))}
