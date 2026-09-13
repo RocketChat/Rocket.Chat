@@ -17,7 +17,7 @@
   - I have signed the CLA - https://cla-assistant.io/RocketChat/Rocket.Chat
   - Lint and unit tests pass locally with my changes
   - I have added tests that prove my fix is effective or that my feature works (if applicable)
-  - I have added necessary documentation (if applicable)
+  - I have updated the affected developer docs under /docs (setup, architecture, conventions, extension points, commands) in this PR - or it's not applicable. See /docs/README.md
   - Any dependent changes have been merged and published in downstream modules
 -->
 

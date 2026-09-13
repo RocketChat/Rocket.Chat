@@ -18,7 +18,15 @@ __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or y
 
 ## Development Guidelines
 
-Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/space/RnD/359891343/%F0%9F%8C%90+Development+Guidelines) on how to set up your environment, do code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
+**Setting up your environment / running locally:** start with the in-repo docs —
+they live next to the code, work offline, and are reviewed in PRs:
+
+- [Getting Started](../docs/getting-started.md) — clone to a running app.
+- [Developer docs index](../docs/README.md) — conventions, build stack,
+  extension points, troubleshooting.
+
+For broader R&D process and PR title patterns, see our Handbook's
+[Development Guidelines](https://handbook.rocket.chat/space/RnD/359891343/%F0%9F%8C%90+Development+Guidelines).
 
 ## Contributor License Agreement
 

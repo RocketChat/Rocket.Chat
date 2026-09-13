@@ -25,6 +25,7 @@
 		"build": "turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
+		"docs:check-links": "node scripts/check-docs-links.mjs docs",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
