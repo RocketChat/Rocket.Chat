@@ -9,11 +9,13 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	imperativeModal,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import CreateEventModal from '../../calendar/CreateEventModal/CreateEventModal';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -85,6 +87,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
+					{authEnabled && <Button onClick={() => imperativeModal.open({ component: CreateEventModal, props: { onClose: imperativeModal.close } })}>{t('Create_Event')}</Button>}
 					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
 					{outlookUrl && (
 						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
