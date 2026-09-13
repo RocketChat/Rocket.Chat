@@ -189,11 +189,6 @@ export class Job {
 		const definition = this.agenda.getDefinition(this.attrs.name);
 
 		return new Promise(async (resolve, reject) => {
-			this.attrs.lastRunAt = new Date();
-			debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
-			this.computeNextRunAt();
-			await this.save();
-
 			let finished = false;
 			const jobCallback = async (err?: Error): Promise<void> => {
 				// We don't want to complete the job multiple times
@@ -236,6 +231,14 @@ export class Job {
 			};
 
 			try {
+				this.attrs.lastRunAt = new Date();
+				debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
+				this.computeNextRunAt();
+				// An unguarded rejection here would leave the returned promise
+				// pending forever and surface as an unhandledRejection, since a
+				// promise executor ignores the async function's own promise.
+				await this.save();
+
 				this.agenda.emit('start', this);
 				this.agenda.emit(`start:${this.attrs.name}`, this);
 				debug('[%s:%s] starting job', this.attrs.name, this.attrs._id);
