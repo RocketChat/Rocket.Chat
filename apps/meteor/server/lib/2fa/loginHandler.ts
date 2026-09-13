@@ -2,6 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
+import { CredentialTokens, Users } from '@rocket.chat/models';
 
 import { checkCodeForUser } from './code';
 import { callbacks } from '../callbacks';
@@ -45,6 +46,23 @@ callbacks.add(
 			code: totp?.code,
 			options: { disablePasswordFallback: true },
 		});
+
+		// Clean up any pending SAML credential token after successful 2FA verification.
+		// The SAML login handler stores the token on the user to prevent premature deletion
+		// before the second method.callAnon/login call (which carries the TOTP code).
+		const pendingToken = (login.user as any).services?.saml?.pendingCredentialToken;
+		if (pendingToken) {
+			await CredentialTokens.removeById(pendingToken);
+			await Users.updateOne(
+				{ _id: login.user._id },
+				{
+					$unset: {
+						'services.saml.pendingCredentialToken': '',
+						'services.saml.pendingCredentialExpiresAt': '',
+					},
+				},
+			);
+		}
 
 		return login;
 	},

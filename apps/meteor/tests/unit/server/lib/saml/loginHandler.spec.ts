@@ -5,10 +5,12 @@ import sinon from 'sinon';
 
 const retrieveCredential = sinon.stub().resolves(null);
 const removeById = sinon.stub().resolves();
+const updateOne = sinon.stub().resolves();
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
 	log: sinon.stub(),
 	mapProfileToUserObject: sinon.stub(),
+	insertOrUpdateSAMLUser: sinon.stub().resolves({ userId: 'user-id', token: 'token' }),
 	events: { emit: sinon.stub() },
 };
 
@@ -16,6 +18,7 @@ const handler = sinon.stub();
 proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'@rocket.chat/models': {
 		CredentialTokens: { removeById },
+		Users: { updateOne },
 	},
 	'meteor/accounts-base': {
 		Accounts: {
@@ -44,7 +47,11 @@ describe('SAML loginHandler', () => {
 		retrieveCredential.resolves(null);
 		removeById.reset();
 		removeById.resolves();
+		updateOne.reset();
+		updateOne.resolves();
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
+		samlUtilsMock.insertOrUpdateSAMLUser.reset();
+		samlUtilsMock.insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'token' });
 	});
 
 	it('should reject non-string credentialToken and never query the database (NoSQL injection prevention)', async () => {
@@ -65,10 +72,30 @@ describe('SAML loginHandler', () => {
 		expect(retrieveCredential.called).to.be.false;
 	});
 
-	it('should delete the credential token after retrieval', async () => {
-		await handler({ saml: true, credentialToken: 'token-to-delete' });
+	it('should store pending credential token on user for 2FA cleanup', async () => {
+		retrieveCredential.resolves({ profile: { username: 'test-user' } });
+
+		await handler({ saml: true, credentialToken: 'token-for-2fa' });
+
+		expect(updateOne.calledOnce).to.be.true;
+		expect(updateOne.calledWith(
+			{ _id: 'user-id' },
+			sinon.match({
+				$set: sinon.match({
+					'services.saml.pendingCredentialToken': 'token-for-2fa',
+				}),
+			}),
+		)).to.be.true;
+		expect(removeById.called).to.be.false;
+	});
+
+	it('should delete credential token on error', async () => {
+		retrieveCredential.resolves({ profile: { username: 'test-user' } });
+		samlUtilsMock.insertOrUpdateSAMLUser.rejects(new Error('DB error'));
+
+		await handler({ saml: true, credentialToken: 'token-on-error' });
 
 		expect(removeById.calledOnce).to.be.true;
-		expect(removeById.calledWith('token-to-delete')).to.be.true;
+		expect(removeById.calledWith('token-on-error')).to.be.true;
 	});
 });
