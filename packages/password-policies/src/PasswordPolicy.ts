@@ -79,11 +79,16 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
 	}: PasswordPolicyOptions) {
+		// Invalid counts interpolate as literals rather than throwing, so the rule
+		// would silently stop matching; `{0,}` matches every non-empty password.
+		const safeForbidRepeatingCharactersCount =
+			Number.isSafeInteger(forbidRepeatingCharactersCount) && forbidRepeatingCharactersCount >= 1 ? forbidRepeatingCharactersCount : 3;
+
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
-		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
+		this.forbidRepeatingCharactersCount = safeForbidRepeatingCharactersCount;
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
@@ -91,7 +96,7 @@ export class PasswordPolicy {
 		this.throwError = throwError;
 
 		this.regex = {
-			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${forbidRepeatingCharactersCount},}`),
+			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${safeForbidRepeatingCharactersCount},}`),
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
@@ -262,8 +267,6 @@ export class PasswordPolicy {
 			}
 			if (this.forbidRepeatingCharacters) {
 				data.policy.push(['get-password-policy-forbidRepeatingCharacters']);
-			}
-			if (this.forbidRepeatingCharactersCount) {
 				data.policy.push([
 					'get-password-policy-forbidRepeatingCharactersCount',
 					{ forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount },
