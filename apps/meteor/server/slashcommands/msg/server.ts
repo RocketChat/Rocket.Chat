@@ -17,15 +17,14 @@ slashCommands.add({
 	command: 'msg',
 	callback: async function Msg({ params, message: item, userId }: SlashCommandCallbackParams<'msg'>): Promise<void> {
 		const trimmedParams = params.trim();
-		const separator = trimmedParams.indexOf(' ');
-		if (separator === -1) {
+		const match = trimmedParams.match(/^(\S+)(?:[ \t]*\r?\n|[ \t])([\s\S]*)$/);
+		if (!match?.[2].trim()) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: i18n.t('Username_and_message_must_not_be_empty', { lng: settings.get('Language') || 'en' }),
 			});
 			return;
 		}
-		const message = trimmedParams.slice(separator + 1);
-		const targetUsernameOrig = trimmedParams.slice(0, separator);
+		const [, targetUsernameOrig, message] = match;
 		const targetUsername = targetUsernameOrig.replace('@', '');
 		const targetUser = await Users.findOneByUsernameIgnoringCase(targetUsername);
 		if (targetUser == null) {
