@@ -2990,6 +2990,29 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return statusCode: 200 and apply offset and count pagination parameters', function (done) {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
+				void request
+					.get(api(`chat.getMessageReadReceipts`))
+					.set(credentials)
+					.query({
+						messageId: message._id,
+						offset: 0,
+						count: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('receipts').and.to.be.an('array');
+						expect(res.body.receipts.length).to.be.at.most(1);
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
 		});
 
 		describe('when an error occurs', () => {
