@@ -5,12 +5,15 @@ export const useRedirectToSetupWizard = (): void => {
 	const userId = useUserId();
 	const setupWizardState = useSetting('Show_Setup_Wizard');
 	const router = useRouter();
+
 	const isAdmin = useRole('admin');
 
 	const isWizardInProgress = userId && isAdmin && setupWizardState === 'in_progress';
 	const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
+
 	useEffect(() => {
-		if (mustRedirect) {
+		const currentPath = router.getLocationPathname();
+		if (mustRedirect && !currentPath?.startsWith('/setup-wizard')) {
 			router.navigate('/setup-wizard');
 		}
 	}, [mustRedirect, router]);
