@@ -5,6 +5,8 @@ import { flushSync } from 'react-dom';
 
 import type { ComposerAPI } from './chats/ChatAPI';
 import { settings } from './settings';
+import type { LinePrefix } from './toggleLinePrefix';
+import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX } from './toggleLinePrefix';
 import AddLinkComposerActionModal from '../views/composer/AddLinkComposerActionModal';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
@@ -27,9 +29,16 @@ type PromptButton = {
 	icon: IconName;
 } & FormattingButtonDefault;
 
-export type FormattingButton = PatternButton | PromptButton | TextButton;
+type LinePrefixButton = {
+	linePrefix: LinePrefix;
+	icon: IconName;
+} & FormattingButtonDefault;
+
+export type FormattingButton = PatternButton | PromptButton | TextButton | LinePrefixButton;
 
 export const isPromptButton = (button: FormattingButton): button is PromptButton => 'prompt' in button;
+
+export const isLinePrefixButton = (button: FormattingButton): button is LinePrefixButton => 'linePrefix' in button;
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
@@ -58,6 +67,16 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'Multi_line_code',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
+	},
+	{
+		label: 'Bulleted_list',
+		icon: 'list-bullets',
+		linePrefix: UNORDERED_LINE_PREFIX,
+	},
+	{
+		label: 'Numbered_list',
+		icon: 'list-numbers',
+		linePrefix: ORDERED_LINE_PREFIX,
 	},
 	{
 		label: 'Link',
