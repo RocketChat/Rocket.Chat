@@ -194,10 +194,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 				const result = await fetch(this.apiEndPointUrl, {
 					ignoreSsrfValidation: true,
 					params: {
-						auth_key: this.apiKey,
 						target_lang: language,
 						text: attachment.description || attachment.text || '',
 					},
+					headers: {
+						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+					},
+					method: 'POST',
 				});
 				if (!result.ok) {
 					throw new Error(result.statusText);
