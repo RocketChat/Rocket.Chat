@@ -142,6 +142,40 @@ describe('/msg slash command', () => {
 		});
 	});
 
+	it('should preserve trailing blank line in message body (LF)', async () => {
+		const msgCmd = commands.msg;
+		await msgCmd.callback({
+			command: 'msg',
+			params: ' @alice\nhello\n\n',
+			message,
+			userId,
+		});
+
+		expect(executeSendMessageStub.calledOnce).to.be.true;
+		expect(executeSendMessageStub.firstCall.args[1]).to.deep.equal({
+			_id: 'random-id',
+			rid: 'direct-room-id',
+			msg: 'hello\n\n',
+		});
+	});
+
+	it('should preserve trailing blank line in message body (CRLF)', async () => {
+		const msgCmd = commands.msg;
+		await msgCmd.callback({
+			command: 'msg',
+			params: ' @alice\r\nhello\r\n\r\n',
+			message,
+			userId,
+		});
+
+		expect(executeSendMessageStub.calledOnce).to.be.true;
+		expect(executeSendMessageStub.firstCall.args[1]).to.deep.equal({
+			_id: 'random-id',
+			rid: 'direct-room-id',
+			msg: 'hello\r\n\r\n',
+		});
+	});
+
 	it('should reject /msg with missing message (only @username)', async () => {
 		const msgCmd = commands.msg;
 		await msgCmd.callback({

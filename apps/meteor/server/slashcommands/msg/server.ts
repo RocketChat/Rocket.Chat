@@ -16,7 +16,7 @@ import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
 slashCommands.add({
 	command: 'msg',
 	callback: async function Msg({ params, message: item, userId }: SlashCommandCallbackParams<'msg'>): Promise<void> {
-		const trimmedParams = params.trim();
+		const trimmedParams = params.trimStart();
 		const match = trimmedParams.match(/^(\S+)(?:[ \t]*\r?\n|[ \t])([\s\S]*)$/);
 		if (!match?.[2].trim()) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
