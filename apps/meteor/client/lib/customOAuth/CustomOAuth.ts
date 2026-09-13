@@ -13,6 +13,17 @@ import { loginServices } from '../loginServices';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
 
+const isIOSClient = (): boolean => {
+	if (typeof navigator === 'undefined') {
+		return false;
+	}
+
+	const iOSUserAgent = /iPad|iPhone|iPod/.test(navigator.userAgent);
+	const iPadOS13Plus = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+	return iOSUserAgent || iPadOS13Plus;
+};
+
 export class CustomOAuth<TServiceName extends string = string> implements IOAuthProvider {
 	public serverURL: string;
 
@@ -80,7 +91,8 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		}
 
 		const credentialToken = Random.secret();
-		const loginStyle = OAuth._loginStyle(this.name, config);
+		const configuredLoginStyle = OAuth._loginStyle(this.name, config);
+		const loginStyle = isIOSClient() && configuredLoginStyle === 'popup' ? 'redirect' : configuredLoginStyle;
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 
