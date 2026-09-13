@@ -6,6 +6,7 @@ export {
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
+	usePeekMediaSessionHidden,
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
