@@ -15,6 +15,7 @@ export * from './isTruthy';
 export * from './normalizeLanguage';
 export * from './objectMap';
 export * from './pick';
+export * from './primeOnce';
 export * from './removeEmpty';
 export * from './stream';
 export * from './timezone';

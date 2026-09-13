@@ -20,6 +20,76 @@ describe('LocalBroker', () => {
 		});
 	});
 
+	describe('#call()', () => {
+		const brokerWith = (instance: ServiceClass) => {
+			const broker = new LocalBroker();
+			broker.createService(instance);
+			return broker;
+		};
+
+		it('should dispatch to the registered service method', async () => {
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+
+				async echo(value: unknown) {
+					return { echoed: value };
+				}
+			})();
+
+			await expect(brokerWith(instance).call('test.echo', ['hi'])).resolves.toEqual({ echoed: 'hi' });
+		});
+
+		it('should hand the arguments over by reference', async () => {
+			const received: unknown[] = [];
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+
+				async take(value: unknown) {
+					received.push(value);
+				}
+			})();
+
+			// stands in for a cursor or a stream, which no serializer would survive
+			const circular: Record<string, unknown> = {};
+			circular.self = circular;
+
+			await brokerWith(instance).call('test.take', [circular]);
+
+			expect(received[0]).toBe(circular);
+		});
+
+		it('should resolve undefined for a service it does not run', async () => {
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
+
+			await expect(brokerWith(instance).call('other.method', [])).resolves.toBeUndefined();
+		});
+
+		it('should not expose lifecycle hooks or event handlers as callable', async () => {
+			const startedStub = jest.fn();
+			const handlerStub = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+
+				async started() {
+					startedStub();
+				}
+
+				onUserCreated() {
+					handlerStub();
+				}
+			})();
+
+			const broker = brokerWith(instance);
+			await broker.call('test.started', []);
+			await broker.call('test.onUserCreated', []);
+
+			expect(startedStub).not.toHaveBeenCalled();
+			expect(handlerStub).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('#destroyService()', () => {
 		it('should call all the expected lifecycle hooks when destroying a service', () => {
 			const removeAllListenersStub = jest.fn();

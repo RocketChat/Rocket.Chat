@@ -97,6 +97,9 @@ export type {
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
 
+export { getInstanceMethods } from './lib/getInstanceMethods';
+export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry';
+export type { LocalHandler } from './lib/LocalServiceRegistry';
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 

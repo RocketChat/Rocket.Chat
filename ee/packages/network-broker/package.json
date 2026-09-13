@@ -19,6 +19,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
 		"moleculer": "^0.14.35",
+		"nats": "^2.29.1",
 		"pino": "10.3.1"
 	},
 	"devDependencies": {
