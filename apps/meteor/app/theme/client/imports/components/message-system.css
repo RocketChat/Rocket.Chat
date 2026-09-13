@@ -1,0 +1,15 @@
+/* Allow system messages (e.g. Livechat transfer comments) to wrap onto multiple
+   lines instead of being truncated with an ellipsis */
+.rcx-message-system {
+	&__container,
+	&__body {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: unset;
+		word-break: break-word;
+	}
+
+	&__block {
+		align-items: flex-start;
+	}
+}
