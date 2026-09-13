@@ -1,18 +1,18 @@
 import { sortAppsByAlphabeticalOrInverseOrder } from './sortAppsByAlphabeticalOrInverseOrder';
 
 describe('sortAppsByAlphabeticalOrder', () => {
-	it.skip('should return a positive number if first word is, alphabetically, after second word', () => {
-		const firstWord = 'Alfa';
-		const secondWord = 'Bravo';
+	it('should return a positive number if first word is, alphabetically, after second word', () => {
+		const firstWord = 'Bravo';
+		const secondWord = 'Alfa';
 
 		const result = sortAppsByAlphabeticalOrInverseOrder(firstWord, secondWord);
 
 		expect(result).toBeGreaterThan(0);
 	});
 
-	it.skip('should return a negative number if first word is, alphabetically, before second word', () => {
-		const firstWord = 'Bravo';
-		const secondWord = 'Alfa';
+	it('should return a negative number if first word is, alphabetically, before second word', () => {
+		const firstWord = 'Alfa';
+		const secondWord = 'Bravo';
 
 		const result = sortAppsByAlphabeticalOrInverseOrder(firstWord, secondWord);
 
