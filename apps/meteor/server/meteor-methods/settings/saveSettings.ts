@@ -43,6 +43,9 @@ Meteor.methods<ServerMethods>({
 			});
 		} catch (error) {
 			if (error instanceof SettingValidationError) {
+				if (error.reason === 'bounds') {
+					throw new Meteor.Error('error-invalid-setting-value', error.message, { method: 'saveSettings', settingId: error.settingId });
+				}
 				throw new Meteor.Error('error-setting-validation-failed', error.message);
 			}
 			throw error;

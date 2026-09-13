@@ -9,9 +9,8 @@ import { updateAuditedByUser } from './auditedSettingUpdates';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
-import { validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
-import { checkSettingValueBounds } from '../checkSettingValueBonds';
+import { validateSettings } from '../validateSetting';
 
 const validJSON = Match.Where((value: string) => {
 	try {
@@ -88,7 +87,6 @@ export const saveSettingsBulk = async (
 				case 'range':
 					check(value, Number);
 					checkInteger(value);
-					checkSettingValueBounds(setting, value);
 					break;
 				case 'multiSelect':
 					check(value, Array);
@@ -113,7 +111,7 @@ export const saveSettingsBulk = async (
 		});
 	}
 
-	validateSettingRules(params);
+	validateSettings(params);
 
 	const auditSettingOperation = updateAuditedByUser({
 		_id: uid,

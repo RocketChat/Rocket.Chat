@@ -9,9 +9,10 @@ import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../../lib/notifyListener';
-import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
+import { SettingValidationError } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { validateSetting } from '../../settings/validateSetting';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -71,9 +72,14 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			validateSettingRules([{ _id, value }]);
+			if (setting) {
+				validateSetting(setting, value);
+			}
 		} catch (error) {
 			if (error instanceof SettingValidationError) {
+				if (error.reason === 'bounds') {
+					throw new Meteor.Error('error-invalid-setting-value', error.message, { method: 'saveSetting', settingId: _id });
+				}
 				throw new Meteor.Error('error-setting-validation-failed', error.message);
 			}
 			throw error;
