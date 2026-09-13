@@ -84,6 +84,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		room,
 		user._id,
 		user.username,
+		user.federated,
 		canCreateDirectMessage,
 		createDirectMessage,
 		ownUserId,
