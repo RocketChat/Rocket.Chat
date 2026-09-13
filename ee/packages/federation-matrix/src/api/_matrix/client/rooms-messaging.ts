@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { EventID, FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Rooms, Users } from '@rocket.chat/models';
+import { FederationMatrixTransactions, Rooms, Users } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
@@ -152,6 +152,18 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const eventType = c.req.param('eventType');
 				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
+				const txnId = c.req.param('txnId');
+
+				if (!txnId) {
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_BAD_JSON',
+							error: 'Missing transaction ID',
+						},
+					};
+				}
+				const appService = c.get('appService');
 
 				if (eventType === 'org.matrix.bridge.ping') {
 					try {
@@ -197,6 +209,24 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				}
 
 				// TODO: deduplicate by txnId to handle bridge retries
+
+				const existing = await FederationMatrixTransactions.findByTransaction(
+					appService.registration._id,
+					senderUsername,
+					roomId,
+					eventType,
+					txnId,
+				);
+
+				if (existing) {
+					return {
+						statusCode: 200,
+						body: {
+							event_id: existing.eventId,
+						},
+					};
+				}
+
 				try {
 					if (isFileMessage) {
 						const fileContent: FileMessageContent = {
@@ -212,6 +242,16 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 							event_id: event.eventId,
 						});
 
+						await FederationMatrixTransactions.createTransaction({
+							appServiceId: appService.registration._id,
+							senderId: senderUsername,
+							roomId,
+							eventType,
+							txnId,
+							eventId: event.eventId,
+							createdAt: new Date(),
+						});
+
 						return {
 							statusCode: 200,
 							body: {
@@ -223,6 +263,16 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 					const event = await federationSDK.sendMessage(roomId, body.body, body.formatted_body ?? body.body, senderUsername);
 
 					await FederationMatrix.saveFederationMessage({ event: event.event as PduForType<'m.room.message'>, event_id: event.eventId });
+
+					await FederationMatrixTransactions.createTransaction({
+						appServiceId: appService.registration._id,
+						senderId: senderUsername,
+						roomId,
+						eventType,
+						txnId,
+						eventId: event.eventId,
+						createdAt: new Date(),
+					});
 
 					return {
 						statusCode: 200,
