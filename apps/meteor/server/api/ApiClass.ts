@@ -924,23 +924,26 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								const errorKey = typeof e === 'string' ? e : e?.error ?? e?.message;
+								const errorMessage = typeof e === 'string'
+									? e
+									: e?.message || e?.reason || (typeof e?.error === 'string' ? e.error : undefined) || String(e);
+								switch (errorKey) {
 									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+										return api.tooManyRequests(errorMessage);
 									case 'unauthorized':
+										return api.unauthorized(errorMessage);
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+									case 'error-not-authorized':
+										return api.forbidden(errorMessage);
 									case 'forbidden':
 									case 'error-forbidden':
 										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
+											return api.forbidden(errorMessage);
 										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(errorMessage, e?.error, process.env.TEST_MODE ? e?.stack : undefined, e);
 									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(errorMessage, e?.error, process.env.TEST_MODE ? e?.stack : undefined, e);
 								}
 							})(e);
 						} finally {
