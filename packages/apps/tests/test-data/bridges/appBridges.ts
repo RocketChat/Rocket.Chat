@@ -12,6 +12,7 @@ import { TestsHttpBridge } from './httpBridge';
 import { TestsInternalBridge } from './internalBridge';
 import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
+import { TestsMediaCallBridge } from './mediaCallBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
 import { TestOutboundCommunicationBridge } from './outboundComms';
@@ -36,6 +37,7 @@ import type {
 	IInternalBridge,
 	IListenerBridge,
 	LivechatBridge,
+	MediaCallBridge,
 	MessageBridge,
 	ModerationBridge,
 	OutboundMessageBridge,
@@ -110,6 +112,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly experimentalBridge: TestExperimentalBridge;
 
+	private readonly mediaCallsBridge: TestsMediaCallBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -139,6 +143,7 @@ export class TestsAppBridges extends AppBridges {
 		this.contactBridge = new TestContactBridge();
 		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
 		this.experimentalBridge = new TestExperimentalBridge();
+		this.mediaCallsBridge = new TestsMediaCallBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -251,5 +256,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getExperimentalBridge(): ExperimentalBridge {
 		return this.experimentalBridge;
+	}
+
+	public getMediaCallBridge(): MediaCallBridge {
+		return this.mediaCallsBridge;
 	}
 }
