@@ -18,7 +18,12 @@ const options = {
 } as const;
 
 export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
-	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
+	const [, mention, rawName = ''] = useMemo(
+		() => filterText.match(/(@|#)?(.*)/i) || [],
+		[filterText],
+	);
+
+	const name = rawName.trim();
 
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
