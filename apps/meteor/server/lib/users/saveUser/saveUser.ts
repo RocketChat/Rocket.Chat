@@ -8,7 +8,7 @@ import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
-import { handleProfileFields } from './handleProfileFields';
+import { handleProfileFields, type ProfileField } from './handleProfileFields';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { setPasswordUpdater } from './setPasswordUpdater';
@@ -246,6 +246,18 @@ const _saveUser = (session?: ClientSession) =>
 			};
 			for (const field of clearedProfileFields) {
 				delete diff[field];
+			}
+			// Retained profile fields go out as persisted (trimmed, deduped), not as
+			// received: clients apply the diff as-is.
+			const retained = (field: ProfileField) => userData[field] !== undefined && !clearedProfileFields.includes(field);
+			if (retained('title')) {
+				diff.title = userUpdated?.title;
+			}
+			if (retained('nationality')) {
+				diff.nationality = userUpdated?.nationality;
+			}
+			if (retained('languages')) {
+				diff.languages = userUpdated?.languages;
 			}
 			void notifyOnUserChange({
 				clientAction: 'updated',
