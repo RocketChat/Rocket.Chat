@@ -1,5 +1,10 @@
-import { format, formatDistanceToNow, formatDuration, intervalToDuration, differenceInCalendarDays, parse } from 'date-fns';
 import type { Locale } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns/differenceInCalendarDays';
+import { format } from 'date-fns/format';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import { formatDuration } from 'date-fns/formatDuration';
+import { intervalToDuration } from 'date-fns/intervalToDuration';
+import { parse } from 'date-fns/parse';
 
 export type DateInput = string | Date | number;
 

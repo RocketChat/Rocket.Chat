@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { differenceInMilliseconds } from 'date-fns';
+import { differenceInMilliseconds } from 'date-fns/differenceInMilliseconds';
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { getUserPreference } from './getUserPreference';

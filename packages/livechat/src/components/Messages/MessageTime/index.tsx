@@ -1,4 +1,5 @@
-import { parseISO, isToday } from 'date-fns';
+import { isToday } from 'date-fns/isToday';
+import { parseISO } from 'date-fns/parseISO';
 import type { TFunction } from 'i18next';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
