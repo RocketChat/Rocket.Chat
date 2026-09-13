@@ -22,16 +22,21 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
-const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
+const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U, maxRetries = 60) =>
 	new Promise<U>((resolve, reject) => {
+		let attempts = 0;
 		const callPromise = () => {
 			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
 					return;
 				}
-
-				setTimeout(callPromise, 1000);
+				attempts++;
+				if (attempts < maxRetries) {
+					setTimeout(callPromise, 1000);
+				} else {
+					reject(new Error(`waitFor: predicate not satisfied after ${maxRetries} attempts`));
+				}
 			}, reject);
 		};
 
