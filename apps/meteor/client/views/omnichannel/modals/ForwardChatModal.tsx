@@ -162,7 +162,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 						<Controller
 							name='comment'
 							control={control}
-							render={({ field }) => <TextAreaInput {...field} id={commentFieldId} rows={8} flexGrow={1} />}
+							render={({ field }) => <TextAreaInput {...field} id={commentFieldId} rows={8} flexGrow={1} style={{overflowWrap: 'break-word'}} />}
 						/>
 					</FieldRow>
 				</Field>
