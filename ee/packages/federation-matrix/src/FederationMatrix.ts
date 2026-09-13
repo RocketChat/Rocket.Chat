@@ -103,12 +103,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				if (!user.username || !user.status || user.username.includes(':')) {
 					return;
 				}
-				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1, federated: 1, federation: 1 } });
-				if (!localUser) {
-					return;
-				}
-
-				if (!isUserNativeFederated(localUser)) {
+				const localUser = await Users.findOneByUsername(user.username, {
+					projection: { _id: 1, username: 1, federated: 1, federation: 1 },
+				});
+				if (!localUser?.username) {
 					return;
 				}
 
@@ -121,10 +119,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
+				const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
+
 				void federationSDK.sendPresenceUpdateToRooms(
 					[
 						{
-							user_id: localUser.federation.mui,
+							user_id: userMui,
 							presence: statusMap[user.status] || 'offline',
 						},
 					],
