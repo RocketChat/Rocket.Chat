@@ -301,7 +301,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public updateUser(userId: string | null, isLoggingIn: boolean, isConnected: boolean): void {
-		if (userId === this.userId && !isLoggingIn && !isConnected) {
+		// nothing changed: same user, already connected and not mid-login - keep the current subscription
+		if (userId === this.userId && !isLoggingIn && isConnected) {
 			return;
 		}
 
