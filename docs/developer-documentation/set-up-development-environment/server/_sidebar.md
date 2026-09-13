@@ -1,0 +1,5 @@
+* [Server Environment Setup](index.md)
+  * [☁️ Gitpod](gitpod.md)
+  * [🍏 Mac OSX](mac-osx.md)
+  * [🐧 Linux](linux.md)
+  * [🪟 Windows (WSL)](windows.md)
