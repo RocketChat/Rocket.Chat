@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  release:
-    types: [published]
   pull_request:
     branches:
       - '**'
@@ -10,6 +8,8 @@ on:
       - '**.md'
   merge_group:
   push:
+    tags:
+      - '*'
     branches:
       - develop
     paths-ignore:
@@ -17,7 +17,7 @@ on:
 
 concurrency:
   # merge_group runs group by the merge-group ref so a recreated group cancels the stale run;
-  # push/release runs group by run_id on purpose (never cancel a deploy in progress)
+  # push (incl. tag) runs group by run_id on purpose (never cancel a deploy in progress)
   group: ${{ github.workflow }}-${{ github.head_ref || (github.event_name == 'merge_group' && github.ref) || github.run_id }}
   cancel-in-progress: true
 
@@ -227,7 +227,7 @@ jobs:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
-    if: github.event_name == 'release'
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -237,30 +237,22 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Register release on cloud as Draft
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
-          if [[ '${{ github.event_name }}' = 'release' ]]; then
-            GIT_TAG="${GITHUB_REF#*tags/}"
-            GIT_BRANCH=""
-            ARTIFACT_NAME="${REPO_VERSION}"
-            RC_VERSION=$GIT_TAG
+          GIT_TAG="${GITHUB_REF#*tags/}"
+          GIT_BRANCH=""
+          ARTIFACT_NAME="${REPO_VERSION}"
+          RC_VERSION=$GIT_TAG
 
-            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
-              RC_RELEASE=candidate
-            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
-              RC_RELEASE=stable
-            fi
-          else
-            GIT_TAG=""
-            GIT_BRANCH="${GITHUB_REF#*heads/}"
-            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
-            RC_VERSION="${REPO_VERSION}"
-            RC_RELEASE=develop
-          fi;
+          if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+            RC_RELEASE=candidate
+          elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+            RC_RELEASE=stable
+          fi
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
               "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\",\"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
@@ -366,7 +358,7 @@ jobs:
           - production
           - coverage
         exclude:
-          - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
+          - type: ${{ (!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -398,7 +390,7 @@ jobs:
             [rocketchat],
           ]
         type:
-          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+          - ${{ (!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
           - fips
         exclude:
           - arch: arm64
@@ -424,7 +416,7 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         env:
           # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -434,7 +426,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' }}
 
       - name: Image ${{ matrix.service[1] || '"skipped"' }}
         uses: ./.github/actions/build-docker
@@ -450,7 +442,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[2] || '"skipped"' }}
@@ -467,7 +459,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[3] || '"skipped"' }}
@@ -484,7 +476,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
   build-gh-docker-publish:
@@ -498,7 +490,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
         with:
           sparse-checkout: |
             docker-compose-ci.yml
@@ -507,7 +499,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Login to GitHub Container Registry
-        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -515,7 +507,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Download manifests
-        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: manifests-*
@@ -523,7 +515,7 @@ jobs:
           merge-multiple: true
 
       - name: Create and push multi-arch manifests
-        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
         run: |
           set -o xtrace
           shopt -s nullglob
@@ -610,7 +602,6 @@ jobs:
         shell: bash
         run: |
           ./actionlint -color
-
 
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
@@ -699,7 +690,7 @@ jobs:
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      retries: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -790,7 +781,7 @@ jobs:
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      retries: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -864,7 +855,7 @@ jobs:
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      retries: ${{ (startsWith(github.ref, 'refs/tags/') || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -903,7 +894,7 @@ jobs:
         run: yarn build
 
       - name: Login to GitHub Container Registry
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -918,7 +909,7 @@ jobs:
       # Download Docker images from build artifacts
       - name: Download Docker images
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        if: github.event.pull_request.head.repo.full_name != github.repository && !startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/develop'
         with:
           pattern: 'docker-image-rocketchat-amd64-coverage'
           path: /tmp/docker-images
@@ -926,7 +917,7 @@ jobs:
 
       # Load Docker images
       - name: Load Docker images
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        if: github.event.pull_request.head.repo.full_name != github.repository && !startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/develop'
         shell: bash
         run: |
           set -o xtrace
@@ -1028,7 +1019,23 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-deno-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs:
+      [
+        test-guard,
+        checks,
+        test-unit,
+        test-api,
+        test-ui,
+        test-api-ee,
+        test-ui-ee,
+        test-api-livechat,
+        test-api-livechat-ee,
+        test-api-apps-deno-ee,
+        test-api-fips,
+        test-api-livechat-fips,
+        test-ui-fips,
+        test-federation-matrix,
+      ]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1093,7 +1100,7 @@ jobs:
   deploy:
     name: 🚀 Publish build assets
     runs-on: ubuntu-24.04-arm
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
@@ -1119,7 +1126,7 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
-          if [[ "${{ github.event_name }}" = 'release' ]]; then
+          if [[ "${{ startsWith(github.ref, 'refs/tags/') }}" = 'true' ]]; then
             ARTIFACT_NAME="${REPO_VERSION}"
           else
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
@@ -1174,7 +1181,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Download manifests
-        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: manifests-*
@@ -1291,7 +1298,7 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
-          if [[ '${{ github.event_name }}' = 'release' ]]; then
+          if [[ '${{ startsWith(github.ref, 'refs/tags/') }}' = 'true' ]]; then
             GIT_TAG="${GITHUB_REF#*tags/}"
             GIT_BRANCH=""
             ARTIFACT_NAME="${REPO_VERSION}"
@@ -1317,10 +1324,46 @@ jobs:
           # Makes build fail if the release isn't there
           curl --fail "https://releases.rocket.chat/$RC_VERSION/info"
 
+  publish-github-release:
+    name: 🚀 Publish GitHub Release
+    runs-on: ubuntu-24.04-arm
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [docker-image-publish, release-versions]
+    permissions:
+      contents: write
+    steps:
+      # the release is created as a draft by the release-action and is only published
+      # here, after all artifacts are available, so users never see a release
+      # they can't install yet
+      - name: Remove draft from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # drafts are not addressable by tag (GET /releases/tags/{tag} returns 404),
+          # so find the release id by listing; the draft was created right before the
+          # tag push, so it's always within the most recent releases
+          RELEASE_ID=$(gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            --jq "[.[] | select(.tag_name == \"${GITHUB_REF_NAME}\")][0].id // empty")
+
+          if [[ -z "$RELEASE_ID" ]]; then
+            echo "No release found for tag ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+
+          MAKE_LATEST=false
+          if [[ '${{ needs.release-versions.outputs.release }}' == 'latest' && '${{ needs.release-versions.outputs.latest-release }}' == "$GITHUB_REF_NAME" ]]; then
+            MAKE_LATEST=true
+          fi
+
+          gh api -X PATCH "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" \
+            -F draft=false -f make_latest="$MAKE_LATEST"
+
   docs-update:
     name: Update Version Durability
 
-    if: github.event_name == 'release'
+    if: startsWith(github.ref, 'refs/tags/')
     needs:
       - docker-image-publish
 
