@@ -187,7 +187,7 @@ async function saveUserProfile(
 		...(Object.keys(unset).length > 0 && { unset }),
 	});
 
-	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
 }

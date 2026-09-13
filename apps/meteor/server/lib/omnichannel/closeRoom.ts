@@ -97,8 +97,8 @@ async function afterRoomClosed(
 		 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 		 * in the next major version of the Apps-Engine
 		 */
-		void Apps.self?.triggerEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+		void Apps.triggerEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+		void Apps.triggerEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 	});
 
 	const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;

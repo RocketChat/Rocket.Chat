@@ -1,6 +1,6 @@
-import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 
+import type { IParseAppPackageResult } from '../../../../dist/server/compiler/IParseAppPackageResult';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
 import type { RequestContext } from '../../lib/requestContext';

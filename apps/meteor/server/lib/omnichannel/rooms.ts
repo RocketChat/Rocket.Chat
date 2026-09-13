@@ -190,7 +190,7 @@ export async function saveRoomInfo(
 	await LivechatRooms.saveRoomById(roomData);
 
 	setImmediate(() => {
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+		void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 	});
 
 	if (guestData?.name?.trim().length) {

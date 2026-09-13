@@ -44,7 +44,7 @@ export const followMessage = async (user: IUser, { mid }: { mid: IMessage['_id']
 	});
 
 	const isFollowed = true;
-	await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, user, isFollowed);
+	await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, user, isFollowed);
 
 	return followResult;
 };

@@ -319,7 +319,7 @@ export const RoutingManager: Routing = {
 				throw new Error('error-room-not-found');
 			}
 
-			void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
+			void Apps.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
 			void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 			void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
