@@ -5,17 +5,21 @@ import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
+import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
+import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
+import VideoBlock from '../blocks/VideoBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
 import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
 import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import DateTimePickerElement from '../elements/DateTimePickerElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
@@ -27,6 +31,7 @@ import PlainTextElement from '../elements/PlainTextElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import RadioButtonElement from '../elements/RadioButtonElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import TextInputElement from '../elements/TextInputElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 import MultiUsersSelectElement from '../elements/UsersSelectElement/MultiUsersSelectElement';
@@ -126,6 +131,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return null;
 	}
 
+	header(block: UiKit.HeaderBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<HeaderBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
 	image(block: UiKit.ImageBlock | UiKit.ImageElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (isImageBlock(block, context)) {
 			return (
@@ -186,6 +203,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		);
 	}
 
+	datetimepicker(block: UiKit.DateTimePickerElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<DateTimePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
 	static_select(block: UiKit.StaticSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return null;
@@ -230,6 +259,42 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={block.actionId || index} appId={block.appId}>
 				<PlainTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	number_input(block: UiKit.NumberInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	email_text_input(block: UiKit.EmailInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	url_text_input(block: UiKit.UrlInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}
@@ -333,6 +398,30 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 	multi_channels_select(block: UiKit.MultiChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.FORM) {
 			return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	markdown(block: UiKit.MarkdownBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<MarkdownBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	video(block: UiKit.VideoBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<VideoBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
 		}
 
 		return null;
