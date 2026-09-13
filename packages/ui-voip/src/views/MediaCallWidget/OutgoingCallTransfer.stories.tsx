@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import OutgoingCallTransfer from './OutgoingCallTransfer';
+import OutgoingCall from './OutgoingCall';
 import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
@@ -12,8 +12,8 @@ const mockedContexts = mockAppRoot()
 	})
 	.buildStoryDecorator();
 
-export default {
-	component: OutgoingCallTransfer,
+const meta = {
+	component: OutgoingCall,
 	decorators: [
 		mockedContexts,
 		(Story) => (
@@ -22,6 +22,10 @@ export default {
 			</MockedMediaCallProvider>
 		),
 	],
-} satisfies Meta<typeof OutgoingCallTransfer>;
+} satisfies Meta<typeof OutgoingCall>;
 
-export const OutgoingCallTransferStory: StoryObj<typeof OutgoingCallTransfer> = {};
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const OutgoingCallTransferStory: Story = {};
