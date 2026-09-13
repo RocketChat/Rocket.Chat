@@ -55,6 +55,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private validateUserDomain: boolean;
 
+	private useRealName: boolean;
+
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
@@ -90,6 +92,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'boolean') {
 				this.validateUserDomain = value;
+			}
+		});
+
+		this.onSettingChanged('UI_Use_Real_Name', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.useRealName = value;
 			}
 		});
 
@@ -185,6 +194,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
 		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
+		this.useRealName = (await Settings.get<boolean>('UI_Use_Real_Name')) || false;
 	}
 
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
@@ -838,6 +848,19 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
+	private async findTypingUser(user: string) {
+		const projection = { _id: 1, username: 1, federation: 1, federated: 1 } as const;
+
+		const byUsername = async () => Users.findOneByUsername(user, { projection });
+		const byName = async () => Users.findOne({ name: user }, { projection });
+
+		const [primary, fallback] = this.useRealName ? [byName, byUsername] : [byUsername, byName];
+
+		const matched = await primary();
+
+		return matched ?? fallback();
+	}
+
 	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
 		if (!this.processEDUTyping) {
 			return;
@@ -850,11 +873,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
-			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
-		});
+		const localUser = await this.findTypingUser(user);
 
 		if (!localUser) {
+			this.logger.debug({ msg: 'Ignoring typing notification: no local user matched', user, rid });
 			return;
 		}
 
