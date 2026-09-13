@@ -31,7 +31,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 					type: 'object',
 					properties: {
 						offset: { type: 'number' },
-						logs: { type: 'array' },
+						logs: { type: 'array', items: {} },
 						count: { type: 'number' },
 						total: { type: 'number' },
 						success: { type: 'boolean' },
