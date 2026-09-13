@@ -30,6 +30,10 @@ describe('timeUnitToMs function', () => {
 		expect(() => timeUnitToMs(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => timeUnitToMs(TIMEUNIT.days, -1)).toThrow(errorMessage);
 	});
+
+	it('should coerce string timespan values', () => {
+		expect(timeUnitToMs(TIMEUNIT.days, '1')).toBe(86400000);
+	});
 });
 
 describe('msToTimeUnit function', () => {
@@ -61,5 +65,9 @@ describe('msToTimeUnit function', () => {
 		expect(() => msToTimeUnit(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -1)).toThrow(errorMessage);
+	});
+
+	it('should coerce string millisecond values from settings', () => {
+		expect(msToTimeUnit(TIMEUNIT.days, '63072000000.0')).toBe(730);
 	});
 });
