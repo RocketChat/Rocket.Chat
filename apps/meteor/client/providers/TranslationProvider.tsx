@@ -6,6 +6,7 @@ import {
 	availableTranslationNamespaces,
 	defaultTranslationNamespace,
 	extractTranslationNamespaces,
+	defaultFallbackLng,
 } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
@@ -72,7 +73,8 @@ const useI18next = (lng: string): typeof i18next => {
 		isI18nInitialized = true;
 		i18n.init({
 			lng,
-			fallbackLng: 'en',
+			fallbackLng: defaultFallbackLng,
+			load: 'currentOnly',
 			ns: availableTranslationNamespaces,
 			defaultNS: defaultTranslationNamespace,
 			nsSeparator: '.',
