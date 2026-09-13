@@ -541,6 +541,10 @@ export class AppManager {
 		const { marketplaceInfo, signature, migrated, _id } = storageItem;
 		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({ marketplaceInfo, signature, migrated, _id });
 
+		if (!stored) {
+			throw new Error(`App with id ${id} couldn't be found`);
+		}
+
 		await this.updateLocal(stored, app);
 		await this.bridges
 			.getAppActivationBridge()
@@ -766,6 +770,10 @@ export class AppManager {
 			unsetPermissionsGranted: typeof permissionsGranted === 'undefined',
 		});
 
+		if (!stored) {
+			throw new Error(`App with id ${descriptor.id} couldn't be found`);
+		}
+
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
 			.stopRuntime(this.apps.get(old.id).getRuntimeController())
@@ -919,22 +927,42 @@ export class AppManager {
 				}
 
 				const appStorageItem = app.getStorageItem();
-				const { subscriptionInfo } = appStorageItem.marketplaceInfo?.[0] || {};
+
+				if (!appStorageItem.marketplaceInfo?.length) {
+					return;
+				}
+
+				const { subscriptionInfo } = appStorageItem.marketplaceInfo[0];
 
 				if (subscriptionInfo?.license.license === appInfo.subscriptionInfo.license.license) {
 					return;
 				}
 
-				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
-				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
+				try {
+					const updatedMarketplaceInfo = [
+						{ ...appStorageItem.marketplaceInfo[0], subscriptionInfo: appInfo.subscriptionInfo },
+						...appStorageItem.marketplaceInfo.slice(1),
+					];
+					const signature = await this.getSignatureManager().signApp({ ...appStorageItem, marketplaceInfo: updatedMarketplaceInfo });
 
-				return this.appMetadataStorage.updatePartialAndReturnDocument({
-					_id: appStorageItem._id,
-					marketplaceInfo: appStorageItem.marketplaceInfo,
-					signature: appStorageItem.signature,
-				});
+					const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({
+						_id: appStorageItem._id,
+						marketplaceInfo: updatedMarketplaceInfo,
+						signature,
+					});
+
+					if (!stored) {
+						console.warn(`App with id ${appStorageItem._id} couldn't be found while updating marketplace info`);
+						return;
+					}
+
+					appStorageItem.marketplaceInfo = updatedMarketplaceInfo;
+					appStorageItem.signature = signature;
+				} catch (error) {
+					console.error(`Error while updating marketplace info for App ${appStorageItem._id}:`, error);
+				}
 			}),
-		).catch(() => {});
+		);
 
 		const queue = [] as Array<Promise<void>>;
 

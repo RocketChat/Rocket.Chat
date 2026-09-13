@@ -25,7 +25,7 @@ export abstract class AppMetadataStorage {
 	public abstract updatePartialAndReturnDocument(
 		item: Partial<IAppStorageItem>,
 		options?: { unsetPermissionsGranted?: boolean },
-	): Promise<IAppStorageItem>;
+	): Promise<IAppStorageItem | null>;
 
 	public abstract updateStatus(_id: string, status: AppStatus): Promise<boolean>;
 
