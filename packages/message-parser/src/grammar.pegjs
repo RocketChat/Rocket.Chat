@@ -389,10 +389,44 @@ References
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
 // Fast-path: bulk consume chars that can't start ]( or ] [ and aren't emphasis markers
+// Uses LinkTitleEmphasis so that italic rules cannot consume ]( (the link title terminator)
 LinkTitle
-  = (Whitespace / Emphasis)
+  = (Whitespace / LinkTitleEmphasis)
   / anyTitle:$[^\]()*_~ \t\r\n]+ { return plain(anyTitle) }
   / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
+
+// Link-title variant of Emphasis: uses LinkTitleMaybeItalic whose italic rules
+// exclude ] from plain-run matching so they cannot consume the ]( terminator
+LinkTitleEmphasis = MaybeBold / LinkTitleMaybeItalic / MaybeStrikethrough
+
+LinkTitleMaybeItalic
+  = & { if (skipItalic) { return false; } skipItalic = true; return true; }
+    @( text:LinkTitleItalic { skipItalic = false; return text; }
+     / & { skipItalic = false; return false; } BlockedByJavascript )
+
+// Like Italic but ItalicContentItems uses LinkTitleItalicPlainRun / LinkTitleAnyItalic
+// which exclude ] so the rules cannot consume ]( that terminates the link title
+LinkTitleItalic
+   = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
+  / [\x5F] [\x5F] i:LinkTitleItalicContentItems [\x5F] [\x5F] t:$[a-zA-Z0-9]+ {
+      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)]);
+    }
+  / [\x5F] i:LinkTitleItalicContentItems [\x5F] t:$[a-zA-Z]+ {
+      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)]);
+    }
+  / [\x5F] [\x5F] @LinkTitleItalicContent [\x5F] [\x5F]
+  / [\x5F] @LinkTitleItalicContent [\x5F]
+
+LinkTitleItalicContent = text:LinkTitleItalicContentItems { return italic(text); }
+
+LinkTitleItalicContentItems = text:LinkTitleItalicContentItem+ { return reducePlainTexts(text); }
+
+// Like ItalicContentItem but with ] excluded from plain runs so ]( stops italic matching
+LinkTitleItalicContentItem = ItalicContentPreferentialItem / LinkTitleItalicPlainRun / LinkTitleAnyItalic / Line
+
+// ] excluded to prevent italic content from consuming ]( (link title terminator)
+LinkTitleItalicPlainRun = run:$[^\x0a\_ *~\]]+ { return plain(run); }
+LinkTitleAnyItalic = t:[^\x0a\_ \]] { return plain(t); }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
