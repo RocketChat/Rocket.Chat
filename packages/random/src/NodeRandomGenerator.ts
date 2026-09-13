@@ -12,7 +12,7 @@ export class NodeRandomGenerator extends RandomGenerator {
 	 */
 	fraction() {
 		const numerator = Number.parseInt(this.hexString(8), 16);
-		return numerator * 2.3283064365386963e-10; // 2^-3;
+		return numerator * 2.3283064365386963e-10; // 2^-32
 	}
 
 	/**
