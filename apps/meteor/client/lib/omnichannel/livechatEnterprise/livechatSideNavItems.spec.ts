@@ -54,25 +54,27 @@ describe('livechatEnterpriseSideNavItems', () => {
 		const itemsByLabel = Object.fromEntries(registeredItems.map((item) => [item.i18nLabel, item]));
 
 		jest.mocked(hasPermission).mockReturnValue(true);
+		jest.mocked(hasAtLeastOnePermission).mockReturnValue(true);
+
 		expect(itemsByLabel.Tags.permissionGranted?.()).toBe(true);
 		expect(hasPermission).toHaveBeenCalledWith('manage-livechat-tags');
 
-		itemsByLabel.Reports.permissionGranted?.();
+		expect(itemsByLabel.Reports.permissionGranted?.()).toBe(true);
 		expect(hasPermission).toHaveBeenCalledWith('view-livechat-reports');
 
-		itemsByLabel.Livechat_Monitors.permissionGranted?.();
+		expect(itemsByLabel.Livechat_Monitors.permissionGranted?.()).toBe(true);
 		expect(hasPermission).toHaveBeenCalledWith('manage-livechat-monitors');
 
-		itemsByLabel.Units.permissionGranted?.();
+		expect(itemsByLabel.Units.permissionGranted?.()).toBe(true);
 		expect(hasPermission).toHaveBeenCalledWith('manage-livechat-units');
 
-		itemsByLabel.Canned_Responses.permissionGranted?.();
+		expect(itemsByLabel.Canned_Responses.permissionGranted?.()).toBe(true);
 		expect(hasPermission).toHaveBeenCalledWith('manage-livechat-canned-responses');
 
-		itemsByLabel.SLA_Policies.permissionGranted?.();
+		expect(itemsByLabel.SLA_Policies.permissionGranted?.()).toBe(true);
 		expect(hasAtLeastOnePermission).toHaveBeenCalledWith('manage-livechat-sla');
 
-		itemsByLabel.Priorities.permissionGranted?.();
+		expect(itemsByLabel.Priorities.permissionGranted?.()).toBe(true);
 		expect(hasAtLeastOnePermission).toHaveBeenCalledWith('manage-livechat-priorities');
 	});
 
@@ -93,7 +95,12 @@ describe('livechatEnterpriseSideNavItems', () => {
 		]);
 	});
 
-	it('should support re-registration after logout and login', () => {
+	it('should survive repeated register/unregister cycles', () => {
+		// The startup wiring (startup/livechatEnterprise.ts) calls register on
+		// the livechat-enterprise feature toggle up and unregister on down, so a
+		// logout/login transition exercises one full down/up cycle. Directly
+		// asserting those cycles here keeps the behavior covered without an E2E
+		// test; the feature-toggle side itself stays thin.
 		registerLivechatEnterpriseSidebarItems();
 		expect(registerOmnichannelSidebarItem).toHaveBeenCalledTimes(7);
 

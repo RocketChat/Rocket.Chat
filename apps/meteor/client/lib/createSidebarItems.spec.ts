@@ -39,6 +39,38 @@ describe('createSidebarItems', () => {
 		expect(before).not.toBe(after);
 	});
 
+	it('should produce a new array reference on unregistration for useSyncExternalStore', () => {
+		const item1: Item = { i18nLabel: 'Item1', href: '/path1' };
+		const item2: Item = { i18nLabel: 'Item2', href: '/path2' };
+		const { unregisterSidebarItem, getSidebarItems } = createSidebarItems([item1, item2]);
+		const before = getSidebarItems();
+
+		unregisterSidebarItem('Item1');
+		const after = getSidebarItems();
+
+		expect(before).not.toBe(after);
+		expect(after).toEqual([item2]);
+	});
+
+	it('should notify every subscriber and only those still subscribed', () => {
+		const { registerSidebarItem, subscribeToSidebarItems } = createSidebarItems();
+		const first = jest.fn();
+		const second = jest.fn();
+		const unsubscribeFirst = subscribeToSidebarItems(first);
+		subscribeToSidebarItems(second);
+
+		registerSidebarItem({ i18nLabel: 'Item', href: '/path' });
+
+		expect(first).toHaveBeenCalledTimes(1);
+		expect(second).toHaveBeenCalledTimes(1);
+
+		unsubscribeFirst();
+		registerSidebarItem({ i18nLabel: 'Item2', href: '/path2' });
+
+		expect(first).toHaveBeenCalledTimes(1);
+		expect(second).toHaveBeenCalledTimes(2);
+	});
+
 	it('should unregister a sidebar item by i18nLabel and notify subscribers', () => {
 		const item1: Item = { i18nLabel: 'Item1', href: '/path1' };
 		const item2: Item = { i18nLabel: 'Item2', href: '/path2' };
