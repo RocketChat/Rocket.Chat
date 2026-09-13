@@ -40,8 +40,10 @@ const getPopupUrl = (credentialToken: string): string => {
 	return url.href;
 };
 
+const CAS_POPUP_TIMEOUT_MS = 120_000;
+
 const waitForPopupClose = (popup: Window) => {
-	return new Promise<void>((resolve) => {
+	const pollClosed = new Promise<void>((resolve) => {
 		const checkPopupOpen = setInterval(() => {
 			if (popup.closed || popup.closed === undefined) {
 				clearInterval(checkPopupOpen);
@@ -49,6 +51,19 @@ const waitForPopupClose = (popup: Window) => {
 			}
 		}, 100);
 	});
+
+	const timeout = new Promise<never>((_, reject) => {
+		setTimeout(() => {
+			try {
+				popup.close();
+			} catch {
+				// popup may already be closed or cross-origin
+			}
+			reject(new Error('CAS login timed out. Please try again.'));
+		}, CAS_POPUP_TIMEOUT_MS);
+	});
+
+	return Promise.race([pollClosed, timeout]);
 };
 
 export const openCASLoginPopup = async (credentialToken: string) => {
