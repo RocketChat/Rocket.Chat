@@ -3,7 +3,7 @@ import { Form, FormContainer, FormHeader, FormTitle } from '@rocket.chat/layout'
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
 
 export type GuestFormProps = { setLoginRoute: DispatchLoginRouter };
 

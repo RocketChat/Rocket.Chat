@@ -5,11 +5,11 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import type { MongoClient } from 'mongodb';
 
-import { initDatabaseTracing } from './traceDatabaseCalls';
+import { initDatabaseTracing } from './traceDatabaseCalls.js';
 
 let tracer: Tracer | undefined;
 
-export * from './traceInstanceMethods';
+export * from './traceInstanceMethods.js';
 
 export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());

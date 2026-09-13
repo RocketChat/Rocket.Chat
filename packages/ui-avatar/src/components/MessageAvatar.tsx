@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { AvatarContainer, Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react';
 
-import UserAvatar from './UserAvatar';
+import UserAvatar from './UserAvatar.js';
 
 export type MessageAvatarProps = {
 	emoji?: ReactNode;

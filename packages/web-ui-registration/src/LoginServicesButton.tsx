@@ -6,7 +6,7 @@ import type { SetStateAction, Dispatch } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LoginErrorState, LoginErrors } from './LoginForm';
+import type { LoginErrorState, LoginErrors } from './LoginForm.js';
 
 const servicesSupportedByMeteor = ['saml', 'cas', 'ldap'];
 

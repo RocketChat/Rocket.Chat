@@ -1,8 +1,8 @@
-import CMSPage from './CMSPage';
-import RegistrationPageRouter from './RegistrationPageRouter';
-import ResetPasswordPage from './ResetPassword/ResetPasswordPage';
+import CMSPage from './CMSPage.js';
+import RegistrationPageRouter from './RegistrationPageRouter.js';
+import ResetPasswordPage from './ResetPassword/ResetPasswordPage.js';
 
-export type { LoginRoutes } from './hooks/useLoginRouter';
+export type { LoginRoutes } from './hooks/useLoginRouter.js';
 export { CMSPage, ResetPasswordPage };
 
 export default RegistrationPageRouter;
