@@ -1,4 +1,3 @@
-import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -27,7 +26,10 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
-	await CredentialTokens.removeById(loginRequest.credentialToken);
+	// Do not delete the credential token on redemption: the mobile login flow makes the webview
+	// and the native app redeem the same token concurrently, so removing it after the first
+	// redemption makes the second one fail with "No matching login attempt found".
+	// The credential_tokens collection cleans these up via its TTL index on `expireAt`.
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
