@@ -27,14 +27,23 @@ export const unescapeHTML = (str: string): string =>
 			return htmlEntityCodeToCharacter[htmlEntityCode];
 		}
 
+		// `fromCodePoint` (not `fromCharCode`) so astral code points such as
+		// emoji (`&#128512;`, `&#x1F600;`) decode to a full character instead of
+		// a truncated UTF-16 code unit. Guard the range: `fromCodePoint` throws on
+		// values above U+10FFFF, and the entity length limit still admits a
+		// 9-digit decimal that exceeds it.
+		const MAX_CODE_POINT = 0x10ffff;
+
 		match = htmlEntityCode.match(/^#x([\da-fA-F]+)$/);
 		if (match) {
-			return String.fromCharCode(parseInt(match[1], 16));
+			const codePoint = parseInt(match[1], 16);
+			return codePoint <= MAX_CODE_POINT ? String.fromCodePoint(codePoint) : entity;
 		}
 
 		match = htmlEntityCode.match(/^#(\d+)$/);
 		if (match) {
-			return String.fromCharCode(~~match[1]);
+			const codePoint = parseInt(match[1], 10);
+			return codePoint <= MAX_CODE_POINT ? String.fromCodePoint(codePoint) : entity;
 		}
 
 		return entity;
