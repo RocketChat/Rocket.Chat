@@ -42,7 +42,7 @@ const isSendLeaveBodyProps = ajv.compile({
 			const: 'm.room.member',
 		},
 	},
-	required: ['content', 'depth', 'origin', 'origin_server_ts', 'sender', 'state_key', 'type'],
+	required: ['content', 'depth', 'origin_server_ts', 'sender', 'state_key', 'type'],
 });
 const isSendLeaveSuccessResponseProps = ajv.compile({
 	type: 'object',
