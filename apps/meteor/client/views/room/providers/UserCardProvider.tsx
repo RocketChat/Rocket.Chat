@@ -84,7 +84,17 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
+	// Hover-out close: keeps a pending open alive so a trigger-to-trigger
+	// handoff still shows the next card.
 	const closeUserCard = useStableCallback(() => {
+		state.close();
+	});
+
+	// Explicit dismissal (Escape, the card's own close, an action that closes
+	// it): the user asked for no card, so a pending hover open must not bring
+	// one back a moment later.
+	const dismissUserCard = useStableCallback(() => {
+		clearTimers();
 		state.close();
 	});
 
@@ -115,7 +125,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				username,
 				rid: room._id,
 				onOpenUserInfo: () => openUserInfo(username),
-				onClose: closeUserCard,
+				onClose: dismissUserCard,
 			});
 		};
 
@@ -189,7 +199,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				return;
 			}
 			e.stopImmediatePropagation();
-			closeUserCard();
+			dismissUserCard();
 		};
 
 		document.addEventListener('mousemove', handleMouseMove);
@@ -200,7 +210,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			document.removeEventListener('keydown', handleKeyDown, { capture: true });
 			document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
 		};
-	}, [isOpen, closeUserCard]);
+	}, [isOpen, closeUserCard, dismissUserCard]);
 
 	// Every entry is identity-stable, so consumers subscribed to the context
 	// (every message header, avatar and mention in the room) never re-render
@@ -209,10 +219,11 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		() => ({
 			openUserCard: handleSetUserCard,
 			openUserInfo: handleOpenUserInfo,
-			closeUserCard,
+			// consumers close the card on purpose (e.g. an action that opens a call)
+			closeUserCard: dismissUserCard,
 			triggerProps: cardTriggerProps,
 		}),
-		[handleSetUserCard, handleOpenUserInfo, closeUserCard],
+		[handleSetUserCard, handleOpenUserInfo, dismissUserCard],
 	);
 
 	return (
