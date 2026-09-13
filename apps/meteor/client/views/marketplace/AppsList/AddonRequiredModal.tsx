@@ -1,14 +1,4 @@
-import {
-	Button,
-	Modal,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTitle,
-} from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -27,26 +17,23 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 
 	const handleOpenLink = useExternalLink();
 
+	const handleContactSales = () => {
+		handleOpenLink(GET_ADDONS_LINK);
+		onDismiss();
+	};
+
 	return (
-		<Modal>
-			<ModalHeader>
-				<ModalHeaderText>
-					<ModalTitle>{t('Add-on_required')}</ModalTitle>
-				</ModalHeaderText>
-				<ModalClose onClick={onDismiss} />
-			</ModalHeader>
-			<ModalContent>{t('Add-on_required_modal_enable_content')}</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					{['install', 'update'].includes(actionType) && (
-						<Button onClick={onInstallAnyway}>{actionType === 'install' ? t('Install_anyway') : t('Update_anyway')}</Button>
-					)}
-					<Button primary onClick={() => handleOpenLink(GET_ADDONS_LINK)}>
-						{t('Contact_sales')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			title={t('Add-on_required')}
+			onClose={onDismiss}
+			onDismiss={onDismiss}
+			confirmText={t('Contact_sales')}
+			onConfirm={handleContactSales}
+			cancelText={['install', 'update'].includes(actionType) ? (actionType === 'install' ? t('Install_anyway') : t('Update_anyway')) : undefined}
+			onCancel={['install', 'update'].includes(actionType) ? onInstallAnyway : undefined}
+		>
+			{t('Add-on_required_modal_enable_content')}
+		</GenericModal>
 	);
 };
 
