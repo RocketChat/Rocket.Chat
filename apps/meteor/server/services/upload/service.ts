@@ -3,7 +3,13 @@ import type Stream from 'node:stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
-import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
+import type {
+	ICreatePendingFileParams,
+	ISendFileLivechatMessageParams,
+	ISendFileMessageParams,
+	IUploadFileParams,
+	IUploadService,
+} from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -21,6 +27,7 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
 import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { UploadFS } from '../../ufs';
+import { ufsComplete } from '../../ufs/ufs-methods';
 
 const logger = new Logger('UploadService');
 
@@ -30,6 +37,46 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	async uploadFile({ buffer, details, federation }: IUploadFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
 		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
+	}
+
+	async createPendingFile({ details, federation }: ICreatePendingFileParams): Promise<IUpload> {
+		const fileStore = FileUpload.getStore('Uploads');
+		const fileData = {
+			...details,
+			federation,
+			complete: false,
+			uploading: false,
+			progress: 0,
+		};
+
+		const fileId = await fileStore.store.create(fileData);
+
+		const file = await Uploads.findOneById(fileId);
+		if (!file) {
+			throw new Error('Failed to create pending upload record');
+		}
+
+		return file;
+	}
+
+	async completePendingFile({ fileId, buffer }: { fileId: IUpload['_id']; buffer: Buffer }): Promise<IUpload | null> {
+		const file = await Uploads.findOneById(fileId);
+		if (!file) {
+			return null;
+		}
+
+		if (file.complete) {
+			return file;
+		}
+
+		const fileStore = FileUpload.getStore('Uploads');
+
+		await fileStore.store.getFilter()?.check({ ...file, size: buffer.length }, buffer);
+		await Uploads.updateOne({ _id: fileId }, { $set: { size: buffer.length } });
+
+		await fs.promises.writeFile(UploadFS.getTempFilePath(fileId), buffer);
+
+		return ufsComplete(fileId, fileStore.name);
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {

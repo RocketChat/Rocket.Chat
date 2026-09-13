@@ -1,5 +1,6 @@
 import type { IncomingMessage } from 'node:http';
 
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { Uploads } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
@@ -23,13 +24,30 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url || '');
 
 	if (match?.[1]) {
-		const file = await Uploads.findOneById(match[1]);
+		let file = await Uploads.findOneById(match[1]);
 
 		if (file) {
 			if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 				res.writeHead(403);
 				res.end();
 				return;
+			}
+
+			if (!file.complete && file.federation?.mxcUri) {
+				try {
+					const materialized = await FederationMatrix.materializePendingUpload(file._id);
+					if (!materialized) {
+						res.writeHead(404);
+						res.end();
+						return;
+					}
+					file = materialized;
+				} catch (err) {
+					SystemLogger.warn({ msg: 'Failed to fetch federated file on demand', fileId: file._id, err });
+					res.writeHead(503);
+					res.end();
+					return;
+				}
 			}
 
 			if (hasReplyWithRedirectUrlParam(req)) {
