@@ -1551,6 +1551,219 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
 </body>
 `;
 
+exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1uma213"
+      role="dialog"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-ro98rt rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </div>
+      <header
+        class="rcx-box rcx-box--full rcx-css-4vvilp"
+      >
+        <div
+          id="rcx-media-call-widget-title-prefix"
+          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+        >
+          Voice_call
+        </div>
+        <h3
+          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          id="rcx-media-call-widget-title"
+        >
+          <time
+            class="rcx-box rcx-box--full rcx-css-2eyztw"
+            datetime="PT0H0M0S"
+          >
+            00
+            :
+            00
+          </time>
+        </h3>
+        <div
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
+        >
+          <button
+            aria-label="Open_in_new_window"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            label="Open_in_new_window"
+            title="Open_in_new_window"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="customize"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            disabled=""
+            label="customize"
+            title="Device_settings_not_supported_by_browser"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </header>
+      <section
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1u7o4jl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-wlehfz"
+            id="rcx-media-call-widget-caller-info"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              >
+                <img
+                  alt=""
+                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+                />
+              </figure>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-jgzlgu"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-q52znk"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-ilfe77"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                    />
+                  </svg>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                  >
+                    John Doe
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              >
+                1234567890
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-1koqfyi"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          role="group"
+        >
+          <button
+            aria-label="Mute"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Mute"
+            title="Mute"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Hold"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Hold"
+            title="Hold"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Forward"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Forward"
+            title="Forward"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Voice_call__user__hangup"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            label="Voice_call__user__hangup"
+            title="Voice_call__user__hangup"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </footer>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;
+
 exports[`renders OutgoingCall without crashing 1`] = `
 <body>
   <div>
