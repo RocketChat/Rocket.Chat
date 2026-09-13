@@ -47,7 +47,12 @@ export const cleanRoomHistoryMethod = async (
 
 	const room = await findRoomByIdOrName({ params: { roomId } });
 
-	if (!room || !(await canAccessRoomAsync(room, { _id: userId }))) {
+	if (!room) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+	}
+
+	const hasAccess = await canAccessRoomAsync(room, { _id: userId });
+	if (!hasAccess && !(await hasPermissionAsync(userId, 'clean-channel-history', roomId))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 	}
 
