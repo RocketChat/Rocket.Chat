@@ -17,19 +17,20 @@ export type ChannelsTableRowProps = {
 
 const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) => {
 	const formatDate = useFormatDate();
-	const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
+	const { _id, ts, t, name, usersCount, lastMessage, topic, belongsTo } = room;
+	const roomName = roomCoordinator.getRoomName(t, room);
 	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(room);
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
 			<GenericTableCell>
 				<Box display='flex'>
-					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
+					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={roomName} url={avatarUrl} />}</Box>
 					<Box flexGrow={1} marginInline={8} withTruncatedText>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={room} />
 							<Box fontScale='p2m' marginInline={4}>
-								{fname || name}
+								{roomName}
 							</Box>
 							<RoomTags room={room} />
 						</Box>
