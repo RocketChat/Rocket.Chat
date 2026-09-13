@@ -28,7 +28,10 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { t } = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
-	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	// No placeholder from the previous username: when the card hands off from
+	// one author to another it must show a skeleton, not the previous user's
+	// data (roles, actions) under the new trigger.
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 	const {
 		data: isMemberData,
