@@ -32,7 +32,9 @@ export const SendMessageActionForm = ({ control, index, ...props }: SendMessageA
 						control={control}
 						name={name}
 						defaultValue=''
-						rules={{ required: t('Required_field', { field: t('Message') }) }}
+						rules={{ required: t('Required_field', { field: t('Message') }),
+					            validate: (value) => {if(value.startsWith(" ")) return t('Message cannot start with space');}
+					    }}
 						render={({ field }) => (
 							<TextAreaInput
 								error={messageError?.message}
