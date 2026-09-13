@@ -136,6 +136,42 @@ describe('[OAuthApps]', () => {
 					createdAppsIds.push(res.body.application._id);
 				});
 		});
+
+		it('should trim surrounding whitespace from the redirectUri', async () => {
+			await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name: `new app ${Date.now()}`,
+					redirectUri: '  http://localhost:3000  ',
+					active: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('application.redirectUri', 'http://localhost:3000');
+					createdAppsIds.push(res.body.application._id);
+				});
+		});
+
+		it('should trim and normalize a list of redirectUris', async () => {
+			await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name: `new app ${Date.now()}`,
+					redirectUri: ' http://localhost:3000 \n\n http://localhost:4000 \n',
+					active: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('application.redirectUri', 'http://localhost:3000,http://localhost:4000');
+					createdAppsIds.push(res.body.application._id);
+				});
+		});
 	});
 
 	describe('[/oauth-apps.get]', () => {
@@ -335,6 +371,24 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('active', active);
 					expect(res.body).to.have.property('redirectUri', redirectUri);
 					expect(res.body).to.have.property('name', name);
+				});
+		});
+
+		it('should trim and normalize the redirectUri when updating an app', async () => {
+			await request
+				.post(api(`oauth-apps.update`))
+				.set(credentials)
+				.send({
+					appId,
+					name: `new app ${Date.now()}`,
+					redirectUri: ' http://localhost:3000 \n\n http://localhost:4000 \n',
+					active: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('redirectUri', 'http://localhost:3000,http://localhost:4000');
 				});
 		});
 
