@@ -1,13 +1,98 @@
 {
-	"name": "Rocket.Chat Gitpod",
-	"build": {
-        "context": "..",
-        "dockerfile": "./Dockerfile"
-    },
+	"name": "Rocket.Chat Dev",
+	"dockerComposeFile": [
+		"docker-compose.yml",
+		"docker-compose.overrides.yml"
+	],
+	"service": "app",
+	// The checkout's directory name is in the path so every worktree gets a
+	// *distinct* workspace path. What that buys: anything keying state by absolute
+	// path stops collapsing every checkout into one entry, notably
+	// `~/.claude/projects/`, which lives in a volume shared by all of them (see
+	// README). `rocket.chat` stays the leaf, so the prefix shows up in neither the
+	// VS Code title nor the shell prompt. Uniqueness is the same bet the compose
+	// project name already makes — one worktree per directory name.
+	//
+	// NOT ${devcontainerId}, the obvious candidate, which is broken here: `up`
+	// substitutes it, but `devcontainer exec` resolves the config with no id
+	// labels, so the literal `${devcontainerId}` survives into the exec cwd and
+	// every command dies with `chdir to cwd (...) no such file or directory`. No
+	// flag fixes it, `--id-label` included.
+	//
+	// The workspace bind mount and the two volumes nested inside it are in
+	// `mounts` below rather than docker-compose.yml because of this: their targets
+	// have to track this path, and a compose file cannot see these variables.
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/rocket.chat",
+	// Non-root user is required for `claude --dangerously-skip-permissions`
+	"remoteUser": "vscode",
+
+	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/scripts/initialize.sh'",
+	"onCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/on-create.sh",
+	"updateContentCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/update-content.sh",
+	"postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/post-start.sh",
+
+	// Optional features for DX — comment out the ones you don't want.
+
+	// features can have additional setup scripts inside ./scripts/<feature name>
+	// Check ./scripts/lib/features.sh for details
 	"features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-    },
-	"forwardPorts": [3000],
+		"ghcr.io/devcontainers-extra/features/npm-packages:1": {
+			"packages": [
+				// rc-apps CLI for rocket.chat apps authoring
+				"@rocket.chat/apps-cli"
+			]
+		},
+
+		// Comment it out if you never run e2e tests — the apt packages, the shared
+		// volume, its mount and the browser download all go with it.
+		"ghcr.io/postfinance/devcontainer-features/playwright-deps:2": {
+			"installChromiumDeps": true,
+			"installFirefoxDeps": false,
+			"installWebkitDeps": false
+		}
+
+		// Installs the GitHub CLI (gh).
+		// ,"ghcr.io/devcontainers/features/github-cli:1": {}
+
+		// Installs the Claude Code CLI (and its VS Code extension) into the container.
+		// ,"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+	},
+	"containerEnv": {
+		// Turbo "remote" cache config - server is on docker-compose.yml
+		// May also be used by the host, but beware of OS differences
+		"TURBO_API": "http://turbo-cache:3000",
+		"TURBO_TEAM": "rocketchat",
+		"TURBO_TOKEN": "rocketchat-local-dev",
+		// Prevent turbo from using worktree-aware cache resolution
+		"TURBO_CACHE_DIR": ".turbo/cache",
+
+		// Global cache for worktree sharing
+		"YARN_ENABLE_GLOBAL_CACHE": "true"
+	},
+	// Many volumes are externally created by the features' hook scripts and contributed
+	// to docker-compose.overrides.yml. This allows contents to be shared among worktrees
+	//
+	// What IS here is only what needs the workspace path in its target: the
+	// workspace itself and the two build volumes nested inside it. The CLI turns
+	// these into a generated compose override, so the named ones come out as
+	// ordinary project-prefixed volumes (`<project>_rc-node-modules`) — the same
+	// name and the same per-worktree namespacing they had in docker-compose.yml,
+	// which is what these two want. The *shared* volumes could never move here for
+	// exactly that reason. Docker orders mounts by target depth, so the two nest
+	// inside the bind mount whatever order they appear in.
+	"mounts": [
+		"source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
+		// Keeps node_modules off the host bind mount, for speed.
+		"source=rc-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+		// .meteor/local must NOT be shared with the host: Meteor writes absolute
+		// paths into it (notably the dev_bundle symlink, which points into the
+		// running user's ~/.meteor). A host-written dev_bundle dangles in the
+		// container — /home/<hostuser> does not exist in there — and Meteor then
+		// spins on any in-project command, burning CPU and printing nothing. It
+		// also holds db/, the mongod data dir `meteor` populates in dev, which the
+		// two sides must not share.
+		"source=rc-meteor-local,target=${containerWorkspaceFolder}/apps/meteor/.meteor/local,type=volume"
+	],
 	"customizations": {
 		"vscode": {
 			"extensions": [

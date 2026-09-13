@@ -1,0 +1,6 @@
+# The devcontainer feature this directory's hooks belong to. Nothing in here
+# runs unless devcontainer.json declares it. Version-agnostic on purpose — the
+# `:1.0` suffix in devcontainer.json is matched optionally.
+#
+# See scripts/lib/features.sh.
+ghcr.io/anthropics/devcontainer-features/claude-code

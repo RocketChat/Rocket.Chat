@@ -30,6 +30,7 @@
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
 		"fuselage": "./fuselage.sh",
 		"lint": "turbo run lint",
+		"postinstall": "git rev-parse --git-dir > /dev/null 2>&1 && git config core.hooksPath .githooks || true",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"

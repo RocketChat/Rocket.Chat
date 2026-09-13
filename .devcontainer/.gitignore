@@ -1,0 +1,3 @@
+docker-compose.overrides.yml
+.host-skills/
+.skip-skills
