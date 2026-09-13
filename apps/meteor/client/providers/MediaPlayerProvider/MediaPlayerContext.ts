@@ -25,6 +25,12 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
+	/** Timestamp of the message the audio belongs to (used to match bulk-delete criteria). */
+	ts?: Date;
+	/** Whether the owning message is pinned (used to match bulk-delete criteria). */
+	pinned?: boolean;
+	/** Discussion room id the owning message belongs to (used to match bulk-delete criteria). */
+	drid?: string;
 };
 
 export type MediaPlayerContextValue = {
