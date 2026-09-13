@@ -234,6 +234,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						rid: nonFederatedChannel._id,
 						type: 'p',
 						config: rc1AdminRequestConfig,
+						type: 'p',
 					});
 
 					// The REST endpoint rejects the invite with the federation-specific error: the federated
@@ -852,6 +853,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
+							type: 'p',
 						});
 
 						expect(addUserResponse.body).toHaveProperty('success', true);
@@ -956,6 +958,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
+							type: 'p',
 						});
 
 						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
@@ -1093,6 +1096,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
+							type: 'p',
 						});
 
 						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
