@@ -130,8 +130,6 @@ const RichTextMessageBox = ({
 
 	const messageComposerRef = useRef<HTMLElement>(null);
 
-	const composerClearCountRef = useRef(0);
-
 	const subscription = useRoomSubscription();
 	const { initialValue, persistLocal, flushDraft } = useDraft(
 		room._id,
@@ -165,18 +163,12 @@ const RichTextMessageBox = ({
 				return;
 			}
 
-			const composer = createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
-				rid: room._id,
-				tmid,
-			});
-
-			const { clear } = composer;
-			composer.clear = () => {
-				composerClearCountRef.current += 1;
-				clear();
-			};
-
-			chat.setComposerAPI(composer);
+			chat.setComposerAPI(
+				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
+					rid: room._id,
+					tmid,
+				}),
+			);
 		},
 		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
 	);
@@ -204,31 +196,20 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useStableCallback(async () => {
+	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
 
-		const { composer } = chat;
-		const text = composer?.text ?? '';
-
-		composer?.clear();
-		const clearCountAtSend = composerClearCountRef.current;
+		const text = chat.composer?.text ?? '';
 		popup.clear();
 
-		try {
-			await onSend?.({
-				value: text,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			});
-		} finally {
-			if (composer && text && composerClearCountRef.current === clearCountAtSend && chat.composer === composer && !composer.text) {
-				composer.setText(text);
-				composer.setCursorToEnd();
-			}
-		}
+		onSend?.({
+			value: text,
+			tshow,
+			previewUrls,
+			isSlashCommandAllowed,
+		});
 	});
 
 	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
