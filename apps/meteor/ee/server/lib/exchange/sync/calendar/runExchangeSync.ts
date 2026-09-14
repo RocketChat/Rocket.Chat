@@ -1,16 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { forEachWithConcurrency } from './forEachWithConcurrency';
-import { iterateMailboxCandidates } from './resolveMailboxes';
+import { forEachWithConcurrency } from '../forEachWithConcurrency';
+import { MAILBOX_CONCURRENCY } from '../limits';
+import { iterateMailboxCandidates } from '../resolveMailboxes';
 import { syncMailbox } from './syncMailbox';
-import { getExchangeProvider, getSyncWindow, isServerSyncEnabled } from '../ExchangeProviderRegistry';
-import { isExchangeError } from '../errors';
-import { logger } from '../logger';
-
-// How many mailboxes at once. Kept low because neither server tells us its request limit, and crossing it
-// gets us throttled. Raising it does not speed up EWS: that transport talks to Exchange one call at a time.
-export const MAILBOX_CONCURRENCY = 5;
+import { getExchangeProvider, getSyncWindow, isServerSyncEnabled } from '../../ExchangeProviderRegistry';
+import { isExchangeError } from '../../errors';
+import { logger } from '../../logger';
 
 export type ExchangeSyncRunSummary = {
 	mailboxes: number;

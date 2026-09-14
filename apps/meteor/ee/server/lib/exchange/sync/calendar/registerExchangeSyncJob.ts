@@ -2,9 +2,9 @@ import { cronJobs } from '@rocket.chat/cron';
 import { isValidCron } from 'cron-validator';
 
 import { runExchangeSync } from './runExchangeSync';
-import { settings } from '../../../../../server/settings';
-import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
+import { settings } from '../../../../../../server/settings';
+import { logger } from '../../logger';
+import { scrubForLog } from '../../scrub';
 
 export const EXCHANGE_SYNC_JOB = 'Exchange_Server_Sync';
 

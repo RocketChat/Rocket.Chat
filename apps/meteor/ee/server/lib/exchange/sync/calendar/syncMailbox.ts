@@ -3,13 +3,12 @@ import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { ExchangeSyncState } from '@rocket.chat/models';
 
-import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEventUpsert } from '../definition/types';
-import { isExchangeError } from '../errors';
-import { logger } from '../logger';
-import { scrubForLog, scrubText } from '../scrub';
-
-export const MAX_PAGES = 50;
+import type { IExchangeProvider } from '../../definition/IExchangeProvider';
+import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
+import { isExchangeError } from '../../errors';
+import { logger } from '../../logger';
+import { scrubForLog, scrubText } from '../../scrub';
+import { MAX_PAGES } from '../limits';
 
 const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 

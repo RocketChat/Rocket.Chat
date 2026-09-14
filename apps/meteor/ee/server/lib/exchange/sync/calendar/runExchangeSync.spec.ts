@@ -1,6 +1,7 @@
-import { ExchangeError } from '../errors';
-import { MAILBOX_CONCURRENCY, runExchangeSync } from './runExchangeSync';
+import { runExchangeSync } from './runExchangeSync';
+import { MAILBOX_CONCURRENCY } from '../limits';
 import type { MailboxSyncOutcome } from './syncMailbox';
+import { ExchangeError } from '../../errors';
 
 const syncMailbox = jest.fn();
 const applyDeferredSideEffects = jest.fn();
@@ -12,8 +13,8 @@ jest.mock('./syncMailbox', () => ({ syncMailbox: (...args: unknown[]) => syncMai
 jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
 }));
-jest.mock('./resolveMailboxes', () => ({ iterateMailboxCandidates: () => candidates() }));
-jest.mock('../ExchangeProviderRegistry', () => ({
+jest.mock('../resolveMailboxes', () => ({ iterateMailboxCandidates: () => candidates() }));
+jest.mock('../../ExchangeProviderRegistry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
 	getSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
 	isServerSyncEnabled: () => isServerSyncEnabled(),

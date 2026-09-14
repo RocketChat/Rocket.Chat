@@ -2,11 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { resolveMailbox } from './resolveMailboxes';
+import { resolveMailbox } from '../resolveMailboxes';
 import type { MailboxSyncOutcome } from './syncMailbox';
 import { syncMailbox } from './syncMailbox';
-import { getExchangeProvider, getSyncWindow } from '../ExchangeProviderRegistry';
-import { ExchangeError } from '../errors';
+import { getExchangeProvider, getSyncWindow } from '../../ExchangeProviderRegistry';
+import { ExchangeError } from '../../errors';
 
 const inFlight = new Set<IUser['_id']>();
 

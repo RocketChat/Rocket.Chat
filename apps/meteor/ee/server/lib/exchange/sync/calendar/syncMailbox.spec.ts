@@ -1,8 +1,9 @@
-import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../definition/types';
-import type { ExchangeErrorCode } from '../errors';
-import { ExchangeError } from '../errors';
-import { MAX_PAGES, syncMailbox } from './syncMailbox';
+import { syncMailbox } from './syncMailbox';
+import type { IExchangeProvider } from '../../definition/IExchangeProvider';
+import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../../definition/types';
+import type { ExchangeErrorCode } from '../../errors';
+import { ExchangeError } from '../../errors';
+import { MAX_PAGES } from '../limits';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();

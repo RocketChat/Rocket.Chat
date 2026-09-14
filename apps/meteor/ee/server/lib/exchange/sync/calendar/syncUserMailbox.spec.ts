@@ -1,6 +1,6 @@
-import { ExchangeError } from '../errors';
 import type { MailboxSyncOutcome } from './syncMailbox';
 import { syncUserMailbox } from './syncUserMailbox';
+import { ExchangeError } from '../../errors';
 
 const findOneById = jest.fn();
 const syncMailbox = jest.fn();
@@ -13,8 +13,8 @@ jest.mock('./syncMailbox', () => ({ syncMailbox: (...args: unknown[]) => syncMai
 jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
 }));
-jest.mock('./resolveMailboxes', () => ({ resolveMailbox: (...args: unknown[]) => resolveMailbox(...args) }));
-jest.mock('../ExchangeProviderRegistry', () => ({
+jest.mock('../resolveMailboxes', () => ({ resolveMailbox: (...args: unknown[]) => resolveMailbox(...args) }));
+jest.mock('../../ExchangeProviderRegistry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
 	getSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
 }));

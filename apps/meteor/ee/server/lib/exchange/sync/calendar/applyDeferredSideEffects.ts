@@ -1,8 +1,8 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { logger } from '../logger';
-import { scrubForLog } from '../scrub';
+import { logger } from '../../logger';
+import { scrubForLog } from '../../scrub';
 
 export const applyDeferredSideEffects = async (dirty: Map<IUser['_id'], boolean>): Promise<void> => {
 	for (const [uid, removedEvents] of dirty) {

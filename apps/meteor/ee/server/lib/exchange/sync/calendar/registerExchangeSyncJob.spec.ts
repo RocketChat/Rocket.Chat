@@ -7,7 +7,7 @@ const remove = jest.fn();
 const watchMultiple = jest.fn();
 const stopWatching = jest.fn();
 
-jest.mock('../../../../../server/settings', () => ({
+jest.mock('../../../../../../server/settings', () => ({
 	settings: { get: (key: string) => get(key), watchMultiple: (...args: unknown[]) => watchMultiple(...args) },
 }));
 jest.mock('@rocket.chat/cron', () => ({
