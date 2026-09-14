@@ -1,66 +1,32 @@
 import type { IUser, IVideoConferenceUser, VideoConferenceLeaveReason } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 
-/**
- * Presence in a call as a lease the call window keeps renewing, rather than a departure it promises to report.
- *
- * A report is the fast, accurate path and it usually works — but it can only be sent by a live client to a live
- * server, and neither is guaranteed. The case that started this: the workspace goes down while the call carries
- * on in the provider (LiveKit, Pexip and friends are separate services), people leave during the outage, and
- * their leave never reaches anyone. The same hole swallows a crashed tab, a killed browser, a dead battery and a
- * `keepalive` fetch that didn't make it. What all of those have in common is that *renewals stop*, which is the
- * signal this infers a departure from.
- *
- * Deliberately provider-agnostic: the renewal comes from our own conference window, which exists whoever runs the
- * media — an iframe provider renders inside our page, so our code is alive there too.
- */
-
-/**
- * The rate a browser throttles a hidden tab's timers down to — a call someone is listening to while working in
- * another window. Every current browser lands near one a minute, and this, not the rate below, is what a lease
- * has to survive: the rate below is only what a window aims for, and it reaches it while it is on screen.
- */
+/** Browser constraint: a hidden tab has its timers throttled to roughly one tick a minute. */
 export const PRESENCE_THROTTLED_HEARTBEAT_MS = 60_000;
 
-/** How many throttled renewals may go missing — to a brief network drop, say — before a lease is given up on. */
+/** How many throttled renewals may go missing before a lease is given up on. */
 export const PRESENCE_MISSED_TICKS_TOLERATED = 3;
 
-/**
- * How often a call window renews its lease.
- *
- * Under the rate it will be throttled to, so a window that is on screen renews several times over within one
- * lease and a hidden one still renews about once.
- */
+/** How often a call window renews its lease. */
 export const PRESENCE_HEARTBEAT_MS = 30_000;
 
-/**
- * How long one renewal is good for.
- *
- * Derived rather than picked, because the quantity that was ever reasoned about is how many throttled renewals
- * may go missing before a window is presumed gone — long enough to survive that, short enough that a ghost in
- * the members list is a curiosity rather than a lie. It doubles as the grace period a departing member gets
- * before their absence is written, which is why this is also what a restart waits out.
- */
+/** How long one renewal is good for. Doubles as the grace period a restart waits out. */
 export const PRESENCE_LEASE_MS = PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_MISSED_TICKS_TOLERATED;
 
-/** The reasons a departure was inferred rather than reported, so a renewal can undo them and a report cannot. */
+/** Leave reasons a renewal may undo. A reported departure is never revived. */
 export const INFERRED_LEAVE_REASONS: VideoConferenceLeaveReason[] = ['timeout'];
 
-/** A member whose lease has run out, and the last moment we know they were still in the call. */
+/** A member whose lease has run out, and the last moment they were known to be in the call. */
 export type ExpiredPresenceLease = { uid: IUser['_id']; leftAt: Date };
 
-/**
- * The last moment there was evidence this member was in the call. Members who joined before leases existed have
- * no renewal to read, so their join stands as the last thing we know — and failing even that, their membership.
- */
+/** Members who joined before leases existed have no `lastSeenAt`, so their join is the last evidence there is. */
 const lastEvidence = (user: IVideoConferenceUser): Date => user.lastSeenAt ?? user.joinedAt ?? user.ts;
 
 /**
- * Which members are to be treated as gone, and when they left.
+ * The members whose lease has run out, each with the moment they left.
  *
- * `leftAt` is the last evidence rather than the moment of the sweep, which is the whole point of keeping a
- * watermark: stamping "now" on a call recovered after a 20-minute outage would add 20 minutes to everyone's call
- * history. The honest answer is "we last saw you before the lights went out", and that is what this returns.
+ * `leftAt` is the last evidence, never the moment of the sweep: stamping "now" on a call recovered after an
+ * outage would add the whole outage to everyone's call history.
  */
 export const expiredPresenceLeases = (users: IVideoConferenceUser[], now: Date, leaseMs = PRESENCE_LEASE_MS): ExpiredPresenceLease[] =>
 	users
@@ -69,15 +35,9 @@ export const expiredPresenceLeases = (users: IVideoConferenceUser[], now: Date, 
 		.filter(({ leftAt }) => now.getTime() - leftAt.getTime() >= leaseMs);
 
 /**
- * Whether leases may be acted on yet, given how long this process has been up.
+ * Whether this process has been up long enough for its leases to mean anything.
  *
- * The guard that makes leases correct across a restart. From the database, "everyone left" and "we were not here
- * to be told" are the same picture: every lease is expired either way. So a freshly started process waits out a
- * full lease before evicting anyone — whoever is still in the call renews within it (their window heartbeats
- * every `PRESENCE_HEARTBEAT_MS`, throttled to a minute at worst), and whoever is genuinely gone is still gone
- * afterwards, with the departure timestamp they had all along.
- *
- * In a multi-instance workspace this costs nothing: the instances that stayed up were never absent and keep
- * sweeping throughout.
+ * A fresh process cannot tell "everyone left" from "we were not here to be told" — every lease reads as expired
+ * either way — so one full lease has to pass before an eviction is believed.
  */
 export const isPresenceSweepDue = (uptimeMs: number, leaseMs = PRESENCE_LEASE_MS): boolean => uptimeMs >= leaseMs;
