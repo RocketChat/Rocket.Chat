@@ -197,7 +197,7 @@ API.v1.post(
 		const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 		const { userId } = this;
 
-		if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
 			return API.v1.forbidden('Not allowed');
 		}
 
@@ -218,7 +218,7 @@ API.v1.post(
 				throw new Error(availabilityErrors.NOT_ACTIVE);
 			}
 
-			const allowRinging = Boolean(requestRinging) && (await hasPermissionAsync(userId, 'videoconf-ring-users'));
+			const allowRinging = Boolean(requestRinging) && (await hasPermissionAsync(this.user, 'videoconf-ring-users'));
 
 			return API.v1.success({
 				data: {
@@ -416,6 +416,9 @@ API.v1.post(
 	{
 		authRequired: true,
 		body: isVideoConfRingProps,
+		// The same permission `video-conference.start` demands before ringing anyone — having access to a
+		// conference must not be a way around it.
+		permissionsRequired: ['videoconf-ring-users'],
 		// Ringing again is a deliberate, repeatable act, but not one worth hammering someone with.
 		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
 		response: {
@@ -427,12 +430,6 @@ API.v1.post(
 	},
 	async function action() {
 		const { callId, userId } = this.bodyParams;
-
-		// The same permission `video-conference.start` demands before ringing anyone — having access to a
-		// conference must not be a way around it.
-		if (!(await hasPermissionAsync(this.userId, 'videoconf-ring-users'))) {
-			return API.v1.forbidden('Not allowed');
-		}
 
 		const conference = await loadAccessibleConference(callId, this.userId);
 		if (!conference) {
@@ -472,7 +469,7 @@ API.v1.post(
 		const added = await VideoConf.addMembers(conference.userId, callId, users, {
 			// Not ringing unless asked: adding someone to a call in progress is often to have them join when
 			// they can, and an unrequested ring is an interruption nobody chose.
-			ring: (ring ?? false) && (await hasPermissionAsync(this.userId, 'videoconf-ring-users')),
+			ring: (ring ?? false) && (await hasPermissionAsync(this.user, 'videoconf-ring-users')),
 		});
 
 		return API.v1.success({ added });
