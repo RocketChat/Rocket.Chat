@@ -14,7 +14,7 @@ const SidebarRailCallPanel = () => {
 		<FeaturePreview feature='sidebarRail' disabled={embeddedLayout || isMobile}>
 			<FeaturePreviewOn>
 				<SidebarPortal>
-					<Sidepanel role='complementary' aria-label={t('Calls')}>
+					<Sidepanel className='rcx-sidebar__fixed-width' role='complementary' aria-label={t('Calls')}>
 						<Box padding={16}>
 							<InlineMediaCallWidget />
 						</Box>
