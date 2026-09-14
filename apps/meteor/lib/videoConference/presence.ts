@@ -16,21 +16,32 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
  */
 
 /**
+ * The rate a browser throttles a hidden tab's timers down to — a call someone is listening to while working in
+ * another window. Every current browser lands near one a minute, and this, not the rate below, is what a lease
+ * has to survive: the rate below is only what a window aims for, and it reaches it while it is on screen.
+ */
+export const PRESENCE_THROTTLED_HEARTBEAT_MS = 60_000;
+
+/** How many throttled renewals may go missing — to a brief network drop, say — before a lease is given up on. */
+export const PRESENCE_MISSED_TICKS_TOLERATED = 3;
+
+/**
  * How often a call window renews its lease.
  *
- * Well under the lease it renews, because a hidden tab — a call you are listening to while working in another
- * window — has its timers throttled to roughly one a minute by every current browser.
+ * Under the rate it will be throttled to, so a window that is on screen renews several times over within one
+ * lease and a hidden one still renews about once.
  */
 export const PRESENCE_HEARTBEAT_MS = 30_000;
 
 /**
  * How long one renewal is good for.
  *
- * Long enough to survive throttling (two missed ticks at a browser's throttled rate) and a brief network drop,
- * short enough that a ghost in the members list is a curiosity rather than a lie. It doubles as the grace period
- * a departing member gets before their absence is written, which is why this is also what a restart waits out.
+ * Derived rather than picked, because the quantity that was ever reasoned about is how many throttled renewals
+ * may go missing before a window is presumed gone — long enough to survive that, short enough that a ghost in
+ * the members list is a curiosity rather than a lie. It doubles as the grace period a departing member gets
+ * before their absence is written, which is why this is also what a restart waits out.
  */
-export const PRESENCE_LEASE_MS = 180_000;
+export const PRESENCE_LEASE_MS = PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_MISSED_TICKS_TOLERATED;
 
 /** The reasons a departure was inferred rather than reported, so a renewal can undo them and a report cannot. */
 export const INFERRED_LEAVE_REASONS: VideoConferenceLeaveReason[] = ['timeout'];
