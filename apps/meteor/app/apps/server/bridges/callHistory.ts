@@ -2,6 +2,7 @@ import type { IAppServerOrchestrator, IAppsCallHistoryEntry, IAppsCallHistoryPag
 import { CallHistoryBridge } from '@rocket.chat/apps/dist/server/bridges/CallHistoryBridge';
 import type { CallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
 import { CallHistory, MediaCalls } from '@rocket.chat/models';
+import { toValidDate } from '@rocket.chat/tools';
 import type { FindOptions } from 'mongodb';
 
 import { settings } from '../../../../server/settings';
@@ -58,21 +59,6 @@ export class AppCallHistoryBridge extends CallHistoryBridge {
 	 */
 	private isInternalHistoryInUse(): boolean {
 		return !settings.get('VoIP_TeamCollab_ExternalCallHistory_Enabled');
-	}
-
-	/**
-	 * `Date`s arrive from the app over msgpack. They survive the trip, but the value
-	 * originates in app code, so coerce rather than trust: a string date would otherwise
-	 * reach Mongo and silently match nothing.
-	 */
-	private toDate(value: Date | undefined): Date | undefined {
-		if (!value) {
-			return undefined;
-		}
-
-		const date = value instanceof Date ? value : new Date(value);
-
-		return Number.isNaN(date.getTime()) ? undefined : date;
 	}
 
 	/**
@@ -146,8 +132,11 @@ export class AppCallHistoryBridge extends CallHistoryBridge {
 				uid: query.uid,
 				direction: query.direction,
 				inStates: query.states,
-				from: this.toDate(query.from),
-				to: this.toDate(query.to),
+				// `Date`s arrive from the app over msgpack. They survive the trip, but the value
+				// originates in app code, so coerce rather than trust: a string date would
+				// otherwise reach Mongo and silently match nothing.
+				from: toValidDate(query.from),
+				to: toValidDate(query.to),
 			},
 			{ sort: { ts: -1 }, skip: offset, limit: count },
 		);
