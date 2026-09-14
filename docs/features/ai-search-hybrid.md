@@ -59,7 +59,8 @@ deterministic tie-break, with a semantic preference on exact ties.
 For nonempty results the weighted score lies in `(0, 1/61]`. At weight 50, it is half the usual
 unweighted two-list RRF sum; this constant scaling leaves both ordering and multiplicative recency
 reranking unchanged. For example, semantic rank 3 plus keyword rank 1 gives
-`0.5/63 + 0.5/61 = 0.0161332`, ahead of a semantic-only rank-1 hit at `0.5/61 = 0.0081967`.
+`0.5/63 + 0.5/61 = 0.0161332`, ahead of a candidate found by the semantic branch alone at rank 1
+(`0.5/61 = 0.0081967`). Both figures are hybrid-mode scores; single-retriever mode is covered below.
 
 Single-retriever modes and failure fallback use `1/(60 + rank)`. Rescaling the surviving branch to
 weight 1 preserves its ordering, including after the multiplicative recency boost. RRF scores are

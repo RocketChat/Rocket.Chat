@@ -55,7 +55,7 @@ export const createAISettings = async (): Promise<void> => {
 	await settingsRegistry.add('AI_Intelligent_Search_Semantic_Weight', 50, {
 		group: AI_SETTINGS_GROUP,
 		section: 'Intelligent_Search',
-		type: 'int',
+		type: 'range',
 		i18nLabel: 'AI_Intelligent_Search_Semantic_Weight',
 		i18nDescription: 'AI_Intelligent_Search_Semantic_Weight_Description',
 		enterprise: true,
@@ -67,7 +67,7 @@ export const createAISettings = async (): Promise<void> => {
 	await settingsRegistry.add('AI_Intelligent_Search_Recency_Weight', 0, {
 		group: AI_SETTINGS_GROUP,
 		section: 'Intelligent_Search',
-		type: 'int',
+		type: 'range',
 		i18nLabel: 'AI_Intelligent_Search_Recency_Weight',
 		i18nDescription: 'AI_Intelligent_Search_Recency_Weight_Description',
 		enterprise: true,
