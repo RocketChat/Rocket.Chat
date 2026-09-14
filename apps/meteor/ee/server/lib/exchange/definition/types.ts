@@ -60,7 +60,6 @@ export type ExchangeContactPhone = {
 
 export type ExchangeContactEmail = {
 	address: string;
-	label?: string;
 };
 
 export type ExchangeContactUpsert = {
@@ -73,6 +72,7 @@ export type ExchangeContactUpsert = {
 	companyName?: string;
 	emails: ExchangeContactEmail[];
 	phones: ExchangeContactPhone[];
+	categories: string[];
 };
 
 export type ExchangeContactDeletion = {
