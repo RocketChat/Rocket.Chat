@@ -184,7 +184,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message || (hasAuthError ? errors.password?.message : undefined)}
-										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}
+										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : undefined}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
 									/>
@@ -206,7 +206,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 										})}
 										placeholder={passwordPlaceholder}
 										error={errors.password?.message}
-										aria-invalid={errors.password || errorOnSubmit ? 'true' : 'false'}
+										aria-invalid={errors.password || errorOnSubmit ? 'true' : undefined}
 										aria-describedby={`${passwordId}-error`}
 										id={passwordId}
 									/>
