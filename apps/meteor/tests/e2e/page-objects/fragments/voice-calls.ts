@@ -141,6 +141,11 @@ export class Widget {
 		return this.transferModal;
 	}
 
+	/** Dismisses the widget while it sits on the dialer, before a call is placed. */
+	get btnClose(): Locator {
+		return this.root.getByRole('button', { name: 'Close', exact: true });
+	}
+
 	async showCallHere(): Promise<void> {
 		await this.btnShowCallHere.click();
 		await expect(this.btnShowCallHere).not.toBeVisible();
