@@ -1,5 +1,4 @@
 import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
@@ -17,13 +16,6 @@ type ChatAccessNoticeProps = {
 
 // The banner itself isn't the control here — the Review button is — so undo the affordances
 // `AnnouncementBanner` shows for the clickable case.
-const notInteractive = css`
-	cursor: default;
-	&:hover {
-		text-decoration: none;
-	}
-`;
-
 /**
  * Being added to a conference grants no room access, so some members can be in the call without being able
  * to read its chat. Rather than forcing that choice on whoever adds them, it is surfaced here once it
@@ -47,10 +39,10 @@ const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) 
 	// second one, it is something that became true. Declared here rather than changed in the shared component,
 	// whose other caller is a room announcement that really is one.
 	return (
-		<AnnouncementBanner role='status' className={notInteractive}>
+		<AnnouncementBanner role='status'>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
 				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: present.length })}</Box>
-				<Box display='flex' alignItems='center' flexShrink={0} style={{ gap: 4 }}>
+				<Box display='flex' alignItems='center' flexShrink={0} gap={4}>
 					<Button small onClick={() => setModal(<ChatAccessModal callId={callId} access={access} onClose={() => setModal(null)} />)}>
 						{t('Review')}
 					</Button>

@@ -1,4 +1,3 @@
-import type { css as cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
@@ -6,15 +5,18 @@ import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
 export type AnnouncementBannerProps = {
 	children: ReactNode;
 	onClick?: (e: MouseEvent) => void;
-	/** Composed with the banner's own styles, so `css` output is as welcome as a plain class name. */
-	className?: string | ReturnType<typeof cssFn>;
-} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'className'>;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 const AnnouncementBanner = ({ children, className, onClick, ...props }: AnnouncementBannerProps) => {
+	// A banner with nothing to click is not a control, and already says so elsewhere — `tabIndex` and `role`
+	// below both ask the same question. The pointer and the hover underline are the rest of that answer: they
+	// promise something happens on click, and on a banner that only announces, nothing does.
+	const clickable = Boolean(onClick);
+
 	const announcementBar = css`
 		background-color: ${Palette.status['status-background-info'].theme('announcement-background')};
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
-		cursor: pointer;
+		cursor: ${clickable ? 'pointer' : 'default'};
 		transition: transform 0.2s ease-out;
 		a:link {
 			color: ${Palette.text['font-pure-black'].theme('announcement-text')};
@@ -24,7 +26,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			flex: auto;
 		}
 		&:hover {
-			text-decoration: underline;
+			text-decoration: ${clickable ? 'underline' : 'none'};
 		}
 	`;
 
