@@ -9,8 +9,6 @@ import { NEW_CONFERENCE_ID } from './lib/callWindow';
 import AuthenticationCheck from '../root/MainLayout/AuthenticationCheck';
 import PageLoading from '../root/PageLoading';
 
-const conferenceLoading = <PageLoading />;
-
 const ConferenceRoute = () => {
 	const id = useRouteParameter('id');
 	const callUrlParam = useSearchParameter('callUrl');
@@ -18,7 +16,7 @@ const ConferenceRoute = () => {
 
 	if (callUrlParam) {
 		return (
-			<AuthenticationCheck guest loading={conferenceLoading}>
+			<AuthenticationCheck guest loadingElement={<PageLoading />}>
 				<ConferencePage />
 			</AuthenticationCheck>
 		);
@@ -26,7 +24,7 @@ const ConferenceRoute = () => {
 
 	if (id === NEW_CONFERENCE_ID && rid) {
 		return (
-			<AuthenticationCheck guest={false} loading={conferenceLoading}>
+			<AuthenticationCheck guest={false} loadingElement={<PageLoading />}>
 				<ConferenceViewport>
 					<ConferenceStartPage rid={rid} />
 				</ConferenceViewport>
@@ -36,7 +34,7 @@ const ConferenceRoute = () => {
 
 	if (id) {
 		return (
-			<AuthenticationCheck guest={false} loading={conferenceLoading}>
+			<AuthenticationCheck guest={false} loadingElement={<PageLoading />}>
 				<ConferenceViewport>
 					<ConferenceEmbeddedPage callId={id} />
 				</ConferenceViewport>

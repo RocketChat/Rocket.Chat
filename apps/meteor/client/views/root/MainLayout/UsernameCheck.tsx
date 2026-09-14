@@ -14,10 +14,10 @@ export type UsernameCheckProps = {
 	 * suits routes that render inside the navigation chrome — standalone routes should pass their own so
 	 * they don't flash a sidebar and composer they will never show.
 	 */
-	loading?: ReactNode;
+	loadingElement?: ReactNode;
 };
 
-const UsernameCheck = ({ children, loading }: UsernameCheckProps) => {
+const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 
@@ -39,7 +39,7 @@ const UsernameCheck = ({ children, loading }: UsernameCheckProps) => {
 	}, [userData?.user, userId, allowAnonymousRead]);
 
 	if (isLoading) {
-		return loading ?? <HomeSkeleton />;
+		return loadingElement ?? <HomeSkeleton />;
 	}
 
 	if (shouldRegisterUsername) {

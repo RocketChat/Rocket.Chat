@@ -23,7 +23,7 @@ export type AuthenticationCheckProps = {
 	children: ReactNode;
 	guest?: boolean;
 	/** Placeholder shown while the user is resolved — see `UsernameCheck`. */
-	loading?: ReactNode;
+	loadingElement?: ReactNode;
 };
 
 /**
@@ -35,7 +35,7 @@ export type AuthenticationCheckProps = {
  */
 const hasGivenUp = (status: ReturnType<typeof useConnectionStatus>['status']): boolean => status === 'waiting' || status === 'failed';
 
-const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckProps) => {
+const AuthenticationCheck = ({ children, guest, loadingElement }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
@@ -100,13 +100,13 @@ const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckPr
 	if (isResumingSession) {
 		// A route that brought its own placeholder gets it here too: the app-shaped skeleton is the wrong shape
 		// for a window that never shows the app around it.
-		return <>{loading ?? <HomeSkeleton />}</>;
+		return <>{loadingElement ?? <HomeSkeleton />}</>;
 	}
 
 	if (user) {
 		return (
 			<LoggedInArea>
-				<UsernameCheck loading={loading}>{children}</UsernameCheck>
+				<UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>
 			</LoggedInArea>
 		);
 	}
@@ -116,7 +116,7 @@ const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckPr
 	}
 
 	if (!forceLogin && allowAnonymousRead) {
-		return <UsernameCheck loading={loading}>{children}</UsernameCheck>;
+		return <UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>;
 	}
 
 	return <LoginPage />;
