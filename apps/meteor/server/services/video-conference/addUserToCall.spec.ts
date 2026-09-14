@@ -53,7 +53,7 @@ const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', username
 
 const broadcastStub = sinon.stub().resolves();
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
+const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/core-services': {
 		api: { broadcast: broadcastStub },

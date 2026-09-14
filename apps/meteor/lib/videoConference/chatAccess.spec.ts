@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { chatAccessLeadsWithDiscussion, resolveChatAccessMode } from '../../../../lib/videoConference/chatAccess';
+import { chatAccessLeadsWithDiscussion, resolveChatAccessMode } from './chatAccess';
 
 describe('videoConference chat access', () => {
 	describe('chatAccessLeadsWithDiscussion', () => {

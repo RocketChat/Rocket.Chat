@@ -6,7 +6,7 @@ import sinon from 'sinon';
 
 const canAccessRoomIdAsyncMock = sinon.stub();
 
-const { canAccessConference } = p.noCallThru().load('../../../../server/lib/videoConfAccess', {
+const { canAccessConference } = p.noCallThru().load('./videoConfAccess', {
 	'./authorization/canAccessRoom': { canAccessRoomIdAsync: canAccessRoomIdAsyncMock },
 });
 

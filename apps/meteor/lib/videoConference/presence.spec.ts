@@ -7,7 +7,7 @@ import {
 	PRESENCE_THROTTLED_HEARTBEAT_MS,
 	expiredPresenceLeases,
 	isPresenceSweepDue,
-} from '../../../../lib/videoConference/presence';
+} from './presence';
 
 const ts = new Date('2026-08-02T10:00:00.000Z');
 const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);
