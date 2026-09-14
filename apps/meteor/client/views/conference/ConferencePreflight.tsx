@@ -1,6 +1,7 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, CheckBox, Field, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, CheckBox, Icon } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
@@ -84,7 +85,9 @@ const ConferencePreflight = ({
 	const [title, setTitle] = useState(defaultName ?? name);
 	const [confirming, setConfirming] = useState(false);
 
-	const handleConfirm = () => {
+	/** Typed from the Box it is given to, which submits its own event type rather than React's. */
+	const handleSubmit: NonNullable<ComponentProps<typeof Box>['onSubmit']> = (event) => {
+		event.preventDefault();
 		setConfirming(true);
 		onConfirm(preferences, title.trim() || name, ring);
 	};
@@ -172,11 +175,13 @@ const ConferencePreflight = ({
 
 			{canName && (
 				<Box width='100%' marginBlockStart={16}>
+					{/* `Field` wires the label to the input itself, which is what the package is for — the id this
+					    carried was referenced by nothing, and the name was announced from an `aria-label` that
+					    nobody could see. */}
 					<Field>
+						<FieldLabel>{t('Call_name')}</FieldLabel>
 						<FieldRow>
 							<TextInput
-								id='conference-preflight-name'
-								aria-label={t('Call_name')}
 								value={title}
 								placeholder={defaultName ?? name}
 								onChange={(event) => setTitle((event.target as HTMLInputElement).value)}
@@ -218,17 +223,22 @@ const ConferencePreflight = ({
 
 			<Box marginBlockStart={24} width='100%'>
 				<ButtonGroup vertical stretch>
-					<Button primary loading={confirming} onClick={handleConfirm}>
+					<Button type='submit' primary loading={confirming}>
 						{confirmLabel}
 					</Button>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button type='button' onClick={onCancel}>
+						{t('Cancel')}
+					</Button>
 				</ButtonGroup>
 			</Box>
 		</Box>
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} overflowY='auto'>
+		// A form, so the screen has one submit and Enter in the name field does what the button does — it did
+		// nothing at all before. The device toggles are `IconButton`s, which Fuselage types as `button`, so they
+		// stay toggles rather than becoming submits.
+		<Box is='form' onSubmit={handleSubmit} display='flex' flexDirection='column' flexGrow={1} minHeight={0} overflowY='auto'>
 			<Box
 				display='flex'
 				flexDirection={columns ? 'row' : 'column'}
