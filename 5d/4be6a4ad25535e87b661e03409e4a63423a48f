@@ -1,0 +1,24 @@
+ee/packages/federation-matrix/src/api/_matrix/send-leave.ts
+  s_84ed1362aeefc7::t_bb25dd491ffce6 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "5d4be6a4ad25535e87b661e03409e4a63423a48f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_84ed1362aeefc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d4534654-4965-46ab-8827-dea6ef12a033",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
