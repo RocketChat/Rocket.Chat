@@ -97,6 +97,8 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			// the actions need it to withhold calls from federated users
+			federated,
 		};
 	}, [data, workspaceRoles, roomRoles]);
 
