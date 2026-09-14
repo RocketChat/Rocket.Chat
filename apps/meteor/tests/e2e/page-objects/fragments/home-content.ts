@@ -119,6 +119,14 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
+	get lastIgnoredThreadMessage(): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name: 'This message was ignored' });
+	}
+
+	get ignoredThreadMessages(): Locator {
+		return this.threadMessageListItems.getByRole('button', { name: 'This message was ignored' });
+	}
+
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;
@@ -422,6 +430,19 @@ export class HomeContent {
 		if (responsePromise) {
 			await responsePromise;
 		}
+	}
+
+	async sendMultipleFilesMessage(fileNames: string[], { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		await this.page
+			.getByLabel('Room composer')
+			.locator('input[type=file]')
+			.setInputFiles(fileNames.map((name) => getFilePath(name)));
+
+		if (!waitForResponse) {
+			return;
+		}
+
+		await expect(this.composer.btnSend).toBeEnabled();
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {

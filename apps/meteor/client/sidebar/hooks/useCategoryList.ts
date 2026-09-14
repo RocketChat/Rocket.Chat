@@ -1,10 +1,10 @@
-import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
 type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
@@ -169,8 +169,8 @@ export const getRoomCategory = (
 
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
 	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
-	const sidebarCategories = useUserPreference<ISidebarCategory[]>('sidebarCategories', []) ?? [];
-	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
+	const { rawCategories: sidebarCategories } = useUserSidebarCategories();
+	const sidebarSectionsOrder = useSidebarSectionsOrder();
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
 	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true) ?? true;
 	const isDiscussionEnabled = useSetting('Discussion_enabled', true) ?? true;
