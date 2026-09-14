@@ -12,7 +12,7 @@ import type { ExchangeErrorCode } from '../lib/exchange/errors';
 import { isExchangeError } from '../lib/exchange/errors';
 import { logger } from '../lib/exchange/logger';
 import { scrubForLog } from '../lib/exchange/scrub';
-import { syncUserMailbox } from '../lib/exchange/sync/syncUserMailbox';
+import { syncCalendarForUser } from '../lib/exchange/sync/calendar/syncCalendarForUser';
 
 const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'not-configured': 'Exchange_Test_Connection_not_configured',
@@ -114,11 +114,11 @@ API.v1.post(
 		}
 
 		try {
-			const { upserted, modified, deleted } = await syncUserMailbox(this.userId);
+			const { upserted, modified, deleted } = await syncCalendarForUser(this.userId);
 
 			return API.v1.success({ upserted, modified, deleted });
 		} catch (err) {
-			logger.error({ msg: 'On-demand Exchange sync failed', uid: this.userId, err: scrubForLog(err) });
+			logger.error({ msg: 'On-demand Exchange calendar sync failed', uid: this.userId, err: scrubForLog(err) });
 
 			if (!isExchangeError(err)) {
 				return API.v1.internalError('Outlook_Sync_Failed');

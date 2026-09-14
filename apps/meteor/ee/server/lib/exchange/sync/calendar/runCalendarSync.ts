@@ -1,18 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { forEachWithConcurrency } from './forEachWithConcurrency';
-import { iterateMailboxCandidates } from './resolveMailboxes';
-import { syncMailbox } from './syncMailbox';
-import { getExchangeProvider, getSyncWindow, isServerSyncEnabled } from '../ExchangeProviderRegistry';
-import { isExchangeError } from '../errors';
-import { logger } from '../logger';
+import { forEachWithConcurrency } from '../forEachWithConcurrency';
+import { MAILBOX_CONCURRENCY } from '../limits';
+import { iterateMailboxCandidates } from '../resolveMailboxes';
+import { syncCalendarWindow } from './syncCalendarWindow';
+import { getExchangeProvider, getCalendarSyncWindow, isServerSyncEnabled } from '../../ExchangeProviderRegistry';
+import { isExchangeError } from '../../errors';
+import { logger } from '../../logger';
 
-// How many mailboxes at once. Kept low because neither server tells us its request limit, and crossing it
-// gets us throttled. Raising it does not speed up EWS: that transport talks to Exchange one call at a time.
-export const MAILBOX_CONCURRENCY = 5;
-
-export type ExchangeSyncRunSummary = {
+export type CalendarSyncRunSummary = {
 	mailboxes: number;
 	skipped: number;
 	upserted: number;
@@ -25,8 +22,8 @@ export type ExchangeSyncRunSummary = {
 
 let running = false;
 
-export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
-	const summary: ExchangeSyncRunSummary = {
+export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
+	const summary: CalendarSyncRunSummary = {
 		mailboxes: 0,
 		skipped: 0,
 		upserted: 0,
@@ -38,7 +35,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 	};
 
 	if (running) {
-		logger.warn({ msg: 'Skipping Exchange sync run: the previous one is still in progress' });
+		logger.warn({ msg: 'Skipping Exchange calendar sync run: the previous one is still in progress' });
 		return summary;
 	}
 
@@ -53,7 +50,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 		}
 
 		const provider = getExchangeProvider();
-		const timeWindow = getSyncWindow();
+		const timeWindow = getCalendarSyncWindow();
 
 		await forEachWithConcurrency(iterateMailboxCandidates(), MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
@@ -68,7 +65,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 
 			summary.mailboxes++;
 
-			const outcome = await syncMailbox(provider, uid, mailbox, timeWindow);
+			const outcome = await syncCalendarWindow(provider, uid, mailbox, timeWindow);
 
 			summary.upserted += outcome.upserted;
 			summary.modified += outcome.modified;
@@ -88,7 +85,7 @@ export const runExchangeSync = async (): Promise<ExchangeSyncRunSummary> => {
 			}
 		});
 
-		logger.info({ msg: 'Exchange sync run finished', ...summary, provider: provider.id });
+		logger.info({ msg: 'Exchange calendar sync run finished', ...summary, provider: provider.id });
 
 		return summary;
 	} catch (err) {

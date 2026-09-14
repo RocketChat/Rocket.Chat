@@ -1,25 +1,25 @@
-import type { IExchangeSyncState, IUser } from '@rocket.chat/core-typings';
-import type { ExchangeSyncIdentity, IExchangeSyncStateModel } from '@rocket.chat/model-typings';
+import type { IExchangeCalendarSyncState, IUser } from '@rocket.chat/core-typings';
+import type { ExchangeCalendarSyncIdentity, IExchangeCalendarSyncStateModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class ExchangeSyncStateRaw extends BaseRaw<IExchangeSyncState> implements IExchangeSyncStateModel {
+export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncState> implements IExchangeCalendarSyncStateModel {
 	constructor(db: Db) {
-		super(db, 'exchange_sync_state');
+		super(db, 'exchange_calendar_sync_state');
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { uid: 1 }, unique: true }];
 	}
 
-	public async findOneByUserId(uid: IUser['_id']): Promise<IExchangeSyncState | null> {
+	public async findOneByUserId(uid: IUser['_id']): Promise<IExchangeCalendarSyncState | null> {
 		return this.findOne({ uid });
 	}
 
 	public async saveCursor(
 		uid: IUser['_id'],
-		identity: ExchangeSyncIdentity,
+		identity: ExchangeCalendarSyncIdentity,
 		cursor: string | undefined,
 		lastSyncAt: Date,
 	): Promise<UpdateResult> {
@@ -33,7 +33,7 @@ export class ExchangeSyncStateRaw extends BaseRaw<IExchangeSyncState> implements
 		);
 	}
 
-	public async setLastError(uid: IUser['_id'], identity: ExchangeSyncIdentity, lastError: string): Promise<UpdateResult> {
+	public async setLastError(uid: IUser['_id'], identity: ExchangeCalendarSyncIdentity, lastError: string): Promise<UpdateResult> {
 		return this.updateOne({ uid }, { $set: { ...identity, lastError, lastErrorAt: new Date() } }, { upsert: true });
 	}
 

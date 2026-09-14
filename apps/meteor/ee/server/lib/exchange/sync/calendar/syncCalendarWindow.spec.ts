@@ -1,8 +1,9 @@
-import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../definition/types';
-import type { ExchangeErrorCode } from '../errors';
-import { ExchangeError } from '../errors';
-import { MAX_PAGES, syncMailbox } from './syncMailbox';
+import { syncCalendarWindow } from './syncCalendarWindow';
+import type { IExchangeProvider } from '../../definition/IExchangeProvider';
+import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../../definition/types';
+import type { ExchangeErrorCode } from '../../errors';
+import { ExchangeError } from '../../errors';
+import { MAX_PAGES } from '../limits';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();
@@ -22,7 +23,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 }));
 
 jest.mock('@rocket.chat/models', () => ({
-	ExchangeSyncState: {
+	ExchangeCalendarSyncState: {
 		findOneByUserId: (...args: unknown[]) => findOneByUserId(...args),
 		saveCursor: (...args: unknown[]) => saveCursor(...args),
 		setLastError: (...args: unknown[]) => setLastError(...args),
@@ -33,7 +34,7 @@ jest.mock('@rocket.chat/models', () => ({
 const UID = 'uid';
 const MAILBOX = 'user@corp.example';
 
-// Day anchored, which is what `getSyncWindow` produces
+// Day anchored, which is what `getCalendarSyncWindow` produces
 const timeWindow: DateRange = { start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') };
 
 const upsert = (externalId: string, over: Partial<ExchangeEventUpsert> = {}): ExchangeEventUpsert => ({
@@ -86,7 +87,7 @@ const batch = (over: Record<string, unknown> = {}) => ({
 
 const importedExternalIds = (): string[] => (importMany.mock.calls[0][0] as { externalId: string }[]).map(({ externalId }) => externalId);
 
-describe('syncMailbox', () => {
+describe('syncCalendarWindow', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		findOneByUserId.mockResolvedValue(null);
@@ -102,7 +103,7 @@ describe('syncMailbox', () => {
 		it('lets a later upsert win over an earlier deletion of the same event', async () => {
 			const provider = providerReturning(page([deletion('A')], { hasMore: true, cursor: 'c1' }), page([upsert('A')]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(importedExternalIds()).toEqual(['A']);
 			expect(deleteImported).not.toHaveBeenCalled();
@@ -111,7 +112,7 @@ describe('syncMailbox', () => {
 		it('lets a later deletion win over an earlier upsert of the same event', async () => {
 			const provider = providerReturning(page([upsert('A')], { hasMore: true, cursor: 'c1' }), page([deletion('A')]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(importedExternalIds()).toEqual([]);
 			expect(deleteImported).toHaveBeenCalledWith(UID, ['A'], timeWindow.start, { deferSideEffects: true });
@@ -120,7 +121,7 @@ describe('syncMailbox', () => {
 		it('treats a cancelled event as a removal rather than importing it', async () => {
 			const provider = providerReturning(page([upsert('A', { isCancelled: true }), upsert('B')]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(importedExternalIds()).toEqual(['B']);
 			expect(deleteImported).toHaveBeenCalledWith(UID, ['A'], timeWindow.start, { deferSideEffects: true });
@@ -131,7 +132,7 @@ describe('syncMailbox', () => {
 		it('never prunes when no page claimed to be complete', async () => {
 			const provider = providerReturning(page([upsert('A')]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(pruneImportedWindow).not.toHaveBeenCalled();
 		});
@@ -143,7 +144,7 @@ describe('syncMailbox', () => {
 				page([upsert('A')], { isCompleteForWindow: true }),
 			);
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(pruneImportedWindow).toHaveBeenCalledWith(UID, timeWindow, ['A'], { deferSideEffects: true });
 		});
@@ -151,7 +152,7 @@ describe('syncMailbox', () => {
 		it('prunes after the upserts landed, so it cannot remove what this run is reviving', async () => {
 			const provider = providerReturning(page([upsert('A')], { isCompleteForWindow: true }));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(importMany.mock.invocationCallOrder[0]).toBeLessThan(pruneImportedWindow.mock.invocationCallOrder[0]);
 		});
@@ -178,7 +179,7 @@ describe('syncMailbox', () => {
 			findOneByUserId.mockResolvedValue(stored);
 			const provider = providerReturning(page([]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(provider.listEvents).toHaveBeenCalledWith(MAILBOX, timeWindow, stored.cursor);
 		});
@@ -193,7 +194,7 @@ describe('syncMailbox', () => {
 			findOneByUserId.mockResolvedValue({ ...stored, ...difference });
 			const provider = providerReturning(page([]));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(provider.listEvents).toHaveBeenCalledWith(MAILBOX, timeWindow, undefined);
 		});
@@ -202,7 +203,7 @@ describe('syncMailbox', () => {
 			findOneByUserId.mockResolvedValue({ ...stored, windowStart: new Date('2026-09-06T00:00:00Z') });
 			const provider = folderScopedProvider();
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(provider.listEvents).toHaveBeenCalledWith(MAILBOX, timeWindow, stored.cursor);
 		});
@@ -210,7 +211,7 @@ describe('syncMailbox', () => {
 		it('stores the identity of the window it just read, not the one it resumed from', async () => {
 			const provider = providerReturning(page([], { cursor: 'fresh' }));
 
-			await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(saveCursor).toHaveBeenCalledWith(
 				UID,
@@ -235,7 +236,7 @@ describe('syncMailbox', () => {
 		it('reports the failure and carries the error for a caller that needs to rethrow it', async () => {
 			const err = new ExchangeError('mailbox-not-found', 'nope');
 
-			const outcome = await syncMailbox(failingProvider(err), UID, MAILBOX, timeWindow);
+			const outcome = await syncCalendarWindow(failingProvider(err), UID, MAILBOX, timeWindow);
 
 			expect(outcome).toMatchObject({ failed: true, fatal: false, error: err, upserted: 0 });
 		});
@@ -248,19 +249,24 @@ describe('syncMailbox', () => {
 			['mailbox-not-found', false],
 			['unexpected-response', false],
 		])('marks %s as fatal=%s, which is what stops the whole run', async (code, fatal) => {
-			const outcome = await syncMailbox(failingProvider(new ExchangeError(code as ExchangeErrorCode, 'x')), UID, MAILBOX, timeWindow);
+			const outcome = await syncCalendarWindow(
+				failingProvider(new ExchangeError(code as ExchangeErrorCode, 'x')),
+				UID,
+				MAILBOX,
+				timeWindow,
+			);
 
 			expect(outcome.fatal).toBe(fatal);
 		});
 
 		it('drops the cursor when Exchange rejected the stored sync state', async () => {
-			await syncMailbox(failingProvider(new ExchangeError('sync-state-invalid', 'x')), UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(failingProvider(new ExchangeError('sync-state-invalid', 'x')), UID, MAILBOX, timeWindow);
 
 			expect(clearCursorByUserId).toHaveBeenCalledWith(UID);
 		});
 
 		it('keeps the cursor for any other failure, so a transient error does not force a full resync', async () => {
-			await syncMailbox(failingProvider(new ExchangeError('connection-failed', 'x')), UID, MAILBOX, timeWindow);
+			await syncCalendarWindow(failingProvider(new ExchangeError('connection-failed', 'x')), UID, MAILBOX, timeWindow);
 
 			expect(clearCursorByUserId).not.toHaveBeenCalled();
 		});
@@ -270,7 +276,7 @@ describe('syncMailbox', () => {
 			deleteImported.mockRejectedValue(new ExchangeError('unexpected-response', 'x'));
 
 			const provider = providerReturning(page([upsert('A'), deletion('B')]));
-			const outcome = await syncMailbox(provider, UID, MAILBOX, timeWindow);
+			const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(outcome).toMatchObject({ failed: true, changed: true });
 		});
@@ -280,7 +286,7 @@ describe('syncMailbox', () => {
 		const pages: Page<ExchangeEvent>[] = Array.from({ length: MAX_PAGES }, () => page([], { hasMore: true, cursor: 'endless' }));
 
 		const provider = providerReturning(...pages);
-		await syncMailbox(provider, UID, MAILBOX, timeWindow);
+		await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 		expect(provider.listEvents).toHaveBeenCalledTimes(MAX_PAGES);
 	});
@@ -289,7 +295,7 @@ describe('syncMailbox', () => {
 		pruneImportedWindow.mockResolvedValue(batch({ changed: true, deleted: 2 }));
 		const provider = providerReturning(page([upsert('A')], { isCompleteForWindow: true }));
 
-		const outcome = await syncMailbox(provider, UID, MAILBOX, timeWindow);
+		const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 		expect(outcome).toMatchObject({ pruned: 2, removedEvents: true, changed: true });
 	});

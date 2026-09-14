@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
-export interface IExchangeSyncState extends IRocketChatRecord {
+export interface IExchangeCalendarSyncState extends IRocketChatRecord {
 	uid: IUser['_id'];
 	mailbox: string;
 	provider: 'graph' | 'ews';
