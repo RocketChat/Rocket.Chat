@@ -65,6 +65,34 @@ The agent must **focus only on the specified feature scope** and avoid scope cre
 
 ---
 
+## Comment Discipline
+
+Full rules: [docs/code-comments.md](../../docs/code-comments.md).
+
+- Comment the **intent** of a function — what a caller gets, what it guarantees.
+  Never narrate the mechanism: if the line below says it, the comment adds nothing.
+- Inside a function body a comment is the exception, not the default. Only for what
+  cannot be in the code: a workaround (with a link to the issue), an external
+  constraint, an invariant a future edit would break silently.
+- **Never let a comment explain a symbol that lives in another file.** It cannot be
+  kept true, and it is feature documentation in the wrong place — it belongs in
+  `docs/features/`, written coarsely enough that a rename does not invalidate it.
+- Budgets: a comment block **≤ 6 lines**; **≤ 4** consecutive `//` lines above a
+  statement; comment lines **≤ ~10%** of the production (non-test) lines added. The
+  repository's own average is 4.3%.
+- Never commit narration (`// Now we need to...`), change history
+  (`// Changed from X to Y`), analysis output (alternatives weighed, edge cases
+  enumerated, "verified that..."), or commented-out code.
+- The same explanation at several call sites belongs on the shared function, once.
+- Never create `*_SUMMARY.md`, `*_ANALYSIS.md`, `FINDINGS.md` or similar files
+  describing how the change was reached. That goes in the PR description; a design
+  decision goes in `docs/adr/`.
+
+Before opening the PR, re-read the diff looking only at comments, and delete every
+one that does not answer a question the code leaves open.
+
+---
+
 ## Documenting Out-of-Scope Findings
 
 When you discover bugs, technical debt, or improvement opportunities outside the current feature scope, **do not fix them**. Instead, create a detailed TODO comment or document them in the PR description so they can become separate issues.
