@@ -432,6 +432,17 @@ export class HomeContent {
 		}
 	}
 
+	async sendMultipleFilesMessage(fileNames: string[], { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
+		await this.page
+			.getByLabel('Room composer')
+			.locator('input[type=file]')
+			.setInputFiles(fileNames.map((name) => getFilePath(name)));
+		if (responsePromise) {
+			await responsePromise;
+		}
+	}
+
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
