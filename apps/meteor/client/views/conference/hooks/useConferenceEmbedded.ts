@@ -79,7 +79,7 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
  * call's chat in the room with thread mode on: the thread hangs off the call's message and is read in this
  * panel, so it is ours whoever runs the media.
  */
-const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: 'thread' | 'main_room'): boolean =>
+const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: PersistentChatMode): boolean =>
 	isPersistentChatEnabled && isCallWindowEnabled && chatMode === 'thread';
 
 export const useConferenceEmbedded = (callId: string) => {
