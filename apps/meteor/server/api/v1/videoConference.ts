@@ -495,7 +495,6 @@ API.v1.post(
 			200: cancelResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 	},
@@ -507,17 +506,10 @@ API.v1.post(
 			return API.v1.notFound();
 		}
 
-		// Whether this particular user may *name* the call is the service's call to make — access is only the
-		// question of whether they may be here at all. Its refusal is an authorization answer, not a failure,
-		// so it maps to 403 rather than surfacing as an internal error.
-		try {
-			await VideoConf.renameCall(this.userId, callId, title);
-		} catch (e) {
-			if (e instanceof Error && e.message === 'error-not-allowed') {
-				return API.v1.forbidden('Not allowed');
-			}
-			throw e;
-		}
+		// Whether this particular user may *name* the call is the service's to decide — access only settles
+		// whether they may be here at all. Its refusal travels as `error-not-allowed`, the same way every other
+		// endpoint in the API lets one travel, so there is nothing here to translate.
+		await VideoConf.renameCall(this.userId, callId, title);
 
 		return API.v1.success();
 	},
@@ -533,7 +525,6 @@ API.v1.post(
 			200: shareChatResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 	},
