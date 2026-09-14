@@ -21,7 +21,7 @@
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
-		"@rocket.chat/fuselage-tokens": "^0.34.0",
+		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/storybook-dark-mode": "workspace:~",
 		"@storybook/addon-a11y": "^9.1.20",
 		"@storybook/addon-docs": "^9.1.20",
