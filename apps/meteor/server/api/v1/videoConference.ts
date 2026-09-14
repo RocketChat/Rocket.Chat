@@ -71,7 +71,7 @@ const cancelResponseSchema = ajv.compile<void>({
  * How every conference endpoint below starts: the call has to exist, and the caller has to be allowed near it.
  *
  * Both failures answer a bare 404, vague about which it was, so a stranger cannot learn that a call id is
- * real. Endpoints published before this rule still answer 400 until a major may change it.
+ * real.
  */
 const loadAccessibleConference = async (
 	callId: VideoConference['_id'],
@@ -245,7 +245,11 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: 404, once a published endpoint may change status — see `loadAccessibleConference`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -299,7 +303,11 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: 404, once a published endpoint may change status — see `loadAccessibleConference`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -541,7 +549,11 @@ API.v1.get(
 		const { callId } = this.queryParams;
 
 		const call = await loadAccessibleConference(callId, this.userId);
-		// TODO: 404, once a published endpoint may change status — see `loadAccessibleConference`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -599,7 +611,11 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		// TODO: 404, once a published endpoint may change status — see `loadAccessibleConference`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
 			return API.v1.failure('invalid-params');
 		}
