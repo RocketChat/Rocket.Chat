@@ -1,4 +1,4 @@
-import { configureExchangeSyncJob, DEFAULT_INTERVAL_MINUTES, EXCHANGE_SYNC_JOB, registerExchangeSyncJob } from './registerExchangeSyncJob';
+import { configureCalendarSyncJob, DEFAULT_INTERVAL_MINUTES, CALENDAR_SYNC_JOB, registerCalendarSyncJob } from './registerCalendarSyncJob';
 
 const get = jest.fn();
 const has = jest.fn();
@@ -17,9 +17,9 @@ jest.mock('@rocket.chat/cron', () => ({
 		remove: (...args: unknown[]) => remove(...args),
 	},
 }));
-jest.mock('./runExchangeSync', () => ({ runExchangeSync: jest.fn() }));
+jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
 
-describe('configureExchangeSyncJob', () => {
+describe('configureCalendarSyncJob', () => {
 	const settingsOf = (over: Record<string, unknown> = {}) => {
 		const values: Record<string, unknown> = {
 			Outlook_Calendar_Enabled: true,
@@ -45,9 +45,9 @@ describe('configureExchangeSyncJob', () => {
 	])('schedules every %s minutes as %s', async (minutes, schedule) => {
 		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
 
-		await configureExchangeSyncJob();
+		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(EXCHANGE_SYNC_JOB, schedule, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
 	});
 
 	it.each([
@@ -57,17 +57,17 @@ describe('configureExchangeSyncJob', () => {
 	])('converts %s minutes into the hour field as %s', async (minutes, schedule) => {
 		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
 
-		await configureExchangeSyncJob();
+		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(EXCHANGE_SYNC_JOB, schedule, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
 	});
 
 	it.each([0, -5, NaN, 0.5, 15.9])('falls back to the default interval for %p', async (minutes) => {
 		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
 
-		await configureExchangeSyncJob();
+		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(EXCHANGE_SYNC_JOB, `*/${DEFAULT_INTERVAL_MINUTES} * * * *`, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `*/${DEFAULT_INTERVAL_MINUTES} * * * *`, expect.any(Function));
 	});
 
 	it.each([
@@ -76,7 +76,7 @@ describe('configureExchangeSyncJob', () => {
 	])('does not schedule when %s', async (_label, over) => {
 		settingsOf(over);
 
-		await configureExchangeSyncJob();
+		await configureCalendarSyncJob();
 
 		expect(add).not.toHaveBeenCalled();
 	});
@@ -84,14 +84,14 @@ describe('configureExchangeSyncJob', () => {
 	it('removes the existing job before scheduling it again', async () => {
 		has.mockResolvedValue(true);
 
-		await configureExchangeSyncJob();
+		await configureCalendarSyncJob();
 
-		expect(remove).toHaveBeenCalledWith(EXCHANGE_SYNC_JOB);
-		expect(add).toHaveBeenCalledWith(EXCHANGE_SYNC_JOB, expect.anything(), expect.any(Function));
+		expect(remove).toHaveBeenCalledWith(CALENDAR_SYNC_JOB);
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, expect.anything(), expect.any(Function));
 	});
 });
 
-describe('registerExchangeSyncJob', () => {
+describe('registerCalendarSyncJob', () => {
 	const flush = () => new Promise((resolve) => setImmediate(resolve));
 
 	beforeEach(() => {
@@ -104,7 +104,7 @@ describe('registerExchangeSyncJob', () => {
 	});
 
 	it('watches the settings that decide whether the job exists at all', () => {
-		registerExchangeSyncJob();
+		registerCalendarSyncJob();
 
 		expect(watchMultiple).toHaveBeenCalledWith(
 			['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'],
@@ -113,7 +113,7 @@ describe('registerExchangeSyncJob', () => {
 	});
 
 	it('reconfigures the job when a watched setting changes', async () => {
-		registerExchangeSyncJob();
+		registerCalendarSyncJob();
 
 		await watchMultiple.mock.calls[0][1]();
 		await flush();

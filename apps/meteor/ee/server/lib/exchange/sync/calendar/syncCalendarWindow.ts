@@ -1,7 +1,7 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { ExchangeSyncState } from '@rocket.chat/models';
+import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
@@ -12,7 +12,7 @@ import { MAX_PAGES } from '../limits';
 
 const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 
-export type MailboxSyncOutcome = {
+export type CalendarSyncOutcome = {
 	upserted: number;
 	modified: number;
 	deleted: number;
@@ -24,7 +24,7 @@ export type MailboxSyncOutcome = {
 	error?: unknown;
 };
 
-const EMPTY: MailboxSyncOutcome = {
+const EMPTY: CalendarSyncOutcome = {
 	upserted: 0,
 	modified: 0,
 	deleted: 0,
@@ -105,16 +105,16 @@ const collectPages = async (
 	}
 };
 
-export const syncMailbox = async (
+export const syncCalendarWindow = async (
 	provider: IExchangeProvider,
 	uid: IUser['_id'],
 	mailbox: string,
 	timeWindow: DateRange,
-): Promise<MailboxSyncOutcome> => {
+): Promise<CalendarSyncOutcome> => {
 	const syncWindowDays = Math.round((timeWindow.end.getTime() - timeWindow.start.getTime()) / 86_400_000);
 	const identity = { mailbox, provider: provider.id, syncWindowDays, windowStart: timeWindow.start };
 
-	const state = await ExchangeSyncState.findOneByUserId(uid);
+	const state = await ExchangeCalendarSyncState.findOneByUserId(uid);
 
 	const sameSource = state?.mailbox === mailbox && state?.provider === provider.id;
 	const sameWindow = state?.syncWindowDays === syncWindowDays && state?.windowStart?.getTime() === timeWindow.start.getTime();
@@ -153,7 +153,7 @@ export const syncMailbox = async (
 		changed = changed || Boolean(pruned?.changed);
 		removedEvents = removedEvents || Boolean(pruned?.deleted);
 
-		await ExchangeSyncState.saveCursor(uid, identity, cursor, new Date());
+		await ExchangeCalendarSyncState.saveCursor(uid, identity, cursor, new Date());
 
 		return {
 			upserted: imported.upserted,
@@ -169,12 +169,12 @@ export const syncMailbox = async (
 		const code = isExchangeError(err) ? err.code : 'unknown';
 
 		if (code === 'sync-state-invalid') {
-			await ExchangeSyncState.clearCursorByUserId(uid);
+			await ExchangeCalendarSyncState.clearCursorByUserId(uid);
 		}
 
-		await ExchangeSyncState.setLastError(uid, identity, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
+		await ExchangeCalendarSyncState.setLastError(uid, identity, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
 
-		logger.warn({ msg: 'Exchange mailbox sync failed', uid, code, err: scrubForLog(err) });
+		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err: scrubForLog(err) });
 
 		return { ...EMPTY, changed, removedEvents, failed: true, fatal: FATAL_CODES.has(code), error: err };
 	}

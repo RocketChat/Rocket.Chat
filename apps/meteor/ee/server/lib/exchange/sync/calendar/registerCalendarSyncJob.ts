@@ -1,20 +1,20 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { isValidCron } from 'cron-validator';
 
-import { runExchangeSync } from './runExchangeSync';
+import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
 
-export const EXCHANGE_SYNC_JOB = 'Exchange_Server_Sync';
+export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 
 const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
 
 export const DEFAULT_INTERVAL_MINUTES = 15;
 
 const stopExchangeSyncJob = async (): Promise<void> => {
-	if (await cronJobs.has(EXCHANGE_SYNC_JOB)) {
-		await cronJobs.remove(EXCHANGE_SYNC_JOB);
+	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
+		await cronJobs.remove(CALENDAR_SYNC_JOB);
 	}
 };
 
@@ -29,9 +29,9 @@ const intervalToCron = (minutes: number): string => {
 	return `0 */${Math.min(Math.round(value / 60), 23)} * * *`;
 };
 
-export const configureExchangeSyncJob = async (): Promise<void> => {
-	if (await cronJobs.has(EXCHANGE_SYNC_JOB)) {
-		await cronJobs.remove(EXCHANGE_SYNC_JOB);
+export const configureCalendarSyncJob = async (): Promise<void> => {
+	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
+		await cronJobs.remove(CALENDAR_SYNC_JOB);
 	}
 
 	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
@@ -42,19 +42,19 @@ export const configureExchangeSyncJob = async (): Promise<void> => {
 
 	// An invalid expression does not throw at add() time, it yields no next run and the job never fires.
 	if (!isValidCron(schedule)) {
-		logger.error({ msg: 'Refusing to schedule the Exchange sync job with an invalid schedule', schedule });
+		logger.error({ msg: 'Refusing to schedule the Exchange calendar sync job with an invalid schedule', schedule });
 		return;
 	}
 
-	logger.info({ msg: 'Scheduling the Exchange sync job', schedule });
+	logger.info({ msg: 'Scheduling the Exchange calendar sync job', schedule });
 
-	await cronJobs.add(EXCHANGE_SYNC_JOB, schedule, async () => runExchangeSync());
+	await cronJobs.add(CALENDAR_SYNC_JOB, schedule, async () => runCalendarSync());
 };
 
-export const registerExchangeSyncJob = (): (() => void) => {
+export const registerCalendarSyncJob = (): (() => void) => {
 	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, () => {
-		void configureExchangeSyncJob().catch((err) =>
-			logger.error({ msg: 'Could not configure the Exchange sync job', err: scrubForLog(err) }),
+		void configureCalendarSyncJob().catch((err) =>
+			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) }),
 		);
 	});
 
@@ -62,7 +62,7 @@ export const registerExchangeSyncJob = (): (() => void) => {
 		stopWatching();
 
 		void stopExchangeSyncJob().catch((err) =>
-			logger.error({ msg: 'Could not stop the Exchange sync job during cleanup', err: scrubForLog(err) }),
+			logger.error({ msg: 'Could not stop the Exchange calendar sync job during cleanup', err: scrubForLog(err) }),
 		);
 	};
 };

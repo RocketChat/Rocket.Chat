@@ -3,14 +3,14 @@ import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
 import { resolveMailbox } from '../resolveMailboxes';
-import type { MailboxSyncOutcome } from './syncMailbox';
-import { syncMailbox } from './syncMailbox';
-import { getExchangeProvider, getSyncWindow } from '../../ExchangeProviderRegistry';
+import type { CalendarSyncOutcome } from './syncCalendarWindow';
+import { syncCalendarWindow } from './syncCalendarWindow';
+import { getExchangeProvider, getCalendarSyncWindow } from '../../ExchangeProviderRegistry';
 import { ExchangeError } from '../../errors';
 
 const inFlight = new Set<IUser['_id']>();
 
-export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOutcome> => {
+export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSyncOutcome> => {
 	if (inFlight.has(uid)) {
 		throw new ExchangeError('rate-limited', 'A sync for this mailbox is already in progress');
 	}
@@ -39,7 +39,7 @@ export const syncUserMailbox = async (uid: IUser['_id']): Promise<MailboxSyncOut
 			throw new ExchangeError('mailbox-not-found', 'No mailbox could be resolved for this user');
 		}
 
-		const outcome = await syncMailbox(provider, uid, mailbox, getSyncWindow());
+		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow());
 
 		// Read before the throw below, so a write that committed before the failure still gets its
 		// scheduling and its presence refresh from the `finally`.

@@ -1,25 +1,25 @@
-import type { MailboxSyncOutcome } from './syncMailbox';
-import { syncUserMailbox } from './syncUserMailbox';
+import { syncCalendarForUser } from './syncCalendarForUser';
+import type { CalendarSyncOutcome } from './syncCalendarWindow';
 import { ExchangeError } from '../../errors';
 
 const findOneById = jest.fn();
-const syncMailbox = jest.fn();
+const syncCalendarWindow = jest.fn();
 const applyDeferredSideEffects = jest.fn();
 const resolveMailbox = jest.fn();
 const getExchangeProvider = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({ Users: { findOneById: (...args: unknown[]) => findOneById(...args) } }));
-jest.mock('./syncMailbox', () => ({ syncMailbox: (...args: unknown[]) => syncMailbox(...args) }));
+jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
 jest.mock('./applyDeferredSideEffects', () => ({
 	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
 }));
 jest.mock('../resolveMailboxes', () => ({ resolveMailbox: (...args: unknown[]) => resolveMailbox(...args) }));
 jest.mock('../../ExchangeProviderRegistry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
-	getSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
+	getCalendarSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
 }));
 
-const outcome = (over: Partial<MailboxSyncOutcome> = {}): MailboxSyncOutcome => ({
+const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome => ({
 	upserted: 0,
 	modified: 0,
 	deleted: 0,
@@ -33,40 +33,40 @@ const outcome = (over: Partial<MailboxSyncOutcome> = {}): MailboxSyncOutcome => 
 
 const verified = { _id: 'uid', emails: [{ address: 'user@corp.example', verified: true }] };
 
-describe('syncUserMailbox', () => {
+describe('syncCalendarForUser', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		resolveMailbox.mockReturnValue('user@corp.example');
 		getExchangeProvider.mockReturnValue({ id: 'ews' });
 		findOneById.mockResolvedValue(verified);
-		syncMailbox.mockResolvedValue(outcome());
+		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
 	});
 
 	it('syncs the mailbox resolved for the user', async () => {
 		resolveMailbox.mockReturnValue('real@corp.example');
 
-		await syncUserMailbox('uid');
+		await syncCalendarForUser('uid');
 
-		expect(syncMailbox).toHaveBeenCalledWith({ id: 'ews' }, 'uid', 'real@corp.example', expect.anything());
+		expect(syncCalendarWindow).toHaveBeenCalledWith({ id: 'ews' }, 'uid', 'real@corp.example', expect.anything());
 	});
 
 	it('rethrows the failure instead of reporting a sync of zero events', async () => {
 		const err = new ExchangeError('mailbox-not-found', 'nope');
-		syncMailbox.mockResolvedValue(outcome({ failed: true, error: err }));
+		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, error: err }));
 
-		await expect(syncUserMailbox('uid')).rejects.toBe(err);
+		await expect(syncCalendarForUser('uid')).rejects.toBe(err);
 	});
 
 	it('still applies the side effects of work that committed before the failure', async () => {
-		syncMailbox.mockResolvedValue(outcome({ failed: true, changed: true, removedEvents: true, error: new Error('boom') }));
+		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, changed: true, removedEvents: true, error: new Error('boom') }));
 
-		await expect(syncUserMailbox('uid')).rejects.toThrow('boom');
+		await expect(syncCalendarForUser('uid')).rejects.toThrow('boom');
 		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Map([['uid', true]]));
 	});
 
 	it('leaves the side effects alone when nothing changed', async () => {
-		await syncUserMailbox('uid');
+		await syncCalendarForUser('uid');
 
 		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Map());
 	});
@@ -75,14 +75,14 @@ describe('syncUserMailbox', () => {
 		findOneById.mockResolvedValue({ _id: 'uid', emails: [{ address: 'user@corp.example', verified: false }] });
 		resolveMailbox.mockReturnValue(undefined);
 
-		await expect(syncUserMailbox('uid')).rejects.toMatchObject({ code: 'email-not-verified' });
-		expect(syncMailbox).not.toHaveBeenCalled();
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'email-not-verified' });
+		expect(syncCalendarWindow).not.toHaveBeenCalled();
 	});
 
 	it('reports a missing mailbox for a user that no longer exists', async () => {
 		findOneById.mockResolvedValue(null);
 
-		await expect(syncUserMailbox('uid')).rejects.toMatchObject({ code: 'mailbox-not-found' });
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'mailbox-not-found' });
 	});
 
 	it('refuses a second sync while one is already running for the same user', async () => {
@@ -90,23 +90,23 @@ describe('syncUserMailbox', () => {
 		const parked = new Promise<void>((resolve) => {
 			release = resolve;
 		});
-		syncMailbox.mockImplementation(async () => {
+		syncCalendarWindow.mockImplementation(async () => {
 			await parked;
 			return outcome();
 		});
 
-		const first = syncUserMailbox('uid');
+		const first = syncCalendarForUser('uid');
 
-		await expect(syncUserMailbox('uid')).rejects.toMatchObject({ code: 'rate-limited' });
+		await expect(syncCalendarForUser('uid')).rejects.toMatchObject({ code: 'rate-limited' });
 
 		release();
 		await first;
 	});
 
 	it('releases the guard after a failure, so a retry is not locked out', async () => {
-		syncMailbox.mockResolvedValueOnce(outcome({ failed: true, error: new Error('boom') }));
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ failed: true, error: new Error('boom') }));
 
-		await expect(syncUserMailbox('uid')).rejects.toThrow('boom');
-		await expect(syncUserMailbox('uid')).resolves.toMatchObject({ failed: false });
+		await expect(syncCalendarForUser('uid')).rejects.toThrow('boom');
+		await expect(syncCalendarForUser('uid')).resolves.toMatchObject({ failed: false });
 	});
 });

@@ -82,7 +82,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * today is still refreshed rather than left behind. Both bounds land on a day boundary, so the window is
  * identical for every run of the same day, which is what makes a Graph delta link reusable.
  */
-export const getSyncWindow = (from: Date = new Date()): DateRange => {
+export const getCalendarSyncWindow = (from: Date = new Date()): DateRange => {
 	const configured = Math.trunc(settings.get<number>('Exchange_Calendar_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
 	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
 

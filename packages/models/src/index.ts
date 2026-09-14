@@ -66,8 +66,8 @@ import type {
 	IWebdavAccountsModel,
 	ICalendarEventModel,
 	IContactsModel,
+	IExchangeCalendarSyncStateModel,
 	IExchangeContactSyncStateModel,
-	IExchangeSyncStateModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
 	IAppsPersistenceModel,
@@ -204,7 +204,7 @@ export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceM
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const Contacts = proxify<IContactsModel>('IContactsModel');
-export const ExchangeSyncState = proxify<IExchangeSyncStateModel>('IExchangeSyncStateModel');
+export const ExchangeCalendarSyncState = proxify<IExchangeCalendarSyncStateModel>('IExchangeCalendarSyncStateModel');
 export const ExchangeContactSyncState = proxify<IExchangeContactSyncStateModel>('IExchangeContactSyncStateModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',

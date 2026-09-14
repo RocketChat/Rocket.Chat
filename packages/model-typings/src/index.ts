@@ -66,7 +66,7 @@ export type * from './models/IVideoConferenceModel';
 export type * from './models/IWebdavAccountsModel';
 export type * from './models/ICalendarEventModel';
 export type * from './models/IContactsModel';
-export type * from './models/IExchangeSyncStateModel';
+export type * from './models/IExchangeCalendarSyncStateModel';
 export type * from './models/IExchangeContactSyncStateModel';
 export type * from './models/IOmnichannelServiceLevelAgreementsModel';
 export type * from './models/IAppLogsModel';

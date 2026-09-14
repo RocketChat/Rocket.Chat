@@ -1,7 +1,7 @@
 import {
 	detachExchangeProvider,
 	getExchangeProvider,
-	getSyncWindow,
+	getCalendarSyncWindow,
 	isServerSyncEnabled,
 	registerExchangeProviderWatchers,
 } from './ExchangeProviderRegistry';
@@ -19,13 +19,13 @@ const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const midnight = new Date('2026-08-31T00:00:00Z');
 
-describe('getSyncWindow', () => {
+describe('getCalendarSyncWindow', () => {
 	beforeEach(() => jest.clearAllMocks());
 
 	it('starts at midnight so an event earlier today is still inside the window', () => {
 		setDays(2);
 
-		expect(getSyncWindow(new Date('2026-08-31T09:47:31.250Z'))).toEqual({
+		expect(getCalendarSyncWindow(new Date('2026-08-31T09:47:31.250Z'))).toEqual({
 			start: midnight,
 			end: new Date('2026-09-02T00:00:00Z'),
 		});
@@ -34,17 +34,17 @@ describe('getSyncWindow', () => {
 	it('gives every moment of one day the identical window, which is what a delta link needs', () => {
 		setDays(2);
 
-		const first = getSyncWindow(midnight);
+		const first = getCalendarSyncWindow(midnight);
 
 		for (const offset of [1, HOUR, DAY - 1]) {
-			expect(getSyncWindow(new Date(midnight.getTime() + offset))).toEqual(first);
+			expect(getCalendarSyncWindow(new Date(midnight.getTime() + offset))).toEqual(first);
 		}
 	});
 
 	it('moves to the next window once the day is over', () => {
 		setDays(2);
 
-		expect(getSyncWindow(new Date(midnight.getTime() + DAY)).start).toEqual(new Date(midnight.getTime() + DAY));
+		expect(getCalendarSyncWindow(new Date(midnight.getTime() + DAY)).start).toEqual(new Date(midnight.getTime() + DAY));
 	});
 
 	it.each([
@@ -55,13 +55,13 @@ describe('getSyncWindow', () => {
 	])('clamps %s', (_label, configured, expectedDays) => {
 		setDays(configured);
 
-		expect(getSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + expectedDays * DAY));
+		expect(getCalendarSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + expectedDays * DAY));
 	});
 
 	it('defaults when the setting is missing rather than producing an invalid range', () => {
 		setDays(undefined);
 
-		expect(getSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + 2 * DAY));
+		expect(getCalendarSyncWindow(midnight).end).toEqual(new Date(midnight.getTime() + 2 * DAY));
 	});
 });
 

@@ -1,3 +1,4 @@
+import type { IContact } from '@rocket.chat/core-typings';
 import { Contacts } from '@rocket.chat/models';
 import { isContactsListProps, ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
