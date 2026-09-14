@@ -27,14 +27,6 @@ export default baseConfig({
 				'swiper/swiper.css$': join(swiperRoot, 'swiper.css'),
 				'swiper/modules/zoom.css$': join(swiperRoot, 'modules/zoom.css'),
 			},
-			// Meteor's bundler shims Node's built-ins; webpack 5 stopped doing that. A page that reaches the
-			// message composer pulls in mime-type/micromatch, which want `path` and `process` — and without these
-			// the story renders "process is not defined" instead of the component.
-			fallback: {
-				...config.resolve?.fallback,
-				path: require.resolve('path-browserify'),
-				process: require.resolve('process/browser'),
-			},
 			// This is only needed because of Rocket.Chat's icon font.
 			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
 		};
@@ -48,12 +40,13 @@ export default baseConfig({
 		}
 
 		config.plugins?.push(
-			// `process.env` is read at module scope by some of those Node-oriented dependencies, so the shim has to
-			// be injected rather than merely resolvable.
-			new webpack.ProvidePlugin({ process: require.resolve('process/browser') }),
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.ts')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
 			new webpack.NormalModuleReplacementPlugin(/rocketchat\.info$/, require.resolve('./mocks/rocketchat.info.ts')),
+			// The MIME database, which `app/utils/lib/mimeTypes` loads and every story that reaches the message
+			// composer therefore loads too. Its own dependencies are written for Node — see the mock for why that
+			// is replaced here rather than shimmed for the whole preview.
+			new webpack.NormalModuleReplacementPlugin(/^mime-type\/with-db$/, require.resolve('./mocks/mimeType.ts')),
 		);
 
 		return config;
