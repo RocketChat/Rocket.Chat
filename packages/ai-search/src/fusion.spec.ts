@@ -95,6 +95,29 @@ describe('AI Search fusion helpers', () => {
 			expect(top.rrfScore).toBeCloseTo(0.6 / (k + 1), 10);
 		});
 
+		it('matches the weighted sum and score bounds across every supported integer weight', () => {
+			for (let weight = 0; weight <= 100; weight++) {
+				const fused = fuseCandidatesWithWeightedRRF(semantic, keyword, weight, 10);
+				for (const result of fused) {
+					const semanticRank = semantic.findIndex(({ msgId }) => msgId === result.msgId) + 1;
+					const keywordRank = keyword.findIndex(({ msgId }) => msgId === result.msgId) + 1;
+					const expected =
+						(semanticRank ? weight / 100 / (60 + semanticRank) : 0) + (keywordRank ? (1 - weight / 100) / (60 + keywordRank) : 0);
+
+					expect(result.rrfScore).toBeCloseTo(expected, 14);
+					expect(result.rrfScore).toBeGreaterThan(0);
+					expect(result.rrfScore).toBeLessThanOrEqual(1 / 61);
+				}
+			}
+		});
+
+		it('breaks equal-score ties by semantic rank deterministically', () => {
+			const fused = fuseCandidatesWithWeightedRRF([candidate('a'), candidate('b')], [candidate('b'), candidate('a')], 50, 2);
+
+			expect(fused[0].rrfScore).toBe(fused[1].rrfScore);
+			expect(ids(fused)).toEqual(['a', 'b']);
+		});
+
 		it('degrades to the populated branch when the other retriever returns nothing', () => {
 			expect(ids(fuseCandidatesWithWeightedRRF(semantic, [], 50, 10))).toEqual(['s1', 's2', 'shared']);
 			expect(ids(fuseCandidatesWithWeightedRRF([], keyword, 50, 10))).toEqual(['shared', 'k1', 'k2']);
@@ -196,6 +219,15 @@ describe('AI Search fusion helpers', () => {
 			]);
 
 			expect(ids(applyTemporalRerank(candidates, { recencyWeight: 100, halfLifeDays: 30, now }))).toEqual(['relevant', 'fresh']);
+		});
+
+		it('can promote rank 60 over rank 1 at maximum recency weight', () => {
+			const candidates = ranked([
+				['old-first', 1 / 61, daysAgo(3650)],
+				['fresh-sixtieth', 1 / 120, daysAgo(0)],
+			]);
+
+			expect(ids(applyTemporalRerank(candidates, { recencyWeight: 100, halfLifeDays: 30, now }))).toEqual(['fresh-sixtieth', 'old-first']);
 		});
 
 		it('leaves candidates without a usable timestamp at their relevance score rather than penalising them', () => {

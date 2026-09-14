@@ -59,9 +59,11 @@ export type IntelligentSearchCandidate = {
 	rid?: string;
 	msgId?: string;
 	pipelineText: string;
-	/** Normalized cosine similarity. Unset for keyword candidates, which have no comparable score. */
+	/** Display similarity clamped to [0, 1]. Unset for keyword candidates. */
 	score?: number;
+	/** Cosine similarity in [-1, 1], retained at full precision for filtering. */
 	semanticSimilarity?: number;
+	/** Cosine distance in [0, 2]. */
 	semanticDistance?: number;
 	source?: IntelligentSearchCandidateSource;
 	ts?: string;

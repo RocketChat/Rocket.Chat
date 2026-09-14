@@ -117,7 +117,7 @@ export const getRecencyDecay = (ageInDays: number, halfLifeDays: number): number
 	return 2 ** (-Math.max(0, ageInDays) / halfLifeDays);
 };
 
-// The boost is bounded by `1 + recencyWeight`. Missing or unparseable timestamps keep the RRF score.
+// The multiplier is bounded by `1 + recencyWeight / 100`. Missing timestamps keep the RRF score.
 export const applyTemporalRerank = (
 	candidates: FusedIntelligentSearchCandidate[],
 	{ recencyWeight, halfLifeDays, now = new Date() }: TemporalRerankOptions,

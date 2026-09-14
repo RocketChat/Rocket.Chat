@@ -1,3 +1,4 @@
+import { filterSemanticCandidatesByMinimumSimilarity } from './fusion';
 import {
 	buildIntelligentSearchPipelineFilters,
 	getSemanticDistanceThreshold,
@@ -50,7 +51,7 @@ describe('AI Search intelligent search helpers', () => {
 					results: [
 						{ metadata: { room_id: 'r1', msg_id: 'm1', text: 'metadata text', score: 0.11 } },
 						{ external_identifier: 'r2:m2', content: 'content text', similarity: 0.49 },
-						{ id: 'm3', rid: 'r3', document: 'document text', distance: 12 },
+						{ id: 'm3', rid: 'r3', document: 'document text', distance: 0.12 },
 						{ metadata: { room_id: 'r4', msg_id: 'm4', score: null, similarity: '' }, text: 'no numeric score' },
 						{ text: 'missing ids' },
 					],
@@ -134,6 +135,38 @@ describe('AI Search intelligent search helpers', () => {
 					source: 'keyword',
 				},
 			]);
+		});
+	});
+
+	describe('semantic score mathematics', () => {
+		it.each([0, 0.1743, 0.3098, 0.3807, 1, 1.2, 2])('preserves cosine distance %s without percentage conversion', (distance) => {
+			const [result] = normalizeIntelligentSearchCandidates([{ id: 'm1', distance }], [], 1);
+
+			expect(result.semanticDistance).toBe(distance);
+			expect(result.semanticSimilarity).toBeCloseTo(1 - distance, 14);
+			expect(result.score).toBeCloseTo(Math.max(0, 1 - distance), 14);
+		});
+
+		it.each([-1, -0.2, 0, 0.69996, 0.7, 1])('preserves cosine similarity %s and its complementary distance', (similarity) => {
+			const [result] = normalizeIntelligentSearchCandidates([{ id: 'm1', similarity }], [], 1);
+
+			expect(result.semanticSimilarity).toBe(similarity);
+			expect(result.semanticDistance).toBeCloseTo(1 - similarity, 14);
+			expect(result.score).toBe(Math.max(0, similarity));
+		});
+
+		it('does not round a below-threshold candidate into eligibility', () => {
+			const candidates = normalizeIntelligentSearchCandidates(
+				[
+					{ id: 'below', distance: 0.30004 },
+					{ id: 'boundary', distance: 0.3 },
+					{ id: 'above', distance: 0.29996 },
+				],
+				[],
+				3,
+			);
+
+			expect(filterSemanticCandidatesByMinimumSimilarity(candidates, 70).map(({ msgId }) => msgId)).toEqual(['boundary', 'above']);
 		});
 	});
 

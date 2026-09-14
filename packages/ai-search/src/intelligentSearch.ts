@@ -56,14 +56,6 @@ export const normalizeSimilarityPercent = (value: unknown): number => {
 export const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number =>
 	Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
-// Pipeline contract, verified against a live pipeline: `score`/`distance` are cosine distances (lower is
-// better), `similarity` values are cosine similarities. Percentages are accepted for provider drift.
-const normalizePipelineScore = (value: number): number => {
-	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
-
-	return Math.min(1, Math.max(0, normalizedValue));
-};
-
 // The keyword retriever reuses `score` for a full-text rank where higher is better, so reading it as a
 // distance would invert it and fabricate a confident similarity.
 const extractPipelineSimilarityScores = (
@@ -77,8 +69,8 @@ const extractPipelineSimilarityScores = (
 
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
-		const semanticSimilarity = normalizePipelineScore(similarity);
-		const semanticDistance = Number((1 - semanticSimilarity).toFixed(4));
+		const semanticSimilarity = Math.min(1, Math.max(-1, similarity));
+		const semanticDistance = 1 - semanticSimilarity;
 
 		return {
 			semanticSimilarity,
@@ -88,10 +80,11 @@ const extractPipelineSimilarityScores = (
 
 	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
 	if (typeof distance === 'number') {
-		const semanticDistance = normalizePipelineScore(distance);
+		// Cosine distance spans [0, 2]; values above 1 indicate negative similarity.
+		const semanticDistance = Math.min(2, Math.max(0, distance));
 
 		return {
-			semanticSimilarity: Number((1 - semanticDistance).toFixed(4)),
+			semanticSimilarity: 1 - semanticDistance,
 			semanticDistance,
 		};
 	}
@@ -182,7 +175,7 @@ export const normalizeIntelligentSearchCandidates = (
 			pipelineText: firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '',
 			...(ts && { ts }),
 			...(typeof semanticSimilarity === 'number' && {
-				score: semanticSimilarity,
+				score: Math.max(0, semanticSimilarity),
 				semanticSimilarity,
 				semanticDistance,
 			}),
