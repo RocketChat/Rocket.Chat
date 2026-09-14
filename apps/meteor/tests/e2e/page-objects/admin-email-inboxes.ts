@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
 export class AdminEmailInboxes extends Admin {
 	constructor(page: Page) {
@@ -10,6 +10,10 @@ export class AdminEmailInboxes extends Admin {
 	get btnNewEmailInbox(): Locator {
 		return this.page.locator('role=button[name="New Email Inbox"]');
 	}
+
+	protected readonly route = AdminSectionsHref.emailInboxes;
+
+	protected readonly title = 'Email inboxes';
 
 	get inputName(): Locator {
 		return this.page.locator('input[name="name"]');

@@ -69,6 +69,17 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					}
 				});
 
+				// A window rebuild (jump to a message, jump to recent) re-enters that same cascade
+				// mid-session: messages reinsert and the pending programmatic scroll hasn't run, so an
+				// observer pass would page off a stale scrollTop of 0. Require fresh input after each
+				// one, and drop any trailing invocation already scheduled against the dead window.
+				const offRoomCleared = RoomHistoryManager.on('room-cleared', (clearedRid: string) => {
+					if (clearedRid === rid) {
+						userInteracted = false;
+						checkPositionAndGetMore.cancel();
+					}
+				});
+
 				const gatedCheck = () => {
 					// Surrounding-messages fetch (when navigating to ?msg=...) needs to fire once on
 					// the initial observer pass before the user has interacted.
@@ -117,6 +128,7 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 				element.addEventListener('scroll', handleScroll, { passive: true });
 
 				return () => {
+					offRoomCleared();
 					observer.disconnect();
 					mutationObserver.disconnect();
 					checkPositionAndGetMore.cancel();

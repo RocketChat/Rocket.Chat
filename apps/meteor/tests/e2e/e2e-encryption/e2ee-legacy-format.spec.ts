@@ -52,7 +52,7 @@ test.describe('E2EE Legacy Format', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		createE2EEChannel = new CreateE2EEChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async () => {

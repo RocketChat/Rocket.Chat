@@ -4,7 +4,7 @@ description: 'Setup NodeJS'
 inputs:
   node-version:
     required: false
-    description: 'Node version. If not provided, read from package.json engines.node'
+    description: 'Node version. If not provided, read from package.json volta.node'
   cache-modules:
     required: false
     description: 'Cache node_modules'
@@ -43,7 +43,7 @@ runs:
       run: |
         NODE_VERSION="${{ inputs.node-version }}"
         if [ -z "$NODE_VERSION" ]; then
-          NODE_VERSION=$(node -p "require('./package.json').engines.node")
+          NODE_VERSION=$(node -p "require('./package.json').volta.node")
         fi
         echo "NODE_VERSION: ${NODE_VERSION}"
         echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
@@ -56,13 +56,13 @@ runs:
         echo "DENO_VERSION=${DENO_VERSION}" >> $GITHUB_ENV
 
     # Turbo local cache: use rharkor/caching-for-turbo in workflows — not stored here to avoid huge redundant keys.
-    - name: Cache Deno (apps-engine)
+    - name: Cache Deno (apps)
       if: inputs.cache-modules
       id: cache-deno
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
-        path: packages/apps-engine/.deno-cache
-        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        path: packages/apps/.deno-cache
+        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps/deno-runtime/deno.lock') }}
         restore-keys: |
           deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-
 

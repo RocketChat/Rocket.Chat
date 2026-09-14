@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
 import { Navbar } from '../page-objects/fragments';
 import { OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
@@ -103,7 +104,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/');
+		await new HomeOmnichannel(page).goto();
 		await poNavbar.btnContactCenter.click();
 		await poContacts.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);

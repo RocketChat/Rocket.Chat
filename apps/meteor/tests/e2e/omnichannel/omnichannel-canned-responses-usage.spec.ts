@@ -90,9 +90,9 @@ test.describe('OC - Canned Responses Usage', () => {
 		]);
 	});
 
-	test('OC - Canned Responses Usage - Create response and use in chat', async ({ page }) => {
+	test('OC - Canned Responses Usage - Create response and use in chat', async () => {
 		await test.step('expect to start a visitor conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
@@ -120,9 +120,9 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 	});
 
-	test('OC - Canned Responses Usage - Use response with placeholder replacement', async ({ page }) => {
+	test('OC - Canned Responses Usage - Use response with placeholder replacement', async () => {
 		await test.step('expect to start a new visitor conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.fill('test_message_for_placeholder');
@@ -143,11 +143,11 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 	});
 
-	test('OC - Canned Responses Usage - Modify response before sending', async ({ page }) => {
+	test('OC - Canned Responses Usage - Modify response before sending', async () => {
 		const modifiedText = `Additionally, I'll be happy to help you with any specific questions.`;
 
 		await test.step('expect to start a visitor conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.fill('test_message_for_modification');
@@ -179,9 +179,9 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 	});
 
-	test('OC - Canned Responses Usage - Use multiple responses in sequence', async ({ page }) => {
+	test('OC - Canned Responses Usage - Use multiple responses in sequence', async () => {
 		await test.step('expect to start a visitor conversation', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.fill('test_message_for_sequence');

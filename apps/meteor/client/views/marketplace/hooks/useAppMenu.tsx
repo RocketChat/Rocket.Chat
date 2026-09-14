@@ -68,14 +68,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
-		| 'Update'
-		| 'Install'
-		| 'Subscribe'
-		| 'See_Pricing'
-		| 'Try_now'
-		| 'Buy'
-		| 'Request'
-		| 'Requested';
+		'Update' | 'Install' | 'Subscribe' | 'See_Pricing' | 'Try_now' | 'Buy' | 'Request' | 'Requested';
 	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
