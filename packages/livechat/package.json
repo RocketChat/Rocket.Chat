@@ -73,7 +73,6 @@
 		"@types/mini-css-extract-plugin": "~2.5.1",
 		"@types/react": "~19.2.18",
 		"@types/webpack-env": "~1.18.8",
-		"@types/whatwg-fetch": "~0.0.33",
 		"autoprefixer": "^10.5.4",
 		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
