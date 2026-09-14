@@ -43,8 +43,11 @@ const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) 
 		return null;
 	}
 
+	// `banner` is the page's header landmark, which the call window already has one of — and this notice is not a
+	// second one, it is something that became true. Declared here rather than changed in the shared component,
+	// whose other caller is a room announcement that really is one.
 	return (
-		<AnnouncementBanner className={notInteractive}>
+		<AnnouncementBanner role='status' className={notInteractive}>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
 				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: present.length })}</Box>
 				<Box display='flex' alignItems='center' flexShrink={0} style={{ gap: 4 }}>
