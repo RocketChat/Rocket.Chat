@@ -16,15 +16,25 @@ export const mediaCallHangupReasonList = [
 	'not-answered',
 	/** The server's expiration sweep ended a call that stopped progressing. */
 	'expired',
+	/** Timeout waiting for the local audio track */
 	'timeout-local-track',
+	/** Timeout waiting for the remote SDP */
 	'timeout-remote-sdp',
+	/** Timeout while generating the local SDP + waiting for ICE Gathering */
 	'timeout-local-sdp',
+	/** Timeout connecting to the negotiated session */
 	'timeout-activation',
+	/** Timeout waiting for server to acknowledge our acceptance */
+	'timeout-accepting',
 	/** The call state did not progress for too long. */
 	'timeout',
+	/** Hanging up because of an error during the signal processing */
 	'signaling-error',
+	/** Hanging up because of an error setting up the service connection */
 	'service-error',
+	/** Hanging up because of an error setting up the media connection */
 	'media-error',
+	/** Something wrong with the audio input track on the client */
 	'input-error',
 	/** An unidentified error. */
 	'error',
