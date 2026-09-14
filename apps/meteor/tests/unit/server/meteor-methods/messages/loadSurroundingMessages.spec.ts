@@ -37,6 +37,9 @@ p.noCallThru().load('../../../../../server/meteor-methods/messages/loadSurroundi
 	'../../lib/authorization/canAccessRoom': {
 		canAccessRoomIdAsync: canAccessRoomIdMock,
 	},
+	'../../lib/deprecationWarningLogger': {
+		methodDeprecationLogger: { method: sinon.stub() },
+	},
 	'../../lib/utils/lib/normalizeMessagesForUser': {
 		normalizeMessagesForUser: normalizeMessagesForUserMock,
 	},

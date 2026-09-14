@@ -39,7 +39,7 @@ test.describe('OC - Contact Center - Chats', () => {
 	test.beforeEach(async ({ page }) => {
 		poOmniChats = new OmnichannelContactCenterChats(page);
 
-		await page.goto('/omnichannel-directory/chats');
+		await poOmniChats.goto();
 	});
 
 	test.afterEach(async ({ page }) => {
@@ -62,7 +62,7 @@ test.describe('OC - Contact Center - Chats', () => {
 			const [chatA] = conversations.map((c) => c.data);
 			const [todayString] = new Date(chatA.room.ts).toISOString().split('T');
 			await poOmniChats.btnFilters.click();
-			await expect(page).toHaveURL('/omnichannel-directory/chats/filters');
+			await expect(page).toHaveURL('/omnichannel/current/chats/filters');
 			await poOmniChats.filters.inputFrom.fill(todayString);
 			await poOmniChats.filters.inputTo.fill(todayString);
 			await poOmniChats.filters.btnApply.click();

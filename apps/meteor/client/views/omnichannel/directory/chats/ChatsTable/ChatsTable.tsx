@@ -92,7 +92,11 @@ const ChatsTable = () => {
 				<>
 					<GenericTable aria-label={t('Omnichannel_Contact_Center_Chats')} fixed={false}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.rooms.map((room) => <ChatsTableRow key={room._id} {...room} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.rooms.map((room) => (
+								<ChatsTableRow key={room._id} {...room} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider
