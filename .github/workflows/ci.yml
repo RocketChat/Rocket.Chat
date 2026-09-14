@@ -811,6 +811,8 @@ jobs:
       type: api
       release: ee
       fips: true
+      # the fips images are built for amd64 only, see the build-gh-docker matrix
+      arch: amd64
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['8.0']"
@@ -833,6 +835,8 @@ jobs:
       type: api-livechat
       release: ee
       fips: true
+      # the fips images are built for amd64 only, see the build-gh-docker matrix
+      arch: amd64
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['8.0']"
@@ -855,6 +859,8 @@ jobs:
       type: ui
       release: ee
       fips: true
+      # the fips images are built for amd64 only, see the build-gh-docker matrix
+      arch: amd64
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
