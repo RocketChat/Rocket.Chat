@@ -2,7 +2,7 @@ import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.cha
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useSetModal, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -59,16 +59,19 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference, call } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
-	const [threadTmid, setThreadTmid] = useState<string | null>(null);
+	const setModal = useSetModal();
 
+	// Opened through the conference's own modal region, which `ConferenceViewport` mounts — so the thread is
+	// rendered inside this page's providers rather than at the app root, where the room it loads has none.
 	const handleOpenThread = useCallback(
 		(tmid: string) => {
 			if (!room.rid) {
 				return;
 			}
-			setThreadTmid(tmid);
+
+			setModal(<ConferenceThreadModal rid={room.rid} tmid={tmid} onClose={() => setModal(null)} />);
 		},
-		[room.rid],
+		[room.rid, setModal],
 	);
 
 	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : handleOpenThread });
@@ -262,8 +265,6 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 					)}
 				</CallPanel>
 			</Box>
-
-			{threadTmid && room.rid && <ConferenceThreadModal rid={room.rid} tmid={threadTmid} onClose={() => setThreadTmid(null)} />}
 		</Box>
 	);
 };
