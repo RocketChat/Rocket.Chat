@@ -9,8 +9,11 @@ import type {
 } from '@rocket.chat/media-signaling';
 
 import { mediaCallDirector } from './CallDirector';
+import { CtiCallProvider } from './CtiCallProvider';
 import { getDefaultSettings } from './getDefaultSettings';
+import { getMediaCallAppGateway } from './injection';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
+import type { CtiCallStateEvent, MediaCallDevice } from '../definition/IMediaCallAppGateway';
 import type {
 	IMediaCallServer,
 	IMediaCallServerSettings,
@@ -90,7 +93,7 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async requestCall(params: InternalCallParams): Promise<void> {
 		try {
-			const fullParams = await this.parseCallContacts(params);
+			const fullParams = params.requestedService === 'cti' ? await this.parseCtiCallContacts(params) : await this.parseCallContacts(params);
 
 			await this.createCall(fullParams);
 		} catch (error) {
@@ -122,12 +125,41 @@ export class MediaCallServer implements IMediaCallServer {
 	public async createCall(params: InternalCallParams): Promise<void> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
+		if (params.requestedService === 'cti') {
+			await CtiCallProvider.createCall(params);
+			return;
+		}
+
 		if (params.callee.type === 'sip') {
 			await this.session.createOutgoingCall(params);
 			return;
 		}
 
 		await InternalCallProvider.createCall(params);
+	}
+
+	/** Entry point for an app to report an inbound call arriving on a user's device (app -> host). */
+	public async createIncomingCtiCall(params: {
+		user: MediaCallContact;
+		from: MediaCallContact;
+		device?: string;
+		features?: CallFeature[];
+	}): Promise<void> {
+		await CtiCallProvider.createIncomingCall(params);
+	}
+
+	/** Entry point for an app to report a state/control change on a cti call it is handling (app -> host). */
+	public async reportCtiCallState(callId: string, event: CtiCallStateEvent): Promise<void> {
+		await CtiCallProvider.reportState(callId, event);
+	}
+
+	/** Lists the cti devices a user may place/receive calls on, as provided by the installed apps. */
+	public async getUserMediaDevices(uid: IUser['_id']): Promise<MediaCallDevice[]> {
+		const gateway = getMediaCallAppGateway();
+		if (!gateway) {
+			return [];
+		}
+		return gateway.getDevices(uid);
 	}
 
 	public receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
@@ -207,6 +239,39 @@ export class MediaCallServer implements IMediaCallServer {
 	 * Will throw if a call can't be routed or if one of the user lacks permission for it.
 	 * Blocked permissions do not affect the routing rules, meaning a call may be blocked even if it would have been allowed through a different route.
 	 * */
+	/**
+	 * Resolves contacts for a `cti` call. Unlike a webrtc/sip call, the callee is the opaque dial
+	 * target the app will route, so it is NOT resolved through SIP routing or required to be an
+	 * extension — it is kept as the app-backed (`sip`-typed) leg. Only the caller (a Rocket.Chat user)
+	 * is resolved and permission-checked.
+	 */
+	private async parseCtiCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
+		const requester = params.requestedBy || params.caller;
+		if (requester.type !== 'user') {
+			logger.warn('Invalid cti call requester');
+			throw new CallRejectedError('invalid-call-params');
+		}
+
+		if (!(await this.settings.permissionCheck(requester.id, 'external'))) {
+			logger.debug({ msg: 'User lacks permission for a cti call', uid: requester.id });
+			throw new CallRejectedError('forbidden');
+		}
+
+		const caller = await mediaCallDirector.cast.getContactForActor(params.caller, { requiredType: 'user' });
+		if (!caller) {
+			logger.debug('Failed to load cti caller contact information');
+			throw new CallRejectedError('invalid-call-params');
+		}
+
+		const callee: MediaCallContact = { ...params.callee, type: 'sip' };
+
+		return {
+			...params,
+			caller: { ...caller, contractId: params.caller.contractId },
+			callee,
+		};
+	}
+
 	private async parseCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
 		// On call transfers, do not mutate the caller
 		// On new calls, force the caller type to be 'user' (since the call is being created in rocket.chat first)

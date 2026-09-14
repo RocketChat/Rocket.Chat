@@ -115,6 +115,10 @@ export class UserActorSignalProcessor {
 				return this.processCallTransfer(signal.to);
 			case 'dtmf':
 				return this.processDTMF(signal.dtmf, signal.duration);
+			case 'mute':
+				return this.processMute(signal.muted);
+			case 'hold':
+				return this.processHold(signal.held);
 		}
 	}
 
@@ -275,6 +279,24 @@ export class UserActorSignalProcessor {
 		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
 
 		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
+	}
+
+	private async processMute(muted: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processMute', muted });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onMute(this.call._id, muted);
+	}
+
+	private async processHold(held: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processHold', held });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onHold(this.call._id, held);
 	}
 
 	protected async clientIsReachable(): Promise<void> {

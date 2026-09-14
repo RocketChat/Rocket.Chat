@@ -53,7 +53,12 @@ export type CallPreventionRecord = {
 };
 
 export interface IMediaCall extends IRocketChatRecord {
-	service: 'webrtc';
+	/**
+	 * How the call's media/control is handled:
+	 * - `webrtc`: handled by the Rocket.Chat client through a WebRTC connection (relayed to SIP when needed).
+	 * - `cti`: handled entirely by an external device/gateway through a Rocket.Chat app; the client is only a remote control.
+	 */
+	service: 'webrtc' | 'cti';
 	kind: 'direct';
 
 	state: MediaCallState;
@@ -99,4 +104,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	features: string[];
 
 	sipCallId?: string;
+
+	/** For `cti` calls: identifies which of the user's external endpoints/devices handles the call (opaque to Rocket.Chat, resolved by the app). */
+	device?: string;
 }
