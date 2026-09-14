@@ -1,10 +1,5 @@
 import { Contacts } from '@rocket.chat/models';
-import {
-	isContactsListProps,
-	validateBadRequestErrorResponse,
-	validateContactsListSuccessResponse,
-	validateUnauthorizedErrorResponse,
-} from '@rocket.chat/rest-typings';
+import { isContactsListProps, ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
 
@@ -18,7 +13,15 @@ API.v1.get(
 		query: isContactsListProps,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 1000 },
 		response: {
-			200: validateContactsListSuccessResponse,
+			200: ajv.compile<{ contacts: IContact[]; success: true }>({
+				type: 'object',
+				properties: {
+					contacts: { type: 'array' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['contacts', 'success'],
+				additionalProperties: false,
+			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},

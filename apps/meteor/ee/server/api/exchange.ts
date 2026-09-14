@@ -1,8 +1,6 @@
 import {
 	validateBadRequestErrorResponse,
-	validateExchangeSyncMyCalendarSuccessResponse,
-	validateExchangeSyncMyContactsSuccessResponse,
-	validateExchangeTestConnectionSuccessResponse,
+	ajv,
 	validateForbiddenErrorResponse,
 	validateInternalErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -39,7 +37,16 @@ API.v1.post(
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
 		response: {
-			200: validateExchangeTestConnectionSuccessResponse,
+			200: ajv.compile<{ provider: string; message: string; success: true }>({
+				type: 'object',
+				properties: {
+					provider: { type: 'string' },
+					message: { type: 'string' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['provider', 'message', 'success'],
+				additionalProperties: false,
+			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
@@ -83,7 +90,22 @@ API.v1.post(
 		// Every call is a full window fetch against the tenant, so this is deliberately tighter than a read
 		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
 		response: {
-			200: validateExchangeSyncMyCalendarSuccessResponse,
+			200: ajv.compile<{
+				upserted: number;
+				modified: number;
+				deleted: number;
+				success: true;
+			}>({
+				type: 'object',
+				properties: {
+					upserted: { type: 'integer' },
+					modified: { type: 'integer' },
+					deleted: { type: 'integer' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['upserted', 'modified', 'deleted', 'success'],
+				additionalProperties: false,
+			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			500: validateInternalErrorResponse,
@@ -118,7 +140,26 @@ API.v1.post(
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
 		response: {
-			200: validateExchangeSyncMyContactsSuccessResponse,
+			200: ajv.compile<{
+				folders: number;
+				upserted: number;
+				modified: number;
+				deleted: number;
+				pruned: number;
+				success: true;
+			}>({
+				type: 'object',
+				properties: {
+					folders: { type: 'integer' },
+					upserted: { type: 'integer' },
+					modified: { type: 'integer' },
+					deleted: { type: 'integer' },
+					pruned: { type: 'integer' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['folders', 'upserted', 'modified', 'deleted', 'pruned', 'success'],
+				additionalProperties: false,
+			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			500: validateInternalErrorResponse,
