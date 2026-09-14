@@ -15,7 +15,11 @@ type CallPanelProps = {
 	children: ReactNode;
 };
 
-const PANEL_WIDTH = 400;
+/**
+ * In rem, so the panel grows with the reader's font size instead of squeezing the same chat into a fixed box —
+ * the product sizes its own contextual bar the same way. 25rem is the 400px it was drawn at.
+ */
+const PANEL_WIDTH = '25rem';
 
 /**
  * Never wider than the window. `minWidth` is what makes the panel keep its width instead of being squeezed by
@@ -23,7 +27,7 @@ const PANEL_WIDTH = 400;
  * push the panel's own controls off the screen. The clamp leaves the split layout untouched, since it is only
  * used above the `md` breakpoint, which is wider than the panel.
  */
-const PANEL_INLINE_SIZE = `min(${PANEL_WIDTH}px, 100vw)`;
+const PANEL_INLINE_SIZE = `min(${PANEL_WIDTH}, 100vw)`;
 
 const CLOSE_MS = 200;
 
@@ -43,17 +47,18 @@ const CLOSE_MS = 200;
  */
 const sheetStyle = css`
 	/* A hair of the call left showing down both sides, for the same reason as the gap above: it reads as
-	   something laid over the call rather than as the window's new contents. */
+	   something laid over the call rather than as the window's new contents. In px on purpose — it is a hairline,
+	   and a hairline that grew with the font size would stop being one. */
 	inset-inline: 2px;
 	inset-block-end: 0;
 
 	/* A sheet doesn't touch the top: leaving the call visible above it is what says this is laid *over* the call
 	   rather than being a page of its own. Proportional, so a landscape phone doesn't spend a tenth of its height
 	   on the gap, and capped, so a tall window doesn't open a chasm. */
-	inset-block-start: clamp(16px, 6dvh, 48px);
+	inset-block-start: clamp(1rem, 6dvh, 3rem);
 
-	border-start-start-radius: 12px;
-	border-start-end-radius: 12px;
+	border-start-start-radius: 0.75rem;
+	border-start-end-radius: 0.75rem;
 
 	/* The product's own elevation-2 pair, scaled up and aimed upwards: a sheet is a much larger surface than the
 	   dropdown that shadow was drawn for, and what it has to lift away from is above it. It reads when there is
@@ -103,7 +108,7 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			borderBlockStyle='solid'
 			borderBlockColor='stroke-extra-light'
 			borderInlineStartWidth={sheet || !visible ? 0 : 'default'}
-			borderRadius={sheet ? undefined : '4px 0px 0px 4px'}
+			borderRadius={sheet ? undefined : '0.25rem 0 0 0.25rem'}
 			position={sheet ? 'fixed' : 'relative'}
 			// The one thing not taken from the contextual bar's defaults, which is `surface-room`. Beside a call the
 			// panel is chrome rather than a room, and the chat inside it paints its own room background anyway.
