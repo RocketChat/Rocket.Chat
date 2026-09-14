@@ -171,17 +171,15 @@ const commandsEndpoints = API.v1
 
 			const totalCount = commands.length;
 
-			const paginatedCommands = processQueryOptionsOnResult(commands, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-			});
-
 			return API.v1.success({
-				commands: paginatedCommands,
+				commands: processQueryOptionsOnResult(commands, {
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+				}),
 				appsLoaded: true as const,
 				offset,
-				count: paginatedCommands.length,
+				count: commands.length,
 				total: totalCount,
 			});
 		},
