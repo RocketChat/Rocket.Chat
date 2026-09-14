@@ -34,6 +34,7 @@ import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useEmbeddedConferenceCall } from './hooks/useEmbeddedConferenceCall';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
+import { useProviderPlugin } from './hooks/useProviderPlugin';
 import { useRinging } from '../../hooks/useRinging';
 import { isRefusal } from '../../lib/utils/isRefusal';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
@@ -265,6 +266,19 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// `hideUnreadStatus` is the reader saying they do not want to be told about this room, and the sidebar honours
 	// it for exactly this kind of mark, so the dot honours it too.
 	const hasUnseenActivity = !chatVisible && !unread && Boolean(subscription?.alert) && !subscription?.hideUnreadStatus;
+
+	// A provider page can carry a chat control of its own, and a plugin there can hand it to the panel this page
+	// owns — see `useProviderPlugin` for the protocol. Same badge as the top bar's toggle, since it is the same
+	// panel and the same unread behind both.
+	useProviderPlugin({
+		conferenceUrl: conference.url,
+		chatVisible,
+		hasUnread: unread > 0 || hasUnseenActivity,
+		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
+		// The same thing hanging up does for a provider that runs the call in here: report the departure and
+		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
+		onLeave: leaveNow,
+	});
 
 	// Who is actually in the call — the faces worth glancing at, and how many there are altogether.
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);

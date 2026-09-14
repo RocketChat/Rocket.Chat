@@ -756,6 +756,48 @@ Providers that don't declare it still work in the split view — the chat panel 
 
 The provider's URL is embedded in an iframe, so it must permit framing (no restrictive `X-Frame-Options` / `frame-ancestors`). Rocket.Chat's own CSP allows `frame-src *`. Note the public `meet.jit.si` server disconnects embedded calls after 5 minutes and asks you to use a self-hosted instance or JaaS.
 
+### Talking to the provider's page
+
+A provider reached by URL renders in this window's iframe, and its page can carry controls of its own — a chat
+button in its in-meeting toolbar, a Leave button. Those controls know nothing about the panels beside the frame
+unless something tells them. `useProviderPlugin` is the protocol that does: the provider's chat button becomes a
+remote control for the chat panel this window owns, and this window hears about a call the user left from inside
+the frame.
+
+The namespace is Rocket.Chat's, not any provider's — `{ action: 'rocketchat:videoconf/<name>', ...payload }` —
+so any provider plugin that speaks it gets the same behaviour. Pexip's
+[External Chat plugin](https://github.com/RocketChat/Pexip.External.Chat) is the first implementation: its
+branding hides Pexip's own chat button and add-participant menu, on the understanding that Rocket.Chat supplies
+both. A Jitsi plugin sending the same actions needs nothing new on this side.
+
+| Direction | Action | Payload | What it means here |
+|---|---|---|---|
+| plugin → window | `ready` | — | The control rendered, and knows nothing. Answered with the panel's state and its unread — the one message that *must* be answered |
+| plugin → window | `toggle-chat` | `{ active }` | The control was used; the chat panel opens or closes |
+| plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
+| plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
+| window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
+| window → plugin | `chat-unread` | `{ unread }` | The same unread that badges the top bar's chat toggle |
+
+Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
+
+The plugin may run in a frame of its own inside the provider's page — Pexip's does — so this window answers
+`event.source` rather than the iframe it rendered: a message posted to the provider's own window would never
+reach a plugin nested inside it. Nothing can be said until the plugin says `ready`.
+
+Messages are only acted on when they carry the provider URL's origin, or `null` for a sandboxed plugin frame. A
+provider that runs the call inside this page has no iframe and therefore no origin to check against, so nothing
+is trusted there at all. Every other provider is unaffected: one without a plugin never says `ready`, and the
+bridge stays silent.
+
+Two conditions are the deployment's rather than the code's. The provider must allow framing by the workspace
+origin, and this window has to be the top window if the plugin posts to `window.top`, as Pexip's does — a
+Rocket.Chat that is itself embedded in another page would never see those messages.
+
+Pexip's plugin also exposes `dial-out`, which would let this window dial a phone or SIP destination into the
+call. It is deliberately not part of the protocol above: nothing here can send it, because the participants
+modal takes usernames only.
+
 ## Settings
 
 | Setting | Notes |
