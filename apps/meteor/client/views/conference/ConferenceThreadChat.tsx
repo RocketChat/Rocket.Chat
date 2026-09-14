@@ -39,7 +39,6 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 			case 'always':
 				return true;
 			case 'never':
-				return false;
 			default:
 				return false;
 		}
