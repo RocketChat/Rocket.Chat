@@ -1,3 +1,4 @@
+export type * from './IAppCallHistoryConverter';
 export type * from './IAppContactsConverter';
 export type * from './IAppConvertersMap';
 export type * from './IAppDepartmentsConverter';

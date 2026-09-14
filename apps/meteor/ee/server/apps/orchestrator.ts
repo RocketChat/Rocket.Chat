@@ -31,6 +31,7 @@ import {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
+	AppCallHistoryConverter,
 	AppRolesConverter,
 	AppContactsConverter,
 } from '../../../app/apps/server/converters';
@@ -115,6 +116,7 @@ export class AppServerOrchestrator implements IAppServerOrchestrator {
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
 		this._converters.set('threads', new AppThreadsConverter(this));
 		this._converters.set('roles', new AppRolesConverter());
+		this._converters.set('callHistory', new AppCallHistoryConverter());
 
 		this._bridges = new RealAppBridges(this);
 

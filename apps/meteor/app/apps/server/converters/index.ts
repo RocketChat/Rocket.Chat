@@ -1,3 +1,4 @@
+import { AppCallHistoryConverter } from './callHistory';
 import { AppContactsConverter } from './contacts';
 import { AppDepartmentsConverter } from './departments';
 import { AppMessagesConverter } from './messages';
@@ -10,6 +11,7 @@ import { AppVideoConferencesConverter } from './videoConferences';
 import { AppVisitorsConverter } from './visitors';
 
 export {
+	AppCallHistoryConverter,
 	AppContactsConverter,
 	AppMessagesConverter,
 	AppRoomsConverter,
