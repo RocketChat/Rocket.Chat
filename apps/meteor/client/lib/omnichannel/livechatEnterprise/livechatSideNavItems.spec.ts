@@ -96,11 +96,6 @@ describe('livechatEnterpriseSideNavItems', () => {
 	});
 
 	it('should survive repeated register/unregister cycles', () => {
-		// The startup wiring (startup/livechatEnterprise.ts) calls register on
-		// the livechat-enterprise feature toggle up and unregister on down, so a
-		// logout/login transition exercises one full down/up cycle. Directly
-		// asserting those cycles here keeps the behavior covered without an E2E
-		// test; the feature-toggle side itself stays thin.
 		registerLivechatEnterpriseSidebarItems();
 		expect(registerOmnichannelSidebarItem).toHaveBeenCalledTimes(7);
 
