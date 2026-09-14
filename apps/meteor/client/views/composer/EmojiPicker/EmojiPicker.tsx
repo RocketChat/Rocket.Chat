@@ -162,9 +162,12 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const handleScroll = (range: ListRange) => {
 		const { startIndex , endIndex } = range;
 
-        if ( endIndex >= emojiListByCategory.length - 1) {
 			const lastCategory = categoriesIndexes[categoriesIndexes.length - 1];
-			if (lastCategory) {
+			
+			if ( endIndex > emojiListByCategory.length - 1 && 
+				lastCategory && 
+				startIndex >= lastCategory.index
+			) {
 				setCurrentCategory(lastCategory.key);
 				return;
 			}
