@@ -3,6 +3,7 @@ import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { createRecordingSender } from '../../tests/helpers/parityHarness';
+import { CallHistoryRead } from '../CallHistoryRead';
 import { CloudWorkspaceRead } from '../CloudWorkspaceRead';
 import { ContactRead } from '../ContactRead';
 import { LivechatRead } from '../LivechatRead';
@@ -123,6 +124,60 @@ describe('Reader family (base-runtime)', () => {
 			const b = setup();
 			await new UserRead(b.senderFn).getAppUser('another-app');
 			assert.deepStrictEqual(b.rec.emitted()[0], { method: 'bridges:getUserBridge:doGetAppUser', params: ['another-app'] });
+		});
+	});
+
+	describe('CallHistoryRead', () => {
+		it('getById forwards to getCallHistoryBridge:doGetById with the APP_ID sentinel', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getCallHistoryBridge:doGetById': { item: { id: 'h1' } } });
+			const result = await new CallHistoryRead(senderFn).getById('h1');
+
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getCallHistoryBridge:doGetById', params: ['h1', 'APP_ID'] }]);
+			assert.deepStrictEqual(result, { item: { id: 'h1' } });
+		});
+
+		it('getById short-circuits to undefined for an empty id (no bridge call)', async () => {
+			const { rec, senderFn } = setup();
+			assert.strictEqual(await new CallHistoryRead(senderFn).getById(''), undefined);
+			assert.strictEqual(rec.emitted().length, 0);
+		});
+
+		// The host serializes a bridge's `undefined` as `null`, so the accessor has to map it back
+		// for its declared `| undefined` to hold.
+		it('getById normalizes a null result to undefined', async () => {
+			const { senderFn } = setup({ 'bridges:getCallHistoryBridge:doGetById': null });
+
+			assert.strictEqual(await new CallHistoryRead(senderFn).getById('missing'), undefined);
+		});
+
+		it('getByCallId short-circuits to an empty array for an empty id (no bridge call)', async () => {
+			const { rec, senderFn } = setup();
+			assert.deepStrictEqual(await new CallHistoryRead(senderFn).getByCallId(''), []);
+			assert.strictEqual(rec.emitted().length, 0);
+		});
+
+		it('find forwards the query object and defaults it to empty', async () => {
+			const page = { entries: [], total: 0, count: 0, offset: 0 };
+
+			const withQuery = setup({ 'bridges:getCallHistoryBridge:doFind': page });
+			const from = new Date('2026-01-01T00:00:00.000Z');
+			await new CallHistoryRead(withQuery.senderFn).find({ from, direction: 'inbound' });
+			assert.deepStrictEqual(withQuery.rec.emitted(), [
+				{ method: 'bridges:getCallHistoryBridge:doFind', params: [{ from, direction: 'inbound' }, 'APP_ID'] },
+			]);
+
+			const noQuery = setup({ 'bridges:getCallHistoryBridge:doFind': page });
+			await new CallHistoryRead(noQuery.senderFn).find();
+			assert.deepStrictEqual(noQuery.rec.emitted(), [{ method: 'bridges:getCallHistoryBridge:doFind', params: [{}, 'APP_ID'] }]);
+		});
+
+		// The bridge answers a missing permission with `null`, which msgpack hands back as-is.
+		// Callers read `.entries` unguarded, so the accessor has to absorb it.
+		it('find returns an empty page when the bridge denies the call', async () => {
+			const { senderFn } = setup({ 'bridges:getCallHistoryBridge:doFind': null });
+			const result = await new CallHistoryRead(senderFn).find();
+
+			assert.deepStrictEqual(result, { entries: [], total: 0, count: 0, offset: 0 });
 		});
 	});
 
