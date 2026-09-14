@@ -1,5 +1,5 @@
 import { Box, PaletteStyleTag } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-client';
+import { ModalProviderWithRegion, useThemeMode } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import { CONFERENCE_THEMED_CLASS } from './panelStyles';
@@ -13,6 +13,11 @@ import { CONFERENCE_THEMED_CLASS } from './panelStyles';
  * video tile — inherits by landing in the same document. `CONFERENCE_THEMED_CLASS` hands the reader's
  * preference back to the subtrees that ask for it, so a chat beside the call is read in the theme its room is
  * read in everywhere else.
+ *
+ * And it carries the conference's own modal region. `useSetModal` renders into the nearest region, and the
+ * app's is mounted at the app root — outside this tree, where a modal of ours would be cut off from the
+ * providers it was written under. A region here keeps a modal inside the conference's React tree while the DOM
+ * still goes through the modal portal, the same arrangement the voip popout window uses.
  */
 const ConferenceViewport = ({ children }: { children: ReactNode }) => {
 	const theme = useThemeMode();
@@ -21,7 +26,7 @@ const ConferenceViewport = ({ children }: { children: ReactNode }) => {
 		// `100dvh` so a mobile browser's collapsing URL bar doesn't leave the call clipped or scrollable.
 		<Box backgroundColor='surface-tint' height='100dvh' width='100%' display='flex' flexDirection='column' overflow='hidden'>
 			<PaletteStyleTag theme={theme} selector={`.${CONFERENCE_THEMED_CLASS}`} tagId={`conference-themed-palette-${theme}`} />
-			{children}
+			<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
 		</Box>
 	);
 };
