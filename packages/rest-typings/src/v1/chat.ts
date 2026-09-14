@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IMessageSearchResult,
+	IRoom,
+	MessageAttachment,
+	IReadReceiptWithUser,
+	MessageUrl,
+	IThreadMainMessage,
+} from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -1001,8 +1009,10 @@ export type ChatEndpoints = {
 		GET: (params: ChatIgnoreUser) => void;
 	};
 	'/v1/chat.search': {
+		// Full-text search results include a MongoDB `$meta: 'textScore'` relevance score, so the
+		// contract exposes IMessageSearchResult (IMessage + optional `score`), not bare IMessage. See #42086.
 		GET: (params: ChatSearch) => {
-			messages: IMessage[];
+			messages: IMessageSearchResult[];
 		};
 	};
 	'/v1/chat.update': {

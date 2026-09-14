@@ -10,8 +10,10 @@
  * declared. When typia moves to CLOSED schemas, the server's own responses would start failing.
  *
  * This spec locks in the message-cluster reconciliation WITHOUT a running server or Mongo:
- * it takes the typia-generated schemas, forces them CLOSED, and asserts that the realistic
- * wire-format payloads the chat.* endpoints return validate with no undeclared fields.
+ * it takes the typia-generated schemas, forces their TOP-LEVEL object closed (where all the
+ * reconciled fields live), and asserts that the realistic wire-format payloads the chat.*
+ * endpoints return validate with no undeclared ROOT fields. Nested/$ref subschemas are left as
+ * generated — typia will close those itself once it ships closed schemas.
  *
  * Fixes covered (all green):
  *   - editedAt / editedBy: added to the base IMessage type.
@@ -88,18 +90,22 @@ describe('message response schema drift (#42086)', () => {
 		expect(validate.errors ?? []).toEqual([]);
 	});
 
-	it('an edited message has no fields undeclared by IMessage (editedAt/editedBy added to base)', () => {
+	it('an edited message validates fully against a closed IMessage (editedAt/editedBy added to base)', () => {
 		const validate = closedValidator('IMessage');
 		const edited = { ...baseMessage, editedAt: '2026-01-02T00:00:00.000Z', editedBy: { _id: 'user-2', username: 'bob' } };
-		validate(coerceDatesToStrings(edited));
-		expect(leakedFields(validate)).toEqual([]);
+		const ok = validate(coerceDatesToStrings(edited));
+		// Assert the FULL error list (not just the root additionalProperties slice) so a missing or
+		// mistyped field — e.g. a malformed editedBy — also fails the guard instead of passing silently.
+		expect(validate.errors ?? []).toEqual([]);
+		expect(ok).toBe(true);
 	});
 
-	it('a search hit with a relevance score validates against IMessageSearchResult (survives schema closing)', () => {
+	it('a search hit with a relevance score validates fully against a closed IMessageSearchResult (survives schema closing)', () => {
 		const validate = closedValidator('IMessageSearchResult');
 		const hit = { ...baseMessage, score: 3.14 };
-		validate(coerceDatesToStrings(hit));
-		expect(leakedFields(validate)).toEqual([]);
+		const ok = validate(coerceDatesToStrings(hit));
+		expect(validate.errors ?? []).toEqual([]);
+		expect(ok).toBe(true);
 	});
 
 	it('parseUrls is not a declared IMessage field, so it must be stripped before persist (sendMessage)', () => {
