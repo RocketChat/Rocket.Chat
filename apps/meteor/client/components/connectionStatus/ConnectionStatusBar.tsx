@@ -71,7 +71,7 @@ function ConnectionStatusBar() {
 			paddingBlock={4}
 			paddingInline={12}
 			width='100%'
-			borderBlockEndWidth={2}
+			borderBlockEndWidth='medium'
 			role='alert'
 			fontScale='p2'
 		>
