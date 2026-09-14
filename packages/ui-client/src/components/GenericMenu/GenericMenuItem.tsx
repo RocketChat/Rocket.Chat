@@ -14,6 +14,15 @@ export type GenericMenuItemProps = {
 	gap?: boolean;
 	tooltip?: string;
 	variant?: string;
+	/**
+	 * What this item *says*, for an item whose `content` is rendered rather than plain text.
+	 *
+	 * The collection underneath needs a string to match typeahead against and to announce, and it cannot read one
+	 * out of arbitrary JSX — without it, it warns per item ("unsupported by type to select for accessibility") and
+	 * the item is unreachable by typing its name. The call's menus are full of those: a device row with a level
+	 * meter beside it, a raised hand with an avatar.
+	 */
+	textValue?: string;
 };
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
