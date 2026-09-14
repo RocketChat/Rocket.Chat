@@ -8,6 +8,7 @@ import { useEffect, useMemo } from 'react';
 import type { CallPreferences } from './useCallPreferences';
 import { departureFor } from './useLeaveConferenceOnClose';
 import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
+import type { PersistentChatMode } from '../../../../lib/videoConference/constants';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
@@ -65,7 +66,7 @@ export const useConferenceEmbedded = (callId: string) => {
 
 	// The fallback is only reached where the setting isn't registered, which is a workspace without the call
 	// window — and there the server answers `main_room` too. Once the window is on, the registered value wins.
-	const chatMode = useSetting('VideoConf_Persistent_Chat_Mode', 'main_room') as 'thread' | 'main_room';
+	const chatMode = useSetting<PersistentChatMode>('VideoConf_Persistent_Chat_Mode', 'main_room');
 
 	const {
 		data: info,

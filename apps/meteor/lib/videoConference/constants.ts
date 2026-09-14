@@ -12,6 +12,15 @@ export const availabilityErrors = {
  * Shared with the server, which slices the joinable payload to it: sending more would be sending a roster nobody
  * draws. Two is what fits beside a call's name in a sidebar row without pushing it out — the rest are a count.
  */
+/**
+ * Where a call's persistent chat lives. Written down once because both halves read the same setting and have to
+ * agree on what it can say — the server through `getPersistentChatMode`, the call window through
+ * `useConferenceEmbedded`.
+ */
+export const PERSISTENT_CHAT_MODES = ['thread', 'main_room'] as const;
+
+export type PersistentChatMode = (typeof PERSISTENT_CHAT_MODES)[number];
+
 export const CALL_FACES_SHOWN = 2;
 
 /**
