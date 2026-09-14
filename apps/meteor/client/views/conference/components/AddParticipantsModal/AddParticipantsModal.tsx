@@ -1,3 +1,4 @@
+import { isDirectMessageRoom, isPrivateRoom } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -31,31 +32,34 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	// Present only for participants who can read the chat: a member added from outside the room has no room
 	// here, and must still be able to add people.
 	const room = Rooms.use((state) => state.get(rid));
-	const isPrivate = room?.t === 'p';
-	const isDirect = room?.t === 'd';
 
 	const addParticipants = useEndpoint('POST', '/v1/video-conference.add-participants');
 
 	// Members of the room are left out of the options: they can already join, so adding them would be a no-op.
 	// Everyone else is offerable — that is the point, since membership doesn't require room access.
 	// DMs expose their members on the room doc; other room types come from the members endpoint.
-	const getMembers = useEndpoint('GET', isPrivate ? '/v1/groups.members' : '/v1/channels.members');
+	const getMembers = useEndpoint('GET', room && isPrivateRoom(room) ? '/v1/groups.members' : '/v1/channels.members');
 	// 100 is the members endpoints' own page size, and this asks for one page rather than paging the whole room.
 	// So in a room with more members than that, some of them are still offered as options. That is a redundant
 	// option rather than a wrong outcome: the server skips anyone already associated with the call, and the toast
 	// below says as much. Paging every member of a large room to tidy up a picker isn't worth the requests.
 	const membersQuery = useQuery({
-		enabled: !!room && !isDirect,
+		enabled: !!room && !isDirectMessageRoom(room),
 		queryKey: ['conference', 'add-participants', 'members', rid, room?.t],
 		queryFn: () => getMembers({ roomId: rid, count: 100 }),
 	});
 
 	const memberUsernames = useMemo(() => {
-		if (isDirect) {
-			return room?.usernames ?? [];
+		// Asked of the room rather than carried in a flag: `usernames` is optional on a room and required on a
+		// direct one, so the narrowing is what says this list exists at all.
+		if (room && isDirectMessageRoom(room)) {
+			return room.usernames;
 		}
-		return (membersQuery.data?.members ?? []).map((member) => member.username).filter((username): username is string => !!username);
-	}, [isDirect, room?.usernames, membersQuery.data]);
+
+		return (membersQuery.data?.members ?? [])
+			.map((member) => member.username)
+			.filter((username): username is string => typeof username === 'string');
+	}, [room, membersQuery.data]);
 
 	// Adding makes them members of the *conference*, which is what lets them join the call — it deliberately
 	// puts them in no room. Whether they can read the chat is surfaced separately, once it matters, rather
