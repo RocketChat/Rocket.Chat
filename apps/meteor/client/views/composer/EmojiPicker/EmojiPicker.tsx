@@ -163,7 +163,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		const { startIndex , endIndex } = range;
 
 			const lastCategory = categoriesIndexes[categoriesIndexes.length - 1];
-			
+
 			if ( endIndex > emojiListByCategory.length - 1 && 
 				lastCategory && 
 				startIndex >= lastCategory.index
@@ -171,7 +171,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 				setCurrentCategory(lastCategory.key);
 				return;
 			}
-		}
+		
 		const category = categoriesIndexes.find(
 			(category, index) => category.index <= startIndex + 1 && (categoriesIndexes[index + 1]?.index ?? Infinity)>= startIndex,
 		);
