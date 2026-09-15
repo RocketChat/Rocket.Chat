@@ -43,16 +43,14 @@ export const WithOverflow: Story = {
 	args: { people, total: 12 },
 };
 
-/**
- * One person. A blank circle keeps its place, so a single face doesn't read as a lone dot against the text.
- */
+/** One person, which is a real state a call can be in — and now what it looks like. */
 export const SinglePerson: Story = {
 	args: { people: [people[0]], total: 1 },
 };
 
 /** The larger size, for a full screen rather than a sidebar row. */
 export const LargerAvatars: Story = {
-	args: { people, total: 7, size: 'x24' },
+	args: { people, total: 7, size: 'large' },
 };
 
 /**
