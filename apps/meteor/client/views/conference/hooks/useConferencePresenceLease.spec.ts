@@ -8,8 +8,31 @@ const renew = jest.fn(() => null);
 
 const wrapper = () => mockAppRoot().withEndpoint('POST', '/v1/video-conference.heartbeat', renew).build();
 
+/**
+ * The throttle reads a monotonic clock, so the test drives one. Jest's fake timers move `Date.now()`, and the
+ * case worth covering here is precisely the one where time passes *without* the timers firing — a hidden window
+ * whose interval the browser has throttled.
+ */
+let elapsed = 0;
+
+const pass = (ms: number) => {
+	elapsed += ms;
+};
+
+/** In periods, so the clock the hook reads is at the firing time when each renewal is due, not past it. */
+const runFor = (ms: number) => {
+	for (let remaining = ms; remaining > 0; remaining -= PRESENCE_HEARTBEAT_MS) {
+		const step = Math.min(remaining, PRESENCE_HEARTBEAT_MS);
+
+		pass(step);
+		jest.advanceTimersByTime(step);
+	}
+};
+
 beforeEach(() => {
 	jest.useFakeTimers();
+	elapsed = 0;
+	jest.spyOn(performance, 'now').mockImplementation(() => elapsed);
 	renew.mockClear();
 });
 
@@ -34,7 +57,7 @@ it('renews the lease straight away', () => {
 it('keeps renewing while the window is in the call', () => {
 	renderHook(() => useConferencePresenceLease('call-1', true), { wrapper: wrapper() });
 
-	act(() => void jest.advanceTimersByTime(PRESENCE_HEARTBEAT_MS * 2));
+	act(() => runFor(PRESENCE_HEARTBEAT_MS * 2));
 
 	expect(renew).toHaveBeenCalledTimes(3);
 });
@@ -45,7 +68,7 @@ it('stops renewing once the window is no longer in the call', () => {
 	const { unmount } = renderHook(() => useConferencePresenceLease('call-1', true), { wrapper: wrapper() });
 
 	unmount();
-	act(() => void jest.advanceTimersByTime(PRESENCE_HEARTBEAT_MS * 3));
+	act(() => runFor(PRESENCE_HEARTBEAT_MS * 3));
 
 	expect(renew).toHaveBeenCalledTimes(1);
 });
@@ -55,7 +78,7 @@ it('stops renewing once the window is no longer in the call', () => {
 it('says nothing until the window has joined', () => {
 	renderHook(() => useConferencePresenceLease('call-1', false), { wrapper: wrapper() });
 
-	act(() => void jest.advanceTimersByTime(PRESENCE_HEARTBEAT_MS * 3));
+	act(() => runFor(PRESENCE_HEARTBEAT_MS * 3));
 
 	expect(renew).not.toHaveBeenCalled();
 });
@@ -69,7 +92,7 @@ it('renews when the window is brought back to the front after its timers were he
 	expect(renew).toHaveBeenCalledTimes(1);
 
 	// Longer than a period, with no timer having fired — which is what a throttled hidden window looks like.
-	act(() => void jest.setSystemTime(Date.now() + PRESENCE_HEARTBEAT_MS));
+	act(() => pass(PRESENCE_HEARTBEAT_MS));
 
 	act(() => show('visible'));
 	expect(renew).toHaveBeenCalledTimes(2);

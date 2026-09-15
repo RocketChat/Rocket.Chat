@@ -28,11 +28,14 @@ export const useConferencePresenceLease = (callId: string, active: boolean) => {
 		// Either the timer or coming back to the window can ask for a renewal, but only one goes out per period:
 		// both were asking, so switching tabs a few times sent a burst of heartbeats for a lease that was already
 		// current. What matters is that the gap between renewals never grows, not that every prompt is answered.
-		let lastRenewedAt = 0;
+		// `performance.now()` and not `Date.now()`: the wall clock can go backwards — an NTP correction, a user
+		// setting it — and one that did would make every gap negative, so nothing would renew until real time
+		// caught up and the server's lease had long expired. This one only ever moves forward.
+		let lastRenewedAt: number | undefined;
 		const renewNow = () => {
-			const now = Date.now();
+			const now = performance.now();
 
-			if (now - lastRenewedAt < PRESENCE_HEARTBEAT_MS) {
+			if (lastRenewedAt !== undefined && now - lastRenewedAt < PRESENCE_HEARTBEAT_MS) {
 				return;
 			}
 
