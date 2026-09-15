@@ -29,22 +29,22 @@ export const useConferenceSubscription = (rid: string | undefined): void => {
 
 	// Keyed by the endpoint and its parameter, from the shared file: this is the same request `useStartConference`
 	// makes, and two keys for one endpoint meant each of them missing the other's cache.
-	useQuery({
+	const { data } = useQuery({
 		queryKey: subscriptionsQueryKeys.subscription(rid as string),
-		queryFn: async () => {
-			const { subscription } = await getSubscription({ roomId: rid as string });
-
-			// Into the store as it arrives, rather than in an effect watching the result. The effect ran a render
-			// later and re-ran whenever the query handed back the same object under a new identity.
-			if (subscription) {
-				SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscription));
-			}
-
-			return subscription ?? null;
-		},
+		queryFn: async () => (await getSubscription({ roomId: rid as string })).subscription ?? null,
 		enabled: !!rid && !!uid,
 		retry: false,
 	});
+
+	// Watching the result rather than hydrating inside the query function, which was the tidier place right up
+	// until the key became a shared one: a window that arrives with the subscription already cached — from the
+	// start screen, which asks for the same thing — never runs the function, and the store it feeds is what the
+	// closed chat's unread badge reads. `upsertSubscription` is idempotent, so a repeat costs nothing.
+	useEffect(() => {
+		if (data) {
+			SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(data));
+		}
+	}, [data]);
 
 	useEffect(() => {
 		if (!uid || !rid) {

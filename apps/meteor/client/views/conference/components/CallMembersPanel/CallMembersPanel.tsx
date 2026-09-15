@@ -2,7 +2,7 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { hasConferenceChatAccess } from '../../../../../lib/videoConference/chatAccess';
@@ -31,12 +31,15 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 		[members],
 	);
 
-	const {
-		mutate: ringMember,
-		isPending: ringing,
-		variables: memberBeingRung,
-	} = useMutation({
+	// Who has been rung and not yet answered for — a set rather than the mutation's own `variables`, which holds
+	// only the most recent call: ringing a second member while the first request was still out put that one back
+	// in reach, which is the double ring this was added to prevent.
+	const [ringingMembers, setRingingMembers] = useState<string[]>([]);
+
+	const { mutate: ringMember } = useMutation({
 		mutationFn: (memberId: string) => ring({ callId, userId: memberId }),
+		onMutate: (memberId) => setRingingMembers((current) => [...current, memberId]),
+		onSettled: (_data, _error, memberId) => setRingingMembers((current) => current.filter((id) => id !== memberId)),
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
@@ -47,7 +50,7 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 			hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
 			// The row stops offering to ring once the member is ringing, but that is the server's answer coming
 			// back — until it does, this is what says the ask is already on its way.
-			ringing={ringing && memberBeingRung === member._id}
+			ringing={ringingMembers.includes(member._id)}
 			onRing={ringMember}
 		/>
 	);
