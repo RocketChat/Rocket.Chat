@@ -77,15 +77,22 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
 	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>();
-	const togglePanel = useCallback((panel: ConferencePanel) => {
-		setActivePanel((current) => (current === panel ? undefined : panel));
+	const togglePanel = useCallback(
+		(panel: ConferencePanel) => {
+			// A thread belongs to the chat it was opened from, and that panel is where it is shown — so any click
+			// that leaves the chat closed takes the thread with it, rather than leaving one waiting to reappear.
+			// Asked as "does the chat survive this click", not "was this click about the chat": switching straight
+			// to the members panel closes the chat just as surely as clicking the chat button again does.
+			const chatStaysOpen = panel === 'chat' && activePanel !== 'chat';
 
-		// A thread belongs to the chat it was opened from, and the panel is where it is shown — closing the panel
-		// takes the thread with it rather than leaving one waiting to reappear when the panel is opened again.
-		if (panel === 'chat') {
-			setOpenThread(undefined);
-		}
-	}, []);
+			setActivePanel((current) => (current === panel ? undefined : panel));
+
+			if (!chatStaysOpen) {
+				setOpenThread(undefined);
+			}
+		},
+		[activePanel],
+	);
 	const chatVisible = activePanel === 'chat';
 
 	const breakpoints = useBreakpoints();
