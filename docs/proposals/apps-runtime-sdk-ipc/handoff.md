@@ -1,9 +1,17 @@
 # Handoff — Runtime SDK / IPC protocol grilling
 
-Working notes from a design interrogation of [`README.md`](./README.md). Captures **verified facts**
-(several of which contradict the README), **decisions locked**, and **branches still open**.
+Working notes from a design interrogation of an earlier draft of [`README.md`](./README.md).
+Captures **verified facts** (several of which contradicted that draft), **decisions locked**, and
+**branches still open**.
 
-Status: README **not yet rewritten**. Decisions below supersede it where they conflict.
+**Status: historical.** The decisions below were carried into
+[ADR 0005](../../adr/0005-apps-subprocess-protocol.md) and the README was rewritten as the delivery
+plan. Read those two first; this file is kept for the reasoning behind a decision, not for its
+current wording. Where the two disagree, the ADR wins.
+
+Two entries have since been overtaken by the `jsonrpc-lite` replacement
+([ADR 0004](../../adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md)) and are marked below:
+§1.2 and D7.
 
 ---
 
@@ -45,7 +53,13 @@ Related wart: `base-runtime/src/lib/secureFields.ts` imports `@rocket.chat/apps/
 — a **compiled-CJS import from inside the Deno sandbox**, working only via `deno.jsonc`'s
 `unstable: ["detect-cjs"]`, and exactly what `deno-runtime/main.ts`'s comment says not to do.
 
-### 1.2 `jsonrpc-lite` has a real per-request cost
+### 1.2 `jsonrpc-lite` has a real per-request cost — ✅ acted on
+
+> **Overtaken.** The cost this section predicted was measured and the library removed. ADR 0004 has
+> the numbers: build 3,200x, receive 12.1x, round-trip 11.0x, with the throwaway `JSON.stringify`
+> accounting for most of the gap — the 64 KiB upload fixture builds 47,812x faster. The 24 importing
+> files now read `packages/apps/src/lib/jsonrpc.ts`, and both `instanceof` sites survived: `mainLoop`
+> tests the in-house `JsonRpcError` class, and `messenger`'s became the structural `isErrorObject`.
 
 `checkParams` (`jsonrpc.js:311`) runs `JSON.stringify(params)` **and discards the result** — a pure
 serializability probe. `validateMessage` invokes it for `RequestObject` and `NotificationObject`;
@@ -66,6 +80,8 @@ instances.
 - Build order: `build:default` **then** `build:base-runtime`.
 - Both host and base-runtime compile with **`strict: false`**.
 - Host imports nothing from `base-runtime` today (only a path string in `AppsEngineDenoRuntime`).
+  The reverse is not true, and got worse: `base-runtime` now **value**-imports the host's compiled
+  `dist` twice — `lib/secureFields.ts` and, since ADR 0004, `lib/jsonrpc.ts`.
 - **Deno consumes TS source, deliberately** — importing compiled `dist` runs CJS whose `require()`
   bypasses the import map and escapes the `--allow-read` allowlist. Import map is generated per-spawn
   by `generateEphemeralDenoConfig`; deno runs with `--cached-only`, so any npm dep must also be
@@ -132,7 +148,7 @@ unverified.
 | **D4** | **One codec, identical both sides, factory-based.** Complete ext registration on both: host also guards `App` on ext 0; both carry both halves of ext 2; both use factories. No direction parameter. |
 | **D5** | Codec takes an injected **capability**, not an injected function: `createCodec({ getAppPermissions?: () => IPermission[] })`. `applySecureFields` moves into `protocol/`; host passes `() => []` (strips all secure fields — safe default; host-side ext-2 decode changes from `undefined` to "stripped object", unreachable today). |
 | **D6** | Move `SecureFields.ts` wholesale into `protocol/` and **update the Meteor import** (`apps/meteor/app/apps/server/converters/codecs/rooms.ts` uses `secureFieldsMapper`). No re-export shim — monorepo, just fix the call site. Deletes the CJS-from-sandbox wart. |
-| **D7** | JSON-RPC: **surface now, implementation later.** `protocol/` owns the API (`buildRequest`, `parseFrame`, envelope + error constructors), delegating to `jsonrpc-lite` internally. 24 call sites migrate once. The two `instanceof` sites become **brand-checked types owned by `protocol/`** (`isProtocolError(x)`), never library classes — otherwise the later swap re-opens the churn. Replacing `jsonrpc-lite` is a **committed follow-up with a benchmark as its acceptance criterion** (motivated by §1.2, not by dependency hygiene). |
+| **D7** | *(Overtaken by ADR 0004 — the swap happened first, not later. The surface exists, in-house, and the migration of the 24 call sites is done; what remains for `protocol/` is the move. Kept for the reasoning.)* JSON-RPC: **surface now, implementation later.** `protocol/` owns the API (`buildRequest`, `parseFrame`, envelope + error constructors), delegating to `jsonrpc-lite` internally. 24 call sites migrate once. The two `instanceof` sites become **brand-checked types owned by `protocol/`** (`isProtocolError(x)`), never library classes — otherwise the later swap re-opens the churn. Replacing `jsonrpc-lite` is a **committed follow-up with a benchmark as its acceptance criterion** (motivated by §1.2, not by dependency hygiene). |
 | **D8** | **Subprocess is untrusted.** Validation posture is **asymmetric**: `app→host` params **always validated, host-side, with AJV-compiled schemas**; `host→app` is **types-only** plus dev/test-only checks. Rationale: the untrusted direction is also the cheap one (ids, scalars); the expensive one (hydrated message+room+user) is self-sent. AJV's `new Function` codegen also stays out of the Deno sandbox this way. Authoring is **TypeBox** (schemas *are* JSON Schema — no conversion; Zod would add a conversion step *and* a draft-2020-12 vs AJV-8 mismatch). |
 | **D9** | **No codegen.** No ts-morph, no committed generated artifact, no codegen build step. Hand-author ~112 shallow tuples (mostly `string`/`boolean`/`object`). Deep `IMessage`/`IRoom`/`IUser` schemas are **redundant** — `docs/proposals/apps-converters-zod` is already putting runtime-validated Zod codecs on those same objects one layer down; generating IPC schemas for them means validating the same payload twice in two schema systems. Division of labor: **IPC contract = shape of the call** (arity + scalar types, shallow, catches injection); **converter codecs = the domain objects**. Keep codegen's one real benefit — drift detection — as a **test**: reflect over bridge prototypes (`Object.getOwnPropertyNames(X.prototype).filter(n => n.startsWith('do'))`) and assert every `do*` has a contract entry. Use `Function.prototype.length` as a **max-arity bound + existence check** only (it under-counts optional params — `doGetAppUser(appId?)` → 0). |
 | **D10** | **TypeBox stays out of the sandbox.** Split `protocol/contracts/bridges/names.ts` (plain string consts, zero deps, value-imported by both sides) from `schemas.ts` (TypeBox; host value-imports, runtime `import type` only, so TS erases it and Deno never loads it). No `deno.jsonc`/`.deno-cache` change. |

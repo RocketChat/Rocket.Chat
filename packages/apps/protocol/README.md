@@ -3,7 +3,8 @@
 The wire format spoken between the host controller (`packages/apps/src/server/runtime/`) and the app
 subprocess (`packages/apps/base-runtime/`, run by `deno-runtime` or `node-runtime`).
 
-- **Decisions and rationale:** [ADR 0002](../../../docs/adr/0002-apps-subprocess-protocol.md)
+- **Decisions and rationale:** [ADR 0005](../../../docs/adr/0005-apps-subprocess-protocol.md),
+  building on [ADR 0004](../../../docs/adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md)
 - **Delivery plan:** [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
 > **Status: being built.** This directory currently holds only the zero-dependency framing constants.
@@ -58,6 +59,10 @@ APP ──out-of-band──▶ HOST
 RESPONSES
   app → host   success { id, result: { value, logs? } }   error { id, error: { code, message, data? } }
   host → app   success { id, result: <value> }            error { id, error: { code, message, data? } }
+
+EVERY MESSAGE
+  meta?                                       an open bag of out-of-band values, carried and never
+                                              read by the bridge — the HTTP-headers analogue
 ```
 
 ### Method-name grammar
@@ -96,7 +101,7 @@ src/
 │   └── secureFields.ts
 ├── framing/
 │   ├── control.ts  _zPING / _zPONG + isControlFrame                     (zero deps)
-│   ├── jsonrpc.ts  buildRequest / parseFrame / envelope                 ⏳
+│   ├── jsonrpc.ts  envelopes, factories, guards — moved from src/lib    ⏳
 │   ├── errors.ts   closed code enum + declared data shapes              ⏳
 │   └── metrics.ts  { pid, queueSize }, NDJSON
 └── contracts/
@@ -105,6 +110,10 @@ src/
         ├── names.ts    plain string constants — both sides value-import
         └── schemas.ts  TypeBox — host value-imports, runtime `import type` only    ⏳
 ```
+
+The JSON-RPC envelope is the one piece that already exists: ADR 0004 wrote it in
+`packages/apps/src/lib/jsonrpc.ts`, and `base-runtime` reads it through a shim that re-exports the
+host's compiled `dist`. Moving it here is what retires that shim.
 
 Two constraints on what may live here:
 

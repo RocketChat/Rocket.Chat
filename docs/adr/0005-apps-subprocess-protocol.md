@@ -1,15 +1,19 @@
-# ADR 0002 — The host↔subprocess protocol is owned by `packages/apps/protocol`
+# ADR 0005 — The host↔subprocess protocol is owned by `packages/apps/protocol`
 
 ## Status
 
 **Accepted — not yet implemented.** Supersedes the catalog in
 `docs/proposals/apps-runtime-sdk-ipc`; that proposal is reduced to the delivery plan.
 
-- **Date:** 2026-08
+- **Date:** 2026-08, revised 2026-09
 - **Scope:** `packages/apps` (host, `base-runtime`, `node-runtime`, `deno-runtime`) plus one import
   site in `apps/meteor`
 - **Follows:** [ADR 0001](./0001-app-accessor-logic-in-base-runtime.md), whose follow-up 5
   ("consolidated host↔subprocess protocol/SDK") this ADR answers
+- **Builds on:** [ADR 0004](./0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md), which
+  already replaced `jsonrpc-lite` with in-house types in `packages/apps/src/lib/jsonrpc.ts`. That
+  module is the JSON-RPC surface this ADR relocates into `protocol/`; decisions 6 and 8 start from
+  it rather than from the library
 
 ## Decision
 
@@ -41,6 +45,10 @@
    extension set: ext 0 guards functions *and* `App` instances on both sides; both carry both
    directions of ext 2; both expose `newEncoder()`/`newDecoder()` rather than singletons. No
    direction parameter.
+   - The unification also has to carry the nesting machinery each half grew separately: the host's
+     reentrant nested-**encoder** pool, which a pass over secure fields borrows a slot from, and the
+     runtime's fresh nested-**Decoder** per ext-2 decode, which keeps the outer msgpack frame from
+     staying reachable. Each side built the half it needed. A shared codec owns both.
 4. **The codec takes an injected capability, not an injected function** —
    `createCodec({ getAppPermissions?: () => IPermission[] })`. `applySecureFields` moves into
    `protocol/`; the host passes `() => []`, which strips all secure fields. Host-side ext-2 decode
@@ -48,17 +56,28 @@
    today.
 5. **`SecureFields.ts` moves wholesale into `protocol/`** and the Meteor call site
    (`apps/meteor/app/apps/server/converters/codecs/rooms.ts`, which uses `secureFieldsMapper`) is
-   updated. No re-export shim. This deletes the compiled-CJS-from-inside-the-sandbox import that
-   only works via `deno.jsonc`'s `unstable: ["detect-cjs"]`.
+   updated. No re-export shim. This deletes one of the two compiled-CJS-from-inside-the-sandbox
+   imports that only work via `deno.jsonc`'s `unstable: ["detect-cjs"]`; decision 6 deletes the
+   other.
 
 ### Framing
 
-6. **`protocol/` owns the JSON-RPC surface now and the implementation later.** It exports
-   `buildRequest` / `parseFrame` / envelope and error constructors, delegating to `jsonrpc-lite`
-   internally; the 24 call sites migrate once. The two structural `instanceof` sites
-   (`mainLoop.ts:70`, `messenger.ts:28`) become **brand-checked types owned by `protocol/`**
-   (`isProtocolError(x)`), never library classes, so the later swap does not reopen the churn.
-   `parseFrame`'s return type reserves an optional `meta` slot (see follow-up 2).
+6. **`protocol/` owns the JSON-RPC surface, and that surface already exists.** ADR 0004 put the
+   envelope types, the factories, and the type guards in `packages/apps/src/lib/jsonrpc.ts`, with
+   `meta` on all four envelopes. This ADR **moves that module** to `protocol/framing/jsonrpc.ts`
+   unchanged in behavior, and deletes `base-runtime/src/lib/jsonrpc.ts`, the shim that re-exports it
+   from the host's compiled `dist`. The ~25 importing modules follow the new path.
+   - The move is what the API ownership was for. ADR 0004 already removed the reasons to wrap the
+     surface: nothing delegates to a library, and the structural sites test types this repository
+     owns — `instanceof JsonRpcError` in process, `isErrorObject` on a decoded payload — so no
+     `isProtocolError` brand has to be invented to insulate a later swap.
+   - It also deletes the second compiled-CJS-from-inside-the-sandbox import (see decision 5 and
+     *Context*). `jsonrpc.ts` is a **value** import, so it is the one that makes the wart
+     load-bearing: `build:base-runtime` cannot typecheck and Deno cannot spawn until
+     `build:default` has emitted `dist/lib/jsonrpc.js`.
+   - The move dates ADR 0004's reference index, which points at `packages/apps/src/lib/jsonrpc.ts`.
+     The PR that moves the module updates that entry; nothing else in ADR 0004 changes, because the
+     types, the factories, the guards, and the measured pipeline are the same code at a new path.
 7. **The result envelope is asymmetric, and that is deliberate.** App→host responses carry
    `result: { value, logs? }`; host→app responses carry the raw value. Only the subprocess produces
    app logs, and `bridges:*` responses are the hot direction — wrapping them would add an allocation
@@ -67,6 +86,11 @@
 8. **The error taxonomy is a closed enum owned by `protocol/`**: the five standard JSON-RPC codes,
    plus `-32070` (`AppsEngineException.JSONRPC_ERROR_CODE`, unchanged — defined in `apps-engine` and
    the only code with a live consumer), plus `-32000` for "handler or bridge threw".
+   - Half of this exists. `src/lib/jsonrpc.ts` already exports the five standard codes and
+     `SERVER_ERROR` as named constants, and `JsonRpcError` already carries the matching static
+     factories. What this decision adds is `-32070`, the retirement of `1000`, the declared `data`
+     shapes below, and the closing of the set — the codes are loose constants today, so nothing
+     stops a call site writing a number.
    - **Code `1000` is retired.** It currently marks structural bridge-dispatch failures; those split
      into `-32601` (unknown bridge, unknown `do*`, non-`do` prefix) and `-32602` (params not an
      array, or schema violation). Zero risk — nothing reads inbound error codes today.
@@ -184,9 +208,10 @@
 controller and every runtime adapter import. It owns the codec, the control frames, the JSON-RPC
 envelope and error taxonomy, the closed method set, and the app→host param schemas. The host owns
 the binding from that wire to its own bridges (the invoker table). `base-runtime` owns accessor
-injection. `jsonrpc-lite` is still present, behind `protocol/`'s API, with its removal scheduled and
-benchmarked.
+injection.
 
+`base-runtime` imports no compiled `dist` from inside the sandbox: `lib/jsonrpc.ts` and
+`lib/secureFields.ts` are both gone, and what they re-exported is read from `protocol/` as source.
 The `'APP_ID'` string does not appear on the wire, in `base-runtime`, or in `handleBridgeMessage`.
 
 ## Architecture
@@ -200,7 +225,7 @@ packages/apps/protocol/            # 4th tsc project, strict: true, built first
 │   │   └── secureFields.ts        # moved from base-runtime + src/lib
 │   ├── framing/
 │   │   ├── control.ts             # _zPING / _zPONG + isControlFrame          (zero deps)
-│   │   ├── jsonrpc.ts             # buildRequest / parseFrame / envelope      (D6)
+│   │   ├── jsonrpc.ts             # envelopes, factories, guards — moved from src/lib (D6)
 │   │   ├── errors.ts              # closed code enum + declared data shapes   (D8)
 │   │   └── metrics.ts             # { pid, queueSize }, NDJSON                (D11)
 │   └── contracts/
@@ -274,30 +299,30 @@ Deliberate, and recorded here so they are not "cleaned up" later.
 
 Out of scope here; unblocked or motivated by this work.
 
-1. **Replace `jsonrpc-lite`** — committed, with a benchmark as the acceptance criterion. Motivated by
-   real per-request cost, not dependency hygiene: `checkParams` (`jsonrpc.js:311`) runs
-   `JSON.stringify(params)` **and discards the result** as a serializability probe, and
-   `validateMessage` invokes it for every `RequestObject` and `NotificationObject` — so it taxes
-   every outbound request in both directions, including `app:executePostMessageSent` (message +
-   room), `bridges:getHttpBridge:doCall` (full body), and `app:executePreFileUpload`. A `Buffer` in
-   params does not throw; it stringifies to an N-element JSON number array, which is then thrown
-   away, once per message.
-2. **A top-level `meta` property on the envelope** — an HTTP-headers analogue for tracing data, with
-   `logs` moving into it. Blocked on follow-up 1: `jsonrpc-lite` drops unknown top-level properties
-   on `parseObject`. `parseFrame`'s return type reserves the slot so adding it later is a widening,
-   not a signature change at 24 call sites.
-3. **Preserve error codes into app code.** `mainLoop.handleResponse` currently reconstructs
+1. ~~**Replace `jsonrpc-lite`**~~ — **done.** Recorded in
+   [ADR 0004](./0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md), which also carries the
+   benchmark this ADR asked for as the acceptance criterion: build 3,200x, receive 12.1x,
+   round-trip 11.0x.
+2. ~~**A top-level `meta` property on the envelope**~~ — **done**, in the same work. All four
+   envelope types carry an optional `meta`, and every factory and messenger descriptor threads it
+   through. `logs` has **not** moved into it; it still rides `result.logs` and `error.data.logs`, so
+   decision 7's envelope and decision 8's declared `data` shapes are unaffected.
+3. **Move the envelope tuple up to the messenger.** Inherited from ADR 0004, which left it open and
+   unmeasured: encode `[kind, id, method, params]` in the messenger itself, keeping the wire-size
+   gain without a nested encoder and without a copy. It belongs to `protocol/` once `protocol/` owns
+   the framing, and it is a wire-format change, so decision 12's no-version-skew licence covers it.
+4. **Preserve error codes into app code.** `mainLoop.handleResponse` currently reconstructs
    `new Error(payload.error.message)`, discarding `code` and `data`, so no app can distinguish a
    permission denial from a bridge throw. Restoring that is an app-observable behavior change with
    its own design question (do we expose typed accessor errors?), so it is deliberately not smuggled
    into this work.
-4. **Consume `queueSize`.** A growing outbound queue is arguably as good a restart signal as missed
+5. **Consume `queueSize`.** A growing outbound queue is arguably as good a restart signal as missed
    pongs, and `LivenessManager` is adjacent. Today the host only `debug()`s the metrics.
-5. **Host→app cancellation.** The host times out requests (`waitForResponse` with
+6. **Host→app cancellation.** The host times out requests (`waitForResponse` with
    `getRuntimeTimeout()`), but the subprocess keeps executing the app method with no way to be told
    to stop. Decision 9 leaves room for this without reserving a method; the hard part is aborting
    app code that runs via `new Function` in the runtime's own realm.
-6. **`ProxiedApp.call`'s range check** is `e.code >= -32999 || e.code <= -32000`, an `||` where `&&`
+7. **`ProxiedApp.call`'s range check** is `e.code >= -32999 || e.code <= -32000`, an `||` where `&&`
    was meant — it matches every number, so every non-`-32070`/`-32601` error is logged and
    swallowed and `call()` resolves `undefined`. Cosmetic in effect, but it should be either fixed or
    deliberately documented as "log everything".
@@ -308,21 +333,32 @@ Out of scope here; unblocked or motivated by this work.
 
 The two `codec.ts` files are **complementary halves of one format**, not duplicates:
 
-| Ext | Host (`src/server/runtime/base/codec.ts`, 78 LOC) | Runtime (`base-runtime/src/lib/codec.ts`, 50 LOC) |
+| Ext | Host (`src/server/runtime/base/codec.ts`, 134 LOC) | Runtime (`base-runtime/src/lib/codec.ts`, 58 LOC) |
 | --- | --- | --- |
 | 0 — functions | `Uint8Array([0])`, functions only | `Uint8Array(0)`, functions **or `App` instances** |
 | 1 — buffers | symmetric | symmetric |
 | 2 — secure fields | `encode` real; `decode` → `undefined` | `encode` → `null`; `decode` real |
+| ext-2 nesting | a reentrant **encoder** pool, one per subprocess | a fresh **Decoder** per call |
 
 Neither side can round-trip its own output. The asymmetries are convenience rather than requirement,
 and the runtime's use of singletons over factories is not a real bug — if the subprocess's stdin dies
 the process is unrecoverable anyway — but a format maintained as two halves that each implement the
 other's gaps is the failure mode this ADR exists to prevent.
 
-Related, and deleted by decision 5: `base-runtime/src/lib/secureFields.ts` imports
-`@rocket.chat/apps/dist/lib/SecureFields` — a compiled-CJS import from inside the Deno sandbox,
-working only via `unstable: ["detect-cjs"]`, and exactly what `deno-runtime/main.ts`'s own comment
-says not to do.
+The last row is the gap widening while this ADR waited. Each side needed a second codec instance for
+the nested ext-2 pass and reasoned about it alone: the host pools encoders per subprocess, because
+`new Encoder()` allocates a 2 KiB buffer and an `Encoder` never shrinks it; the runtime deliberately
+does **not** pool its decoder, because `new Decoder()` allocates nothing and a pooled one would keep
+a view of the whole outer frame reachable. Both conclusions are right for their half. Neither is
+written down where the other half can read it.
+
+Related, and deleted by decisions 5 and 6: `base-runtime/src/lib/secureFields.ts` and
+`base-runtime/src/lib/jsonrpc.ts` both import from `@rocket.chat/apps/dist/` — compiled-CJS imports
+from inside the Deno sandbox, working only via `unstable: ["detect-cjs"]`, and exactly what
+`deno-runtime/main.ts`'s own comment says not to do. `jsonrpc.ts` arrived with ADR 0004 as the
+cheapest way to give both sides one copy of the envelope types, which is the same need `protocol/`
+exists to serve properly. Two type-only imports of `dist` also remain (`roomFactory.ts`,
+`handlers/app/construct.ts`); TypeScript erases those, so they never reach the sandbox.
 
 ### No version skew
 
@@ -339,7 +375,7 @@ vendored into `.deno-cache` — which is why decision 15 keeps TypeBox type-only
 
 - **`data: <Error>` transmits nothing.** `@msgpack/msgpack` encodes only own-*enumerable* properties,
   and `Error`'s `message` and `stack` are non-enumerable — `encode(new Error('boom'))` decodes to
-  `{}`. Both `handleApp` (`:103`, `:114`) and `handleBridgeMessage` pass a raw `Error` as `data`
+  `{}`. Both `handleApp` (`:110`, `:121`) and `handleBridgeMessage` pass a raw `Error` as `data`
   today, so the receiver gets an empty map plus whatever `logs` was subsequently mutated onto that
   same `Error` object. Hence decision 8's declared `data` shapes.
 - **Code `1000` is still live post-consolidation.** `handleIncomingMessage` wraps anything
