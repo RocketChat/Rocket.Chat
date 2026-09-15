@@ -8,6 +8,7 @@ import {
 	useSetModal,
 	useToastMessageDispatch,
 	useTranslation,
+	useUserId,
 	useUserRoom,
 	useUserSubscription,
 	useEndpoint,
@@ -41,6 +42,7 @@ const getUserIsMuted = (
 export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
+	const ownUserId = useUserId();
 	const userCanMute = usePermission('mute-user', rid);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -99,9 +101,9 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 			);
 		};
 
-		return roomCanMute && userCanMute
+		return roomCanMute && userCanMute && user._id !== ownUserId
 			? {
-					content: t(isMuted ? 'Unmute_user' : 'Mute_user'),
+					content: t(isMuted ? 'Unmute' : 'Mute'),
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					onClick: action,
 					type: 'management' as UserInfoActionType,
@@ -118,8 +120,10 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		roomName,
 		setModal,
 		t,
+		user._id,
 		user.username,
 		userCanMute,
+		ownUserId,
 	]);
 
 	return muteUserOption;

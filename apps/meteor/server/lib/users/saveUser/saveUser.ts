@@ -8,6 +8,7 @@ import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
+import { handleProfileFields, type ProfileField } from './handleProfileFields';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { setPasswordUpdater } from './setPasswordUpdater';
@@ -42,6 +43,9 @@ export type SaveUserData = {
 
 	bio?: string;
 	nickname?: string;
+	title?: string | null;
+	nationality?: string | null;
+	languages?: string[] | null;
 
 	roles?: IRole['_id'][];
 	settings?: Partial<IUserSettings>;
@@ -155,6 +159,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		handleBio(updater, userData.bio);
 		handleNickname(updater, userData.nickname);
+		const clearedProfileFields = handleProfileFields(updater, userData);
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);
@@ -232,13 +237,33 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+			// Cleared profile fields were $unset in Mongo; announce them as unset
+			// too, otherwise clients would keep the stale value (or receive the
+			// raw null/[] from the request as if it were the new one).
+			const diff = {
+				...userData,
+				emails: userUpdated?.emails,
+			};
+			for (const field of clearedProfileFields) {
+				delete diff[field];
+			}
+			// Retained profile fields go out as persisted (trimmed, deduped), not as
+			// received: clients apply the diff as-is.
+			const retained = (field: ProfileField) => userData[field] !== undefined && !clearedProfileFields.includes(field);
+			if (retained('title')) {
+				diff.title = userUpdated?.title;
+			}
+			if (retained('nationality')) {
+				diff.nationality = userUpdated?.nationality;
+			}
+			if (retained('languages')) {
+				diff.languages = userUpdated?.languages;
+			}
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
-				diff: {
-					...userData,
-					emails: userUpdated?.emails,
-				},
+				diff,
+				...(clearedProfileFields.length > 0 && { unset: Object.fromEntries(clearedProfileFields.map((field) => [field, 1])) }),
 			});
 		}, session);
 

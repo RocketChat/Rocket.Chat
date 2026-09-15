@@ -70,6 +70,9 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			reason,
 			freeSwitchExtension,
 			abacAttributes,
+			title,
+			nationality,
+			languages,
 		} = data.user;
 
 		return {
@@ -79,6 +82,9 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			lastLogin,
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
+			title,
+			nationality,
+			languages,
 			canViewAllInfo,
 			phone,
 			utcOffset,

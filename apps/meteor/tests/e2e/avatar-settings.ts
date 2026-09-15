@@ -90,7 +90,8 @@ test.describe('avatar-settings', () => {
 			});
 
 			test('expect user card avatar to have provider prefix', async () => {
-				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').click();
+				// Hovering the author name opens the user card; clicking now opens the full profile.
+				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').hover();
 				await expect(poHomeChannel.userCard.imgUserCard).toHaveAttribute('src', avatarUrl);
 			});
 		});

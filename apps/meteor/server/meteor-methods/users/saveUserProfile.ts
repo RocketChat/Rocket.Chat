@@ -17,6 +17,7 @@ import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
+import { normalizeLanguages, validateProfileFields, type ProfileField } from '../../lib/users/saveUser/handleProfileFields';
 import { saveUserIdentity } from '../../lib/users/saveUserIdentity';
 import { settings as rcSettings } from '../../settings';
 
@@ -34,6 +35,9 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -112,6 +116,55 @@ async function saveUserProfile(
 			});
 		}
 		await Users.setNickname(user._id, settings.nickname.trim());
+	}
+
+	if (user && (settings.title !== undefined || settings.nationality !== undefined || settings.languages !== undefined)) {
+		validateProfileFields(settings, 'saveUserProfile');
+
+		// All three fields land in a single write: no per-field _updatedAt
+		// churn and no partial state if a later step throws.
+		const $set: Record<string, string | string[]> = {};
+		const $unset: Record<string, 1> = {};
+
+		for (const field of ['title', 'nationality'] as const) {
+			const value = settings[field];
+			// absent = don't touch; null or empty string = clear
+			if (value === undefined) {
+				continue;
+			}
+			const trimmed = value?.trim();
+			if (trimmed) {
+				$set[field] = trimmed;
+			} else {
+				$unset[field] = 1;
+			}
+		}
+
+		if (settings.languages !== undefined) {
+			const languages = settings.languages ? normalizeLanguages(settings.languages) : [];
+			if (languages.length) {
+				$set.languages = languages;
+			} else {
+				$unset.languages = 1;
+			}
+		}
+
+		if (Object.keys($set).length || Object.keys($unset).length) {
+			await Users.updateOne(
+				{ _id: user._id },
+				{
+					...(Object.keys($set).length && { $set }),
+					...(Object.keys($unset).length && { $unset }),
+				},
+			);
+		}
+
+		// The change notification below diffs the fresh document, where a
+		// cleared field is simply absent — mirror the $unset so clients drop
+		// the stale value instead of keeping it.
+		for (const field of Object.keys($unset) as ProfileField[]) {
+			unset[field] = true;
+		}
 	}
 
 	if (user && settings.email) {
@@ -209,6 +262,9 @@ declare module '@rocket.chat/ddp-client' {
 				statusType?: string;
 				bio?: string;
 				nickname?: string;
+				title?: string | null;
+				nationality?: string | null;
+				languages?: string[] | null;
 			},
 			customFields: Record<string, any>,
 			...args: unknown[]
@@ -228,6 +284,9 @@ export function executeSaveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 	},
 	customFields: Record<string, any> = {},
 	...args: unknown[]

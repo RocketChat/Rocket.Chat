@@ -17,12 +17,12 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 		flexBasis={0}
 		alignItems='center'
 		fontScale='h4'
-		color='default'
+		color='titles-labels'
 		withTruncatedText
 		{...props}
 	>
 		{status}
-		<Box marginInlineStart={8} flexGrow={1} withTruncatedText>
+		<Box marginInlineStart='x4' flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
 	</Box>
