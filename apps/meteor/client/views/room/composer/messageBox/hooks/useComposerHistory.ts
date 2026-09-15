@@ -2,9 +2,9 @@ import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
 import { useCallback } from 'react';
 
-import { createComposerHistory } from '../../../../../../app/ui-message/client/messageBox/composerHistory';
-import { triggerEvent } from '../../../../../../app/ui-message/client/messageBox/createComposerAPICore';
-import { renderComposerContent } from '../../../../../../app/ui-message/client/messageBox/messageStateHandler';
+import { createComposerHistory } from '../../../../../lib/composerHistory';
+import { triggerEvent } from '../../../../../lib/createComposerAPICore';
+import { renderComposerContent } from '../../../../../lib/messageStateHandler';
 
 export const useComposerHistory = (parseOptions: Options) =>
 	useSafeRefCallback(

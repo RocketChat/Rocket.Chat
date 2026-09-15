@@ -2,11 +2,11 @@ import type { Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/tools';
 import type { RefObject } from 'react';
 
+import type { ComposerAPI } from './chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
 import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,

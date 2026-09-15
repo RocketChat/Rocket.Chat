@@ -24,13 +24,13 @@ import {
 	extractImageFilesFromClipboard,
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
-import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
-import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
+import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
 import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
