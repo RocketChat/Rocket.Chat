@@ -553,7 +553,6 @@ export class NotificationsModule {
 		this.streamImporters.emit('progress', progress);
 	}
 
-	/** Tells whoever is watching this conference that it changed and is worth reading again. */
 	notifyVideoConferenceUpdated(callId: string): void {
 		this.streamVideoConference.emit(`${callId}/updated`);
 	}

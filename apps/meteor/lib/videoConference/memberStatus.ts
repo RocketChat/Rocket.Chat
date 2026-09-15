@@ -1,7 +1,6 @@
 import type { IVideoConferenceUser } from '@rocket.chat/core-typings';
 import { hasJoinedVideoConference, isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 
-/** Where a member stands with the call, as one thing the UI can label them with. */
 export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'invited';
 
 type MemberState = Pick<IVideoConferenceUser, 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'>;
@@ -24,7 +23,6 @@ export const getConferenceMemberStatus = (member: MemberState): ConferenceMember
 	return member.declined ? 'declined' : 'invited';
 };
 
-/** Whether ringing this member now would ask them anything they are not already being asked. */
 export const canRingConferenceMember = (member: MemberState, now?: number): boolean =>
 	getConferenceMemberStatus(member) !== 'joined' && !isRingingVideoConferenceMember(member, now);
 

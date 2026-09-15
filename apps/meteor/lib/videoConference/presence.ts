@@ -4,13 +4,11 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
 /** Browser constraint: a hidden tab has its timers throttled to roughly one tick a minute. */
 export const PRESENCE_THROTTLED_HEARTBEAT_MS = 60_000;
 
-/** How many throttled renewals may go missing before a lease is given up on. */
 export const PRESENCE_MISSED_TICKS_TOLERATED = 3;
 
-/** How often a call window renews its lease. */
 export const PRESENCE_HEARTBEAT_MS = 30_000;
 
-/** How long one renewal is good for. Doubles as the grace period a restart waits out. */
+/** Doubles as the grace period a restart waits out before believing any lease. */
 export const PRESENCE_LEASE_MS = PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_MISSED_TICKS_TOLERATED;
 
 /** Leave reasons a renewal may undo. A reported departure is never revived. */

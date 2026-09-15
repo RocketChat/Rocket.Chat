@@ -514,12 +514,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
 	}
 
-	/** Whether the provider supports a chat that outlives the call — see `maybeCreateDiscussion`. */
 	private supportsPersistentChat(providerName: string): boolean {
 		return videoConfProviders.getProviderCapabilities(providerName)?.persistentChat === true;
 	}
 
-	/** Tells anyone watching the conference that it moved and is worth reading again. */
 	private notifyConferenceUpdate(callId: VideoConference['_id']): void {
 		void api.broadcast('video-conference.updated', { callId });
 	}
@@ -1385,7 +1383,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
-	/** Leaves every other call this user is still counted as being in. See `addUserToCall`. */
 	private async leaveOtherCalls(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
 		// The status predicate names the statuses the partial index is filtered on, which is what makes it
 		// eligible. `endedAt` stays because that, not the index filter, is the liveness rule.
@@ -1582,7 +1579,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Gives the user their own status back. A no-op if something with a stronger claim has taken over since. */
+	/** A no-op if something with a stronger claim has taken over since. */
 	private async releaseBusyForCall(uid: IUser['_id']): Promise<void> {
 		try {
 			await Presence.endActiveState(uid, this.name);
@@ -1659,7 +1656,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Ends a conference only if it is still empty — a rejoin inside the grace period is what cancels it. */
+	/** A rejoin inside the grace period is what cancels the ending. */
 	private async endCallIfEmpty(callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, endedAt: 1 } });
 		if (!call || call.endedAt || call.users.some(isInVideoConference)) {
@@ -1890,7 +1887,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.isPersistentChatEnabled() && this.getPersistentChatMode() === 'thread';
 	}
 
-	/** Follows the call's chat thread for one participant. Idempotent — `follow` uses `$addToSet`. */
+	/** Idempotent: `follow` uses `$addToSet`. */
 	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
 		if (!this.chatLivesInAThread()) {
 			return;
@@ -1903,7 +1900,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await follow({ tmid: call.messages.started, uid });
 	}
 
-	/** Follows the call's chat thread for everyone already in the call, once the thread's parent exists. */
+	/** Only once the thread's parent message exists, for everyone who joined before it did. */
 	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
 		if (!this.chatLivesInAThread()) {
 			return;
@@ -2108,7 +2105,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Tells the users just added to a conference that it is ringing for them. */
 	private async notifyUsersAddedToConference(
 		adderId: IUser['_id'],
 		memberIds: IUser['_id'][],
@@ -2133,7 +2129,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	/** Tells the users just invited into the conference's room about it; clicking takes them to that room. */
+	/** Unlike a ring, this one can carry the room: they were just given access to it. */
 	private async notifyUsersInvitedToConference(
 		inviter: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		usernames: NonNullable<IUser['username']>[],
