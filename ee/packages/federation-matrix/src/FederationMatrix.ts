@@ -15,7 +15,15 @@ import {
 	isUserNativeFederated,
 	UserStatus,
 } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	MessageQuoteAttachment,
+	IMessage,
+	IRoom,
+	IUpload,
+	IUser,
+	IRoomNativeFederated,
+	ISubscription,
+} from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PduForType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -1057,6 +1065,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return false;
 		}
+	}
+
+	async materializePendingUpload(fileId: IUpload['_id']): Promise<IUpload | null> {
+		return MatrixMediaService.materializePendingFile(fileId);
 	}
 
 	async saveFederationMessage({ event, event_id: eventId }: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void> {
