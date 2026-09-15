@@ -6,8 +6,8 @@ import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 
+import { isSuccessObject, request } from '../../../src/lib/jsonrpc';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';
@@ -16,8 +16,6 @@ import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 describe('DenoRuntimeSubprocessController', () => {
-	const rpcTypeRequest = 'request' as RpcStatusType.request;
-
 	let manager: AppManager;
 	let controller: DenoRuntimeSubprocessController;
 	let appPackage: IParseAppPackageResult;
@@ -73,18 +71,11 @@ describe('DenoRuntimeSubprocessController', () => {
 			avatarUrl: 'https://avatars.com/123',
 		};
 
-		const response = await controller['handleBridgeMessage']({
-			type: rpcTypeRequest,
-			payload: {
-				jsonrpc: '2.0',
-				id: 'requestId',
-				method: 'bridges:getMessageBridge:doCreate',
-				params: [messageParam, 'APP_ID'],
-				serialize: () => '',
-			},
-		});
+		const response = await controller['handleBridgeMessage'](
+			request('requestId', 'bridges:getMessageBridge:doCreate', [messageParam, 'APP_ID']),
+		);
 
-		assert.ok(response instanceof SuccessObject);
+		assert.ok(isSuccessObject(response));
 
 		const { id, result } = response;
 
