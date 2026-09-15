@@ -1,30 +1,39 @@
-import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { useMethod, useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { useRoom } from '../../../contexts/RoomContext';
 
-export const useMessageSearchQuery = ({
-	searchText,
-	limit,
-	globalSearch,
-}: {
-	searchText: string;
-	limit: number;
-	globalSearch: boolean;
-}) => {
+export type MessageSearchItem = NonNullable<Awaited<ReturnType<ServerMethods['rocketchatSearch.search']>>['message']>['docs'][number];
+
+export const useMessageSearchQuery = ({ searchText, globalSearch }: { searchText: string; globalSearch: boolean }) => {
 	const uid = useUserId();
 	const room = useRoom();
+	const pageSize = useSetting('PageSize', 10);
 
 	const t = useTranslation();
 
 	const searchMessages = useMethod('rocketchatSearch.search');
-	return useQuery({
-		queryKey: ['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, limit, globalSearch }] as const,
-
-		queryFn: async () => {
+	return useInfiniteQuery({
+		queryKey: ['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, globalSearch }] as const,
+		queryFn: async ({ pageParam: limit }) => {
 			const result = await searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll: globalSearch });
-			return result.message?.docs ?? [];
+			const items = result.message?.docs ?? [];
+
+			return {
+				items,
+				itemCount: items.length >= limit ? items.length + 1 : items.length,
+			};
 		},
+		initialPageParam: pageSize,
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			if (lastPage.items.length < lastPageParam) {
+				return undefined;
+			}
+
+			return lastPageParam + pageSize;
+		},
+		select: ({ pages }) => pages.at(-1) ?? { items: [], itemCount: 0 },
 		placeholderData: keepPreviousData,
 		meta: {
 			errorToastMessage: t('Search_message_search_failed'),
