@@ -1,3 +1,4 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -49,8 +50,12 @@ const CallMemberItem = ({ member, hasChatAccess, onRing }: CallMemberItemProps) 
 						</Box>
 					)}
 					{!hasChatAccess && (
+						// The icon is decorative — `Icon` renders `aria-hidden`, so the label it carried was read by
+						// nothing. What this row is announced as is its own content, so the fact goes in as text: seen
+						// as a struck-through balloon, heard as the sentence, hovered as the tooltip.
 						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
-							<Icon name='balloon-off' size='x16' aria-label={t('No_chat_access')} />
+							<Icon name='balloon-off' size='x16' />
+							<VisuallyHidden>{t('No_chat_access')}</VisuallyHidden>
 						</Box>
 					)}
 				</Box>
