@@ -2,7 +2,7 @@ import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.cha
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound, useSetModal, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,6 @@ import ConferenceChat from './ConferenceChat';
 import ConferencePageError from './ConferencePageError';
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
-import ConferenceThreadModal from './ConferenceThreadModal';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import PageLoading from '../root/PageLoading';
 import CallMembersPanel from './components/CallMembersPanel/CallMembersPanel';
@@ -60,22 +59,14 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference, call } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
-	const setModal = useSetModal();
 
-	// Opened through the conference's own modal region, which `ConferenceViewport` mounts — so the thread is
-	// rendered inside this page's providers rather than at the app root, where the room it loads has none.
-	const handleOpenThread = useCallback(
-		(tmid: string) => {
-			if (!room.rid) {
-				return;
-			}
+	// Which thread is open, rather than the thread itself: it is shown through the chat panel's own modal region,
+	// inside the room's provider, so that it can read the room from context instead of opening it a second time.
+	// Here it is only an answer to "which one", which the panel turns into a modal.
+	const [openThread, setOpenThread] = useState<string>();
+	const closeThread = useCallback(() => setOpenThread(undefined), []);
 
-			setModal(<ConferenceThreadModal rid={room.rid} tmid={tmid} onClose={() => setModal(null)} />);
-		},
-		[room.rid, setModal],
-	);
-
-	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : handleOpenThread });
+	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : setOpenThread });
 
 	const { leaveNow } = useLeaveConferenceOnClose(callId, conference.departure);
 
@@ -86,7 +77,15 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
 	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>();
-	const togglePanel = useCallback((panel: ConferencePanel) => setActivePanel((current) => (current === panel ? undefined : panel)), []);
+	const togglePanel = useCallback((panel: ConferencePanel) => {
+		setActivePanel((current) => (current === panel ? undefined : panel));
+
+		// A thread belongs to the chat it was opened from, and the panel is where it is shown — closing the panel
+		// takes the thread with it rather than leaving one waiting to reappear when the panel is opened again.
+		if (panel === 'chat') {
+			setOpenThread(undefined);
+		}
+	}, []);
 	const chatVisible = activePanel === 'chat';
 
 	const breakpoints = useBreakpoints();
@@ -255,6 +254,8 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 							roomType={room.type}
 							loading={room.loading}
 							chatAccess={room.chatAccess}
+							thread={openThread}
+							onCloseThread={closeThread}
 							onClose={() => togglePanel('chat')}
 						/>
 					)}

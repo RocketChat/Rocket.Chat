@@ -23,13 +23,7 @@ const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-type RoomActivityStream = {
-	handler: (username: string, activityType: string[], extras?: object) => void;
-	stop: () => void;
-	refs: number;
-};
-
-const rooms = new Map<string, RoomActivityStream>();
+const rooms = new Map<string, (username: string, activityType: string[], extras?: object) => void>();
 
 const performingUsers = new Map<string, IRoomActivity>();
 const performingUsersEmitter = new Emitter<{ changed: void }>();
@@ -73,24 +67,10 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 	performingUsersEmitter.emit('changed');
 }
-/** Releases one holder's claim on the room's stream, and closes it once nobody is left holding it. */
-const releaseRoomStream =
-	(rid: string, entry: RoomActivityStream): (() => void) =>
-	() => {
-		entry.refs--;
-
-		if (entry.refs === 0) {
-			entry.stop();
-			rooms.delete(rid);
-		}
-	};
-
 export const UserAction = new (class {
 	addStream(rid: string): () => void {
-		const existing = rooms.get(rid);
-		if (existing) {
-			existing.refs++;
-			return releaseRoomStream(rid, existing);
+		if (rooms.get(rid)) {
+			throw new Error('UserAction - addStream should only be called once per room');
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
@@ -102,12 +82,16 @@ export const UserAction = new (class {
 			}
 			handleStreamAction(rid, username, activityType, extras);
 		};
+		rooms.set(rid, handler);
 
 		const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
-		const entry: RoomActivityStream = { handler, stop, refs: 1 };
-		rooms.set(rid, entry);
-
-		return releaseRoomStream(rid, entry);
+		return () => {
+			if (!rooms.get(rid)) {
+				return;
+			}
+			stop();
+			rooms.delete(rid);
+		};
 	}
 
 	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {

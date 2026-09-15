@@ -33,10 +33,24 @@ type ConferenceChatProps = {
 	roomType?: IRoom['t'];
 	loading: boolean;
 	chatAccess?: ConferenceChatAccess;
+	/** A thread of this room to show over it, if one is open. */
+	thread?: string;
+	onCloseThread?: () => void;
 	onClose: () => void;
 };
 
-const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAccess, onClose }: ConferenceChatProps) => {
+const ConferenceChat = ({
+	callId,
+	rid,
+	tmid,
+	roomName,
+	roomType,
+	loading,
+	chatAccess,
+	thread,
+	onCloseThread,
+	onClose,
+}: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const setModal = useSetModal();
@@ -90,7 +104,7 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 
 			{shared && (
 				<ConferenceStoresReady>
-					<ConferenceRoomPanel rid={rid} tmid={tmid} onEscape={onClose} />
+					<ConferenceRoomPanel rid={rid} tmid={tmid} thread={thread} onCloseThread={onCloseThread} onEscape={onClose} />
 				</ConferenceStoresReady>
 			)}
 		</Box>

@@ -1,25 +1,26 @@
 import { Box, Modal, ModalClose, ModalContent, ModalHeader, ModalHeaderText, ModalTitle } from '@rocket.chat/fuselage';
-import { useId } from 'react';
+import { lazy, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ConferenceRoomPanel from './ConferenceRoomPanel';
-import { CONFERENCE_THEMED_CLASS } from './panelStyles';
+import ConferenceThreadChat from './ConferenceThreadChat';
+import { CONFERENCE_THEMED_CLASS, narrowRoomStyle } from './panelStyles';
+
+const ChatProvider = lazy(() => import('../room/providers/ChatProvider'));
 
 type ConferenceThreadModalProps = {
-	rid: string;
 	tmid: string;
 	onClose: () => void;
 };
 
 /**
- * The thread, opened over the call through `useSetModal`.
+ * The thread, opened over the call.
  *
- * What it renders is only the modal: the backdrop, the focus trap and the portal come from the `ModalRegion`
- * the conference mounts in `ConferenceViewport`. That region is what makes `useSetModal` usable here at all —
- * the app's own region sits at the app root, outside this tree, and `ConferenceRoomPanel` below brings a
- * `RoomProvider` that needs the conference's providers around it.
+ * It renders the thread and nothing around it: the room it belongs to is already open, because this is rendered
+ * *inside* the chat panel's own `RoomProvider`. The modal region it goes through sits there too, and a modal is a
+ * React child of its region however far the portal moves the DOM node — which is what lets this consume the room's
+ * context rather than opening the room a second time.
  */
-const ConferenceThreadModal = ({ rid, tmid, onClose }: ConferenceThreadModalProps) => {
+const ConferenceThreadModal = ({ tmid, onClose }: ConferenceThreadModalProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
 
@@ -35,8 +36,10 @@ const ConferenceThreadModal = ({ rid, tmid, onClose }: ConferenceThreadModalProp
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent padding={0} overflow='hidden' display='flex' flexDirection='column' height='60vh'>
-				<Box display='flex' flexDirection='column' height='full'>
-					<ConferenceRoomPanel rid={rid} tmid={tmid} onEscape={onClose} />
+				<Box className={narrowRoomStyle} display='flex' flexDirection='column' height='full'>
+					<ChatProvider tmid={tmid}>
+						<ConferenceThreadChat tmid={tmid} onEscape={onClose} />
+					</ChatProvider>
 				</Box>
 			</ModalContent>
 		</Modal>
