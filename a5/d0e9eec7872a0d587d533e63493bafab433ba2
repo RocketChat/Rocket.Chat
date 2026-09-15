@@ -1,0 +1,48 @@
+packages/streamer/src/StreamPresence.ts
+  s_00ff27bda72447::t_544831b0e52aa5 7-9
+packages/streamer/tsconfig.json
+  s_00ff27bda72447::t_8fdcb160243b66 1-9
+packages/streamer/src/listeners.module.ts
+  s_00ff27bda72447::t_1f561622d1b301 72-73
+  s_00ff27bda72447::t_5ab220ba362627 6-27
+  s_00ff27bda72447::t_af6b4183cb82a4 46
+packages/streamer/.gitignore
+  s_00ff27bda72447::t_f53f99d9c285eb 1-5
+eslint.config.mjs
+  s_00ff27bda72447::t_0bccb3a51a9dfa 344-345
+  s_abc60a14c993f1::t_8fbbc9bd24992f 343
+packages/streamer/jest.config.ts
+  s_00ff27bda72447::t_ea5bf4d929a48c 1-6
+packages/streamer/package.json
+  s_00ff27bda72447::t_24f9b3e71930d5 1-46
+packages/streamer/turbo.json
+  s_00ff27bda72447::t_12b351c7dde514 1-9
+packages/streamer/src/notifications.module.ts
+  s_00ff27bda72447::t_6e64594b45912f 15-18
+yarn.lock
+  s_00ff27bda72447::t_af0fb16d75f56d 11067-11090
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a5d0e9eec7872a0d587d533e63493bafab433ba2",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_abc60a14c993f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dd6fcdf6-5ffc-4230-a98b-f632233d063b",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
