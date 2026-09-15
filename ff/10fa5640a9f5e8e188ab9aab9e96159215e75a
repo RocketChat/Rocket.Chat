@@ -1,0 +1,23 @@
+packages/streamer/package.json
+  s_e58fd7704b2631::t_9b8afb0b32be98 15
+packages/streamer/tsconfig.json
+  s_e58fd7704b2631::t_686f7808da1e1f 8-11
+packages/streamer/tsconfig.build.json
+  s_e58fd7704b2631::t_849ef7b8cbf642 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ff10fa5640a9f5e8e188ab9aab9e96159215e75a",
+  "prompts": {},
+  "sessions": {
+    "s_e58fd7704b2631": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1fcc9b3-26e3-449b-9b45-2217554902d8",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
