@@ -27,7 +27,9 @@ module.exports = {
 	mutate: [source],
 	coverageAnalysis: 'perTest',
 
-	ignorePatterns: ['.meteor', 'client', 'public', 'private', 'tests/e2e', '.storybook', 'packages', 'reports'],
+	// `.stryker-tmp*` matters here: the driver runs several targets at once, each with its own temp
+	// directory, and a sandbox copy that walks a sibling run's directory fails as that run deletes it.
+	ignorePatterns: ['.meteor', 'client', 'public', 'private', 'tests/e2e', '.storybook', 'packages', 'reports', '.stryker-tmp*'],
 
 	reporters: ['json'],
 	jsonReporter: { fileName: `${reportDir}/mutation.json` },
