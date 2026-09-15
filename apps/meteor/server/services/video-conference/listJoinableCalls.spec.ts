@@ -4,7 +4,7 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, createService, resetAll } from './testHarness';
-import { CALL_FACES_SHOWN } from '../../../../../lib/videoConference/constants';
+import { CALL_FACES_SHOWN } from '../../../lib/videoConference/constants';
 
 const me = 'me';
 

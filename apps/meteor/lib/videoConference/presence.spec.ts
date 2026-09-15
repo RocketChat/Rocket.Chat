@@ -4,9 +4,11 @@ import { expect } from 'chai';
 import {
 	PRESENCE_HEARTBEAT_MS,
 	PRESENCE_LEASE_MS,
+	PRESENCE_LEASE_TICKS,
+	PRESENCE_THROTTLED_HEARTBEAT_MS,
 	expiredPresenceLeases,
 	isPresenceSweepDue,
-} from '../../../../lib/videoConference/presence';
+} from './presence';
 
 const ts = new Date('2026-08-02T10:00:00.000Z');
 const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);
@@ -80,9 +82,20 @@ describe('isPresenceSweepDue', () => {
 		expect(isPresenceSweepDue(PRESENCE_LEASE_MS)).to.be.true;
 	});
 
-	// The grace period is only useful if everyone still in a call gets to renew inside it — several times over,
-	// since a browser throttles a hidden window's timers to roughly one a minute.
-	it('waits long enough for a surviving window to renew', () => {
-		expect(PRESENCE_LEASE_MS / PRESENCE_HEARTBEAT_MS).to.be.at.least(3);
+	// The rate a window aims for has to be one a throttled window can actually keep, or it drops renewals it
+	// believes it is sending.
+	it('aims for a heartbeat a throttled window can keep', () => {
+		expect(PRESENCE_HEARTBEAT_MS).to.be.at.most(PRESENCE_THROTTLED_HEARTBEAT_MS);
+	});
+
+	// The arithmetic cannot tell "intervals spanned" from "renewals tolerated", and the two read alike, so the
+	// boundary is pinned here instead: expiry is inclusive, which makes the last interval a deadline.
+	it('survives every throttled renewal going missing but the last', () => {
+		const users = [member({ _id: 'hidden', lastSeenAt: ts })];
+
+		expect(expiredPresenceLeases(users, at(PRESENCE_THROTTLED_HEARTBEAT_MS * (PRESENCE_LEASE_TICKS - 1)))).to.deep.equal([]);
+		expect(expiredPresenceLeases(users, at(PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_LEASE_TICKS))).to.deep.equal([
+			{ uid: 'hidden', leftAt: ts },
+		]);
 	});
 });

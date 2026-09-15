@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, providerCapabilities, resetAll } from './testHarness';
-import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/constants';
+import { EMPTY_CALL_GRACE_MS } from '../../../lib/videoConference/constants';
 
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
 // projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A

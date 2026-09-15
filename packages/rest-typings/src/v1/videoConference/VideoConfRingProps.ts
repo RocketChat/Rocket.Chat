@@ -5,12 +5,9 @@ import { ajv } from '../Ajv';
 export type VideoConfRingProps = {
 	callId: string;
 	/**
-	 * The member to ring, by user *id* — not username. Ringing targets someone who is already a conference
-	 * member, and members are tracked by id; `video-conference.add-participants` speaks usernames instead,
-	 * because it may also invite people into a room.
+	 * The member to ring, by user id — they are already a member, and members are tracked by id.
 	 *
-	 * One at a time on purpose: ringing again is aimed at a particular person who didn't pick up, so the caller
-	 * says who. Ringing a batch is what adding participants does.
+	 * One at a time: ringing a batch is what `add-participants` does, and it speaks usernames instead.
 	 */
 	userId: string;
 };

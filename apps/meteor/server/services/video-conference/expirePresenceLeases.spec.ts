@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { buildGroupCall, buildMember, cloneFixture, createService, resetAll } from './testHarness';
-import { PRESENCE_LEASE_MS } from '../../../../../lib/videoConference/presence';
+import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
 
 const ts = new Date('2026-08-02T10:00:00.000Z');
 const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);

@@ -509,28 +509,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		void api.broadcast('room.video-conference', { rid, callId });
 	}
 
-	/**
-	 * Whether the provider runs the call inside Rocket.Chat rather than at a page of its own.
-	 *
-	 * A question asked all over this file — of a call, of a provider name, positively and negatively — and one
-	 * worth asking through a name, because "embedded" is a claim about where the media runs and half the rules
-	 * here turn on it.
-	 */
+	/** Whether the provider runs the call inside Rocket.Chat rather than at a page of its own. */
 	private isEmbeddedProvider(providerName: string): boolean {
 		return videoConfProviders.getProviderCapabilities(providerName)?.embedded === true;
 	}
 
-	/** Whether the provider supports a chat that outlives the call — see `maybeCreateDiscussion`. */
 	private supportsPersistentChat(providerName: string): boolean {
 		return videoConfProviders.getProviderCapabilities(providerName)?.persistentChat === true;
 	}
 
-	/**
-	 * Tells anyone watching the conference that something about it moved — its membership, its chat's room, or who
-	 * can read that chat. Whichever it was, the answer on the other side is to read the conference again, so this
-	 * is one signal rather than three: the call window needs it to know whether it is still waiting on anyone, and
-	 * a participant's chat panel needs it to follow the chat.
-	 */
 	private notifyConferenceUpdate(callId: VideoConference['_id']): void {
 		void api.broadcast('video-conference.updated', { callId });
 	}
@@ -626,17 +613,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
 		const record = {
 			t: 'videoconf',
-			// The call's name, where the call's chat is a thread on this message — because a thread is titled after
-			// its parent, and with nothing to read there every call in a room was listed as `Video Conference`, the
-			// message type's generic name. Three calls in a channel were three threads with one name between them.
-			//
-			// It costs nothing in the room: a message carrying blocks renders those and never its text
-			// (`RoomMessageContent` draws a body only when there are no blocks), so the readers are the two places
-			// that name a thread from its parent — the room's thread list and the thread's own header, both of
-			// which check `msg` before falling back to the message type. A direct call has no name of its own to
-			// use, and a group call whose creator left the field empty keeps the generic one.
-			// Falls back to the localised name rather than an empty string: an empty `msg` is what made a new
-			// conference arrive as an empty notification (#41156).
+			// Names the thread, which takes its title from this parent. Invisible in the room itself: a message
+			// carrying blocks renders those and never its text. Falls back to the localised name rather than an
+			// empty string, which is what made a new conference arrive as an empty notification (#41156).
 			msg:
 				this.threadTitleFor(call) ||
 				i18n.t('Video_Conference', {
@@ -660,11 +639,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
-		// Embedded (built-in) providers like LiveKit are registered by core
-		// only when their prerequisites are satisfied (e.g. VideoConf_LiveKit_
-		// Enabled + URL + API key + secret). Their presence in the registry
-		// IS the "fully configured" signal. Going through the apps-engine
-		// manager would fail because there's no app behind them.
+		// There is no app behind a built-in provider, so the apps-engine manager has nothing to ask. Core only
+		// registers one once its settings are complete, which makes its presence the configured signal.
 		if (this.isEmbeddedProvider(providerName)) {
 			return;
 		}
@@ -845,11 +821,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const isEmbedded = this.isEmbeddedProvider(providerName);
 
-		// Being called makes you a member, exactly as being added to a group conference does. Without this the
-		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
-		// and a call they missed leaves them no history entry. Embedded only: a non-embedded callee has always
-		// entered `users` by answering, and putting them there earlier would rewrite the call history their
-		// clients build from it.
+		// Embedded only: a non-embedded callee has always entered `users` by answering, and adding them earlier
+		// would rewrite the call history their clients build from it.
 		if (isEmbedded) {
 			await this.addAbsentMember(callId, calleeId);
 		}
@@ -908,13 +881,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Everyone the end of a call concerns, which is not the same as everyone in its room.
 	 *
-	 * Being added to a conference grants no room access — the third person in a DM call is a member of the call
-	 * with no subscription to the DM it started in — so a broadcast that walks subscriptions alone never reached
-	 * them, and their window went on showing a call that had ended. Their own membership is added to the room's,
-	 * the way `assignDiscussionToConference` does it when the chat moves.
-	 *
-	 * Only the end is broadcast this way. `ring` and `started` are about a call appearing in a room, and someone
-	 * outside that room learns of it by being rung rather than by watching the room.
+	 * Conference membership grants no room access, so members with no subscription have to be added to the
+	 * room's audience explicitly. Only the end is broadcast this way.
 	 */
 	private async notifyCallAndRoomUsers(
 		call: AtLeast<VideoConference, '_id' | 'rid' | 'users'>,
@@ -969,10 +937,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-group-call');
 		}
 
-		// Embedded providers (LiveKit) render the call inline in Rocket.Chat —
-		// no URL handoff. Skip both URL generation and ringing notifications:
-		// the call shows up as an "active call" banner in the room and other
-		// participants tap to join. No incoming-call sound/modal.
+		// An embedded call has no URL to hand off and announces itself as a banner in the room, so neither the
+		// URL nor the ring applies.
 		const isEmbedded = this.isEmbeddedProvider(providerName);
 		if (!isEmbedded) {
 			const url = await this.generateNewUrl(call);
@@ -1361,11 +1327,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Records that a user dismissed the call instead of joining.
 	 *
-	 * This only writes to the member's entry — it never ends the conference, which is what separates
-	 * declining a conference from rejecting a 1:1 call. A member who declines can still join afterwards.
-	 *
-	 * Someone rung as a room member has no entry yet, so one is created for them: without it there would be
-	 * nowhere to record the decline.
+	 * Never ends the conference, and never stops them joining later. A member rung without an entry gets one,
+	 * so there is somewhere to record it.
 	 */
 	public async declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
@@ -1383,15 +1346,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Rings one member who isn't in the call, again.
+	 * Rings one member who is not in the call, again. Says whether the ring went out.
 	 *
-	 * A ring is one-shot, so the caller of a call nobody picked up needs a way to try again — and adding the
-	 * same person a second time won't do it, since they are already a member. One member at a time, because
-	 * that is the shape of the act: someone specific didn't pick up. Says whether the ring went out.
-	 *
-	 * A member who already left is rung too: they were there and are not now, which is exactly the case
-	 * "call them back" is for. Someone already in the call is never rung, and neither is someone whose phone is
-	 * ringing right now: there is nothing more to ask of them. The caller can't ring themselves.
+	 * Never someone already in the call, and never someone whose phone is ringing now — there is nothing more
+	 * to ask of either. A member who left is rung, which is what calling them back means.
 	 */
 	public async ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
@@ -1414,11 +1372,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Associates a user with the call without marking them present — being a member is not being in the call.
+	 * Associates a user with the call without marking them present. Says whether the user was found.
 	 *
-	 * Two paths need it: being called, and declining a call you were only rung about as a room member. In both,
-	 * the person has to exist on the call before anything — an answer, a decline, a history row — can be recorded
-	 * against them. Says whether it found the user, which is the only thing the two callers disagree about.
+	 * A person has to exist on the call before an answer, a decline or a history row can be recorded for them.
 	 */
 	private async addAbsentMember(callId: VideoConference['_id'], uid: IUser['_id']): Promise<boolean> {
 		const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(uid, {
@@ -1432,12 +1388,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
-	/** Leaves every other call this user is still counted as being in. See `addUserToCall`. */
 	private async leaveOtherCalls(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
-		// Asking the database for "still in it" rather than reading every membership and sifting in memory.
-		// The status predicate names the exact statuses the partial index is filtered on, which is what lets the
-		// planner use it; `endedAt` stays because it is the actual liveness rule (everything that ends a call sets
-		// both), so the semantics don't hang on the index's filter.
+		// The status predicate names the statuses the partial index is filtered on, which is what makes it
+		// eligible. `endedAt` stays because that, not the index filter, is the liveness rule.
 		const others = await VideoConferenceModel.find(
 			{
 				_id: { $ne: callId },
@@ -1453,21 +1406,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * The calls that are running right now and that this user may join.
+	 * The calls running right now that this user may join.
 	 *
-	 * This is how a call is reached without having caught its ring — which matters because a ring is one-shot and
-	 * a conference started in a room with more than ten subscribers rings nobody at all.
-	 *
-	 * Nothing new is stored to answer it: the conference records already hold membership, liveness and the room.
-	 * The scan is over *running* conferences rather than over this user's rooms, so its cost follows how many
-	 * calls are in progress — few — rather than how many rooms the user is in.
-	 *
-	 * A call is offered when the user is a member of it, or is in the room it belongs to. Room *membership* rather
-	 * than room *access*: a public channel is readable by anyone, and a call in a channel the user never joined
-	 * has no business in their sidebar.
-	 *
-	 * Calls nobody is in are left out. A conference only stops when someone ends it or the expiry cron reaches it,
-	 * so without this an abandoned one would be advertised as joinable for a day.
+	 * Room membership rather than room access, so a call in a public channel they never joined stays out of
+	 * their sidebar. Calls nobody is in are left out.
 	 */
 	public async listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]> {
 		// The status predicate matches the partial index's filter so the scan can be served by it; `endedAt` is
@@ -1529,9 +1471,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Rings a set of members: the in-product ring, the desktop notification that reaches someone who isn't
-	 * looking at the app, and the record of when it happened — which is what lets every client tell a phone that
-	 * is ringing now from one that was rung and ignored.
+	 * Rings a set of members: the in-product ring, the desktop notification, and the record of when it happened.
+	 *
+	 * That record is what lets a client tell a phone ringing now from one rung and ignored.
 	 */
 	private async ringUsers(callId: VideoConference['_id'], rid: IRoom['_id'], uid: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
 		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
@@ -1544,17 +1486,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Rings the other side of a direct call when its caller arrives in it.
+	 * Rings the other side of a direct call when its caller arrives in it. Says whether it rang.
 	 *
-	 * Creating the call is not asking anyone to answer it: the caller lands on the preflight screen first, and
-	 * being rung into a call whose caller is still choosing a camera means answering to an empty room. So the
-	 * ring waits for them to actually enter — which is this moment.
-	 *
-	 * Only members who have never been rung, so rejoining doesn't ring anyone again; the call window's own
-	 * "ring again" is how a second attempt is asked for.
-	 *
-	 * Says whether it rang, because the caller arriving is also what starts the call — and starting a direct
-	 * call pushes everyone in the room. Both would reach the same phone, a moment apart, about one call.
+	 * Creating a call is not asking anyone to answer it — the caller is still on the preflight screen. Only
+	 * members never rung before, so a rejoin rings nobody again.
 	 */
 	private async ringCalleeOnCallerArrival(call: IDirectVideoConference, uid: IUser['_id']): Promise<boolean> {
 		if (call.createdBy._id !== uid) {
@@ -1580,19 +1515,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Records that a member left the call, and ends the conference once nobody is left in it.
+	 * Records that a member left, and ends the conference once nobody is left in it.
 	 *
-	 * This is what gives a conference an end at all for providers that never report one — closing the call
-	 * window is the only signal there is. Ending it is what writes everyone's call history, so without this a
-	 * call sits at `STARTED` until the expiry cron notices it a day later.
-	 *
-	 * Leaving is not declining and not un-joining: membership and `joined` both stand, so the member keeps their
-	 * history entry and can rejoin.
-	 *
-	 * The call is not ended the moment it empties. `pagehide` fires on a reload just as it does on a close, and
-	 * the two are indistinguishable from it — so ending on the spot meant refreshing the call window killed the
-	 * call. Instead the emptiness is confirmed after a grace period, which a rejoin cancels by simply being back
-	 * in the call. That also absorbs a network blip taking the window down for a moment.
+	 * Leaving is neither declining nor un-joining: the member keeps their history entry and can rejoin. The
+	 * ending waits out a grace period, because `pagehide` cannot tell a reload from a close.
 	 */
 	public async leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, {
@@ -1602,10 +1528,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		// Already recorded as gone, so there is nothing to record and nobody to tell. Leaving is reported more
-		// than once by design — the call window says so as it closes, and whatever opened it says so again if
-		// that window vanished without managing to — and re-stamping would move a departure that already
-		// happened and broadcast a roster change nothing changed.
+		// Leaving is reported more than once by design, so re-stamping would move a departure that already
+		// happened and announce a roster change that did not.
 		const member = call.users.find(({ _id }) => _id === uid);
 		if (!member || member.leftAt) {
 			return;
@@ -1617,11 +1541,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyConferenceUpdate(callId);
 
 		if (this.isEmbeddedProvider(call.providerName)) {
-			// Only the leaver's own devices are told 'end', so their other windows stop showing a call they are no
-			// longer in. Never the room: one member leaving is not the call ending — a reload fires a leave too —
-			// and a room-wide 'end' from here would dismiss everyone else's ringing popup and silence the caller's
-			// outgoing ring while the call still runs. The room-wide 'end' belongs to `endCall`, which the grace
-			// period below reaches once the call has actually emptied.
+			// The leaver's own devices only. A room-wide 'end' here would dismiss everyone else's ringing popup
+			// while the call still runs; that one belongs to `endCall`.
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
 
 			// Out of the call, so back to whatever status they had before it. Only embedded joins claim busy,
@@ -1642,18 +1563,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Says the user is busy for as long as they are in a call, without overwriting the status they chose.
+	 * Marks the user busy for the duration of the call, without discarding the status they chose.
 	 *
-	 * A *claim* rather than a status. `internal` is the strongest source there is, so busy is what shows for as long
-	 * as the call lasts; the status it displaced is stashed and handed back when the claim ends, which is how someone
-	 * who set themselves away before the call is away again after it. A status the user sets *during* the call is
-	 * queued the same way rather than displayed — the call is not overruled while it is happening, and their latest
-	 * intent is what they are left with once it ends.
-	 *
-	 * Ended by id, so it can end in any order relative to a voice call's own claim: two `internal` claims stash for
-	 * each other rather than one clobbering the other.
-	 *
-	 * Nothing here is allowed to break a call. Presence is a courtesy; joining is not.
+	 * A claim rather than a status: the one it displaces is stashed and handed back when the claim ends. Keyed
+	 * by id so it nests with a voice call's own claim. Never allowed to fail a join.
 	 */
 	private async claimBusyForCall(uid: IUser['_id']): Promise<void> {
 		try {
@@ -1671,7 +1584,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Gives the user their own status back. A no-op if something with a stronger claim has taken over since. */
+	/** A no-op if something with a stronger claim has taken over since. */
 	private async releaseBusyForCall(uid: IUser['_id']): Promise<void> {
 		try {
 			await Presence.endActiveState(uid, this.name);
@@ -1681,23 +1594,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Renews a member's presence lease: their call window telling us it is still in the call.
+	 * Renews a member's presence lease — their call window saying it is still in the call.
 	 *
-	 * Provider-agnostic by construction — the conference window is ours whoever runs the media, so this is the one
-	 * presence signal that exists for every provider. See `lib/videoConference/presence` for why presence is a
-	 * lease rather than a reported departure.
-	 *
-	 * A renewal can also *revive* an inferred departure — the sweep gave up on this window while it was in fact
-	 * alive, and this heartbeat is the correction. The revival has to undo what the eviction did: the sweep
-	 * released their busy claim and told every watcher the roster shrank, so coming back re-claims busy (embedded
-	 * only, exactly as joining does) and announces the roster again. An ordinary renewal changes nothing anyone
-	 * can see, so it stays free of extra writes and notifications.
+	 * A renewal also revives a departure that was inferred rather than reported, undoing what the sweep did to
+	 * their busy claim and to the roster. An ordinary renewal writes nothing anyone can see.
 	 */
 	public async renewPresence(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
-		// Whether this renewal revived anything is the model's answer, decided in the same atomic step as the
-		// write itself — a separate read would race the member reporting a leave in between, and would happily
-		// call a heartbeat against an *ended* call a revival: the final throttled heartbeat of the very window
-		// whose expiry ended the call would then re-claim busy with no release path left to ever undo it.
+		// Revival is decided in the same atomic step as the write. A separate read would race a reported leave,
+		// and could call a heartbeat against an ended call a revival — re-claiming busy with no release left.
 		const renewal = await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
 
 		// Nothing matched (the call ended, the member is unknown, or they reported leaving) or nothing was
@@ -1716,23 +1620,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Marks everyone whose presence lease has run out as having left, and ends the calls that empties.
 	 *
-	 * This is the durable half of leaving. `leaveCall` is the reported half: accurate, immediate, and impossible
-	 * to rely on — it needs a live client talking to a live server, so it is lost exactly when the workspace goes
-	 * down under a call that carries on in the provider. It is also lost by a crashed tab or a closed laptop, and
-	 * the grace period `leaveCall` schedules for an emptied call is an in-process timer that a restart discards.
-	 * Leases cover all of it, because their evidence lives in the database rather than in anyone's memory.
-	 *
-	 * Departures are stamped with the last evidence we had, never with the moment of the sweep — see
-	 * `expiredPresenceLeases`. Callers must respect `isPresenceSweepDue` first: right after a restart every lease
-	 * looks expired whether or not anyone actually left.
+	 * Callers must check `isPresenceSweepDue` first: right after a restart every lease reads as expired whether
+	 * or not anyone actually left.
 	 */
 	public async expirePresenceLeases(now = new Date()): Promise<void> {
 		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
 			try {
-				// Presence leases only apply to embedded providers, whose call window is ours and sends heartbeats.
-				// Non-embedded providers (Jitsi, Meet, Pexip) open in an iframe/popup we don't control — no heartbeat
-				// is sent, so every lease would look expired and the sweep would end every call after 3 minutes.
-				// Those calls are cleaned up by the 24-hour TTL cron instead, exactly as they were before leases existed.
+				// A non-embedded call never heartbeats, so every lease on one reads as expired. Sweeping those would
+				// end a live call after three minutes; the 24-hour TTL cron has them.
 				if (!this.isEmbeddedProvider(call.providerName)) {
 					continue;
 				}
@@ -1766,7 +1661,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Ends a conference only if it is still empty — a rejoin inside the grace period is what cancels it. */
+	/** A rejoin inside the grace period is what cancels the ending. */
 	private async endCallIfEmpty(callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, endedAt: 1 } });
 		if (!call || call.endedAt || call.users.some(isInVideoConference)) {
@@ -1777,28 +1672,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Where the conference's chat lives and which members can't read it, because membership deliberately grants
-	 * no room access. Surfacing them is the point: the choice of how to fix it is offered once it actually
-	 * matters, rather than being forced on whoever adds a participant — so this also reports what that choice
-	 * is, since it depends on the room and on who is asking.
+	 * Where the conference's chat lives, which members cannot read it, and what remedy is available.
 	 *
-	 * Access isn't always a subscription question — a plain public channel is readable by anyone, so
-	 * `getMembersWithoutRoomAccess` answers both that and the plain private-room case from one `Subscriptions`
-	 * read instead of one authorization call per member. A team-owned, discussion, or ABAC-attributed room can
-	 * grant access through paths a room+subscriptions read can't see (team membership, the parent room's own
-	 * rules, an ABAC decision), so those still ask per member — getting one of those wrong is worse than the
-	 * extra reads, and conferences are small.
+	 * Conference membership grants no room access, so surfacing the members without it is the point.
 	 */
 	public async getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess> {
 		return (await this.resolveChatAccess(uid, callId)).access;
 	}
 
 	/**
-	 * `getChatAccess`, plus the *usernames* of the members it decided about.
+	 * `getChatAccess`, plus the usernames of the members it decided about.
 	 *
-	 * The public shape carries ids, because that is what a client matches against the members it already holds. A
-	 * room invite needs usernames — and they were in hand while the ids were being worked out, so resolving the
-	 * access doesn't have to read the conference a second time to find them.
+	 * The public shape carries ids, which is what a client matches against; a room invite needs usernames.
 	 */
 	private async resolveChatAccess(
 		uid: IUser['_id'],
@@ -1839,14 +1724,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * A team-owned public channel can be read by any team member without them ever having subscribed to it, a
-	 * discussion inherits its access from the parent room it was split off from, and a room carrying ABAC
-	 * attributes can bypass subscriptions entirely — none of that is visible from this room's own subscriptions,
-	 * so those keep asking `canAccessRoomIdAsync` once per member, exactly as before.
+	 * The members who cannot read the given room.
 	 *
-	 * Everything else reduces to one `Subscriptions` read for every member at once: a plain public channel (no
-	 * team) is readable by anyone unless banned from it specifically, and a plain private room (group or DM) is
-	 * readable only by whoever holds an actual, non-invited subscription to it.
+	 * Rooms whose access can come from outside their own subscriptions — team-owned, discussions, ABAC — are
+	 * asked once per member. Everything else reduces to a single `Subscriptions` read.
 	 */
 	private async getMembersWithoutRoomAccess(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
@@ -1876,13 +1757,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Names a running group conference, for the person who started it.
+	 * Names a running group conference.
 	 *
-	 * The name is what the provider is told to call the meeting and what the call is listed as everywhere it
-	 * appears, so it is worth being able to set it once the call exists rather than only in the instant it is
-	 * created. Only the creator: a title everyone in the call could rewrite is a title nobody can rely on.
-	 *
-	 * A direct call has no title of its own — it is named after the other person — so there is nothing to set.
+	 * Only the creator may: a title anyone in the call could rewrite is one nobody can rely on. A direct call is
+	 * named after the other person, so there is nothing to set.
 	 */
 	public async renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void> {
 		const call = await VideoConferenceModel.findOneById<VideoConference>(callId, {
@@ -1909,9 +1787,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Gives every member who can't read the chat access to it, either by bringing them into the room — which
-	 * exposes its whole history — or by moving the chat to a discussion. Both are lossy in different ways, so
-	 * the caller says which; nothing here infers one. Returns the room the chat now lives in.
+	 * Gives the members who cannot read the chat access to it. Returns the room the chat now lives in.
+	 *
+	 * Both remedies give something away, so the caller names one and nothing here infers it.
 	 */
 	public async shareChatWithMembers(
 		uid: IUser['_id'],
@@ -1998,9 +1876,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Where a call's persistent chat lives.
 	 *
-	 * The setting that chooses is registered by the PR that introduces the call window, because that is the only
-	 * thing a mode other than `main_room` describes. Unregistered — which is every workspace until then — this
-	 * answers `main_room`, the discussion off the room that persistent chat has always created.
+	 * The setting behind it is registered by the call window. Unregistered, this answers `main_room`.
 	 */
 	private getPersistentChatMode(): 'thread' | 'main_room' {
 		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
@@ -2009,29 +1885,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Whether this call's chat is a thread hanging off the call's own message in the room.
 	 *
-	 * Persistent chat is on, and the mode says thread rather than discussion. Nothing else: the mode can only
-	 * answer `thread` where the call window exists to read one in — see `getPersistentChatMode`.
-	 *
-	 * The provider used to be asked as well, through `supportsPersistentChat`, and no provider an app registers
-	 * declares that capability — so thread mode did nothing for a Jitsi call and the chat panel quietly showed
-	 * the room instead. The wrong question: a thread off the call's message is *our* chat panel's, not the
-	 * provider's feature, and an iframed provider renders inside our own page, so our panel is beside it either
-	 * way. Whoever runs the media, the chat is ours.
-	 *
-	 * `maybeCreateDiscussion` still asks: a discussion per call is what persistent chat created before the
-	 * window existed, and which providers get one is not this change's business to widen.
+	 * Deliberately not a provider question: the chat panel is ours whoever runs the media, and an iframed
+	 * provider renders inside our own page. `maybeCreateDiscussion` does still ask the provider.
 	 */
 	private chatLivesInAThread(): boolean {
 		return this.isPersistentChatEnabled() && this.getPersistentChatMode() === 'thread';
 	}
 
-	/**
-	 * Auto-follow the call's chat thread for a single user. Called when a
-	 * participant joins the call, so they receive thread notifications for
-	 * messages posted during the conference. Only applies when persistent
-	 * chat is enabled in "thread" mode and the started message already
-	 * exists. The underlying `follow` is idempotent ($addToSet).
-	 */
+	/** Idempotent: `follow` uses `$addToSet`. */
 	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
 		if (!this.chatLivesInAThread()) {
 			return;
@@ -2044,12 +1905,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await follow({ tmid: call.messages.started, uid });
 	}
 
-	/**
-	 * Auto-follow the call's chat thread for every participant already in
-	 * the call. Called when `messages.started` is first set (i.e. the
-	 * thread parent message has just been created) so that any user who
-	 * joined before the message existed gets subscribed retroactively.
-	 */
+	/** Only once the thread's parent message exists, for everyone who joined before it did. */
 	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
 		if (!this.chatLivesInAThread()) {
 			return;
@@ -2094,10 +1950,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return name.includes('[date]') ? name.replace('[date]', date) : `${date} ${name}`;
 	}
 
-	// Creates a discussion off the conference's room and points the conference's `discussionRid` at it so
-	// the chat continues there without exposing the parent room's history to the new participants. For a
-	// DM (which can't grow past two people) the discussion keeps the DM members; for other rooms it keeps
-	// the room's current members. In both cases the newly selected users are added.
+	/**
+	 * Moves the conference's chat to a discussion off its room, so it continues without exposing the parent
+	 * room's history to the people being added.
+	 */
 	private async createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
@@ -2130,10 +1986,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('error-invalid-discussion-type');
 		}
 
-		// Carry over the current participants so they keep the chat: DMs expose them on the room doc, while
-		// channels/groups read them from the room's subscriptions (the conference's `users` list only holds
-		// people who already joined the call, so it's not a good proxy for the room's members). The newly
-		// selected users are added on top.
+		// Not the conference's `users`: that holds only people who joined the call, which is not the room's
+		// membership.
 		const existingMembers =
 			baseRoom.t === 'd'
 				? baseRoom.usernames || []
@@ -2211,13 +2065,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Tells people about a conference through the desktop, for the case the in-product ring can't reach: a
-	 * backgrounded tab, or no client open at all. Clicking focuses the app, and the "Join call" action joins the
-	 * conference itself.
+	 * Tells people about a conference through the desktop, for when the in-product ring cannot reach them.
 	 *
-	 * Whether it carries a **room** is the one thing that matters here, because that is what makes the click
-	 * navigate. Someone invited *into* the room can be sent there; someone merely added to the call cannot —
-	 * membership grants no room access, so the room behind the call may be one they can't open.
+	 * Carries a room only when the recipient can open one: membership of the call grants no room access, and a
+	 * notification that navigates nowhere is worse than one that does not try.
 	 */
 	private async notifyUsersAboutConference({
 		recipients,
@@ -2259,7 +2110,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	/** Tells the users just added to a conference that it is ringing for them. */
 	private async notifyUsersAddedToConference(
 		adderId: IUser['_id'],
 		memberIds: IUser['_id'][],
@@ -2284,7 +2134,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	/** Tells the users just invited into the conference's room about it; clicking takes them to that room. */
+	/** Unlike a ring, this one can carry the room: they were just given access to it. */
 	private async notifyUsersInvitedToConference(
 		inviter: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		usernames: NonNullable<IUser['username']>[],
@@ -2384,10 +2234,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		try {
 			if (room) {
-				// Everyone involved with the call should land in the new discussion: the conference's members
-				// (including any added from outside the room) plus the original room's members, who were part of
-				// the conversation before the chat moved. Members who never joined the call are included on
-				// purpose — the discussion is where they catch up.
+				// Room members who never joined the call are included on purpose: the discussion is where they
+				// catch up on a conversation that moved out from under them.
 				const roomMemberIds = (await Subscriptions.findByRoomId(call.rid, { projection: { 'u._id': 1 } }).toArray()).map(({ u }) => u._id);
 				const recipients = new Set([...call.users.map(({ _id }) => _id), ...roomMemberIds]);
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
+import { conferenceNameFor } from './conferenceName';
 
 const rodrigo = { _id: 'rodrigo', name: 'Rodrigo Nascimento', username: 'rodrigo.nascimento' };
 const alice = { _id: 'alice', name: 'Alice', username: 'alice' };

@@ -35,12 +35,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// `createdAt` is part of the key so the `$or: [{ rid }, { discussionRid }]` listing below can be
 			// served by an index-ordered merge instead of a blocking in-memory sort of the whole room history.
 			{ key: { discussionRid: 1, createdAt: 1 }, unique: false },
-			// Listing the calls that are running (`findActiveWithMembers` and the service's own scans over open
-			// calls): a partial
-			// index, so it holds just the handful of conferences that are live. The hot queries match on these
-			// exact statuses, which is what makes the index eligible for them; `endedAt: { $exists: false }` alone
-			// could not anchor an index at all. `$in` in a partialFilterExpression needs MongoDB 6.0, and the
-			// minimum supported server is 7.0.
+			// Partial, so it holds only the live conferences. Queries must name these exact statuses to be
+			// eligible for it; `endedAt: { $exists: false }` alone could not anchor an index at all.
 			{
 				key: { status: 1, createdAt: -1 },
 				unique: false,
@@ -235,10 +231,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	/**
 	 * Adds a member to the conference, doing nothing if they are already one.
 	 *
-	 * The guard lives in the *query*, not in a read-then-write: `$addToSet` compares whole documents, so once
-	 * an entry can be mutated (by `setUserJoinedById` below) it would no longer match and a second call would
-	 * append a duplicate. Filtering on `users._id` makes this atomic and idempotent in one update, which also
-	 * removes the race in a caller that checks membership in memory first.
+	 * The guard is in the query rather than a read-then-write: `$addToSet` compares whole documents, so a
+	 * mutated entry would stop matching and a second call would append a duplicate.
 	 */
 	public async addMemberById(
 		callId: string,
@@ -280,19 +274,10 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	/**
-	 * Renews a member's presence lease — their call window reporting that it is still in the call.
+	 * Renews a member's presence lease, reviving an inferred departure but never a reported one.
 	 *
-	 * A renewal also undoes a departure that was *inferred*: a lease we gave up on while the window was in fact
-	 * alive was simply wrong, and the window saying so is the correction. A departure the member reported is
-	 * never undone this way — they left, and a heartbeat still in flight behind them must not put them back in
-	 * the call. Neither is anything undone on a call that has ended: the final heartbeat of a window whose lease
-	 * expiry emptied the call would otherwise regenerate a member inside an ENDED conference. Both conditions
-	 * live in the query, which is why a stale renewal matches nothing at all.
-	 *
-	 * Answers with what the write found, decided in the same atomic step as the write itself: `null` when nothing
-	 * matched (the call ended, the member is unknown, or their departure was reported), and otherwise whether this
-	 * renewal *revived* an inferred departure — judged from the entry as it stood before the write, along with the
-	 * call's room and provider so the caller can react without a second, racy read.
+	 * `null` when nothing matched: the call ended, the member is unknown, or they reported leaving. Those
+	 * conditions live in the query, so a stale renewal matches nothing.
 	 */
 	public async renewUserPresenceById(
 		callId: string,
@@ -342,10 +327,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
-	/**
-	 * `reason` says how the departure came to be known, and is only written when there is something to say: an
-	 * absent one reads as reported, which is what every entry written before leases existed was.
-	 */
+	/** `reason` is written only when there is something to say: an absent one reads as reported. */
 	public async setUserLeftById(callId: string, uid: IUser['_id'], leftAt = new Date(), reason?: VideoConferenceLeaveReason): Promise<void> {
 		await this.updateOne(
 			{ _id: callId },
@@ -447,11 +429,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	/**
-	 * Every call that is still open, with what the presence sweep needs to judge it: who is on the roster, and
-	 * which provider is running the media — the one that may be able to say who is in the room.
+	 * Every call still open, with what the presence sweep needs to judge it.
 	 *
-	 * Deliberately not scoped to a provider or to an age. Any open call has leases to check, and one whose
-	 * members all vanished ten seconds ago is exactly as stuck as one that has been that way for hours.
+	 * Deliberately unscoped by provider or age: any open call has leases to check.
 	 */
 	public findActiveWithMembers(): FindCursor<Pick<VideoConference, '_id' | 'rid' | 'users' | 'providerName'>> {
 		return this.find(

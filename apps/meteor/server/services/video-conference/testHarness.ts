@@ -112,7 +112,7 @@ export const createService = ({
 	models?: Record<string, unknown>;
 	overrides?: Record<string, unknown>;
 } = {}) => {
-	const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
+	const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		...commonServiceStubs,
 		'@rocket.chat/core-services': {
 			api: { broadcast },

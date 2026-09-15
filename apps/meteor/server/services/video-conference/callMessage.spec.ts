@@ -18,7 +18,7 @@ let settingsValues: Record<string, unknown> = {};
 
 const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 
-const { VideoConfService } = proxyquire.noCallThru().load('../../../../../server/services/video-conference/service', {
+const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 	...commonServiceStubs,
 	'@rocket.chat/models': {
 		Users: { findOneById: sinon.stub().resolves({ _id: 'creator', username: 'creator.user', name: 'Creator User' }) },

@@ -1,12 +1,8 @@
 import { RING_RECIPIENTS_LIMIT, hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { shouldRingRecipients } from '../../../../lib/videoConference/constants';
-import {
-	canRingConferenceMember,
-	getConferenceMemberStatus,
-	isUnaskedConferenceMember,
-} from '../../../../lib/videoConference/memberStatus';
+import { shouldRingRecipients } from './constants';
+import { canRingConferenceMember, getConferenceMemberStatus, isUnaskedConferenceMember } from './memberStatus';
 
 const at = new Date('2026-08-02T10:00:00.000Z');
 
