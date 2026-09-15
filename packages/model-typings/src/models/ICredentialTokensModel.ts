@@ -5,5 +5,6 @@ import type { IBaseModel } from './IBaseModel';
 export interface ICredentialTokensModel extends IBaseModel<ICredentialToken> {
 	create(_id: string, userInfo: ICredentialToken['userInfo']): Promise<void>;
 	findOneNotExpiredById(_id: string): Promise<ICredentialToken | null>;
+	extendExpirationById(_id: string): Promise<void>;
 	removeNotExpiredById(_id: string): Promise<ICredentialToken | null>;
 }

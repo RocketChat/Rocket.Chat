@@ -3,19 +3,32 @@ import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const retrieveCredential = sinon.stub().resolves(null);
+class MeteorErrorMock extends Error {
+	constructor(
+		public error: unknown,
+		public reason?: string,
+	) {
+		super(typeof reason === 'string' ? reason : String(error));
+	}
+}
+
+const retrieveCredential = sinon.stub().resolves(undefined);
+const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id', token: 'login-token' });
+const getUserForCheck = sinon.stub().resolves({ _id: 'user-id', services: {} });
+const doesUserRequire2FA = sinon.stub().returns(false);
 const removeById = sinon.stub().resolves();
+const extendExpirationById = sinon.stub().resolves();
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
 	log: sinon.stub(),
-	mapProfileToUserObject: sinon.stub(),
+	mapProfileToUserObject: sinon.stub().returns({ username: 'user' }),
 	events: { emit: sinon.stub() },
 };
 
 const handler = sinon.stub();
 proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'@rocket.chat/models': {
-		CredentialTokens: { removeById },
+		CredentialTokens: { removeById, extendExpirationById },
 	},
 	'meteor/accounts-base': {
 		Accounts: {
@@ -26,24 +39,36 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 		},
 	},
 	'meteor/meteor': {
-		Meteor: { Error },
+		Meteor: { Error: MeteorErrorMock },
 	},
 	'./lib/SAML': {
-		SAML: { retrieveCredential },
+		SAML: { retrieveCredential, insertOrUpdateSAMLUser },
 	},
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
 	},
+	'../2fa/code': { getUserForCheck },
+	'../oauth/twoFactorAuth': { doesUserRequire2FA },
 	'../i18n': { i18n: { t: sinon.stub().returns('') } },
 	'../logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 
+const reasonOf = (result: any): string => (result?.error as MeteorErrorMock)?.reason ?? '';
+
 describe('SAML loginHandler', () => {
 	beforeEach(() => {
 		retrieveCredential.reset();
-		retrieveCredential.resolves(null);
+		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });
+		insertOrUpdateSAMLUser.reset();
+		insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'login-token' });
+		extendExpirationById.reset();
+		extendExpirationById.resolves();
 		removeById.reset();
 		removeById.resolves();
+		getUserForCheck.reset();
+		getUserForCheck.resolves({ _id: 'user-id', services: {} });
+		doesUserRequire2FA.reset();
+		doesUserRequire2FA.returns(false);
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
 	});
 
@@ -65,10 +90,31 @@ describe('SAML loginHandler', () => {
 		expect(retrieveCredential.called).to.be.false;
 	});
 
-	it('should delete the credential token after retrieval', async () => {
-		await handler({ saml: true, credentialToken: 'token-to-delete' });
+	it('should discard the credential when no second factor is required', async () => {
+		const result = await handler({ saml: true, credentialToken: 'token' });
 
-		expect(removeById.calledOnce).to.be.true;
-		expect(removeById.calledWith('token-to-delete')).to.be.true;
+		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
+		expect(removeById.calledOnceWith('token')).to.be.true;
+		expect(extendExpirationById.called).to.be.false;
+	});
+
+	it('should keep the credential alive when a second factor is required', async () => {
+		doesUserRequire2FA.returns({ method: 'totp' });
+
+		const result = await handler({ saml: true, credentialToken: 'token' });
+
+		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
+		expect(extendExpirationById.calledOnceWith('token')).to.be.true;
+		expect(removeById.called).to.be.false;
+	});
+
+	it('should remove the credential when provisioning the user fails', async () => {
+		insertOrUpdateSAMLUser.rejects(new Error('error-invalid-user'));
+
+		const result = await handler({ saml: true, credentialToken: 'token' });
+
+		expect(reasonOf(result)).to.be.a('string');
+		expect(removeById.called).to.be.true;
+		expect(extendExpirationById.called).to.be.false;
 	});
 });

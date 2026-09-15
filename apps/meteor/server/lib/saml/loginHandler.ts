@@ -2,11 +2,13 @@ import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { getUserForCheck } from '../2fa/code';
 import { i18n } from '../i18n';
+import { SystemLogger } from '../logger/system';
+import { doesUserRequire2FA } from '../oauth/twoFactorAuth';
+import { warnUnlicensedAuthService } from '../premiumAuthDeprecation';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import { SystemLogger } from '../logger/system';
-import { warnUnlicensedAuthService } from '../premiumAuthDeprecation';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -27,7 +29,6 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
-	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
@@ -42,6 +43,13 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
 		const updatedUser = await SAML.insertOrUpdateSAMLUser(userObject);
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
+
+		const user = await getUserForCheck(updatedUser.userId);
+		if (user && doesUserRequire2FA(user)) {
+			await CredentialTokens.extendExpirationById(loginRequest.credentialToken);
+		} else {
+			await CredentialTokens.removeById(loginRequest.credentialToken);
+		}
 
 		return updatedUser;
 	} catch (err: any) {
