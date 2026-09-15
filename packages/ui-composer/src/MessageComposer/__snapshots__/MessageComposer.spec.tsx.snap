@@ -610,11 +610,11 @@ exports[`renders WithFiles without crashing 1`] = `
       >
         <div
           aria-label="antique-pocket-clock-500x500.zip"
-          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1mnd8rh rcx-css-1q87xeh"
+          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1mnd8rh rcx-css-s5rqwk"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-bhy0bx"
+            class="rcx-box rcx-box--full rcx-css-run4sg"
           >
             <i
               aria-hidden="true"
@@ -663,11 +663,11 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-1q87xeh"
+          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-s5rqwk"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-bhy0bx"
+            class="rcx-box rcx-box--full rcx-css-run4sg"
           >
             <i
               aria-hidden="true"
@@ -700,13 +700,13 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-1hx773r"
+          class="rcx-box rcx-box--full rcx-css-tlrtfc rcx-css-1bgdw6k"
           readonly=""
           role="group"
           title="Something went wrong"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-bhy0bx"
+            class="rcx-box rcx-box--full rcx-css-run4sg"
           >
             <i
               aria-hidden="true"

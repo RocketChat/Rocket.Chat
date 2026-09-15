@@ -22,7 +22,7 @@ export const MembersListDivider = ({ title, count }: MembersListDividerProps) =>
 			display='flex'
 			flexDirection='row'
 			justifyContent='space-between'
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='extra-light'
 		>
 			<Box>{t(title)}</Box>
