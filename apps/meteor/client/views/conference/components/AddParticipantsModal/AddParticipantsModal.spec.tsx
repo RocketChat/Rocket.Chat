@@ -23,7 +23,12 @@ const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider Per
 const memberUser = { _id: 'member-id', username: 'member', name: 'Room Member', nickname: '', status: 'online', avatarETag: '' };
 
 const autocomplete = jest.fn((_params: { selector: string }) => ({ items: [outsider, memberUser] }) as any);
-const channelMembers = jest.fn(() => ({ members: [{ _id: 'member-id', username: 'member' }] }) as any);
+// One endpoint for every room type that has a members list, paged: the modal keeps asking until it holds the
+// whole membership, because `API_Upper_Count_Limit` can cap a page well below what was requested.
+const roomMembers = jest.fn(
+	(_params: { offset?: number }) =>
+		({ members: [{ _id: 'member-id', username: 'member' }], count: 1, offset: 0, total: 1, success: true }) as any,
+);
 const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true }) as any);
 
 // The room is what the workspace knows about `rid`, and a conference member added from outside it knows
@@ -31,7 +36,7 @@ const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true })
 const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?: IRoom) => {
 	const appRoot = mockAppRoot()
 		.withEndpoint('GET', '/v1/users.autocomplete', autocomplete)
-		.withEndpoint('GET', '/v1/channels.members', channelMembers)
+		.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', roomMembers)
 		.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
 		.withJohnDoe();
 
@@ -53,7 +58,7 @@ const selectOutsider = async () => {
 
 beforeEach(() => {
 	autocomplete.mockClear();
-	channelMembers.mockClear();
+	roomMembers.mockClear();
 	addParticipants.mockClear();
 	dispatchToastMessage.mockClear();
 	// The ring preference outlives a test, being remembered in storage on purpose.
@@ -115,6 +120,34 @@ it('excludes the room members from the autocomplete when the workspace knows the
 	await waitFor(() => expect(selectorFor('outsider')).toBeDefined());
 
 	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: ['member'] });
+});
+
+// `API_Upper_Count_Limit` caps every paginated endpoint and cannot be read from the client, so a workspace
+// that sets it low answers a request for 100 members with far fewer. Taking the first answer as the whole
+// membership left room members in the picker as if they were not members at all.
+it('keeps asking until it holds the whole membership, however small the pages are', async () => {
+	const everyone = ['member', 'second', 'third'];
+	roomMembers.mockImplementation(
+		({ offset = 0 }) =>
+			({
+				members: everyone.slice(offset, offset + 1).map((username) => ({ _id: `${username}-id`, username })),
+				count: 1,
+				offset,
+				total: everyone.length,
+				success: true,
+			}) as any,
+	);
+
+	renderModal({}, createFakeRoom({ _id: 'room-id', t: 'c' }));
+
+	await typeFilter('outsider');
+
+	const selectorFor = (term: string) =>
+		autocomplete.mock.calls.map(([params]) => JSON.parse(params.selector)).find((selector) => selector.term === term);
+
+	await waitFor(() => expect(selectorFor('outsider')).toBeDefined());
+
+	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: everyone });
 });
 
 // This is the regression that matters: a conference member added from outside the room has no room to

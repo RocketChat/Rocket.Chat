@@ -1,4 +1,5 @@
-import { isDirectMessageRoom, isPrivateRoom } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -9,8 +10,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
+import { roomsQueryKeys, videoConferenceQueryKeys } from '../../../../lib/queryKeys';
 import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
+
+/** What to ask for per page. The server may answer with fewer — see the query below. */
+const MEMBERS_PAGE = 100;
 
 type AddParticipantsModalProps = {
 	callId: string;
@@ -47,16 +51,32 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 
 	// Members of the room are left out of the options: they can already join, so adding them would be a no-op.
 	// Everyone else is offerable — that is the point, since membership doesn't require room access.
-	// DMs expose their members on the room doc; other room types come from the members endpoint.
-	const getMembers = useEndpoint('GET', room && isPrivateRoom(room) ? '/v1/groups.members' : '/v1/channels.members');
-	// 100 is the members endpoints' own page size, and this asks for one page rather than paging the whole room.
-	// So in a room with more members than that, some of them are still offered as options. That is a redundant
-	// option rather than a wrong outcome: the server skips anyone already associated with the call, and the toast
-	// below says as much. Paging every member of a large room to tidy up a picker isn't worth the requests.
+	// DMs expose their members on the room doc; every other room type comes from the one members endpoint, which
+	// does not care whether the room is public or private.
+	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const membersQuery = useQuery({
 		enabled: !!room && !isDirectMessageRoom(room),
-		queryKey: ['conference', 'add-participants', 'members', rid, room?.t],
-		queryFn: () => getMembers({ roomId: rid, count: 100 }),
+		queryKey: roomsQueryKeys.members(rid, (room?.t ?? 'c') as RoomType),
+		queryFn: async () => {
+			// How many come back is the server's decision, not ours: `API_Upper_Count_Limit` caps every paginated
+			// endpoint and is not readable from here, so a workspace that sets it to 5 answers a request for 100
+			// with 5. Asking once and assuming the answer was complete left room members in the picker as if they
+			// were not members at all.
+			//
+			// So the response says when to stop. `total` is the room's membership, and paging until we hold it is
+			// a handful of requests when the modal opens, once — which is what it costs to be right about who is
+			// already here.
+			const members = [];
+
+			for (;;) {
+				const page = await getMembers({ roomId: rid, offset: members.length, count: MEMBERS_PAGE });
+				members.push(...page.members);
+
+				if (!page.count || members.length >= page.total) {
+					return members;
+				}
+			}
+		},
 	});
 
 	const memberUsernames = useMemo(() => {
@@ -66,7 +86,7 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 			return room.usernames;
 		}
 
-		return (membersQuery.data?.members ?? [])
+		return (membersQuery.data ?? [])
 			.map((member) => member.username)
 			.filter((username): username is string => typeof username === 'string');
 	}, [room, membersQuery.data]);
