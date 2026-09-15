@@ -230,7 +230,7 @@ const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* 
 		const plurals = getLanguagePlurals(language).concat(['zero']); // 'zero' is special in i18next
 
 		for (const [key, translation] of Object.entries(resource)) {
-			if (typeof translation !== 'object' || !translation) continue;
+			if (typeof translation !== 'object' || !translation || Array.isArray(translation)) continue;
 
 			const translationPlurals = Object.keys(translation);
 			for (const plural of translationPlurals) {
@@ -246,6 +246,65 @@ const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* 
 						},
 					};
 				}
+			}
+		}
+	}
+});
+
+/**
+ * Convert "plural array" to object
+ */
+const converArrayPluralToObject = describeTask('convert-plural-array', async function* () {
+	const languages = await getResourceLanguages();
+
+	for (const language of languages) {
+		const resource = await readResource(language);
+
+		for (const [key, translation] of Object.entries(resource)) {
+			if (typeof translation !== 'object' || !translation) continue;
+
+			if (Array.isArray(translation)) {
+				yield {
+					lint: async (reportError) => {
+						reportError('%s: key %o has invalid plural form %o', language, key, translation);
+					},
+					fix: async () => {
+						resource[key] = Object.fromEntries(translation);
+						await writeResource(language, resource);
+					},
+				};
+			}
+		}
+	}
+});
+
+/**
+ * Check for keys that have the original content from the base language
+ */
+const checkIfTranslated = describeTask('check-if-translated', async function* () {
+	const languages = await getResourceLanguages();
+	const baseResource = await readResource(baseLanguage);
+
+	for (const language of languages) {
+		const resource = await readResource(language);
+
+		if (language === baseLanguage) continue;
+
+		for (const [key, translation] of Object.entries(resource)) {
+			if (typeof translation !== 'object' || !translation) continue;
+
+			const baseTranslation = baseResource[key];
+			if (JSON.stringify(translation) === JSON.stringify(baseTranslation)) {
+				yield {
+					lint: async (reportError) => {
+						reportError(JSON.stringify({ [key]: translation }));
+						// reportError('%s: key %o has same content from base language %o', language, key, JSON.stringify({ [key]: translation }));
+					},
+					fix: async () => {
+						delete resource[key];
+						await writeResource(language, resource);
+					},
+				};
 			}
 		}
 	}
@@ -584,6 +643,8 @@ const tasksByName = {
 	'missing-placeholders': missingPlaceholders,
 	'extra-placeholders': extraPlaceholders,
 	'find-duplicate-keys': findDuplicateKeys,
+	'convert-array-plural-object': converArrayPluralToObject,
+	'check-if-translated': checkIfTranslated,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
