@@ -23,29 +23,37 @@ const OngoingCallsList = () => {
 	const showAllLabel = hiddenActive > 0 ? t('Show_all_count_new', { count: hiddenActive }) : t('Show_all');
 
 	return (
-		<Box display='flex' flexDirection='column'>
+		// A real list, so the calls are countable and each row is an item of it. It was a bare column of links,
+		// which a screen reader reads as loose links with nothing saying how many there are or that they belong
+		// together.
+		<Box is='ul' aria-label={t('Ongoing_calls')} display='flex' flexDirection='column' margin={0} paddingBlock={0} paddingInline={0}>
 			{visibleActive.map((item) => (
-				<CallListItem
-					key={item.callId}
-					call={item}
-					silenced={silencedCalls.includes(item.callId)}
-					onJoin={joinCall}
-					onDecline={decline}
-					onSilence={silence}
-				/>
+				<Box is='li' key={item.callId}>
+					<CallListItem
+						call={item}
+						silenced={silencedCalls.includes(item.callId)}
+						onJoin={joinCall}
+						onDecline={decline}
+						onSilence={silence}
+					/>
+				</Box>
 			))}
 
 			{visibleDeclined.length > 0 && (
 				<>
-					{visibleActive.length > 0 && <Divider />}
+					{/* `aria-hidden`, because a separator between two groups of the same list is a picture of the
+					    grouping rather than an item in it — and a bare `<hr>` between list items is not one. */}
+					{visibleActive.length > 0 && <Divider aria-hidden='true' />}
 					{visibleDeclined.map((item) => (
-						<CallListItem key={item.callId} call={item} onJoin={joinCall} onDecline={decline} />
+						<Box is='li' key={item.callId}>
+							<CallListItem call={item} onJoin={joinCall} onDecline={decline} />
+						</Box>
 					))}
 				</>
 			)}
 
 			{(hasMore || showAll) && (
-				<Box paddingInline={16} paddingBlock={4}>
+				<Box is='li' paddingInline={16} paddingBlock={4}>
 					<Button small secondary width='100%' onClick={toggleShowAll}>
 						{showAll ? t('Show_fewer') : showAllLabel}
 					</Button>

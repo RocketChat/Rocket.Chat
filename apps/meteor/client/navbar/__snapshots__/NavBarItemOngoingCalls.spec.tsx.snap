@@ -20,6 +20,8 @@ exports[`NavBarItemOngoingCalls renders OneOngoing without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
+          aria-controls="_r_1_"
+          aria-expanded="false"
           aria-label="1 ongoing call"
           class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
@@ -59,6 +61,8 @@ exports[`NavBarItemOngoingCalls renders OnlyDeclined without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
+          aria-controls="_r_2_"
+          aria-expanded="false"
           aria-label="Ongoing calls"
           class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
@@ -87,6 +91,8 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
+          aria-controls="_r_3_"
+          aria-expanded="true"
           aria-label="1 ongoing call"
           class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
@@ -119,23 +125,27 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
         <div
           class="rcx-box rcx-box--full rcx-css-xvdgy9"
         >
+          <span
+            data-focus-scope-start="true"
+            hidden=""
+          />
           <div
-            aria-label="Ongoing calls"
             class="rcx-box rcx-box--full rcx-css-rbegs8"
-            role="region"
+            id="_r_3_"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            <ul
+              aria-label="Ongoing calls"
+              class="rcx-box rcx-box--full rcx-css-1nirrkh"
             >
-              <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="/conference/ringing"
+              <li
+                class="rcx-box rcx-box--full"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    style="gap: 4px;"
                   >
                     <i
                       aria-hidden="true"
@@ -143,13 +153,14 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
                     >
                       ❲
                     </i>
-                    <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                    <a
+                      class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+                      href="/conference/ringing"
                     >
                       Ada Lovelace
-                    </div>
+                    </a>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-box rcx-box--full rcx-css-7j82ur"
                     >
                       <span
                         class="rcx-box rcx-box--full rcx-css-18wfy10"
@@ -160,10 +171,11 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    style="gap: 4px;"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-box rcx-box--full rcx-css-1319w2q"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -171,37 +183,46 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
                         1 person joined
                       </div>
                     </div>
-                    <button
-                      aria-label="Silence"
-                      class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                      title="Silence"
-                      type="button"
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+                      style="gap: 4px;"
                     >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
+                      <button
+                        aria-label="Silence"
+                        class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Silence"
+                        type="button"
                       >
-                        
-                      </i>
-                    </button>
-                    <button
-                      aria-label="Decline"
-                      class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                      title="Decline"
-                      type="button"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        aria-label="Decline"
+                        class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Decline"
+                        type="button"
                       >
-                        
-                      </i>
-                    </button>
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </a>
-            </div>
+              </li>
+            </ul>
           </div>
+          <span
+            data-focus-scope-end="true"
+            hidden=""
+          />
         </div>
       </div>
     </div>
@@ -219,6 +240,8 @@ exports[`NavBarItemOngoingCalls renders SeveralOngoing without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
+          aria-controls="_r_4_"
+          aria-expanded="false"
           aria-label="3 ongoing calls"
           class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"

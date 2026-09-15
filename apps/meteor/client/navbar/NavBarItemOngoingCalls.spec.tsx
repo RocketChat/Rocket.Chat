@@ -68,14 +68,45 @@ describe('NavBarItemOngoingCalls', () => {
 		expect(await screen.findByText('Ada Lovelace')).toBeInTheDocument();
 	});
 
-	// The list opened into a bare box, so the calls in it were loose rows nothing could scope to.
-	it('opens a named region holding the calls', async () => {
+	// The list opened into a bare box of links, so the calls in it were loose rows nothing could count or scope
+	// to. It is a list now, named, with each call an item of it.
+	it('opens a named list holding the calls', async () => {
 		render(<SeveralOngoing />);
 
 		await userEvent.click(await screen.findByRole('button', { name: /ongoing call/i }));
 
-		const list = await screen.findByRole('region', { name: 'Ongoing calls' });
+		const list = await screen.findByRole('list', { name: 'Ongoing calls' });
 
 		await waitFor(() => expect(list).toHaveTextContent('Daily standup'));
+	});
+
+	// Opening it from the keyboard used to leave the reader behind: the list is portalled away from the button,
+	// so nothing followed it there and nothing said it had opened.
+	it('says whether the list is open, and takes focus into it', async () => {
+		render(<OneOngoing />);
+
+		const button = await screen.findByRole('button', { name: /ongoing call/i });
+		expect(button).toHaveAttribute('aria-expanded', 'false');
+
+		await userEvent.click(button);
+
+		expect(button).toHaveAttribute('aria-expanded', 'true');
+		await waitFor(() =>
+			expect(screen.getByRole('list', { name: 'Ongoing calls' })).toContainElement(document.activeElement as HTMLElement),
+		);
+	});
+
+	// Escape is how a thing opened over the page is dismissed, and the button it came from is where focus belongs.
+	it('closes on Escape and gives the button its focus back', async () => {
+		render(<OneOngoing />);
+
+		const button = await screen.findByRole('button', { name: /ongoing call/i });
+		await userEvent.click(button);
+		await screen.findByRole('list', { name: 'Ongoing calls' });
+
+		await userEvent.keyboard('{Escape}');
+
+		await waitFor(() => expect(screen.queryByRole('list', { name: 'Ongoing calls' })).not.toBeInTheDocument());
+		expect(button).toHaveFocus();
 	});
 });
