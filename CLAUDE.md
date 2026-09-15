@@ -2,12 +2,19 @@
 
 Monorepo: the main Meteor app lives in `apps/meteor/`, shared libraries in `packages/`, other services in `apps/` and `ee/`.
 
+## Writing code here
+
+Comments state the **intent** of a function, never the mechanism, and never explain
+code that lives in another file — that belongs in `docs/features/`. Full rules:
+[docs/code-comments.md](docs/code-comments.md).
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Cross-cutting
 
+- [docs/code-comments.md](docs/code-comments.md) — what a comment may say, and where reasoning goes when it is not a comment
 - [docs/i18n.md](docs/i18n.md) — translation keys: where they live, naming, namespaces, interpolation, plurals, server-side `lng`, what the i18n linter enforces
 
 ### Frontend

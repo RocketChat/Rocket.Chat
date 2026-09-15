@@ -46,6 +46,13 @@ The agent must **not introduce refactors, performance optimizations, or scope ex
 
 ---
 
+## Comment Discipline
+
+Comments: see [docs/code-comments.md](../../docs/code-comments.md). Intent, not
+mechanism; nothing explaining code in another file; no analysis or summary files.
+
+---
+
 ## Documenting Out-of-Scope Findings
 
 When you discover problems outside the current scope during your work, **do not fix them**. Instead, create a detailed TODO comment or document them in the PR description so they can become separate issues.
