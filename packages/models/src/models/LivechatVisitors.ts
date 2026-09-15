@@ -1,5 +1,5 @@
 import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatVisitorsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
@@ -111,16 +111,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	 * Find visitors by _id
 	 * @param {string} token - Visitor token
 	 */
-	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+	findById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
-		return this.find(
+	findEnabled<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		query: Filter<ILivechatVisitor>,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
 			{
 				...query,
 				disabled: { $ne: true },
@@ -129,21 +135,27 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
+	findOneEnabledById<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			_id,
 			disabled: { $ne: true },
 		};
 
-		return this.findOne<T>(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	getVisitorByToken<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		token: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			token,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
@@ -216,14 +228,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	/**
 	 * Find visitors by their email or phone or username or name
 	 */
-	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField<
+		T extends Document = ILivechatVisitor,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		emailOrPhone?: string,
 		nameOrUsername?: RegExp,
 		allowedCustomFields: string[] = [],
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
+		options?: O,
+	): Promise<FindPaginated<FindCursor<DocumentWithProjection<T, O>>>> {
 		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
-			return this.findPaginated({ disabled: { $ne: true } }, options);
+			return this.findPaginated<T, O>({ disabled: { $ne: true } }, options);
 		}
 
 		const query: Filter<ILivechatVisitor> = {
@@ -253,7 +268,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			disabled: { $ne: true },
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
 	async findOneByEmailAndPhoneAndCustomField(
@@ -498,11 +513,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
-	findByIds(ids: string[], options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+	findByIds<T extends Document = ILivechatVisitor, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
 		};
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 }
 

@@ -1,7 +1,11 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
 
-export type ChannelsListProps = PaginatedRequest<{ _id?: string }>;
+export type ChannelsListProps = PaginatedRequest<{
+	_id?: string;
+	/* deprecated */
+	fields?: string;
+}>;
 
 const channelsListPropsSchema = {
 	type: 'object',
@@ -19,6 +23,9 @@ const channelsListPropsSchema = {
 			type: 'number',
 		},
 		sort: {
+			type: 'string',
+		},
+		fields: {
 			type: 'string',
 		},
 	},

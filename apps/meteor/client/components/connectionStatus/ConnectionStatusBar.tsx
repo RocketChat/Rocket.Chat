@@ -14,23 +14,46 @@ const connectionStatusBarStyle = css`
 	z-index: 1000000;
 
 	display: flex;
+	column-gap: 8px;
 	justify-content: space-between;
 	align-items: center;
 
 	.rcx-connection-status-bar--wrapper {
 		display: flex;
+		flex: 1 1 auto;
 		align-items: center;
+		min-width: 0;
 		column-gap: 8px;
 	}
 	.rcx-connection-status-bar--content {
 		display: flex;
 		align-items: center;
+		min-width: 0;
 		column-gap: 8px;
 	}
 	.rcx-connection-status-bar--info {
 		color: ${Palette.text['font-default']};
 	}
+	.rcx-connection-status-bar--action {
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 767px) {
+		align-items: flex-start;
+
+		.rcx-connection-status-bar--wrapper {
+			align-items: flex-start;
+		}
+
+		.rcx-connection-status-bar--content {
+			flex-direction: column;
+			align-items: flex-start;
+			row-gap: 2px;
+			column-gap: 0;
+		}
+	}
 `;
+
 function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
@@ -63,7 +86,13 @@ function ConnectionStatusBar() {
 					)}
 				</span>
 			</span>
-			<Button primary onClick={reconnect} small disabled={['connected', 'connecting'].includes(status)}>
+			<Button
+				className='rcx-connection-status-bar--action'
+				primary
+				onClick={reconnect}
+				small
+				disabled={['connected', 'connecting'].includes(status)}
+			>
 				{t('Connect')}
 			</Button>
 		</Box>

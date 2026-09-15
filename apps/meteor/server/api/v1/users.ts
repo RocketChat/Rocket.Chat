@@ -48,6 +48,9 @@ import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -86,6 +89,7 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
+import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -246,7 +250,9 @@ API.v1
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await saveUserPreferences(this.bodyParams.data, userId);
+			const { statusVisibilityDenied: _ownBlockList, ...preferences } = this.bodyParams.data;
+
+			await saveUserPreferences(userId === this.userId ? this.bodyParams.data : preferences, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -258,12 +264,19 @@ API.v1
 				return API.v1.failure('User not found');
 			}
 
+			const { statusVisibilityDenied, ...savedPreferences } = user.settings?.preferences ?? {};
+
 			return API.v1.success({
 				user: {
 					_id: user._id,
 					settings: {
 						preferences: {
-							...user.settings?.preferences,
+							...savedPreferences,
+							...(userId === this.userId &&
+								settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
+								statusVisibilityDenied?.length && {
+									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
+								}),
 							language: user.language,
 						},
 					},
@@ -706,6 +719,12 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
+			const hidden = await getUsersHiddenFrom(this.userId);
+
+			if (hidden && queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
+			}
+
 			const actualSort = sort || { username: 1 };
 
 			if (sort?.status) {
@@ -763,7 +782,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users,
+				users: redactHiddenUsers(users, hidden),
 				count: users.length,
 				offset,
 				total,
@@ -809,20 +828,25 @@ API.v1.get(
 		const { sort } = await this.parseJsonQuery();
 		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
-		return API.v1.success(
-			await findPaginatedUsersByStatus({
-				uid: this.userId,
-				offset,
-				count,
-				sort,
-				status,
-				roles,
-				searchTerm,
-				hasLoggedIn,
-				type,
-				inactiveReason,
-			}),
-		);
+		const result = await findPaginatedUsersByStatus({
+			uid: this.userId,
+			offset,
+			count,
+			sort,
+			status,
+			roles,
+			searchTerm,
+			hasLoggedIn,
+			type,
+			inactiveReason,
+		});
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		return API.v1.success({
+			...result,
+			users: redactHiddenUsers(result.users, hidden),
+		});
 	},
 );
 
@@ -1552,9 +1576,14 @@ API.v1.get(
 			},
 		};
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+
 		if (ids) {
+			const requested = Array.isArray(ids) ? ids : ids.split(',');
+			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
+
 			return API.v1.success({
-				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: filterHiddenUsers(users, hidden),
 				full: false,
 			});
 		}
@@ -1564,15 +1593,19 @@ API.v1.get(
 			const diff = (Date.now() - Number(ts)) / 1000 / 60;
 
 			if (diff < 10) {
+				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
+
 				return API.v1.success({
-					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
+					users: filterHiddenUsers(users, hidden),
 					full: false,
 				});
 			}
 		}
 
+		const users = await Users.findUsersNotOffline(options).toArray();
+
 		return API.v1.success({
-			users: await Users.findUsersNotOffline(options).toArray(),
+			users: filterHiddenUsers(users, hidden),
 			full: true,
 		});
 	},
@@ -1707,12 +1740,15 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		return API.v1.success(
-			await findUsersToAutocomplete({
-				uid: this.userId,
-				selector,
-			}),
-		);
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		if (hidden && queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		}
+
+		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
+
+		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
 	},
 );
 
@@ -1941,9 +1977,10 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: user.status || ('offline' as UserStatus),
+				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2080,12 +2117,14 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
+			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
 
 			return API.v1.success({
-				_id: user._id,
-				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				...(user.statusSource && { statusSource: user.statusSource }),
-				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
+				_id: visible._id,
+				status: (visible.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(visible.statusSource && { statusSource: visible.statusSource }),
+				...(visible.statusExpiresAt && { statusExpiresAt: visible.statusExpiresAt.toISOString() }),
 			});
 		},
 	);

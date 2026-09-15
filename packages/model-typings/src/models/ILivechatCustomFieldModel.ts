@@ -1,30 +1,32 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, Document } from 'mongodb';
+import type { FindCursor, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomField> {
-	findByScope<T extends Document = ILivechatCustomField>(
+	findByScope<T extends Document = ILivechatCustomField, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		scope: ILivechatCustomField['scope'],
-		options?: FindOptions<T>,
+		options?: O,
 		includeHidden?: boolean,
-	): FindCursor<T>;
-	findByScope(
-		scope: ILivechatCustomField['scope'],
-		options?: FindOptions<ILivechatCustomField>,
-		includeHidden?: boolean,
-	): FindCursor<ILivechatCustomField>;
-	findMatchingCustomFields(
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findMatchingCustomFields<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		scope: ILivechatCustomField['scope'],
 		searchable: boolean,
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<ILivechatCustomField>;
-	findMatchingCustomFieldsByIds(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findMatchingCustomFieldsByIds<
+		T extends Document = ILivechatCustomField,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		ids: ILivechatCustomField['_id'][],
 		scope: ILivechatCustomField['scope'],
 		searchable: boolean,
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<ILivechatCustomField>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	createOrUpdateCustomField(
 		_id: string | null,
 		field: string,

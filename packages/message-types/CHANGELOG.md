@@ -1,5 +1,17 @@
 # @rocket.chat/message-types
 
+## 0.1.2
+
+### Patch Changes
+
+- ([#41484](https://github.com/RocketChat/Rocket.Chat/pull/41484)) Fixes an issue where deleted thread messages display as empty in thread context
+
+## 0.1.2-rc.0
+
+### Patch Changes
+
+- ([#41484](https://github.com/RocketChat/Rocket.Chat/pull/41484)) Fixes an issue where deleted thread messages display as empty in thread context
+
 ## 0.1.1
 
 ### Patch Changes

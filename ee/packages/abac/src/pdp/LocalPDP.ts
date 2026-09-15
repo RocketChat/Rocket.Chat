@@ -51,7 +51,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
 	}
 
-	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
+	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id'>[]> {
 		const roomIds = user.__rooms;
 
 		// No attributes: no rooms :(

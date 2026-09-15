@@ -78,7 +78,8 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+	// No projection: the full room is spread into the ICreatedRoom returned below.
+	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids);
 
 	const isNewRoom = !room;
 

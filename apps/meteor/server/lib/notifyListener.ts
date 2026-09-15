@@ -514,6 +514,18 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserId = async (
 	});
 };
 
+export const notifyOnSubscriptionsChangedByRoomIdsAndUserId = async (
+	roomIds: ISubscription['rid'][],
+	uid: ISubscription['u']['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserIdAndRoomIds(uid, roomIds, { projection: subscriptionFields });
+
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
+
 export const notifyOnSubscriptionChangedById = async (
 	id: ISubscription['_id'],
 	clientAction: Exclude<ClientAction, 'removed'> = 'updated',

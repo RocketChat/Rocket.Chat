@@ -1,11 +1,11 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 
 export class AdminThirdPartyLogin extends Admin {
-	constructor(page: Page) {
-		super(page);
-	}
+	protected readonly route = AdminSectionsHref.thirdPartyLogin;
+
+	protected readonly title = 'Third-party login';
 
 	get btnNewApplication(): Locator {
 		return this.page.getByRole('button', { name: 'New Application', exact: true });

@@ -334,7 +334,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.getVisitorByToken(token, {}));
+			.convertVisitor(await LivechatVisitors.getVisitorByToken<ILivechatVisitor>(token, {}));
 	}
 
 	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
@@ -380,7 +380,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('departments')
-			.convertDepartment(await LivechatDepartment.findOneByIdOrName(value, {}));
+			.convertDepartment(await LivechatDepartment.findOneByIdOrName<ILivechatDepartment>(value, {}));
 	}
 
 	protected async findDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>> {

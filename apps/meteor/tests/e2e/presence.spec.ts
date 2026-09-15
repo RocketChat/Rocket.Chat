@@ -14,12 +14,11 @@ test.describe.serial('Presence', () => {
 		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
-
-		await page.goto('/home');
 	});
 
 	test.describe('Login using default settings', () => {
 		test('should user be online after log in', async () => {
+			await poLogin.goto();
 			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
@@ -30,6 +29,10 @@ test.describe.serial('Presence', () => {
 		const customStatus = faker.string.alpha(10);
 		test.use({ storageState: Users.admin.state });
 
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
+
 		test('should user custom status be reactive', async ({ browser }) => {
 			await test.step('user1 custom status should be empty', async () => {
 				await poHomeChannel.navbar.openChat('user1');
@@ -39,8 +42,8 @@ test.describe.serial('Presence', () => {
 
 			await test.step('update user1 custom status', async () => {
 				const user1Page = await browser.newPage({ storageState: Users.user1.state });
-				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
+				await user1Channel.goto();
 
 				await user1Channel.navbar.changeUserCustomStatus(customStatus);
 				await user1Page.close();
@@ -105,6 +108,10 @@ test.describe.serial('Presence', () => {
 
 	test.describe('Status expiration', () => {
 		test.use({ storageState: Users.admin.state });
+
+		test.beforeEach(async () => {
+			await poHomeChannel.goto();
+		});
 
 		test('should toggle custom date/time inputs when selecting duration', async () => {
 			await poHomeChannel.navbar.openEditStatusModal();
@@ -218,7 +225,7 @@ test.describe.serial('Presence', () => {
 			const text = faker.string.alpha(10);
 
 			await test.step('fill Status field + Clear-after on /account/profile and save', async () => {
-				await page.goto('/account/profile');
+				await poAccountProfile.goto();
 				await poAccountProfile.inputStatusText.fill(text);
 				await poAccountProfile.chooseClearStatusAfter('30 minutes');
 				await Promise.all([
@@ -230,7 +237,7 @@ test.describe.serial('Presence', () => {
 			});
 
 			await test.step('status with expiration appears in user menu', async () => {
-				await page.goto('/home');
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnUserMenu.click();
 				await expect(poHomeChannel.navbar.userMenu).toContainText(text);
 				await expect(poHomeChannel.navbar.userMenu).toContainText('Until');

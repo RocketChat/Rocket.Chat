@@ -773,6 +773,17 @@ export const createAccountSettings = () =>
 			});
 		});
 
+		await this.section('Privacy', async function () {
+			await this.add('Accounts_StatusVisibility_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
+			});
+		});
+
 		await this.section('Avatar', async function () {
 			await this.add('Accounts_AvatarResize', true, {
 				type: 'boolean',
@@ -807,6 +818,7 @@ export const createAccountSettings = () =>
 
 			return this.add('Accounts_SetDefaultAvatar', true, {
 				type: 'boolean',
+				alert: 'Accounts_SetDefaultAvatar_Deprecation_Alert',
 			});
 		});
 

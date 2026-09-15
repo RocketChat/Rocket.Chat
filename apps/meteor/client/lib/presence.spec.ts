@@ -14,7 +14,7 @@ jest.mock('meteor/meteor', () => ({
 
 const mockGet = jest.fn();
 
-jest.mock('../../app/utils/client/lib/SDKClient', () => ({
+jest.mock('../../client/lib/SDKClient', () => ({
 	sdk: {
 		rest: {
 			get: (...args: unknown[]) => mockGet(...args),

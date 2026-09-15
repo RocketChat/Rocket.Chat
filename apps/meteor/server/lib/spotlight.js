@@ -11,7 +11,7 @@ import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 export class Spotlight {
 	async fetchRooms(userId, rooms) {
-		if (!settings.get('Store_Last_Message') || (await hasPermissionAsync(userId, 'preview-c-room'))) {
+		if (!settings.get('Store_Last_Message') || (userId && (await hasPermissionAsync(userId, 'preview-c-room')))) {
 			return rooms;
 		}
 
@@ -191,7 +191,7 @@ export class Spotlight {
 			return users;
 		}
 
-		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
+		const canListOutsiders = !!userId && (await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']));
 		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];

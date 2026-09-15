@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
+import { useStatusVisibilityModalHandler } from './useStatusVisibilityModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
@@ -76,6 +77,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
+	const handleStatusVisibility = useStatusVisibilityModalHandler();
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
@@ -107,7 +110,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 				status: <UserStatus status={user?.status} />,
 				content: (
 					<>
-						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
+						{contentValue && <MarkdownText withTruncatedText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
 								<Icon name='clock' size='x16' marginInlineEnd={4} />
@@ -134,32 +137,41 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
 			.filter((s) => userStatuses.isValidType(s.id))
-			.map(
-				(status): GenericMenuItemProps => ({
-					id: status.id,
-					status: <UserStatus status={status.statusType} />,
-					content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
-					addon: <RadioButton checked={isPresetSelected(status.statusType)} readOnly />,
-					onClick: () => setStatusMutation.mutate(status),
-				}),
-			);
+			.map((status): GenericMenuItemProps => ({
+				id: status.id,
+				status: <UserStatus status={status.statusType} />,
+				content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+				addon: <RadioButton checked={isPresetSelected(status.statusType)} readOnly />,
+				onClick: () => setStatusMutation.mutate(status),
+			}));
 
 		// Admin-defined custom statuses
 		const customItems = allowUserStatusMessageChange
 			? (statuses ?? [])
 					.filter((s) => !userStatuses.isValidType(s.id))
-					.map(
-						(status): GenericMenuItemProps => ({
-							id: status.id,
-							status: <UserStatus status={status.statusType} />,
-							content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
-							addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
-							onClick: () => setStatusMutation.mutate(status),
-						}),
-					)
+					.map((status): GenericMenuItemProps => ({
+						id: status.id,
+						status: <UserStatus status={status.statusType} />,
+						content: (
+							<MarkdownText withTruncatedText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />
+						),
+						addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
+						onClick: () => setStatusMutation.mutate(status),
+					}))
 			: [];
 
-		return [...items, ...presetItems, ...customItems];
+		const actionItems: GenericMenuItemProps[] = [];
+
+		if (statusVisibilityEnabled) {
+			actionItems.push({
+				id: 'status-visibility-edit',
+				icon: 'eye-off',
+				content: t('Accounts_StatusVisibility_HideFrom'),
+				onClick: handleStatusVisibility,
+			});
+		}
+
+		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
 		allowUserStatusMessageChange,
@@ -170,6 +182,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		customStatusExpiration,
 		statuses,
 		handleCustomStatus,
+		handleStatusVisibility,
+		statusVisibilityEnabled,
 		setStatusMutation,
 	]);
 };

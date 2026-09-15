@@ -475,7 +475,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														control={control}
 														name='hideSysMes'
 														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+															<ToggleSwitch
+																id={hideSysMesField}
+																{...field}
+																checked={value}
+																disabled={isFederated}
+																aria-describedby={`${hideSysMesField}-hint`}
+															/>
 														)}
 													/>
 												</FieldRow>
@@ -490,9 +496,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
 																aria-label={t('Select_messages_to_hide')}
+																aria-describedby={`${hideSysMesField}-hint`}
 															/>
 														)}
 													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${hideSysMesField}-hint`}>{t('Hide_System_Messages_Hint')}</FieldHint>
 												</FieldRow>
 											</Field>
 										)}

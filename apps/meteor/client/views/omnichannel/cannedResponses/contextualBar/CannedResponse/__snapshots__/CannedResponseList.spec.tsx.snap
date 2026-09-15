@@ -117,7 +117,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     aria-haspopup="listbox"
                     aria-label="Type"
                     aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
-                    class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                     type="button"
                   >
                     <span
@@ -126,7 +126,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     />
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                     >
                       
                     </i>

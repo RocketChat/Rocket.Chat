@@ -1,8 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import { SDP } from './sdp';
 import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
 import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification';
 import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
+import type { ServerMediaSignalRemoteSDP } from '../../../definition/signals';
 import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
@@ -308,8 +310,52 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await iceGatheringData.promise;
 	}
 
-	public setRemoteIds(streams: MediaStreamIdentification[]): void {
-		this.streams.setRemoteIds(streams);
+	public setRemoteIds(signal: ServerMediaSignalRemoteSDP): void {
+		const {
+			streams,
+			sdp: { sdp },
+		} = signal;
+
+		const streamsFromSDP = sdp ? this.getRemoteIdsFromSDP(sdp) : [];
+		const allStreams = this.combineRemoteIds(streams || [], streamsFromSDP);
+
+		if (allStreams.length) {
+			this.streams.setRemoteIds(allStreams);
+		}
+	}
+
+	protected combineRemoteIds(streams1: MediaStreamIdentification[], streams2: MediaStreamIdentification[]): MediaStreamIdentification[] {
+		if (!streams2.length) {
+			return streams1;
+		}
+		if (!streams1.length) {
+			return streams2;
+		}
+
+		const result = [...streams1];
+		for (const stream of streams2) {
+			if (result.find(({ id }) => id === stream.id)) {
+				continue;
+			}
+
+			result.push(stream);
+		}
+
+		return result;
+	}
+
+	protected getRemoteIdsFromSDP(sdp: string): MediaStreamIdentification[] {
+		const contentMap = SDP.getStreamContentMapFromSDP(sdp);
+		return Object.entries(contentMap)
+			.map(([id, content]) => {
+				const tag = SDP.getStreamTagByMediaContent(content);
+				if (!tag) {
+					return null;
+				}
+
+				return { id, tag };
+			})
+			.filter((stream): stream is MediaStreamIdentification => Boolean(stream));
 	}
 
 	public getLocalStreamIds(): MediaStreamIdentification[] {

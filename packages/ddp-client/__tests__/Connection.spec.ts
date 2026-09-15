@@ -5,11 +5,13 @@ import { ConnectionImpl } from '../src/Connection';
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
 
 let server: WS;
+let connection: ConnectionImpl;
 beforeEach(() => {
 	server = new WS('ws://localhost:1234/websocket');
 });
 
 afterEach(() => {
+	connection?.close();
 	server.close();
 	WS.clean();
 	jest.useRealTimers();
@@ -17,7 +19,7 @@ afterEach(() => {
 
 it('should connect', async () => {
 	const client = new MinimalDDPClient();
-	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
 
 	expect(connection.status).toBe('idle');
 	expect(connection.session).toBeUndefined();
@@ -29,7 +31,7 @@ it('should connect', async () => {
 
 it('should handle a failing connection', async () => {
 	const client = new MinimalDDPClient();
-	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
 
 	expect(connection.status).toBe('idle');
 	expect(connection.session).toBeUndefined();
@@ -42,7 +44,7 @@ it('should handle a failing connection', async () => {
 
 it('should trigger a disconnect callback', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	expect(connection.status).toBe('idle');
 	expect(connection.session).toBeUndefined();
@@ -63,7 +65,7 @@ it('should trigger a disconnect callback', async () => {
 it('should handle the close method', async () => {
 	const client = new MinimalDDPClient();
 
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, {
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, {
 		retryCount: 0,
 		retryTime: 0,
 	});
@@ -88,7 +90,7 @@ it('should handle the close method', async () => {
 
 it('should handle reconnecting', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
 
 	expect(connection.status).toBe('idle');
 	expect(connection.session).toBeUndefined();
@@ -128,7 +130,7 @@ it('should handle reconnecting', async () => {
 
 it('should queue messages if the connection is not ready', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	await handleConnection(server, connection.connect());
 
@@ -149,7 +151,7 @@ it('should queue messages if the connection is not ready', async () => {
 
 it('should be idempotent if reconnect is called while already connected', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	await handleConnection(server, connection.connect());
 
@@ -163,7 +165,7 @@ it('should be idempotent if reconnect is called while already connected', async 
 
 it('should be idempotent if connect is called while already connected', async () => {
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
+	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	await handleConnection(server, connection.connect());
 
@@ -177,7 +179,7 @@ it('should share the in-flight connect promise with a concurrent connect() calle
 	// 'failed' payload from the in-flight handshake. Both callers must now
 	// observe the real outcome.
 	const client = new MinimalDDPClient();
-	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
 
 	const first = connection.connect();
 	expect(connection.status).toBe('connecting');
@@ -194,7 +196,7 @@ it('should share the in-flight connect promise with a concurrent reconnect() cal
 	// timer fires `reconnect()` and must piggyback on any handshake the
 	// consumer's bootstrap path already started.
 	const client = new MinimalDDPClient();
-	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
 
 	const first = connection.connect();
 	expect(connection.status).toBe('connecting');
@@ -214,7 +216,7 @@ it('should not surface the retry timer rejection when an external connect won th
 	// rejection on the page. The timer must now no-op silently when the
 	// connection has already been re-established.
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
 
 	await handleConnection(server, connection.connect());
 	expect(connection.status).toBe('connected');
@@ -258,7 +260,7 @@ it('should reset retryCount on a successful connection so subsequent drops can r
 	// forever — observed in e2e-encryption/e2ee-passphrase-management as the
 	// next loginByUserState login frame never being delivered.
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
 
 	await handleConnection(server, connection.connect());
 	expect(connection.status).toBe('connected');
@@ -323,7 +325,7 @@ it('should ignore a stale ws.onclose that fires after the socket has been replac
 	// handler would flip status back to 'disconnected' and schedule another
 	// retry timer.
 	const client = new MinimalDDPClient();
-	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
 
 	await handleConnection(server, connection.connect());
 	const firstWs = (connection as unknown as { ws: WebSocket }).ws;

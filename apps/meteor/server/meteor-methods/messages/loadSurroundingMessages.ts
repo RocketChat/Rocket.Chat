@@ -6,7 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,17 +29,18 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
+		methodDeprecationLogger.method('loadSurroundingMessages', '9.0.0', '/v1/rooms.history');
 		check(message, Object);
 		check(limit, Number);
 		check(showThreadMessages, Boolean);
 
-		if (!Meteor.userId()) {
+		const fromId = Meteor.userId() ?? undefined;
+
+		if (!fromId && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadSurroundingMessages',
 			});
 		}
-
-		const fromId = Meteor.userId() ?? undefined;
 
 		if (!message._id) {
 			return false;

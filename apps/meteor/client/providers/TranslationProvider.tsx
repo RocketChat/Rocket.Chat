@@ -18,9 +18,9 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { getURL } from '../../app/utils/client';
 import { i18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { getURL } from '../lib/getURL';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 import { setDateFnsLocale } from '../lib/utils/setDateFnsLocale';

@@ -42,7 +42,7 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
+		const rooms = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,
 			agent,
 			{
@@ -176,7 +176,7 @@ export const auditGetOmnichannelMessagesMethod = async (
 	// No livechat.applyRoomRestrictions here (unlike the type 'l' path in getRoomInfoByAuditParams): this
 	// mirrors the original DDP auditGetOmnichannelMessages. Access is gated by the can-audit permission and
 	// audit is intended to span all omnichannel rooms, so unit/visibility restrictions are not applied.
-	const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+	const rooms = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 		projection: { _id: 1 },
 	}).toArray();
 	// keep rids an array — `$in: undefined` throws "$in needs an array" when no rooms match

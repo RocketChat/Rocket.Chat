@@ -14,6 +14,12 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		uid: ICalendarEvent['uid'],
 	): Promise<ICalendarEvent | null>;
 	findOverlappingEvents(eventId: ICalendarEvent['_id'], uid: IUser['_id'], startTime: Date, endTime: Date): FindCursor<ICalendarEvent>;
-	findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null>;
-	findEventsStartingNow({ now, offset }: { now: Date; offset?: number }): FindCursor<ICalendarEvent>;
+	findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null>;
+	findEventsStartingNow({
+		now,
+		offset,
+	}: {
+		now: Date;
+		offset?: number;
+	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
 }

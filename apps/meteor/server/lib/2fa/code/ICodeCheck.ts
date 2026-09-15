@@ -1,5 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
+/** The user fields the 2FA checks read; `getUserForCheck` projects exactly these. */
+export type TwoFactorUser = Pick<IUser, '_id' | 'username' | 'emails' | 'language' | 'createdAt' | 'services'>;
+
 export interface IProcessInvalidCodeResult {
 	codeGenerated: boolean;
 	codeExpires?: Date;
@@ -9,11 +12,11 @@ export interface IProcessInvalidCodeResult {
 export interface ICodeCheck {
 	readonly name: string;
 
-	isEnabled(user: IUser, force?: boolean): boolean;
+	isEnabled(user: TwoFactorUser, force?: boolean): boolean;
 
-	verify(user: IUser, code: string, force?: boolean): Promise<boolean>;
+	verify(user: TwoFactorUser, code: string, force?: boolean): Promise<boolean>;
 
-	processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult>;
+	processInvalidCode(user: TwoFactorUser): Promise<IProcessInvalidCodeResult>;
 
-	maxFaildedAttemtpsReached(user: IUser): Promise<boolean>;
+	maxFaildedAttemtpsReached(user: TwoFactorUser): Promise<boolean>;
 }
