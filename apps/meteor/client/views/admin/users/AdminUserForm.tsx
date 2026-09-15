@@ -23,6 +23,7 @@ import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
+	usePermission,
 	useSetting,
 	useEndpoint,
 	useRouter,
@@ -41,6 +42,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -57,7 +59,12 @@ export type AdminUserFormProps = {
 };
 
 export type UserFormProps = Omit<
-	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	UserCreateParamsPOST & {
+		avatar: AvatarObject;
+		passwordConfirmation: string;
+		freeSwitchExtension?: string;
+		statusVisibilityDeniedByAdmin?: string[];
+	},
 	'fields'
 >;
 
@@ -87,6 +94,7 @@ const getInitialValue = ({
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
+	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
@@ -104,6 +112,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
 	const { data: hasPresenceLicense = false } = useHasLicenseModule('unlimited-presence');
 	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -129,7 +138,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
+	const showUserStatusSection = hasPresenceLicense && userStatusEnabled && canViewFullOtherUserInfo;
+	const statusFieldsDisabled = showUserStatusSection && presenceDisabledByAdmin === true;
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -176,10 +187,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
-			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
+			return handleUpdateUser.mutateAsync({
+				userId: userData?._id,
+				data: { ...userFormData, ...(showUserStatusSection && statusVisibilityDeniedByAdmin && { statusVisibilityDeniedByAdmin }) },
+			});
 		}
 
 		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
@@ -191,11 +205,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
+	const userStatusId = useId();
+	const hiddenFromId = useId();
 	const bioId = useId();
 	const nicknameId = useId();
 	const passwordId = useId();
 	const rolesId = useId();
-	const userStatusId = useId();
 	const joinDefaultChannelsId = useId();
 	const sendWelcomeEmailId = useId();
 	const setRandomPasswordId = useId();
@@ -424,31 +439,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
-					{hasPresenceLicense && userStatusEnabled && (
-						<Field>
-							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
-								<FieldLabel htmlFor={userStatusId}>{t('User_Status')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='presenceDisabledByAdmin'
-										render={({ field: { ref, onChange, value } }) => (
-											<ToggleSwitch
-												id={userStatusId}
-												ref={ref}
-												aria-describedby={`${userStatusId}-hint`}
-												onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
-												checked={value !== true}
-											/>
-										)}
-									/>
-								</FieldRow>
-							</Box>
-							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
-								{t('User_status_admin_toggle_Description')}
-							</FieldHint>
-						</Field>
-					)}
 					{isNewUserPage && (
 						<Field>
 							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
@@ -505,8 +495,35 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</>
 						)}
 					</Field>
+					{showUserStatusSection && (
+						<Field>
+							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
+								<FieldLabel htmlFor={userStatusId}>{t('Show_status')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='presenceDisabledByAdmin'
+										render={({ field: { ref, onChange, value } }) => (
+											<ToggleSwitch
+												id={userStatusId}
+												ref={ref}
+												aria-describedby={`${userStatusId}-hint`}
+												onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+												checked={value !== true}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Box>
+							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
+								{t('User_presence_admin_hint')}
+							</FieldHint>
+						</Field>
+					)}
 					<Field>
-						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
+						<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
+							{t('StatusMessage')}
+						</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -518,6 +535,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									<TextInput
 										{...field}
 										id={statusTextId}
+										disabled={statusFieldsDisabled}
 										error={errors?.statusText?.message}
 										aria-invalid={errors.statusText ? 'true' : 'false'}
 										aria-describedby={`${statusTextId}-error`}
@@ -532,6 +550,29 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
+					{showUserStatusSection && !isNewUserPage && (
+						<Field>
+							<FieldLabel htmlFor={hiddenFromId} disabled={statusFieldsDisabled}>
+								{t('Hide_presence_from')}
+							</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='statusVisibilityDeniedByAdmin'
+									render={({ field: { value, onChange } }) => (
+										<UserAutoCompleteMultiple
+											id={hiddenFromId}
+											value={value}
+											onChange={onChange}
+											disabled={statusFieldsDisabled}
+											placeholder={t('Select_users')}
+										/>
+									)}
+								/>
+							</FieldRow>
+							<FieldHint>{t('Hide_presence_from_hint')}</FieldHint>
+						</Field>
+					)}
 					<Field>
 						<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
 						<FieldRow>

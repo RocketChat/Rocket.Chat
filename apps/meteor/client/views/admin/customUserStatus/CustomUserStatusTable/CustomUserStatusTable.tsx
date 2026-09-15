@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
+import type { MutableRefObject, ReactNode } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,10 +23,11 @@ import GenericNoResult from '../../../../components/GenericNoResults';
 export type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (id: string) => void;
+	children?: ReactNode;
 };
 
 // TODO: Missing error state
-const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
+const CustomUserStatus = ({ reload, onClick, children }: CustomUserStatusProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -69,14 +70,16 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)}>
+				{children}
+			</FilterByText>
 			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>
 							<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-								{t('Name')}
+								{t('Status_name')}
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell
 								key='presence'
