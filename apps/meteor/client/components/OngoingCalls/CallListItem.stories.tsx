@@ -86,6 +86,19 @@ export const RingingSilenced: Story = {
 };
 
 /**
+ * Declined a second into the ring. The ring window is still open and the payload carries no `declinedAt` to
+ * compare it against, so the answer is what counts: no "Ringing…", nothing left to silence or decline.
+ */
+export const RingingButDeclined: Story = {
+	args: { call: buildJoinableCall({ callId: 'refused', name: 'Design review', declined: true, ringingAt: new Date() }) },
+};
+
+/** The same rule from the other side: answering by joining ends the ring too. */
+export const RingingButJoined: Story = {
+	args: { call: buildJoinableCall({ callId: 'answered', name: 'Standup', joined: true, ringingAt: new Date() }) },
+};
+
+/**
  * A ring this client never heard, so there is no noise of its own to stop — only Decline. The row still says
  * it is ringing, because it is: somewhere else.
  */

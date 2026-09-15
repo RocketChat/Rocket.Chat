@@ -1,94 +1,77 @@
-import type { JoinableVideoConference } from '@rocket.chat/core-typings';
-import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
-import NavBarItemOngoingCalls from './NavBarItemOngoingCalls';
-import { buildJoinableCall as call } from '../views/conference/testFixtures';
+import * as stories from './NavBarItemOngoingCalls.stories';
 
-const joinCall = jest.fn();
+/**
+ * Whether the button is there at all and what colour it is — red while something rings, blue while something
+ * merely runs — is what the stories show, and the snapshots are what hold it. Asserting a Fuselage class name
+ * for that only pinned the class name.
+ *
+ * What is left here is what the button does: opening the list, opening itself when a call starts ringing, and
+ * giving the calls somewhere to be found.
+ */
+const { OneOngoing, Ringing, SeveralOngoing } = composeStories(stories);
 
-jest.mock('@rocket.chat/ui-video-conf', () => ({
-	...jest.requireActual('@rocket.chat/ui-video-conf'),
-	useVideoConfJoinCall: () => joinCall,
-}));
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	...jest.requireActual('@rocket.chat/ui-contexts'),
-}));
+/**
+ * The list is fetched, so the first frames are empty whatever the story holds — and a story with nothing to
+ * show stays empty, so there is no one element to wait for. Waiting for two consecutive frames to agree is what
+ * covers both: a fixed flush raced the query and snapshotted an empty box for the largest story.
+ */
+const settled = async (element: HTMLElement) => {
+	let previous: string | undefined;
 
-const renderButton = (calls: JoinableVideoConference[]) =>
-	render(<NavBarItemOngoingCalls />, {
-		wrapper: mockAppRoot()
-			.withJohnDoe()
-			.withUserPreference('displayAvatars', true)
-			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
-			.withEndpoint('POST', '/v1/video-conference.decline', () => ({ success: true }) as any)
-			.build(),
+	await waitFor(() => {
+		const html = element.innerHTML;
+		const unchanged = html === previous;
+		previous = html;
+
+		expect(unchanged).toBe(true);
+	});
+};
+
+describe('NavBarItemOngoingCalls', () => {
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const { baseElement } = render(<Story />);
+		await settled(baseElement);
+
+		expect(baseElement).toMatchSnapshot();
 	});
 
-beforeEach(() => {
-	joinCall.mockClear();
-});
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />);
 
-it('shows the button when there are calls', async () => {
-	renderButton([call({ callId: 'one' })]);
-
-	expect(await screen.findByRole('button', { name: /Ongoing_calls/ })).toBeInTheDocument();
-});
-
-it('says nothing when there are no calls to reach', async () => {
-	const { container } = renderButton([]);
-
-	await waitFor(() => expect(container).toBeEmptyDOMElement());
-});
-
-it('opens the list on click', async () => {
-	renderButton([call({ callId: 'one', name: 'Standup' })]);
-
-	await userEvent.click(await screen.findByRole('button', { name: /Ongoing_calls/ }));
-
-	expect(await screen.findByText('Standup')).toBeInTheDocument();
-});
-
-describe('when something is ringing', () => {
-	const ringing = [call({ callId: 'ringing', name: 'Alice', ringingAt: new Date() })];
-
-	it('is red', async () => {
-		renderButton(ringing);
-
-		expect((await screen.findByRole('button', { name: /Ongoing_calls/ })).className).toMatch(/rcx-button--icon-secondary-danger/);
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
 	});
 
-	it('opens itself without being asked', async () => {
-		renderButton(ringing);
+	it('opens the list on click', async () => {
+		render(<OneOngoing />);
 
-		expect(await screen.findByText('Alice')).toBeInTheDocument();
+		await userEvent.click(await screen.findByRole('button', { name: /ongoing call/i }));
+
+		expect(await screen.findByText('Daily standup')).toBeInTheDocument();
 	});
-});
 
-it('is blue while something is merely running', async () => {
-	renderButton([call({ callId: 'running' })]);
+	// A ring is not something to go looking for.
+	it('opens itself when something is ringing, without being asked', async () => {
+		render(<Ringing />);
 
-	expect((await screen.findByRole('button', { name: /Ongoing_calls/ })).className).toMatch(/rcx-button--icon-secondary-info/);
-});
+		expect(await screen.findByText('Ada Lovelace')).toBeInTheDocument();
+	});
 
-it('keeps a declined call behind a separator', async () => {
-	renderButton([call({ callId: 'one', name: 'Standup' }), call({ callId: 'refused', name: 'Design review', declined: true })]);
+	// The list opened into a bare box, so the calls in it were loose rows nothing could scope to.
+	it('opens a named region holding the calls', async () => {
+		render(<SeveralOngoing />);
 
-	await userEvent.click(await screen.findByRole('button', { name: /Ongoing_calls/ }));
+		await userEvent.click(await screen.findByRole('button', { name: /ongoing call/i }));
 
-	expect(await screen.findByText('Standup')).toBeInTheDocument();
-	expect(screen.getByText('Design review')).toBeInTheDocument();
-});
+		const list = await screen.findByRole('region', { name: 'Ongoing calls' });
 
-// The list opens into a bare box, so the calls in it were loose rows nothing could scope to.
-it('opens a named region holding the calls', async () => {
-	renderButton([call({ callId: 'call-1', name: 'Standup' })]);
-
-	await userEvent.click(await screen.findByRole('button', { name: /Ongoing_calls/ }));
-
-	const list = await screen.findByRole('region', { name: 'Ongoing_calls' });
-
-	await waitFor(() => expect(list).toHaveTextContent('Standup'));
+		await waitFor(() => expect(list).toHaveTextContent('Daily standup'));
+	});
 });
