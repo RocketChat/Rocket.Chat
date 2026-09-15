@@ -36,9 +36,11 @@ const CallTopBar = ({ host, children }: CallTopBarProps) => {
 			width='100%'
 			minHeight={48}
 			paddingInline={12}
-			style={{ gap: 8 }}
+			gap={8}
 		>
 			{host}
+			{/* `ButtonGroup` has no `gap` prop — only `align`, `stretch`, `wrap`, `vertical`, `small` and `large` —
+			    so this one stays a style. */}
 			<ButtonGroup style={{ gap: 8 }}>{children}</ButtonGroup>
 		</Box>
 	);

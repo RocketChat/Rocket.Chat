@@ -185,15 +185,21 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				host={
 					<Box className={callHeaderTimerStyles}>
 						<CallTimer startAt={call.createdAt} />
+						{/* The rule between the clock and the name is drawn, not typed. As a character it was content —
+						    read out as "vertical line" by anything that reads the header, and styled by nudging its
+						    opacity until it looked like a rule. */}
 						{call.name && (
-							<>
-								<Box is='span' color='default' opacity={0.5} marginInline={8}>
-									|
-								</Box>
-								<Box is='span' withTruncatedText>
-									{call.name}
-								</Box>
-							</>
+							<Box
+								is='span'
+								withTruncatedText
+								marginInlineStart={8}
+								paddingInlineStart={8}
+								borderInlineStartWidth='default'
+								borderInlineStartStyle='solid'
+								borderInlineStartColor='stroke-extra-light'
+							>
+								{call.name}
+							</Box>
 						)}
 					</Box>
 				}
