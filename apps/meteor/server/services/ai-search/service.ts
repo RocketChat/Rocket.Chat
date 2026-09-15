@@ -250,6 +250,10 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		// allSettled, not all: searchIntelligentPipeline rethrows on network failure and timeout, and one
 		// flaky branch must degrade hybrid to the survivor rather than to an empty result set
 		const [semanticResult, keywordResult] = await Promise.allSettled([queryBranch('semantic'), queryBranch('keyword')]);
+		if (semanticResult.status === 'rejected' && keywordResult.status === 'rejected') {
+			throw semanticResult.reason;
+		}
+
 		const keywordCandidates = keywordResult.status === 'fulfilled' ? keywordResult.value : undefined;
 		const semanticCandidates =
 			semanticResult.status === 'fulfilled'
@@ -257,13 +261,9 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 				: undefined;
 
 		if (!semanticCandidates) {
-			if (!keywordCandidates) {
-				throw semanticResult.status === 'rejected' ? semanticResult.reason : new Error('error-ai-search-retrieval-failed');
-			}
-
 			logger.warn({ msg: 'Intelligent search branch failed, serving the surviving retriever', failedBranch: 'semantic' });
 
-			return toRankedCandidates(keywordCandidates);
+			return toRankedCandidates(keywordCandidates ?? []);
 		}
 
 		if (!keywordCandidates) {
@@ -354,6 +354,9 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		searchCandidates: IntelligentSearchCandidate[],
 		userId: string,
 		limit = AI_SEARCH_PAGE_SIZE,
+		// a similarity is only shown when it is what ordered the list; fused or recency-boosted rankings
+		// would otherwise display a percentage that contradicts the order the reader can see
+		includeSimilarity = true,
 	): Promise<AISearchResult[]> {
 		// the whole pool is resolved, not just the first page: pre-slicing here returns short pages once
 		// permission filtering below drops a candidate
@@ -405,7 +408,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 				text: dbMessage.msg || '',
 				ts: dbMessage.ts?.toISOString(),
 				u: dbMessage.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
-				...(Number.isFinite(result.score) && { score: result.score }),
+				...(includeSimilarity && Number.isFinite(result.score) && { score: result.score }),
 				...(room && { room }),
 			});
 			if (normalizedResults.length === limit) {
@@ -503,13 +506,14 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		}
 
 		const semanticWeight = this.resolveSemanticWeight(searchType);
+		const recencyWeight = this.getRecencyWeight();
 		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, semanticWeight);
 		const rerankedCandidates = applyTemporalRerank(candidates, {
-			recencyWeight: this.getRecencyWeight(),
+			recencyWeight,
 			halfLifeDays: DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS,
 		});
 
-		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit);
+		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit, semanticWeight === 100 && recencyWeight === 0);
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {

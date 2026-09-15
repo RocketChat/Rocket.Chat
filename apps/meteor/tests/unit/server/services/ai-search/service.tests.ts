@@ -312,13 +312,13 @@ describe('AISearchService', () => {
 			expect(serverFetch.callCount).to.equal(2);
 			expect(results).to.deep.equal([
 				{
+					// hybrid ordering is fused rank, so no similarity is reported for either row
 					_id: 'allowed-msg',
 					rid: 'allowed',
 					msgId: 'allowed-msg',
 					text: 'allowed-msg from db',
 					ts: '2026-01-05T12:00:00.000Z',
 					u: { username: 'alice', name: 'Alice' },
-					score: 0.8,
 					room: { _id: 'allowed', t: 'c', name: 'general', fname: 'General' },
 				},
 				{
@@ -429,6 +429,37 @@ describe('AISearchService', () => {
 			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Recency_Weight' ? 100 : settings[key]));
 			const withBoost = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
 			expect(withBoost.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['fresh', 'stale']);
+		});
+
+		it('reports a similarity only when the similarity is what ordered the list', async () => {
+			const pipelineResults = {
+				results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, score: 0.2 }],
+			};
+			serverFetch.resolves({ ok: true, status: 200, json: async () => pipelineResults, text: async () => '' });
+
+			// semantic-only with no recency boost: the score is the ranking, so it is shown
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 100 : settings[key]));
+			const [semanticOnly] = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			expect(semanticOnly).to.have.property('score', 0.8);
+
+			// hybrid: the list is ordered by fused rank, so a similarity would contradict the order
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+			const [hybrid] = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			expect(hybrid).to.not.have.property('score');
+
+			// semantic-only but recency-boosted: freshness reordered the list, so the similarity is withheld
+			cachedSettings.get.callsFake((key: string) => {
+				if (key === 'AI_Intelligent_Search_Semantic_Weight') {
+					return 100;
+				}
+				if (key === 'AI_Intelligent_Search_Recency_Weight') {
+					return 25;
+				}
+
+				return settings[key];
+			});
+			const [boosted] = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+			expect(boosted).to.not.have.property('score');
 		});
 
 		it('serves the surviving retriever when one hybrid branch fails', async () => {

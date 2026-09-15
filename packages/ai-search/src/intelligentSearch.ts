@@ -62,6 +62,7 @@ const extractPipelineSimilarityScores = (
 	result: Record<string, unknown>,
 	metadata: Record<string, unknown>,
 	source: IntelligentSearchCandidateSource,
+	logger?: AIServiceLogger,
 ): { semanticSimilarity?: number; semanticDistance?: number } => {
 	if (source === 'keyword') {
 		return {};
@@ -69,6 +70,9 @@ const extractPipelineSimilarityScores = (
 
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
+		if (similarity < -1 || similarity > 1) {
+			logger?.warn?.({ msg: 'Intelligent search similarity outside the documented cosine range', similarity });
+		}
 		const semanticSimilarity = Math.min(1, Math.max(-1, similarity));
 		const semanticDistance = 1 - semanticSimilarity;
 
@@ -81,6 +85,9 @@ const extractPipelineSimilarityScores = (
 	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
 	if (typeof distance === 'number') {
 		// Cosine distance spans [0, 2]; values above 1 indicate negative similarity.
+		if (distance < 0 || distance > 2) {
+			logger?.warn?.({ msg: 'Intelligent search distance outside the documented cosine range', distance });
+		}
 		const semanticDistance = Math.min(2, Math.max(0, distance));
 
 		return {
@@ -165,7 +172,7 @@ export const normalizeIntelligentSearchCandidates = (
 			seenMessageIds.add(msgId);
 		}
 
-		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source);
+		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source, logger);
 		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
 			// source-qualified: the index is per-retriever, so a bare index would fuse unrelated candidates
