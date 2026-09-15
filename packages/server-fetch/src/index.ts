@@ -113,6 +113,14 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 	return location;
 }
 
+/**
+ * Performs a server-side fetch with SSRF validation.
+ *
+ * Security Context (SSRF Protection & URL Pinning):
+ * When node-fetch encounters a relative redirect location, it resolves it against the pinned IP URL instead of the original hostname.
+ * We intercept the `location` URL to detect this scenario. If the redirect location's hostname matches the pinned IP,
+ * we restore the original hostname and port to ensure subsequent requests preserve Server Name Indication (SNI) and TLS works correctly.
+ */
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
 	const { controller, timeoutId } = getTimeout(options?.timeout);
@@ -179,7 +187,20 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				return response;
 			}
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+			const locationUrl = new URL(followRedirect(response, redirectCount), currentUrl);
+
+			if (locationUrl.hostname === url.hostname) {
+				const current = new URL(currentUrl);
+				locationUrl.hostname = current.hostname;
+				// Explicitly check for an empty port string, or check against url.port.
+				// Note that node-fetch may resolve default ports (e.g., 80/443) differently based on the URL scheme.
+				// We check explicitly against the original url's port to prevent overwriting explicit redirect ports.
+				if (locationUrl.port === '' || locationUrl.port === url.port) {
+					locationUrl.port = current.port;
+				}
+			}
+
+			currentUrl = locationUrl.toString();
 
 			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
 			response.body.resume();
