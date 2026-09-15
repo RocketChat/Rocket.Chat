@@ -151,6 +151,9 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 					headers['Last-Modified'] = file.uploadedAt.toUTCString();
 				}
 
+				// Advertise Range support so clients know they can seek before requesting a Range
+				headers['Accept-Ranges'] = 'bytes';
+
 				// Parse request headers
 				if (typeof req.headers === 'object') {
 					// Compare ETag
@@ -223,8 +226,6 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 						}
 						status = 206; // partial content
 					}
-				} else {
-					headers['Accept-Ranges'] = 'bytes';
 				}
 
 				// Open the file stream
