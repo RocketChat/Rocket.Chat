@@ -7,7 +7,7 @@ node_modules
 
 # testing
 coverage
-.stryker-tmp
+.stryker-tmp*
 **/reports/mutation*
 stryker.log
 
