@@ -3,6 +3,8 @@ export class BrokerMocked {
 
 	services: Map<string, any> = new Map();
 
+	options: Record<string, unknown> = {};
+
 	async destroyService(name: string): Promise<void> {
 		this.services.delete(name);
 	}

@@ -26,12 +26,15 @@ export class NetworkBroker implements IBroker {
 
 	private defaultDependencies = ['settings', 'license'];
 
+	private balancerDisabled: boolean;
+
 	metrics: IServiceMetrics;
 
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
 
 		this.metrics = broker.metrics;
+		this.balancerDisabled = broker.options.disableBalancer === true;
 	}
 
 	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
@@ -51,12 +54,14 @@ export class NetworkBroker implements IBroker {
 			});
 		}
 
-		const services: { name: string }[] = await this.broker.call('$node.services', {
-			onlyAvailable: true,
-		});
+		if (!this.balancerDisabled) {
+			const services: { name: string }[] = await this.broker.call('$node.services', {
+				onlyAvailable: true,
+			});
 
-		if (!services.find((service) => service.name === method.split('.')[0])) {
-			return new Error('method-not-available');
+			if (!services.find((service) => service.name === method.split('.')[0])) {
+				return new Error('method-not-available');
+			}
 		}
 
 		return this.broker.call(method, isStreamingCall ? stream : data, {
@@ -187,7 +192,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
-		return this.broker.call('$node.list');
+		return this.broker.call('$node.list', {}, { nodeID: this.broker.nodeID });
 	}
 
 	async start(): Promise<void> {
