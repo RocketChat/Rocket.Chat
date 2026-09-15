@@ -10,13 +10,14 @@ export const availabilityErrors = {
 export const CALL_FACES_SHOWN = 2;
 
 /**
- * Where a call's persistent chat lives. Written down once because both halves read the same setting and have to
- * agree on what it can say — the server through `getPersistentChatMode`, the call window through
- * `useConferenceEmbedded`.
+ * Where a call's persistent chat lives — the two answers the `VideoConf_Persistent_Chat_Mode` setting can give.
+ *
+ * A type and not a value: nothing here validates the setting, so a runtime array would be an export with no
+ * reader pretending to be a shared contract. The server resolves the setting in `getPersistentChatMode` and the
+ * call window reads it in `useConferenceEmbedded`; the day either of them checks a value against a list, this is
+ * where the list goes.
  */
-export const PERSISTENT_CHAT_MODES = ['thread', 'main_room'] as const;
-
-export type PersistentChatMode = (typeof PERSISTENT_CHAT_MODES)[number];
+export type PersistentChatMode = 'thread' | 'main_room';
 
 export const PREFLIGHT_FACES_SHOWN = 10;
 

@@ -40,7 +40,11 @@ export type RoomProviderProps = {
 const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	const layout = useLayout();
 	// Only built when a caller asks for it: the ordinary room passes the layout's own context straight through.
-	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true }), [layout]);
+	// `showTopNavbarEmbeddedLayout` is forced off rather than inherited: it is the workspace saying that an
+	// embedded *page* should still show the navigation, which is a sentence about an iframe in someone else's
+	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
+	// the setting on the panel would have grown the full room header.
+	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
 	const room = Rooms.use((state) => state.get(rid));
 
 	const messageJumpParam = useSearchParameter('msg');

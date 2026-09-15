@@ -36,7 +36,11 @@ const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) 
 	}
 
 	return (
-		<AnnouncementBanner>
+		// `AnnouncementBanner` is a `banner` landmark when nothing clicks it, and this window already has one —
+		// `CallTopBar`, which is the header. Two of them is two things neither a person nor a test can tell apart,
+		// and the strip is not the window's header anyway. The sentence keeps `role='status'`, which is what makes
+		// the count reach a reader when it changes.
+		<AnnouncementBanner role='none'>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
 				{/* The live region is the sentence, not the strip: the count changes as people join and leave, and a
 				    region wrapping the buttons too would re-read "Review" and "Dismiss" over whoever is using them. */}
