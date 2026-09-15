@@ -31,6 +31,7 @@ import type {
 	ServerMediaSignalNotification,
 	ServerMediaSignalRemoteSDP,
 	ServerMediaSignalRequestOffer,
+	ServerMediaSignalUpdateCall,
 } from '../definition/signals/server';
 
 export interface IClientMediaCallConfig {
@@ -661,6 +662,8 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.processOfferRequest(signal);
 			case 'notification':
 				return this.processNotification(signal);
+			case 'update':
+				return this.processCallUpdate(signal);
 		}
 	}
 
@@ -1179,6 +1182,18 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			case 'hangup':
 				return this.flagAsEnded('remote', signal.hangupReason);
+		}
+	}
+
+	private async processCallUpdate(signal: ServerMediaSignalUpdateCall) {
+		this.config.logger?.debug('ClientMediaCall.processCallUpdate');
+
+		if (signal.features) {
+			this.enabledFeatures = signal.features;
+		}
+
+		if (signal.contact) {
+			this.changeContact(signal.contact);
 		}
 	}
 
