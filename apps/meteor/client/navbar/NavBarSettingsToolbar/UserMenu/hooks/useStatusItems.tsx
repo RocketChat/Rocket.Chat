@@ -1,5 +1,5 @@
-import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnumValue } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -93,7 +93,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			return [
 				{
 					id: 'user-status-disabled',
-					status: <UserStatus status={UserStatusEnumValue.OFFLINE} />,
+					status: <UserStatus status={UserStatusEnum.OFFLINE} />,
 					content: t('Offline'),
 					addon: (
 						<Box role='img' aria-label={statusDisabledReason} title={statusDisabledReason}>
