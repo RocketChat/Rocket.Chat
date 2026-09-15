@@ -79,7 +79,7 @@ const SendJoinEventSchema = {
 			required: ['membership'],
 		},
 	},
-	required: ['type', 'state_key', 'sender', 'origin', 'origin_server_ts', 'content'],
+	required: ['type', 'state_key', 'sender', 'origin_server_ts', 'content'],
 };
 
 const isSendJoinEventProps = ajv.compile(SendJoinEventSchema);
