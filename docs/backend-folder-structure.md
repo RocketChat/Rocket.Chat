@@ -17,7 +17,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | Path        | What it is |
 | ----------- | ---------- |
 | `server/`   | **All community server code.** Described in detail below. |
-| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-license-boundary-ee). |
+| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-ee-tree-eeserver-and-the-license-boundary). |
 | `client/`, `ee/client/` | Frontend (React) code. |
 | `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), client-only feature code (`app/*/client/`), and `app/apps/server/` (Apps-Engine bridges/converters, kept intentionally). |
 | `lib/`      | Small utilities shared between client and server (isomorphic, no Meteor/server imports). |
