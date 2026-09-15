@@ -1,0 +1,44 @@
+diff --git a/dist/src/typescript-checker.js b/dist/src/typescript-checker.js
+index dc8d7d6a6cd6c93cf1a083a5cf641e37411481f5..ed3c65f1760af99791fea24e58155b124245fadb 100644
+--- a/dist/src/typescript-checker.js
++++ b/dist/src/typescript-checker.js
+@@ -14,6 +14,21 @@ import { HybridFileSystem } from './fs/hybrid-file-system.js';
+ import { NativeFileSystem } from './ts-native/native-file-system.js';
+ import { NativeTypescriptChecker } from './ts-native/native-typescript-checker.js';
+ import { NativeTypescriptCompiler } from './ts-native/native-typescript-compiler.js';
++
++/**
++ * Diagnostics that only exist because of Stryker's own compiler-option overrides.
++ *
++ * COMPILER_OPTIONS_OVERRIDES in tsconfig-helpers forces `allowUnreachableCode: true` and
++ * `noUnusedLocals: false` on the project. Those overrides can leave a legitimate
++ * `@ts-expect-error` with nothing to suppress, and TypeScript then reports the directive as
++ * unused. The project itself compiles; the checker's own settings created the error. Such a
++ * diagnostic must neither fail the dry run nor be charged to a mutant.
++ */
++const STRYKER_INDUCED_DIAGNOSTIC_CODES = new Set([
++    2578, // Unused '@ts-expect-error' directive.
++]);
++
++const dropStrykerInducedDiagnostics = (errors) => errors.filter((error) => !STRYKER_INDUCED_DIAGNOSTIC_CODES.has(error.code));
+ typescriptCheckerLoggerFactory.inject = tokens(commonTokens.getLogger, commonTokens.target);
+ function typescriptCheckerLoggerFactory(loggerFactory, 
+ // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+@@ -59,7 +74,7 @@ export class TypescriptChecker {
+      * Starts the typescript compiler and does a dry run
+      */
+     async init() {
+-        const errors = await this.tsCompiler.init();
++        const errors = dropStrykerInducedDiagnostics(await this.tsCompiler.init());
+         if (errors.length) {
+             throw new Error(`Typescript error(s) found in dry run compilation: ${this.createErrorText(errors)}`);
+         }
+@@ -107,7 +122,7 @@ export class TypescriptChecker {
+         }
+     }
+     async checkErrors(mutants, errorsMap, nodes) {
+-        const errors = await this.tsCompiler.check(mutants);
++        const errors = dropStrykerInducedDiagnostics(await this.tsCompiler.check(mutants));
+         const mutantsThatCouldNotBeTestedInGroups = new Set();
+         //If there is only a single mutant the error has to originate from the single mutant
+         if (errors.length && mutants.length === 1) {

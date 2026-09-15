@@ -10867,6 +10867,7 @@ __metadata:
     "@storybook/react-webpack5": "npm:^9.1.20"
     "@stryker-mutator/core": "npm:^10.0.0"
     "@stryker-mutator/mocha-runner": "npm:^10.0.0"
+    "@stryker-mutator/typescript-checker": "patch:@stryker-mutator/typescript-checker@npm%3A10.0.0#~/.yarn/patches/@stryker-mutator-typescript-checker-npm-10.0.0-e7d3599a58.patch"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.3"
@@ -13975,6 +13976,34 @@ __metadata:
     "@stryker-mutator/core": 10.0.0
     mocha: ">= 7.2 < 13"
   checksum: 10/fa72f488c0bff1174a33f2f5dd03809445f229915abe0d2da3195ba0cffc84a65f91998a2da8c2d9c063fa73ffef5b88bd727dcfe889a60a06d8fe1838ded101
+  languageName: node
+  linkType: hard
+
+"@stryker-mutator/typescript-checker@npm:10.0.0":
+  version: 10.0.0
+  resolution: "@stryker-mutator/typescript-checker@npm:10.0.0"
+  dependencies:
+    "@stryker-mutator/api": "npm:10.0.0"
+    "@stryker-mutator/util": "npm:10.0.0"
+    semver: "npm:~7.8.0"
+  peerDependencies:
+    "@stryker-mutator/core": 10.0.0
+    typescript: ">=3.6"
+  checksum: 10/66559c0d4a4ce6c8a02fe21cb35bdd49eb103dc2889591140b411ab95911e1bd2bb60f77f8658dc22340db503f8a6a6ea2ccdabf52a6574d171e91aeeafeeff5
+  languageName: node
+  linkType: hard
+
+"@stryker-mutator/typescript-checker@patch:@stryker-mutator/typescript-checker@npm%3A10.0.0#~/.yarn/patches/@stryker-mutator-typescript-checker-npm-10.0.0-e7d3599a58.patch":
+  version: 10.0.0
+  resolution: "@stryker-mutator/typescript-checker@patch:@stryker-mutator/typescript-checker@npm%3A10.0.0#~/.yarn/patches/@stryker-mutator-typescript-checker-npm-10.0.0-e7d3599a58.patch::version=10.0.0&hash=82530a"
+  dependencies:
+    "@stryker-mutator/api": "npm:10.0.0"
+    "@stryker-mutator/util": "npm:10.0.0"
+    semver: "npm:~7.8.0"
+  peerDependencies:
+    "@stryker-mutator/core": 10.0.0
+    typescript: ">=3.6"
+  checksum: 10/ac7d519a25578bfee757060afd40c1514bc3a9d5b4207c404805a8f8f3268ea8debd370d4a8e4b30d99865070ca4422d0f54b9137da71acaa60e76e96501b53c
   languageName: node
   linkType: hard
 
