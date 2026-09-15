@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError } from '@rocket.chat/core-services';
+import { MeteorError, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -21,6 +21,7 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { shouldBreakInVersion } from '../../shouldBreakInVersion';
+import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
@@ -52,6 +53,8 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 
 	freeSwitchExtension?: string;
 };
@@ -192,6 +195,31 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const presenceChanged =
+			userData.presenceDisabledByAdmin !== undefined &&
+			userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
+
+		if (presenceChanged) {
+			if (userData.presenceDisabledByAdmin) {
+				updater.set('presenceDisabledByAdmin', true);
+			} else {
+				updater.unset('presenceDisabledByAdmin');
+			}
+		}
+
+		const deniedByAdmin =
+			userData.statusVisibilityDeniedByAdmin !== undefined
+				? await resolveUsersByUsernames(userData.statusVisibilityDeniedByAdmin.filter((username) => username !== oldUserData?.username))
+				: undefined;
+
+		if (deniedByAdmin) {
+			if (deniedByAdmin.ids.length) {
+				updater.set('statusVisibilityDeniedByAdmin', deniedByAdmin.ids);
+			} else {
+				updater.unset('statusVisibilityDeniedByAdmin');
+			}
+		}
+
 		if (userData.customFields) {
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
@@ -207,6 +235,10 @@ const _saveUser = (session?: ClientSession) =>
 				}
 				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
 				void options.auditStore.commitAuditEvent();
+			}
+
+			if (presenceChanged || deniedByAdmin) {
+				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged });
 			}
 
 			// App IPostUserUpdated event hook

@@ -68,6 +68,7 @@ import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVid
 
 export type { AppStatusReport } from './types/IAppsEngineService';
 export type { IAbacService, AbacActor } from './types/IAbacService';
+export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
