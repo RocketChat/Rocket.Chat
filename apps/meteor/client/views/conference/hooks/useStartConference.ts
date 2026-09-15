@@ -2,7 +2,8 @@ import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { CallPreferences } from './useCallDevicesInitialState';
-import { subscriptionsQueryKeys, videoConferenceQueryKeys } from '../../../lib/queryKeys';
+import { useRoomSubscriptionQuery } from './useRoomSubscriptionQuery';
+import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
  * Starts the conference this window was opened for, once its preflight has been confirmed.
@@ -17,24 +18,13 @@ import { subscriptionsQueryKeys, videoConferenceQueryKeys } from '../../../lib/q
 export const useStartConference = (rid: string) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 	const getCapabilities = useEndpoint('GET', '/v1/video-conference.capabilities');
 	const startConference = useEndpoint('POST', '/v1/video-conference.start');
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 
 	// The subscription, not the room: its `fname` is the name this reader knows the room by, which for a direct
 	// message is the other person rather than a room name at all.
-	const {
-		data: subscription,
-		isPending: isRoomPending,
-		error: roomError,
-	} = useQuery({
-		// The endpoint and its parameter, from the shared file — `useConferenceSubscription` asks the server the
-		// same question, and a key named after this screen instead meant the two never shared an answer.
-		queryKey: subscriptionsQueryKeys.subscription(rid),
-		queryFn: async () => (await getSubscription({ roomId: rid })).subscription ?? null,
-		retry: false,
-	});
+	const { data: subscription, isPending: isRoomPending, error: roomError } = useRoomSubscriptionQuery(rid);
 
 	const {
 		data: capabilities,
