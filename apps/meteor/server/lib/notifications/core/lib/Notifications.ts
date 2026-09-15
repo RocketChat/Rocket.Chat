@@ -1,12 +1,9 @@
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { NotificationsModule } from '@rocket.chat/streamer/notifications.module';
+import { Streamer } from '@rocket.chat/streamer/streamer.module';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-
-import { NotificationsModule } from '../../../../modules/notifications/notifications.module';
-import { Streamer } from '../../../../modules/streamer/streamer.module';
-
-import './Presence';
 
 class Stream extends Streamer<'local'> {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {

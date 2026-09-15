@@ -150,6 +150,7 @@
 		"@rocket.chat/server-cloud-communication": "workspace:^",
 		"@rocket.chat/server-fetch": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
+		"@rocket.chat/streamer": "workspace:^",
 		"@rocket.chat/styled": "~0.34.1",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
