@@ -9,29 +9,31 @@ import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 
 export class SearchResultValidationService {
-	private getSubscription = mem(async (rid: IRoom['_id'], uid?: IUser['_id']) => {
-		if (!rid) {
-			return;
-		}
+	// `mem` keys on the first argument alone, so both `uid` and `maxAge` are mandatory here:
+	// this memoizes an access-control decision, and a key that drops `uid` hands one user's
+	// verdict to the next one asking about the same room.
+	private getSubscription = mem(
+		async (rid: IRoom['_id'], uid?: IUser['_id']) => {
+			if (!rid) {
+				return;
+			}
 
-		const room = await Rooms.findOneById(rid);
-		if (!room) {
-			return;
-		}
+			const room = await Rooms.findOneById(rid);
+			if (!room) {
+				return;
+			}
 
-		if (!uid || !(await canAccessRoomAsync(room, { _id: uid }))) {
-			return;
-		}
+			if (!uid || !(await canAccessRoomAsync(room, { _id: uid }))) {
+				return;
+			}
 
-		return room;
-	});
+			return room;
+		},
+		{ maxAge: 5000, cacheKey: JSON.stringify },
+	);
 
-	private getUser = mem(async (uid: IUser['_id']) => {
-		if (!uid) {
-			return;
-		}
-
-		return Users.findOneById(uid, { projection: { username: 1 } });
+	private getUser = mem(async (uid: IUser['_id']) => (uid ? Users.findOneById(uid, { projection: { username: 1 } }) : undefined), {
+		maxAge: 5000,
 	});
 
 	async validateSearchResult(result: IRawSearchResult): Promise<ISearchResult> {
