@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import { Contextualbar } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import { CONFERENCE_THEMED_CLASS } from '../panelStyles';
@@ -34,12 +33,20 @@ const CLOSE_MS = 200;
 /**
  * A side panel for conference content (the chat, the members).
  *
- * It is the product's own contextual bar, so a panel beside the call has the same edges, background and
- * elevation as one beside a room. What it adds is opening and closing: the outer width animates to zero while
- * the inner box keeps its own, so the content slides out rather than reflowing as it goes.
+ * Its own surface rather than the product's contextual bar. It started as one, for the sake of having the same
+ * edges and background as a panel beside a room — but almost nothing of that survived: the bar's background, its
+ * width, its borders, its radius, its position and its overflow were all overridden, and the sheet had to hand
+ * back the four props it sets on its own Box (`insetBlockStart`, `insetInlineEnd`, `height`, `zIndex`) because a
+ * Box prop beats a class whichever order the stylesheets land in, and the sheet's own insets were losing to them
+ * in silence. What was left of the bar was a marker attribute with no styles behind it.
  *
- * It is a sibling of the call area *above* the call bar, never a child of it, so that animation never reflows
- * the bar.
+ * Still `Box` and not `@rocket.chat/styled`: what this needs from the design system is colours and border widths
+ * *by name*, and a styled template can only reach them by writing out the custom properties — which is the copy
+ * that goes stale. The parts that are genuinely CSS, and depend on the props, are the class below.
+ *
+ * What it adds to a plain surface is opening and closing: the outer width animates to zero while the inner box
+ * keeps its own, so the content slides out rather than reflowing as it goes. It is a sibling of the call area
+ * *above* the call bar, never a child of it, so that animation never reflows the bar.
  */
 const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 	// The docked panel's width is what animates; a sheet's is the window's, and it animates its position instead.
@@ -104,39 +111,39 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 					visibility 0s linear ${visible ? 0 : CLOSE_MS}ms;
 			`;
 
-	// `Contextualbar` sets `insetBlockStart`, `insetInlineEnd`, `height` and `zIndex` on its own Box, and a Box
-	// prop beats a class whichever order the two stylesheets land in — the sheet's `top` and derived height lost
-	// to `top: 0` and `height: 100%` in silence, leaving it flush with the top of the window, and its inline end
-	// would lose the same way. So the sheet hands all four back as props and sets its own insets in the class;
-	// the docked panel passes nothing and keeps every default it had.
-	const sheetOverrides = sheet ? { insetBlockStart: undefined, insetInlineEnd: undefined, height: undefined, zIndex: 100 } : {};
-
 	return (
-		<Contextualbar
-			{...sheetOverrides}
+		<Box
+			is='aside'
 			// What the panel holds is room UI, so it is read in the reader's own theme rather than in the dark the
 			// window around it is pinned to.
 			// An array rather than a joined string: `css` returns an object Fuselage resolves itself, and joining it
 			// stringifies it to `[object Object]` — which is a class name that exists nowhere, so the sheet's own
 			// rules silently never applied.
 			className={[CONFERENCE_THEMED_CLASS, panelStyle]}
+			display='flex'
+			flexDirection='column'
+			flexShrink={0}
+			color='default'
+			// Chrome beside a call rather than a room, and the chat inside it paints its own room background anyway.
+			backgroundColor='surface-light'
+			overflow='hidden'
+			height={sheet ? undefined : 'full'}
+			zIndex={sheet ? 100 : undefined}
+			position={sheet ? 'fixed' : 'relative'}
 			width={sheet ? undefined : dockedInlineSize}
 			minWidth={sheet ? undefined : dockedInlineSize}
 			borderBlockWidth={sheet ? 0 : 'default'}
 			borderBlockStyle='solid'
 			borderBlockColor='stroke-extra-light'
 			borderInlineStartWidth={sheet || !visible ? 0 : 'default'}
+			borderInlineStartStyle='solid'
+			borderInlineStartColor='stroke-extra-light'
 			borderRadius={sheet ? undefined : '0.25rem 0 0 0.25rem'}
-			position={sheet ? 'fixed' : 'relative'}
-			// The one thing not taken from the contextual bar's defaults, which is `surface-room`. Beside a call the
-			// panel is chrome rather than a room, and the chat inside it paints its own room background anyway.
-			backgroundColor='surface-light'
-			overflow='hidden'
 		>
 			<Box display='flex' flexDirection='column' width='100%' minWidth={sheet ? 0 : PANEL_INLINE_SIZE} height='100%'>
 				{children}
 			</Box>
-		</Contextualbar>
+		</Box>
 	);
 };
 
