@@ -7,7 +7,7 @@
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
-	"main": "./dist/service.js",
+	"main": "./dist/ee/apps/ddp-streamer/src/service.js",
 	"files": [
 		"/dist"
 	],
