@@ -12,4 +12,13 @@ export type ExchangeEndpoints = {
 			deleted: number;
 		};
 	};
+	'/v1/exchange.syncMyContacts': {
+		POST: () => {
+			folders: number;
+			upserted: number;
+			modified: number;
+			deleted: number;
+			pruned: number;
+		};
+	};
 };

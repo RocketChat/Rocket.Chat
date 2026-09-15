@@ -3,7 +3,16 @@ import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { DEFAULT_GRAPH_HOST, GraphTokenClient } from './GraphTokenClient';
 import type { GraphTokenClientConfig } from './GraphTokenClient';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type {
+	ContactFolder,
+	DateRange,
+	ExchangeContact,
+	ExchangeContactEmail,
+	ExchangeContactPhone,
+	ExchangeEvent,
+	ExchangeProviderCapabilities,
+	Page,
+} from '../definition/types';
 import { ExchangeError } from '../errors';
 import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
@@ -16,6 +25,10 @@ const MAX_DELTA_PAGES = 50;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
+
+const DEFAULT_CONTACT_FOLDER_ID = 'default';
+
+const CONTACT_FIELDS = 'id,displayName,givenName,surname,companyName,emailAddresses,mobilePhone,businessPhones,homePhones,categories';
 
 type GraphDateTimeTimeZone = {
 	dateTime?: unknown;
@@ -42,6 +55,25 @@ type GraphDeltaResponse = {
 	'@odata.deltaLink'?: unknown;
 };
 
+type GraphContactFolder = {
+	id?: unknown;
+	displayName?: unknown;
+};
+
+type GraphContact = {
+	'id'?: unknown;
+	'displayName'?: unknown;
+	'givenName'?: unknown;
+	'surname'?: unknown;
+	'companyName'?: unknown;
+	'emailAddresses'?: unknown;
+	'mobilePhone'?: unknown;
+	'businessPhones'?: unknown;
+	'homePhones'?: unknown;
+	'categories'?: unknown;
+	'@removed'?: unknown;
+};
+
 /**
  * Graph sends `2026-08-21T10:00:00.0000000` with no zone suffix. Since we always request UTC, the marker
  * is appended rather than letting the runtime guess the server's local zone.
@@ -63,13 +95,25 @@ const asString = (value: unknown): string | undefined => (typeof value === 'stri
 /** Only `busy` counts, matching the EWS `LegacyFreeBusyStatus` rule so presence behaves the same either way. */
 const isBusy = (showAs: unknown): boolean => showAs === 'busy';
 
+// Graph gives one number as a bare string and the rest as arrays, so both arrive here.
+const asStringArray = (value: unknown): string[] =>
+	(Array.isArray(value) ? value : [value]).map((entry) => asString(entry)).filter((entry): entry is string => entry !== undefined);
+
+const toPhones = (value: unknown, label: string): ExchangeContactPhone[] => asStringArray(value).map((raw) => ({ raw, label }));
+
+const toEmails = (value: unknown): ExchangeContactEmail[] =>
+	(Array.isArray(value) ? value : [])
+		.map((entry) => asString((entry as { address?: unknown } | null)?.address))
+		.filter((address): address is string => address !== undefined)
+		.map((address) => ({ address }));
+
 export class MicrosoftGraphProvider implements IExchangeProvider {
 	public readonly id = 'graph' as const;
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
 		supportsDelta: true,
 		supportsWebhooks: true,
-		supportsContacts: false,
+		supportsContacts: true,
 		cursorIsWindowScoped: true,
 	};
 
@@ -110,6 +154,121 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		logger.warn({ msg: 'Graph calendar view paged out before the window was fully read', pages: MAX_DELTA_PAGES });
 
 		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
+	}
+
+	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
+		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
+
+		let url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}/contactFolders?$select=id,displayName`;
+
+		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
+			const payload = await this.requestJson<GraphDeltaResponse>(url);
+			const raw = Array.isArray(payload.value) ? (payload.value as GraphContactFolder[]) : [];
+
+			for (const folder of raw) {
+				const id = asString(folder.id);
+
+				if (!id) {
+					logger.warn({ msg: 'Skipping Graph contact folder without an id' });
+					continue;
+				}
+
+				folders.push({ id, displayName: asString(folder.displayName) ?? '' });
+			}
+
+			const nextLink = asString(payload['@odata.nextLink']);
+
+			if (!nextLink) {
+				return folders;
+			}
+
+			url = nextLink;
+		}
+
+		logger.error({ msg: 'Graph contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
+
+		return folders;
+	}
+
+	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
+		const items: ExchangeContact[] = [];
+
+		let url = cursor ?? this.contactsDeltaUrl(mailbox, folderId);
+
+		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
+			const payload = await this.requestJson<GraphDeltaResponse>(url);
+
+			const raw = Array.isArray(payload.value) ? (payload.value as GraphContact[]) : [];
+			items.push(
+				...raw
+					.map((contact) => this.toExchangeContact(contact, folderId))
+					.filter((contact): contact is ExchangeContact => contact !== undefined),
+			);
+
+			const nextLink = asString(payload['@odata.nextLink']);
+
+			if (!nextLink) {
+				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteForWindow: !cursor };
+			}
+
+			url = nextLink;
+		}
+
+		logger.warn({ msg: 'Graph contact folder paged out before it was fully read', folderId, pages: MAX_DELTA_PAGES });
+
+		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
+	}
+
+	private contactsDeltaUrl(mailbox: string, folderId: string): string {
+		const mailboxUrl = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}`;
+		const scope = folderId === DEFAULT_CONTACT_FOLDER_ID ? 'contacts' : `contactFolders/${encodeURIComponent(folderId)}/contacts`;
+
+		return `${mailboxUrl}/${scope}/delta?$select=${CONTACT_FIELDS}`;
+	}
+
+	private toExchangeContact(contact: GraphContact, folderId: string): ExchangeContact | undefined {
+		const externalId = asString(contact.id);
+		if (!externalId) {
+			logger.warn({ msg: 'Skipping Graph contact without an id' });
+			return undefined;
+		}
+
+		if (contact['@removed']) {
+			return { kind: 'deleted', externalId, folderId };
+		}
+
+		const emails = toEmails(contact.emailAddresses);
+		const categories = asStringArray(contact.categories);
+		const phones = [
+			...toPhones(contact.mobilePhone, 'mobile'),
+			...toPhones(contact.businessPhones, 'business'),
+			...toPhones(contact.homePhones, 'home'),
+		];
+
+		const givenName = asString(contact.givenName);
+		const surname = asString(contact.surname);
+		const companyName = asString(contact.companyName);
+
+		const fullName = [givenName, surname].filter(Boolean).join(' ');
+		const displayName = asString(contact.displayName) || fullName || emails[0]?.address || phones[0]?.raw;
+
+		if (!displayName) {
+			logger.warn({ msg: 'Skipping Graph contact with nothing to resolve it by', externalId });
+			return undefined;
+		}
+
+		return {
+			kind: 'upsert',
+			externalId,
+			folderId,
+			displayName,
+			...(givenName && { givenName }),
+			...(surname && { surname }),
+			...(companyName && { companyName }),
+			emails,
+			phones,
+			categories,
+		};
 	}
 
 	private calendarViewDeltaUrl(mailbox: string, timeWindow: DateRange): string {
