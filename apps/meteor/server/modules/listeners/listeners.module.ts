@@ -58,9 +58,9 @@ export class ListenersModule {
 			if (!isMessageParserDisabled && message.msg) {
 				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 					? settings
-							.get<string>('Message_CustomDomain_AutoLink')
-							.split(',')
-							.map((domain) => domain.trim())
+						.get<string>('Message_CustomDomain_AutoLink')
+						.split(',')
+						.map((domain) => domain.trim())
 					: [];
 
 				message.md = parse(message.msg, {
@@ -207,20 +207,6 @@ export class ListenersModule {
 				},
 			});
 
-			// TODO: no client in this repo subscribes to notify-logged/user-status; if mobile and the
-			// SDK don't either, this check and the restricted mirror behind it can be dropped
-			if (!statusVisibilityGate.hasRestrictions(_id)) {
-				notifications.notifyLoggedInThisInstance('user-status', [
-					_id,
-					username,
-					STATUS_MAP[status],
-					statusText,
-					name,
-					roles,
-					statusSource,
-					statusExpiresAt,
-				]);
-			}
 
 			if (_id) {
 				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);
