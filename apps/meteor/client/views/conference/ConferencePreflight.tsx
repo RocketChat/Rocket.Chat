@@ -223,7 +223,7 @@ const ConferencePreflight = ({
 
 			<Box marginBlockStart={24} width='100%'>
 				<ButtonGroup vertical stretch>
-					<Button type='submit' primary loading={confirming}>
+					<Button type='submit' variant='primary' loading={confirming}>
 						{confirmLabel}
 					</Button>
 					<Button type='button' onClick={onCancel}>
