@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import ConferenceRoomPanel from './ConferenceRoomPanel';
 import ConferenceStoresReady from './ConferenceStoresReady';
@@ -54,19 +54,26 @@ const ConferenceChat = ({ callId, rid, tmid, roomName, roomType, loading, chatAc
 	const shared = hasConferenceChatAccess(chatAccess, uid);
 	const presentWithoutAccess = shared && chatAccess ? chatAccess.members.filter(hasJoinedVideoConference).length : 0;
 
-	const headerLabel = tmid ? t('Thread') : t('Chat');
+	// One sentence, with the room's icon interpolated into it, rather than three pieces concatenated in this
+	// file: a language that puts the room before the word — or drops the preposition — has nowhere to say so
+	// when the order is decided here.
 	const title = roomName ? (
-		<>
-			{tmid ? t('Thread_in') : t('Chat_in')} <Icon name={roomTypeIcon(roomType)} size='x16' /> {roomName}
-		</>
+		<Trans
+			i18nKey={tmid ? 'Thread_in__roomName__' : 'Chat_in__roomName__'}
+			values={{ roomName }}
+			components={{ icon: <Icon name={roomTypeIcon(roomType)} size='x16' /> }}
+		/>
 	) : (
-		headerLabel
+		t(tmid ? 'Thread' : 'Chat')
 	);
 
 	return (
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} height='full'>
 			{/* The icon sits between the words, so the heading's name is given rather than assembled from them. */}
-			<CallPanelHeader title={title} titleLabel={`${tmid ? t('Thread_in') : t('Chat_in')} ${roomName}`} onClose={onClose}>
+			{/* No `titleLabel` any more: the heading names itself from its own contents, and `Icon` renders
+			    `aria-hidden`, so the icon in the middle of the sentence contributes nothing to that name. The
+			    label existed to work around an icon that was never in the name to begin with. */}
+			<CallPanelHeader title={title} onClose={onClose}>
 				{presentWithoutAccess > 0 && chatAccess && (
 					<IconButton
 						icon='balloon-exclamation'
