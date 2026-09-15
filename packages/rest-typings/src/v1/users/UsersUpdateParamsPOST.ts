@@ -11,6 +11,7 @@ export type UsersUpdateParamsPOST = {
 		username?: string;
 		active?: boolean;
 		presenceDisabledByAdmin?: boolean;
+		statusVisibilityDeniedByAdmin?: string[];
 		bio?: string;
 		nickname?: string;
 		statusText?: string;
@@ -75,6 +76,11 @@ const UsersUpdateParamsPostSchema = {
 				},
 				presenceDisabledByAdmin: {
 					type: 'boolean',
+					nullable: true,
+				},
+				statusVisibilityDeniedByAdmin: {
+					type: 'array',
+					items: { type: 'string' },
 					nullable: true,
 				},
 				roles: {
