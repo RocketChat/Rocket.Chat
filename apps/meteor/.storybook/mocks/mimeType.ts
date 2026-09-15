@@ -11,12 +11,16 @@
  * satisfy one dependency of one module. The same reason `meteor` and the server tree are replaced above it.
  *
  * `app/utils/lib/mimeTypes` keeps its own logic: only the lookup table below is stubbed, with the types a
- * story is plausibly built around.
+ * story is plausibly built around — including the ones that module registers itself through `define`, since the
+ * `define` here accepts the call and drops it.
  */
 const types: Record<string, string> = {
+	// `aac` and `ico` are `app/utils/lib/mimeTypes`' own registrations. Its last `define` for `ico` overwrites,
+	// so `image/x-icon` is the one that wins there and the one that belongs here.
 	aac: 'audio/aac',
 	csv: 'text/csv',
 	gif: 'image/gif',
+	ico: 'image/x-icon',
 	jpeg: 'image/jpeg',
 	jpg: 'image/jpeg',
 	json: 'application/json',
