@@ -1,0 +1,19 @@
+CONTEXT.md
+  s_e58fd7704b2631::t_9f22209938a711 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ebebb648fef462548d5e4773cc04cc8a8066358c",
+  "prompts": {},
+  "sessions": {
+    "s_e58fd7704b2631": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1fcc9b3-26e3-449b-9b45-2217554902d8",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
