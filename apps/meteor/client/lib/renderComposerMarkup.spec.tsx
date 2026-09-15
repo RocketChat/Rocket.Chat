@@ -52,7 +52,15 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 		['horizontal rule between paragraphs', 'a\n---\nb'],
 		['table', '|a|b|\n|-|-|\n|1|2|'],
 		['hyphen list', '- one\n- two'],
+		['list item with inline markup', '- *bold* one'],
+		['list followed by a paragraph', '- one\ntext after'],
+		['paragraph followed by a list', 'text before\n- one'],
+		['lone hyphen marker', '- '],
 		['ordered list', '1. one\n2. two'],
+		['ordered list numbered out of order', '1. one\n3. three\n2. two'],
+		['ordered list not starting at one', '7. seven\n8. eight'],
+		['ordered list item with inline markup', '1. *bold* one'],
+		['ordered list followed by a paragraph', '1. one\ntext after'],
 		['tasks', '- [x] done\n- [ ] todo'],
 		['emoji shortcode', 'hi :smile: there'],
 		['emoji shortcode alone', ':smile:'],
@@ -71,8 +79,34 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 	});
 });
 
+describe('list styling', () => {
+	it.each([
+		['unordered', '- one\n- two', /^- $/],
+		['ordered', '1. one\n3. three', /^\d+\. $/],
+	])('emphasizes every %s item marker like the message list does', (_label, text, markerPattern) => {
+		const markers = Array.from(mountMarkup(text).querySelectorAll('span')).filter((span) => markerPattern.test(span.textContent ?? ''));
+
+		expect(markers).toHaveLength(2);
+
+		for (const marker of markers) {
+			expect(marker.getAttribute('style')).toBe('font-weight:700;padding-inline-start:0.5rem');
+		}
+	});
+
+	it('keeps the numbers the user typed instead of renumbering', () => {
+		const markers = Array.from(mountMarkup('1. one\n3. three\n2. two').querySelectorAll('span'))
+			.filter((span) => /^\d+\. $/.test(span.textContent ?? ''))
+			.map((span) => span.textContent);
+
+		expect(markers).toEqual(['1. ', '3. ', '2. ']);
+	});
+});
+
 const lossy: [string, string][] = [
 	['asterisk list', '* one\n* two'],
+	['hyphen list with extra spacing', '-  one'],
+	['ordered list with a leading zero', '01. one'],
+	['ordered list with extra spacing', '1.  one'],
 	['slack-style link', '<https://rocket.chat|docs>'],
 	['padded horizontal rule', '  ---'],
 	['several big emoji', '😄 😄'],

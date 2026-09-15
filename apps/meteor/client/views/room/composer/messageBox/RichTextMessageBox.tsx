@@ -57,27 +57,10 @@ const cursorMap = new WeakMap<
 	}
 >();
 
-const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
-	const target = event.target as HTMLDivElement;
-	const { childNodes } = target;
-
-	// Normalize <div><br></div> to just <br>
-	if (childNodes.length === 1 && childNodes[0].nodeName === 'DIV' && (childNodes[0] as HTMLElement).innerHTML === '<br>') {
-		target.innerHTML = '<br>';
-	}
-
-	// Normalize empty DOM to <br>
-	if (target.innerHTML === '') {
-		target.innerHTML = '<br>';
-	}
-
-	const text = target.innerText.replace(/\n$/, '');
-
-	return {
-		isTyping: Boolean(text.trim()),
-		hideplaceholder: Boolean(text),
-	};
-};
+const reducer = (_: unknown, text: string): TypingState => ({
+	isTyping: Boolean(text.trim()),
+	hideplaceholder: Boolean(text),
+});
 
 const RichTextMessageBox = ({
 	tmid,
@@ -110,6 +93,23 @@ const RichTextMessageBox = ({
 	if (!chat) {
 		throw new Error('Chat context not found');
 	}
+
+	const handleInput = useStableCallback((event: FormEvent<HTMLElement>) => {
+		const target = event.target as HTMLDivElement;
+		const { childNodes } = target;
+
+		// Normalize <div><br></div> to just <br>
+		if (childNodes.length === 1 && childNodes[0].nodeName === 'DIV' && (childNodes[0] as HTMLElement).innerHTML === '<br>') {
+			target.innerHTML = '<br>';
+		}
+
+		// Normalize empty DOM to <br>
+		if (target.innerHTML === '') {
+			target.innerHTML = '<br>';
+		}
+
+		setTyping(chat.composer?.text ?? target.innerText.replace(/\n$/, ''));
+	});
 
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
@@ -162,6 +162,7 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
+
 			chat.setComposerAPI(
 				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
 					rid: room._id,
@@ -201,7 +202,6 @@ const RichTextMessageBox = ({
 		}
 
 		const text = chat.composer?.text ?? '';
-		chat.composer?.clear();
 		popup.clear();
 
 		onSend?.({
@@ -321,7 +321,7 @@ const RichTextMessageBox = ({
 		switch (event.key) {
 			case 'Escape': {
 				closeEditing(event);
-				if (!input.innerText.trim()) onEscape?.();
+				if (!chat.composer?.text.trim()) onEscape?.();
 				return;
 			}
 
@@ -345,14 +345,16 @@ const RichTextMessageBox = ({
 			case 'ArrowDown': {
 				const { selectionEnd } = getSelectionRange(input);
 
-				if (selectionEnd === input.innerText.length) {
+				const textLength = chat.composer?.text.length ?? 0;
+
+				if (selectionEnd === textLength) {
 					event.preventDefault();
 					event.stopPropagation();
 
 					onNavigateToNextMessage?.();
 
 					if (event.altKey) {
-						setSelectionRange(input, input.innerText.length, input.innerText.length);
+						setSelectionRange(input, textLength, textLength);
 					}
 				}
 			}
@@ -470,7 +472,7 @@ const RichTextMessageBox = ({
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={disabled}
-					onInput={setTyping}
+					onInput={handleInput}
 					placeholder={composerPlaceholder}
 					hideplaceholder={hideplaceholder}
 					hidetext={isRecordingAudio}
