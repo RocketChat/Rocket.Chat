@@ -32,6 +32,7 @@ const toContact = (uid: IUser['_id'], contact: ExchangeContactUpsert, defaultReg
 	...(contact.givenName && { givenName: contact.givenName }),
 	...(contact.surname && { surname: contact.surname }),
 	...(contact.companyName && { companyName: contact.companyName }),
+	...(contact.officeLocation && { officeLocation: contact.officeLocation }),
 	emails: contact.emails,
 	categories: contact.categories,
 	// Normalizing here rather than in the providers keeps one region policy instead of one per provider.

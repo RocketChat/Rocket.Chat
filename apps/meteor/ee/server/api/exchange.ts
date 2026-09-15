@@ -1,4 +1,3 @@
-import { License } from '@rocket.chat/license';
 import {
 	validateBadRequestErrorResponse,
 	ajv,
@@ -37,6 +36,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['outlook-calendar'],
 		response: {
 			200: ajv.compile<{ provider: string; message: string; success: true }>({
 				type: 'object',
@@ -55,10 +55,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		if (!License.hasModule('outlook-calendar')) {
-			return API.v1.forbidden();
-		}
-
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}
@@ -92,6 +88,7 @@ API.v1.post(
 	'exchange.syncMyCalendar',
 	{
 		authRequired: true,
+		license: ['outlook-calendar'],
 		// Every call is a full window fetch against the tenant, so this is deliberately tighter than a read
 		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
 		response: {
@@ -118,10 +115,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		if (!License.hasModule('outlook-calendar')) {
-			return API.v1.forbidden();
-		}
-
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}
@@ -148,6 +141,7 @@ API.v1.post(
 	'exchange.syncMyContacts',
 	{
 		authRequired: true,
+		license: ['outlook-calendar'],
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
 		response: {
 			200: ajv.compile<{
@@ -177,10 +171,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		if (!License.hasModule('outlook-calendar')) {
-			return API.v1.forbidden();
-		}
-
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}

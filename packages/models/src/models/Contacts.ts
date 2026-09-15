@@ -1,12 +1,20 @@
 import type { IContact, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ContactBulkUpsertResult, IContactsModel, ImportedContact } from '@rocket.chat/model-typings';
+import type {
+	ContactBulkUpsertResult,
+	ContactListFilter,
+	FindPaginated,
+	IContactsModel,
+	ImportedContact,
+	ManualContact,
+} from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Collection, Db, DeleteResult, FindCursor, FindOptions, IndexDescription } from 'mongodb';
+import type { Collection, Db, DeleteResult, Filter, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 const OUTLOOK: IContact['source'] = 'outlook';
+const MANUAL: IContact['source'] = 'manual';
 
 export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IContact>>) {
@@ -35,24 +43,52 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		];
 	}
 
-	public findByUserId(uid: IUser['_id'], options: FindOptions<IContact> = { sort: { displayName: 1 } }): FindCursor<IContact> {
-		return this.find({ uid }, options);
+	public findPaginatedByUserId(
+		uid: IUser['_id'],
+		{ text, categories, companies }: ContactListFilter,
+		options: FindOptions<IContact>,
+	): FindPaginated<FindCursor<IContact>> {
+		const query: Filter<IContact> = { uid };
+
+		if (text) {
+			const pattern = { $regex: escapeRegExp(text), $options: 'i' };
+
+			query.$or = [{ displayName: pattern }, { companyName: pattern }, { 'emails.address': pattern }, { 'phones.raw': pattern }];
+		}
+
+		if (categories?.length) {
+			query.categories = { $in: categories };
+		}
+
+		if (companies?.length) {
+			query.companyName = { $in: companies };
+		}
+
+		return this.findPaginated(query, options);
+	}
+
+	public async findFilterOptionsByUserId(uid: IUser['_id']): Promise<{ categories: string[]; companies: string[] }> {
+		const [categories, companies] = await Promise.all([
+			this.col.distinct('categories', { uid }),
+			this.col.distinct('companyName', { uid }),
+		]);
+
+		const present = (value: string | undefined): value is string => Boolean(value);
+
+		return {
+			categories: categories.filter(present).sort(),
+			companies: companies.filter(present).sort(),
+		};
 	}
 
 	public findByUserIdAndPhone(uid: IUser['_id'], e164: string): FindCursor<IContact> {
 		return this.find({ uid, 'phones.e164': e164 }, { sort: { displayName: 1 } });
 	}
 
-	public searchByUserId(uid: IUser['_id'], term: string, limit: number): FindCursor<IContact> {
-		const pattern = { $regex: escapeRegExp(term), $options: 'i' };
+	public async createManual(contact: ManualContact): Promise<IContact['_id']> {
+		const { insertedId } = await this.insertOne({ ...contact, source: MANUAL });
 
-		return this.find(
-			{
-				uid,
-				$or: [{ displayName: pattern }, { companyName: pattern }, { 'emails.address': pattern }, { 'phones.raw': pattern }],
-			},
-			{ sort: { displayName: 1 }, limit },
-		);
+		return insertedId;
 	}
 
 	public async bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult> {

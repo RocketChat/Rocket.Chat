@@ -70,6 +70,7 @@ export type ExchangeContactUpsert = {
 	givenName?: string;
 	surname?: string;
 	companyName?: string;
+	officeLocation?: string;
 	emails: ExchangeContactEmail[];
 	phones: ExchangeContactPhone[];
 	categories: string[];

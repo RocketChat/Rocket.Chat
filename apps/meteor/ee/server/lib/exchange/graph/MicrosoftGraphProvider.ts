@@ -28,7 +28,8 @@ const PREFER_UTC = 'outlook.timezone="UTC"';
 
 const DEFAULT_CONTACT_FOLDER_ID = 'default';
 
-const CONTACT_FIELDS = 'id,displayName,givenName,surname,companyName,emailAddresses,mobilePhone,businessPhones,homePhones,categories';
+const CONTACT_FIELDS =
+	'id,displayName,givenName,surname,companyName,emailAddresses,mobilePhone,businessPhones,homePhones,categories,officeLocation';
 
 type GraphDateTimeTimeZone = {
 	dateTime?: unknown;
@@ -71,6 +72,7 @@ type GraphContact = {
 	'businessPhones'?: unknown;
 	'homePhones'?: unknown;
 	'categories'?: unknown;
+	'officeLocation'?: unknown;
 	'@removed'?: unknown;
 };
 
@@ -248,6 +250,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		const givenName = asString(contact.givenName);
 		const surname = asString(contact.surname);
 		const companyName = asString(contact.companyName);
+		const officeLocation = asString(contact.officeLocation);
 
 		const fullName = [givenName, surname].filter(Boolean).join(' ');
 		const displayName = asString(contact.displayName) || fullName || emails[0]?.address || phones[0]?.raw;
@@ -265,6 +268,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...(givenName && { givenName }),
 			...(surname && { surname }),
 			...(companyName && { companyName }),
+			...(officeLocation && { officeLocation }),
 			emails,
 			phones,
 			categories,
