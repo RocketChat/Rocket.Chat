@@ -62,12 +62,30 @@ it('says nothing until the window has joined', () => {
 
 // A hidden window has its timers throttled to roughly one a minute, which is the normal state of a call you are
 // listening to. The lease absorbs that; renewing on the way back to the front makes returning immediate.
-it('renews when the window is brought back to the front', () => {
+it('renews when the window is brought back to the front after its timers were held up', () => {
 	renderHook(() => useConferencePresenceLease('call-1', true), { wrapper: wrapper() });
 
 	act(() => show('hidden'));
 	expect(renew).toHaveBeenCalledTimes(1);
 
+	// Longer than a period, with no timer having fired — which is what a throttled hidden window looks like.
+	act(() => void jest.setSystemTime(Date.now() + PRESENCE_HEARTBEAT_MS));
+
 	act(() => show('visible'));
 	expect(renew).toHaveBeenCalledTimes(2);
+});
+
+// Switching between windows is not news. Both the timer and coming back to the front ask for a renewal, and
+// answering every prompt sent a burst of heartbeats for a lease that was already current.
+it('says nothing extra when the window is flipped back and forth within one period', () => {
+	renderHook(() => useConferencePresenceLease('call-1', true), { wrapper: wrapper() });
+
+	act(() => {
+		show('hidden');
+		show('visible');
+		show('hidden');
+		show('visible');
+	});
+
+	expect(renew).toHaveBeenCalledTimes(1);
 });

@@ -24,14 +24,29 @@ export const useConferencePresenceLease = (callId: string, active: boolean) => {
 
 		// A failed renewal needs no handling: it is indistinguishable from the outage this exists for, and the
 		// next one — or the server's own view of who is in the provider's room — settles it.
-		const renewNow = () => void renew({ callId }).catch(() => undefined);
+		//
+		// Either the timer or coming back to the window can ask for a renewal, but only one goes out per period:
+		// both were asking, so switching tabs a few times sent a burst of heartbeats for a lease that was already
+		// current. What matters is that the gap between renewals never grows, not that every prompt is answered.
+		let lastRenewedAt = 0;
+		const renewNow = () => {
+			const now = Date.now();
+
+			if (now - lastRenewedAt < PRESENCE_HEARTBEAT_MS) {
+				return;
+			}
+
+			lastRenewedAt = now;
+			void renew({ callId }).catch(() => undefined);
+		};
 
 		renewNow();
 		const interval = setInterval(renewNow, PRESENCE_HEARTBEAT_MS);
 
 		// A call is usually something you listen to while looking at another window, and browsers throttle a
 		// hidden window's timers to roughly one a minute. The lease is long enough to absorb that; renewing on
-		// the way back to the front is what makes coming back after being throttled harder than that immediate.
+		// the way back to the front is what makes coming back after being throttled harder than that immediate —
+		// and, because of the gap above, it is a renewal only when the timer has actually been held up.
 		const onVisibilityChange = () => {
 			if (document.visibilityState === 'visible') {
 				renewNow();
