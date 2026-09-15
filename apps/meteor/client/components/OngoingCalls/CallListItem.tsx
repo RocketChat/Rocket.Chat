@@ -2,6 +2,7 @@ import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { canDeclineCall } from './useOngoingCalls';
@@ -39,8 +40,19 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 	const incomingCalls = useVideoConfIncomingCalls();
 	const audible = ringing && !silenced && incomingCalls.some(({ callId, dismissed }) => callId === call.callId && !dismissed);
 
+	/**
+	 * The row is a link, and these buttons are inside it. A click on one of them would otherwise reach the row —
+	 * following the link, and being read as "answer this call" — so each stops there: `preventDefault` for the
+	 * link's own navigation, `stopPropagation` for the row's handler.
+	 */
+	const stopAt = (act: () => void) => (event: MouseEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+		act();
+	};
+
 	const decline = (
-		<IconButton mini secondary icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={() => onDecline(call.callId)} />
+		<IconButton mini secondary icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={stopAt(() => onDecline(call.callId))} />
 	);
 
 	const actions = (() => {
@@ -55,7 +67,7 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 							icon='bell-off'
 							title={t('Silence')}
 							aria-label={t('Silence')}
-							onClick={() => onSilence(call.callId)}
+							onClick={stopAt(() => onSilence(call.callId))}
 						/>
 					)}
 					{decline}
@@ -86,14 +98,12 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 			// sidebar and gets the same treatment: a real link to where it goes. Without an `href` this rendered as
 			// an anchor with no role, no accessible name and no way to reach it from the keyboard — the click below
 			// still does the work, and prevents the navigation, but the row is now addressable by what it is.
+			//
+			// It used to ask the DOM whether the click had come from one of its own buttons. It no longer has to:
+			// the buttons stop the click themselves, which is where that decision belongs.
 			href={`/conference/${call.callId}`}
 			onClick={(event) => {
 				event.preventDefault();
-
-				if ((event.target as HTMLElement).closest('button')) {
-					return;
-				}
-
 				onJoin(call.callId);
 			}}
 			icon={<Icon name='video' size='x16' />}
