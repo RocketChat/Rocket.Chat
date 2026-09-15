@@ -2274,7 +2274,7 @@
   "Start_of_conversation": "Söhbətin başlanması",
   "Start_video_call": "Video zəngini başla",
   "Start_video_conference": "Video konfransı başladın?",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Kanal üçün <code class=\"inline\" >%s</code>və ya <code class=\"inline\" >%s</code>üçün başlayın. Məsələn: <code class=\"inline\" >%s</code>və ya <code class=\"inline\" >%s</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "İstifadəçi üçün <code>@</code>, kanal üçün <code>#</code> ilə başlayın. Məsələn: <code>@john</code> və ya <code>#general</code>",
   "Started_a_video_call": "Video Çağrısı başladı",
   "Started_At": "Başladı",
   "Statistics": "Statistika",

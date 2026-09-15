@@ -2319,7 +2319,7 @@
   "Start_of_conversation": "Pokalbio pradžia",
   "Start_video_call": "Pradėkite vaizdo skambutį",
   "Start_video_conference": "Pradėkite vaizdo konferenciją?",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Pradėkite nuo <code class=\"inline\" >%s</code>naudotojui arba <code class=\"inline\" >%s</code>kanalui. Pvz .: <code class=\"inline\" >%s</code>arba <code class=\"inline\" >%s</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Pradėkite nuo <code>@</code> naudotojui arba <code>#</code> kanalui. Pvz .: <code>@john</code> arba <code>#general</code>",
   "Started_a_video_call": "Pradėjo vaizdo skambutį",
   "Started_At": "Prasidėjo at",
   "Statistics": "Statistika",

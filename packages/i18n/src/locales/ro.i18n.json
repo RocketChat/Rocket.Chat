@@ -22,7 +22,7 @@
   "Accounts": "Conturi",
   "Accounts_Admin_Email_Approval_Needed_Default": "<p>Utilizatorul <b>[name] ([email])</b> a fost înregistrat.</p><p>Verificați \"Administrație ->Utilizatori\" pentru a-l activa sau șterge.</p>",
   "Accounts_Admin_Email_Approval_Needed_Subject_Default": "Un nou utilizator înregistrat și are nevoie de aprobare",
-  "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>Utilizatorul <b>[name] ([email])</b> a fost înregistrat. <p><p><p><p><p><p><p><p><p><p></p>",
+  "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>Utilizatorul <b>[name] ([email])</b> a fost înregistrat.</p><p>Motiv: <b>[reason]</b></p><p>Verificați \"Administrație ->Utilizatori\" pentru a-l activa sau șterge.</p>",
   "Accounts_AllowAnonymousRead": "Permiteți citirea anonimă",
   "Accounts_AllowAnonymousWrite": "Permiteți scrierea anonimă",
   "Accounts_AllowDeleteOwnAccount": "Permiteți utilizatorilor să-și șteargă contul",
