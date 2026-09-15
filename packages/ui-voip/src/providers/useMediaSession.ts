@@ -112,6 +112,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
+						confirmed: instanceState.confirmed,
 					},
 				});
 				return;
@@ -124,6 +125,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+				ringing,
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
@@ -160,6 +162,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					callId,
 					startedAt,
 					supportedFeatures,
+					confirmed: instanceState.confirmed,
+					ringing,
 				},
 			});
 		};

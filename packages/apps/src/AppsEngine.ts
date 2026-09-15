@@ -8,6 +8,7 @@ export type {
 	IVisitorPhone as IAppsVisitorPhone,
 	ILivechatContact as IAppsLivechatContact,
 } from '@rocket.chat/apps-engine/definition/livechat';
+export type { IMediaCall as IAppsMediaCall } from '@rocket.chat/apps-engine/definition/mediaCalls';
 export type { IMessage as IAppsMessage } from '@rocket.chat/apps-engine/definition/messages';
 export type { IMessageRaw as IAppsMesssageRaw } from '@rocket.chat/apps-engine/definition/messages';
 export { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';

@@ -84,10 +84,9 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		callId: string,
 		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
 		expiresAt: Date,
-	): Promise<UpdateResult> {
+	): Promise<IMediaCall | null> {
 		const { calleeContractId, sipCallId } = data;
-
-		return this.updateOne(
+		return this.findOneAndUpdate(
 			{
 				_id: callId,
 				state: { $in: ['none', 'ringing'] },
@@ -106,11 +105,12 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					},
 				},
 			},
+			{ returnDocument: 'after' },
 		);
 	}
 
-	public async activateCallById(callId: string, expiresAt: Date): Promise<UpdateResult> {
-		return this.updateOne(
+	public async activateCallById(callId: string, expiresAt: Date): Promise<IMediaCall | null> {
+		return this.findOneAndUpdate(
 			{
 				_id: callId,
 				state: 'accepted',
@@ -122,13 +122,14 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					expiresAt,
 				},
 			},
+			{ returnDocument: 'after' },
 		);
 	}
 
-	public async hangupCallById(callId: string, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<UpdateResult> {
+	public async hangupCallById(callId: string, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<IMediaCall | null> {
 		const { endedBy, reason } = params || {};
 
-		return this.updateOne(
+		return this.findOneAndUpdate(
 			{
 				_id: callId,
 				ended: false,
@@ -142,6 +143,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					...(reason && { hangupReason: reason }),
 				},
 			},
+			{ returnDocument: 'after' },
 		);
 	}
 
@@ -223,5 +225,23 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ limit: 1 },
 		);
 		return count > 0;
+	}
+
+	public async updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult> {
+		const { caller, callee } = participants;
+
+		if (!caller && !callee) {
+			throw new Error('participant-not-specified');
+		}
+
+		return this.updateOneById(callId, {
+			$set: {
+				...(caller && { caller }),
+				...(callee && { callee }),
+			},
+		});
 	}
 }

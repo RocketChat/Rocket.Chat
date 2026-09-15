@@ -33,7 +33,9 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	ringing?: boolean;
 	supportedFeatures: readonly CallFeature[];
+	confirmed: boolean;
 }
 
 interface IEmptySession extends IBaseSession {
