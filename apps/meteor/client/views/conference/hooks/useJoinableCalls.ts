@@ -61,13 +61,11 @@ export const useJoinableCalls = () => {
 			// `createdAt` arrives as a string over REST. Newest first, and sorted here rather than trusted from
 			// the server, since both readers present it as a most-recent-first list.
 			return calls
-				.map(
-					({ createdAt, ringingAt, ...call }): JoinableVideoConference => ({
-						...call,
-						createdAt: new Date(createdAt),
-						...(ringingAt && { ringingAt: new Date(ringingAt) }),
-					}),
-				)
+				.map(({ createdAt, ringingAt, ...call }): JoinableVideoConference => ({
+					...call,
+					createdAt: new Date(createdAt),
+					...(ringingAt && { ringingAt: new Date(ringingAt) }),
+				}))
 				.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 		},
 		refetchInterval: POLL_INTERVAL,

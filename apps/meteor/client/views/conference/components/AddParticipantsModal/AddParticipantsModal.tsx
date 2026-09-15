@@ -1,4 +1,3 @@
-import type { RoomType } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
@@ -56,7 +55,7 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const membersQuery = useQuery({
 		enabled: !!room && !isDirectMessageRoom(room),
-		queryKey: roomsQueryKeys.members(rid, (room?.t ?? 'c') as RoomType),
+		queryKey: roomsQueryKeys.members(rid, room?.t ?? 'c'),
 		queryFn: async () => {
 			// How many come back is the server's decision, not ours: `API_Upper_Count_Limit` caps every paginated
 			// endpoint and is not readable from here, so a workspace that sets it to 5 answers a request for 100
