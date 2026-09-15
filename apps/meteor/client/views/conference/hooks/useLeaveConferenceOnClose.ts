@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { APIClient } from '../../../lib/RestApiClient';
-import { baseURI } from '../../../lib/baseURI';
 import { closeCallWindow } from '../lib/callWindow';
 
 /**
@@ -55,9 +54,8 @@ export const departureFor = ({
  * expiry cron notices it a day later. The server decides what each report means; this only sends the right one.
  *
  * `pagehide` rather than `beforeunload`: it fires for the bfcache case too, and unlike `unload` it doesn't
- * suppress the cache. The request goes out with `keepalive` because the document is being torn down —
- * `sdk.rest` would have its fetch cancelled with the page. `sendBeacon` can't carry the auth headers the REST
- * API needs, so this uses the credentials the client already holds.
+ * suppress the cache. The request goes out with `keepalive`, because a fetch started while the document is being
+ * torn down is otherwise cancelled with it. (`sendBeacon` can't carry the auth headers the REST API needs.)
  */
 
 export const useLeaveConferenceOnClose = (callId: string, departure: ConferenceDeparture = 'leave') => {
@@ -69,13 +67,16 @@ export const useLeaveConferenceOnClose = (callId: string, departure: ConferenceD
 	// joined anyway still gets their leave reported.
 	const reported = useRef<string | undefined>(undefined);
 
+	// One endpoint per departure rather than one path built from the name. `useEndpoint` wants the pattern it is
+	// typed by, and a path assembled from a variable is a reference nobody can grep for: searching the codebase
+	// for `video-conference.decline` would not have found this file at all.
+	const leave = useEndpoint('POST', '/v1/video-conference.leave');
+	const cancel = useEndpoint('POST', '/v1/video-conference.cancel');
+	const decline = useEndpoint('POST', '/v1/video-conference.decline');
+	const report = useMemo(() => ({ leave, cancel, decline }), [leave, cancel, decline]);
+
 	const reportLeaving = useCallback(() => {
 		if (departure === 'none') {
-			return;
-		}
-
-		const credentials = APIClient.getCredentials();
-		if (!credentials) {
 			return;
 		}
 
@@ -86,13 +87,8 @@ export const useLeaveConferenceOnClose = (callId: string, departure: ConferenceD
 
 		// Best-effort, and deliberately not checked: `cancel` refuses a call that is no longer ringing, which is
 		// a race this cannot win from here and does not need to — the presence sweep collects what it misses.
-		return fetch(`${baseURI.replace(/\/$/, '')}/api/v1/video-conference.${departure}`, {
-			method: 'POST',
-			keepalive: true,
-			headers: { ...credentials, 'Content-Type': 'application/json' },
-			body: JSON.stringify({ callId }),
-		}).catch(() => undefined);
-	}, [callId, departure]);
+		return report[departure]({ callId }, { keepalive: true }).catch(() => undefined);
+	}, [callId, departure, report]);
 
 	useEffect(() => {
 		const onPageHide = () => void reportLeaving();
