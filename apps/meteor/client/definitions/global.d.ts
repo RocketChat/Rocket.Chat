@@ -3,6 +3,16 @@ import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 declare global {
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
+
+		// Bridge injected into the desktop app's internal video-chat window (separate from
+		// `RocketChatDesktop`, which is only present in the main app webview).
+		videoCallWindow?: {
+			// Navigate the main app window to an in-app route (e.g. "/channel/general") and focus it.
+			openInMainWindow?: (path: string) => void;
+			// Close the conference window (renderer `window.close()` can't close a main-process window).
+			close?: () => void;
+		};
+
 		opera?: string;
 	}
 

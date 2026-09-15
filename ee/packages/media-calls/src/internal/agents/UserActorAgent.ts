@@ -59,14 +59,18 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
-		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason'>>(callId, {
-			projection: { endedBy: 1, hangupReason: 1 },
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason' | 'escalatedAt'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1, escalatedAt: 1 },
 		});
 		if (!call) {
 			return 'remote';
 		}
 
-		const { endedBy, hangupReason } = call;
+		const { endedBy, hangupReason, escalatedAt } = call;
+		// If we requested an escalation, treat the hangup as normal
+		if (escalatedAt) {
+			return 'normal';
+		}
 
 		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
 			return 'remote';
@@ -171,6 +175,23 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
+			features: call.features as CallFeature[],
+		});
+	}
+
+	public async onCallUpdated(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+
+		if (!call?.acceptedAt || call.ended) {
+			return;
+		}
+
+		const contact = this.getOtherCallActor(call);
+
+		await this.sendSignal({
+			type: 'update',
+			callId: call._id,
+			contact,
 			features: call.features as CallFeature[],
 		});
 	}

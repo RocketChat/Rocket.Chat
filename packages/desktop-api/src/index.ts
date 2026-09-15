@@ -55,6 +55,10 @@ export interface IRocketChatDesktop {
 	destroyNotification: (id: unknown) => void;
 	getInternalVideoChatWindowEnabled: () => boolean;
 	openInternalVideoChatWindow: (url: string, options: VideoChatWindowOptions) => void;
+	// Register a handler for navigation requests sent to the main app window (e.g. a link clicked in
+	// the internal video-chat window). The callback receives a server-relative route (e.g.
+	// "/channel/general"). Optional: only present in desktop builds that implement it.
+	onNavigateToRoute?: (cb: (path: string) => void) => void;
 	setGitCommitHash: (gitCommitHash: string) => void;
 	writeTextToClipboard: (text: string) => void;
 	getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
@@ -66,4 +70,5 @@ export interface IRocketChatDesktop {
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }
