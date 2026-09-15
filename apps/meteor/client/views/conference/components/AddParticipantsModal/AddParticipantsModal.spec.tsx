@@ -25,10 +25,10 @@ const memberUser = { _id: 'member-id', username: 'member', name: 'Room Member', 
 const autocomplete = jest.fn((_params: { selector: string }) => ({ items: [outsider, memberUser] }) as any);
 // One endpoint for every room type that has a members list, paged: the modal keeps asking until it holds the
 // whole membership, because `API_Upper_Count_Limit` can cap a page well below what was requested.
-const roomMembers = jest.fn(
-	(_params: { offset?: number }) =>
-		({ members: [{ _id: 'member-id', username: 'member' }], count: 1, offset: 0, total: 1, success: true }) as any,
-);
+const oneRoomMember = (_params: { offset?: number }) =>
+	({ members: [{ _id: 'member-id', username: 'member' }], count: 1, offset: 0, total: 1, success: true }) as any;
+
+const roomMembers = jest.fn(oneRoomMember);
 const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true }) as any);
 
 // The room is what the workspace knows about `rid`, and a conference member added from outside it knows
@@ -58,7 +58,10 @@ const selectOutsider = async () => {
 
 beforeEach(() => {
 	autocomplete.mockClear();
-	roomMembers.mockClear();
+	// `mockReset` and not `mockClear`: the paging test installs an implementation of its own, and clearing leaves
+	// it in place for whatever runs next — which makes those tests depend on the order they happen to run in.
+	roomMembers.mockReset();
+	roomMembers.mockImplementation(oneRoomMember);
 	addParticipants.mockClear();
 	dispatchToastMessage.mockClear();
 	// The ring preference outlives a test, being remembered in storage on purpose.

@@ -5,7 +5,9 @@ import { departureFor, useLeaveConferenceOnClose } from './useLeaveConferenceOnC
 
 // Asserted at the context rather than through `withEndpoint`, which hands a mock only the parameters: what this
 // hook has to get right includes *how* the request goes out, and `keepalive` is the whole point of it.
-const callEndpoint = jest.fn((_args: { pathPattern: string; params: unknown; keepalive?: boolean }) => Promise.resolve({} as never));
+const callEndpoint = jest.fn((_args: { method: string; pathPattern: string; params: unknown; keepalive?: boolean }) =>
+	Promise.resolve({} as never),
+);
 
 const wrapper = () => mockAppRoot().withServerContext({ callEndpoint }).build();
 
@@ -28,7 +30,7 @@ it('reports the user leaving when the call window goes away', () => {
 	hide();
 
 	expect(callEndpoint).toHaveBeenCalledTimes(1);
-	expect(reportOf(0)).toMatchObject({ pathPattern: '/v1/video-conference.leave', params: { callId: 'call-1' } });
+	expect(reportOf(0)).toMatchObject({ method: 'POST', pathPattern: '/v1/video-conference.leave', params: { callId: 'call-1' } });
 });
 
 // The document is being torn down, so a request without `keepalive` is cancelled with the page — which is the
@@ -61,7 +63,7 @@ describe('leaving on purpose', () => {
 		await act(() => result.current.leaveNow());
 
 		expect(callEndpoint).toHaveBeenCalledTimes(1);
-		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.leave');
+		expect(reportOf(0)).toMatchObject({ method: 'POST', pathPattern: '/v1/video-conference.leave' });
 		expect(close).toHaveBeenCalled();
 	});
 
@@ -97,7 +99,7 @@ describe('what gets reported', () => {
 
 		hide();
 
-		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.cancel');
+		expect(reportOf(0)).toMatchObject({ method: 'POST', pathPattern: '/v1/video-conference.cancel' });
 	});
 
 	it('declines for a member who was rung and closed it', () => {
@@ -105,7 +107,7 @@ describe('what gets reported', () => {
 
 		hide();
 
-		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.decline');
+		expect(reportOf(0)).toMatchObject({ method: 'POST', pathPattern: '/v1/video-conference.decline' });
 	});
 
 	// The guard is against reporting the *same* thing twice, not against a member whose standing changed:
@@ -123,7 +125,7 @@ describe('what gets reported', () => {
 		await act(() => result.current.leaveNow());
 
 		expect(callEndpoint).toHaveBeenCalledTimes(2);
-		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.decline');
+		expect(reportOf(0)).toMatchObject({ method: 'POST', pathPattern: '/v1/video-conference.decline' });
 		expect(reportOf(1).pathPattern).toBe('/v1/video-conference.leave');
 	});
 });
