@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { userEvent, within } from 'storybook/test';
 
 import ConferenceEmbeddedPage from './ConferenceEmbeddedPage';
-import { conferenceAppRoot, onPhone, withCallProviders } from './storyFixtures';
+import { conferenceAppRoot, onPhone, withConferenceWindow } from './storyFixtures';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 
 /**
@@ -122,7 +122,7 @@ type Story = StoryObj<typeof meta>;
  * Alone in the call, with the members panel open beside it — the call just started and nobody else has arrived.
  */
 export const AloneInTheCall: Story = {
-	decorators: [withCallProviders(joinedAppRoot([viewer]))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer]))],
 	play: openMembers,
 };
 
@@ -132,7 +132,7 @@ export const AloneInTheCall: Story = {
  */
 export const SeveralParticipants: Story = {
 	decorators: [
-		withCallProviders(
+		withConferenceWindow(
 			joinedAppRoot([
 				viewer,
 				member('ada', 'Ada Lovelace'),
@@ -150,7 +150,7 @@ export const SeveralParticipants: Story = {
  * is about is marked in the panel.
  */
 export const WithChatAccessNotice: Story = {
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace'), member('grace', 'Grace Hopper')], ['grace']))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace'), member('grace', 'Grace Hopper')], ['grace']))],
 	play: openMembers,
 };
 
@@ -158,7 +158,7 @@ export const WithChatAccessNotice: Story = {
  * The call with every panel shut — the chrome on its own, which is what a participant looking at the call sees.
  */
 export const PanelsClosed: Story = {
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
 };
 
 /**
@@ -166,7 +166,7 @@ export const PanelsClosed: Story = {
  * so what the panel can offer is an explanation rather than the conversation.
  */
 export const ChatNotSharedWithYou: Story = {
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')], ['john.doe']))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')], ['john.doe']))],
 	play: openChat,
 };
 
@@ -180,7 +180,7 @@ export const ChatNotSharedWithYou: Story = {
  */
 export const MobilePortraitPanelSheet: Story = {
 	...onPhone('phonePortrait'),
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
 	play: openMembers,
 };
 
@@ -193,7 +193,7 @@ export const MobilePortraitPanelSheet: Story = {
  */
 export const MobileLandscapePanelSheet: Story = {
 	...onPhone('phoneLandscape'),
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
 	play: openMembers,
 };
 
@@ -203,5 +203,5 @@ export const MobileLandscapePanelSheet: Story = {
  */
 export const MobileLandscapePanelsClosed: Story = {
 	...onPhone('phoneLandscape'),
-	decorators: [withCallProviders(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
+	decorators: [withConferenceWindow(joinedAppRoot([viewer, member('ada', 'Ada Lovelace')]))],
 };

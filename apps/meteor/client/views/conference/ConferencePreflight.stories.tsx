@@ -3,7 +3,7 @@ import { action } from 'storybook/actions';
 import { userEvent, within } from 'storybook/test';
 
 import ConferencePreflight from './ConferencePreflight';
-import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withCallProviders } from './storyFixtures';
+import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withConferenceWindow } from './storyFixtures';
 
 /**
  * The screen a call actually starts on: what the camera will do on arrival, and what the call is called.
@@ -32,7 +32,7 @@ const meta = {
 				<Story />
 			</div>
 		),
-		withCallProviders(conferenceAppRoot()),
+		withConferenceWindow(conferenceAppRoot()),
 	],
 	beforeEach: storeCallPreferences({ cam: false }),
 } satisfies Meta<typeof ConferencePreflight>;

@@ -14,6 +14,7 @@ import { useContext, useMemo } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
+import ConferenceViewport from './ConferenceViewport';
 import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { buildConferenceMember } from './testFixtures';
 import { storybookI18n } from '../../stories/i18n';
@@ -88,6 +89,29 @@ export const withCallProviders = (builder: Builder): Decorator => {
 			</I18nextProvider>
 		</Providers>
 	);
+};
+
+/**
+ * The same providers, inside the window itself — for the stories that *are* the window: the preflight and the
+ * call page.
+ *
+ * `ConferenceViewport` is where the window's palette lives, so without it a story of the call renders in
+ * Storybook's own theme: light controls over the black call area, which is precisely what the window exists to
+ * avoid. It is also what gives the story the viewport box and the modal region the page opens into.
+ */
+export const withConferenceWindow = (builder: Builder): Decorator => {
+	const withProviders = withCallProviders(builder);
+
+	// eslint-disable-next-line react/display-name
+	return (Story, context) =>
+		withProviders(
+			() => (
+				<ConferenceViewport>
+					<Story />
+				</ConferenceViewport>
+			),
+			context,
+		);
 };
 
 const CALL_PREFERENCES_KEY = 'videoconf-call-preferences';
