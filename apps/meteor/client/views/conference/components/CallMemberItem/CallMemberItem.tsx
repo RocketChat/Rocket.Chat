@@ -15,6 +15,8 @@ import type { ConferenceMember } from '../../hooks/useConferenceEmbedded';
 type CallMemberItemProps = {
 	member: ConferenceMember;
 	hasChatAccess: boolean;
+	/** Whether this member's ring has been asked for and not yet answered. */
+	ringing?: boolean;
 	onRing: (memberId: string) => void;
 };
 
@@ -24,7 +26,7 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	invited: 'Waiting_for_answer',
 };
 
-const CallMemberItem = ({ member, hasChatAccess, onRing }: CallMemberItemProps) => {
+const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, onRing }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
@@ -67,11 +69,14 @@ const CallMemberItem = ({ member, hasChatAccess, onRing }: CallMemberItemProps) 
 			</OptionContent>
 			{canRingConferenceMember(member) && (
 				<OptionColumn>
+					{/* The button stays until the server says the phone is ringing, which is a round trip away — so
+					    while the request is out it refuses a second one. Clicking three times rang three times. */}
 					<IconButton
 						small
 						icon='phone'
 						title={t('Ring__name__', { name: nameOrUsername })}
 						aria-label={t('Ring__name__', { name: nameOrUsername })}
+						disabled={ringRequested}
 						onClick={() => onRing(member._id)}
 					/>
 				</OptionColumn>

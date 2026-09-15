@@ -31,13 +31,25 @@ const CallMembersPanel = ({ callId, rid, members, chatAccess, onClose }: CallMem
 		[members],
 	);
 
-	const { mutate: ringMember } = useMutation({
+	const {
+		mutate: ringMember,
+		isPending: ringing,
+		variables: memberBeingRung,
+	} = useMutation({
 		mutationFn: (memberId: string) => ring({ callId, userId: memberId }),
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
 	const renderMember = (member: ConferenceMember) => (
-		<CallMemberItem key={member._id} member={member} hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)} onRing={ringMember} />
+		<CallMemberItem
+			key={member._id}
+			member={member}
+			hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
+			// The row stops offering to ring once the member is ringing, but that is the server's answer coming
+			// back — until it does, this is what says the ask is already on its way.
+			ringing={ringing && memberBeingRung === member._id}
+			onRing={ringMember}
+		/>
 	);
 
 	return (
