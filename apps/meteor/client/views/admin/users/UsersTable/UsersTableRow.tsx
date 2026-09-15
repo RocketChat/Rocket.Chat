@@ -14,6 +14,7 @@ import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
+import { useManageUserStatusAction } from '../hooks/useManageUserStatusAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
@@ -81,6 +82,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onReload);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
+	const manageUserStatusAction = useManageUserStatusAction();
 	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
@@ -102,6 +104,9 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				!isFederatedUser && {
 					changeUserStatusAction,
 				}),
+			...(manageUserStatusAction && {
+				manageUserStatusAction,
+			}),
 			...(deleteUserAction && {
 				deleteUserAction,
 			}),
@@ -109,6 +114,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 		[
 			changeAdminStatusAction,
 			changeUserStatusAction,
+			manageUserStatusAction,
 			deleteUserAction,
 			isFederatedUser,
 			isNotPendingDeactivatedNorFederated,
