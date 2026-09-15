@@ -23,7 +23,7 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 	useConfinedNavigation();
 
 	const { t } = useTranslation();
-	const { name, isDirect, capabilities, loading, error, start } = useStartConference(rid);
+	const { name, isDirect, capabilities, loading, error, starting, start } = useStartConference(rid);
 
 	if (error) {
 		return <ConferencePageError />;
@@ -48,6 +48,7 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 			// still be acted on. Only offered where a ring is possible at all: a channel or a team announces a call
 			// rather than ringing it, so there would be nothing for the switch to change.
 			canChooseRinging={isDirect}
+			confirming={starting}
 			onConfirm={(preferences, chosenName, ring) => start({ state: preferences, name: chosenName, ring })}
 			onCancel={closeCallWindow}
 		/>

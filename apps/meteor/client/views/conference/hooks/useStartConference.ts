@@ -1,7 +1,7 @@
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { CallPreferences } from './useCallPreferences';
+import type { CallPreferences } from './useCallDevicesInitialState';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
@@ -43,7 +43,11 @@ export const useStartConference = (rid: string) => {
 		queryFn: async () => (await getCapabilities()).capabilities,
 	});
 
-	const { mutate: start, error: startError } = useMutation({
+	const {
+		mutate: start,
+		isPending: starting,
+		error: startError,
+	} = useMutation({
 		mutationFn: async ({ state, name, ring }: { state: CallPreferences; name?: string; ring?: boolean }) => {
 			// `allowRinging` is a request, not an instruction: the server decides from the room whether ringing is
 			// the right way to announce this call at all, and this only says whether the caller wants it where it is.
@@ -82,6 +86,12 @@ export const useStartConference = (rid: string) => {
 		 * returning empty defaults would show it anyway.
 		 */
 		error: startError ?? roomError ?? capabilitiesError ?? (noSubscription ? new Error('conference-room-unavailable') : null),
+		/**
+		 * Whether the call is being created. This screen stays mounted while it happens — creating the conference
+		 * and joining it are two requests, and navigating away is the last thing `start` does — so the button that
+		 * asked for it is what has to say so.
+		 */
+		starting,
 		start,
 	};
 };
