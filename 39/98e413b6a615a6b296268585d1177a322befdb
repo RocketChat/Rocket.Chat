@@ -1,10 +1,15 @@
 apps/meteor/tests/unit/server/lib/search/SearchResultValidationService.spec.ts
   s_abc60a14c993f1::t_d908712d00a68c 1-79
+  s_abc60a14c993f1::t_a1321dcf5efc80 18-24
+  s_abc60a14c993f1::t_de4af5bc372d20 1-17,25-79
 .changeset/search-acl-cache-ignores-uid.md
   s_abc60a14c993f1::t_9982d3a4c775d7 5
   s_abc60a14c993f1::t_d908712d00a68c 1-4
+  s_abc60a14c993f1::t_e23fbcef515593 1-4
 apps/meteor/server/lib/search/service/SearchResultValidationService.ts
   s_abc60a14c993f1::t_d908712d00a68c 12-36
+  s_abc60a14c993f1::t_8950d83fc46c8f 12-31,33-36
+  s_abc60a14c993f1::t_fb3ab8502dfc98 32
 ---
 {
   "schema_version": "authorship/3.0.0",
