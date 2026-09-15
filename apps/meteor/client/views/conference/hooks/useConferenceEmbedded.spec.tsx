@@ -56,8 +56,10 @@ const renderConference = () => {
 it('resolves the chat room and the members who cannot read it', async () => {
 	const { result } = renderConference();
 
-	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
-	await waitFor(() => expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]));
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('room-id');
+		expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]);
+	});
 });
 
 it('reads the conference again when it changes', async () => {
@@ -110,14 +112,18 @@ it('follows the chat to a discussion in thread mode too', async () => {
 			.build(),
 	});
 
-	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
-	expect(result.current.room.tmid).toBeDefined();
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('room-id');
+		expect(result.current.room.tmid).toBeDefined();
+	});
 
 	discussionRid = 'discussion-id';
 	streamRef.controller?.emit(`${callId}/updated`, []);
 
-	await waitFor(() => expect(result.current.room.rid).toBe('discussion-id'));
-	expect(result.current.room.tmid).toBeUndefined();
+	await waitFor(() => {
+		expect(result.current.room.rid).toBe('discussion-id');
+		expect(result.current.room.tmid).toBeUndefined();
+	});
 });
 
 // Joining is the user's decision, made on the preflight screen: it is what turns their mic and camera choices
@@ -152,8 +158,10 @@ describe('joining', () => {
 		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
 		result.current.conference.join({ state: { mic: false, cam: true } });
 
-		await waitFor(() => expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } }));
-		await waitFor(() => expect(result.current.conference.url).toBe('https://call.example/?name=john.doe'));
+		await waitFor(() => {
+			expect(join).toHaveBeenCalledWith({ callId, state: { mic: false, cam: true } });
+			expect(result.current.conference.url).toBe('https://call.example/?name=john.doe');
+		});
 	});
 
 	it('says who may name the call', async () => {
@@ -189,8 +197,10 @@ describe('naming on the way in', () => {
 		await waitFor(() => expect(result.current.call.name).toBe('general'));
 		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
 
-		await waitFor(() => expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' }));
-		await waitFor(() => expect(join).toHaveBeenCalled());
+		await waitFor(() => {
+			expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' });
+			expect(join).toHaveBeenCalled();
+		});
 	});
 
 	it('says nothing to the server when the name was left alone', async () => {
