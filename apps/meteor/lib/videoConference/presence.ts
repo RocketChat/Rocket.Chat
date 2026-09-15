@@ -4,12 +4,13 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
 /** Browser constraint: a hidden tab has its timers throttled to roughly one tick a minute. */
 export const PRESENCE_THROTTLED_HEARTBEAT_MS = 60_000;
 
-export const PRESENCE_MISSED_TICKS_TOLERATED = 3;
+/** Intervals one lease spans, not renewals it tolerates: expiry is inclusive, so the last one is a deadline. */
+export const PRESENCE_LEASE_TICKS = 3;
 
 export const PRESENCE_HEARTBEAT_MS = 30_000;
 
 /** Doubles as the grace period a restart waits out before believing any lease. */
-export const PRESENCE_LEASE_MS = PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_MISSED_TICKS_TOLERATED;
+export const PRESENCE_LEASE_MS = PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_LEASE_TICKS;
 
 /** Leave reasons a renewal may undo. A reported departure is never revived. */
 export const INFERRED_LEAVE_REASONS: VideoConferenceLeaveReason[] = ['timeout'];

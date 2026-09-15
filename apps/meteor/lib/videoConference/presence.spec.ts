@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import {
 	PRESENCE_HEARTBEAT_MS,
 	PRESENCE_LEASE_MS,
+	PRESENCE_LEASE_TICKS,
 	PRESENCE_THROTTLED_HEARTBEAT_MS,
 	expiredPresenceLeases,
 	isPresenceSweepDue,
@@ -81,10 +82,20 @@ describe('isPresenceSweepDue', () => {
 		expect(isPresenceSweepDue(PRESENCE_LEASE_MS)).to.be.true;
 	});
 
-	// How many throttled renewals the lease tolerates is now true by construction, so what is left to check is
-	// the part that isn't: the rate a window aims for has to be one a throttled window can actually keep, or it
-	// drops renewals it believes it is sending.
+	// The rate a window aims for has to be one a throttled window can actually keep, or it drops renewals it
+	// believes it is sending.
 	it('aims for a heartbeat a throttled window can keep', () => {
 		expect(PRESENCE_HEARTBEAT_MS).to.be.at.most(PRESENCE_THROTTLED_HEARTBEAT_MS);
+	});
+
+	// The arithmetic cannot tell "intervals spanned" from "renewals tolerated", and the two read alike, so the
+	// boundary is pinned here instead: expiry is inclusive, which makes the last interval a deadline.
+	it('survives every throttled renewal going missing but the last', () => {
+		const users = [member({ _id: 'hidden', lastSeenAt: ts })];
+
+		expect(expiredPresenceLeases(users, at(PRESENCE_THROTTLED_HEARTBEAT_MS * (PRESENCE_LEASE_TICKS - 1)))).to.deep.equal([]);
+		expect(expiredPresenceLeases(users, at(PRESENCE_THROTTLED_HEARTBEAT_MS * PRESENCE_LEASE_TICKS))).to.deep.equal([
+			{ uid: 'hidden', leftAt: ts },
+		]);
 	});
 });
