@@ -3,13 +3,15 @@ import type { DeleteResult, FindCursor, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
-/** `source` is set by the model, so ingestion cannot write a record it would not be allowed to prune. */
 export type ImportedContact = Omit<InsertionModel<IContact>, '_id' | 'source' | 'externalId' | 'folderId' | 'lastSyncAt'> & {
 	externalId: string;
 	folderId: string;
 };
 
-export type ManualContact = Omit<InsertionModel<IContact>, '_id' | 'source' | 'categories' | 'externalId' | 'folderId' | 'lastSyncAt'>;
+export type ManualContact = Omit<
+	InsertionModel<IContact>,
+	'_id' | 'source' | 'companyName' | 'officeLocation' | 'categories' | 'externalId' | 'folderId' | 'lastSyncAt'
+>;
 
 export type ContactListFilter = {
 	text?: string;
