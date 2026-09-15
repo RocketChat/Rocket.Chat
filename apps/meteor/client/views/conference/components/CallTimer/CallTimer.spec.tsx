@@ -1,8 +1,8 @@
+import { CallTimer } from '@rocket.chat/ui-client';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import CallTimer from './CallTimer';
 import * as stories from './CallTimer.stories';
 
 /**

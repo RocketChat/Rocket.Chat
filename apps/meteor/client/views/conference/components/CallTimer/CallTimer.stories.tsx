@@ -1,6 +1,5 @@
+import { CallTimer } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
-
-import CallTimer from './CallTimer';
 
 /**
  * How long the call has been going, in the call window's header.

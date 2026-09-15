@@ -1,8 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 
-type CallTimerProps = { startAt?: Date };
+export type CallTimerProps = {
+	/** When the call started. Absent until the call itself has been read, which is a render or two after mount. */
+	startAt?: Date;
+};
 
+/**
+ * How long a call has been going.
+ *
+ * Shared, because there were two of these — this one and `ui-voip`'s — counting the same thing from the same
+ * shape of prop and disagreeing about the details that matter. This is the version that survives a start which
+ * arrives late, which is the normal case: the conference is read a render after the timer mounts, and a timer
+ * that captured its start once anchored a call already minutes old at zero and counted up from there.
+ */
 const CallTimer = ({ startAt }: CallTimerProps) => {
 	// The moment is ticked and the elapsed time derived from it, rather than the start being captured once: the
 	// conference this reads from arrives a render later than the timer mounts, so freezing the start anchored a
