@@ -44,7 +44,7 @@ const CallParticipants = ({ people, total, size = 'small' }: CallParticipantsPro
 	const label = t('__count__people_in_the_call', { count: total });
 
 	// `UserAvatar` renders nothing without a username, so someone who arrived without one would take a place in
-	// the row and leave it empty — a gap and a drop shadow around nothing. They are counted, not drawn.
+	// the row and leave a gap in it. They are counted, not drawn.
 	const faces = people.filter(({ username }) => !!username);
 
 	// Faces switched off, or a call whose members didn't travel with it — an older server, say.
