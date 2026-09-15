@@ -66,7 +66,7 @@ export async function readPackageJson(cwd: string) {
 	return JSON.parse(await readFile(filePath, 'utf-8'));
 }
 
-async function getUpdateFilesList(cwd: string): Promise<string[]> {
+export async function getUpdateFilesList(cwd: string): Promise<string[]> {
 	const file = await readPackageJson(cwd);
 	if (!file.houston) {
 		return [];
