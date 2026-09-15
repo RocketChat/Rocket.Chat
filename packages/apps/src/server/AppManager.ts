@@ -32,6 +32,7 @@ import { AppRuntimeManager } from './managers/AppRuntimeManager';
 import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
 import type { IMarketplaceInfo } from './marketplace';
+import { RollbackScope } from './misc/RollbackScope';
 import { defaultPermissions } from './permissions/AppPermissions';
 import { EmptyRuntime } from './runtime/EmptyRuntime';
 import type { IAppStorageItem } from './storage';
@@ -576,7 +577,6 @@ export class AppManager {
 
 		const aff = new AppFabricationFulfillment();
 		const result = await this.getParser().unpackageApp(appPackage);
-		const undoSteps: Array<() => Promise<void>> = [];
 
 		aff.setAppInfo(result.info);
 		aff.setImplementedInterfaces(result.implemented.getValues());
@@ -593,84 +593,85 @@ export class AppManager {
 			languageContent: result.languageContent,
 		};
 
-		try {
-			descriptor.sourcePath = await this.appSourceStorage.store(descriptor, appPackage);
-
-			undoSteps.push(() => this.appSourceStorage.remove(descriptor));
-		} catch {
-			aff.setStorageError('Failed to store app package');
-
-			return aff;
-		}
-
-		let app: ProxiedApp;
+		const rollback = new RollbackScope(`Installation of the app "${result.info.name}" (${result.info.id})`);
 
 		try {
-			app = await this.getCompiler().toSandBox(this, descriptor, result);
-		} catch (error) {
-			await Promise.all(undoSteps.map((undoer) => undoer()));
+			// The compilation comes first because it writes nothing outside of this process.
+			// A package that we can not compile then leaves no data behind.
+			const app = await this.getCompiler().toSandBox(this, descriptor, result);
 
-			throw error;
-		}
+			rollback.defer('stop the app runtime', () => this.getRuntime().stopRuntime(app.getRuntimeController()));
 
-		undoSteps.push(() =>
-			this.getRuntime()
-				.stopRuntime(app.getRuntimeController())
-				.catch(() => {}),
-		);
+			try {
+				descriptor.sourcePath = await this.appSourceStorage.store(descriptor, appPackage);
+			} catch {
+				aff.setStorageError('Failed to store app package');
 
-		// Create a user for the app
-		try {
-			await this.createAppUser(result.info);
+				return aff;
+			}
 
-			undoSteps.push(async () => void this.removeAppUser(app));
-		} catch {
-			aff.setAppUserError({
-				username: `${result.info.nameSlug}.bot`,
-				message: 'Failed to create an app user for this app.',
-			});
+			rollback.defer('remove the app package', () => this.appSourceStorage.remove(descriptor));
 
-			await Promise.all(undoSteps.map((undoer) => undoer()));
+			// Create a user for the app
+			try {
+				const { created: createdAppUser } = await this.createAppUser(result.info);
+
+				// Remove the user only if this installation created it. An app user from a
+				// previous installation must survive the rollback.
+				if (createdAppUser) {
+					rollback.defer('remove the app user', async () => {
+						await this.removeAppUser(app);
+					});
+				}
+			} catch {
+				aff.setAppUserError({
+					username: `${result.info.nameSlug}.bot`,
+					message: 'Failed to create an app user for this app.',
+				});
+
+				return aff;
+			}
+
+			descriptor.signature = await this.getSignatureManager().signApp(descriptor);
+			const created = await this.appMetadataStorage.create(descriptor);
+
+			if (!created) {
+				aff.setStorageError('Failed to create the App, the storage did not return it.');
+
+				return aff;
+			}
+
+			// The metadata record is the commit point of the installation
+			rollback.commit();
+
+			app.getStorageItem()._id = created._id;
+
+			this.apps.set(app.getID(), app);
+			aff.setApp(app);
+
+			// Let everyone know that the App has been added
+			await this.bridges
+				.getAppActivationBridge()
+				.doAppAdded(app)
+				.catch(() => {
+					// If an error occurs during this, oh well.
+				});
+
+			await this.installApp(app, user);
+
+			// Should enable === true, then we go through the entire start up process
+			// Otherwise, we only initialize it.
+			if (enable) {
+				// Start up the app
+				await this.runStartUpProcess(created, app, false);
+			} else {
+				await this.initializeApp(app);
+			}
 
 			return aff;
+		} finally {
+			await rollback.unwind();
 		}
-
-		descriptor.signature = await this.getSignatureManager().signApp(descriptor);
-		const created = await this.appMetadataStorage.create(descriptor);
-
-		if (!created) {
-			aff.setStorageError('Failed to create the App, the storage did not return it.');
-
-			await Promise.all(undoSteps.map((undoer) => undoer()));
-
-			return aff;
-		}
-
-		app.getStorageItem()._id = created._id;
-
-		this.apps.set(app.getID(), app);
-		aff.setApp(app);
-
-		// Let everyone know that the App has been added
-		await this.bridges
-			.getAppActivationBridge()
-			.doAppAdded(app)
-			.catch(() => {
-				// If an error occurs during this, oh well.
-			});
-
-		await this.installApp(app, user);
-
-		// Should enable === true, then we go through the entire start up process
-		// Otherwise, we only initialize it.
-		if (enable) {
-			// Start up the app
-			await this.runStartUpProcess(created, app, false);
-		} else {
-			await this.initializeApp(app);
-		}
-
-		return aff;
 	}
 
 	/**
@@ -1183,11 +1184,17 @@ export class AppManager {
 		return enable;
 	}
 
-	private async createAppUser(appInfo: IAppInfo): Promise<string> {
+	/**
+	 * Ensures that an app user exists.
+	 *
+	 * @returns the id of the app user, and whether this call created it. A caller that
+	 * reverts an installation must not remove a user that it did not create.
+	 */
+	private async createAppUser(appInfo: IAppInfo): Promise<{ id: string; created: boolean }> {
 		const appUser = await (this.bridges.getUserBridge() as IInternalUserBridge & UserBridge).getAppUser(appInfo.id);
 
 		if (appUser) {
-			return appUser.id;
+			return { id: appUser.id, created: false };
 		}
 
 		const userData: Partial<IUser> = {
@@ -1200,11 +1207,13 @@ export class AppManager {
 			isEnabled: true,
 		};
 
-		return (this.bridges.getUserBridge() as IInternalUserBridge & UserBridge).create(userData, appInfo.id, {
+		const id = await (this.bridges.getUserBridge() as IInternalUserBridge & UserBridge).create(userData, appInfo.id, {
 			avatarUrl: appInfo.iconFileContent || appInfo.iconFile,
 			joinDefaultChannels: true,
 			sendWelcomeEmail: false,
 		});
+
+		return { id, created: true };
 	}
 
 	private async removeAppUser(app: ProxiedApp): Promise<boolean> {
