@@ -37,7 +37,7 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 	const buttonProps = useButtonPattern(handleOpenRoomInfo);
 
 	return (
-		<HeaderTitleButton aria-label={`${room.name}${room.encrypted ? ` - ${t('encrypted')}` : ''}`} {...buttonProps} marginInlineEnd={4}>
+		<HeaderTitleButton aria-label={`${t('Room_Info')}${room.encrypted ? ` - ${t('Encrypted')}` : ''}`} {...buttonProps} marginInlineEnd={4}>
 			<HeaderIconWithRoom room={room} />
 			<HeaderTitle>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
