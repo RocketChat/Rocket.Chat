@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c708845a31bc38c12a87c0e0429e26328dbb81ac",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
