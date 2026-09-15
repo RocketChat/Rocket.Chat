@@ -17,11 +17,11 @@ exports[`NavBarItemOngoingCalls renders OneOngoing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1a2ohtu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-15fxfxp"
+        class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
           aria-label="1 ongoing call"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
+          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
           type="button"
         >
@@ -31,14 +31,18 @@ exports[`NavBarItemOngoingCalls renders OneOngoing without crashing 1`] = `
           >
             ❲
           </i>
+          <div
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            style="pointer-events: none;"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
+            >
+              1
+            </span>
+          </div>
         </button>
-        <span
-          aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
-          style="position: absolute; inset-block-start: -4px; inset-inline-end: -4px;"
-        >
-          1
-        </span>
       </div>
     </div>
   </div>
@@ -52,11 +56,11 @@ exports[`NavBarItemOngoingCalls renders OnlyDeclined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1a2ohtu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-15fxfxp"
+        class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
           aria-label="Ongoing calls"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
           type="button"
         >
@@ -80,11 +84,11 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1a2ohtu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-15fxfxp"
+        class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
           aria-label="1 ongoing call"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
           type="button"
         >
@@ -94,14 +98,18 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
           >
             ❲
           </i>
+          <div
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            style="pointer-events: none;"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
+            >
+              1
+            </span>
+          </div>
         </button>
-        <span
-          aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
-          style="position: absolute; inset-block-start: -4px; inset-inline-end: -4px;"
-        >
-          1
-        </span>
       </div>
       <div
         class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-6qwf9c"
@@ -208,11 +216,11 @@ exports[`NavBarItemOngoingCalls renders SeveralOngoing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1a2ohtu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-15fxfxp"
+        class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
           aria-label="3 ongoing calls"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
+          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
           title="Ongoing calls"
           type="button"
         >
@@ -222,14 +230,18 @@ exports[`NavBarItemOngoingCalls renders SeveralOngoing without crashing 1`] = `
           >
             ❲
           </i>
+          <div
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            style="pointer-events: none;"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
+            >
+              3
+            </span>
+          </div>
         </button>
-        <span
-          aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
-          style="position: absolute; inset-block-start: -4px; inset-inline-end: -4px;"
-        >
-          3
-        </span>
       </div>
     </div>
   </div>

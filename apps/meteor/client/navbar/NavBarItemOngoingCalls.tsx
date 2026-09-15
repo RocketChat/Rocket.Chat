@@ -1,7 +1,8 @@
-import { Badge, Box, Dropdown, IconButton } from '@rocket.chat/fuselage';
+import { Box, Dropdown } from '@rocket.chat/fuselage';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import IconButtonWithBadge from '../components/IconButtonWithBadge';
 import OngoingCallsList from '../components/OngoingCalls/OngoingCallsList';
 import { useOngoingCallsList } from '../components/OngoingCalls/useOngoingCalls';
 import { useDropdownVisibility } from '../views/room/Header/Omnichannel/QuickActions/hooks/useDropdownVisibility';
@@ -39,8 +40,8 @@ const NavBarItemOngoingCalls = () => {
 
 	return (
 		<>
-			<Box position='relative' display='inline-flex'>
-				<IconButton
+			<Box display='inline-flex'>
+				<IconButtonWithBadge
 					ref={reference}
 					small
 					secondary={isOffering}
@@ -48,17 +49,13 @@ const NavBarItemOngoingCalls = () => {
 					info={isOffering && !isRinging}
 					onClick={() => toggle()}
 					title={name}
-					// The badge sits beside the button rather than inside it, so a screen reader would otherwise announce
-					// the name and then a stray number. The count goes into the name and the badge is hidden from
-					// assistive technology, so it is said once.
+					// A screen reader would otherwise announce the name and then a stray number, so the count goes
+					// into the name and the badge is hidden from assistive technology — said once.
 					aria-label={active > 0 ? t('Ongoing_calls_count', { count: active }) : name}
 					icon='video'
+					badge={active > 0 ? active : undefined}
+					badgeVariant='secondary'
 				/>
-				{active > 0 && (
-					<Badge aria-hidden='true' variant='secondary' style={{ position: 'absolute', insetBlockStart: -4, insetInlineEnd: -4 }}>
-						{active}
-					</Badge>
-				)}
 			</Box>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-end'>
