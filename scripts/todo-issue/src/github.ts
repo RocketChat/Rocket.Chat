@@ -176,11 +176,12 @@ function buildIssueBody(todo: TodoItem, owner: string, repo: string, sha: string
 	return lines.join('\n');
 }
 
-function buildIssueBodyFromGroup(todos: TodoItem[], owner: string, repo: string, sha: string): string {
+function buildIssueBodyFromGroup(todos: TodoItem[], title: string, owner: string, repo: string, sha: string): string {
 	const bodies = [...new Set(todos.map((t) => t.body).filter(Boolean))] as string[];
 	const locationLines = todos.map((todo) => {
 		const blobUrl = `https://github.com/${owner}/${repo}/blob/${sha}/${encodeURI(todo.filename)}#L${todo.line}-L${todo.line + BLOB_LINES}`;
-		return `- [\`${todo.filename}#L${todo.line}\`](${blobUrl})`;
+		const variant = todo.title === title ? '' : ` — \`${todo.title}\``;
+		return `- [\`${todo.filename}#L${todo.line}\`](${blobUrl})${variant}`;
 	});
 	const lines = [
 		bodies.join('\n\n') || '',
@@ -221,7 +222,10 @@ export async function createIssue(todoOrGroup: TodoItem | TodoItem[], config: Co
 		await ensureLabelExists(config.owner, config.repo, label, config.token);
 	}
 
-	const body = group.length > 1 ? buildIssueBodyFromGroup(group, config.owner, config.repo, sha) : buildIssueBody(todo, config.owner, config.repo, sha);
+	const body =
+		group.length > 1
+			? buildIssueBodyFromGroup(group, todo.title, config.owner, config.repo, sha)
+			: buildIssueBody(todo, config.owner, config.repo, sha);
 
 	const locations = group.map((t) => `${t.filename}#L${t.line}`).join(', ');
 	console.log(`[CREATE] "${todo.title}" (${locations})`);
