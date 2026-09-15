@@ -73,28 +73,17 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 	performingUsersEmitter.emit('changed');
 }
-/**
- * The disposer for one `addStream` call. It releases that call's reference and no more, however many times it is
- * invoked: an effect cleanup can run twice (StrictMode's double invoke, a cleanup racing a re-mount), and a second
- * decrement would take `refs` below the number of mounts still holding the stream — closing it under them, and then
- * never closing it at all once the count can no longer come back to zero.
- */
-const releaseRoomStream = (rid: string, entry: RoomActivityStream): (() => void) => {
-	let released = false;
-
-	return () => {
-		if (released) {
-			return;
-		}
-		released = true;
-
+/** Releases one holder's claim on the room's stream, and closes it once nobody is left holding it. */
+const releaseRoomStream =
+	(rid: string, entry: RoomActivityStream): (() => void) =>
+	() => {
 		entry.refs--;
+
 		if (entry.refs === 0) {
 			entry.stop();
 			rooms.delete(rid);
 		}
 	};
-};
 
 export const UserAction = new (class {
 	addStream(rid: string): () => void {
