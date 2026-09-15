@@ -68,10 +68,11 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 	 *   reads when there is something bright behind — a camera with a picture in it — and costs nothing over a
 	 *   black tile.
 	 * - `padding-block-end` keeps the home indicator off the chat's composer.
-	 * - `visibility` is switched at the end of the closing animation rather than with it: `overflow: hidden` hides
-	 *   a shut panel's composer and close button from the eye but leaves them in the tab order and in the
-	 *   accessibility tree, and `visibility` takes them out of both. Immediate on the way open, so the content is
-	 *   there as it arrives.
+	 * - `visibility` is switched at the end of the closing animation rather than with it, on both paths:
+	 *   `overflow: hidden` hides a shut panel's composer and close button from the eye but leaves them in the tab
+	 *   order and in the accessibility tree, and `visibility` takes them out of both. Immediate on the way open,
+	 *   so the content is there as it arrives — and delayed on the way out, or the sheet would go invisible the
+	 *   moment it was asked to close and never show the slide it was sliding.
 	 */
 	const panelStyle = sheet
 		? css`
@@ -90,7 +91,9 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 
 				visibility: ${visible ? 'visible' : 'hidden'};
 				transform: translateY(${visible ? '0' : '100%'});
-				transition: transform ${CLOSE_MS}ms ease;
+				transition:
+					transform ${CLOSE_MS}ms ease,
+					visibility 0s linear ${visible ? 0 : CLOSE_MS}ms;
 				will-change: transform;
 			`
 		: css`
