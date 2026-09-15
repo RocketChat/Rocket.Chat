@@ -10,25 +10,19 @@ type NameableConference = {
 const displayName = (person?: Partial<Pick<IUser, 'name' | 'username'>>): string => person?.name || person?.username || '';
 
 /**
- * Who a direct call is *with*, from this viewer's side. Whoever started it, unless that is the viewer themselves,
- * in which case it is whoever else is on the call.
+ * Who a direct call is with, from this viewer's side.
  *
- * The creator rather than "the other member" because a direct call can hold more than two people: someone added
- * to a call in a DM has two others to choose from, and the one who matters to them is the one who brought them in.
+ * The creator rather than "the other member", because a direct call can hold more than two people and the one
+ * who matters to a newcomer is whoever brought them in.
  */
 const otherParty = (call: NameableConference, viewerId: IUser['_id'] | undefined) =>
 	call.createdBy._id !== viewerId ? call.createdBy : call.users.find(({ _id }) => _id !== viewerId);
 
 /**
- * What to call a conference, for the person looking at it. Returns `''` when only the room can answer, leaving
- * that to the caller — which is also what keeps the room lookup off the path that doesn't need it.
+ * What to call a conference, for the person looking at it.
  *
- * A direct call has no name of its own, so it is named after a person. Ordinarily that name comes from the
- * viewer's own subscription, since a DM is named per side and the name lives there rather than on the room. But
- * conference membership grants no room access, so a member added from outside a DM has no subscription to read —
- * and the room can't help either: a DM room carries neither `name` nor `fname`, so falling back to it ended in
- * `getRoomName`'s last resort, the raw room id. That is what put a hash in front of the person who was invited.
- * Naming the call after whoever brought them in answers the question they actually have, which is who is calling.
+ * Returns `''` when only the room can answer, leaving the lookup to the caller. See
+ * [video conferences](../../../../docs/features/video-conference.md) for how a call gets its name.
  */
 export const conferenceNameFor = (
 	call: NameableConference,
@@ -38,9 +32,7 @@ export const conferenceNameFor = (
 ): string => {
 	const isDM = call.type === 'direct' || roomType === 'd';
 
-	// A group conference has a name of its own, and it wins — except in a DM, where the "title" is
-	// `room.fname` from the creator's perspective and is wrong for every other viewer.  There the
-	// per-viewer subscription name is the right answer.
+	// In a DM the title is `room.fname` as the creator sees it, which is wrong for every other viewer.
 	if (!isDM && call.type === 'videoconference' && call.title) {
 		return call.title;
 	}

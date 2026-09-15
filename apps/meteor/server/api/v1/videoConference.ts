@@ -70,8 +70,8 @@ const cancelResponseSchema = ajv.compile<void>({
 /**
  * How every conference endpoint below starts: the call has to exist, and the caller has to be allowed near it.
  *
- * Both failures are answered the same way — a bare 404, deliberately vague about which of the two it was, so
- * a stranger can't use the endpoint to learn that a call id is real.
+ * Both failures answer a bare 404, vague about which it was, so a stranger cannot learn that a call id is
+ * real.
  */
 const loadAccessibleConference = async (
 	callId: VideoConference['_id'],
@@ -245,10 +245,11 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: answer 404 here, the way the conference endpoints added alongside this one do. The params are
-		// valid — the call is missing, or it is not this caller's — so 400 describes the wrong thing. Left as
-		// it is because this endpoint is published and clients depend on the status: it belongs to the next
-		// major, with `applyBreakingChanges`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -270,12 +271,8 @@ API.v1.post(
 			}
 		}
 
-		// Embedded providers (LiveKit) intentionally return an empty url —
-		// they're rendered inline rather than opened as an external popup.
-		// Include rid so the client can route the join into its embedded
-		// provider context without an extra round-trip to look it up.
-		// For every other provider the url is the whole point of joining,
-		// so coming back without one is a failure.
+		// An embedded call renders inline and has no URL to hand back. For every other provider the URL is the
+		// whole point of joining, so coming back without one is a failure.
 		if (!url && !videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			return API.v1.failure('failed-to-get-url');
 		}
@@ -306,10 +303,11 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: answer 404 here, the way the conference endpoints added alongside this one do. The params are
-		// valid — the call is missing, or it is not this caller's — so 400 describes the wrong thing. Left as
-		// it is because this endpoint is published and clients depend on the status: it belongs to the next
-		// major, with `applyBreakingChanges`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -383,11 +381,9 @@ API.v1.post(
 );
 
 /**
- * Renews the caller's presence lease on a call — the conference window saying it is still in it.
+ * Renews the caller's presence lease on a call.
  *
- * The counterpart of `video-conference.leave`, and the reason a lost leave is survivable: leaving is inferred from
- * renewals stopping, so nothing has to reach us at the moment someone goes. Provider-agnostic, because the window
- * doing the renewing is ours whatever runs the media.
+ * The counterpart of `video-conference.leave`, and what makes a lost leave survivable.
  */
 API.v1.post(
 	'video-conference.heartbeat',
@@ -471,10 +467,7 @@ API.v1.post(
 			return API.v1.notFound();
 		}
 
-		// Registers the users as conference members — it deliberately does not put them in any room. Being a
-		// member authorizes joining the call; whether they can read the chat is surfaced separately.
-		// Adding is open to anyone with access to the conference; the ring that usually accompanies it needs the
-		// same permission `video-conference.start` demands, and degrades silently without it — same as `start`.
+		// Membership authorizes joining the call and nothing else — it puts nobody in a room.
 		const added = await VideoConf.addMembers(this.userId, callId, users, {
 			// Not ringing unless asked: adding someone to a call in progress is often to have them join when
 			// they can, and an unrequested ring is an interruption nobody chose.
@@ -556,10 +549,11 @@ API.v1.get(
 		const { callId } = this.queryParams;
 
 		const call = await loadAccessibleConference(callId, this.userId);
-		// TODO: answer 404 here, the way the conference endpoints added alongside this one do. The params are
-		// valid — the call is missing, or it is not this caller's — so 400 describes the wrong thing. Left as
-		// it is because this endpoint is published and clients depend on the status: it belongs to the next
-		// major, with `applyBreakingChanges`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
@@ -617,10 +611,11 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		// TODO: answer 404 here, the way the conference endpoints added alongside this one do. The params are
-		// valid — the call is missing, or it is not this caller's — so 400 describes the wrong thing. Left as
-		// it is because this endpoint is published and clients depend on the status: it belongs to the next
-		// major, with `applyBreakingChanges`.
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
 			return API.v1.failure('invalid-params');
 		}
