@@ -35,13 +35,14 @@ const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) 
 		return null;
 	}
 
-	// `banner` is the page's header landmark, which the call window already has one of — and this notice is not a
-	// second one, it is something that became true. Declared here rather than changed in the shared component,
-	// whose other caller is a room announcement that really is one.
 	return (
-		<AnnouncementBanner role='status'>
+		<AnnouncementBanner>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
-				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: present.length })}</Box>
+				{/* The live region is the sentence, not the strip: the count changes as people join and leave, and a
+				    region wrapping the buttons too would re-read "Review" and "Dismiss" over whoever is using them. */}
+				<Box role='status' withTruncatedText>
+					{t('__count__participants_cannot_see_the_chat', { count: present.length })}
+				</Box>
 				<Box display='flex' alignItems='center' flexShrink={0} gap={4}>
 					<Button small onClick={() => setModal(<ChatAccessModal callId={callId} access={access} onClose={() => setModal(null)} />)}>
 						{t('Review')}
