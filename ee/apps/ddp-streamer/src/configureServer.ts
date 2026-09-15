@@ -45,7 +45,11 @@ server.publish(loginServiceConfigurationPublication, async function () {
 });
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
-server.publish(autoUpdateCollection, function () {
+server.publish(autoUpdateCollection, async function () {
+	// the boot load may have found the monolith unreachable, so try again before
+	// serving a subscriber an empty version map
+	await Autoupdate.prime().catch(() => undefined);
+
 	Autoupdate.getVersions().forEach((version, arch) => {
 		this.added(autoUpdateCollection, arch, version);
 	});

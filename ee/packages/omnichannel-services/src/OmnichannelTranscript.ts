@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 
 import {
 	ServiceClass,
@@ -16,7 +16,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
-import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset, primeOnce, streamToBuffer } from '@rocket.chat/tools';
 import type { TFunction, i18n } from 'i18next';
 
 import type { WorkDetailsWithSource } from './localTypes';
@@ -80,8 +80,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	override async started(): Promise<void> {
-		// TODO: cache these with mem
+	/**
+	 * Primed on first use rather than in `started()`: the settings service runs in
+	 * another process and is not necessarily reachable while this one boots. Every
+	 * field is kept current by `onSettingChanged` from then on.
+	 */
+	private primeSettings = primeOnce(async () => {
 		const [siteName, dateFormat, timeAndDateFormat, serverLanguage, reportingTimezone, defaultCustomTimezone, showSystemMessages] =
 			await Promise.all([
 				settingsService.get<string>('Site_Name'),
@@ -100,9 +104,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.reportingTimezone = reportingTimezone;
 		this.defaultCustomTimezone = defaultCustomTimezone;
 		this.showSystemMessages = showSystemMessages;
-	}
+	});
 
 	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
+		await this.primeSettings();
+
 		switch (this.reportingTimezone) {
 			case 'custom':
 				return this.defaultCustomTimezone;
@@ -330,6 +336,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
+		await this.primeSettings();
+
 		this.log.info({
 			msg: 'Processing transcript received from queue',
 			rid: details.rid,
@@ -415,7 +423,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		try {
 			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
-				streamParam: Readable.from(stream),
+				stream: Readable.from(stream),
 				roomIds: [rid, details.rid],
 				data,
 				transcriptText,
@@ -452,20 +460,32 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async uploadFiles({
-		streamParam,
+		stream,
 		roomIds,
 		data,
 		transcriptText,
 	}: {
-		streamParam: Readable;
+		stream: Readable;
 		roomIds: string[];
 		data: Pick<WorkerData, 'siteName' | 'visitor'>;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
+		// a stream is consumed once, so every upload gets its own copy. Piping to
+		// several destinations writes each chunk to all of them and pauses the source
+		// when any one falls behind, so this stays a tee rather than a buffer of the
+		// whole pdf. Attach every pipe before awaiting, or a late destination misses
+		// whatever already flowed.
+		const copies = roomIds.map(() => new PassThrough());
+		copies.forEach((copy) => stream.pipe(copy));
+
+		// pipe does not forward errors, so a render that fails halfway would otherwise
+		// leave every upload waiting for bytes that are never coming
+		stream.on('error', (err) => copies.forEach((copy) => copy.destroy(err)));
+
 		return Promise.all(
-			roomIds.map((roomId) => {
+			roomIds.map((roomId, index) => {
 				return uploadService.uploadFileFromStream({
-					streamParam,
+					streamParam: copies[index],
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
 						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replaceAll('/', '-')}_${
