@@ -31,6 +31,10 @@ export type PersistentAudioTrack = {
 	pinned?: boolean;
 	/** Discussion room id the owning message belongs to (used to match bulk-delete criteria). */
 	drid?: string;
+	/** When played from a quote, the id of the original message that holds the attachment (its deletion also closes the player). */
+	originMid?: string;
+	/** Timestamp of the original quoted message (used to match bulk-delete criteria). */
+	originTs?: Date;
 };
 
 export type MediaPlayerContextValue = {

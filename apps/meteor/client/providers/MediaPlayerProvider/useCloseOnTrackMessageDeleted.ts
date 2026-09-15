@@ -15,29 +15,51 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 	const pinned = track?.pinned;
 	const username = track?.username;
 	const drid = track?.drid;
+	const originMid = track?.originMid;
+	const originTs = track?.originTs;
 
 	useEffect(() => {
 		if (!rid || !mid) {
 			return;
 		}
 
+		// The player closes when the message that renders the audio is deleted and, when the audio
+		// was played from a quote, when the original message that holds the attachment is deleted.
+		const watchedIds = originMid && originMid !== mid ? [mid, originMid] : [mid];
+
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id }) => {
-			if (_id === mid) {
+			if (watchedIds.includes(_id)) {
 				close();
 			}
 		});
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
+			if (params.ids?.some((id) => watchedIds.includes(id))) {
+				close();
+				return;
+			}
+
 			const matchesCriteria = createDeleteCriteria(params);
 			const trackMessage = { _id: mid, rid, ts, pinned, drid, u: { username } } as IMessage;
 
-			if (params.ids?.includes(mid) || matchesCriteria(trackMessage)) {
+			if (matchesCriteria(trackMessage)) {
 				close();
+				return;
+			}
+
+			// Only the id and timestamp of the quoted original are known on the client, so the
+			// pinned, discussion and author filters cannot be evaluated for it.
+			if (originMid && originMid !== mid && originTs && !params.users?.length) {
+				const originMessage = { _id: originMid, rid, ts: originTs } as IMessage;
+
+				if (matchesCriteria(originMessage)) {
+					close();
+				}
 			}
 		});
 
 		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message) => {
-			if (message._id === mid && message.t === 'rm') {
+			if (message.t === 'rm' && watchedIds.includes(message._id)) {
 				close();
 			}
 		});
@@ -47,5 +69,5 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 			unsubscribeFromDeleteMessageBulk();
 			unsubscribeFromRoomMessages();
 		};
-	}, [rid, mid, ts, pinned, username, drid, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
+	}, [rid, mid, ts, pinned, username, drid, originMid, originTs, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
 };
