@@ -13,7 +13,6 @@ exports[`ConferenceChat renders what it shows when everyone in the call can read
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            aria-label="Chat_in undefined"
             class="rcx-box rcx-box--full rcx-css-1spko5i"
             id="contextualbarTitle"
           >
@@ -60,7 +59,6 @@ exports[`ConferenceChat renders what it shows when the chat was never shared wit
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            aria-label="Chat_in undefined"
             class="rcx-box rcx-box--full rcx-css-1spko5i"
             id="contextualbarTitle"
           >
@@ -128,7 +126,6 @@ exports[`ConferenceChat renders what it shows when this member can read the chat
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            aria-label="Chat_in undefined"
             class="rcx-box rcx-box--full rcx-css-1spko5i"
             id="contextualbarTitle"
           >
