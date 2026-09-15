@@ -1,0 +1,281 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SideRail renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; height: 400px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1cb8xb9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-sqvmzt"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Chat"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+              title="Chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chat rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`SideRail renders MultipleActions without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; height: 400px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1cb8xb9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-sqvmzt"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Chat"
+              class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--small-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+              title="Chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chat rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+            <button
+              aria-label="Team"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+              title="Team"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+            <button
+              aria-label="More"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+              title="More"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1ry6fnh"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`SideRail renders WithClosedPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; height: 400px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1cb8xb9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-sqvmzt"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Chat"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+              title="Chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chat rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-fv551s"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`SideRail renders WithOpenPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; height: 400px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1cb8xb9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-sqvmzt"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Chat"
+              class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--small-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+              title="Chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chat rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1ry6fnh"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`SideRail renders WithOverlayPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; height: 400px; position: relative;"
+    >
+      <div
+        style="flex: 1; background: rgb(238, 238, 238); padding: 16px;"
+      >
+        Main content
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1cb8xb9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-sqvmzt"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              aria-label="Chat"
+              class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--small-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+              title="Chat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chat rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1ok59g1"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
