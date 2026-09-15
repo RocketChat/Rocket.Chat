@@ -39,6 +39,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 - [docs/mutation-testing.md](docs/mutation-testing.md) — Stryker: grading a spec by what it would notice, how to scope a run, how to read a survived mutant
+- [docs/proposals/mutation-testing-scope-experiment.md](docs/proposals/mutation-testing-scope-experiment.md) — pre-registered experiment: does a static predictor tell us which specs are worth mutating?
 
 ### Other
 
