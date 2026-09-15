@@ -30,6 +30,7 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteHeld: false,
 		callId: 'call-1',
 		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
+		confirmed: false,
 	} as SessionState;
 
 	const streams = localScreenActive ? { localScreen: { active: true, stream: null } } : {};
