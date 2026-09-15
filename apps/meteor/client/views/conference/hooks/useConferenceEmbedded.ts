@@ -138,17 +138,15 @@ export const useConferenceEmbedded = (callId: string) => {
 	}, [info, members]);
 
 	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
-	// choices into the provider's URL — and what marks them as present. So this waits to be asked, rather than
-	// running as soon as the window opens.
+	// choices into the provider's URL — and what marks them as present. So nothing here asks for it.
 	//
 	// The result is held in the cache rather than in this hook's state, so a window that has *already* joined —
 	// one that just created the conference on the start screen — finds it there and goes straight into the call
-	// instead of asking again.
-	const { data } = useQuery({
-		queryKey: videoConferenceQueryKeys.join(callId),
-		queryFn: async () => joinConference({ callId, state: {} }),
-		enabled: false,
-	});
+	// instead of asking again. Read with `useQuery` and `enabled: false`, that was a query declaring a `queryFn`
+	// it must never run; `getQueryData` says the same thing without the disclaimer.
+	// Not reactive, and it does not need to be: the only writer after this mounts is the mutation below, whose
+	// own settling is what re-renders this.
+	const data = queryClient.getQueryData<Awaited<ReturnType<typeof joinConference>>>(videoConferenceQueryKeys.join(callId));
 
 	const {
 		mutate: join,
