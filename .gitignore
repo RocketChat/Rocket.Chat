@@ -7,6 +7,9 @@ node_modules
 
 # testing
 coverage
+.stryker-tmp
+**/reports/mutation
+stryker.log
 
 # next.js
 .next/
