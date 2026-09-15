@@ -116,6 +116,7 @@
 		"@rocket.chat/fuselage-tokens": "^0.34.0",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
+		"@rocket.chat/gazzodown-alt": "workspace:^",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/i18n": "workspace:^",
 		"@rocket.chat/icons": "^0.49.0",
