@@ -69,7 +69,6 @@ const CallParticipants = ({ people, total, size = 'x18' }: CallParticipantsProps
 						<UserAvatar username={username as string} size={size} />
 					</Box>
 				))}
-				{faces.length === 1 && <Box aria-hidden='true' width={size} height={size} borderRadius='full' backgroundColor='surface-neutral' />}
 			</Box>
 			<Box fontScale='micro' color='hint' flexShrink={0}>
 				{remaining > 0 ? t('plus__usersCount__joined', { count: remaining }) : t('joined')}

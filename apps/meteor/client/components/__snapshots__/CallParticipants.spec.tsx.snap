@@ -216,10 +216,6 @@ exports[`CallParticipants renders SinglePerson without crashing 1`] = `
               />
             </figure>
           </div>
-          <div
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-1qk7pq7"
-          />
         </div>
         <div
           class="rcx-box rcx-box--full rcx-css-1axvo6j"
