@@ -115,8 +115,8 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius={4} elevation='2'>
-				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
+			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius='medium' elevation='2'>
+				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius='medium'>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box marginBlockStart={4} display='flex' justifyContent='space-between'>
