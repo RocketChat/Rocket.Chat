@@ -6,45 +6,48 @@ exports[`CallListItem renders Declined without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/refused"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/refused"
+          >
+            Design review
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Design review
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
+              3 people joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                3 people joined
-              </div>
-            </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
@@ -54,7 +57,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -66,45 +69,48 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/standup"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/standup"
+          >
+            Daily standup
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Daily standup
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
+              4 people joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                4 people joined
-              </div>
-            </div>
             <button
               aria-label="Decline"
               class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
@@ -120,7 +126,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             </button>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -132,48 +138,46 @@ exports[`CallListItem renders Joined without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/joined"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/joined"
+          >
+            Pairing session
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
-            >
-              Pairing session
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
-            </div>
-          </div>
-          <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                2 people joined
-              </div>
+              2 people joined
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -185,50 +189,53 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/ringing"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/ringing"
+          >
+            Ada Lovelace
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            >
+              Ringing
+              …
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Ada Lovelace
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              <span
-                class="rcx-box rcx-box--full rcx-css-18wfy10"
-              >
-                Ringing
-                …
-              </span>
+              1 person joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                1 person joined
-              </div>
-            </div>
             <button
               aria-label="Silence"
               class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
@@ -257,7 +264,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             </button>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -269,45 +276,48 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/refused"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/refused"
+          >
+            Design review
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Design review
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
+              2 people joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                2 people joined
-              </div>
-            </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
@@ -317,7 +327,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -329,48 +339,46 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/answered"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/answered"
+          >
+            Standup
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
-            >
-              Standup
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
-            </div>
-          </div>
-          <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                2 people joined
-              </div>
+              2 people joined
             </div>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -382,50 +390,53 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/ringing"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/ringing"
+          >
+            Ada Lovelace
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            >
+              Ringing
+              …
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Ada Lovelace
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              <span
-                class="rcx-box rcx-box--full rcx-css-18wfy10"
-              >
-                Ringing
-                …
-              </span>
+              1 person joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                1 person joined
-              </div>
-            </div>
             <button
               aria-label="Decline"
               class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
@@ -441,7 +452,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             </button>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -453,50 +464,53 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/ringing"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/ringing"
+          >
+            Ada Lovelace
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            >
+              Ringing
+              …
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Ada Lovelace
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              <span
-                class="rcx-box rcx-box--full rcx-css-18wfy10"
-              >
-                Ringing
-                …
-              </span>
+              1 person joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                1 person joined
-              </div>
-            </div>
             <i
               aria-hidden="true"
               class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-z80ug6"
@@ -519,7 +533,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             </button>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>
@@ -531,45 +545,48 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
-      <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
-        href="/conference/alone"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
       >
         <div
-          class="rcx-box rcx-box--full rcx-sidebar-item__col"
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+          >
+            ❲
+          </i>
+          <a
+            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            href="/conference/alone"
+          >
+            Ada Lovelace
+          </a>
+          <div
+            class="rcx-box rcx-box--full rcx-css-7j82ur"
+          >
+            Aug 3rd
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+          style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-            >
-              ❲
-            </i>
             <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__title"
+              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
             >
-              Ada Lovelace
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
-            >
-              Aug 3rd
+              1 person joined
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-sidebar-item__row"
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
+            style="gap: 4px;"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-              >
-                1 person joined
-              </div>
-            </div>
             <button
               aria-label="Decline"
               class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
@@ -585,7 +602,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             </button>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </body>

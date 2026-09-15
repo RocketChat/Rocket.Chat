@@ -2,11 +2,10 @@ import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
-import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import OngoingCallItem from './OngoingCallItem';
 import { canDeclineCall } from './useOngoingCalls';
-import Extended from '../../sidebar/Item/Extended';
 
 type CallListItemProps = {
 	call: JoinableVideoConference;
@@ -20,9 +19,9 @@ type CallListItemProps = {
 /**
  * One call in the list, whatever state it is in: ringing, merely running, already joined, or turned down.
  *
- * The state is read off the call rather than chosen by the caller, because it is the same row either way — the
- * sidebar's room item with a video mark instead of an avatar — and only the two slots at its edges differ. A
- * list that had to pick a component per state ended up re-deriving that state to do the picking.
+ * The state is read off the call rather than chosen by the caller, because it is the same row either way — and
+ * only the two slots at its edges differ. A list that had to pick a component per state ended up re-deriving
+ * that state to do the picking.
  */
 const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: CallListItemProps) => {
 	const { t } = useTranslation();
@@ -40,19 +39,8 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 	const incomingCalls = useVideoConfIncomingCalls();
 	const audible = ringing && !silenced && incomingCalls.some(({ callId, dismissed }) => callId === call.callId && !dismissed);
 
-	/**
-	 * The row is a link, and these buttons are inside it. A click on one of them would otherwise reach the row —
-	 * following the link, and being read as "answer this call" — so each stops there: `preventDefault` for the
-	 * link's own navigation, `stopPropagation` for the row's handler.
-	 */
-	const stopAt = (act: () => void) => (event: MouseEvent) => {
-		event.preventDefault();
-		event.stopPropagation();
-		act();
-	};
-
 	const decline = (
-		<IconButton mini secondary icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={stopAt(() => onDecline(call.callId))} />
+		<IconButton mini secondary icon='cross' title={t('Decline')} aria-label={t('Decline')} onClick={() => onDecline(call.callId)} />
 	);
 
 	const actions = (() => {
@@ -67,7 +55,7 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 							icon='bell-off'
 							title={t('Silence')}
 							aria-label={t('Silence')}
-							onClick={stopAt(() => onSilence(call.callId))}
+							onClick={() => onSilence(call.callId)}
 						/>
 					)}
 					{decline}
@@ -93,19 +81,9 @@ const CallListItem = ({ call, silenced = false, onJoin, onDecline, onSilence }: 
 	})();
 
 	return (
-		<Extended
-			// The row is where the call is answered or rejoined, so it is the same kind of thing as a room in the
-			// sidebar and gets the same treatment: a real link to where it goes. Without an `href` this rendered as
-			// an anchor with no role, no accessible name and no way to reach it from the keyboard — the click below
-			// still does the work, and prevents the navigation, but the row is now addressable by what it is.
-			//
-			// It used to ask the DOM whether the click had come from one of its own buttons. It no longer has to:
-			// the buttons stop the click themselves, which is where that decision belongs.
+		<OngoingCallItem
 			href={`/conference/${call.callId}`}
-			onClick={(event) => {
-				event.preventDefault();
-				onJoin(call.callId);
-			}}
+			onOpen={() => onJoin(call.callId)}
 			icon={<Icon name='video' size='x16' />}
 			title={call.name}
 			time={call.createdAt}
