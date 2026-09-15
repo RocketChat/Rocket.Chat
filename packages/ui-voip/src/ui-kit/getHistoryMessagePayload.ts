@@ -1,5 +1,5 @@
-import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
-import type { IconButtonElement, FrameableIconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
+import type { CallHistoryItemState, CallPreventionRecord, IMessage } from '@rocket.chat/core-typings';
+import type { IconButtonElement, FrameableIconElement, InfoCardBlock, PlainText, TextObject } from '@rocket.chat/ui-kit';
 import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
 const APP_ID = 'media-call-core';
@@ -10,6 +10,8 @@ export const callStateToTranslationKey = (callState: CallHistoryItemState): Text
 			return { type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' };
 		case 'not-answered':
 			return { type: 'mrkdwn', i18n: { key: 'Call_not_answered_bold' }, text: 'Call not answered' };
+		case 'prevented':
+			return { type: 'mrkdwn', i18n: { key: 'Voice_call_not_placed' }, text: 'Voice call not placed' };
 		case 'failed':
 		case 'error':
 			return { type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' };
@@ -26,6 +28,7 @@ export const callStateToIcon = (callState: CallHistoryItemState): FrameableIconE
 			return { type: 'icon', icon: 'phone-question-mark', variant: 'warning', framed: true };
 		case 'failed':
 		case 'error':
+		case 'prevented':
 			return { type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true };
 		case 'transferred':
 			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary', framed: true };
@@ -72,15 +75,41 @@ export const getHistoryAction = (callId: string): IconButtonElement => {
 	};
 };
 
-export const getHistoryMessagePayload = (
-	callState: CallHistoryItemState,
-	callDuration: number | undefined,
-	callId?: string,
-	msg: string = '',
-): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
-	const callStateTranslationKey = callStateToTranslationKey(callState);
-	const icon = callStateToIcon(callState);
-	const callDurationFormatted = getFormattedCallDuration(callDuration);
+const getPreventedReasonElement = (preventedBy: CallPreventionRecord): PlainText => {
+	if (preventedBy.i18n) {
+		return {
+			type: 'plain_text',
+			i18n: preventedBy.i18n,
+			text: preventedBy.text,
+		};
+	}
+	if (preventedBy.text) {
+		return { type: 'plain_text', text: preventedBy.text };
+	}
+	return {
+		type: 'plain_text',
+		i18n: { key: 'Prevented_by_app', args: { appName: preventedBy.appName } },
+		text: `Prevented by app: ${preventedBy.appName}`,
+	};
+};
+
+export type HistoryMessagePayloadOptions = {
+	state: CallHistoryItemState;
+	duration?: number;
+	callId?: string;
+	msg?: string;
+	preventedBy?: CallPreventionRecord;
+};
+
+export const getHistoryMessagePayload = ({
+	state,
+	duration,
+	callId,
+	msg = '',
+	preventedBy,
+}: HistoryMessagePayloadOptions): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
+	const prevention = state === 'prevented' ? preventedBy : undefined;
+	const secondaryElement = prevention ? getPreventedReasonElement(prevention) : getFormattedCallDuration(duration);
 
 	return {
 		msg,
@@ -92,14 +121,14 @@ export const getHistoryMessagePayload = (
 				rows: [
 					{
 						background: 'default',
-						elements: [icon, callStateTranslationKey],
+						elements: [callStateToIcon(state), callStateToTranslationKey(state)],
 						...(callId && { action: getHistoryAction(callId) }),
 					},
-					...(callDurationFormatted
+					...(secondaryElement
 						? [
 								{
 									background: 'secondary',
-									elements: [callDurationFormatted],
+									elements: [secondaryElement],
 								} as const,
 							]
 						: []),
