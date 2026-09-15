@@ -1,6 +1,9 @@
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { Settings, StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+
+const logger = new Logger('StatusVisibilityGate');
 
 export const STATUS_VISIBILITY_SETTING_ID = 'Accounts_StatusVisibility_Enabled';
 const USER_STATUS_SETTING_ID = 'Accounts_UserStatus_Enabled';
@@ -27,7 +30,7 @@ export class StatusVisibilityGate {
 		});
 	}
 
-	private isSettingEnabled(id: string, onFailure: boolean): Promise<boolean> {
+	private isSettingEnabled(id: string): Promise<boolean> {
 		const cached = this.settingCache.get(id);
 
 		if (cached) {
@@ -38,7 +41,7 @@ export class StatusVisibilityGate {
 			.then((value) => value !== false)
 			.catch(() => {
 				this.settingCache.delete(id);
-				return onFailure;
+				return true;
 			});
 
 		this.settingCache.set(id, lookup);
@@ -46,8 +49,8 @@ export class StatusVisibilityGate {
 		return lookup;
 	}
 
-	async hidesEveryone(): Promise<boolean> {
-		return !(await this.isSettingEnabled(USER_STATUS_SETTING_ID, true));
+	private async hidesEveryone(): Promise<boolean> {
+		return !(await this.isSettingEnabled(USER_STATUS_SETTING_ID));
 	}
 
 	isActive(): boolean {
@@ -64,7 +67,7 @@ export class StatusVisibilityGate {
 	}
 
 	async ensureActive(): Promise<boolean> {
-		return (await this.hidesEveryone()) || (await this.isSettingEnabled(STATUS_VISIBILITY_SETTING_ID, true)) || this.isActive();
+		return (await this.hidesEveryone()) || (await this.isSettingEnabled(STATUS_VISIBILITY_SETTING_ID)) || this.isActive();
 	}
 
 	hasRestrictions(targetId: IUser['_id']): boolean {
@@ -95,7 +98,9 @@ export class StatusVisibilityGate {
 				this.restrictedUsers = new Set(users);
 				this.everyoneHidden = everyoneHidden;
 			})
-			.catch(() => undefined)
+			.catch((err) => {
+				logger.error({ msg: 'Failed to sync the status visibility gate, keeping every user restricted', err });
+			})
 			.finally(() => {
 				this.pendingSync = undefined;
 			});

@@ -36,6 +36,17 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 		});
 	}
 
+	if (
+		!isUpdateUserData(userData) &&
+		userData.presenceDisabledByAdmin !== undefined &&
+		!(await hasPermissionAsync(userId, 'edit-other-user-info'))
+	) {
+		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
 	if (userData.roles) {
 		const newRoles = userData.roles.filter((roleId) => !existingRoles.includes(roleId));
 		if (newRoles.length > 0) {

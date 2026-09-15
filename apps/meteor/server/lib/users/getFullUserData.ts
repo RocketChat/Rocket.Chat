@@ -106,7 +106,8 @@ export async function getFullUserDataByUniqueSearchTerm(
 		(searchType === 'email' &&
 			caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
 
-	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
+	const canViewFullOtherUserInfo = await hasPermissionAsync(userId, 'view-full-other-user-info');
+	const canViewAllInfo = !!myself || canViewFullOtherUserInfo;
 
 	// Only search for importId/email if the user has permission to view them
 	if (['importId', 'email'].includes(searchType) && !canViewAllInfo) {
@@ -123,6 +124,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
+			...(canViewFullOtherUserInfo && { statusVisibilityDeniedByAdmin: 1 }),
 			...(myself && {
 				services: 1,
 				...(settings.get<boolean>('Accounts_StatusVisibility_Enabled') && { 'settings.preferences.statusVisibilityDenied': 1 }),
@@ -146,10 +148,24 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.resume;
 	delete user?.services?.email;
 
-	const ownBlockList = myself ? user.settings?.preferences?.statusVisibilityDenied : undefined;
+	const ownBlockList =
+		myself && settings.get<boolean>('Accounts_StatusVisibility_Enabled') && user.settings?.preferences
+			? user.settings.preferences.statusVisibilityDenied
+			: undefined;
+	const adminBlockList = user.statusVisibilityDeniedByAdmin;
 
-	if (settings.get<boolean>('Accounts_StatusVisibility_Enabled') && ownBlockList?.length && user.settings?.preferences) {
-		user.settings.preferences.statusVisibilityDenied = (await resolveUsersByIds(ownBlockList)).usernames;
+	if (ownBlockList?.length || adminBlockList?.length) {
+		const { ids, usernames } = await resolveUsersByIds([...new Set([...(ownBlockList ?? []), ...(adminBlockList ?? [])])]);
+		const usernameById = new Map(ids.map((id, index) => [id, usernames[index]]));
+		const toUsernames = (list: string[]) => list.map((id) => usernameById.get(id)).filter((name): name is string => Boolean(name));
+
+		if (ownBlockList?.length && user.settings?.preferences) {
+			user.settings.preferences.statusVisibilityDenied = toUsernames(ownBlockList);
+		}
+
+		if (adminBlockList?.length) {
+			user.statusVisibilityDeniedByAdmin = toUsernames(adminBlockList);
+		}
 	}
 
 	// not gated by Accounts_StatusVisibility_Enabled: admins can disable a user's status regardless of that setting

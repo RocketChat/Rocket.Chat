@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
 import type { UpdateUserData } from './saveUser';
@@ -41,7 +42,10 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		throw new MeteorError('error-invalid-user', 'Invalid user');
 	}
 
-	if (userData.presenceDisabledByAdmin !== undefined && !canEditOtherUserInfo) {
+	if (
+		((userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) && !canEditOtherUserInfo) ||
+		(userData.statusVisibilityDeniedByAdmin !== undefined && !License.hasModule('unlimited-presence'))
+	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

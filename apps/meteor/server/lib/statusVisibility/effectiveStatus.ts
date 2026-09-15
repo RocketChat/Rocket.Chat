@@ -5,7 +5,13 @@ import type { Filter } from 'mongodb';
 import type { PresenceScope } from './presenceScope';
 import { hiddenIds } from './presenceScope';
 
-const hiddenStatusFilter = (status: UserStatus[], ids: IUser['_id'][]): Filter<IUser> => {
+export const effectiveStatusFilter = (status: UserStatus[], hidden: PresenceScope): Filter<IUser> => {
+	if (hidden.hideAll) {
+		return status.includes(UserStatus.OFFLINE) ? {} : { $nor: [{}] };
+	}
+
+	const ids = hiddenIds(hidden);
+
 	if (!ids.length) {
 		return { status: { $in: status } };
 	}
@@ -15,14 +21,6 @@ const hiddenStatusFilter = (status: UserStatus[], ids: IUser['_id'][]): Filter<I
 	}
 
 	return { $and: [{ _id: { $nin: ids } }, { status: { $in: status } }] };
-};
-
-export const effectiveStatusFilter = (status: UserStatus[], hidden: PresenceScope): Filter<IUser> => {
-	if (hidden.hideAll) {
-		return status.includes(UserStatus.OFFLINE) ? {} : { $nor: [{}] };
-	}
-
-	return hiddenStatusFilter(status, hiddenIds(hidden));
 };
 
 export const effectiveStatusExpression = (hidden: PresenceScope) => {

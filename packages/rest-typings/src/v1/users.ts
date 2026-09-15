@@ -11,6 +11,7 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
+import type { UsersListStatusVisibilityParamsGET } from './users/UsersListStatusVisibilityParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
@@ -163,6 +164,15 @@ export type UsersEndpoints = {
 	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: DefaultUserInfo[];
+		}>;
+	};
+
+	'/v1/users.listStatusVisibility': {
+		GET: (params: UsersListStatusVisibilityParamsGET) => PaginatedResult<{
+			users: (Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText'> & {
+				presenceDisabledByAdmin: boolean;
+				statusVisibilityDeniedByAdmin: NonNullable<IUser['username']>[];
+			})[];
 		}>;
 	};
 
@@ -419,3 +429,4 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersListStatusVisibilityParamsGET';
