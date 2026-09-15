@@ -61,7 +61,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				onSuccess();
 			}
 		} catch (error: any) {
-			console.log(error);
+			console.error('Failed to poll workspace registration confirmation:', error);
 		}
 	}, [cloudConfirmationPoll, intentData.device_code, dispatchToastMessage, t, onSuccess]);
 
