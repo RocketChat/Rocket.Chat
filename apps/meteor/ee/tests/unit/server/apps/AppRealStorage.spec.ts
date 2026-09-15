@@ -215,6 +215,15 @@ describe('AppRealStorage', () => {
 
 			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: mockAppStorageItem }, { returnDocument: 'after' })).to.be.true;
 		});
+
+		it('should return null when the document is not found', async () => {
+			const updatedItem = { ...mockAppStorageItem, _id: 'test-id' };
+			mockDb.findOneAndUpdate.resolves(null);
+
+			const result = await storage.updatePartialAndReturnDocument(updatedItem);
+
+			expect(result).to.be.null;
+		});
 	});
 
 	describe('updateStatus', () => {
