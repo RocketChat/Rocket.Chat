@@ -1,6 +1,7 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
+import { callServer } from '@rocket.chat/media-calls';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import type { ConferenceEndedEventData, EventSinkRequest, ParticipantStatusEventData } from '../definition';
 import { logger } from '../logger';
@@ -72,6 +73,37 @@ export class EventSinkEndpoint extends PexipEndpoint {
 				identification,
 				method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
 			});
+			return;
+		}
+
+		// Conference hasn't been escalated from two sides yet
+		if (!call.mediaCallIds?.length || call.mediaCallIds.length < 2) {
+			return;
+		}
+
+		if (!call.sipParticipantCount) {
+			logger.warn({
+				msg: 'Conference escalated from media call on both sides but no sip participant has connected to it',
+				method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
+			});
+			return;
+		}
+
+		if (!call.webrtcParticipantCount || call.webrtcParticipantCount < 2) {
+			return;
+		}
+
+		const mediaCalls = await MediaCalls.findAllNotOverByCallIds(call.mediaCallIds).toArray();
+		for (const mediaCall of mediaCalls) {
+			if (mediaCall.escalatedAt && mediaCall.escalatedByPeerAt) {
+				await callServer.hangupEscalatedCall(mediaCall).catch((err) => {
+					logger.error({
+						msg: 'Unexpected error while hanging up a fully escalated voice call',
+						err,
+						method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
+					});
+				});
+			}
 		}
 	}
 

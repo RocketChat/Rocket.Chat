@@ -1,3 +1,7 @@
+import { MediaCall } from '@rocket.chat/core-services';
+import type { VideoConference } from '@rocket.chat/core-typings';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
+
 import type { ServiceConfiguration } from '../definition/ServiceConfiguration';
 import type { SerializedServiceConfigurationRequest } from '../definition/ServiceConfigurationRequest';
 import { logger } from '../logger';
@@ -5,7 +9,7 @@ import { PexipEndpoint } from './endpoint';
 
 export class ServerConfigurationEndpoint extends PexipEndpoint {
 	public async get(serviceRequest: SerializedServiceConfigurationRequest): Promise<ServiceConfiguration | null> {
-		const { local_alias: alias, protocol = null } = serviceRequest;
+		const { local_alias: alias, protocol = null, remote_alias: participantUri = null, call_direction: direction } = serviceRequest;
 		logger.debug({ msg: 'Processing Pexip Policy Server Request', alias, protocol });
 
 		if (!alias) {
@@ -14,11 +18,15 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		}
 
 		const identification = this.getIdentificationFromAlias(alias);
+		const participantSipUri = protocol === 'sip' && direction === 'dial_in' ? participantUri : null;
 
-		return this.getServiceConfigurationForIdentification(identification);
+		return this.getServiceConfigurationForIdentification(identification, participantSipUri);
 	}
 
-	private async getServiceConfigurationForIdentification(identification: string): Promise<ServiceConfiguration | null> {
+	private async getServiceConfigurationForIdentification(
+		identification: string,
+		participantSipUri: string | null,
+	): Promise<ServiceConfiguration | null> {
 		const call = await this.getCallByIdentification(identification);
 		if (!call) {
 			logger.error({ msg: 'Invalid call identification', identification });
@@ -30,10 +38,13 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 
 		const [hostPin, guestPin] = await this.pexip.createAndStorePinsForCall(call);
 
-		return this.makeServiceConfiguration(call._id, title, hostPin, guestPin);
+		const canSkipPin = await this.detectVoiceCallEscalation(call, participantSipUri);
+		const guestPinToUse = canSkipPin ? null : guestPin;
+
+		return this.makeServiceConfiguration(call._id, title, hostPin, guestPinToUse);
 	}
 
-	private makeServiceConfiguration(name: string, title: string, hostPin: string, guestPin: string): ServiceConfiguration {
+	private makeServiceConfiguration(name: string, title: string, hostPin: string, guestPin: string | null): ServiceConfiguration {
 		const { customization } = this.pexip.settings;
 
 		return {
@@ -51,5 +62,62 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 			local_display_name: title,
 			enable_overlay_text: customization.overlayText,
 		};
+	}
+
+	private async detectVoiceCallEscalation(conference: VideoConference, participantUri: string | null): Promise<boolean> {
+		if (!participantUri) {
+			return false;
+		}
+
+		const { sipAlias, mediaCallIds: linkedMediaCallIds } = conference;
+
+		if (!sipAlias) {
+			return false;
+		}
+
+		const participantSipExtension = this.normalizeSipExtension(this.getIdentificationFromAlias(participantUri));
+
+		if (!participantSipExtension) {
+			logger.debug({ msg: 'Someone connected to a Pexip Conference via SIP, but we could not identify them.' });
+			return false;
+		}
+
+		try {
+			logger.debug({
+				msg: 'Pexip Participant joined via SIP',
+				sipAlias: conference.sipAlias,
+				conferenceId: conference._id,
+				participantSipExtension,
+			});
+
+			const mediaCallIds = await MediaCalls.findAllNotOverByOppositeSipExtension(participantSipExtension, { projection: { _id: 1 } })
+				.map(({ _id }) => _id)
+				.toArray();
+
+			if (mediaCallIds.length !== 1) {
+				// Check if the user is already linked to the conference
+				if (linkedMediaCallIds?.length) {
+					if (await MediaCalls.isUserSipExtensionInCallIds(participantSipExtension, linkedMediaCallIds)) {
+						logger.debug({ msg: 'User already had a media call linked to the conference' });
+						return true;
+					}
+				}
+
+				logger.debug({ msg: 'Could not identify the media call that the SIP Participant is connecting from', calls: mediaCallIds });
+				return mediaCallIds.length > 0;
+			}
+
+			const [mediaCallId] = mediaCallIds;
+
+			const updateResult = await VideoConferenceModel.addMediaCallIdByConferenceId(conference._id, mediaCallId);
+			if (updateResult.modifiedCount) {
+				logger.debug({ msg: 'Media Call linked to Conference', conference: conference._id, call: mediaCallId });
+				await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
+			}
+		} catch (err) {
+			logger.error({ msg: 'Unexpected error handling Pexip Voice to Video Escalation', err });
+		}
+
+		return true;
 	}
 }
