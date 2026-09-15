@@ -13,6 +13,8 @@ import { getReadReceiptsFunction } from '../meteor-methods/getReadReceipts';
 
 type GetMessageReadReceiptsProps = {
 	messageId: IMessage['_id'];
+	count?: number;
+	offset?: number;
 };
 
 declare module '@rocket.chat/rest-typings' {
@@ -52,10 +54,10 @@ API.v1.get(
 			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 		}
 
-		const { messageId } = this.queryParams;
+		const { messageId, offset, count } = this.queryParams;
 
 		return API.v1.success({
-			receipts: await getReadReceiptsFunction(messageId, this.userId),
+			receipts: await getReadReceiptsFunction(messageId, this.userId, { offset, count }),
 		});
 	},
 );
