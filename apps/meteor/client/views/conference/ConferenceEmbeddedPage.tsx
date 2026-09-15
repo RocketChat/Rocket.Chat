@@ -221,6 +221,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
 					badge={chatBadge}
 					badgeVariant={unreadVariant}
+					badgeTitle={unreadTitle}
 				/>
 			</CallTopBar>
 
