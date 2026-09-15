@@ -58,9 +58,9 @@ export class ListenersModule {
 			if (!isMessageParserDisabled && message.msg) {
 				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 					? settings
-						.get<string>('Message_CustomDomain_AutoLink')
-						.split(',')
-						.map((domain) => domain.trim())
+							.get<string>('Message_CustomDomain_AutoLink')
+							.split(',')
+							.map((domain) => domain.trim())
 					: [];
 
 				message.md = parse(message.msg, {
