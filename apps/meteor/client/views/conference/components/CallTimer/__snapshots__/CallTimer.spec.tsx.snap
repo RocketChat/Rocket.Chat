@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Hours without crashing 1`] = `
+<body>
+  <div>
+    <time
+      aria-live="off"
+      class="rcx-box rcx-box--full rcx-css-2eyztw"
+      datetime="PT2H0M4S"
+      role="timer"
+    >
+      2:
+      00
+      :
+      04
+    </time>
+  </div>
+</body>
+`;
+
+exports[`renders Minutes without crashing 1`] = `
+<body>
+  <div>
+    <time
+      aria-live="off"
+      class="rcx-box rcx-box--full rcx-css-2eyztw"
+      datetime="PT1H58M41S"
+      role="timer"
+    >
+      1:
+      58
+      :
+      41
+    </time>
+  </div>
+</body>
+`;
+
+exports[`renders NotStartedYet without crashing 1`] = `
+<body>
+  <div>
+    <time
+      aria-live="off"
+      class="rcx-box rcx-box--full rcx-css-2eyztw"
+      datetime="PT0H0M0S"
+      role="timer"
+    >
+      00
+      :
+      00
+    </time>
+  </div>
+</body>
+`;
