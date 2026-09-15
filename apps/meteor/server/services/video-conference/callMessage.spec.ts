@@ -75,34 +75,36 @@ describe('VideoConfService: the call message that names a thread', () => {
 		expect(sentRecord().msg).to.equal('Sprint planning');
 	});
 
+	// The cases below have no title to lend the thread, and fall back to the generic name rather than to an empty
+	// `msg` — which is what made a new conference arrive as an empty notification (#41156).
+
 	// In main-room mode the chat is the room itself and no thread is opened, so there is nothing to name.
-	it('says nothing when the chat is not a thread', async () => {
+	it('falls back to the generic name when the chat is not a thread', async () => {
 		settingsValues.VideoConf_Persistent_Chat_Mode = 'main_room';
 
 		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
 
-		expect(sentRecord().msg).to.equal('');
+		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
 
-	it('says nothing when persistent chat is off entirely', async () => {
+	it('falls back to the generic name when persistent chat is off entirely', async () => {
 		settingsValues.VideoConf_Enable_Persistent_Chat = false;
 
 		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
 
-		expect(sentRecord().msg).to.equal('');
+		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
 
 	// A direct call is named after the other person rather than being given a name, so there is none to borrow.
-	it('says nothing for a direct call', async () => {
+	it('falls back to the generic name for a direct call', async () => {
 		await service.createMessage(buildDirectCall([buildMember({ _id: 'creator' })]));
 
-		expect(sentRecord().msg).to.equal('');
+		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
 
-	// Left as the generic name rather than as a blank line in the thread list.
-	it('says nothing for a group call nobody named', async () => {
+	it('falls back to the generic name for a group call nobody named', async () => {
 		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: '   ' }));
 
-		expect(sentRecord().msg).to.equal('');
+		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
 });
