@@ -2,7 +2,7 @@ import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { CallPreferences } from './useCallDevicesInitialState';
-import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
+import { subscriptionsQueryKeys, videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
  * Starts the conference this window was opened for, once its preflight has been confirmed.
@@ -29,7 +29,9 @@ export const useStartConference = (rid: string) => {
 		isPending: isRoomPending,
 		error: roomError,
 	} = useQuery({
-		queryKey: ['conference', 'start', rid],
+		// The endpoint and its parameter, from the shared file — `useConferenceSubscription` asks the server the
+		// same question, and a key named after this screen instead meant the two never shared an answer.
+		queryKey: subscriptionsQueryKeys.subscription(rid),
 		queryFn: async () => (await getSubscription({ roomId: rid })).subscription ?? null,
 		retry: false,
 	});

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { SubscriptionsCachedStore } from '../../../cachedStores';
+import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 
 /**
@@ -26,18 +27,24 @@ export const useConferenceSubscription = (rid: string | undefined): void => {
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 	const subscribeToNotifyUser = useStream('notify-user');
 
-	const { data } = useQuery({
-		queryKey: ['conference', 'subscription', rid, uid],
-		queryFn: async () => (await getSubscription({ roomId: rid as string })).subscription ?? null,
+	// Keyed by the endpoint and its parameter, from the shared file: this is the same request `useStartConference`
+	// makes, and two keys for one endpoint meant each of them missing the other's cache.
+	useQuery({
+		queryKey: subscriptionsQueryKeys.subscription(rid as string),
+		queryFn: async () => {
+			const { subscription } = await getSubscription({ roomId: rid as string });
+
+			// Into the store as it arrives, rather than in an effect watching the result. The effect ran a render
+			// later and re-ran whenever the query handed back the same object under a new identity.
+			if (subscription) {
+				SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscription));
+			}
+
+			return subscription ?? null;
+		},
 		enabled: !!rid && !!uid,
 		retry: false,
 	});
-
-	useEffect(() => {
-		if (data) {
-			SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(data));
-		}
-	}, [data]);
 
 	useEffect(() => {
 		if (!uid || !rid) {
