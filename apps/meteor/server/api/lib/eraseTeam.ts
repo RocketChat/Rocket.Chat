@@ -76,8 +76,8 @@ export async function eraseRoomLooseValidation(rid: string): Promise<boolean> {
 		return false;
 	}
 
-	if (Apps.self?.isLoaded()) {
-		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomDeletePrevent, room);
+	if (Apps.isLoaded()) {
+		const prevent = await Apps.triggerEvent(AppEvents.IPreRoomDeletePrevent, room);
 		if (prevent) {
 			return false;
 		}
@@ -90,8 +90,8 @@ export async function eraseRoomLooseValidation(rid: string): Promise<boolean> {
 		return false;
 	}
 
-	if (Apps.self?.isLoaded()) {
-		void Apps.self?.triggerEvent(AppEvents.IPostRoomDeleted, room);
+	if (Apps.isLoaded()) {
+		void Apps.triggerEvent(AppEvents.IPostRoomDeleted, room);
 	}
 
 	return true;

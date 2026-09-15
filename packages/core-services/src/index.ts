@@ -12,7 +12,6 @@ import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import type { IApiService } from './types/IApiService';
-import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
@@ -66,7 +65,6 @@ import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFil
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
-export type { AppStatusReport } from './types/IAppsEngineService';
 export type { IAbacService, AbacActor } from './types/IAbacService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -107,7 +105,6 @@ export type {
 	IAccount,
 	IAnalyticsService,
 	IApiService,
-	IAppsEngineService,
 	IAuthorization,
 	IAuthorizationLivechat,
 	IBannerService,
@@ -181,7 +178,6 @@ export { proxify };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');
-export const Apps = proxify<IAppsEngineService>('apps-engine');
 export const Presence = proxify<IPresence>('presence');
 export const Account = proxify<IAccount>('accounts');
 export const License = proxify<ILicense>('license');

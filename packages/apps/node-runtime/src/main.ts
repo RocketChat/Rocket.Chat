@@ -1,12 +1,11 @@
 import './lib/loader-hook';
 
-import { setSandboxGlobals, setSandboxRequire } from '@rocket.chat/apps/base-runtime/dist/handlers/app/construct';
-import { setTransport } from '@rocket.chat/apps/base-runtime/dist/lib/messenger';
-import { startMainLoop } from '@rocket.chat/apps/base-runtime/dist/mainLoop';
-
 import registerErrorListeners from './error-handlers';
 import { sandboxRequire } from './lib/require';
 import { stdoutTransport } from './lib/transports/stdoutTransport';
+import { setSandboxGlobals, setSandboxRequire } from '../../base-runtime/dist/handlers/app/construct';
+import { setTransport } from '../../base-runtime/dist/lib/messenger';
+import { startMainLoop } from '../../base-runtime/dist/mainLoop';
 
 if (!process.argv.includes('--subprocess')) {
 	console.error(`

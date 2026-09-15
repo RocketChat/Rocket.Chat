@@ -172,7 +172,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// App IPostUserDeleted event hook
 	if (deletedBy) {
-		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
+		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
 	}
 
 	// update name and fname of group direct messages

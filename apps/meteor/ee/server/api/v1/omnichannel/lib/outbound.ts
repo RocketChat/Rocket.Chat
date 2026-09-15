@@ -40,20 +40,7 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 			throw new Error('error-invalid-provider');
 		}
 
-		return this.getProviderManager().getProviderMetadata(provider.appId, provider.type);
-	}
-
-	private getProviderManager() {
-		if (!Apps.self?.isLoaded()) {
-			throw new Error('apps-engine-not-loaded');
-		}
-
-		const manager = Apps.self?.getManager()?.getOutboundCommunicationProviderManager();
-		if (!manager) {
-			throw new Error('apps-engine-not-configured-correctly');
-		}
-
-		return manager;
+		return Apps.outboundProviders.getProviderMetadata(provider.appId, provider.type);
 	}
 
 	public sendMessage(providerId: string, message: IOutboundMessage) {
@@ -62,7 +49,7 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 			throw new Error('error-invalid-provider');
 		}
 
-		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, message);
+		return Apps.outboundProviders.sendOutboundMessage(provider.appId, provider.type, message);
 	}
 }
 

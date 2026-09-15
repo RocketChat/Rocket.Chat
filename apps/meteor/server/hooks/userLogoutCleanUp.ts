@@ -9,7 +9,7 @@ export const runUserLogoutCleanUp = async (user: IUser): Promise<void> => {
 		void afterLogoutCleanUpCallback.run(user);
 	});
 
-	await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedOut, user);
+	await Apps.triggerEvent(AppEvents.IPostUserLoggedOut, user);
 };
 
 Accounts.onLogout(async ({ user }: { user?: IUser }) => {

@@ -1,9 +1,9 @@
-import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
 import type { AppAccessors } from './accessors/mod';
 import { bridgeCall } from './bridges/bridgeCall';
 import { Room } from './room';
+import type { AppManager } from '../../../dist/server/AppManager';
 
 const getMockAppManager = (senderFn: AppAccessors['senderFn']) => {
 	return {

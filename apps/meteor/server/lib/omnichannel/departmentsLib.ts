@@ -136,7 +136,7 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
+		void Apps.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
@@ -266,7 +266,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
-	void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
+	void Apps.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }

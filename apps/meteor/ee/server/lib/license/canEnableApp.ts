@@ -1,5 +1,5 @@
+import { Apps } from '@rocket.chat/apps';
 import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
-import { Apps } from '@rocket.chat/core-services';
 import type { LicenseModule } from '@rocket.chat/core-typings';
 import { License, type LicenseImp } from '@rocket.chat/license';
 

@@ -86,7 +86,7 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 		isReacted = true;
 	}
 
-	void Apps.self?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+	void Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
 	void notifyOnMessageChange({
 		id: message._id,
