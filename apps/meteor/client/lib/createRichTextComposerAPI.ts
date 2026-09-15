@@ -22,6 +22,8 @@ export const createRichTextComposerAPI = (
 		input.focus();
 	};
 
+	const getText = (): string => input.innerText.replace(/\n$/, '');
+
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
 
@@ -77,7 +79,7 @@ export const createRichTextComposerAPI = (
 		composerRef,
 		room: { rid, tmid },
 		initialValue: initialDraft,
-		save: () => persistDraft(input.innerText),
+		save: () => persistDraft(getText()),
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
@@ -215,7 +217,7 @@ export const createRichTextComposerAPI = (
 		replaceText,
 		replyWith,
 		substring: (start: number, end?: number) => {
-			return input.innerText.substring(start, end);
+			return getText().substring(start, end);
 		},
 		getCursorPosition: () => {
 			return getSelectionRange(input).selectionStart;
@@ -230,7 +232,7 @@ export const createRichTextComposerAPI = (
 			setSelectionRange(input, 0, 0);
 		},
 		get text(): string {
-			return input.innerText;
+			return getText();
 		},
 		get selection(): { start: number; end: number } {
 			const { selectionStart, selectionEnd } = getSelectionRange(input);

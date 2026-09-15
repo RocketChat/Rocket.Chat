@@ -370,6 +370,43 @@ describe('RichText Composer API - draft restore', () => {
 	});
 });
 
+describe('RichText Composer API - text', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it('does not expose the trailing newline the renderer appends', () => {
+		const input = document.createElement('div');
+		input.contentEditable = 'true';
+		document.body.appendChild(input);
+
+		const composer = createRichTextComposerAPI(
+			input,
+			jest.fn(),
+			'edited *message*',
+			Number.MAX_SAFE_INTEGER,
+			{},
+			{ current: null },
+			{
+				rid: 'GENERAL',
+			},
+		);
+
+		expect(input.textContent).toBe('edited *message*\n');
+		expect(composer.text).toBe('edited *message*');
+	});
+
+	it('keeps inner newlines', () => {
+		const { composer, input } = setupComposer('', { start: 0, end: 0 });
+
+		composer.insertText('first\nsecond');
+
+		expect(input.textContent).toBe('first\nsecond\n');
+		expect(composer.text).toBe('first\nsecond');
+	});
+});
+
 describe('RichText Composer API - wrapSelection', () => {
 	afterEach(() => {
 		window.getSelection()?.removeAllRanges();
