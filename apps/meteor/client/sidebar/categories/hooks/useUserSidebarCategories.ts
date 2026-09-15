@@ -1,4 +1,5 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { isStaleSidebarCategory } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -13,7 +14,7 @@ export const useUserSidebarCategories = () => {
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories');
 
 	return useMemo(() => {
-		const rawCategories = allEntries ?? [];
+		const rawCategories = (allEntries ?? []).filter((entry) => !isStaleSidebarCategory(entry));
 		const customCategories = rawCategories.filter((entry) => !entry.default);
 		return hasLicenseModule ? { rawCategories, customCategories } : { rawCategories, customCategories: [] };
 	}, [hasLicenseModule, allEntries]);
