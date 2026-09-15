@@ -647,6 +647,8 @@
   "allow-external-voice-calls_description": "Permission to allow users to make and receive calls with users from external integrations.",
   "allow-internal-voice-calls": "Allow Internal Voice Calls",
   "allow-internal-voice-calls_description": "Permission to allow users to make and receive calls with other users in the workspace.",
+  "allow-screenShare-voice-calls": "Share screen in voice calls",
+  "allow-screenShare-voice-calls_description": "Users without this permission can still see screens shared by other participants",
   "Almost_done": "Almost done",
   "Alphabetical": "Alphabetical",
   "Also_send_thread_message_to_channel_behavior": "Also send thread message to channel behavior",

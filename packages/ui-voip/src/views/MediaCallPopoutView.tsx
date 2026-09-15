@@ -23,6 +23,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -31,7 +32,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -82,7 +83,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				{supportedFeatures.includes('hold') && (
+				{allowedFeatures.includes('hold') && (
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
@@ -91,7 +92,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						onToggle={onHold}
 					/>
 				)}
-				{supportedFeatures.includes('screen-share') && (
+				{allowedFeatures.includes('screen-share') && (
 					<ToggleButton
 						label={t('Share_screen')}
 						icons={['desktop-arrow-up', 'desktop-cross']}
@@ -100,7 +101,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						onToggle={onToggleScreenSharing}
 					/>
 				)}
-				{supportedFeatures.includes('transfer') && (
+				{allowedFeatures.includes('transfer') && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 				)}
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
