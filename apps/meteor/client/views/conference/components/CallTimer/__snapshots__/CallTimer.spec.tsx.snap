@@ -24,13 +24,12 @@ exports[`renders Minutes without crashing 1`] = `
     <time
       aria-live="off"
       class="rcx-box rcx-box--full rcx-css-2eyztw"
-      datetime="PT1H58M41S"
+      datetime="PT0H1M23S"
       role="timer"
     >
-      1:
-      58
+      01
       :
-      41
+      23
     </time>
   </div>
 </body>
