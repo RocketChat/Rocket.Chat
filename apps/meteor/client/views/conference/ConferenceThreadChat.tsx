@@ -34,25 +34,11 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
-	const [sendToChannel, setSendToChannel] = useState(() => {
-		switch (sendToChannelPreference) {
-			case 'always':
-				return true;
-			case 'never':
-			default:
-				return false;
-		}
-	});
-
-	const handleSend = useCallback((): void => {
-		if (sendToChannelPreference === 'default') {
-			setSendToChannel(false);
-		}
-	}, [sendToChannelPreference]);
-
-	const handleComposerEscape = useCallback((): void => {
-		onEscape?.();
-	}, [onEscape]);
+	// Only the user's own decision is state. What the box would say on its own is a fact about the preference and
+	// the thread — the first message of a thread also goes to the room, later ones don't — and a fact is read
+	// rather than remembered. It used to be initialised into state before the main message had arrived, so the
+	// thread's reply count could not be consulted, and the send handler then had to force the box back.
+	const [overridden, setOverridden] = useState(false);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
@@ -101,6 +87,21 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 
 	const mainMessage = mainMessageQueryResult.data;
 
+	const defaultSendToChannel = (() => {
+		switch (sendToChannelPreference) {
+			case 'always':
+				return true;
+			case 'never':
+				return false;
+			// A thread nobody has replied to yet is still part of the room's conversation, so its first reply is
+			// offered to the room as well. Once the thread has replies it is its own place and the offer stops.
+			default:
+				return !mainMessage.tcount;
+		}
+	})();
+
+	const sendToChannel = overridden ? !defaultSendToChannel : defaultSendToChannel;
+
 	return (
 		<Box
 			is='section'
@@ -128,8 +129,7 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 						tmid={mainMessage._id}
 						threadExists={isThreadMainMessage(mainMessage)}
 						subscription={subscription}
-						onSend={handleSend}
-						onEscape={handleComposerEscape}
+						onEscape={onEscape}
 						onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 						onNavigateToNextMessage={handleNavigateToNextMessage}
 						tshow={sendToChannel}
@@ -139,7 +139,7 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 								<CheckBox
 									id={sendToChannelID}
 									checked={sendToChannel}
-									onChange={() => setSendToChannel((checked) => !checked)}
+									onChange={() => setOverridden((current) => !current)}
 									name='alsoSendThreadToChannel'
 								/>
 								<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
