@@ -8,10 +8,15 @@ export type AnnouncementBannerProps = {
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 const AnnouncementBanner = ({ children, className, onClick, ...props }: AnnouncementBannerProps) => {
+	// A banner with nothing to click is not a control, and already says so elsewhere — `tabIndex` and `role`
+	// below both ask the same question. The pointer and the hover underline are the rest of that answer: they
+	// promise something happens on click, and on a banner that only announces, nothing does.
+	const clickable = Boolean(onClick);
+
 	const announcementBar = css`
 		background-color: ${Palette.status['status-background-info'].theme('announcement-background')};
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
-		cursor: pointer;
+		cursor: ${clickable ? 'pointer' : 'default'};
 		transition: transform 0.2s ease-out;
 		a:link {
 			color: ${Palette.text['font-pure-black'].theme('announcement-text')};
@@ -21,7 +26,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			flex: auto;
 		}
 		&:hover {
-			text-decoration: underline;
+			text-decoration: ${clickable ? 'underline' : 'none'};
 		}
 	`;
 

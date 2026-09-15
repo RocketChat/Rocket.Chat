@@ -7,9 +7,17 @@ import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import HomeSkeleton from '../../home/HomeSkeleton';
 
-export type UsernameCheckProps = { children: ReactNode };
+export type UsernameCheckProps = {
+	children: ReactNode;
+	/**
+	 * Placeholder shown while the user is being resolved. Defaults to the app-shaped skeleton, which only
+	 * suits routes that render inside the navigation chrome — standalone routes should pass their own so
+	 * they don't flash a sidebar and composer they will never show.
+	 */
+	loadingElement?: ReactNode;
+};
 
-const UsernameCheck = ({ children }: UsernameCheckProps) => {
+const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 
@@ -31,7 +39,7 @@ const UsernameCheck = ({ children }: UsernameCheckProps) => {
 	}, [userData?.user, userId, allowAnonymousRead]);
 
 	if (isLoading) {
-		return <HomeSkeleton />;
+		return loadingElement ?? <HomeSkeleton />;
 	}
 
 	if (shouldRegisterUsername) {

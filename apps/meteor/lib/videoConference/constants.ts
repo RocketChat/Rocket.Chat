@@ -9,6 +9,16 @@ export const availabilityErrors = {
 /** The server slices the joinable payload to this, so a busy channel does not send a roster to draw two. */
 export const CALL_FACES_SHOWN = 2;
 
+/**
+ * Where a call's persistent chat lives — the two answers the `VideoConf_Persistent_Chat_Mode` setting can give.
+ *
+ * A type and not a value: nothing here validates the setting, so a runtime array would be an export with no
+ * reader pretending to be a shared contract. The server resolves the setting in `getPersistentChatMode` and the
+ * call window reads it in `useConferenceEmbedded`; the day either of them checks a value against a list, this is
+ * where the list goes.
+ */
+export type PersistentChatMode = 'thread' | 'main_room';
+
 export const PREFLIGHT_FACES_SHOWN = 10;
 
 /** How long a conference outlives its last participant, so a reload can cancel the ending. */

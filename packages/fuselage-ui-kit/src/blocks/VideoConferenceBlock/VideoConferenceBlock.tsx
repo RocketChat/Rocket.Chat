@@ -1,5 +1,5 @@
-import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { getUserDisplayName, hasJoinedVideoConference, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { useCurrentRoutePath, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -39,6 +39,12 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { action, viewId = undefined, rid } = useContext(UiKitContext);
+
+	// The call window renders this same message list beside the call it is already in, where "Join" and "Call
+	// back" would start a second one. Asked here rather than handed down through `UiKitContext`: that context is
+	// shared by every app's blocks and knows nothing about any of them, so a flag about video conferencing had no
+	// business in its signature. This block is the only thing that reads the answer, and it can ask for itself.
+	const joinDisabled = !!useCurrentRoutePath()?.startsWith('/conference/');
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -95,8 +101,13 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 		}
 	};
 
+	// `users` is the conference's membership list, not who's currently in the call — a member can be added
+	// without ever joining, so this must be filtered down to those who actually joined before it's counted
+	// or displayed anywhere below.
+	const joinedUsers = useMemo(() => result.data?.users.filter(hasJoinedVideoConference) ?? [], [result.data?.users]);
+
 	const messageFooterText = useMemo(() => {
-		const usersCount = result.data?.users.length;
+		const usersCount = joinedUsers.length;
 
 		if (!displayAvatars) {
 			return t('__usersCount__joined', {
@@ -109,7 +120,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 					count: usersCount - MAX_USERS,
 				})
 			: t('joined');
-	}, [displayAvatars, t, result.data?.users.length]);
+	}, [displayAvatars, t, joinedUsers.length]);
 
 	if (result.isPending || result.isError) {
 		// TODO: error handling
@@ -119,16 +130,16 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const { data } = result;
 	const isUserCaller = data.createdBy._id === userId;
 
-	const joinedNamesOrUsernames = [...data.users]
+	const joinedNamesOrUsernames = [...joinedUsers]
 		.splice(0, MAX_USERS)
 		.map(({ name, username }) => getUserDisplayName(name, username, showRealName))
 		.join(', ');
 
 	const title =
-		data.users.length > MAX_USERS
+		joinedUsers.length > MAX_USERS
 			? t('__usernames__and__count__more_joined', {
 					usernames: joinedNamesOrUsernames,
-					count: data.users.length - MAX_USERS,
+					count: joinedUsers.length - MAX_USERS,
 				})
 			: t('__usernames__joined', { usernames: joinedNamesOrUsernames });
 
@@ -152,16 +163,18 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				<VideoConfMessageFooter>
 					{data.type === 'direct' && (
 						<>
-							<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
+							<VideoConfMessageButton disabled={joinDisabled} onClick={callAgainHandler}>
+								{isUserCaller ? t('Call_again') : t('Call_back')}
+							</VideoConfMessageButton>
 							{[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
 								<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
 							)}
 						</>
 					)}
 					{data.type !== 'direct' &&
-						(data.users.length ? (
+						(joinedUsers.length ? (
 							<>
-								<VideoConfMessageUserStack users={data.users} />
+								<VideoConfMessageUserStack users={joinedUsers} />
 								<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 							</>
 						) : (
@@ -201,12 +214,12 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary onClick={joinHandler}>
+				<VideoConfMessageButton primary disabled={joinDisabled} onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
-				{Boolean(data.users.length) && (
+				{Boolean(joinedUsers.length) && (
 					<>
-						<VideoConfMessageUserStack users={data.users} />
+						<VideoConfMessageUserStack users={joinedUsers} />
 						<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 					</>
 				)}

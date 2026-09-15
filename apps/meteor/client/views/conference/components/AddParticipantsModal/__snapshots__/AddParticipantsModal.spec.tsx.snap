@@ -1,0 +1,363 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Empty without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby="_r_0_-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <form
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id="_r_0_-title"
+              >
+                Add people
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id="react-aria-_r_1_-label"
+                >
+                  People
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1sr8su7"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-w398ts"
+                      >
+                        <input
+                          aria-controls="react-aria-_r_1_-listbox"
+                          aria-describedby=""
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-invalid="false"
+                          aria-labelledby="react-aria-_r_1_-label"
+                          autocomplete="off"
+                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                          id="react-aria-_r_1_"
+                          name="users"
+                          placeholder="Choose users"
+                          role="combobox"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-check-box"
+                  >
+                    <div
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      Ring people
+                    </div>
+                    <input
+                      aria-describedby=""
+                      aria-invalid="false"
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-check-box__input"
+                      id="react-aria-_r_2_-label"
+                      type="checkbox"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-check-box__fake"
+                    />
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ws1yyr"
+                  >
+                    <span
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    >
+                      Ring people
+                    </span>
+                  </div>
+                </span>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button"
+              disabled=""
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders NotRinging without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby="_r_3_-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <form
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id="_r_3_-title"
+              >
+                Add people
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id="react-aria-_r_4_-label"
+                >
+                  People
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1sr8su7"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-w398ts"
+                      >
+                        <input
+                          aria-controls="react-aria-_r_4_-listbox"
+                          aria-describedby=""
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-invalid="false"
+                          aria-labelledby="react-aria-_r_4_-label"
+                          autocomplete="off"
+                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                          id="react-aria-_r_4_"
+                          name="users"
+                          placeholder="Choose users"
+                          role="combobox"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-check-box"
+                  >
+                    <div
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      Ring people
+                    </div>
+                    <input
+                      aria-describedby=""
+                      aria-invalid="false"
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-check-box__input"
+                      id="react-aria-_r_5_-label"
+                      type="checkbox"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-check-box__fake"
+                    />
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ws1yyr"
+                  >
+                    <span
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    >
+                      Ring people
+                    </span>
+                  </div>
+                </span>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button"
+              disabled=""
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
+`;
