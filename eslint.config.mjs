@@ -341,6 +341,9 @@ export default [
 		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib)'],
 	},
 	{
+		ignores: ['packages/streamer/*.js', 'packages/streamer/*.d.ts'],
+	},
+	{
 		files: ['packages/core-typings/**/*'],
 		rules: {
 			'@typescript-eslint/no-empty-interface': 'off',

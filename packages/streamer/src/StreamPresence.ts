@@ -4,9 +4,9 @@ import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typi
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { Streamer } from '../../../../modules/streamer/streamer.module';
-import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../modules/streamer/types';
-import { statusVisibilityGate } from '../../../statusVisibility/StatusVisibilityGate';
+import { statusVisibilityGate } from './StatusVisibilityGate';
+import { Streamer } from './streamer.module';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer } from './types';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
