@@ -31,7 +31,13 @@ import { storybookI18n } from '../../stories/i18n';
  */
 
 /** A builder with the viewer every conference component expects. */
-export const conferenceAppRoot = () => mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', true);
+/**
+ * The app a conference story renders in: signed in, avatars on, and the call window turned on — everything the
+ * feature does is gated on that setting, so without it the stories of the joinable-calls list render nothing at
+ * all.
+ */
+export const conferenceAppRoot = () =>
+	mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', true).withSetting('VideoConf_Conference_Window_Enabled', true);
 
 type Builder = ReturnType<typeof mockAppRoot>;
 
