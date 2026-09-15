@@ -12,7 +12,7 @@
 		"/*.d.ts"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
+		"build": "tsc -p tsconfig.build.json",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
