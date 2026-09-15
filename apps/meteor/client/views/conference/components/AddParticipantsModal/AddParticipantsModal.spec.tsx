@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { QueryClient } from '@tanstack/react-query';
@@ -9,7 +10,6 @@ import AddParticipantsModal from './AddParticipantsModal';
 import * as stories from './AddParticipantsModal.stories';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
 import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
-import { Rooms } from '../../../../stores';
 
 // The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
 // at the dispatch instead of in the DOM.
@@ -26,15 +26,19 @@ const autocomplete = jest.fn((_params: { selector: string }) => ({ items: [outsi
 const channelMembers = jest.fn(() => ({ members: [{ _id: 'member-id', username: 'member' }] }) as any);
 const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true }) as any);
 
-const renderModal = (props: Partial<{ callId: string; rid: string }> = {}) =>
-	render(<AddParticipantsModal callId='call-id' rid='room-id' onClose={jest.fn()} {...props} />, {
-		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/users.autocomplete', autocomplete)
-			.withEndpoint('GET', '/v1/channels.members', channelMembers)
-			.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
-			.withJohnDoe()
-			.build(),
+// The room is what the workspace knows about `rid`, and a conference member added from outside it knows
+// nothing — so it is given per test rather than seeded globally.
+const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?: IRoom) => {
+	const appRoot = mockAppRoot()
+		.withEndpoint('GET', '/v1/users.autocomplete', autocomplete)
+		.withEndpoint('GET', '/v1/channels.members', channelMembers)
+		.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
+		.withJohnDoe();
+
+	return render(<AddParticipantsModal callId='call-id' rid='room-id' onClose={jest.fn()} {...props} />, {
+		wrapper: (room ? appRoot.withRoom(room) : appRoot).build(),
 	});
+};
 
 const typeFilter = async (term: string) => {
 	await userEvent.type(screen.getByRole('combobox'), term);
@@ -52,9 +56,6 @@ beforeEach(() => {
 	channelMembers.mockClear();
 	addParticipants.mockClear();
 	dispatchToastMessage.mockClear();
-	// The room-absent scenario (a conference member with no chat access) must be genuinely absent, not
-	// left over from a previous test that seeded it.
-	Rooms.state.replaceAll([]);
 	// The ring preference outlives a test, being remembered in storage on purpose.
 	localStorage.clear();
 });
@@ -100,10 +101,8 @@ it('disables the Add button until a user is selected', async () => {
 	expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled();
 });
 
-it('excludes the room members from the autocomplete when the room is in the store', async () => {
-	Rooms.state.store(createFakeRoom({ _id: 'room-id', t: 'c' }));
-
-	renderModal();
+it('excludes the room members from the autocomplete when the workspace knows the room', async () => {
+	renderModal({}, createFakeRoom({ _id: 'room-id', t: 'c' }));
 
 	await typeFilter('outsider');
 
@@ -118,10 +117,10 @@ it('excludes the room members from the autocomplete when the room is in the stor
 	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: ['member'] });
 });
 
-// This is the regression that matters: a conference member added from outside the room has no room in
-// this store, and the autocomplete used to be gated on `enabled: !!room`, which left it permanently
-// empty for exactly the people this modal exists to serve.
-it('still fetches and offers users when the room is not in the store', async () => {
+// This is the regression that matters: a conference member added from outside the room has no room to
+// read, and the autocomplete used to be gated on `enabled: !!room`, which left it permanently empty for
+// exactly the people this modal exists to serve.
+it('still fetches and offers users when there is no room to read', async () => {
 	renderModal();
 
 	await typeFilter('outsider');
