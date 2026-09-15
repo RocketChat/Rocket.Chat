@@ -462,6 +462,26 @@ describe('AISearchService', () => {
 			expect(boosted).to.not.have.property('score');
 		});
 
+		it('keeps the similarity when a failed keyword branch leaves semantic ranking alone', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
+			serverFetch.reset();
+			serverFetch
+				.onCall(0)
+				.resolves({
+					ok: true,
+					status: 200,
+					json: async () => ({ results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, score: 0.2 }] }),
+					text: async () => '',
+				})
+				.onCall(1)
+				.rejects(new Error('keyword branch timed out'));
+
+			// the survivor ranked the list by similarity alone, so the badge still explains the order
+			const [result] = await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 });
+
+			expect(result).to.have.property('score', 0.8);
+		});
+
 		it('serves the surviving retriever when one hybrid branch fails', async () => {
 			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Semantic_Weight' ? 50 : settings[key]));
 			serverFetch.reset();

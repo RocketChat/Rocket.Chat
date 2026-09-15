@@ -170,6 +170,45 @@ describe('AI Search intelligent search helpers', () => {
 		});
 	});
 
+	describe('out-of-range score reporting', () => {
+		const makeLogger = () => ({ debug: jest.fn(), warn: jest.fn() });
+
+		it('warns once per call rather than once per offending candidate', () => {
+			const logger = makeLogger();
+			normalizeIntelligentSearchCandidates(
+				[
+					{ id: 'm1', distance: 45 },
+					{ id: 'm2', distance: 60 },
+					{ id: 'm3', distance: 0.2 },
+				],
+				[],
+				10,
+				logger,
+			);
+
+			const warnings = logger.warn.mock.calls.filter(([entry]) => String(entry.msg).includes('outside the documented cosine range'));
+			expect(warnings).toHaveLength(1);
+			expect(warnings[0][0]).toMatchObject({ source: 'semantic', outOfRangeCount: 2 });
+		});
+
+		it('stays silent for values inside the documented ranges', () => {
+			const logger = makeLogger();
+			normalizeIntelligentSearchCandidates(
+				[
+					{ id: 'm1', distance: 0 },
+					{ id: 'm2', distance: 2 },
+					{ id: 'm3', similarity: -1 },
+					{ id: 'm4', similarity: 1 },
+				],
+				[],
+				10,
+				logger,
+			);
+
+			expect(logger.warn.mock.calls.filter(([entry]) => String(entry.msg).includes('cosine range'))).toHaveLength(0);
+		});
+	});
+
 	describe('keyword candidate scores', () => {
 		it('never reports a full-text rank as a semantic similarity', () => {
 			// 0.2803 is the stronger lexical hit; read as a distance it would display as the weaker one

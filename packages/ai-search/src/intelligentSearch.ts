@@ -62,37 +62,31 @@ const extractPipelineSimilarityScores = (
 	result: Record<string, unknown>,
 	metadata: Record<string, unknown>,
 	source: IntelligentSearchCandidateSource,
-	logger?: AIServiceLogger,
-): { semanticSimilarity?: number; semanticDistance?: number } => {
+): { semanticSimilarity?: number; semanticDistance?: number; outOfRange?: boolean } => {
 	if (source === 'keyword') {
 		return {};
 	}
 
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
-		if (similarity < -1 || similarity > 1) {
-			logger?.warn?.({ msg: 'Intelligent search similarity outside the documented cosine range', similarity });
-		}
 		const semanticSimilarity = Math.min(1, Math.max(-1, similarity));
-		const semanticDistance = 1 - semanticSimilarity;
 
 		return {
 			semanticSimilarity,
-			semanticDistance,
+			semanticDistance: 1 - semanticSimilarity,
+			...((similarity < -1 || similarity > 1) && { outOfRange: true }),
 		};
 	}
 
 	const distance = firstNumber(result.score, result.distance, metadata.score, metadata.distance);
 	if (typeof distance === 'number') {
 		// Cosine distance spans [0, 2]; values above 1 indicate negative similarity.
-		if (distance < 0 || distance > 2) {
-			logger?.warn?.({ msg: 'Intelligent search distance outside the documented cosine range', distance });
-		}
 		const semanticDistance = Math.min(2, Math.max(0, distance));
 
 		return {
 			semanticSimilarity: 1 - semanticDistance,
 			semanticDistance,
+			...((distance < 0 || distance > 2) && { outOfRange: true }),
 		};
 	}
 
@@ -118,6 +112,24 @@ const extractIntelligentResultIds = (result: Record<string, unknown>): { rid?: s
 	return { rid, msgId };
 };
 
+// the pipeline has shipped several response envelopes; accept the ones seen in the wild
+const PIPELINE_RESULT_KEYS = ['results', 'context', 'documents', 'hits', 'data'] as const;
+
+const extractPipelineResultList = (rawSearchResults: unknown, rawSearchResultsRecord: Record<string, unknown>): unknown[] => {
+	if (Array.isArray(rawSearchResults)) {
+		return rawSearchResults;
+	}
+
+	for (const key of PIPELINE_RESULT_KEYS) {
+		const value = rawSearchResultsRecord[key];
+		if (Array.isArray(value)) {
+			return value;
+		}
+	}
+
+	return [];
+};
+
 export const normalizeIntelligentSearchCandidates = (
 	rawSearchResults: unknown,
 	userRoomIds: string[] = [],
@@ -125,22 +137,8 @@ export const normalizeIntelligentSearchCandidates = (
 	logger?: AIServiceLogger,
 	source: IntelligentSearchCandidateSource = 'semantic',
 ): IntelligentSearchCandidate[] => {
-	let rawResults: unknown[] = [];
 	const rawSearchResultsRecord = asRecord(rawSearchResults);
-
-	if (Array.isArray(rawSearchResults)) {
-		rawResults = rawSearchResults;
-	} else if (Array.isArray(rawSearchResultsRecord.results)) {
-		rawResults = rawSearchResultsRecord.results;
-	} else if (Array.isArray(rawSearchResultsRecord.context)) {
-		rawResults = rawSearchResultsRecord.context;
-	} else if (Array.isArray(rawSearchResultsRecord.documents)) {
-		rawResults = rawSearchResultsRecord.documents;
-	} else if (Array.isArray(rawSearchResultsRecord.hits)) {
-		rawResults = rawSearchResultsRecord.hits;
-	} else if (Array.isArray(rawSearchResultsRecord.data)) {
-		rawResults = rawSearchResultsRecord.data;
-	}
+	const rawResults = extractPipelineResultList(rawSearchResults, rawSearchResultsRecord);
 
 	logger?.debug?.({
 		msg: 'Intelligent search normalizing results',
@@ -153,6 +151,7 @@ export const normalizeIntelligentSearchCandidates = (
 
 	const candidates: IntelligentSearchCandidate[] = [];
 	const seenMessageIds = new Set<string>();
+	let outOfRangeCount = 0;
 	for (let index = 0; index < rawResults.length && candidates.length < limit; index++) {
 		const result = asRecord(rawResults[index]);
 		const metadata = asRecord(result.metadata);
@@ -172,7 +171,10 @@ export const normalizeIntelligentSearchCandidates = (
 			seenMessageIds.add(msgId);
 		}
 
-		const { semanticDistance, semanticSimilarity } = extractPipelineSimilarityScores(result, metadata, source, logger);
+		const { semanticDistance, semanticSimilarity, outOfRange } = extractPipelineSimilarityScores(result, metadata, source);
+		if (outOfRange) {
+			outOfRangeCount++;
+		}
 		const ts = firstString(metadata.timestamp, result.timestamp);
 		candidates.push({
 			// source-qualified: the index is per-retriever, so a bare index would fuse unrelated candidates
@@ -188,6 +190,12 @@ export const normalizeIntelligentSearchCandidates = (
 			}),
 			...(source && { source }),
 		});
+	}
+
+	// one line per request rather than one per candidate: a provider on the wrong scale would otherwise
+	// emit hundreds of warnings for a single search
+	if (outOfRangeCount) {
+		logger?.warn?.({ msg: 'Intelligent search scores outside the documented cosine range', source, outOfRangeCount });
 	}
 
 	logger?.debug?.({ msg: 'Intelligent search after filter', candidateCount: candidates.length });

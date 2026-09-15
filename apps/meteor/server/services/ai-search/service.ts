@@ -231,7 +231,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		pipelineFilters: IntelligentSearchPipelineFilters,
 		limit: number,
 		semanticWeight: number,
-	): Promise<FusedIntelligentSearchCandidate[]> {
+	): Promise<{ candidates: FusedIntelligentSearchCandidate[]; orderedBySemanticSimilarity: boolean }> {
 		const candidateLimit = this.getSearchCandidateLimit(limit);
 		const queryBranch = (sourceMode: 'semantic' | 'keyword') =>
 			this.queryPipelineCandidates({ query, config, classifications, pipelineFilters, limit: candidateLimit, sourceMode });
@@ -240,11 +240,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		// at the extremes the other retriever is never requested
 		if (semanticWeight === 0) {
-			return toRankedCandidates(await queryBranch('keyword'));
+			return { candidates: toRankedCandidates(await queryBranch('keyword')), orderedBySemanticSimilarity: false };
 		}
 
 		if (semanticWeight === 100) {
-			return toRankedCandidates(filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent));
+			const semanticOnly = filterSemanticCandidatesByMinimumSimilarity(await queryBranch('semantic'), minimumSimilarityPercent);
+
+			return { candidates: toRankedCandidates(semanticOnly), orderedBySemanticSimilarity: true };
 		}
 
 		// allSettled, not all: searchIntelligentPipeline rethrows on network failure and timeout, and one
@@ -263,22 +265,26 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		if (!semanticCandidates) {
 			logger.warn({ msg: 'Intelligent search branch failed, serving the surviving retriever', failedBranch: 'semantic' });
 
-			return toRankedCandidates(keywordCandidates ?? []);
+			return { candidates: toRankedCandidates(keywordCandidates ?? []), orderedBySemanticSimilarity: false };
 		}
 
 		if (!keywordCandidates) {
 			logger.warn({ msg: 'Intelligent search branch failed, serving the surviving retriever', failedBranch: 'keyword' });
 
-			return toRankedCandidates(semanticCandidates);
+			// the surviving branch ranked this list on its own, so the similarity still explains the order
+			return { candidates: toRankedCandidates(semanticCandidates), orderedBySemanticSimilarity: true };
 		}
 
 		// Preserve the union until visibility filtering and temporal reranking have run.
-		return fuseCandidatesWithWeightedRRF(
-			semanticCandidates,
-			keywordCandidates,
-			semanticWeight,
-			semanticCandidates.length + keywordCandidates.length,
-		);
+		return {
+			candidates: fuseCandidatesWithWeightedRRF(
+				semanticCandidates,
+				keywordCandidates,
+				semanticWeight,
+				semanticCandidates.length + keywordCandidates.length,
+			),
+			orderedBySemanticSimilarity: false,
+		};
 	}
 
 	// Over-fetch to improve fusion overlap and reduce short pages after permission filtering.
@@ -507,13 +513,20 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const semanticWeight = this.resolveSemanticWeight(searchType);
 		const recencyWeight = this.getRecencyWeight();
-		const candidates = await this.buildSearchCandidatesForMode(query, config, classifications, pipelineFilters, limit, semanticWeight);
+		const { candidates, orderedBySemanticSimilarity } = await this.buildSearchCandidatesForMode(
+			query,
+			config,
+			classifications,
+			pipelineFilters,
+			limit,
+			semanticWeight,
+		);
 		const rerankedCandidates = applyTemporalRerank(candidates, {
 			recencyWeight,
 			halfLifeDays: DEFAULT_INTELLIGENT_SEARCH_RECENCY_HALF_LIFE_DAYS,
 		});
 
-		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit, semanticWeight === 100 && recencyWeight === 0);
+		return this.normalizeIntelligentResults(rerankedCandidates, userId, limit, orderedBySemanticSimilarity && recencyWeight === 0);
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {
