@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import {
 	validateBadRequestErrorResponse,
 	ajv,
@@ -54,6 +55,10 @@ API.v1.post(
 		},
 	},
 	async function action() {
+		if (!License.hasModule('outlook-calendar')) {
+			return API.v1.forbidden();
+		}
+
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}
@@ -108,10 +113,15 @@ API.v1.post(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			500: validateInternalErrorResponse,
 		},
 	},
 	async function action() {
+		if (!License.hasModule('outlook-calendar')) {
+			return API.v1.forbidden();
+		}
+
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}
@@ -162,10 +172,15 @@ API.v1.post(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			500: validateInternalErrorResponse,
 		},
 	},
 	async function action() {
+		if (!License.hasModule('outlook-calendar')) {
+			return API.v1.forbidden();
+		}
+
 		if (!isServerSyncEnabled()) {
 			return API.v1.failure('Exchange_Server_Sync_Disabled');
 		}

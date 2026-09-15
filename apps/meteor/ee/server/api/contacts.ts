@@ -1,6 +1,13 @@
 import type { IContact } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Contacts } from '@rocket.chat/models';
-import { isContactsListProps, ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	isContactsListProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
 
@@ -25,9 +32,14 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
+		if (!License.hasModule('outlook-calendar')) {
+			return API.v1.forbidden();
+		}
+
 		const { userId } = this;
 		const { text } = this.queryParams;
 
