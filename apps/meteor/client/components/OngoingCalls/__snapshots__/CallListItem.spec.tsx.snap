@@ -7,7 +7,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/refused"
       >
         <div
@@ -67,7 +67,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/standup"
       >
         <div
@@ -133,7 +133,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/joined"
       >
         <div
@@ -186,7 +186,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/ringing"
       >
         <div
@@ -270,7 +270,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/refused"
       >
         <div
@@ -330,7 +330,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/answered"
       >
         <div
@@ -383,7 +383,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/ringing"
       >
         <div
@@ -454,7 +454,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/ringing"
       >
         <div
@@ -532,7 +532,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <a
-        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-1"
+        class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
         href="/conference/alone"
       >
         <div
