@@ -18,6 +18,10 @@ export type AudioAttachmentSource = {
 	ts?: Date;
 	pinned?: boolean;
 	drid?: string;
+	/** When the audio is rendered inside a quote, the id of the original message that holds the attachment. */
+	originMid?: string;
+	/** Timestamp of the original quoted message. */
+	originTs?: Date;
 };
 
 type AudioAttachmentComponentProps = AudioAttachmentProps & {
@@ -55,8 +59,25 @@ const AudioAttachment = ({
 			ts: source?.ts,
 			pinned: source?.pinned,
 			drid: source?.drid,
+			originMid: source?.originMid,
+			originTs: source?.originTs,
 		}),
-		[source?.mid, source?.rid, source?.username, source?.name, source?.ts, source?.pinned, source?.drid, url, src, type, title, size],
+		[
+			source?.mid,
+			source?.rid,
+			source?.username,
+			source?.name,
+			source?.ts,
+			source?.pinned,
+			source?.drid,
+			source?.originMid,
+			source?.originTs,
+			url,
+			src,
+			type,
+			title,
+			size,
+		],
 	);
 
 	const active = isActive(track.id);
