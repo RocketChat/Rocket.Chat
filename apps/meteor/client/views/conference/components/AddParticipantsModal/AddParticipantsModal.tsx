@@ -1,14 +1,15 @@
 import { isDirectMessageRoom, isPrivateRoom } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Field, FieldRow } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEndpoint, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
-import { Rooms } from '../../../../stores';
 import { useCallRingPreference } from '../../hooks/useCallPreferences';
 
 type AddParticipantsModalProps = {
@@ -17,21 +18,30 @@ type AddParticipantsModalProps = {
 	onClose: () => void;
 };
 
+type AddParticipantsFormValues = {
+	users: string[];
+};
+
 const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [selected, setSelected] = useState<string[]>([]);
-	const [adding, setAdding] = useState(false);
+	const { control, handleSubmit, watch } = useForm<AddParticipantsFormValues>({ defaultValues: { users: [] } });
+
+	const { users } = watch();
 
 	// The same habit the preflight remembers, asked here for the same reason: a ring is an interruption, and
 	// someone added so they can join later is not someone to interrupt now.
+	//
+	// Deliberately not a form field: it is remembered across calls and shared with the preflight, so the stored
+	// preference is the value. A copy of it in the form would have to be written back on every change, and the
+	// two could then disagree about what this user's habit is.
 	const { ring, toggleRing } = useCallRingPreference();
 
 	// Present only for participants who can read the chat: a member added from outside the room has no room
 	// here, and must still be able to add people.
-	const room = Rooms.use((state) => state.get(rid));
+	const room = useUserRoom(rid);
 
 	const addParticipants = useEndpoint('POST', '/v1/video-conference.add-participants');
 
@@ -64,14 +74,9 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	// Adding makes them members of the *conference*, which is what lets them join the call — it deliberately
 	// puts them in no room. Whether they can read the chat is surfaced separately, once it matters, rather
 	// than being decided here. The server rings everyone added, unless told not to.
-	const handleAdd = async () => {
-		if (!selected.length) {
-			return;
-		}
-		setAdding(true);
-		try {
-			const { added } = await addParticipants({ callId, users: selected, ring });
-
+	const addParticipantsMutation = useMutation({
+		mutationFn: addParticipants,
+		onSuccess: ({ added }) => {
 			// Anyone already associated with the call is skipped server-side, so a selection can come back empty.
 			// Reporting that as success would claim people were called who never were.
 			dispatchToastMessage(
@@ -88,47 +93,49 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 			}
 
 			onClose();
-		} catch (error) {
+		},
+		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			setAdding(false);
-		}
-	};
+		},
+	});
+
+	const handleAdd = ({ users }: AddParticipantsFormValues) => addParticipantsMutation.mutate({ callId, users, ring });
 
 	return (
 		<GenericModal
 			icon={null}
 			title={t('Add_people')}
 			confirmText={t('Add')}
-			confirmDisabled={!selected.length}
-			confirmLoading={adding}
-			onConfirm={handleAdd}
+			confirmDisabled={!users.length}
+			confirmLoading={addParticipantsMutation.isPending}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAdd)} {...props} />}
 			onCancel={onClose}
 		>
-			<Field>
-				<FieldRow>
-					{/* The product's own way of picking people, the same as adding them to a room — this used to be
-					    hand-rolled here, down to the chips and the remove buttons. */}
-					<UserAutoCompleteMultiple
-						value={selected}
-						onChange={setSelected}
-						exceptions={memberUsernames}
-						placeholder={t('Choose_users')}
-						// A placeholder is not a name: it is gone the moment anything is typed, and it names the field
-						// only for whoever can see it.
-						aria-label={t('Add_people')}
-					/>
-				</FieldRow>
-			</Field>
-			{/* Under the names, because it is a question about the people just chosen. */}
-			<Field>
-				<FieldRow justifyContent='flex-start'>
-					<CheckBox id='conference-add-participants-ring' checked={ring} onChange={toggleRing} />
-					<Box is='label' htmlFor='conference-add-participants-ring' fontScale='p2' color='default' marginInlineStart={8}>
-						{t('Ring_people')}
-					</Box>
-				</FieldRow>
-			</Field>
+			<FieldGroup>
+				<Field>
+					{/* The label is the package's, which is what names the picker: it used to be named by an
+					    `aria-label` nobody could see, over a placeholder that is gone the moment anything is typed. */}
+					<FieldLabel>{t('People')}</FieldLabel>
+					<FieldRow>
+						{/* The product's own way of picking people, the same as adding them to a room — this used to be
+						    hand-rolled here, down to the chips and the remove buttons. */}
+						<Controller
+							control={control}
+							name='users'
+							render={({ field }) => <UserAutoCompleteMultiple {...field} exceptions={memberUsernames} placeholder={t('Choose_users')} />}
+						/>
+					</FieldRow>
+				</Field>
+				{/* Under the names, because it is a question about the people just chosen. */}
+				<Field>
+					<FieldRow justifyContent='flex-start'>
+						<CheckBox checked={ring} onChange={toggleRing} />
+						<Box marginInlineStart={8}>
+							<FieldLabel>{t('Ring_people')}</FieldLabel>
+						</Box>
+					</FieldRow>
+				</Field>
+			</FieldGroup>
 		</GenericModal>
 	);
 };

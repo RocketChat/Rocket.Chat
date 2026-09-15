@@ -9,7 +9,7 @@ exports[`renders Empty without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-modal"
       open=""
     >
-      <div
+      <form
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
       >
         <header
@@ -49,78 +49,100 @@ exports[`renders Empty without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-field"
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
             >
-              <span
-                class="rcx-box rcx-box--full rcx-field__row"
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
               >
-                <div
-                  class="rcx-box rcx-box--full rcx-box--animated rcx-select"
+                <span
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id="react-aria-_r_1_-label"
+                >
+                  People
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1sr8su7"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-w398ts"
+                      class="rcx-box rcx-box--full rcx-css-1sr8su7"
                     >
-                      <input
-                        aria-describedby=""
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-invalid="false"
-                        aria-label="Add people"
-                        aria-labelledby="-label"
-                        autocomplete="off"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
-                        id=""
-                        placeholder="Choose users"
-                        role="combobox"
-                        value=""
-                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-w398ts"
+                      >
+                        <input
+                          aria-controls="react-aria-_r_1_-listbox"
+                          aria-describedby=""
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-invalid="false"
+                          aria-labelledby="react-aria-_r_1_-label"
+                          autocomplete="off"
+                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                          id="react-aria-_r_1_"
+                          name="users"
+                          placeholder="Choose users"
+                          role="combobox"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
                     </div>
                   </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-check-box"
                   >
+                    <div
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      Ring people
+                    </div>
+                    <input
+                      aria-describedby=""
+                      aria-invalid="false"
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-check-box__input"
+                      id="react-aria-_r_2_-label"
+                      type="checkbox"
+                    />
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      class="rcx-box rcx-box--full rcx-check-box__fake"
+                    />
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ws1yyr"
+                  >
+                    <span
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                     >
-                      
-                    </i>
+                      Ring people
+                    </span>
                   </div>
-                </div>
-              </span>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-field"
-            >
-              <span
-                class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
-              >
-                <label
-                  class="rcx-box rcx-box--full rcx-check-box"
-                >
-                  <input
-                    checked=""
-                    class="rcx-box rcx-box--full rcx-check-box__input"
-                    id="conference-add-participants-ring"
-                    type="checkbox"
-                  />
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-check-box__fake"
-                  />
-                </label>
-                <label
-                  class="rcx-box rcx-box--full rcx-css-1ik3wu8"
-                  for="conference-add-participants-ring"
-                >
-                  Ring people
-                </label>
-              </span>
-            </div>
+                </span>
+              </div>
+            </fieldset>
           </div>
         </div>
         <div
@@ -143,7 +165,7 @@ exports[`renders Empty without crashing 1`] = `
             <button
               class="rcx-box rcx-box--full rcx-button"
               disabled=""
-              type="button"
+              type="submit"
             >
               <span
                 class="rcx-button--content"
@@ -153,7 +175,7 @@ exports[`renders Empty without crashing 1`] = `
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </dialog>
   </div>
 </body>
@@ -163,12 +185,12 @@ exports[`renders NotRinging without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_1_-title"
+      aria-labelledby="_r_3_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
     >
-      <div
+      <form
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
       >
         <header
@@ -182,7 +204,7 @@ exports[`renders NotRinging without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id="_r_1_-title"
+                id="_r_3_-title"
               >
                 Add people
               </h2>
@@ -208,78 +230,100 @@ exports[`renders NotRinging without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-field"
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
             >
-              <span
-                class="rcx-box rcx-box--full rcx-field__row"
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
               >
-                <div
-                  class="rcx-box rcx-box--full rcx-box--animated rcx-select"
+                <span
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id="react-aria-_r_4_-label"
+                >
+                  People
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1sr8su7"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-w398ts"
+                      class="rcx-box rcx-box--full rcx-css-1sr8su7"
                     >
-                      <input
-                        aria-describedby=""
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-invalid="false"
-                        aria-label="Add people"
-                        aria-labelledby="-label"
-                        autocomplete="off"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
-                        id=""
-                        placeholder="Choose users"
-                        role="combobox"
-                        value=""
-                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-w398ts"
+                      >
+                        <input
+                          aria-controls="react-aria-_r_4_-listbox"
+                          aria-describedby=""
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-invalid="false"
+                          aria-labelledby="react-aria-_r_4_-label"
+                          autocomplete="off"
+                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                          id="react-aria-_r_4_"
+                          name="users"
+                          placeholder="Choose users"
+                          role="combobox"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
                     </div>
                   </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-check-box"
                   >
+                    <div
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      Ring people
+                    </div>
+                    <input
+                      aria-describedby=""
+                      aria-invalid="false"
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-check-box__input"
+                      id="react-aria-_r_5_-label"
+                      type="checkbox"
+                    />
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      class="rcx-box rcx-box--full rcx-check-box__fake"
+                    />
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ws1yyr"
+                  >
+                    <span
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                     >
-                      
-                    </i>
+                      Ring people
+                    </span>
                   </div>
-                </div>
-              </span>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-field"
-            >
-              <span
-                class="rcx-box rcx-box--full rcx-field__row rcx-css-2no6ie"
-              >
-                <label
-                  class="rcx-box rcx-box--full rcx-check-box"
-                >
-                  <input
-                    checked=""
-                    class="rcx-box rcx-box--full rcx-check-box__input"
-                    id="conference-add-participants-ring"
-                    type="checkbox"
-                  />
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-check-box__fake"
-                  />
-                </label>
-                <label
-                  class="rcx-box rcx-box--full rcx-css-1ik3wu8"
-                  for="conference-add-participants-ring"
-                >
-                  Ring people
-                </label>
-              </span>
-            </div>
+                </span>
+              </div>
+            </fieldset>
           </div>
         </div>
         <div
@@ -302,7 +346,7 @@ exports[`renders NotRinging without crashing 1`] = `
             <button
               class="rcx-box rcx-box--full rcx-button"
               disabled=""
-              type="button"
+              type="submit"
             >
               <span
                 class="rcx-button--content"
@@ -312,7 +356,7 @@ exports[`renders NotRinging without crashing 1`] = `
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </dialog>
   </div>
 </body>
