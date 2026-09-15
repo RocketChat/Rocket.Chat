@@ -1,6 +1,6 @@
 import { FocusScope } from '@react-aria/focus';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IconButtonWithBadge from '../components/IconButtonWithBadge';
@@ -17,6 +17,11 @@ const NavBarItemOngoingCalls = () => {
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 	const listId = useId();
 
+	// Whether this opening was asked for. The list also opens itself when a call starts ringing, and taking the
+	// focus then would pull it out of whatever the user was in the middle of typing — a call arriving is news,
+	// not an instruction to go and look at it.
+	const [openedByUser, setOpenedByUser] = useState(false);
+
 	const isRinging = ringing.length > 0;
 	const isOffering = isRinging || ongoing.length > 0;
 
@@ -25,6 +30,7 @@ const NavBarItemOngoingCalls = () => {
 
 	useEffect(() => {
 		if (ringingCount > prevRingingCount.current) {
+			setOpenedByUser(false);
 			toggle(true);
 		}
 
@@ -49,7 +55,10 @@ const NavBarItemOngoingCalls = () => {
 					secondary={isOffering}
 					danger={isRinging}
 					info={isOffering && !isRinging}
-					onClick={() => toggle()}
+					onClick={() => {
+						setOpenedByUser(!isVisible);
+						toggle();
+					}}
 					// What the button does to the page, said rather than implied: it opens the list below it, and the
 					// list is a thing on the page with an id, so a reader can be told where it went and whether it is
 					// open without being moved there.
@@ -66,10 +75,11 @@ const NavBarItemOngoingCalls = () => {
 			</Box>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-end'>
-					{/* Focus goes in when it opens and comes back to the button when it closes — without that the list
-					    was openable from the keyboard and then unreachable, since it is portalled away from the button
-					    in the DOM. Not `contain`: this is a disclosure rather than a dialog, so Tab may leave it. */}
-					<FocusScope restoreFocus autoFocus>
+					{/* Focus goes in when the user opens it and comes back to the button when it closes — without that
+					    the list was openable from the keyboard and then unreachable, since it is portalled away from
+					    the button in the DOM. Not `contain`: this is a disclosure rather than a dialog, so Tab may
+					    leave it. */}
+					<FocusScope restoreFocus autoFocus={openedByUser}>
 						{/* Escape is how a thing that opened over the page is dismissed, and the button it came from is
 						    where focus belongs afterwards — `restoreFocus` above puts it there. */}
 						<Box

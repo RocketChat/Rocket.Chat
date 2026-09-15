@@ -23,37 +23,43 @@ const OngoingCallsList = () => {
 	const showAllLabel = hiddenActive > 0 ? t('Show_all_count_new', { count: hiddenActive }) : t('Show_all');
 
 	return (
-		// A real list, so the calls are countable and each row is an item of it. It was a bare column of links,
-		// which a screen reader reads as loose links with nothing saying how many there are or that they belong
-		// together.
-		<Box is='ul' aria-label={t('Ongoing_calls')} display='flex' flexDirection='column' margin={0} paddingBlock={0} paddingInline={0}>
-			{visibleActive.map((item) => (
-				<Box is='li' key={item.callId}>
-					<CallListItem
-						call={item}
-						silenced={silencedCalls.includes(item.callId)}
-						onJoin={joinCall}
-						onDecline={decline}
-						onSilence={silence}
-					/>
+		<Box display='flex' flexDirection='column'>
+			{/* Two lists rather than one with a rule through it. An `<hr>` between items is not a list item, so it
+			    was invalid where it stood — and hiding it from a reader left both groups announced as one list, with
+			    nothing to say that the calls below it had already been turned down. Each group names itself. */}
+			{visibleActive.length > 0 && (
+				<Box is='ul' aria-label={t('Ongoing_calls')} display='flex' flexDirection='column' margin={0} paddingBlock={0} paddingInline={0}>
+					{visibleActive.map((item) => (
+						<Box is='li' key={item.callId}>
+							<CallListItem
+								call={item}
+								silenced={silencedCalls.includes(item.callId)}
+								onJoin={joinCall}
+								onDecline={decline}
+								onSilence={silence}
+							/>
+						</Box>
+					))}
 				</Box>
-			))}
+			)}
 
 			{visibleDeclined.length > 0 && (
 				<>
-					{/* `aria-hidden`, because a separator between two groups of the same list is a picture of the
-					    grouping rather than an item in it — and a bare `<hr>` between list items is not one. */}
 					{visibleActive.length > 0 && <Divider aria-hidden='true' />}
-					{visibleDeclined.map((item) => (
-						<Box is='li' key={item.callId}>
-							<CallListItem call={item} onJoin={joinCall} onDecline={decline} />
-						</Box>
-					))}
+					<Box is='ul' aria-label={t('Declined')} display='flex' flexDirection='column' margin={0} paddingBlock={0} paddingInline={0}>
+						{visibleDeclined.map((item) => (
+							<Box is='li' key={item.callId}>
+								<CallListItem call={item} onJoin={joinCall} onDecline={decline} />
+							</Box>
+						))}
+					</Box>
 				</>
 			)}
 
+			{/* Outside the lists: it is a control over them, not a call in them, and counting it as one told a
+			    reader there was one more call than there is. */}
 			{(hasMore || showAll) && (
-				<Box is='li' paddingInline={16} paddingBlock={4}>
+				<Box paddingInline={16} paddingBlock={4}>
 					<Button small secondary width='100%' onClick={toggleShowAll}>
 						{showAll ? t('Show_fewer') : showAllLabel}
 					</Button>
