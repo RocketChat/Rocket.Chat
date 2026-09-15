@@ -1,5 +1,29 @@
 # @rocket.chat/ddp-client
 
+## 1.1.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 7f9592dc92567993f41d0e3510ecc9c00637a4cc]:</summary>
+
+  - @rocket.chat/rest-typings@8.8.0
+  - @rocket.chat/core-typings@8.8.0
+  - @rocket.chat/media-signaling@1.2.0
+  </details>
+
+## 1.1.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 7f9592dc92567993f41d0e3510ecc9c00637a4cc]:</summary>
+
+  - @rocket.chat/rest-typings@8.8.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/media-signaling@1.2.0-rc.0
+  - @rocket.chat/api-client@0.2.56
+  - @rocket.chat/emitter@0.33.0
+  </details>
+
 ## 1.1.1
 
 ### Patch Changes

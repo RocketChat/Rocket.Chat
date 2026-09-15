@@ -6,9 +6,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { sdk } from '../../lib/SDKClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type Username = Exclude<IUser['username'], undefined>;

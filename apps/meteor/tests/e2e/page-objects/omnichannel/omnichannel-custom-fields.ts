@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 
 class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
@@ -22,7 +22,7 @@ class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
 }
 
 export class OmnichannelCustomFields extends OmnichannelAdmin {
-	protected readonly route = 'customfields';
+	protected readonly route = OmnichannelSectionsHref.customFields;
 
 	protected readonly title = 'Custom Fields';
 

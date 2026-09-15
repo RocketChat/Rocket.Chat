@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/account-service",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"private": true,
 	"description": "Rocket.Chat Account service",
 	"keywords": [
@@ -29,7 +29,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"bcrypt": "^6.0.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",

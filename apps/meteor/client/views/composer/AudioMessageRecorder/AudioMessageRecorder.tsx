@@ -5,7 +5,7 @@ import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
+import { AudioRecorder } from '../../../lib/AudioRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();

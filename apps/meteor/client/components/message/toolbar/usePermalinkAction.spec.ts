@@ -4,8 +4,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { usePermalinkAction } from './usePermalinkAction';
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { createFakeUser } from '../../../../tests/mocks/data';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 
 // Mock the getPermaLink function
 jest.mock('../../../lib/getPermaLink', () => ({

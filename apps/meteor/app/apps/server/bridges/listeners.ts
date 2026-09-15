@@ -175,12 +175,7 @@ type HandleFileUploadEvent = {
 };
 
 export type HandleEvent =
-	| HandleMessageEvent
-	| HandleRoomEvent
-	| HandleLivechatEvent
-	| HandleUserEvent
-	| HandleFileUploadEvent
-	| HandleDefaultEvent;
+	HandleMessageEvent | HandleRoomEvent | HandleLivechatEvent | HandleUserEvent | HandleFileUploadEvent | HandleDefaultEvent;
 
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}

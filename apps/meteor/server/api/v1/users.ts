@@ -49,6 +49,7 @@ import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyLis
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { redactStatus } from '../../lib/statusVisibility/redactStatus';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
@@ -1739,12 +1740,15 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		return API.v1.success(
-			await findUsersToAutocomplete({
-				uid: this.userId,
-				selector,
-			}),
-		);
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		if (hidden && queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		}
+
+		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
+
+		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
 	},
 );
 
@@ -1973,9 +1977,10 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: user.status || ('offline' as UserStatus),
+				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2112,12 +2117,14 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
+			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
 
 			return API.v1.success({
-				_id: user._id,
-				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				...(user.statusSource && { statusSource: user.statusSource }),
-				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
+				_id: visible._id,
+				status: (visible.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(visible.statusSource && { statusSource: visible.statusSource }),
+				...(visible.statusExpiresAt && { statusExpiresAt: visible.statusExpiresAt.toISOString() }),
 			});
 		},
 	);

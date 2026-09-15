@@ -2441,7 +2441,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	getVisitorActiveForPeriodUpdateQuery(period: string, updater: Updater<IOmnichannelRoom> = this.getUpdater()): Updater<IOmnichannelRoom> {
+	getVisitorActiveForPeriodUpdateQuery(
+		period: string,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
+		currentActivity?: string[] | null,
+	): Updater<IOmnichannelRoom> {
+		if (currentActivity === null) {
+			return updater.set('v.activity', [period]);
+		}
+
 		return updater.addToSet('v.activity', period);
 	}
 

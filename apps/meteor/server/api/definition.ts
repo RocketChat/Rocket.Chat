@@ -99,6 +99,12 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
+export type RateLimiterOptions = {
+	numRequestsAllowed?: number;
+	intervalTimeInMS?: number;
+	bypassPermissions?: string[];
+};
+
 export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type SharedOptions<TMethod extends string> = (
@@ -112,12 +118,7 @@ export type SharedOptions<TMethod extends string> = (
 			authRequired?: boolean;
 			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 			queryOperations?: string[];
 			queryFields?: string[];
 	  }
@@ -132,12 +133,7 @@ export type SharedOptions<TMethod extends string> = (
 			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 
 			queryOperations?: string[];
 			queryFields?: string[];

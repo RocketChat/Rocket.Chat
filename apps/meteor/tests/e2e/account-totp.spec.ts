@@ -1,4 +1,5 @@
 import { Users } from './fixtures/userStates';
+import { Authenticated } from './page-objects/auth';
 import { test, expect } from './utils/test';
 
 // We mock the REST `method.call` response instead of registering a real
@@ -13,8 +14,7 @@ const METHOD_NAME = 'rc-test-totp-flow';
 
 test.describe('account-totp ddpOverREST preserves the totp-required error', () => {
 	test('opens the TOTP modal when the REST envelope carries a `totp-required` DDP frame, and resolves on retry', async ({ page }) => {
-		await page.goto('/home');
-		await expect(page.getByRole('main')).toBeVisible();
+		await new Authenticated(page).goto();
 
 		let calls = 0;
 		await page.route(`**/api/v1/method.call/${METHOD_NAME}`, async (route) => {

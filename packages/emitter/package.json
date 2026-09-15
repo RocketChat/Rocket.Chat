@@ -10,7 +10,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/emitter"
 	},
 	"license": "MIT",
 	"author": {
@@ -39,13 +40,9 @@
 		"@rollup/plugin-typescript": "~12.3.0",
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
-		"prettier": "~3.3.3",
-		"rollup": "~4.62.3",
-		"ts-jest": "~29.4.11",
+		"rollup": "~4.62.5",
+		"ts-jest": "~29.4.12",
 		"typescript": "~5.9.3"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"volta": {
 		"extends": "../../package.json"

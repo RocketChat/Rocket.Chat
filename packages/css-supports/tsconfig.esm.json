@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"outDir": "./dist/esm"
+	},
+	"exclude": ["**/*.spec.ts", "jest.config.*"]
+}

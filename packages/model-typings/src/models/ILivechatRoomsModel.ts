@@ -282,7 +282,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
-	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
+	getVisitorActiveForPeriodUpdateQuery(
+		period: string,
+		updater?: Updater<IOmnichannelRoom>,
+		currentActivity?: string[] | null,
+	): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
 	findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(

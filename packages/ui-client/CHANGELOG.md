@@ -1,5 +1,39 @@
 # @rocket.chat/ui-client
 
+## 34.0.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/tools@0.4.0
+  - @rocket.chat/ui-avatar@30.0.0
+  - @rocket.chat/ui-contexts@34.0.0
+  </details>
+
+## 34.0.0-rc.0
+
+### Minor Changes
+
+- ([#41355](https://github.com/RocketChat/Rocket.Chat/pull/41355)) Replaces the "Drafts in sidebar" feature preview with an always-on draft indicator. Thread-composer drafts are also persisted per thread and indicated in the thread list
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/tools@0.4.0-rc.0
+  - @rocket.chat/ui-contexts@34.0.0-rc.0
+  - @rocket.chat/ui-avatar@30.0.0-rc.0
+  </details>
+
 ## 33.0.0
 
 ### Minor Changes
