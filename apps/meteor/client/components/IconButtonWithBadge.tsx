@@ -8,6 +8,11 @@ type IconButtonWithBadgeProps = {
 	 */
 	badge?: ReactNode;
 	badgeVariant?: ComponentProps<typeof Badge>['variant'];
+	/**
+	 * A tooltip for the badge itself, where what it counts is worth spelling out on hover — the button's own
+	 * `title` names the control, which is a different sentence.
+	 */
+	badgeTitle?: string;
 } & ComponentProps<typeof IconButton>;
 
 /**
@@ -20,13 +25,15 @@ type IconButtonWithBadgeProps = {
  * name instead, and saying it twice is the failure mode when it does. What the badge says is therefore the
  * caller's to fold into `aria-label`; this only draws it.
  */
-const IconButtonWithBadge = ({ badge, badgeVariant, children, ...props }: IconButtonWithBadgeProps) => (
+const IconButtonWithBadge = ({ badge, badgeVariant, badgeTitle, children, ...props }: IconButtonWithBadgeProps) => (
 	<IconButton position='relative' overflow='visible' {...props}>
 		{badge !== undefined && (
 			// `pointerEvents` is not one of Box's styling props — written as one it reached the DOM as an invalid
 			// `pointer-events` attribute and did nothing, which the snapshots had been recording as normal.
 			<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} style={{ pointerEvents: 'none' }} aria-hidden='true'>
-				<Badge variant={badgeVariant}>{badge}</Badge>
+				<Badge variant={badgeVariant} title={badgeTitle}>
+					{badge}
+				</Badge>
 			</Box>
 		)}
 		{children}

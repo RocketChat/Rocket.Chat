@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
-import { userEvent, within } from 'storybook/test';
 
 import ConferencePreflight from './ConferencePreflight';
 import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withConferenceWindow } from './storyFixtures';
@@ -100,14 +99,12 @@ export const JoiningACall: Story = {
 /**
  * The moment after the primary button is pressed: it goes to a spinner and stays there, because the window is
  * about to be replaced by the call and offering the button again would start a second one.
+ *
+ * Set rather than acted out. It used to click the button and let the screen's own state answer, but confirming
+ * is the caller's mutation now — so a click here starts nothing and there is no spinner to wait for.
  */
 export const Confirming: Story = {
-	args: { canChooseRinging: true },
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		await userEvent.click(await canvas.findByRole('button', { name: 'Call Ada Lovelace' }));
-	},
+	args: { canChooseRinging: true, confirming: true },
 };
 
 /**
