@@ -459,7 +459,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<DocumentWithProjection<T, O> | null>;
 	findWithStatusVisibilityConfig(
 		userIds?: string[],
-	): FindCursor<Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings'>>;
+	): FindCursor<
+		Pick<
+			IUser,
+			'_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings' | 'statusVisibilityDeniedByAdmin'
+		>
+	>;
+	findPaginatedManagedPresenceUsers(searchTerm?: string, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userIds?: string[],
 		options?: O,

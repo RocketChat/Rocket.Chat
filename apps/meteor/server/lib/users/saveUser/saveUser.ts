@@ -21,6 +21,7 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { shouldBreakInVersion } from '../../shouldBreakInVersion';
+import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
@@ -53,6 +54,7 @@ export type SaveUserData = {
 	customFields?: Record<string, any>;
 	active?: boolean;
 	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 
 	freeSwitchExtension?: string;
 };
@@ -205,6 +207,19 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const deniedByAdmin =
+			userData.statusVisibilityDeniedByAdmin !== undefined
+				? await resolveUsersByUsernames(userData.statusVisibilityDeniedByAdmin.filter((username) => username !== oldUserData?.username))
+				: undefined;
+
+		if (deniedByAdmin) {
+			if (deniedByAdmin.ids.length) {
+				updater.set('statusVisibilityDeniedByAdmin', deniedByAdmin.ids);
+			} else {
+				updater.unset('statusVisibilityDeniedByAdmin');
+			}
+		}
+
 		if (userData.customFields) {
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
@@ -222,8 +237,8 @@ const _saveUser = (session?: ClientSession) =>
 				void options.auditStore.commitAuditEvent();
 			}
 
-			if (presenceChanged) {
-				void StatusVisibility.invalidate([userData._id], { allViewers: true });
+			if (presenceChanged || deniedByAdmin) {
+				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged });
 			}
 
 			// App IPostUserUpdated event hook

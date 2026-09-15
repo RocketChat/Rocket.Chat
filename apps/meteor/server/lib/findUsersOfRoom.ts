@@ -7,12 +7,12 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import { settings } from '../settings';
 import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibility/effectiveStatus';
 import type { PresenceScope } from './statusVisibility/presenceScope';
-import { NOTHING_HIDDEN, hiddenIds, scopeHidesAnyone } from './statusVisibility/presenceScope';
+import { hiddenIds, scopeHidesAnyone } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;
 	status?: UserStatus[] | 'not-offline';
-	hidden?: PresenceScope;
+	hidden: PresenceScope;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -22,7 +22,7 @@ type FindUsersParam = {
 export async function findUsersOfRoom({
 	rid,
 	status,
-	hidden = NOTHING_HIDDEN,
+	hidden,
 	skip = 0,
 	limit = 0,
 	filter = '',

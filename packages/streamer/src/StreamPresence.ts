@@ -4,10 +4,11 @@ import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typi
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { statusVisibilityGate } from './StatusVisibilityGate';
-import { hiddenIds } from './presenceScope';
 import { Streamer } from './streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from './types';
+import { statusVisibilityGate } from './StatusVisibilityGate';
+import type { PresenceScope } from './presenceScope';
+import { NOTHING_HIDDEN, isHiddenFor } from './presenceScope';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -35,9 +36,7 @@ class UserPresence {
 
 	private readonly listeners: Set<string>;
 
-	private everyoneHidden = false;
-
-	private hiddenUsers = new Set<IUser['_id']>();
+	private scope: PresenceScope = NOTHING_HIDDEN;
 
 	private pendingCorrections = new Set<IUser['_id']>();
 
@@ -53,7 +52,7 @@ class UserPresence {
 		if (this.listeners.has(uid)) {
 			return;
 		}
-		if (this.isHidden(uid)) {
+		if (isHiddenFor(this.scope, uid)) {
 			this.pendingCorrections.add(uid);
 		}
 		e.on(uid, this.run);
@@ -69,14 +68,9 @@ class UserPresence {
 		return this.stale;
 	}
 
-	private isHidden(uid: IUser['_id']): boolean {
-		return this.everyoneHidden || this.hiddenUsers.has(uid);
-	}
-
 	async refreshHiddenUsers(): Promise<void> {
 		if (!(await statusVisibilityGate.ensureActive())) {
-			this.everyoneHidden = false;
-			this.hiddenUsers = new Set();
+			this.scope = NOTHING_HIDDEN;
 			this.pendingCorrections = new Set();
 			this.stale = false;
 			return;
@@ -84,11 +78,10 @@ class UserPresence {
 
 		try {
 			const scope = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
-			const wasHidden = new Set([...this.listeners].filter((uid) => this.isHidden(uid)));
+			const previous = this.scope;
 
-			this.everyoneHidden = scope.hideAll;
-			this.hiddenUsers = scope.hideAll ? new Set() : new Set(hiddenIds(scope));
-			this.pendingCorrections = new Set([...this.listeners].filter((uid) => this.isHidden(uid) && !wasHidden.has(uid)));
+			this.scope = scope;
+			this.pendingCorrections = new Set([...this.listeners].filter((uid) => isHiddenFor(scope, uid) && !isHiddenFor(previous, uid)));
 			this.stale = false;
 		} catch (error) {
 			this.stale = true;
@@ -97,7 +90,7 @@ class UserPresence {
 	}
 
 	run = (args: UserPresenceStreamArgs): void => {
-		const hidden = this.isHidden(args.uid);
+		const hidden = isHiddenFor(this.scope, args.uid);
 
 		if (hidden && !this.pendingCorrections.delete(args.uid)) {
 			return;

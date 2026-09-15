@@ -20,7 +20,7 @@ export const getUsersHiddenFrom = async (viewerId: IUser['_id'] | null | undefin
 };
 
 export const filterHiddenUsers = <T extends Pick<IUser, '_id'>>(users: T[], hidden: PresenceScope): T[] =>
-	hidden.hideAll ? [] : users.filter((user) => !isHiddenFor(hidden, user._id));
+	users.filter((user) => !isHiddenFor(hidden, user._id));
 
 export const redactHiddenUser = <T extends Pick<IUser, '_id'>>(user: T, hidden: PresenceScope): T =>
 	redactStatus(user, isHiddenFor(hidden, user._id));

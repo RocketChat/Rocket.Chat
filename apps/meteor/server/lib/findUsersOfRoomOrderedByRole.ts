@@ -6,12 +6,11 @@ import type { Document } from 'mongodb';
 import { settings } from '../settings';
 import { effectiveStatusExpression, effectiveStatusFilter } from './statusVisibility/effectiveStatus';
 import type { PresenceScope } from './statusVisibility/presenceScope';
-import { NOTHING_HIDDEN } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;
 	status?: UserStatus[];
-	hidden?: PresenceScope;
+	hidden: PresenceScope;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -27,7 +26,7 @@ type UserWithRoleAndSubscriptionData = IUser & {
 export async function findUsersOfRoomOrderedByRole({
 	rid,
 	status,
-	hidden = NOTHING_HIDDEN,
+	hidden,
 	skip = 0,
 	limit = 0,
 	filter = '',
