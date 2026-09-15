@@ -33,7 +33,7 @@ export const registerAppGeneralLogsHandler = ({ api, _orch }: AppsRestApi) =>
 					properties: {
 						offset: { type: 'number' },
 						// TODO: reference a schema for the array items
-						logs: { type: 'array' },
+						logs: { type: 'array', items: {} },
 						count: { type: 'number' },
 						total: { type: 'number' },
 						success: { type: 'boolean' },

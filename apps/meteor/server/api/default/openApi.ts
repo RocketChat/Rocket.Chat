@@ -1,5 +1,6 @@
 import { schemas } from '@rocket.chat/core-typings';
 import type { Route } from '@rocket.chat/http-router';
+import { getSharedSchemas, openAPIErrorComponents, withOperationIds } from '@rocket.chat/http-router';
 import { ajv, isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
@@ -7,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 
 import { settings } from '../../settings';
 import { API } from '../api';
+import type { SuccessResult } from '../definition';
 import { getTrimmedServerVersion } from '../lib/getTrimmedServerVersion';
 
 const app = express();
@@ -41,18 +43,42 @@ const getTypedRoutes = (
 	);
 };
 
+const TAG_DESCRIPTIONS: Record<string, string> = {
+	'Missing Documentation': 'Endpoints that are not typed yet; their request and response shapes are not described.',
+};
+
+const getTags = (paths: Record<string, Record<string, Route>>) => {
+	const names = new Set(
+		Object.values(paths)
+			.flatMap((methods) => Object.values(methods))
+			.flatMap((route) => route.tags ?? []),
+	);
+
+	return [...names].sort().map((name) => ({
+		name,
+		...(TAG_DESCRIPTIONS[name] && { description: TAG_DESCRIPTIONS[name] }),
+	}));
+};
+
+const siteUrl = () => settings.get<string>('Site_Url')?.replace(/\/$/, '');
+
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
-	openapi: '3.0.3',
+	openapi: '3.1.0',
 	info: {
 		title: 'Rocket.Chat API',
-		description: 'Rocket.Chat API',
+		description:
+			'REST API of this Rocket.Chat workspace. Authenticate by sending the `X-User-Id` and `X-Auth-Token` headers obtained from `/api/v1/login`.',
 		version: getTrimmedServerVersion(),
 	},
-	servers: [
-		{
-			url: settings.get('Site_Url'),
-		},
-	],
+	externalDocs: {
+		url: 'https://developer.rocket.chat/apidocs',
+		description: 'Rocket.Chat developer documentation',
+	},
+	// trailing slash would make every path in the document resolve with a double one, and a Server
+	// Object without a url is invalid, so an unset `Site_Url` means no `servers` at all
+	...(siteUrl() && { servers: [{ url: siteUrl() }] }),
+	tags: getTags(paths),
+	paths: withOperationIds(paths),
 	components: {
 		securitySchemes: {
 			userId: {
@@ -66,10 +92,12 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 				name: 'X-Auth-Token',
 			},
 		},
-		schemas: schemas.components.schemas,
+		schemas: {
+			...schemas.components.schemas,
+			...openAPIErrorComponents,
+			...getSharedSchemas(),
+		},
 	},
-	schemas: schemas.components.schemas,
-	paths,
 });
 
 const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
@@ -77,13 +105,13 @@ const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
 	properties: {
 		openapi: { type: 'string' },
 		info: { type: 'object' },
-		servers: { type: 'array' },
+		externalDocs: { type: 'object' },
+		servers: { type: 'array', items: {} },
+		tags: { type: 'array', items: {} },
 		components: { type: 'object' },
 		paths: { type: 'object' },
-		schemas: { type: 'object' },
-		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['openapi', 'info', 'paths', 'success'],
+	required: ['openapi', 'info', 'paths'],
 	additionalProperties: false,
 });
 
@@ -99,7 +127,13 @@ API.default.get(
 	function action() {
 		const { withUndocumented = false } = this.queryParams;
 
-		return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
+		// The document is served as it is: `API.default.success` would add a `success` key to its root,
+		// which is not an OpenAPI field and fails validation. The cast is the price of saying so - every
+		// 2xx body is typed as `{ success: true } & T`, and this one is the exception.
+		return {
+			statusCode: 200 as const,
+			body: makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })),
+		} as unknown as SuccessResult<Record<string, unknown>>;
 	},
 );
 
@@ -108,7 +142,10 @@ app.use(
 	swaggerUi.serve,
 	swaggerUi.setup(null, {
 		swaggerOptions: {
-			url: `${settings.get('Site_Url')}/api/docs/json`,
+			// Relative to `/api-docs`, not to the root: this runs at import time, before settings are
+			// loaded, so `Site_Url` would render as "undefined", and a leading slash would drop the
+			// deployment prefix of a workspace hosted under ROOT_URL_PATH_PREFIX.
+			url: '../api/docs/json',
 		},
 	}),
 );
