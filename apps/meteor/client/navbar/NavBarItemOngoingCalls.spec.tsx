@@ -42,8 +42,12 @@ describe('NavBarItemOngoingCalls', () => {
 		expect(baseElement).toMatchSnapshot();
 	});
 
+	// Settled first, for the same reason the snapshots are: the list is fetched, so an unsettled render is an
+	// empty box — and an empty box has no violations to find. What these stories are here to check is the button,
+	// its badge and the open dropdown.
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container } = render(<Story />);
+		const { container, baseElement } = render(<Story />);
+		await settled(baseElement);
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
