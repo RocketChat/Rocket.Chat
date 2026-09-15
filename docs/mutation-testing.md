@@ -17,6 +17,19 @@ The config is [apps/meteor/stryker.conf.js](../apps/meteor/stryker.conf.js). The
 
 There is a second, slower pass that type-checks each mutant — see [The typed pass](#the-typed-pass) below.
 
+## Choose a target by risk
+
+Do not choose by a property of the spec. We tested that, and it does not work — see
+[docs/mutation-testing-scope-results.md](mutation-testing-scope-results.md).
+
+The intuition was that mutation testing pays more on side-effect-heavy code. Across 133 specs no static
+predictor reached the bar. Oracle weakness scored ρ = −0.10, branch density ran the wrong way at +0.19, and
+effect surface reached −0.39 only because it tracks file size. The best of them misses more than half of the
+specs that score below 60%.
+
+Pick the target for what a missed fault would cost: churn multiplied by blast radius. Code that changes often
+and that many callers depend on earns the attention. A regex over the spec does not tell you that.
+
 ## Point it at your code
 
 The config is scoped to one spec and to the code that spec owns. Two constants at the top move together:
@@ -116,8 +129,13 @@ client/sidebar/categories/hooks/useUserSidebarCategories.ts(2,10):
   '"@rocket.chat/core-typings"' has no exported member named 'isStaleSidebarCategory'
 ```
 
-Run `yarn && yarn build` from the repo root and try again. `yarn testmutation` does not type-check and is
-unaffected.
+Run `yarn && yarn build` from the repo root and try again.
+
+The fast pass needs the build too, for a different reason. It does not type-check, but the specs import
+workspace packages, and a package without a `dist/` stops the spec from loading. Stryker then fails its dry
+run and reports nothing. A partial build is the trap: if one package fails, turbo skips every package below
+it, and the errors name a missing module rather than the build. Check that `yarn build` ends with every task
+successful.
 
 ### When the report is empty
 

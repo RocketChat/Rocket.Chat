@@ -2,8 +2,10 @@
 
 ## Status
 
-Draft. Pre-registered, not yet run. The hypotheses and thresholds below are fixed before the first measurement,
-so the result can contradict them.
+Run. The result is in [docs/mutation-testing-scope-results.md](../mutation-testing-scope-results.md).
+
+No predictor reached the bar. H0 carried: static triage is abandoned, and we scope by risk instead. The text
+below is the pre-registration, and it stays as it was written before the first measurement.
 
 ## Problem
 
