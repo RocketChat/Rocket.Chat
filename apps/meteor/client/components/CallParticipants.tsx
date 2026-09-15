@@ -1,17 +1,21 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 /**
  * A little definition under each face, so a row of them reads as faces rather than as a strip of colour.
+ *
  * `drop-shadow` rather than `box-shadow` because it follows the avatar's own rounded shape — the radius belongs to
- * the avatar, and guessing it here would leave a square shadow behind a rounded picture.
+ * the avatar, and guessing it here would leave a square shadow behind a rounded picture. That is the one thing the
+ * design system has no token for; the colours are its own, so they follow the theme instead of staying black in a
+ * dark one. The pair is `elevation-2`, the same lift the product's cards and popups use.
  */
 const facesStyles = css`
-	filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.24)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.32));
+	filter: drop-shadow(0 0 1px ${Palette.shadow['shadow-elevation-2x'].toString()})
+		drop-shadow(0 1px 2px ${Palette.shadow['shadow-elevation-2y'].toString()});
 `;
 
 type CallParticipantsProps = {
@@ -19,9 +23,18 @@ type CallParticipantsProps = {
 	people: (Pick<IUser, '_id'> & Partial<Pick<IUser, 'username'>>)[];
 	/** How many are in the call altogether, which is what the count after the faces is worked out from. */
 	total: number;
-	/** Avatar size, since a sidebar row and a full screen don't want the same one. */
-	size?: 'x18' | 'x24';
+	/**
+	 * How big the faces are. Named rather than measured, because there are two places this appears and neither
+	 * chooses a number: a row in a list, and a screen with room to spare.
+	 */
+	size?: 'small' | 'large';
 };
+
+/**
+ * The avatar sizes those names mean. Still Fuselage's `x` scale, which is what `UserAvatar` accepts — its
+ * container types `size` as that union and takes no numbers.
+ */
+const AVATAR_SIZES = { small: 'x18', large: 'x24' } as const;
 
 /**
  * Who is already in a call: their faces, then how many more there are.
@@ -33,7 +46,7 @@ type CallParticipantsProps = {
  * Faces answer *who* is in there, which is usually what decides whether to walk in. With avatars turned off there
  * is nobody to show, so it falls back to the count in words, as the message block does.
  */
-const CallParticipants = ({ people, total, size = 'x18' }: CallParticipantsProps) => {
+const CallParticipants = ({ people, total, size = 'small' }: CallParticipantsProps) => {
 	const { t } = useTranslation();
 	// Defaulted, because the preference is `true` for everyone who hasn't said otherwise and it arrives with the
 	// user rather than with the render. Read bare, the first paint of a call would take `undefined` for "avatars
@@ -66,7 +79,7 @@ const CallParticipants = ({ people, total, size = 'x18' }: CallParticipantsProps
 			<Box display='flex' alignItems='center' style={{ gap: 4 }}>
 				{faces.map(({ _id, username }) => (
 					<Box key={_id} className={facesStyles}>
-						<UserAvatar username={username as string} size={size} />
+						<UserAvatar username={username as string} size={AVATAR_SIZES[size]} />
 					</Box>
 				))}
 			</Box>

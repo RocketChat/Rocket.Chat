@@ -213,7 +213,7 @@ const ConferencePreflight = ({
 								{t('People_in_the_call')}
 							</Box>
 							<Box marginBlockStart={8}>
-								<CallParticipants {...participants} size='x24' />
+								<CallParticipants {...participants} size='large' />
 							</Box>
 						</Box>
 					)}

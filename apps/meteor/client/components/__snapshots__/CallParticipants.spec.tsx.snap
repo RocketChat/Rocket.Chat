@@ -17,7 +17,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
           style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -33,7 +33,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -49,7 +49,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -109,7 +109,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
           style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
@@ -125,7 +125,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
@@ -141,7 +141,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
@@ -201,7 +201,7 @@ exports[`CallParticipants renders SinglePerson without crashing 1`] = `
           style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -245,7 +245,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
           style="gap: 4px;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -261,7 +261,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
@@ -277,7 +277,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1w58cdl"
+            class="rcx-box rcx-box--full rcx-css-1z39yl"
           >
             <figure
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
