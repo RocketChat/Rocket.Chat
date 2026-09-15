@@ -18,6 +18,8 @@ import {
 	Keypad,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isExternalPeer } from '../../utils/isExternalPeer';
 
 const OngoingCall = () => {
@@ -37,6 +39,8 @@ const OngoingCall = () => {
 
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
+
+	const appActions = useVisibleAppActions();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -73,6 +77,8 @@ const OngoingCall = () => {
 						<Divider width='100%' />
 					</Box>
 				) : null}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
 					<ActionButton
 						disabled={connecting || reconnecting}
