@@ -37,7 +37,8 @@ const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
  * whoever always rings wants to ring in both places, and whoever never does wants neither.
  *
  * Stored alongside the arrival preferences rather than in a key of its own, so there is one record of "how this
- * user makes calls" instead of several that can disagree.
+ * user makes calls" instead of several that can disagree — which is also why it lives in this file rather than
+ * one of its own: the two hooks read and write the same record.
  */
 export const useCallRingPreference = () => {
 	const [stored, setStored] = useLocalStorage<StoredCallPreferences>('videoconf-call-preferences', DEFAULTS);
@@ -51,12 +52,14 @@ export const useCallRingPreference = () => {
 };
 
 /**
- * How the user wants to arrive in a call — remembered, because it is a habit rather than a per-call decision.
+ * The state a call is about to start in: mic and camera as this user habitually arrives, narrowed to what the
+ * provider can actually be told about, plus the ring habit the preflight also asks about.
  *
- * A provider that cannot be told about a device is not asked about it: the returned value reports the device as
- * off, so nothing claims to have configured something it can't.
+ * Named for what it answers rather than for where it reads from. It is not simply the stored preferences — those
+ * are one of its two inputs, the provider's capabilities being the other, and a provider that cannot be told
+ * about a device has that device reported as off so nothing claims to have configured something it can't.
  */
-export const useCallPreferences = (capabilities: VideoConferenceCapabilities) => {
+export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabilities) => {
 	const [stored, setStored] = useLocalStorage<StoredCallPreferences>('videoconf-call-preferences', DEFAULTS);
 
 	const preferences = useMemo(

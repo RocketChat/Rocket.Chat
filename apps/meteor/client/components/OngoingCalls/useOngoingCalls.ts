@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 
 import { useRingingExpiry } from '../../hooks/useRingingExpiry';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
-import { useJoinCall } from '../../views/conference/hooks/useJoinCall';
+import { useJoinOrSwitchCallModal } from '../../views/conference/hooks/useJoinOrSwitchCallModal';
 import { useJoinableCalls } from '../../views/conference/hooks/useJoinableCalls';
 
 export const useOngoingCallsList = () => {
@@ -29,7 +29,7 @@ export const useOngoingCallsList = () => {
 
 export const useOngoingCalls = () => {
 	const { ringing, ongoing, declined } = useOngoingCallsList();
-	const joinCall = useJoinCall();
+	const joinCall = useJoinOrSwitchCallModal();
 	const declineCall = useEndpoint('POST', '/v1/video-conference.decline');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
