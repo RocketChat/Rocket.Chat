@@ -102,7 +102,6 @@ export const withCallProviders = (builder: Builder): Decorator => {
 export const withConferenceWindow = (builder: Builder): Decorator => {
 	const withProviders = withCallProviders(builder);
 
-	// eslint-disable-next-line react/display-name
 	return (Story, context) =>
 		withProviders(
 			() => (
