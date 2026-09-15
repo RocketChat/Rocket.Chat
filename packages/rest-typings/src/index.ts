@@ -41,6 +41,7 @@ import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { SetupWizardEndpoints } from './v1/setupWizard';
 import type { StatisticsEndpoints } from './v1/statistics';
+export type { TelemetryMap, TelemetryEvents } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
 import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
