@@ -7,3 +7,4 @@ export { VideoConferenceCodec } from './videoConferences';
 export { VisitorCodec } from './visitors';
 export { DepartmentCodec } from './departments';
 export { UserCodec } from './users';
+export { CallHistoryItemCodec, CallHistoryCallDetailsCodec } from './callHistory';

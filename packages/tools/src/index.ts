@@ -18,6 +18,7 @@ export * from './pick';
 export * from './removeEmpty';
 export * from './stream';
 export * from './timezone';
+export * from './toValidDate';
 export * from './truncateString';
 export * from './unescapeHTML';
 export * from './validateEmail';

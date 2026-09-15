@@ -124,6 +124,14 @@ export const AppPermissions = {
 	'abac': {
 		read: { name: 'abac.read' },
 	},
+	/**
+	 * Reading the call history reaches every user's calls, not just the app's own, so it is
+	 * deliberately absent from `defaultPermissions` below: granting it implicitly would hand
+	 * every pre-permission app a workspace-wide read it never asked for.
+	 */
+	'mediaCall': {
+		history: { name: 'media-call.history' },
+	},
 };
 
 /**
