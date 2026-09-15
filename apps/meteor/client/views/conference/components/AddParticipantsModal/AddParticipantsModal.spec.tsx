@@ -1,9 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { QueryClient } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import AddParticipantsModal from './AddParticipantsModal';
+import * as stories from './AddParticipantsModal.stories';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
 import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
 import { Rooms } from '../../../../stores';
@@ -54,6 +57,28 @@ beforeEach(() => {
 	Rooms.state.replaceAll([]);
 	// The ring preference outlives a test, being remembered in storage on purpose.
 	localStorage.clear();
+});
+
+// What the modal looks like — empty, and with ringing turned off — is the stories' job, and the snapshots hold
+// it. What follows is what it does when it is used.
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
+
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const { baseElement } = render(<Story />);
+	await act(async () => {
+		await new Promise((resolve) => {
+			setTimeout(resolve, 0);
+		});
+	});
+
+	expect(baseElement).toMatchSnapshot();
+});
+
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />);
+
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
 });
 
 it('adds the selected user to the conference', async () => {
