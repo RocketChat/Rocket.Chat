@@ -116,12 +116,14 @@ export async function publishRelease({
 	await pushChanges();
 
 	core.info('create release');
+	// the release stays a draft until CI publishes all artifacts for the tag;
+	// a draft can't be 'latest', so CI decides make_latest when publishing it
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: releaseBody,
 		prerelease,
-		make_latest: isLatestRelease ? 'true' : 'false',
+		draft: true,
 		...github.context.repo,
 	});
 }

@@ -3,7 +3,7 @@ description: Action to cut and publish releases using changesets
 
 inputs:
   action:
-    description: "The main action to perform: publish, publish-final, bump or patch"
+    description: "The main action to perform: publish-final, cut, next, patch or update-pr-description"
     required: true
   base-ref:
     description: "Base ref to use for the release"
