@@ -30,6 +30,12 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 
 	const handleRolesChange = useCallback(
 		(roles: OptionProp[]) => {
+			if (roles.some((role) => role.id === 'all')) {
+				setUsersFilters({ text, roles: [] });
+				setSelectedRoles([]);
+				return;
+			}
+
 			setUsersFilters({ text, roles });
 			setSelectedRoles(roles);
 		},
@@ -45,7 +51,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			{
 				id: 'all',
 				text: 'All_roles',
-				checked: false,
+				checked: selectedRoles.length === 0,
 			},
 			...(roleData
 				? roleData.roles.map((role) => ({
@@ -55,7 +61,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 					}))
 				: []),
 		],
-		[roleData],
+		[roleData, selectedRoles],
 	);
 
 	const breakpoints = useBreakpoints();
