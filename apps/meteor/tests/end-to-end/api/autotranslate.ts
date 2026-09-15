@@ -28,6 +28,27 @@ describe('AutoTranslate', () => {
 	before((done) => getCredentials(done));
 
 	describe('[AutoTranslate]', () => {
+		describe('[/autotranslate.getProviderUiMetadata]', () => {
+			it('should reject unauthenticated requests', async () => {
+				await request.get(api('autotranslate.getProviderUiMetadata')).expect('Content-Type', 'application/json').expect(401);
+			});
+
+			it('should list the registered providers keyed by name', async () => {
+				const res = await request
+					.get(api('autotranslate.getProviderUiMetadata'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.a.property('success', true);
+				expect(res.body).to.have.a.property('providers').that.is.an('object').and.is.not.empty;
+				Object.entries(res.body.providers as Record<string, { name: string; displayName: string }>).forEach(([key, provider]) => {
+					expect(provider).to.have.a.property('name', key);
+					expect(provider).to.have.a.property('displayName').that.is.a('string');
+				});
+			});
+		});
+
 		describe('[/autotranslate.getSupportedLanguages', () => {
 			before(() => resetAutoTranslateDefaults());
 			after(() => resetAutoTranslateDefaults());
