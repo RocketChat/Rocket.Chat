@@ -29,6 +29,18 @@ import { IS_EE } from '../../e2e/config/constants';
 	const statusOf = (members: { username?: string; status?: string }[], username: string) =>
 		members.find((member) => member.username === username)?.status;
 
+	const statusSeenBy = async (overrideCredentials: Credentials, userId: string) => {
+		const { body } = await request.get(api('users.getStatus')).set(overrideCredentials).query({ userId }).expect(200);
+
+		return body.status;
+	};
+
+	const setAdminDenied = (userId: string, usernames: string[], data?: Record<string, unknown>, overrideCredentials = credentials) =>
+		request
+			.post(api('users.update'))
+			.set(overrideCredentials)
+			.send({ userId, data: { statusVisibilityDeniedByAdmin: usernames, ...data } });
+
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -358,12 +370,6 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(overrideCredentials)
 				.send({ userId, data: { presenceDisabledByAdmin: disabled } });
 
-		const statusSeenBy = async (overrideCredentials: Credentials, userId: string) => {
-			const { body } = await request.get(api('users.getStatus')).set(overrideCredentials).query({ userId }).expect(200);
-
-			return body.status;
-		};
-
 		after(async () => {
 			await setPresenceDisabled(bystander._id, false).expect(200);
 		});
@@ -432,15 +438,26 @@ import { IS_EE } from '../../e2e/config/constants';
 			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.OFFLINE);
 			expect(await statusSeenBy(bystanderCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
 		});
+
+		it('should hide the target only from the viewers an admin listed', async () => {
+			await setUserStatus(bystanderCredentials, UserStatus.ONLINE);
+
+			await setAdminDenied(bystander._id, [viewer.username]).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+			expect(await statusSeenBy(hiderCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
+
+			await setAdminDenied(bystander._id, []).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
+		});
+
+		it('should refuse the exception list from a user who cannot edit other users', async () => {
+			await setAdminDenied(hider._id, [viewer.username], undefined, bystanderCredentials).expect(400);
+		});
 	});
 
 	describe('[Accounts_UserStatus_Enabled]', () => {
-		const statusSeenBy = async (overrideCredentials: Credentials, userId: string) => {
-			const { body } = await request.get(api('users.getStatus')).set(overrideCredentials).query({ userId }).expect(200);
-
-			return body.status;
-		};
-
 		before(async () => {
 			await setUserStatus(bystanderCredentials, UserStatus.ONLINE);
 			await setUserStatus(viewerCredentials, UserStatus.BUSY);
@@ -519,6 +536,16 @@ import { IS_EE } from '../../e2e/config/constants';
 			expect(usernames.length).to.be.greaterThan(1);
 			expect(usernames).to.be.deep.equal([...usernames].sort());
 		});
+
+		it('should keep the target offline after an admin rule is cleared', async () => {
+			await setAdminDenied(bystander._id, [viewer.username]).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+
+			await setAdminDenied(bystander._id, []).expect(200);
+
+			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+		});
 	});
 
 	describe('[/im.members]', () => {
@@ -538,6 +565,89 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(usernamesOf(res.body.members)).to.include(hider.username);
 					expect(statusOf(res.body.members, hider.username)).to.be.equal(UserStatus.OFFLINE);
 				});
+		});
+	});
+
+	describe('[/users.listStatusVisibility]', () => {
+		it('should refuse a user who cannot edit other users', async () => {
+			await request.get(api('users.listStatusVisibility')).set(bystanderCredentials).expect(403);
+		});
+
+		it('should list only users under an admin rule, with usernames resolved', async () => {
+			await setAdminDenied(hider._id, [bystander.username]).expect(200);
+
+			const { body } = await request.get(api('users.listStatusVisibility')).set(credentials).expect(200);
+			const row = body.users.find((user: { _id: string }) => user._id === hider._id);
+
+			expect(row).to.not.be.undefined;
+			expect(row.statusVisibilityDeniedByAdmin).to.be.deep.equal([bystander.username]);
+			expect(body.users.every((user: { _id: string }) => user._id !== viewer._id)).to.be.true;
+		});
+
+		it('should redact the presence of a target that hides from the caller', async () => {
+			const admin = await request.get(api('me')).set(credentials).expect(200);
+			const statusText = `status-message-${Date.now()}`;
+			const rowOf = async () => {
+				const { body } = await request.get(api('users.listStatusVisibility')).set(credentials).expect(200);
+
+				return body.users.find((user: { _id: string }) => user._id === hider._id);
+			};
+
+			await setAdminDenied(hider._id, [bystander.username], { statusText }).expect(200);
+
+			expect((await rowOf()).statusText).to.be.equal(statusText);
+
+			await setAdminDenied(hider._id, [admin.body.username]).expect(200);
+
+			const redacted = await rowOf();
+
+			expect(redacted.status).to.be.equal(UserStatus.OFFLINE);
+			expect(redacted.statusText).to.be.undefined;
+
+			await setAdminDenied(hider._id, [], { statusText: '' }).expect(200);
+
+			expect(await rowOf()).to.be.undefined;
+		});
+
+		it('should expose the admin exception list through users.info only to admins, and as usernames', async () => {
+			await setAdminDenied(hider._id, [bystander.username]).expect(200);
+
+			const { body } = await request.get(api('users.info')).set(credentials).query({ userId: hider._id }).expect(200);
+
+			expect(body.user.statusVisibilityDeniedByAdmin).to.be.deep.equal([bystander.username]);
+
+			const { body: ownView } = await request.get(api('users.info')).set(hiderCredentials).query({ userId: hider._id }).expect(200);
+
+			expect(ownView.user).to.not.have.property('statusVisibilityDeniedByAdmin');
+
+			await setAdminDenied(hider._id, []).expect(200);
+		});
+
+		it('should never expose either hide list through users.list', async () => {
+			const assertDenied = async (fields: Record<string, 1>) => {
+				const response = await request
+					.get(api('users.list'))
+					.set(bystanderCredentials)
+					.query({ fields: JSON.stringify(fields) });
+
+				expect(response.status).to.be.oneOf([200, 400]);
+
+				if (response.status === 200) {
+					expect(
+						response.body.users.every(
+							(user: Record<string, unknown> & { settings?: { preferences?: Record<string, unknown> } }) =>
+								!('statusVisibilityDeniedByAdmin' in user) && !user.settings?.preferences?.statusVisibilityDenied,
+						),
+					).to.be.true;
+				}
+			};
+
+			await setAdminDenied(hider._id, [bystander.username]).expect(200);
+
+			await assertDenied({ statusVisibilityDeniedByAdmin: 1, username: 1 });
+			await assertDenied({ 'settings.preferences.statusVisibilityDenied': 1, 'username': 1 });
+
+			await setAdminDenied(hider._id, []).expect(200);
 		});
 	});
 });

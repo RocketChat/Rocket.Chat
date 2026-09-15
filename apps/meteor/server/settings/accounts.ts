@@ -211,6 +211,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowUserStatusMessageChange', true, {
 			type: 'boolean',
 			public: true,
+			i18nDescription: 'Accounts_AllowUserStatusMessageChange_Description',
 		});
 		await this.add('Accounts_AllowUsernameChange', true, {
 			type: 'boolean',
@@ -286,6 +287,7 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+			i18nDescription: 'Accounts_AllowInvisibleStatusOption_Description',
 		});
 
 		await this.section('Registration', async function () {

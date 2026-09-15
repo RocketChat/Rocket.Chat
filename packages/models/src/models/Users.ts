@@ -72,6 +72,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				partialFilterExpression: { 'settings.preferences.statusVisibilityDenied': { $exists: true } },
 			},
 			{ key: { presenceDisabledByAdmin: 1 }, partialFilterExpression: { presenceDisabledByAdmin: true } },
+			{
+				key: { statusVisibilityDeniedByAdmin: 1 },
+				partialFilterExpression: { statusVisibilityDeniedByAdmin: { $exists: true } },
+			},
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
@@ -2437,10 +2441,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	findWithStatusVisibilityConfig(userIds?: IUser['_id'][]) {
-		return this.find<Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings'>>(
+		return this.find<
+			Pick<
+				IUser,
+				'_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings' | 'statusVisibilityDeniedByAdmin'
+			>
+		>(
 			{
 				...(userIds && { _id: { $in: userIds } }),
-				'settings.preferences.statusVisibilityDenied': { $exists: true, $ne: [] },
+				$or: [
+					{ 'settings.preferences.statusVisibilityDenied': { $exists: true, $ne: [] } },
+					{ statusVisibilityDeniedByAdmin: { $exists: true, $ne: [] } },
+				],
 			},
 			{
 				projection: {
@@ -2450,9 +2462,28 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					'statusSource': 1,
 					'statusExpiresAt': 1,
 					'settings.preferences.statusVisibilityDenied': 1,
+					'statusVisibilityDeniedByAdmin': 1,
 				},
 			},
 		);
+	}
+
+	findPaginatedManagedPresenceUsers(searchTerm?: string, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>> {
+		const managed = {
+			$or: [{ presenceDisabledByAdmin: true }, { statusVisibilityDeniedByAdmin: { $exists: true, $ne: [] } }],
+		};
+
+		const term = searchTerm?.trim();
+		const filter: Filter<IUser> = term
+			? {
+					$and: [
+						managed,
+						{ $or: [{ username: { $regex: escapeRegExp(term), $options: 'i' } }, { name: { $regex: escapeRegExp(term), $options: 'i' } }] },
+					],
+				}
+			: managed;
+
+		return this.findPaginated(filter, options);
 	}
 
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

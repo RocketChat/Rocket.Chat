@@ -7,6 +7,7 @@ import {
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
 	isUsersListStatusProps,
+	isUsersListStatusVisibilityParamsGET,
 	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
@@ -849,6 +850,74 @@ API.v1.get(
 		return API.v1.success({
 			...result,
 			users: redactHiddenUsers(result.users, hidden),
+		});
+	},
+);
+
+API.v1.get(
+	'users.listStatusVisibility',
+	{
+		authRequired: true,
+		permissionsRequired: ['edit-other-user-info'],
+		query: isUsersListStatusVisibilityParamsGET,
+		response: {
+			200: ajv.compile<{ users: object[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					users: { type: 'array' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { searchTerm } = this.queryParams;
+
+		const { cursor, totalCount } = Users.findPaginatedManagedPresenceUsers(searchTerm, {
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				statusText: 1,
+				presenceDisabledByAdmin: 1,
+				statusVisibilityDeniedByAdmin: 1,
+			},
+			sort: { username: 1 },
+			skip: offset,
+			limit: count,
+		});
+
+		const [rows, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const visible = redactHiddenUsers(rows, hidden);
+
+		const everyId = [...new Set(visible.flatMap((user) => user.statusVisibilityDeniedByAdmin ?? []))];
+		const resolved = await resolveUsersByIds(everyId);
+		const usernameById = new Map(resolved.ids.map((id, index) => [id, resolved.usernames[index]]));
+
+		return API.v1.success({
+			users: visible.map((user) => ({
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+				status: user.status,
+				statusText: user.statusText,
+				presenceDisabledByAdmin: user.presenceDisabledByAdmin === true,
+				statusVisibilityDeniedByAdmin: (user.statusVisibilityDeniedByAdmin ?? []).map((id) => usernameById.get(id)).filter(Boolean),
+			})),
+			count: visible.length,
+			offset,
+			total,
 		});
 	},
 );

@@ -88,17 +88,16 @@ describe('status visibility service', () => {
 		expect(affected.map(({ _id }) => _id)).toEqual(['ana']);
 	});
 
-	it('flags users with an active block list, only while the feature is on', async () => {
+	it('lists users with an active block list as restricted, only while the feature is on', async () => {
 		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
-		expect(await service.hasRestrictions('ana')).toBe(true);
-		expect(await service.hasRestrictions('carla')).toBe(false);
+		expect(await service.getRestrictedUsers()).toEqual(['ana']);
 
 		settingValues.Accounts_StatusVisibility_Enabled = false;
 		await service.refresh();
 
-		expect(await service.hasRestrictions('ana')).toBe(false);
+		expect(await service.getRestrictedUsers()).toEqual([]);
 	});
 
 	it('reports the viewers on both sides of a block list change', async () => {
@@ -221,7 +220,6 @@ describe('status visibility service', () => {
 		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
 		await service.refresh();
 
-		expect(await service.hasRestrictions('ana')).toBe(true);
 		expect((await service.getRestrictedUsers()).sort()).toEqual(['ana']);
 	});
 
@@ -337,5 +335,52 @@ describe('status visibility service', () => {
 		await service.invalidate(['ana'], { allViewers: true });
 
 		expect(broadcast).toHaveBeenCalledWith('presence.invalidateVisibility', { targets: ['ana'], viewers: undefined });
+	});
+
+	describe('admin exception list', () => {
+		const target = (chosen: string[]) => ({
+			_id: 'target',
+			settings: { preferences: { statusVisibilityDenied: chosen } },
+			statusVisibilityDeniedByAdmin: ['imposed'],
+		});
+
+		beforeEach(async () => {
+			findWithStatusVisibilityConfig.mockReturnValue(cursor([target([])]));
+			await service.refresh();
+		});
+
+		it('should union the admin list with the user list', async () => {
+			findWithStatusVisibilityConfig.mockReturnValue(cursor([target(['chosen'])]));
+
+			await service.refresh();
+
+			expect(await hiddenFrom(service, 'chosen')).toEqual(['target']);
+			expect(await hiddenFrom(service, 'imposed')).toEqual(['target']);
+			expect(await hiddenFrom(service, 'bystander')).toEqual([]);
+		});
+
+		it('should keep the admin list when Accounts_StatusVisibility_Enabled is off', async () => {
+			settingValues.Accounts_StatusVisibility_Enabled = false;
+			findWithStatusVisibilityConfig.mockReturnValue(cursor([target(['chosen'])]));
+
+			await service.refresh();
+
+			expect(await hiddenFrom(service, 'imposed')).toEqual(['target']);
+			expect(await hiddenFrom(service, 'chosen')).toEqual([]);
+		});
+
+		it('does not hide a target through an admin exception without the license', async () => {
+			hasModule.mockReturnValue(false);
+
+			await service.refresh();
+
+			expect(await hiddenFrom(service, 'imposed')).toEqual([]);
+		});
+
+		it('flags a target hidden only by an admin exception as restricted for the sync broadcast gate', async () => {
+			await service.refresh();
+
+			expect((await service.getRestrictedUsers()).sort()).toEqual(['target']);
+		});
 	});
 });
