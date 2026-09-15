@@ -1043,6 +1043,41 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
+	async setUserProfile(
+		userId: string,
+		profile: {
+			displayname?: string;
+			avatar_url?: string;
+		},
+	): Promise<void> {
+		const user = await Users.findOneByUsername(userId);
+
+		if (!user) {
+			return;
+		}
+		
+		const subs = await Subscriptions.findJoinedByUserId<Pick<ISubscription, 'rid'>>(user._id, { projection: { rid: 1 } }).toArray();
+		const rooms = await Rooms.findFederatedByIds<Pick<IRoomNativeFederated, '_id' | 'federation' | 'federated'>>(
+			subs.map(({ rid }) => rid),
+			{ projection: { _id: 1, federation: 1, federated: 1 } },
+		).toArray();
+
+		await Promise.all(
+			rooms.map(async ({ federation }) => {
+				try {
+					await federationSDK.updateRoomMembership({
+						roomId: roomIdSchema.parse(federation.mrid),
+						userId: userIdSchema.parse(userId),
+						membership: 'join',
+						content: profile,
+					});
+				} catch (err) {
+					this.logger.error({ msg: 'Failed to update user profile in Matrix for a room', roomId: federation.mrid, err });
+				}
+			}),
+		);
+	}
+
 	async joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean> {
 		try {
 			if (isUserNativeFederated(user)) {
