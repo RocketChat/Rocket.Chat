@@ -54,7 +54,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return this.create(data);
 		}
 
-		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
+		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy, provider, iCalUId } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
 		const reminderTime = reminderMinutesBeforeStart ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
@@ -68,6 +68,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			reminderTime,
 			externalId,
 			...(busy !== undefined && { busy }),
+			...(provider !== undefined && { provider }),
+			...(iCalUId !== undefined && { iCalUId }),
 		};
 
 		const event = await this.findImportedEvent(externalId, uid);
