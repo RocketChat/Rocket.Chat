@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/queue-worker",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"private": true,
 	"description": "Rocket.Chat service",
 	"keywords": [
@@ -28,7 +28,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",

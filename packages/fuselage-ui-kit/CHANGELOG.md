@@ -1,5 +1,34 @@
 # Change Log
 
+## 34.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [126e446ca50ee6ae17abf0b31f4f1917c72e5a2f, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/apps-engine@1.66.0
+  - @rocket.chat/core-typings@8.8.0
+  - @rocket.chat/gazzodown@34.0.0
+  - @rocket.chat/ui-avatar@30.0.0
+  - @rocket.chat/ui-contexts@34.0.0
+  - @rocket.chat/ui-video-conf@34.0.0
+  </details>
+
+## 34.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [126e446ca50ee6ae17abf0b31f4f1917c72e5a2f, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/apps-engine@1.66.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/ui-contexts@34.0.0-rc.0
+  - @rocket.chat/gazzodown@34.0.0-rc.0
+  - @rocket.chat/ui-kit@1.1.0
+  - @rocket.chat/ui-video-conf@34.0.0-rc.0
+  - @rocket.chat/ui-avatar@30.0.0-rc.0
+  </details>
+
 ## 33.0.0
 
 ### Patch Changes

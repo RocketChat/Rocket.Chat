@@ -6,7 +6,6 @@ import {
 	useLoginWithPassword,
 	useSettingSetValue,
 	useSettingsDispatch,
-	useMethod,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -51,8 +50,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	const dispatchSettings = useSettingsDispatch();
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
-	const registerUser = useMethod('registerUser');
-	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
+	const registerUser = useEndpoint('POST', '/v1/users.register');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
@@ -84,7 +82,13 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			email: string;
 			password: string;
 		}): Promise<void> => {
-			await registerUser({ name: fullname, username, email, pass: password });
+			try {
+				await registerUser({ name: fullname, username, email, pass: password });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				throw error;
+			}
+
 			void clientCallbacks.run('userRegistered', {});
 
 			try {
@@ -102,11 +106,10 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 
 			setForceLogin(false);
 
-			await setBasicInfo({ data: { username } });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 			void clientCallbacks.run('usernameSet', {});
 		},
-		[registerUser, setForceLogin, setBasicInfo, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
+		[registerUser, setForceLogin, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
 	const saveAgreementData = useCallback(

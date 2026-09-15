@@ -3,7 +3,17 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AdminUsers, AdminRoles, AdminRooms, AdminThirdPartyLogin, AdminIntegrations } from './page-objects';
+import {
+	AdminUsers,
+	AdminPermissions,
+	AdminRooms,
+	AdminThirdPartyLogin,
+	AdminIntegrations,
+	AdminInfo,
+	AdminEngagement,
+	AdminMailer,
+} from './page-objects';
+import { AdminDeviceManagement } from './page-objects/admin-device-management';
 import { ToastMessages } from './page-objects/fragments';
 import { createTargetChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
@@ -15,7 +25,7 @@ test.describe.parallel('administration', () => {
 
 	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/info');
+			await new AdminInfo(page).goto();
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
@@ -28,14 +38,15 @@ test.describe.parallel('administration', () => {
 	test.describe('Engagement dashboard', () => {
 		test('Should show upsell modal', async ({ page }) => {
 			test.skip(IS_EE);
-			await page.goto('/admin/engagement/users');
+			const poAdminEngagement = new AdminEngagement(page);
+			await poAdminEngagement.gotoExpecting(poAdminEngagement.upsellModal);
 
-			await expect(page.locator('role=dialog[name="Engagement dashboard"]')).toBeVisible();
+			await expect(poAdminEngagement.upsellModal).toBeVisible();
 		});
 
 		test('Should show engagement dashboard', async ({ page }) => {
 			test.skip(!IS_EE);
-			await page.goto('/admin/engagement/users');
+			await new AdminEngagement(page).goto();
 
 			await expect(page.locator('h1 >> text="Engagement"')).toBeVisible();
 		});
@@ -44,14 +55,15 @@ test.describe.parallel('administration', () => {
 	test.describe('Device management', () => {
 		test('Should show upsell modal', async ({ page }) => {
 			test.skip(IS_EE);
-			await page.goto('/admin/device-management');
+			const poAdminDeviceManagement = new AdminDeviceManagement(page);
+			await poAdminDeviceManagement.gotoExpecting(poAdminDeviceManagement.upsellModal);
 
-			await expect(page.locator('role=dialog[name="Device management"]')).toBeVisible();
+			await expect(poAdminDeviceManagement.upsellModal).toBeVisible();
 		});
 
 		test('Should show device management page', async ({ page }) => {
 			test.skip(!IS_EE);
-			await page.goto('/admin/device-management');
+			await new AdminDeviceManagement(page).goto();
 
 			await expect(page.locator('h1 >> text="Device management"')).toBeVisible();
 		});
@@ -62,7 +74,7 @@ test.describe.parallel('administration', () => {
 		test.beforeEach(async ({ page }) => {
 			poAdminUsers = new AdminUsers(page);
 
-			await page.goto('/admin/users');
+			await poAdminUsers.goto();
 		});
 
 		test('expect find "user1" user', async () => {
@@ -191,7 +203,7 @@ test.describe.parallel('administration', () => {
 		});
 		test.beforeEach(async ({ page }) => {
 			poAdminRooms = new AdminRooms(page);
-			await page.goto('/admin/rooms');
+			await poAdminRooms.goto();
 		});
 
 		test('should find "general" channel', async ({ page }) => {
@@ -273,15 +285,15 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Permissions', () => {
-		let poAdminRoles: AdminRoles;
+		let poAdminPermissions: AdminPermissions;
 		test.beforeEach(async ({ page }) => {
-			poAdminRoles = new AdminRoles(page);
-			await page.goto('/admin/permissions');
+			poAdminPermissions = new AdminPermissions(page);
+			await poAdminPermissions.goto();
 		});
 
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
-			await poAdminRoles.btnCreateRole.click();
+			await poAdminPermissions.btnCreateRole.click();
 			await expect(page.getByRole('dialog', { name: 'Custom roles' })).toBeVisible();
 		});
 
@@ -297,43 +309,43 @@ test.describe.parallel('administration', () => {
 			});
 
 			test('admin should be able to get the owners of a room that wasnt created by him', async ({ page }) => {
-				await poAdminRoles.openRoleByName('Owner').click();
-				await poAdminRoles.btnUsersInRole.click();
-				await poAdminRoles.inputRoom.fill(channelName);
+				await poAdminPermissions.openRoleByName('Owner').click();
+				await poAdminPermissions.btnUsersInRole.click();
+				await poAdminPermissions.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
 
-				await expect(poAdminRoles.getUserInRoleRowByUsername('user1')).toBeVisible();
+				await expect(poAdminPermissions.getUserInRoleRowByUsername('user1')).toBeVisible();
 			});
 
 			test('should add user1 as moderator of target channel', async ({ page }) => {
-				await poAdminRoles.openRoleByName('Moderator').click();
-				await poAdminRoles.btnUsersInRole.click();
+				await poAdminPermissions.openRoleByName('Moderator').click();
+				await poAdminPermissions.btnUsersInRole.click();
 
-				await poAdminRoles.inputRoom.fill(channelName);
+				await poAdminPermissions.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
 
-				await poAdminRoles.inputUsers.pressSequentially('user1');
+				await poAdminPermissions.inputUsers.pressSequentially('user1');
 				await page.getByRole('option', { name: 'user1' }).click();
-				await poAdminRoles.btnAdd.click();
+				await poAdminPermissions.btnAdd.click();
 
-				await expect(poAdminRoles.getUserInRoleRowByUsername('user1')).toBeVisible();
+				await expect(poAdminPermissions.getUserInRoleRowByUsername('user1')).toBeVisible();
 			});
 
 			test('should remove user1 as moderator of target channel', async ({ page }) => {
-				await poAdminRoles.openRoleByName('Moderator').click();
-				await poAdminRoles.btnUsersInRole.click();
+				await poAdminPermissions.openRoleByName('Moderator').click();
+				await poAdminPermissions.btnUsersInRole.click();
 
-				await poAdminRoles.inputRoom.fill(channelName);
+				await poAdminPermissions.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
 
-				await poAdminRoles.removeUserFromRoleByUsername('user1');
+				await poAdminPermissions.removeUserFromRoleByUsername('user1');
 				await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
 			});
 
 			test('should back to the permissions page', async ({ page }) => {
-				await poAdminRoles.openRoleByName('Moderator').click();
-				await poAdminRoles.btnUsersInRole.click();
-				await poAdminRoles.btnBack.click();
+				await poAdminPermissions.openRoleByName('Moderator').click();
+				await poAdminPermissions.btnUsersInRole.click();
+				await poAdminPermissions.btnBack.click();
 
 				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
 			});
@@ -342,7 +354,7 @@ test.describe.parallel('administration', () => {
 
 	test.describe('Mailer', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/mailer');
+			await new AdminMailer(page).goto();
 		});
 
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
@@ -357,13 +369,11 @@ test.describe.parallel('administration', () => {
 		const appRedirectURI = faker.internet.url();
 
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/third-party-login');
 			poAdminThirdPartyLogin = new AdminThirdPartyLogin(page);
+			await poAdminThirdPartyLogin.goto();
 		});
 
 		test('should show Third-party login page', async ({ page }) => {
-			await page.goto('/admin/third-party-login');
-
 			await expect(page.locator('h1 >> text="Third-party login"')).toBeVisible();
 		});
 
@@ -424,7 +434,7 @@ test.describe.parallel('administration', () => {
 
 		test.beforeEach(async ({ page }) => {
 			poAdminIntegrations = new AdminIntegrations(page);
-			await page.goto('/admin/integrations');
+			await poAdminIntegrations.goto();
 		});
 
 		test.afterAll(async ({ api }) => {

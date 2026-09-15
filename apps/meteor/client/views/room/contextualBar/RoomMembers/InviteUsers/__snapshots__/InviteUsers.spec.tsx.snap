@@ -332,19 +332,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_c_"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                         id="_r_3_"
                         type="button"
                       >
                         <span
-                          class="rcx-box rcx-box--full rcx-css-n501yz"
+                          class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                           id="react-aria-_r_c_"
                         >
                           1
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>
@@ -417,19 +417,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_k_"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
                         id="_r_4_"
                         type="button"
                       >
                         <span
-                          class="rcx-box rcx-box--full rcx-css-n501yz"
+                          class="rcx-box rcx-box--full rcx-css-1ah8hdc"
                           id="react-aria-_r_k_"
                         >
                           5
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-rm4moq"
+                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>

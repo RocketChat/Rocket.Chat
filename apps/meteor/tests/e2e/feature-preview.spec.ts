@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
+import { AccountFeaturePreview, AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
 import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
@@ -60,8 +61,7 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test('should show "Navigation" feature section', async ({ page }) => {
-		await page.goto('/account/feature-preview');
-		await page.waitForSelector('#main-content');
+		await new AccountFeaturePreview(page).goto();
 
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
@@ -121,8 +121,8 @@ test.describe.serial('feature preview', () => {
 			await deleteChannel(api, targetChannelNameInTeam);
 		});
 
-		test('should display sidepanel item with the same display preference as the sidebar', async ({ page }) => {
-			await page.goto('/home');
+		test('should display sidepanel item with the same display preference as the sidebar', async () => {
+			await poHomeChannel.goto();
 			const message = 'hello world';
 
 			await poHomeChannel.navbar.openChat(sidepanelTeam);
@@ -130,8 +130,8 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
 		});
 
-		test('should escape special characters on item subtitle', async ({ page }) => {
-			await page.goto('/home');
+		test('should escape special characters on item subtitle', async () => {
+			await poHomeChannel.goto();
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
@@ -174,8 +174,7 @@ test.describe.serial('feature preview', () => {
 			}).toPass();
 			await poHomeTeam.content.sendMessage('hello team');
 
-			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.content.waitForChannel();
+			await user1Channel.gotoChannel(targetChannel);
 			await user1Channel.content.openReplyInThread();
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('hello thread');
@@ -187,7 +186,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
-			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.waitForRoomLoad();
 			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
@@ -198,8 +197,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.waitForHome();
+			await poHomeChannel.goto();
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
@@ -213,8 +211,8 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toHaveAttribute('aria-selected', 'true');
 		});
 
-		test('should show all filters and tablist on sidepanel', async ({ page }) => {
-			await page.goto('/home');
+		test('should show all filters and tablist on sidepanel', async () => {
+			await poHomeChannel.goto();
 
 			await expect(poHomeChannel.sidebar.teamCollabFilters).toBeVisible();
 			await expect(poHomeChannel.sidebar.omnichannelFilters).toBeVisible();
@@ -225,12 +223,14 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should show favorite team on the sidepanel', async () => {
+			test.skip(IS_EE);
+
 			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).not.toBeVisible();
 
-			await poHomeChannel.roomHeaderFavoriteBtn.click();
+			await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
 		});
@@ -265,7 +265,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should persist sidepanel state after page reload', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
 			await poHomeChannel.sidepanel.unreadToggleLabel.click({ force: true });
 
@@ -278,18 +278,16 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Discussions')).toBeVisible();
 		});
 
-		test('should show unread filter for thread messages', async ({ page, browser }) => {
+		test('should show unread filter for thread messages', async ({ browser }) => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
 			await test.step('mark all rooms as read', async () => {
-				await page.goto('/home');
-				await poHomeChannel.waitForHome();
+				await poHomeChannel.goto();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
-			await page.goto(`/channel/${targetChannel}`);
-			await poHomeChannel.content.waitForChannel();
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('test thread message');
 
 			await poHomeChannel.navbar.btnHome.click();
@@ -299,8 +297,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
 
 			await test.step('send a thread message from another user', async () => {
-				await user1Page.goto(`/channel/${targetChannel}`);
-				await user1Channel.content.waitForChannel();
+				await user1Channel.gotoChannel(targetChannel);
 				await user1Channel.content.openReplyInThread();
 				await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 				await user1Channel.content.sendMessageInThread('hello thread');
@@ -323,24 +320,24 @@ test.describe.serial('feature preview', () => {
 			await user1Page.close();
 		});
 
-		test('unread mentions badges on filters', async ({ page, browser }) => {
+		test('unread mentions badges on filters', async ({ browser }) => {
+			test.skip(IS_EE);
+
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
 			await test.step('mark all rooms as read', async () => {
-				await page.goto('/home');
-				await poHomeChannel.waitForHome();
+				await poHomeChannel.goto();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
 			await test.step('should favorite the target channel', async () => {
-				await page.goto(`/channel/${targetChannel}`);
-				await poHomeChannel.content.waitForChannel();
+				await poHomeChannel.gotoChannel(targetChannel);
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
 
-				await poHomeChannel.roomHeaderFavoriteBtn.click();
+				await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			});
@@ -359,8 +356,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.btnHome.click();
 
 			await test.step('send a mention message from another user', async () => {
-				await user1Page.goto(`/channel/${targetChannel}`);
-				await user1Channel.content.waitForChannel();
+				await user1Channel.gotoChannel(targetChannel);
 				await user1Channel.content.sendMessage(`hello @${Users.admin.data.username}`);
 			});
 
@@ -400,7 +396,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should persist sidepanel state after switching admin panel', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
 			await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
@@ -424,16 +420,16 @@ test.describe.serial('feature preview', () => {
 				await page.setViewportSize({ width: 640, height: 460 });
 			});
 
-			test('should show button to toggle sidebar/sidepanel', async ({ page }) => {
-				await page.goto('/home');
+			test('should show button to toggle sidebar/sidepanel', async () => {
+				await poHomeChannel.goto();
 
 				await poHomeChannel.sidebar.waitForDismissal();
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
 
-			test('should toggle sidebar/sidepanel when clicking the button', async ({ page }) => {
-				await page.goto('/home');
+			test('should toggle sidebar/sidepanel when clicking the button', async () => {
+				await poHomeChannel.goto();
 
 				await poHomeChannel.navbar.btnSidebarToggler().click();
 				await poHomeChannel.sidebar.waitForDismissal();
@@ -444,8 +440,8 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 			});
 
-			test('toggle sidebar and sidepanel', async ({ page }) => {
-				await page.goto('/home');
+			test('toggle sidebar and sidepanel', async () => {
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnSidebarToggler().click();
 
 				await expect(poHomeChannel.sidepanel.sidepanelBackButton).toBeVisible();
@@ -462,7 +458,7 @@ test.describe.serial('feature preview', () => {
 			});
 
 			test('should close nav region when clicking outside of it', async ({ page }) => {
-				await page.goto('/home');
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnSidebarToggler().click();
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
@@ -473,8 +469,8 @@ test.describe.serial('feature preview', () => {
 				await poHomeChannel.sidebar.waitForDismissal();
 			});
 
-			test('should close nav region when opening a room', async ({ page }) => {
-				await page.goto('/home');
+			test('should close nav region when opening a room', async () => {
+				await poHomeChannel.goto();
 				await poHomeChannel.navbar.btnSidebarToggler().click();
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
@@ -525,9 +521,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should open rooms when clicking on sidebar filter', async ({ page }) => {
-			await page.goto('/home');
-
-			await poHomeChannel.waitForHome();
+			await poHomeChannel.goto();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
 			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click({ force: true });
@@ -540,9 +534,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should open room when clicking on sidepanel item', async ({ page }) => {
-			await page.goto('/home');
-
-			await poHomeChannel.waitForHome();
+			await poHomeChannel.goto();
 			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click();
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
@@ -557,8 +549,7 @@ test.describe.serial('feature preview', () => {
 			const discussionName = faker.string.uuid();
 
 			await test.step('create a direct message with user1', async () => {
-				await page.goto('/home');
-				await poHomeChannel.waitForHome();
+				await poHomeChannel.goto();
 
 				await poHomeChannel.navbar.openChat(Users.user1.data.username);
 				await poHomeChannel.content.waitForChannel();
@@ -618,9 +609,7 @@ test.describe.serial('feature preview', () => {
 
 		test('should not open rooms when clicking on sidebar filters in small viewport', async ({ page }) => {
 			await page.setViewportSize({ width: 640, height: 460 });
-			await page.goto('/home');
-
-			await poHomeChannel.waitForHome();
+			await poHomeChannel.goto();
 
 			await poHomeChannel.sidebar.waitForDismissal();
 			await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();

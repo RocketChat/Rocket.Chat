@@ -57,7 +57,9 @@ const MessagesQuerySchema = {
 		from: { type: 'string' },
 		to: { type: 'string' },
 		dir: { type: 'string', enum: ['b', 'f'] },
-		limit: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		// a union type list rather than `oneOf`: ajvQuery coerces between number and string, so both
+		// `oneOf` branches would match a numeric value and fail validation
+		limit: { type: ['number', 'string'] },
 		filter: { type: 'string' },
 	},
 };

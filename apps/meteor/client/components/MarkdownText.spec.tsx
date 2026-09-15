@@ -4,7 +4,7 @@ import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
 import '@testing-library/jest-dom';
-import { emoji } from '../../app/emoji/client/lib';
+import { emoji } from '../lib/emoji/lib';
 import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
 
 jest.mock('../lib/getMarkdownParserLimit');

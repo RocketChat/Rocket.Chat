@@ -290,6 +290,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		messageId: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneVisibleByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult>;
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(

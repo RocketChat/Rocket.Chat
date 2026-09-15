@@ -99,6 +99,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			const team = { _id: 'team-id', roomId: 'team-room' };
 			const user = { _id: 'user-1', username: 'u' };
 			stubs.Team.getMatchingTeamRooms.resolves(['room-1', 'room-2', team.roomId]);
+			stubs.Rooms.findOneById.withArgs(team.roomId).resolves({ _id: team.roomId });
 
 			const erased: Array<{ rid: string; user: any }> = [];
 			const eraseRoomFn = async (rid: string, user: any) => {
@@ -114,6 +115,22 @@ describe('eraseTeam (TypeScript) module', () => {
 			sinon.assert.calledOnce(stubs.Team.removeAllMembersFromTeam);
 			sinon.assert.calledOnce(stubs.Team.deleteById);
 		});
+
+		it('skips the main room but still deletes the team when the main room no longer exists', async () => {
+			const team = { _id: 'team-id', roomId: 'team-room' };
+			const user = { _id: 'user-1', username: 'u' };
+			stubs.Team.getMatchingTeamRooms.resolves([]);
+			stubs.Rooms.findOneById.withArgs(team.roomId).resolves(null);
+
+			const eraseRoomFn = sandbox.stub().resolves();
+
+			await subject.eraseTeamShared(user, team, [], eraseRoomFn);
+
+			sinon.assert.notCalled(eraseRoomFn);
+			sinon.assert.calledOnce(stubs.Team.unsetTeamIdOfRooms);
+			sinon.assert.calledOnce(stubs.Team.removeAllMembersFromTeam);
+			sinon.assert.calledOnce(stubs.Team.deleteById);
+		});
 	});
 
 	describe('eraseTeam', () => {
@@ -121,6 +138,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			const team = { _id: 't1', roomId: 't-room' };
 			const user = { _id: 'u1', username: 'u', name: 'User' };
 			stubs.Team.getMatchingTeamRooms.resolves([]);
+			stubs.Rooms.findOneById.withArgs(team.roomId).resolves({ _id: team.roomId });
 			const { eraseRoomStub } = stubs;
 			eraseRoomStub.resolves(true);
 

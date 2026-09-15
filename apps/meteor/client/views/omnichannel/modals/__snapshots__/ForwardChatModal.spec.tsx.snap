@@ -56,7 +56,7 @@ exports[`renders Default without crashing 1`] = `
                     aria-busy="false"
                     aria-disabled="false"
                     aria-label="Forward_to_department"
-                    class="rcx-box rcx-box--full rcx-select rcx-css-cjb8sk"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-cjb8sk"
                     id="_r_0_"
                     name="department"
                   >
@@ -113,7 +113,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <div
                     aria-label="Forward_to_user"
-                    class="rcx-box rcx-box--full rcx-select rcx-css-ue04py"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-ue04py"
                     id="_r_1_"
                     name="username"
                   >

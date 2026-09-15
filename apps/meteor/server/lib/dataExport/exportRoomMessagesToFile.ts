@@ -148,7 +148,7 @@ export const getMessageData = (
 			});
 			break;
 		case 'wm':
-			messageObject.msg = i18n.t('Welcome', { user: username });
+			messageObject.msg = i18n.t('Welcome', { interpolation: { escapeValue: false }, user: username });
 			break;
 		case 'livechat-close':
 			messageObject.msg = i18n.t('Conversation_finished');

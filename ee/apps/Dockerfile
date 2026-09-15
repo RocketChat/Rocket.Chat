@@ -1,4 +1,4 @@
-FROM node:22.22.3-alpine3.23 AS builder
+FROM node:24.15.0-alpine3.23 AS builder
 
 ARG SERVICE
 
@@ -50,7 +50,7 @@ RUN set -eu; cd /app; \
     done; \
     find packages ee/packages ee/apps \( -name '*.js.map' -o -name '*.d.ts' \) -delete
 
-FROM node:22.22.3-alpine3.23 AS release-standard
+FROM node:24.15.0-alpine3.23 AS release-standard
 
 ARG SERVICE
 
@@ -77,10 +77,13 @@ EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
 
-FROM rocketchat/dhi-node:22.22.3-alpine3.23-fips AS release-fips
+FROM rocketchat/dhi-node:24.15.0-alpine3.23-fips AS release-fips
 ARG SERVICE
 ENV NODE_ENV=production \
     PORT=3000
+# the hardened image has no /etc/alpine-release, so node-gyp-build would detect
+# glibc and load the wrong prebuild for native modules
+ENV LIBC=musl
 COPY --chown=node:node --from=builder /app /app
 WORKDIR /app/ee/apps/${SERVICE}
 USER node

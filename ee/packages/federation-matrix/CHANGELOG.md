@@ -1,5 +1,48 @@
 # @rocket.chat/federation-matrix
 
+## 0.2.1
+
+### Patch Changes
+
+- ([#41717](https://github.com/RocketChat/Rocket.Chat/pull/41717)) Fixes federation endpoints rejecting valid requests, which broke:
+
+  - room history backfill
+  - image thumbnails
+  - room message pagination
+  - accepting an invite from another homeserver
+
+- <details><summary>Updated dependencies [097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, 7f9592dc92567993f41d0e3510ecc9c00637a4cc, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/rest-typings@8.8.0
+  - @rocket.chat/core-typings@8.8.0
+  - @rocket.chat/models@2.5.0
+  - @rocket.chat/core-services@0.16.0
+  - @rocket.chat/network-broker@0.2.39
+  </details>
+
+## 0.2.1-rc.0
+
+### Patch Changes
+
+- ([#41717](https://github.com/RocketChat/Rocket.Chat/pull/41717)) Fixes federation endpoints rejecting valid requests, which broke:
+
+  - room history backfill
+  - image thumbnails
+  - room message pagination
+  - accepting an invite from another homeserver
+
+- <details><summary>Updated dependencies [097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, 7f9592dc92567993f41d0e3510ecc9c00637a4cc, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/rest-typings@8.8.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/models@2.5.0-rc.0
+  - @rocket.chat/core-services@0.16.0-rc.0
+  - @rocket.chat/license@1.2.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/http-router@7.9.23
+  - @rocket.chat/network-broker@0.2.39-rc.0
+  </details>
+
 ## 0.2.0
 
 ### Minor Changes

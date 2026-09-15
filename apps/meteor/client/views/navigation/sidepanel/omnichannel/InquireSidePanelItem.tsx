@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarItemIcon } from '@rocket.chat/fuselage';
 import { escapeHTML } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';

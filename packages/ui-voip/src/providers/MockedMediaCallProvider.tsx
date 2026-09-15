@@ -1,4 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import type { CallFeature } from '@rocket.chat/media-signaling';
+import { callFeatureList } from '@rocket.chat/media-signaling';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -18,6 +20,7 @@ export type MockedMediaCallProviderProps = {
 	held?: boolean;
 	onClickDirectMessage?: () => void;
 	instanceProps?: Partial<MockedInstanceProviderProps>;
+	supportedFeatures?: readonly CallFeature[];
 };
 
 const MockedMediaCallProvider = ({
@@ -31,6 +34,7 @@ const MockedMediaCallProvider = ({
 	muted = false,
 	held = false,
 	instanceProps,
+	supportedFeatures = callFeatureList,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
 		displayName: 'John Doe',
@@ -122,7 +126,7 @@ const MockedMediaCallProvider = ({
 		remoteMuted,
 		remoteHeld,
 		callId: undefined,
-		supportedFeatures: ['audio', 'screen-share', 'transfer', 'hold'],
+		supportedFeatures,
 	} as SessionState;
 
 	const contextValue = {

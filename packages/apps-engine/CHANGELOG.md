@@ -1,5 +1,17 @@
 # @rocket.chat/apps-engine
 
+## 1.66.0
+
+### Minor Changes
+
+- ([#41765](https://github.com/RocketChat/Rocket.Chat/pull/41765)) Accepts a role name in the `when.hasOneRole` and `when.hasAllRoles` filters of an app action button
+
+## 1.66.0-rc.0
+
+### Minor Changes
+
+- ([#41765](https://github.com/RocketChat/Rocket.Chat/pull/41765)) Accepts a role name in the `when.hasOneRole` and `when.hasAllRoles` filters of an app action button
+
 ## 1.65.1
 
 ### Patch Changes

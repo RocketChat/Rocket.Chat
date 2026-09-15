@@ -28,7 +28,7 @@ const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
 	return hasAny;
 };
 
-export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
+export const setUsernameWithValidation = async (userId: string, username: string): Promise<void> => {
 	if (!username) {
 		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
 	}
@@ -71,11 +71,6 @@ export const setUsernameWithValidation = async (userId: string, username: string
 		throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 			method: 'setUsername',
 		});
-	}
-
-	if (!user.username) {
-		await joinDefaultChannels(user._id, joinDefaultChannelsSilenced);
-		setImmediate(async () => callbacks.run('afterCreateUser', user));
 	}
 
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
@@ -152,6 +147,11 @@ export const _setUsername = async function (
 	}
 
 	await onceTransactionCommitedSuccessfully(async () => {
+		if (!previousUsername) {
+			await joinDefaultChannels(user._id);
+			callbacks.runAsync('afterCreateUser', user);
+		}
+
 		// If it's the first username and the user has an invite Token, then join the invite room
 		if (!previousUsername && user.inviteToken) {
 			const inviteData = await Invites.findOneById(user.inviteToken);

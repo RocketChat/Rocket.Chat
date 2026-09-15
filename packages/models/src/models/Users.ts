@@ -67,6 +67,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { statusText: 1 } },
 			{ key: { statusConnection: 1 }, sparse: true },
 			{ key: { statusExpiresAt: 1 }, partialFilterExpression: { statusExpiresAt: { $exists: true } } },
+			{
+				key: { 'settings.preferences.statusVisibilityDenied': 1 },
+				partialFilterExpression: { 'settings.preferences.statusVisibilityDenied': { $exists: true } },
+			},
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
@@ -465,13 +469,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
-		const extraQuery = [
-			{
-				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
-			},
-		];
+		const extraQuery = [{ federated: { $ne: true } }];
 		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
@@ -483,9 +482,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
-		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
+		const extraQuery = [{ federated: true }];
 		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
@@ -2435,6 +2433,25 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const query = { roles, type };
 
 		return this.findOne<T, O>(query, options);
+	}
+
+	findWithStatusVisibilityConfig(userIds?: IUser['_id'][]) {
+		return this.find<Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'settings'>>(
+			{
+				...(userIds && { _id: { $in: userIds } }),
+				'settings.preferences.statusVisibilityDenied': { $exists: true, $ne: [] },
+			},
+			{
+				projection: {
+					'username': 1,
+					'status': 1,
+					'statusText': 1,
+					'statusSource': 1,
+					'statusExpiresAt': 1,
+					'settings.preferences.statusVisibilityDenied': 1,
+				},
+			},
+		);
 	}
 
 	findPresenceUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
