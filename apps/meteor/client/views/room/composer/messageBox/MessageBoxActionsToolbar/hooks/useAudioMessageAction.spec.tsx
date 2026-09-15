@@ -28,12 +28,12 @@ it('enables the audio message action when the whitelist allows audio/mpeg, which
 	expect(result.current.disabled).toBe(false);
 });
 
-it('still enables the audio message action for the legacy audio/mp3 whitelist entry', () => {
+it('disables the audio message action when only the legacy audio/mp3 value is whitelisted, since the recorder never produces that type', () => {
 	const { result } = setup('audio/mp3');
-	expect(result.current.disabled).toBe(false);
+	expect(result.current.disabled).toBe(true);
 });
 
-it('disables the audio message action when neither audio/mpeg nor audio/mp3 is whitelisted', () => {
+it('disables the audio message action when neither audio/mpeg nor audio/* is whitelisted', () => {
 	const { result } = setup('image/png');
 	expect(result.current.disabled).toBe(true);
 });
