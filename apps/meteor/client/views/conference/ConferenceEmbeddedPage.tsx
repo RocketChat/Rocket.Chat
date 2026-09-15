@@ -1,6 +1,6 @@
 import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useSetModal, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,6 +25,7 @@ import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { PREFLIGHT_FACES_SHOWN } from '../../../lib/videoConference/constants';
+import IconButtonWithBadge from '../../components/IconButtonWithBadge';
 import { useRingingExpiry } from '../../hooks/useRingingExpiry';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
@@ -108,6 +109,18 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 	const presentCount = present.length;
 
+	/**
+	 * What the chat button's badge says: the unread count, or — when something happened that carries no count —
+	 * an empty badge, which is the dot. `undefined` is no badge at all.
+	 */
+	const chatBadge = (() => {
+		if (unread > 0) {
+			return unread;
+		}
+
+		return hasUnseenActivity ? null : undefined;
+	})();
+
 	const { callSounds } = useCustomSound();
 	const otherMembers = call.canRing && conference.joined ? call.members.filter((m) => m._id !== user?._id && !isInVideoConference(m)) : [];
 	useRingingExpiry(otherMembers.map((m) => m.ringingAt));
@@ -120,55 +133,6 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		}
 		return () => callSounds.stopDialer();
 	}, [someoneRinging, callSounds]);
-
-	const membersAction = (
-		<IconButton
-			small
-			secondary
-			position='relative'
-			overflow='visible'
-			// The same words in both, because they disagreed: the tooltip said "People" while the accessible name
-			// said how many, so anything looking for the button by the name it appeared to have never found it.
-			aria-label={t('__count__people_in_the_call', { count: presentCount })}
-			title={t('__count__people_in_the_call', { count: presentCount })}
-			aria-pressed={activePanel === 'members'}
-			onClick={() => togglePanel('members')}
-			icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-		>
-			{presentCount > 0 && (
-				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
-					<Badge>{presentCount}</Badge>
-				</Box>
-			)}
-		</IconButton>
-	);
-
-	const chatAction = (
-		<IconButton
-			small
-			secondary
-			position='relative'
-			overflow='visible'
-			aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, hasUnseenActivity)}
-			title={t('Chat')}
-			aria-pressed={chatVisible}
-			onClick={() => togglePanel('chat')}
-			icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-		>
-			{unread > 0 && (
-				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
-					<Badge variant={unreadVariant} title={unreadTitle}>
-						{unread}
-					</Badge>
-				</Box>
-			)}
-			{unread === 0 && hasUnseenActivity && (
-				<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} pointerEvents='none' aria-hidden='true'>
-					<Badge variant={unreadVariant} title={unreadTitle} />
-				</Box>
-			)}
-		</IconButton>
-	);
 
 	if (room.error) {
 		return <ConferenceUnauthorizedPage />;
@@ -192,6 +156,8 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		}
 
 		return (
+			// No `confirming`: joining takes this screen down with it — `conference.loading` is that very mutation,
+			// and it returns `PageLoading` above — so there is no button left to report it on.
 			<ConferencePreflight
 				name={call.name}
 				action={call.placing ? 'start' : 'join'}
@@ -232,8 +198,30 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 					</Box>
 				}
 			>
-				{membersAction}
-				{chatAction}
+				<IconButtonWithBadge
+					small
+					secondary
+					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
+					// name said how many, so anything looking for the button by the name it appeared to have never
+					// found it.
+					aria-label={t('__count__people_in_the_call', { count: presentCount })}
+					title={t('__count__people_in_the_call', { count: presentCount })}
+					aria-pressed={activePanel === 'members'}
+					onClick={() => togglePanel('members')}
+					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+					badge={presentCount > 0 ? presentCount : undefined}
+				/>
+				<IconButtonWithBadge
+					small
+					secondary
+					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, hasUnseenActivity)}
+					title={t('Chat')}
+					aria-pressed={chatVisible}
+					onClick={() => togglePanel('chat')}
+					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+					badge={chatBadge}
+					badgeVariant={unreadVariant}
+				/>
 			</CallTopBar>
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
