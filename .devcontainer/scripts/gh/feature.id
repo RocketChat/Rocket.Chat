@@ -1,0 +1,5 @@
+# The devcontainer feature this directory's hooks belong to. Nothing in here
+# runs unless devcontainer.json declares it.
+#
+# See scripts/lib/features.sh.
+ghcr.io/devcontainers/features/github-cli
