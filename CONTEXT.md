@@ -27,7 +27,7 @@ The catalogue of Streamers the product ships with, together with their access ru
 _Avoid_: notifications service, streams config
 
 **Listeners module**:
-The mapping from broker events to Streamer emissions. It is the only place a broker event becomes a client-visible stream event.
+The mapping from broker events to Streamer emissions. Every such mapping lives here; the cross-instance `broadcast` and `stream` events bypass it, replicating an emission another instance already made.
 _Avoid_: event handlers, event bridge
 
 ### DDP Streamer
