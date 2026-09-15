@@ -1,5 +1,4 @@
 import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -14,7 +13,6 @@ import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import PageLoading from '../root/PageLoading';
 import CallMembersPanel from './components/CallMembersPanel/CallMembersPanel';
 import CallPanel from './components/CallPanel';
-import CallTimer from './components/CallTimer/CallTimer';
 import CallTopBar from './components/CallTopBar';
 import ChatAccessNotice from './components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from './components/ConferenceIframe';
@@ -35,14 +33,6 @@ type ConferenceEmbeddedPageProps = {
 type ConferencePanel = 'members' | 'chat';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
-
-const callHeaderTimerStyles = css`
-	display: inline-flex;
-	align-items: center;
-	min-width: 0;
-	color: rgba(255, 255, 255, 0.85);
-	font-variant-numeric: tabular-nums;
-`;
 
 /**
  * `aria-label` overrides a button's contents, so a badge rendered inside one is never announced. The count is
@@ -187,29 +177,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				<ChatAccessNotice callId={callId} access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />
 			)}
 
-			<CallTopBar
-				host={
-					<Box className={callHeaderTimerStyles}>
-						<CallTimer startAt={call.createdAt} />
-						{/* The rule between the clock and the name is drawn, not typed. As a character it was content —
-						    read out as "vertical line" by anything that reads the header, and styled by nudging its
-						    opacity until it looked like a rule. */}
-						{call.name && (
-							<Box
-								is='span'
-								withTruncatedText
-								marginInlineStart={8}
-								paddingInlineStart={8}
-								borderInlineStartWidth='default'
-								borderInlineStartStyle='solid'
-								borderInlineStartColor='stroke-extra-light'
-							>
-								{call.name}
-							</Box>
-						)}
-					</Box>
-				}
-			>
+			<CallTopBar startAt={call.createdAt} name={call.name}>
 				<IconButtonWithBadge
 					small
 					secondary
