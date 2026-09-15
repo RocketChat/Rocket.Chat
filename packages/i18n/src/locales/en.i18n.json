@@ -6116,8 +6116,10 @@
   "Show_agent_email": "Show agent email",
   "Show_agent_info": "Show agent information",
   "Show_all": "Show All",
-  "Show_all_count_new_one": "Show all ({{count}} new)",
-  "Show_all_count_new_other": "Show all ({{count}} new)",
+  "Show_all_count_new": {
+    "one": "Show all ({{count}} new)",
+    "other": "Show all ({{count}} new)"
+  },
   "Show_Avatars": "Show Avatars",
   "Show_call_here": "Show call here",
   "Show_chat": "Show chat",
