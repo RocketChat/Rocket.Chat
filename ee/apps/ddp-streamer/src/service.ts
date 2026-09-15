@@ -20,7 +20,7 @@ void (async () => {
 	);
 
 	// need to import service after models are registered
-	const { NotificationsModule } = await import('../../../../apps/meteor/server/modules/notifications/notifications.module');
+	const { NotificationsModule } = await import('@rocket.chat/streamer/notifications.module');
 	const { DDPStreamer } = await import('./DDPStreamer');
 	const { Stream } = await import('./Streamer');
 
