@@ -1,4 +1,6 @@
+import type { Icon as IconComponent } from '@rocket.chat/fuselage';
 import { Icon, IconButton } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 
 type CallDeviceToggleProps = {
 	device: 'mic' | 'cam';
@@ -8,10 +10,15 @@ type CallDeviceToggleProps = {
 	onToggle: () => void;
 };
 
-const ICONS = {
-	mic: { on: 'mic', off: 'mic-off' },
-	cam: { on: 'video', off: 'video-off' },
-} as const;
+const getDeviceIcon = (device: CallDeviceToggleProps['device'], on: boolean): ComponentProps<typeof IconComponent>['name'] => {
+	switch (device) {
+		case 'mic':
+			return on ? 'mic' : 'mic-off';
+		case 'cam':
+		default:
+			return on ? 'video' : 'video-off';
+	}
+};
 
 /**
  * A mic or camera toggle for the preflight, in the convention every call UI uses: **off is red**, because a
@@ -29,7 +36,7 @@ const CallDeviceToggle = ({ device, on, label, onToggle }: CallDeviceToggleProps
 		title={label}
 		aria-label={label}
 		onClick={onToggle}
-		icon={<Icon size='x24' name={on ? ICONS[device].on : ICONS[device].off} />}
+		icon={<Icon size='x24' name={getDeviceIcon(device, on)} />}
 	/>
 );
 
