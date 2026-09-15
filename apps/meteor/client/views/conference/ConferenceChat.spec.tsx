@@ -1,11 +1,20 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { axe } from 'jest-axe';
 
 import ConferenceChat from './ConferenceChat';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { buildChatAccess } from './testFixtures';
 
-// The room UI underneath needs the whole store-seeding apparatus, which isn't what these assertions are about.
+/**
+ * What this panel decides is what it shows: the chat, or the screen saying the chat was never shared with this
+ * member — and, in its header, whether there is anything to offer about the people who cannot read it. So each
+ * case is a render and the snapshot is the answer.
+ *
+ * Snapshotted from the component rather than from stories, which it has none of: the room underneath needs the
+ * store-seeding `ConferenceStoresReady` does, and that is the very thing mocked out here to leave this panel's
+ * own decisions visible.
+ */
 jest.mock('./ConferenceStoresReady', () => ({
 	__esModule: true,
 	default: ({ children }: { children: React.ReactNode }) => <div data-testid='chat-room'>{children}</div>,
@@ -22,34 +31,23 @@ const renderChat = (chatAccess: ConferenceChatAccess) =>
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
-it('tells a member whose chat was never shared what the situation is', () => {
-	renderChat(buildAccess([uid]));
+const cases = [
+	['the chat was never shared with this member', [uid]],
+	['this member can read the chat, and someone else cannot', ['someone-else']],
+	['everyone in the call can read the chat', []],
+] as const;
 
-	expect(screen.getByText('Chat_not_shared_with_you')).toBeInTheDocument();
-	expect(screen.queryByTestId('chat-room')).not.toBeInTheDocument();
-});
+describe('ConferenceChat', () => {
+	test.each(cases)('renders what it shows when %s', (_case, membersWithoutAccess) => {
+		const { baseElement } = renderChat(buildAccess([...membersWithoutAccess]));
 
-it('shows the chat to a member who can read it', () => {
-	renderChat(buildAccess(['someone-else']));
+		expect(baseElement).toMatchSnapshot();
+	});
 
-	expect(screen.getByTestId('chat-room')).toBeInTheDocument();
-	expect(screen.queryByText('Chat_not_shared_with_you')).not.toBeInTheDocument();
-});
+	test.each(cases)('has no a11y violations when %s', async (_case, membersWithoutAccess) => {
+		const { container } = renderChat(buildAccess([...membersWithoutAccess]));
 
-// The banner about members who can't see the chat lives above the call, not in this panel — it is about the
-// call rather than about whichever panel is open, and it must not move as panels change. What the panel carries
-// instead is its own control in the header, which is what this pins: the banner's Review button being absent
-// would be true of a panel that offered nothing at all.
-it('offers chat access from its own header rather than carrying the notice', () => {
-	renderChat(buildAccess(['someone-else']));
-
-	expect(screen.getByRole('button', { name: '__count__participants_cannot_see_the_chat' })).toBeInTheDocument();
-	expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
-});
-
-// Nobody to tell about, nothing to offer — the header control is about other people, not about a decoration.
-it('says nothing about chat access when everyone in the call can read it', () => {
-	renderChat(buildAccess([]));
-
-	expect(screen.queryByRole('button', { name: '__count__participants_cannot_see_the_chat' })).not.toBeInTheDocument();
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
+	});
 });
