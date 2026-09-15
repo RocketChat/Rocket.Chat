@@ -5,7 +5,7 @@ import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, u
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import type { CallPreferences } from './useCallPreferences';
+import type { CallPreferences } from './useCallDevicesInitialState';
 import { departureFor } from './useLeaveConferenceOnClose';
 import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
 import type { PersistentChatMode } from '../../../../lib/videoConference/constants';

@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useJoinableCalls } from './useJoinableCalls';
 
 /**
- * Joins a call, leaving the one the user is already in.
+ * Joins a call, asking first when it means leaving the one the user is already in.
  *
  * A user is in one call at a time. The call window is shared, so joining a second call already replaces the first
  * one's page — but that is not the same as leaving it: without an explicit leave its participant stays counted as
@@ -17,7 +17,7 @@ import { useJoinableCalls } from './useJoinableCalls';
  * And it asks first. Swapping the call someone is in the middle of, because they clicked a name in a list, is not
  * something to do quietly — the confirmation names the call being left.
  */
-export const useJoinCall = () => {
+export const useJoinOrSwitchCallModal = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const joinCall = useVideoConfJoinCall();

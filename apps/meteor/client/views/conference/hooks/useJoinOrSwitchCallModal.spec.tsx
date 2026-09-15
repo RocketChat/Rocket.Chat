@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { useJoinCall } from './useJoinCall';
+import { useJoinOrSwitchCallModal } from './useJoinOrSwitchCallModal';
 import { useJoinableCalls } from './useJoinableCalls';
 import { buildJoinableCall as call } from '../testFixtures';
 
@@ -21,7 +21,7 @@ const leave = jest.fn(() => ({ success: true }) as any);
  * would take the "no other call" path every time. This waits for the data, then hands back the join function.
  */
 const renderJoin = async (calls: JoinableVideoConference[]) => {
-	const { result } = renderHook(() => ({ join: useJoinCall(), loaded: useJoinableCalls().calls.length }), {
+	const { result } = renderHook(() => ({ join: useJoinOrSwitchCallModal(), loaded: useJoinableCalls().calls.length }), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			// Naming the call being left is the point of the confirmation, and the name only reaches the screen

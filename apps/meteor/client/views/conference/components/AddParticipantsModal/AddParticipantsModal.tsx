@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { videoConferenceQueryKeys } from '../../../../lib/queryKeys';
-import { useCallRingPreference } from '../../hooks/useCallPreferences';
+import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
 
 type AddParticipantsModalProps = {
 	callId: string;
