@@ -1,22 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
-/**
- * A little definition under each face, so a row of them reads as faces rather than as a strip of colour.
- *
- * `drop-shadow` rather than `box-shadow` because it follows the avatar's own rounded shape — the radius belongs to
- * the avatar, and guessing it here would leave a square shadow behind a rounded picture. That is the one thing the
- * design system has no token for; the colours are its own, so they follow the theme instead of staying black in a
- * dark one. The pair is `elevation-2`, the same lift the product's cards and popups use.
- */
-const facesStyles = css`
-	filter: drop-shadow(0 0 1px ${Palette.shadow['shadow-elevation-2x'].toString()})
-		drop-shadow(0 1px 2px ${Palette.shadow['shadow-elevation-2y'].toString()});
-`;
 
 type CallParticipantsProps = {
 	/** A few of the people in the call — whoever is to get a face. Capped by the caller. */
@@ -78,9 +64,7 @@ const CallParticipants = ({ people, total, size = 'small' }: CallParticipantsPro
 			    a face half behind another face is a worse picture of who is in the call. */}
 			<Box display='flex' alignItems='center' style={{ gap: 4 }}>
 				{faces.map(({ _id, username }) => (
-					<Box key={_id} className={facesStyles}>
-						<UserAvatar username={username as string} size={AVATAR_SIZES[size]} />
-					</Box>
+					<UserAvatar key={_id} username={username as string} size={AVATAR_SIZES[size]} />
 				))}
 			</Box>
 			<Box fontScale='micro' color='hint' flexShrink={0}>
