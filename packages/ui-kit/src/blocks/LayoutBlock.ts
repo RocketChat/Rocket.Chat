@@ -4,11 +4,14 @@ import type { ConditionalBlock } from './layout/ConditionalBlock';
 import type { ContextBlock } from './layout/ContextBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
+import type { HeaderBlock } from './layout/HeaderBlock';
 import type { ImageBlock } from './layout/ImageBlock';
 import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
+import type { MarkdownBlock } from './layout/MarkdownBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
+import type { VideoBlock } from './layout/VideoBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
 
 export type LayoutBlock =
@@ -17,9 +20,12 @@ export type LayoutBlock =
 	| ConditionalBlock
 	| ContextBlock
 	| DividerBlock
+	| HeaderBlock
 	| ImageBlock
 	| InputBlock
+	| MarkdownBlock
 	| SectionBlock
+	| VideoBlock
 	| VideoConferenceBlock
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock

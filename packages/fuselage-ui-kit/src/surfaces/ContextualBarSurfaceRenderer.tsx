@@ -7,7 +7,20 @@ import { AppIdProvider } from '../contexts/AppIdContext';
 
 export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'callout', 'tab_navigation']);
+		super([
+			'actions',
+			'context',
+			'divider',
+			'header',
+			'image',
+			'input',
+			'markdown',
+			'section',
+			'preview',
+			'video',
+			'callout',
+			'tab_navigation',
+		]);
 	}
 
 	override plain_text = renderTextObject;
