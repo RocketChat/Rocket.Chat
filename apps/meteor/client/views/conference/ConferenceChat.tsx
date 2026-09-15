@@ -14,7 +14,7 @@ import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import PageLoading from '../root/PageLoading';
 
-const roomTypeIcon = (t?: IRoom['t']): 'hash' | 'hashtag-lock' | 'at' | 'baloons' => {
+const roomTypeIcon = (t?: IRoom['t']) => {
 	switch (t) {
 		case 'p':
 			return 'hashtag-lock';
