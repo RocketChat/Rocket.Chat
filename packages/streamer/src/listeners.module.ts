@@ -3,15 +3,28 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
+import type {
+	IUser,
+	IRoom,
+	IRole,
+	VideoConference,
+	ISetting,
+	IOmnichannelRoom,
+	PresenceStatusCode,
+	SettingValue,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { refreshVisibility } from '../../lib/notifications/core/lib/Presence';
-import { statusVisibilityGate } from '../../lib/statusVisibility/StatusVisibilityGate';
-import { settings } from '../../settings/cached';
-import type { NotificationsModule } from '../notifications/notifications.module';
+import { statusVisibilityGate } from './StatusVisibilityGate';
+import { refreshVisibility } from './StreamPresence';
+import type { NotificationsModule } from './notifications.module';
+
+/** Synchronous view of setting values; `undefined` when the host has no value cached. */
+export type SettingsReader = {
+	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T | undefined;
+};
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -30,7 +43,7 @@ const minimongoChangeMap: Record<string, string> = {
 } as const;
 
 export class ListenersModule {
-	constructor(service: IServiceClass, notifications: NotificationsModule) {
+	constructor(service: IServiceClass, notifications: NotificationsModule, settings: SettingsReader) {
 		statusVisibilityGate.watch(service);
 
 		const logger = new Logger('ListenersModule');
@@ -56,12 +69,8 @@ export class ListenersModule {
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			if (!isMessageParserDisabled && message.msg) {
-				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
-					? settings
-							.get<string>('Message_CustomDomain_AutoLink')
-							.split(',')
-							.map((domain) => domain.trim())
-					: [];
+				const autoLinkDomains = settings.get<string>('Message_CustomDomain_AutoLink');
+				const customDomains = autoLinkDomains ? autoLinkDomains.split(',').map((domain) => domain.trim()) : [];
 
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),

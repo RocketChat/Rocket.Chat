@@ -12,10 +12,10 @@ import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
-import { getCachedUserForPublication } from '../streamer/publication-user-cache';
-import { Streamer as StreamerModule } from '../streamer/streamer.module';
-import type { IStreamer, IStreamerConstructor } from '../streamer/types';
+import { emit, StreamPresence } from './StreamPresence';
+import { getCachedUserForPublication } from './publication-user-cache';
+import { Streamer as StreamerModule } from './streamer.module';
+import type { IStreamer, IStreamerConstructor } from './types';
 
 const logger = new Logger('NotificationsModule');
 
