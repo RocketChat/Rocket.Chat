@@ -62,7 +62,7 @@ export const useJoinOrSwitchCallModal = () => {
 					<Trans
 						i18nKey='Leave__name__to_join_this_call'
 						values={{ name: current.name }}
-						components={{ b: <Box is='span' fontWeight={600} color='default' /> }}
+						components={{ b: <Box is='span' fontScale='p2b' color='default' /> }}
 					/>
 				</GenericModal>,
 			);
