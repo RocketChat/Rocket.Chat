@@ -69,7 +69,12 @@ beforeEach(() => {
 // it. What follows is what it does when it is used.
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
 
+// `composeStories` composes args and decorators, not the story's lifecycle: a `beforeEach` in the story file is
+// Storybook's own hook and nothing runs it here. `NotRinging` seeds the stored preference that way, so without
+// this both stories rendered with ringing on and the case the story exists for was never shown.
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	await Story.load();
+
 	const { baseElement } = render(<Story />);
 	await act(async () => {
 		await new Promise((resolve) => {
@@ -81,6 +86,8 @@ test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) =>
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	await Story.load();
+
 	const { container } = render(<Story />);
 
 	const results = await axe(container);

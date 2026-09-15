@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -45,13 +45,18 @@ describe('CallListItem', () => {
 	// Answering or rejoining is what the row is for, so the whole row is the way in — and it is a link, which is
 	// what gives it a name and a place in the tab order. Clicking it must not follow the href: the call window
 	// opens through the callback.
-	it('opens the call when the row is clicked', async () => {
+	it('opens the call when the row is clicked, without following the link', async () => {
 		render(<Joinable onJoin={onJoin} onDecline={onDecline} />);
 
-		await userEvent.click(screen.getByRole('link', { name: /Daily standup/ }));
+		// Dispatched rather than clicked through `userEvent`, which reports nothing about the default action: the
+		// row has a real `href`, and a regression that opened the call *and* navigated would pass a test that only
+		// checked the callback.
+		const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+		fireEvent(screen.getByRole('link', { name: /Daily standup/ }), event);
 
 		expect(onJoin).toHaveBeenCalledWith('standup');
 		expect(onDecline).not.toHaveBeenCalled();
+		expect(event.defaultPrevented).toBe(true);
 	});
 
 	it('turns the call down without opening it', async () => {
