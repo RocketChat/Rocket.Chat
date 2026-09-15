@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallDeviceToggle from './components/CallDeviceToggle';
-import type { CallPreferences } from './hooks/useCallPreferences';
-import { useCallPreferences } from './hooks/useCallPreferences';
+import type { CallPreferences } from './hooks/useCallDevicesInitialState';
+import { useCallDevicesInitialState } from './hooks/useCallDevicesInitialState';
 import CallParticipants from '../../components/CallParticipants';
 
 /**
@@ -51,6 +51,11 @@ type ConferencePreflightProps = {
 	participants?: ComponentProps<typeof CallParticipants>;
 	capabilities: VideoConferenceCapabilities;
 	canChooseRinging?: boolean;
+	/**
+	 * Whether the call this screen confirms is on its way. Both callers already hold it — confirming starts a
+	 * mutation in each — so the button reads their state rather than keeping a second copy that nothing resets.
+	 */
+	confirming?: boolean;
 	onConfirm: (preferences: CallPreferences, name: string, ring: boolean) => void;
 	onCancel: () => void;
 };
@@ -64,14 +69,15 @@ const ConferencePreflight = ({
 	participants,
 	capabilities,
 	canChooseRinging = false,
+	confirming = false,
 	onConfirm,
 	onCancel,
 }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
-	// `useCallPreferences` already carries the ring habit — it calls `useCallRingPreference` itself. Calling that
-	// again here put a second `useLocalStorage` subscriber on the same key, only one of which drove this screen's
-	// state, leaving two sources of truth for one answer.
-	const { preferences, ring, toggle, toggleRing } = useCallPreferences(capabilities);
+	// `useCallDevicesInitialState` already carries the ring habit — it calls `useCallRingPreference` itself.
+	// Calling that again here put a second `useLocalStorage` subscriber on the same key, only one of which drove
+	// this screen's state, leaving two sources of truth for one answer.
+	const { preferences, ring, toggle, toggleRing } = useCallDevicesInitialState(capabilities);
 
 	// Side by side once there is room for both; stacked below that, with the preview still first.
 	//
@@ -83,12 +89,10 @@ const ConferencePreflight = ({
 	const columns = wideEnough || shortAndWide;
 
 	const [title, setTitle] = useState(defaultName ?? name);
-	const [confirming, setConfirming] = useState(false);
 
 	/** Typed from the Box it is given to, which submits its own event type rather than React's. */
 	const handleSubmit: NonNullable<ComponentProps<typeof Box>['onSubmit']> = (event) => {
 		event.preventDefault();
-		setConfirming(true);
 		onConfirm(preferences, title.trim() || name, ring);
 	};
 
@@ -108,132 +112,6 @@ const ConferencePreflight = ({
 		return isDirect ? t('Call__name__', { name }) : t('Start_call');
 	})();
 
-	const previewColumn = (
-		<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
-			<Box
-				position='relative'
-				width='100%'
-				display='flex'
-				flexDirection='column'
-				alignItems='center'
-				justifyContent='center'
-				borderRadius='x8'
-				overflow='hidden'
-				className={previewTileStyle}
-			>
-				<Box
-					display='flex'
-					flexDirection='column'
-					alignItems='center'
-					justifyContent='center'
-					width='100%'
-					height='100%'
-					style={{ paddingBlockEnd: TOGGLES_ZONE }}
-				>
-					<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-					<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-						{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
-					</Box>
-					{preferences.cam && (
-						<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-							{t('Which_devices_are_used_is_chosen_in_the_call')}
-						</Box>
-					)}
-				</Box>
-
-				<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
-					<ButtonGroup>
-						{capabilities.mic && (
-							<CallDeviceToggle
-								device='mic'
-								on={preferences.mic}
-								label={preferences.mic ? t('Mic_on') : t('Mic_off')}
-								onToggle={() => toggle('mic')}
-							/>
-						)}
-						{capabilities.cam && (
-							<CallDeviceToggle
-								device='cam'
-								on={preferences.cam}
-								label={preferences.cam ? t('Cam_on') : t('Cam_off')}
-								onToggle={() => toggle('cam')}
-							/>
-						)}
-					</ButtonGroup>
-				</Box>
-			</Box>
-		</Box>
-	);
-
-	const detailsColumn = (
-		<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
-			{/* An `h2` rather than a `div` at heading size: it is the screen's heading, and this is the only thing
-			    that lets anyone — or anything — find it as one. */}
-			<Box is='h2' fontScale='h2' color='default' textAlign='center'>
-				{heading}
-			</Box>
-
-			{canName && (
-				<Box width='100%' marginBlockStart={16}>
-					{/* `Field` wires the label to the input itself, which is what the package is for — the id this
-					    carried was referenced by nothing, and the name was announced from an `aria-label` that
-					    nobody could see. */}
-					<Field>
-						<FieldLabel>{t('Call_name')}</FieldLabel>
-						<FieldRow>
-							<TextInput
-								value={title}
-								placeholder={defaultName ?? name}
-								onChange={(event) => setTitle((event.target as HTMLInputElement).value)}
-							/>
-						</FieldRow>
-					</Field>
-				</Box>
-			)}
-
-			{action === 'join' && participants && (
-				<Box marginBlockStart={16} display='flex' flexDirection='column' alignItems='center'>
-					<Box fontScale='c1' color='hint'>
-						{t('People_in_the_call')}
-					</Box>
-					<Box marginBlockStart={8}>
-						<CallParticipants {...participants} size='x24' />
-					</Box>
-				</Box>
-			)}
-
-			{action === 'start' && canChooseRinging && (
-				<Box marginBlockStart={16} width='100%'>
-					<Field>
-						<FieldRow justifyContent='center'>
-							<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
-							<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
-								{t('Ring_people')}
-							</Box>
-						</FieldRow>
-					</Field>
-				</Box>
-			)}
-
-			{action === 'start' && isDirect && (!canChooseRinging || ring) && (
-				<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
-					{t('__name__will_be_notified_when_you_start_the_call', { name })}
-				</Box>
-			)}
-
-			<Box marginBlockStart={24} width='100%'>
-				<ButtonGroup vertical stretch>
-					<Button type='submit' variant='primary' loading={confirming}>
-						{confirmLabel}
-					</Button>
-					<Button type='button' onClick={onCancel}>
-						{t('Cancel')}
-					</Button>
-				</ButtonGroup>
-			</Box>
-		</Box>
-	);
-
 	return (
 		// A form, so the screen has one submit and Enter in the name field does what the button does — it did
 		// nothing at all before. The device toggles are `IconButton`s, which Fuselage types as `button`, so they
@@ -250,8 +128,126 @@ const ConferencePreflight = ({
 				paddingBlock={24}
 				style={{ gap: columns ? 48 : 32 }}
 			>
-				{previewColumn}
-				{detailsColumn}
+				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
+					<Box
+						position='relative'
+						width='100%'
+						display='flex'
+						flexDirection='column'
+						alignItems='center'
+						justifyContent='center'
+						borderRadius='x8'
+						overflow='hidden'
+						className={previewTileStyle}
+					>
+						<Box
+							display='flex'
+							flexDirection='column'
+							alignItems='center'
+							justifyContent='center'
+							width='100%'
+							height='100%'
+							style={{ paddingBlockEnd: TOGGLES_ZONE }}
+						>
+							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
+							<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
+								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
+							</Box>
+							{preferences.cam && (
+								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
+									{t('Which_devices_are_used_is_chosen_in_the_call')}
+								</Box>
+							)}
+						</Box>
+
+						<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
+							<ButtonGroup>
+								{capabilities.mic && (
+									<CallDeviceToggle
+										device='mic'
+										on={preferences.mic}
+										label={preferences.mic ? t('Mic_on') : t('Mic_off')}
+										onToggle={() => toggle('mic')}
+									/>
+								)}
+								{capabilities.cam && (
+									<CallDeviceToggle
+										device='cam'
+										on={preferences.cam}
+										label={preferences.cam ? t('Cam_on') : t('Cam_off')}
+										onToggle={() => toggle('cam')}
+									/>
+								)}
+							</ButtonGroup>
+						</Box>
+					</Box>
+				</Box>
+				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
+					{/* An `h2` rather than a `div` at heading size: it is the screen's heading, and this is the only thing
+		    that lets anyone — or anything — find it as one. */}
+					<Box is='h2' fontScale='h2' color='default' textAlign='center'>
+						{heading}
+					</Box>
+
+					{canName && (
+						<Box width='100%' marginBlockStart={16}>
+							{/* `Field` wires the label to the input itself, which is what the package is for — the id this
+				    carried was referenced by nothing, and the name was announced from an `aria-label` that
+				    nobody could see. */}
+							<Field>
+								<FieldLabel>{t('Call_name')}</FieldLabel>
+								<FieldRow>
+									<TextInput
+										value={title}
+										placeholder={defaultName ?? name}
+										onChange={(event) => setTitle((event.target as HTMLInputElement).value)}
+									/>
+								</FieldRow>
+							</Field>
+						</Box>
+					)}
+
+					{action === 'join' && participants && (
+						<Box marginBlockStart={16} display='flex' flexDirection='column' alignItems='center'>
+							<Box fontScale='c1' color='hint'>
+								{t('People_in_the_call')}
+							</Box>
+							<Box marginBlockStart={8}>
+								<CallParticipants {...participants} size='x24' />
+							</Box>
+						</Box>
+					)}
+
+					{action === 'start' && canChooseRinging && (
+						<Box marginBlockStart={16} width='100%'>
+							<Field>
+								<FieldRow justifyContent='center'>
+									<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
+									<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
+										{t('Ring_people')}
+									</Box>
+								</FieldRow>
+							</Field>
+						</Box>
+					)}
+
+					{action === 'start' && isDirect && (!canChooseRinging || ring) && (
+						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
+							{t('__name__will_be_notified_when_you_start_the_call', { name })}
+						</Box>
+					)}
+
+					<Box marginBlockStart={24} width='100%'>
+						<ButtonGroup vertical stretch>
+							<Button type='submit' variant='primary' loading={confirming}>
+								{confirmLabel}
+							</Button>
+							<Button type='button' onClick={onCancel}>
+								{t('Cancel')}
+							</Button>
+						</ButtonGroup>
+					</Box>
+				</Box>
 			</Box>
 		</Box>
 	);
