@@ -1,3 +1,4 @@
+
 import OAuthServer, { OAuthError, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
@@ -5,7 +6,7 @@ import type { Express, NextFunction, Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { ModelConfig } from './model';
-import { Model } from './model';
+import { Model, logger } from './model';
 
 export class OAuth2Server {
 	public app: Express;
@@ -47,7 +48,7 @@ export class OAuth2Server {
 
 		const debugMiddleware = function (req: Request, _res: Response, next: NextFunction) {
 			if (config.debug === true) {
-				console.log('[OAuth2Server]', req.method, req.url);
+				logger.debug(req.method, req.url);
 			}
 			return next();
 		};
@@ -71,7 +72,7 @@ export class OAuth2Server {
 		const transformRequestsNotUsingFormUrlencodedType = function (req: Request, _res: Response, next: NextFunction) {
 			if (!req.is('application/x-www-form-urlencoded') && req.method === 'POST') {
 				if (config.debug === true) {
-					console.log('[OAuth2Server]', 'Transforming a request to form-urlencoded with the query going to the body.');
+					logger.debug('Transforming a request to form-urlencoded with the query going to the body.');
 				}
 				req.headers['content-type'] = 'application/x-www-form-urlencoded';
 				req.body = Object.assign({}, req.body, req.query);
