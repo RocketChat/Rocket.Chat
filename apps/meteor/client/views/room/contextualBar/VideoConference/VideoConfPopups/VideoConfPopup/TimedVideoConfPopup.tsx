@@ -62,7 +62,12 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 
 	const handleStartCall = async (): Promise<void> => {
 		setStarting(true);
-		startCall(rid);
+		try {
+			await startCall(rid);
+		} catch (error) {
+			setStarting(false);
+			dismissOutgoing();
+		}
 	};
 
 	if (isReceiving) {

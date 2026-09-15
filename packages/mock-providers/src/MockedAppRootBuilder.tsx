@@ -186,13 +186,13 @@ export class MockedAppRootBuilder {
 		dismissOutgoing(): void {
 			throw new Error('Function not implemented.');
 		},
-		startCall(_rid: IRoom['_id'], _title?: string): void {
+		startCall(_rid: IRoom['_id'], _title?: string): Promise<void> {
 			throw new Error('Function not implemented.');
 		},
 		acceptCall(_callId: string): void {
 			throw new Error('Function not implemented.');
 		},
-		joinCall(_callId: string): void {
+		joinCall(_callId: string): Promise<void> {
 			throw new Error('Function not implemented.');
 		},
 		dismissCall(_callId: string): void {
