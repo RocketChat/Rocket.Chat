@@ -1,5 +1,5 @@
 import { getUserDisplayName, hasJoinedVideoConference, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -38,7 +38,13 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { action, viewId = undefined, rid, videoConfJoinDisabled } = useContext(UiKitContext);
+	const { action, viewId = undefined, rid } = useContext(UiKitContext);
+
+	// The call window renders this same message list beside the call it is already in, where "Join" and "Call
+	// back" would start a second one. Asked here rather than handed down through `UiKitContext`: that context is
+	// shared by every app's blocks and knows nothing about any of them, so a flag about video conferencing had no
+	// business in its signature. This block is the only thing that reads the answer, and it can ask for itself.
+	const joinDisabled = !!useCurrentRoutePath()?.startsWith('/conference/');
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -157,7 +163,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				<VideoConfMessageFooter>
 					{data.type === 'direct' && (
 						<>
-							<VideoConfMessageButton disabled={videoConfJoinDisabled} onClick={callAgainHandler}>
+							<VideoConfMessageButton disabled={joinDisabled} onClick={callAgainHandler}>
 								{isUserCaller ? t('Call_again') : t('Call_back')}
 							</VideoConfMessageButton>
 							{[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
@@ -208,7 +214,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary disabled={videoConfJoinDisabled} onClick={joinHandler}>
+				<VideoConfMessageButton primary disabled={joinDisabled} onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
 				{Boolean(joinedUsers.length) && (
