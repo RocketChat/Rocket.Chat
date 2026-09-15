@@ -73,6 +73,21 @@ the remaining seven still reported as `NoCoverage` on the guarded body.
 
 It costs about 11 minutes against 2 seconds, so it is a deliberate pass, not the loop to iterate in.
 
+### It caches between runs
+
+`incremental: true` stores each mutant's result and reuses it while the code behind it has not changed:
+
+| | Cold | Warm |
+|---|---|---|
+| Fast pass | 2 s | 1 s |
+| Typed pass | 627 s | 124 s |
+
+The cache covers the per-mutant work, which is where the time goes. It does not cover the project compile, so
+about 85 seconds is the floor of any typed run. `yarn testmutation:typed --force` rebuilds the cache.
+
+A run that fails writes no cache file. Before you credit a fast run to the cache, check the log for
+`No incremental result file found at …` — that line means the run was cold.
+
 ### The patch behind it
 
 `@stryker-mutator/typescript-checker` does not run on this repo unmodified, so it carries a yarn patch:
@@ -115,3 +130,7 @@ read anything into it.
 The suite reruns once per covered mutant, so the run is the suite's runtime multiplied by the mutant count.
 Keep `mutate` narrow. `coverageAnalysis: 'perTest'` already limits each mutant to the tests that reach it, and
 reports an unreached mutant without running anything.
+
+The typed pass costs more, and file size does not predict it. A 26-line module took as long as a 2200-line one,
+because each mutant re-checks everything downstream of the file it sits in. Four files import the small module;
+nothing imports the large one. Choose a target by who imports it, not by how big it is.

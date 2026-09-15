@@ -29,4 +29,17 @@ module.exports = {
 
 	htmlReporter: { fileName: 'reports/mutation-typed/index.html' },
 	jsonReporter: { fileName: 'reports/mutation-typed/mutation.json' },
+
+	/**
+	 * Reuse the results of the last run for code that has not changed.
+	 *
+	 * This skips the per-mutant work, which is where the run spends its time — measured at 627s down to 124s
+	 * for an unchanged file. It does not skip the project compile, so about 85 seconds is the floor of any
+	 * typed run whatever the cache holds.
+	 *
+	 * Pass `--force` to rebuild the file when you doubt it. A run that fails writes no file at all, so check
+	 * the log for `No incremental result file found` before you credit a fast run to the cache.
+	 */
+	incremental: true,
+	incrementalFile: 'reports/mutation-typed/stryker-incremental.json',
 };
