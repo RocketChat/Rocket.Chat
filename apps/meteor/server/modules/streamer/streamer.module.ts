@@ -1,9 +1,11 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
 
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
-import { SystemLogger } from '../../lib/logger/system';
+
+const logger = new Logger('Streamer');
 
 class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
 	public instances: Record<string, Streamer<N>> = {};
@@ -82,7 +84,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 			}
 
 			if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
-				SystemLogger.error({ msg: 'shortcut is invalid', name, fn });
+				logger.error({ msg: 'shortcut is invalid', name, fn });
 			}
 
 			if (fn === 'all' || fn === true) {
@@ -259,7 +261,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		try {
 			this.registerMethod(method);
 		} catch (err) {
-			SystemLogger.error({ err });
+			logger.error({ err });
 		}
 	}
 
@@ -323,7 +325,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 						}
 					}
 				} catch (err) {
-					SystemLogger.error({
+					logger.error({
 						msg: 'Error while delivering streamer event',
 						eventName,
 						streamName: this.name,

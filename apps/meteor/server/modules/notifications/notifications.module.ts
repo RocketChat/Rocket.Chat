@@ -1,14 +1,23 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
+import type {
+	IImportProgress,
+	ISubscription,
+	IOmnichannelRoom,
+	IUser,
+	IUserDataEvent,
+	PresenceSource,
+	PresenceStatusCode,
+} from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
-import { SystemLogger } from '../../lib/logger/system';
 import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
+
+const logger = new Logger('NotificationsModule');
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -225,7 +234,7 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (err) {
-				SystemLogger.error({ err });
+				logger.error({ err });
 				return false;
 			}
 		}
@@ -524,7 +533,7 @@ export class NotificationsModule {
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
 
-	progressUpdated(progress: { rate: number } | ImporterProgress): void {
+	progressUpdated(progress: { rate: number } | IImportProgress): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }
