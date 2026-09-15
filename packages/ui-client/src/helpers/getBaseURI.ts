@@ -17,4 +17,6 @@ export const getBaseURI = (): string => {
 	return document.URL;
 };
 
-export const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
+export const isExternal = (href: string): boolean =>
+	!href.startsWith(getBaseURI());
+
