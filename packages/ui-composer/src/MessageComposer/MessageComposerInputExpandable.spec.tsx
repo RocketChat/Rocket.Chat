@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import MessageComposerInputExpandable from './MessageComposerInputExpandable';
+import MessageComposerInputExpandable from './MessageComposerInputExpandable.js';
 
 test('should show expand button when dimensions.blockSize > 100', () => {
 	render(

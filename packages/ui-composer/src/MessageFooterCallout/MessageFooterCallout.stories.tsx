@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { MessageFooterCallout, MessageFooterCalloutAction } from '.';
-import MessageFooterCalloutContent from './MessageFooterCalloutContent';
-import MessageFooterCalloutDivider from './MessageFooterCalloutDivider';
-import MessageComposer from '../MessageComposer/MessageComposer';
-import MessageComposerIcon from '../MessageComposer/MessageComposerIcon';
+import MessageFooterCalloutContent from './MessageFooterCalloutContent.js';
+import MessageFooterCalloutDivider from './MessageFooterCalloutDivider.js';
+import { MessageFooterCallout, MessageFooterCalloutAction } from './index.js';
+import MessageComposer from '../MessageComposer/MessageComposer.js';
+import MessageComposerIcon from '../MessageComposer/MessageComposerIcon.js';
 
 export default {
 	component: MessageComposer,

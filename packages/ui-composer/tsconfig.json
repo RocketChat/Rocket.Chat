@@ -1,8 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"rootDirs": ["./src", "./"],
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*", "./.storybook/**/*", "./jest.config.ts"],
+	"include": ["./src/**/*", "./jest.config.ts"],
 }

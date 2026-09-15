@@ -3,7 +3,7 @@ import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle, A
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
+import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation.js';
 
 export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }) => {
 	const { t } = useTranslation();
