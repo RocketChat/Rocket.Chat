@@ -38,9 +38,6 @@ exports[`ConferenceChat renders what it shows when everyone in the call can read
           </div>
         </div>
       </div>
-      <div
-        data-testid="chat-room"
-      />
     </div>
   </div>
 </body>
@@ -164,9 +161,6 @@ exports[`ConferenceChat renders what it shows when this member can read the chat
           </div>
         </div>
       </div>
-      <div
-        data-testid="chat-room"
-      />
     </div>
   </div>
 </body>

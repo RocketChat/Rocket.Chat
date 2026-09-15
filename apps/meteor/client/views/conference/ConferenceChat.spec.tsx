@@ -12,14 +12,11 @@ import { buildChatAccess } from './testFixtures';
  * case is a render and the snapshot is the answer.
  *
  * Snapshotted from the component rather than from stories, which it has none of: the room underneath needs the
- * store-seeding `ConferenceStoresReady` does, and that is the very thing mocked out here to leave this panel's
+ * cached stores seeded, and what seeds them is the page above — so it is stubbed out here to leave this panel's
  * own decisions visible.
  */
-jest.mock('./ConferenceStoresReady', () => ({
-	__esModule: true,
-	default: ({ children }: { children: React.ReactNode }) => <div data-testid='chat-room'>{children}</div>,
-}));
 jest.mock('./ConferenceRoomPanel', () => ({ __esModule: true, default: () => null }));
+jest.mock('../root/hooks/useMainReady', () => ({ useMainReady: () => true }));
 
 // `withJohnDoe` fixes the logged-in id, so the member without access has to be that same user.
 const uid = 'john.doe';

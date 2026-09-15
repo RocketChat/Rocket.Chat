@@ -1,10 +1,9 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { SubscriptionsCachedStore } from '../../../cachedStores';
-import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
+import { useRoomSubscriptionQuery } from './useRoomSubscriptionQuery';
+import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 
 /**
@@ -24,17 +23,21 @@ export const shouldApplySubscriptionChange = (event: string, subRid: string | un
  */
 export const useConferenceSubscription = (rid: string | undefined): void => {
 	const uid = useUserId();
-	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 	const subscribeToNotifyUser = useStream('notify-user');
 
-	// Keyed by the endpoint and its parameter, from the shared file: this is the same request `useStartConference`
-	// makes, and two keys for one endpoint meant each of them missing the other's cache.
-	const { data } = useQuery({
-		queryKey: subscriptionsQueryKeys.subscription(rid as string),
-		queryFn: async () => (await getSubscription({ roomId: rid as string })).subscription ?? null,
-		enabled: !!rid && !!uid,
-		retry: false,
-	});
+	const { data } = useRoomSubscriptionQuery(uid ? rid : undefined);
+
+	// The room UI waits on the cached stores being *ready* — a flag the sidebar's subscriptions normally set once
+	// they have loaded. Nothing loads them in this window, and nothing needs to: the room the chat panel shows is
+	// the one room in play, and this hook and `useOpenRoomById` fetch it between them. So this says the stores are
+	// as loaded as they are going to get, which is what unblocks the room.
+	//
+	// Said here rather than by a component wrapping the panel: it is about the same room, at the same time, as
+	// everything else this hook does, and a component whose whole body was an effect was a component in name only.
+	useEffect(() => {
+		SubscriptionsCachedStore.setReady(true);
+		RoomsCachedStore.setReady(true);
+	}, []);
 
 	// Watching the result rather than hydrating inside the query function, which was the tidier place right up
 	// until the key became a shared one: a window that arrives with the subscription already cached — from the

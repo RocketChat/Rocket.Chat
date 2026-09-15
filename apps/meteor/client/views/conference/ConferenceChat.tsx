@@ -5,7 +5,6 @@ import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
 import ConferenceRoomPanel from './ConferenceRoomPanel';
-import ConferenceStoresReady from './ConferenceStoresReady';
 import CallPanelHeader from './components/CallPanelHeader';
 import NotFoundPage from '../notFound/NotFoundPage';
 import ChatAccessModal from './components/ChatAccessModal/ChatAccessModal';
@@ -13,6 +12,7 @@ import ConferenceChatNotShared from './components/ConferenceChatNotShared';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import PageLoading from '../root/PageLoading';
+import { useMainReady } from '../root/hooks/useMainReady';
 
 const roomTypeIcon = (t?: IRoom['t']) => {
 	switch (t) {
@@ -54,6 +54,7 @@ const ConferenceChat = ({
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const setModal = useSetModal();
+	const storesReady = useMainReady();
 
 	if (loading) {
 		return <PageLoading />;
@@ -102,11 +103,14 @@ const ConferenceChat = ({
 
 			{!shared && <ConferenceChatNotShared />}
 
-			{shared && (
-				<ConferenceStoresReady>
+			{/* The stores are marked ready by `useConferenceSubscription`, up on the page; this waits for that to have
+			    happened, because the room UI reads the flag and renders nothing useful before it is set. */}
+			{shared &&
+				(storesReady ? (
 					<ConferenceRoomPanel rid={rid} tmid={tmid} thread={thread} onCloseThread={onCloseThread} onEscape={onClose} />
-				</ConferenceStoresReady>
-			)}
+				) : (
+					<PageLoading />
+				))}
 		</Box>
 	);
 };
