@@ -1,17 +1,19 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
 import { departureFor, useLeaveConferenceOnClose } from './useLeaveConferenceOnClose';
-import { APIClient } from '../../../lib/RestApiClient';
 
-const credentials = { 'X-User-Id': 'uid-1', 'X-Auth-Token': 'token-1' };
+// Asserted at the context rather than through `withEndpoint`, which hands a mock only the parameters: what this
+// hook has to get right includes *how* the request goes out, and `keepalive` is the whole point of it.
+const callEndpoint = jest.fn((_args: { pathPattern: string; params: unknown; keepalive?: boolean }) => Promise.resolve({} as never));
 
-// jsdom has no `Response`, and the hook only ever awaits the promise.
-const fetchMock = jest.fn(() => Promise.resolve({} as Response));
+const wrapper = () => mockAppRoot().withServerContext({ callEndpoint }).build();
+
+const reportOf = (call: number) =>
+	callEndpoint.mock.calls[call][0] as unknown as { pathPattern: string; params: unknown; keepalive?: boolean };
 
 beforeEach(() => {
-	fetchMock.mockClear();
-	global.fetch = fetchMock as unknown as typeof fetch;
-	jest.spyOn(APIClient, 'getCredentials').mockReturnValue(credentials);
+	callEndpoint.mockClear();
 });
 
 afterEach(() => {
@@ -21,45 +23,32 @@ afterEach(() => {
 const hide = () => window.dispatchEvent(new Event('pagehide'));
 
 it('reports the user leaving when the call window goes away', () => {
-	renderHook(() => useLeaveConferenceOnClose('call-1'));
+	renderHook(() => useLeaveConferenceOnClose('call-1'), { wrapper: wrapper() });
 
 	hide();
 
-	expect(fetchMock).toHaveBeenCalledTimes(1);
-	const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-	expect(url).toContain('/api/v1/video-conference.leave');
-	expect(init.method).toBe('POST');
-	expect(JSON.parse(init.body as string)).toEqual({ callId: 'call-1' });
-	expect(init.headers).toMatchObject(credentials);
+	expect(callEndpoint).toHaveBeenCalledTimes(1);
+	expect(reportOf(0)).toMatchObject({ pathPattern: '/v1/video-conference.leave', params: { callId: 'call-1' } });
 });
 
 // The document is being torn down, so a request without `keepalive` is cancelled with the page — which is the
-// whole failure this hook exists to avoid.
+// whole failure this hook exists to avoid. It used to reach around the SDK to `fetch` to get it; `useEndpoint`
+// takes it now, and authentication stops being this hook's business.
 it('sends the request with keepalive, since the page is going away', () => {
-	renderHook(() => useLeaveConferenceOnClose('call-1'));
+	renderHook(() => useLeaveConferenceOnClose('call-1'), { wrapper: wrapper() });
 
 	hide();
 
-	expect((fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].keepalive).toBe(true);
-});
-
-it('says nothing when there are no credentials to say it with', () => {
-	jest.spyOn(APIClient, 'getCredentials').mockReturnValue(undefined);
-
-	renderHook(() => useLeaveConferenceOnClose('call-1'));
-
-	hide();
-
-	expect(fetchMock).not.toHaveBeenCalled();
+	expect(reportOf(0).keepalive).toBe(true);
 });
 
 it('stops reporting once the page is no longer showing a conference', () => {
-	const { unmount } = renderHook(() => useLeaveConferenceOnClose('call-1'));
+	const { unmount } = renderHook(() => useLeaveConferenceOnClose('call-1'), { wrapper: wrapper() });
 
 	unmount();
 	hide();
 
-	expect(fetchMock).not.toHaveBeenCalled();
+	expect(callEndpoint).not.toHaveBeenCalled();
 });
 
 describe('leaving on purpose', () => {
@@ -67,12 +56,12 @@ describe('leaving on purpose', () => {
 	it('reports leaving and then closes the window', async () => {
 		const close = jest.spyOn(window, 'close').mockImplementation(() => undefined);
 
-		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'));
+		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'), { wrapper: wrapper() });
 
 		await act(() => result.current.leaveNow());
 
-		expect(fetchMock).toHaveBeenCalledTimes(1);
-		expect(String((fetchMock.mock.calls[0] as unknown as [string])[0])).toContain('/api/v1/video-conference.leave');
+		expect(callEndpoint).toHaveBeenCalledTimes(1);
+		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.leave');
 		expect(close).toHaveBeenCalled();
 	});
 
@@ -81,44 +70,42 @@ describe('leaving on purpose', () => {
 	it('does not report the same departure again when closing fires pagehide', async () => {
 		jest.spyOn(window, 'close').mockImplementation(() => undefined);
 
-		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'));
+		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'), { wrapper: wrapper() });
 
 		await act(() => result.current.leaveNow());
 		hide();
 
-		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(callEndpoint).toHaveBeenCalledTimes(1);
 	});
 });
 
 describe('what gets reported', () => {
-	const urlOf = (call: number) => String((fetchMock.mock.calls[call] as unknown as [string])[0]);
-
 	// A call nobody has joined yet has nobody `isInVideoConference`, so reporting a leave from its preflight
 	// schedules the empty-call sweep — ending the call for the people still on their way into it.
 	it('says nothing for a member who was never asked and never arrived', () => {
-		renderHook(() => useLeaveConferenceOnClose('call-1', 'none'));
+		renderHook(() => useLeaveConferenceOnClose('call-1', 'none'), { wrapper: wrapper() });
 
 		hide();
 
-		expect(fetchMock).not.toHaveBeenCalled();
+		expect(callEndpoint).not.toHaveBeenCalled();
 	});
 
 	// Abandoning the preflight of a call you are placing is cancelling it, ring included — which is what the
 	// endpoint has meant since long before this window existed.
 	it('cancels for the caller who leaves before the call is answered', () => {
-		renderHook(() => useLeaveConferenceOnClose('call-1', 'cancel'));
+		renderHook(() => useLeaveConferenceOnClose('call-1', 'cancel'), { wrapper: wrapper() });
 
 		hide();
 
-		expect(urlOf(0)).toContain('/api/v1/video-conference.cancel');
+		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.cancel');
 	});
 
 	it('declines for a member who was rung and closed it', () => {
-		renderHook(() => useLeaveConferenceOnClose('call-1', 'decline'));
+		renderHook(() => useLeaveConferenceOnClose('call-1', 'decline'), { wrapper: wrapper() });
 
 		hide();
 
-		expect(urlOf(0)).toContain('/api/v1/video-conference.decline');
+		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.decline');
 	});
 
 	// The guard is against reporting the *same* thing twice, not against a member whose standing changed:
@@ -128,16 +115,16 @@ describe('what gets reported', () => {
 		jest.spyOn(window, 'close').mockImplementation(() => undefined);
 
 		let departure: 'decline' | 'leave' = 'decline';
-		const { result, rerender } = renderHook(() => useLeaveConferenceOnClose('call-1', departure));
+		const { result, rerender } = renderHook(() => useLeaveConferenceOnClose('call-1', departure), { wrapper: wrapper() });
 
 		hide();
 		departure = 'leave';
 		rerender();
 		await act(() => result.current.leaveNow());
 
-		expect(fetchMock).toHaveBeenCalledTimes(2);
-		expect(urlOf(0)).toContain('.decline');
-		expect(urlOf(1)).toContain('.leave');
+		expect(callEndpoint).toHaveBeenCalledTimes(2);
+		expect(reportOf(0).pathPattern).toBe('/v1/video-conference.decline');
+		expect(reportOf(1).pathPattern).toBe('/v1/video-conference.leave');
 	});
 });
 
