@@ -3,8 +3,11 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
-import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
+import { sdk } from '../../../../lib/SDKClient';
+import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { Messages } from '../../../../stores';
+
+const MAX_IDS_PER_REQUEST = 100;
 
 const findParentMessage = (() => {
 	const waiting: string[] = [];
@@ -14,9 +17,22 @@ const findParentMessage = (() => {
 	});
 
 	const getMessages = withDebouncing({ wait: 500 })(async () => {
-		const _tmp = [...waiting];
+		const messageIds = [...waiting];
 		waiting.length = 0;
-		resolve(callWithErrorHandling('getMessages', _tmp));
+
+		const batches: string[][] = [];
+		for (let i = 0; i < messageIds.length; i += MAX_IDS_PER_REQUEST) {
+			batches.push(messageIds.slice(i, i + MAX_IDS_PER_REQUEST));
+		}
+
+		resolve(
+			Promise.all(
+				batches.map((ids) =>
+					sdk.rest.post('/v1/chat.getMessages', { messageIds: ids }).then(({ messages }) => messages.map((msg) => mapMessageFromApi(msg))),
+				),
+			).then((results) => results.flat()),
+		);
+
 		pending = new Promise<IMessage[]>((r) => {
 			resolve = r;
 		});

@@ -30,7 +30,7 @@ export const useMarkAsUnreadMessageAction = (
 		id: 'mark-message-as-unread',
 		icon: 'flag',
 		label: 'Mark_unread',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'interaction',
 		async action() {
 			router.navigate('/home');

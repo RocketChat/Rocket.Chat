@@ -33,6 +33,7 @@ import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWi
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
@@ -422,17 +423,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
-
-		if (!room) {
-			throw new Error('invalid-room');
-		}
-
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
-		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+		if (room) {
+			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		}
 
 		await Rooms.unsetTeamId(team._id);
 	}
@@ -684,7 +682,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
-					settings: user.settings,
+					settings: omitStatusVisibilityConfig(user.settings),
 				},
 				roles: record.roles,
 				createdBy: {

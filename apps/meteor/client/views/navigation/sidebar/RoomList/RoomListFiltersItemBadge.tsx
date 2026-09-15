@@ -1,4 +1,4 @@
-import { SidebarV2ItemBadge } from '@rocket.chat/fuselage';
+import { SidebarItemBadge } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -23,14 +23,14 @@ const RoomListFiltersItemBadge = ({ roomTitle, unreadGroupCount }: RoomListFilte
 	const { unreadTitle, unreadVariant, unreadCount } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2ItemBadge
+		<SidebarItemBadge
 			variant={unreadVariant}
 			title={unreadTitle}
 			role='status'
 			aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle })}
 		>
 			<span aria-hidden>{unreadCount.total}</span>
-		</SidebarV2ItemBadge>
+		</SidebarItemBadge>
 	);
 };
 

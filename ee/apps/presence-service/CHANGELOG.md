@@ -1,5 +1,40 @@
 # @rocket.chat/presence-service
 
+## 0.6.1
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/model-typings@2.5.0
+  - @rocket.chat/core-typings@8.8.0
+  - @rocket.chat/models@2.5.0
+  - @rocket.chat/core-services@0.16.0
+  - @rocket.chat/network-broker@0.2.39
+  - @rocket.chat/presence@0.3.2
+  - @rocket.chat/cron@0.1.60
+  </details>
+
+## 0.6.1-rc.0
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/model-typings@2.5.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/models@2.5.0-rc.0
+  - @rocket.chat/core-services@0.16.0-rc.0
+  - @rocket.chat/emitter@0.33.0
+  - @rocket.chat/presence@0.3.2-rc.0
+  - @rocket.chat/cron@0.1.60-rc.0
+  - @rocket.chat/network-broker@0.2.39-rc.0
+  </details>
+
 ## 0.6.0
 
 ### Minor Changes

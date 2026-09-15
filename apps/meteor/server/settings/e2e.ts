@@ -32,6 +32,7 @@ export const createE2ESettings = () =>
 			type: 'boolean',
 			i18nLabel: 'Force_Encryption_For_Private_Rooms',
 			i18nDescription: 'Force_Encryption_For_Private_Rooms_Description',
+			alert: 'Force_Encryption_For_Private_Rooms_Alert',
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});

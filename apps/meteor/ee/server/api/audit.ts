@@ -15,6 +15,7 @@ import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../../../server/lib/statusVisibility/hiddenUsers';
 import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from '../lib/audit/functions';
 
 type AuditRoomMembersParams = PaginatedRequest<{
@@ -187,8 +188,11 @@ API.v1.get(
 			return API.v1.notFound();
 		}
 
-		const { cursor, totalCount } = findUsersOfRoom({
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		const { cursor, totalCount } = await findUsersOfRoom({
 			rid: room._id,
+			hidden,
 			filter,
 			skip,
 			limit,
@@ -216,7 +220,7 @@ API.v1.get(
 		});
 
 		return API.v1.success({
-			members,
+			members: redactHiddenUsers(members, hidden),
 			count: members.length,
 			offset: skip,
 			total,
@@ -290,7 +294,7 @@ API.v1.get(
 			return API.v1.failure('The "end" query parameter must be a valid date.');
 		}
 
-		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 		const _sort = { ts: sort?.ts ? sort?.ts : -1 };
 

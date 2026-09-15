@@ -1064,6 +1064,7 @@ export type RoomsHistoryProps = {
 	roomId: IRoom['_id'];
 	next?: string;
 	previous?: string;
+	aroundId?: IMessage['_id'];
 	lastSeen?: string;
 	count?: number;
 	showThreadMessages?: boolean;
@@ -1082,6 +1083,11 @@ const RoomsHistorySchema = {
 		},
 		previous: {
 			type: 'string',
+			nullable: true,
+		},
+		aroundId: {
+			type: 'string',
+			minLength: 1,
 			nullable: true,
 		},
 		lastSeen: {

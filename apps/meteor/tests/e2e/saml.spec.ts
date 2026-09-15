@@ -207,7 +207,7 @@ test.describe('SAML', () => {
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
 
-		await page.goto('/home');
+		await poRegistration.goto();
 	});
 
 	test('Login', async ({ page, api }) => {
@@ -326,7 +326,7 @@ test.describe('SAML', () => {
 		await test.step('expect user to be logged out from Rocket.Chat', async () => {
 			// The logout response echoes back the RelayState from the request (per the SAML spec), so the browser
 			// lands on the IdP after SLO instead of returning here; navigate back to confirm the session ended.
-			await page.goto('/home');
+			await poRegistration.goto();
 			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
 			await expect(poRegistration.btnLoginWithSaml).toBeVisible();
 		});
@@ -337,7 +337,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
 		});
 
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -353,7 +353,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'SAML')).status()).toBe(200);
 		});
 
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -366,7 +366,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Logout - From IdP', async ({ page }) => {
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 
 		// This should trigger a logout request from the IdP, with a redirect to our home on success
@@ -500,7 +500,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
@@ -514,12 +514,12 @@ test.describe('SAML', () => {
 	});
 
 	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
-		await page.goto(`/home`);
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser2');
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
@@ -537,10 +537,10 @@ test.describe('SAML', () => {
 		const page2 = await browser.newPage();
 		const poRegistration2 = new Registration(page2);
 
-		await page2.goto(`/home`);
+		await poRegistration2.goto();
 		await expect(page2).toHaveURL('/home');
 
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
@@ -647,7 +647,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Invalid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
@@ -659,7 +659,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Missing Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);
@@ -671,7 +671,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Accept Valid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=${logoutRequestSignature}`);
@@ -686,7 +686,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Ignore Invalid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
@@ -695,7 +695,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Ignore Missing Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);
@@ -832,7 +832,7 @@ test.describe('SAML', () => {
 		});
 
 		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
-			await page.goto('/home?loginClient=desktop');
+			await poRegistration.goto('/home?loginClient=desktop');
 
 			await expect(page).toHaveURL(/loginClient=desktop/);
 
@@ -862,7 +862,7 @@ test.describe('SAML', () => {
 				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
 
 				// Reload to prove no session was persisted for this browser.
-				await page.goto('/home');
+				await poRegistration.goto();
 				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
 				await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
 			});

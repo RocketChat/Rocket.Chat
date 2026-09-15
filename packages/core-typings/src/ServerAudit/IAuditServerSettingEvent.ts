@@ -1,20 +1,19 @@
 import type { IAuditServerEventType } from '../IServerEvent';
 import type { ISetting } from '../ISetting';
 
-export interface IServerEventSettingsChanged
-	extends IAuditServerEventType<
-		| {
-				key: 'id';
-				value: ISetting['_id'];
-		  }
-		| {
-				key: 'previous';
-				value: ISetting['value'];
-		  }
-		| {
-				key: 'current';
-				value: ISetting['value'];
-		  }
-	> {
+export interface IServerEventSettingsChanged extends IAuditServerEventType<
+	| {
+			key: 'id';
+			value: ISetting['_id'];
+	  }
+	| {
+			key: 'previous';
+			value: ISetting['value'];
+	  }
+	| {
+			key: 'current';
+			value: ISetting['value'];
+	  }
+> {
 	t: 'settings.changed';
 }

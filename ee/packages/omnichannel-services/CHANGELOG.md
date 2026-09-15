@@ -1,5 +1,44 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.57
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [e6779053a5a75f90e4fd72fa42c6cb3e138078ab, b4557f57143d19ff857484a44892427c806bd5d2, 5a3fd5267bf3dcaee645b2121539a8802761a2e4, 097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, 6edcdd7850d713e1d31986542402b5db184f81da, 7f9592dc92567993f41d0e3510ecc9c00637a4cc, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535, 1c01809baea9fc6dd06f3f4b0e38ce41a6f4f5e1]:</summary>
+
+  - @rocket.chat/i18n@4.0.0
+  - @rocket.chat/pdf-worker@0.3.36
+  - @rocket.chat/rest-typings@8.8.0
+  - @rocket.chat/model-typings@2.5.0
+  - @rocket.chat/core-typings@8.8.0
+  - @rocket.chat/models@2.5.0
+  - @rocket.chat/core-services@0.16.0
+  - @rocket.chat/message-types@0.1.2
+  - @rocket.chat/tools@0.4.0
+  </details>
+
+## 0.3.57-rc.0
+
+### Patch Changes
+
+- ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
+
+- <details><summary>Updated dependencies [e6779053a5a75f90e4fd72fa42c6cb3e138078ab, b4557f57143d19ff857484a44892427c806bd5d2, 5a3fd5267bf3dcaee645b2121539a8802761a2e4, 097884fb750bb68396a299230e2f20219dfe0e5a, 4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, 7b7f88ffa061d72db8297e9e62d72c3ab94603ab, 18f5eb45d098ca64d403fdae4704211000efba29, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 6dc66fbe33b7dae6e386e51dadb56b0a70994e80, 20528861308cee6561444fd970c9a080013a7ecf, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, 6edcdd7850d713e1d31986542402b5db184f81da, 7f9592dc92567993f41d0e3510ecc9c00637a4cc, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
+
+  - @rocket.chat/i18n@4.0.0-rc.0
+  - @rocket.chat/pdf-worker@0.3.36-rc.0
+  - @rocket.chat/rest-typings@8.8.0-rc.0
+  - @rocket.chat/model-typings@2.5.0-rc.0
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/models@2.5.0-rc.0
+  - @rocket.chat/core-services@0.16.0-rc.0
+  - @rocket.chat/message-types@0.1.2-rc.0
+  - @rocket.chat/tools@0.4.0-rc.0
+  - @rocket.chat/emitter@0.33.0
+  </details>
+
 ## 0.3.56
 
 ### Patch Changes

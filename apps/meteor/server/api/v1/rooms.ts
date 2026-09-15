@@ -9,6 +9,7 @@ import {
 	isPrivateRoom,
 	isPublicRoom,
 	type IUser,
+	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -63,6 +64,7 @@ import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
+import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
 import { unbanUserFromRoom } from '../../lib/unbanUserFromRoom';
 import { createDiscussion } from '../../meteor-methods/messages/createDiscussion';
 import { sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
@@ -1172,7 +1174,8 @@ API.v1.get(
 
 		const { members, total } = await findUsersOfRoomOrderedByRole({
 			rid: findResult._id,
-			...(status && { status: { $in: status } }),
+			...(status && { status: status as UserStatus[] }),
+			hidden: await getUsersHiddenFrom(this.userId),
 			skip,
 			limit,
 			filter,
@@ -1766,7 +1769,12 @@ export const roomEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, next, previous, lastSeen, showThreadMessages = true } = this.queryParams;
+			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
+
+			if ([next, previous, aroundId].filter(Boolean).length > 1) {
+				throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
+			}
+
 			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still
 			// honors the API_Upper_Count_Limit cap.
 			const { count } = await getPaginationItems({ count: this.queryParams.count ?? 20 });
@@ -1791,10 +1799,20 @@ export const roomEndpoints = API.v1
 				return API.v1.forbidden();
 			}
 
+			let around: IMessage | undefined;
+			if (aroundId) {
+				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				if (!message) {
+					return API.v1.notFound();
+				}
+				around = message;
+			}
+
 			const result = await loadRoomHistory({
 				userId: this.userId,
 				next,
 				previous,
+				around,
 				lastSeen: lastSeen ? new Date(lastSeen) : undefined,
 				count,
 				showThreadMessages,

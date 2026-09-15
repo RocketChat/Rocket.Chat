@@ -93,7 +93,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findPaginatedByActiveExternalUsersExcept<
@@ -104,7 +103,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findActive<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

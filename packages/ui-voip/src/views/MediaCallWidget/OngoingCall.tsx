@@ -18,6 +18,7 @@ import {
 	Keypad,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { isExternalPeer } from '../../utils/isExternalPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -95,7 +96,9 @@ const OngoingCall = () => {
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					)}
 					<ActionButton
-						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
+						label={t('Voice_call__user__hangup', {
+							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+						})}
 						icon='phone-off'
 						danger
 						onClick={onEndCall}
