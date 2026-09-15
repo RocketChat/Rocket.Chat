@@ -222,7 +222,6 @@ For each implementation increment:
 
 Document the new feature:
 
-- **Code Comments**: Complex logic explanation
 - **JSDoc/TSDoc**: Public APIs and functions
 - **README Updates**: If feature affects setup/usage
 - **API Documentation**: New endpoints (if applicable)
