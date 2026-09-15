@@ -10191,6 +10191,7 @@ __metadata:
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/streamer": "workspace:^"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/stylis-logical-props-middleware": "workspace:~"
     "@rocket.chat/tools": "workspace:^"
@@ -11105,7 +11106,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/streamer@workspace:packages/streamer":
+"@rocket.chat/streamer@workspace:^, @rocket.chat/streamer@workspace:packages/streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/streamer@workspace:packages/streamer"
   dependencies:
