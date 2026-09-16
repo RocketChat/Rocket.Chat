@@ -2,17 +2,17 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
 import ComposerInlineElements from './ComposerInlineElements';
-import { listMarkerStyle } from './listMarkerStyle';
 
-type ComposerOrderedListProps = {
+type ComposerListProps = {
 	items: MessageParser.ListItem[];
+	marker: (item: MessageParser.ListItem) => string;
 };
 
-const ComposerOrderedList = ({ items }: ComposerOrderedListProps): ReactElement => (
+const ComposerList = ({ items, marker }: ComposerListProps): ReactElement => (
 	<span>
 		{items.map((item, index) => (
 			<span key={index}>
-				<span style={listMarkerStyle}>{`${item.number}. `}</span>
+				<span style={listMarkerStyle}>{marker(item)}</span>
 				<ComposerInlineElements>{item.value}</ComposerInlineElements>
 				{'\n'}
 			</span>
@@ -20,4 +20,9 @@ const ComposerOrderedList = ({ items }: ComposerOrderedListProps): ReactElement 
 	</span>
 );
 
-export default ComposerOrderedList;
+const listMarkerStyle: React.CSSProperties = {
+	fontWeight: 700,
+	paddingInlineStart: '0.5rem',
+};
+
+export default ComposerList;

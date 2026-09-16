@@ -4,10 +4,9 @@ import { memo, useContext } from 'react';
 
 import ComposerCodeBlock from './ComposerCodeBlock';
 import ComposerInlineElements from './ComposerInlineElements';
+import ComposerList from './ComposerList';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
-import ComposerOrderedList from './ComposerOrderedList';
 import ComposerPlainSpan from './ComposerPlainSpan';
-import ComposerUnorderedList from './ComposerUnorderedList';
 import { sourceOf } from './sourceOf';
 
 type ComposerMarkupProps = {
@@ -90,10 +89,10 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
 
 					case 'UNORDERED_LIST':
-						return <ComposerUnorderedList key={index} items={block.value} />;
+						return <ComposerList key={index} items={block.value} marker={unorderedMarker} />;
 
 					case 'ORDERED_LIST':
-						return <ComposerOrderedList key={index} items={block.value} />;
+						return <ComposerList key={index} items={block.value} marker={orderedMarker} />;
 
 					case 'TASKS':
 						return (
@@ -125,6 +124,10 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 		</>
 	);
 };
+
+const unorderedMarker = (): string => '- ';
+
+const orderedMarker = (item: MessageParser.ListItem): string => `${item.number}. `;
 
 const headingStyles: Record<1 | 2 | 3 | 4, React.CSSProperties> = {
 	1: { fontWeight: 'bold', fontSize: '1.5em' },
