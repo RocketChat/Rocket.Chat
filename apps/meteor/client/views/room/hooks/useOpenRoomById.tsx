@@ -19,11 +19,21 @@ import { Rooms, Subscriptions } from '../../../stores';
 /**
  * Whether the server answered, and its answer was no.
  *
- * The REST client rejects with the `Response` itself for anything that is not ok, and with fetch's own error when
- * the request never got an answer at all. A 4xx is the server having looked: this room is missing, or is not this
- * user's to read. A 5xx, or no answer, says nothing about the room and is worth asking again.
+ * Two shapes, because the app's client rewrites one of them: `RestClient` rejects with the `Response` for
+ * anything that is not ok, and `RestApiClient`'s middleware then replaces it with the error body that response
+ * carried — so in the browser what arrives here is the body, and in a spec against the bare client it is the
+ * `Response`. Either way the server looked: the room is missing, or is not this user's to read.
+ *
+ * A request that never got an answer rejects with fetch's own error, which is neither of those — and that says
+ * nothing about the room.
  */
-const isRefusal = (error: unknown): boolean => error instanceof Response && error.status >= 400 && error.status < 500;
+const isRefusal = (error: unknown): boolean => {
+	if (error instanceof Response) {
+		return error.status >= 400 && error.status < 500;
+	}
+
+	return typeof error === 'object' && error !== null && 'success' in error && (error as { success?: unknown }).success === false;
+};
 
 /**
  * Opens a room by its id, for callers that already know the rid and can't go through the router-driven
