@@ -20,7 +20,7 @@ export const usePasswordPolicy: UsePasswordPolicy = (options) => {
 			const validations = policy.sendValidationMessage(password);
 			return {
 				validations,
-				valid: validations.every(({ isValid }) => isValid),
+				valid: Boolean(password.trim().length) && validations.every(({ isValid }) => isValid),
 			};
 		},
 		[policy],
