@@ -50,7 +50,7 @@ describe('StatusVisibilityGate', () => {
 		await expect(gate.ensureActive()).resolves.toBe(true);
 	});
 
-	it('should reject a sync requested while another one is in flight', async () => {
+	it('should queue and re-run a sync requested while another one is in flight', async () => {
 		const gate = new StatusVisibilityGate();
 
 		const first = gate.syncRestrictedUsers();

@@ -43,8 +43,8 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	}
 
 	if (
-		((userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) && !canEditOtherUserInfo) ||
-		(userData.statusVisibilityDeniedByAdmin !== undefined && !License.hasModule('unlimited-presence'))
+		(userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) &&
+		(!canEditOtherUserInfo || !License.hasModule('unlimited-presence'))
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',

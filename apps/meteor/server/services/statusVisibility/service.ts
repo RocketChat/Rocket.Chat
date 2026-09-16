@@ -134,7 +134,9 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 			return this.allPresences();
 		}
 
-		const previous = targets ?? [...new Set([...this.hiddenFromByUser.keys(), ...this.adminDisabledUsers])];
+		const previous = targets ?? [
+			...new Set([...this.hiddenFromByUser.keys(), ...this.adminHiddenFromByUser.keys(), ...this.adminDisabledUsers]),
+		];
 
 		const disabled = await this.rebuildAdminDisabled(targets);
 

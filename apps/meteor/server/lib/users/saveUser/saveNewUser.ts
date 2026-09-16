@@ -67,6 +67,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	await Users.updateFromUpdater({ _id }, updater);
 
+	if (userData.presenceDisabledByAdmin) {
+		void StatusVisibility.invalidate([_id], { allViewers: true });
+	}
+
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);
 	}
@@ -93,10 +97,6 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		} catch (e) {
 			// Ignore this error for now, as it not being successful isn't bad
 		}
-	}
-
-	if (userData.presenceDisabledByAdmin) {
-		void StatusVisibility.invalidate([_id], { allViewers: true });
 	}
 
 	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
