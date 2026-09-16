@@ -1,7 +1,13 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { ajv, isEmojiCustomList, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isEmojiCustomList,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
@@ -31,9 +37,7 @@ const emojiCustomAllResponseSchema = ajv.compile<{ emojis: IEmojiCustom[]; count
 			type: 'array',
 			items: { $ref: '#/components/schemas/IEmojiCustom' },
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['emojis', 'count', 'offset', 'total', 'success'],

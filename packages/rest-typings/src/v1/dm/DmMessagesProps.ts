@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type DmMessagesProps = PaginatedRequest<
 	({ roomId: string } | { username: string }) & {
@@ -37,12 +38,7 @@ export const isDmMessagesProps = ajvQuery.compile<DmMessagesProps>({
 				sort: {
 					type: 'string',
 				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
+				...paginationQueryProperties,
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -71,12 +67,7 @@ export const isDmMessagesProps = ajvQuery.compile<DmMessagesProps>({
 				sort: {
 					type: 'string',
 				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
+				...paginationQueryProperties,
 			},
 			required: ['username'],
 			additionalProperties: false,

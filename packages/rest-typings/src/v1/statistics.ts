@@ -1,6 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type SlashCommand = { command: string };
@@ -45,14 +46,7 @@ const StatisticsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
