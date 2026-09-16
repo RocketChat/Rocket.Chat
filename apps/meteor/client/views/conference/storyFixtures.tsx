@@ -17,6 +17,7 @@ import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
 import ConferenceViewport from './ConferenceViewport';
+import { callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
 import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { buildConferenceMember } from './testFixtures';
 import { storybookI18n } from '../../stories/i18n';
@@ -108,7 +109,8 @@ export const withConferenceWindow = (builder: Builder): Decorator => {
 		);
 };
 
-const CALL_PREFERENCES_KEY = 'videoconf-call-preferences';
+// The record is kept per account, and every story here is John Doe — see `conferenceAppRoot`.
+const CALL_PREFERENCES_KEY = callPreferencesStorageKey('john.doe');
 
 /**
  * Seeds the remembered call preferences.

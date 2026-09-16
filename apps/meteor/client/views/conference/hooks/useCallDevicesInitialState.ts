@@ -1,4 +1,5 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 /**
@@ -31,10 +32,41 @@ const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
+/**
+ * Whose habits these are.
+ *
+ * One key for the browser was one record for whoever sat at it: a shared machine handed the next person the
+ * last one's camera. Anonymous viewers keep the bare key, having no account to keep it under.
+ */
+export const callPreferencesStorageKey = (uid: string | null | undefined) => (uid ? `${STORAGE_KEY}/${uid}` : STORAGE_KEY);
+
+/**
+ * The record, with every field it declares checked against the type its default has.
+ *
+ * What comes back out of storage is not ours: it may have been written by an older version of this, edited by
+ * hand, or truncated — and a `mic` that is the string "false" is not a microphone that is off. Fields this
+ * version does not declare are left alone, so a record written by a newer one survives a visit from this.
+ */
+const sanitise = (value: unknown): StoredCallPreferences => {
+	if (typeof value !== 'object' || value === null) {
+		return DEFAULTS;
+	}
+
+	const stored: Record<string, unknown> = { ...value };
+
+	for (const [field, fallback] of Object.entries(DEFAULTS)) {
+		if (typeof stored[field] !== typeof fallback) {
+			stored[field] = fallback;
+		}
+	}
+
+	return stored as StoredCallPreferences;
+};
+
 const listeners = new Set<() => void>();
 
-let snapshot: StoredCallPreferences = DEFAULTS;
-let snapshotOf: string | null | undefined;
+/** The last text read from each key, and what it parsed to — so the same object comes back until it changes. */
+const snapshots = new Map<string, { raw: string | null; value: StoredCallPreferences }>();
 
 /**
  * The record as it stands, as one object.
@@ -43,42 +75,44 @@ let snapshotOf: string | null | undefined;
  * reader has to see the same record, or the last one to write puts its whole copy back and undoes what the
  * others changed. Reading the key is cheap; disagreeing about it is not.
  */
-const read = (): StoredCallPreferences => {
+const read = (key: string): StoredCallPreferences => {
 	let raw: string | null = null;
 
 	try {
-		raw = localStorage.getItem(STORAGE_KEY);
+		raw = localStorage.getItem(key);
 	} catch {
 		raw = null;
 	}
 
-	if (raw !== snapshotOf) {
-		snapshotOf = raw;
-
-		try {
-			// Spread over the defaults, because the stored object predates some of these: a user who has arrived at
-			// a call before has a record without `ring`, and reading that as "don't ring" would silently stop their
-			// calls ringing.
-			snapshot = raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<StoredCallPreferences>) } : DEFAULTS;
-		} catch {
-			snapshot = DEFAULTS;
-		}
+	const cached = snapshots.get(key);
+	if (cached && cached.raw === raw) {
+		return cached.value;
 	}
 
-	return snapshot;
-};
-
-const write = (update: (current: StoredCallPreferences) => StoredCallPreferences) => {
-	const next = update(read());
+	let value = DEFAULTS;
 
 	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+		value = raw ? sanitise(JSON.parse(raw)) : DEFAULTS;
+	} catch {
+		value = DEFAULTS;
+	}
+
+	snapshots.set(key, { raw, value });
+
+	return value;
+};
+
+const write = (key: string, update: (current: StoredCallPreferences) => StoredCallPreferences) => {
+	const next = update(read(key));
+
+	try {
+		localStorage.setItem(key, JSON.stringify(next));
 	} catch {
 		// Storage can be refused — a private window, or a browser told to keep nothing. The preference is a
 		// convenience, so it is lost rather than made into an error.
 	}
 
-	snapshotOf = undefined;
+	snapshots.delete(key);
 	listeners.forEach((listener) => listener());
 };
 
@@ -93,13 +127,26 @@ const subscribe = (listener: () => void) => {
 	};
 };
 
-/** Everything here reads the record through this, so there is one of it. */
-const useStoredCallPreferences = () => [useSyncExternalStore(subscribe, read), write] as const;
+/** Everything here reads the record through this, so there is one of it per account. */
+const useStoredCallPreferences = () => {
+	const key = callPreferencesStorageKey(useUserId());
+
+	const stored = useSyncExternalStore(
+		subscribe,
+		useCallback(() => read(key), [key]),
+	);
+	const setStored = useCallback((update: (current: StoredCallPreferences) => StoredCallPreferences) => write(key, update), [key]);
+
+	return [stored, setStored] as const;
+};
 
 /** The ring habit, read out of the shared record. */
-const useRingIn = (stored: StoredCallPreferences) => {
-	const ring = stored.ring ?? true;
-	const toggleRing = useCallback(() => write((current) => ({ ...current, ring: !(current.ring ?? true) })), []);
+const useRingIn = (
+	stored: StoredCallPreferences,
+	setStored: (update: (current: StoredCallPreferences) => StoredCallPreferences) => void,
+) => {
+	const { ring } = stored;
+	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !current.ring })), [setStored]);
 
 	return { ring, toggleRing };
 };
@@ -115,9 +162,9 @@ const useRingIn = (stored: StoredCallPreferences) => {
  * one of its own: the two hooks read and write the same record.
  */
 export const useCallRingPreference = () => {
-	const [stored] = useStoredCallPreferences();
+	const [stored, setStored] = useStoredCallPreferences();
 
-	return useRingIn(stored);
+	return useRingIn(stored, setStored);
 };
 
 /**
@@ -129,7 +176,7 @@ export const useCallRingPreference = () => {
  * about a device has that device reported as off so nothing claims to have configured something it can't.
  */
 export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabilities) => {
-	const [stored] = useStoredCallPreferences();
+	const [stored, setStored] = useStoredCallPreferences();
 
 	const preferences = useMemo(
 		(): CallPreferences => ({
@@ -139,9 +186,12 @@ export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabili
 		[capabilities.cam, capabilities.mic, stored.cam, stored.mic],
 	);
 
-	const toggle = useCallback((device: keyof CallPreferences) => write((current) => ({ ...current, [device]: !current[device] })), []);
+	const toggle = useCallback(
+		(device: keyof CallPreferences) => setStored((current) => ({ ...current, [device]: !current[device] })),
+		[setStored],
+	);
 
-	const { ring, toggleRing } = useRingIn(stored);
+	const { ring, toggleRing } = useRingIn(stored, setStored);
 
 	return { preferences, ring, toggle, toggleRing };
 };
