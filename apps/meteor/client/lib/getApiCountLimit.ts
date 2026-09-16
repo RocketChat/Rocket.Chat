@@ -1,17 +1,9 @@
 import { API_COUNT_LIMIT_DEFAULT } from '@rocket.chat/ui-contexts';
 
 /**
- * The page size to ask paginated endpoints for, handed over by the server as
- * `window.__API_COUNT_LIMIT__` (injected in `server/lib/ui-master/scripts.ts` from the
- * `API_Upper_Count_Limit` setting, which is not public and so cannot be read any other way).
- *
- * Falls back to {@link API_COUNT_LIMIT_DEFAULT} whenever the global is missing or unusable —
- * an older cached page, a test, a story. Asking for less than the cap is always honored, so
- * the fallback is safe in every direction; asking for more is not, which is the whole reason
- * the value is published here.
- *
- * It stays a *suggestion*: the server clamps `count` to its own limit, so a page can come back
- * smaller than requested. Whoever pages must advance by what the response actually carried.
+ * The page size this workspace published, or {@link API_COUNT_LIMIT_DEFAULT} when the page carries
+ * none — an older cached page, a test, a story. Asking for less than the workspace's cap is always
+ * honored, so the fallback is safe in every direction.
  */
 export const getApiCountLimit = (): number => {
 	if (typeof window === 'undefined') return API_COUNT_LIMIT_DEFAULT;

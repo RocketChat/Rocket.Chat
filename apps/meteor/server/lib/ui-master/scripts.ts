@@ -2,12 +2,8 @@ import { addScript } from './inject';
 import { settings } from '../../settings';
 
 /**
- * Hands the client the page size to ask paginated endpoints for.
- *
- * `API_Upper_Count_Limit` is not a public setting, so the client has no other way to learn it
- * and has to guess — and a guess above the cap is silently clamped by `getPaginationItems`,
- * leaving the caller to page with a stride the server never agreed to. Read by
- * `client/lib/getApiCountLimit`, which falls back to its own default when this is absent.
+ * Publishes this workspace's page-size cap to the client, which would otherwise have to guess it:
+ * `API_Upper_Count_Limit` is not a public setting, and a guess above the cap is silently clamped.
  */
 const getApiCountLimitScript = (): string => {
 	const limit = settings.get<number>('API_Upper_Count_Limit');

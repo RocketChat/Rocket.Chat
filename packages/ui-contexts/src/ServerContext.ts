@@ -17,9 +17,7 @@ export type UploadResult = {
 	[key: string]: unknown;
 };
 
-/**
- * Page size the client falls back to when the server hasn't told it otherwise.
- */
+/** Page size used when the server has published none. */
 export const API_COUNT_LIMIT_DEFAULT = 50;
 
 export type ServerContextValue = {
@@ -29,11 +27,9 @@ export type ServerContextValue = {
 	retryTime?: number | undefined;
 	info?: IServerInfo;
 	/**
-	 * How many items to ask a paginated endpoint for — a *suggestion*, not a guarantee.
-	 *
-	 * `getPaginationItems` clamps `count` down to the workspace's `API_Upper_Count_Limit`,
-	 * so a page can come back smaller than this. Callers must advance by what the response
-	 * actually carried, never by this number.
+	 * How many items to ask a paginated endpoint for. A suggestion: the workspace caps it at its
+	 * `API_Upper_Count_Limit`, so a page can come back smaller. Page by what the response
+	 * carried, never by this.
 	 */
 	apiCountLimit?: number;
 	absoluteUrl: (path: string) => string;
