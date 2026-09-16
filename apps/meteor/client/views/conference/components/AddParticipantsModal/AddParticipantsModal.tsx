@@ -1,4 +1,4 @@
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -50,11 +50,15 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 
 	// Members of the room are left out of the options: they can already join, so adding them would be a no-op.
 	// Everyone else is offerable — that is the point, since membership doesn't require room access.
-	// DMs expose their members on the room doc; every other room type comes from the one members endpoint, which
-	// does not care whether the room is public or private.
+	//
+	// DMs expose their members on the room doc. Channels and private groups come from the one members endpoint,
+	// which does not care which of the two it is — but does refuse anything else, an omnichannel room included.
+	// So nothing is asked for those, and the picker offers everyone: a redundant option rather than a wrong
+	// outcome, since the server skips whoever is already associated with the call and the toast below says as
+	// much. Asking anyway would have been a request that fails every time for the same list.
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const membersQuery = useQuery({
-		enabled: !!room && !isDirectMessageRoom(room),
+		enabled: !!room && (isPublicRoom(room) || isPrivateRoom(room)),
 		queryKey: roomsQueryKeys.members(rid, room?.t ?? 'c'),
 		queryFn: async () => {
 			// How many come back is the server's decision, not ours: `API_Upper_Count_Limit` caps every paginated
