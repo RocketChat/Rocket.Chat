@@ -80,18 +80,19 @@ describe('VideoConfService: the call message that names a thread', () => {
 		expect(sentRecord().msg).to.equal('Sprint planning');
 	});
 
-	// Without the window there is no thread — `getPersistentChatMode` answers `main_room` whatever the mode says
-	// — so a name on this message would be a name on nothing, rendered nowhere.
-	it('says nothing while the call window is off', async () => {
+	// The cases below have no thread for the title to name, and fall back to the generic name rather than to an
+	// empty `msg` — which is what made a new conference arrive as an empty notification (#41156).
+
+	// With the window off, `getPersistentChatMode` answers `main_room` whatever the mode is set to, so there is no
+	// thread and nothing for the call's own name to be the name of — the same path as the case below it, reached
+	// by turning the feature off rather than by choosing a mode.
+	it('falls back to the generic name while the call window is off', async () => {
 		settingsValues.VideoConf_Conference_Window_Enabled = false;
 
 		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
 
-		expect(sentRecord().msg).to.equal('');
+		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
-
-	// The cases below have no title to lend the thread, and fall back to the generic name rather than to an empty
-	// `msg` — which is what made a new conference arrive as an empty notification (#41156).
 
 	// In main-room mode the chat is the room itself and no thread is opened, so there is nothing to name.
 	it('falls back to the generic name when the chat is not a thread', async () => {
