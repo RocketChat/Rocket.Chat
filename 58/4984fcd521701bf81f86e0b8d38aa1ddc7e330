@@ -1,0 +1,16 @@
+docs/backend-folder-structure.md
+  h_4c386397e672f4 84
+package.json
+  h_4c386397e672f4 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "584984fcd521701bf81f86e0b8d38aa1ddc7e330",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
