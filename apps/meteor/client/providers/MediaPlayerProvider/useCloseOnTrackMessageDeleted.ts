@@ -5,6 +5,12 @@ import { useEffect } from 'react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { createDeleteCriteria } from '../../lib/utils/threadMessageUtils';
 
+/** A message the player watches, and the room whose deletion events can remove it. */
+type RoomWatch = {
+	ids: string[];
+	criteria: { message: IMessage; isOrigin: boolean }[];
+};
+
 export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null, close: () => void): void => {
 	const subscribeToNotifyRoom = useStream('notify-room');
 	const subscribeToRoomMessages = useStream('room-messages');
@@ -17,60 +23,112 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 	const drid = track?.drid;
 	const originMid = track?.originMid;
 	const originTs = track?.originTs;
+	const originRid = track?.originRid;
+	const originPinned = track?.originPinned;
+	const originDrid = track?.originDrid;
 
 	useEffect(() => {
 		if (!rid || !mid) {
 			return;
 		}
 
-		// The player closes when the message that renders the audio is deleted and, when the audio
-		// was played from a quote, when the original message that holds the attachment is deleted.
-		const watchedIds = originMid && originMid !== mid ? [mid, originMid] : [mid];
+		const hasOrigin = Boolean(originMid && originMid !== mid);
+		// Quotes stored before the origin metadata existed carry only an id and a timestamp. Their
+		// original is assumed to live in the quoting room, which is what the player watched before.
+		const hasOriginMetadata = Boolean(originRid);
+		const originRoom = hasOrigin ? (originRid ?? rid) : undefined;
 
-		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id }) => {
-			if (watchedIds.includes(_id)) {
-				close();
-			}
-		});
-
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
-			if (params.ids?.some((id) => watchedIds.includes(id))) {
-				close();
-				return;
+		const watches = new Map<string, RoomWatch>();
+		const watchRoom = (roomId: string): RoomWatch => {
+			const existing = watches.get(roomId);
+			if (existing) {
+				return existing;
 			}
 
-			const matchesCriteria = createDeleteCriteria(params);
-			const trackMessage = { _id: mid, rid, ts, pinned, drid, u: { username } } as IMessage;
+			const created: RoomWatch = { ids: [], criteria: [] };
+			watches.set(roomId, created);
+			return created;
+		};
 
-			if (matchesCriteria(trackMessage)) {
-				close();
-				return;
+		const trackWatch = watchRoom(rid);
+		trackWatch.ids.push(mid);
+		trackWatch.criteria.push({ message: { _id: mid, rid, ts, pinned, drid, u: { username } } as IMessage, isOrigin: false });
+
+		if (hasOrigin && originMid && originRoom) {
+			const originWatch = watchRoom(originRoom);
+			originWatch.ids.push(originMid);
+
+			if (originTs) {
+				originWatch.criteria.push({
+					message: {
+						_id: originMid,
+						rid: originRoom,
+						ts: originTs,
+						...(hasOriginMetadata && { pinned: originPinned, ...(originDrid && { drid: originDrid }) }),
+					} as IMessage,
+					isOrigin: true,
+				});
 			}
+		}
 
-			// Only the id and timestamp of the quoted original are known on the client, so the
-			// pinned, discussion and author filters cannot be evaluated for it. A synthetic message
-			// without `pinned`/`drid` would satisfy `excludePinned`/`ignoreDiscussion`, closing the
-			// player for an original the prune actually spared, so the timestamp fallback is limited
-			// to prunes that use none of those filters.
-			if (originMid && originMid !== mid && originTs && !params.users?.length && !params.excludePinned && !params.ignoreDiscussion) {
-				const originMessage = { _id: originMid, rid, ts: originTs } as IMessage;
-
-				if (matchesCriteria(originMessage)) {
+		const unsubscribers = [...watches].flatMap(([roomId, { ids, criteria }]) => [
+			subscribeToNotifyRoom(`${roomId}/deleteMessage`, ({ _id }) => {
+				if (ids.includes(_id)) {
 					close();
 				}
-			}
-		});
+			}),
 
-		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message) => {
-			if (message.t === 'rm' && watchedIds.includes(message._id)) {
-				close();
-			}
-		});
+			subscribeToNotifyRoom(`${roomId}/deleteMessageBulk`, (params) => {
+				if (params.ids?.some((id) => ids.includes(id))) {
+					close();
+					return;
+				}
 
-		return () => {
-			unsubscribeFromDeleteMessage();
-			unsubscribeFromDeleteMessageBulk();
-			unsubscribeFromRoomMessages();
-		};
-	}, [rid, mid, ts, pinned, username, drid, originMid, originTs, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
+				const matchesCriteria = createDeleteCriteria(params);
+
+				// The author of a quoted original is not persisted, so a prune filtered by user can
+				// never be evaluated for it. Without the origin metadata `pinned` and `drid` are
+				// unknown too, and a synthetic message missing them would satisfy `excludePinned`
+				// and `ignoreDiscussion`, closing the player for an original the prune spared.
+				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean => {
+					if (!isOrigin) {
+						return true;
+					}
+
+					if (params.users?.length) {
+						return false;
+					}
+
+					return hasOriginMetadata || (!params.excludePinned && !params.ignoreDiscussion);
+				};
+
+				if (criteria.some((entry) => canEvaluate(entry) && matchesCriteria(entry.message))) {
+					close();
+				}
+			}),
+
+			subscribeToRoomMessages(roomId, (message) => {
+				if (message.t === 'rm' && ids.includes(message._id)) {
+					close();
+				}
+			}),
+		]);
+
+		return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
+	}, [
+		rid,
+		mid,
+		ts,
+		pinned,
+		username,
+		drid,
+		originMid,
+		originTs,
+		originRid,
+		originPinned,
+		originDrid,
+		subscribeToNotifyRoom,
+		subscribeToRoomMessages,
+		close,
+	]);
 };
