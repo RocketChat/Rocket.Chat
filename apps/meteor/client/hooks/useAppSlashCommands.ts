@@ -1,6 +1,6 @@
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useApiCountLimit, useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -44,6 +44,8 @@ export const useAppSlashCommands = () => {
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
+	const apiCountLimit = useApiCountLimit();
+
 	const { data } = useQuery({
 		queryKey: appsQueryKeys.slashCommands(),
 		enabled: !!uid,
@@ -53,7 +55,7 @@ export const useAppSlashCommands = () => {
 		retryDelay: (attemptIndex) => Math.min(500 * Math.random() * 10 * 2 ** attemptIndex, 30000),
 		queryFn: async () => {
 			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
-				const count = 50;
+				const count = apiCountLimit;
 				const { commands, appsLoaded, total } = await getSlashCommands({ offset: currentOffset, count });
 
 				if (!appsLoaded) {

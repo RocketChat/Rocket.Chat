@@ -17,12 +17,25 @@ export type UploadResult = {
 	[key: string]: unknown;
 };
 
+/**
+ * Page size the client falls back to when the server hasn't told it otherwise.
+ */
+export const API_COUNT_LIMIT_DEFAULT = 50;
+
 export type ServerContextValue = {
 	connected: boolean;
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 	retryCount: number;
 	retryTime?: number | undefined;
 	info?: IServerInfo;
+	/**
+	 * How many items to ask a paginated endpoint for — a *suggestion*, not a guarantee.
+	 *
+	 * `getPaginationItems` clamps `count` down to the workspace's `API_Upper_Count_Limit`,
+	 * so a page can come back smaller than this. Callers must advance by what the response
+	 * actually carried, never by this number.
+	 */
+	apiCountLimit?: number;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
 		methodName: MethodName,
@@ -63,6 +76,7 @@ export const ServerContext = createContext<ServerContextValue>({
 	status: 'connected',
 	retryCount: 0,
 	info: undefined,
+	apiCountLimit: API_COUNT_LIMIT_DEFAULT,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {
 		throw new Error('not implemented');

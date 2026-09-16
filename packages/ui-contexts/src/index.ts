@@ -12,7 +12,7 @@ export {
 	type RoomToolboxActionConfig,
 	type RenderToolboxItemParams,
 } from './RoomToolboxContext';
-export { ServerContext, type ServerContextValue, type UploadResult } from './ServerContext';
+export { ServerContext, type ServerContextValue, type UploadResult, API_COUNT_LIMIT_DEFAULT } from './ServerContext';
 export { SessionContext, type SessionContextValue } from './SessionContext';
 export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, type ToastMessagesContextValue } from './ToastMessagesContext';
@@ -26,6 +26,7 @@ export { ActionManagerContext, type IActionManager } from './ActionManagerContex
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
+export { useApiCountLimit } from './hooks/useApiCountLimit';
 export { useAssetPath } from './hooks/useAssetPath';
 export { useAssetWithDarkModePath } from './hooks/useAssetWithDarkModePath';
 export { useAtLeastOnePermission } from './hooks/useAtLeastOnePermission';

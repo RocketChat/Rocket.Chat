@@ -1,30 +1,30 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useApiCountLimit, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-const COUNT = 150;
 const ATTRIBUTE_LIST_STALE_TIME = 15_000;
 
 export const useAttributeList = () => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
+	const count = useApiCountLimit();
 
 	return useQuery({
 		enabled: isABACAvailable,
 		staleTime: ATTRIBUTE_LIST_STALE_TIME,
 		queryKey: ABACQueryKeys.roomAttributes.list(),
 		queryFn: async () => {
-			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
+			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count });
 			const { attributes: firstPageAttributes, total } = firstPage;
 
-			let currentPage = COUNT;
+			let currentPage = count;
 			const pages = [];
 
 			while (currentPage < total) {
-				pages.push(attributesAutoCompleteEndpoint({ offset: currentPage, count: COUNT }));
-				currentPage += COUNT;
+				pages.push(attributesAutoCompleteEndpoint({ offset: currentPage, count }));
+				currentPage += count;
 			}
 			const remainingPages = await Promise.all(pages);
 
