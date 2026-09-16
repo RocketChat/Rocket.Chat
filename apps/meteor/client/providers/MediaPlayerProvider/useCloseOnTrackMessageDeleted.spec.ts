@@ -436,7 +436,7 @@ describe('useCloseOnTrackMessageDeleted', () => {
 	describe('when the quoted original lives in another room', () => {
 		const originTs = new Date('2023-12-31T00:00:00.000Z');
 		const buildCrossRoomTrack = (overrides: Partial<PersistentAudioTrack> = {}) =>
-			buildTrack({ id: 'mid2:url', mid: 'mid2', originMid: 'mid1', originTs, originRid: 'room2', originPinned: false, ...overrides });
+			buildTrack({ id: 'mid2:url', mid: 'mid2', originMid: 'mid1', originTs, originRid: 'room2', ...overrides });
 
 		it('closes the player when the original is deleted in its own room', () => {
 			const notifyRef: StreamControllerRef<'notify-room'> = {};
@@ -515,64 +515,73 @@ describe('useCloseOnTrackMessageDeleted', () => {
 			expect(close).not.toHaveBeenCalled();
 		});
 
-		it('evaluates the original against a prune that excludes pinned messages, now that its pinned state is known', () => {
+		it('closes the player when an unfiltered ts prune in the origin room covers the original', () => {
 			const notifyRef: StreamControllerRef<'notify-room'> = {};
 			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
-			const closeUnpinned = jest.fn();
-			const closePinned = jest.fn();
+			const close = jest.fn();
+			const track = buildCrossRoomTrack();
 
-			const bulkParams = {
-				rid: 'room2',
-				excludePinned: true,
-				ignoreDiscussion: false,
-				ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
-				users: [],
-			};
-
-			const { rerender } = renderHook(({ track, close }) => useCloseOnTrackMessageDeleted(track, close), {
-				initialProps: { track: buildCrossRoomTrack() as PersistentAudioTrack | null, close: closeUnpinned },
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
 				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 			});
 
-			notifyRef.controller?.emit('room2/deleteMessageBulk', [bulkParams]);
+			notifyRef.controller?.emit('room2/deleteMessageBulk', [
+				{
+					rid: 'room2',
+					excludePinned: false,
+					ignoreDiscussion: false,
+					ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
+					users: [],
+				},
+			]);
 
-			expect(closeUnpinned).toHaveBeenCalledTimes(1);
-
-			rerender({ track: buildCrossRoomTrack({ originPinned: true }), close: closePinned });
-
-			notifyRef.controller?.emit('room2/deleteMessageBulk', [bulkParams]);
-
-			expect(closePinned).not.toHaveBeenCalled();
+			expect(close).toHaveBeenCalledTimes(1);
 		});
 
-		it('evaluates the original against a prune that ignores discussions, now that its discussion is known', () => {
+		it('does not evaluate the original against a prune that excludes pinned messages, since a stored quote never learns it was pinned', () => {
 			const notifyRef: StreamControllerRef<'notify-room'> = {};
 			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
-			const closeNonDiscussion = jest.fn();
-			const closeDiscussion = jest.fn();
+			const close = jest.fn();
+			const track = buildCrossRoomTrack();
 
-			const bulkParams = {
-				rid: 'room2',
-				excludePinned: false,
-				ignoreDiscussion: true,
-				ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
-				users: [],
-			};
-
-			const { rerender } = renderHook(({ track, close }) => useCloseOnTrackMessageDeleted(track, close), {
-				initialProps: { track: buildCrossRoomTrack() as PersistentAudioTrack | null, close: closeNonDiscussion },
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
 				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 			});
 
-			notifyRef.controller?.emit('room2/deleteMessageBulk', [bulkParams]);
+			notifyRef.controller?.emit('room2/deleteMessageBulk', [
+				{
+					rid: 'room2',
+					excludePinned: true,
+					ignoreDiscussion: false,
+					ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
+					users: [],
+				},
+			]);
 
-			expect(closeNonDiscussion).toHaveBeenCalledTimes(1);
+			expect(close).not.toHaveBeenCalled();
+		});
 
-			rerender({ track: buildCrossRoomTrack({ originDrid: 'disc1' }), close: closeDiscussion });
+		it('does not evaluate the original against a prune that ignores discussions, since a stored quote never learns it became one', () => {
+			const notifyRef: StreamControllerRef<'notify-room'> = {};
+			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+			const close = jest.fn();
+			const track = buildCrossRoomTrack();
 
-			notifyRef.controller?.emit('room2/deleteMessageBulk', [bulkParams]);
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+			});
 
-			expect(closeDiscussion).not.toHaveBeenCalled();
+			notifyRef.controller?.emit('room2/deleteMessageBulk', [
+				{
+					rid: 'room2',
+					excludePinned: false,
+					ignoreDiscussion: true,
+					ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
+					users: [],
+				},
+			]);
+
+			expect(close).not.toHaveBeenCalled();
 		});
 
 		it('does not evaluate the original against a prune filtered by users, since its author is still unknown', () => {
