@@ -104,7 +104,8 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		const notifyRef: StreamControllerRef<'notify-room'> = {};
 		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
 		const close = jest.fn();
-		const track = buildTrack();
+		// Pinned and in a discussion, so the criteria genuinely exclude it: only the explicit id can close.
+		const track = buildTrack({ pinned: true, drid: 'disc1' });
 
 		renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
 			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
