@@ -1,20 +1,31 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 import { sendMessage } from './sendMessage';
-import { runOptimisticSendMessage } from '../../../../app/lib/client/methods/sendMessage';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { createFakeMessage } from '../../../../tests/mocks/data';
+import { Messages, Rooms } from '../../../stores';
+import { sdk } from '../../SDKClient';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../onClientMessageReceived';
 import { dispatchToastMessage } from '../../toast';
+import { getUser, getUserId } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
 
-jest.mock('../../../../app/lib/client/methods/sendMessage', () => ({ runOptimisticSendMessage: jest.fn() }));
-jest.mock('../../../../app/utils/client/lib/SDKClient', () => ({ sdk: { rest: { post: jest.fn() } } }));
+jest.mock('../../SDKClient', () => ({ sdk: { rest: { post: jest.fn() } } }));
 jest.mock('../../onClientBeforeSendMessage', () => ({ onClientBeforeSendMessage: jest.fn() }));
+jest.mock('../../onClientMessageReceived', () => ({ onClientMessageReceived: jest.fn() }));
 jest.mock('../../toast', () => ({ dispatchToastMessage: jest.fn() }));
+jest.mock('../../user', () => ({ getUser: jest.fn(), getUserId: jest.fn() }));
+jest.mock('../../settings', () => ({ settings: { peek: jest.fn() } }));
+jest.mock('../../utils/threadMessageUtils', () => ({ upsertThreadMessageInCache: jest.fn() }));
+jest.mock('../../../stores', () => ({
+	Messages: { state: { get: jest.fn(), store: jest.fn(), update: jest.fn() } },
+	Rooms: { state: { get: jest.fn() } },
+}));
 jest.mock('./afterSendMessageCallback', () => ({ afterSendMessageCallback: jest.fn() }));
 jest.mock('./processMessageEditing', () => ({ processMessageEditing: jest.fn() }));
 jest.mock('./processMessageUploads', () => ({ processMessageUploads: jest.fn() }));
@@ -23,9 +34,14 @@ jest.mock('./processSlashCommand', () => ({ processSlashCommand: jest.fn() }));
 jest.mock('./processTooLongMessage', () => ({ processTooLongMessage: jest.fn() }));
 
 const mockedPost = jest.mocked(sdk.rest.post);
-const mockedRunOptimisticSendMessage = jest.mocked(runOptimisticSendMessage);
 const mockedOnClientBeforeSendMessage = jest.mocked(onClientBeforeSendMessage);
+const mockedOnClientMessageReceived = jest.mocked(onClientMessageReceived);
 const mockedDispatchToastMessage = jest.mocked(dispatchToastMessage);
+const mockedGetUser = jest.mocked(getUser);
+const mockedGetUserId = jest.mocked(getUserId);
+const mockedStoreMessage = jest.mocked(Messages.state.store);
+const mockedGetMessage = jest.mocked(Messages.state.get);
+const mockedGetRoom = jest.mocked(Rooms.state.get);
 const mockedProcessSetReaction = jest.mocked(processSetReaction);
 const mockedProcessTooLongMessage = jest.mocked(processTooLongMessage);
 const mockedProcessSlashCommand = jest.mocked(processSlashCommand);
@@ -62,6 +78,11 @@ beforeEach(() => {
 	mockedProcessMessageUploads.mockResolvedValue(false);
 	mockedProcessMessageEditing.mockResolvedValue(false);
 	mockedOnClientBeforeSendMessage.mockImplementation(async (message) => message);
+	mockedOnClientMessageReceived.mockImplementation(async (message) => message);
+	mockedGetUserId.mockReturnValue('john.doe');
+	mockedGetUser.mockReturnValue({ _id: 'john.doe', username: 'john.doe', name: 'John Doe' } as IUser);
+	mockedGetMessage.mockReturnValue(undefined);
+	mockedGetRoom.mockReturnValue(undefined);
 });
 
 afterEach(() => {
@@ -80,7 +101,7 @@ describe('sendMessage', () => {
 		expect(clear).toHaveBeenCalledTimes(1);
 
 		const [clearOrder] = clear.mock.invocationCallOrder;
-		const [optimisticOrder] = mockedRunOptimisticSendMessage.mock.invocationCallOrder;
+		const [optimisticOrder] = mockedStoreMessage.mock.invocationCallOrder;
 		const [postOrder] = mockedPost.mock.invocationCallOrder;
 
 		expect(clearOrder).toBeLessThan(optimisticOrder);
