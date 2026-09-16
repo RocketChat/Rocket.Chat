@@ -46,7 +46,10 @@ describe('MediaPlayerProvider updateTrack', () => {
 		expect(result.current.track?.pinned).toBe(true);
 	});
 
-	it('adopts a discussion id that appears after playback started', () => {
+	// A message is not expected to gain a discussion id after it exists, so this is defensive:
+	// should the descriptors ever disagree, the player takes the one the message currently renders
+	// rather than keeping a value it can no longer justify.
+	it('refreshes the discussion id when the supplied descriptor differs', () => {
 		const { result } = renderHook(() => useMediaPlayer(), { wrapper });
 
 		act(() => result.current.play(buildTrack()));
