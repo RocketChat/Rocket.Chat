@@ -145,8 +145,7 @@ describe('getClickedLink', () => {
 describe('pasting into the composer', () => {
 	// The paste guard has no home yet; this is the surface the fix has to expose.
 	const extractPastedPlainText = (messageBoxHelpers as Record<string, unknown>).extractPastedPlainText as
-		| ((event: ClipboardEvent<HTMLElement>) => string | undefined)
-		| undefined;
+		((event: ClipboardEvent<HTMLElement>) => string | undefined) | undefined;
 
 	const clipboardEvent = (data: Record<string, string>): ClipboardEvent<HTMLElement> =>
 		({
