@@ -53,8 +53,6 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'../logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 
-const reasonOf = (result: any): string => (result?.error as MeteorErrorMock)?.reason ?? '';
-
 describe('SAML loginHandler', () => {
 	beforeEach(() => {
 		retrieveCredential.reset();
@@ -110,10 +108,8 @@ describe('SAML loginHandler', () => {
 
 	it('should remove the credential when provisioning the user fails', async () => {
 		insertOrUpdateSAMLUser.rejects(new Error('error-invalid-user'));
+		await handler({ saml: true, credentialToken: 'token' });
 
-		const result = await handler({ saml: true, credentialToken: 'token' });
-
-		expect(reasonOf(result)).to.be.a('string');
 		expect(removeById.called).to.be.true;
 		expect(extendExpirationById.called).to.be.false;
 	});
