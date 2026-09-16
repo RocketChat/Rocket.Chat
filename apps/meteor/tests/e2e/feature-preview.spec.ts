@@ -13,6 +13,7 @@ import {
 	createTargetDiscussion,
 	deleteRoom,
 } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -25,6 +26,8 @@ test.describe.serial('feature preview', () => {
 	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
+
+	preserveSettings(['Accounts_AllowFeaturePreview']);
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
@@ -42,7 +45,6 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 		await setUserPreferences(api, {

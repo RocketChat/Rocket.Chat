@@ -32,7 +32,7 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				fontScale='p2'
 				paddingInline={12}
 				marginBlock={16}
-				borderWidth={0}
+				borderWidth='none'
 				is='div'
 				style={{
 					position: 'absolute',
@@ -52,7 +52,7 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				ref={ref}
 				paddingInline={12}
 				paddingBlock={16}
-				borderWidth={0}
+				borderWidth='none'
 				is='span'
 				contentEditable={!disabled}
 				aria-disabled={disabled}
