@@ -10,8 +10,10 @@ const getRestrictedUsers = jest.fn(
 		}),
 );
 
+const settingsGet = jest.fn(async (_id: string) => true as boolean);
+
 jest.mock('@rocket.chat/core-services', () => ({
-	Settings: { get: async () => true },
+	Settings: { get: (id: string) => settingsGet(id) },
 	StatusVisibility: { getRestrictedUsers: () => getRestrictedUsers() },
 }));
 
@@ -24,6 +26,28 @@ describe('StatusVisibilityGate', () => {
 		restrictedUsers = [];
 		pendingReads = [];
 		getRestrictedUsers.mockClear();
+		settingsGet.mockReset();
+		settingsGet.mockResolvedValue(true);
+	});
+
+	it('should stay active when the user status setting cannot be read, so presence is not forwarded unredacted', async () => {
+		settingsGet.mockImplementation(async (id: string) => {
+			if (id === 'Accounts_UserStatus_Enabled') {
+				throw new Error('settings unavailable');
+			}
+
+			return false;
+		});
+
+		const gate = new StatusVisibilityGate();
+
+		const sync = gate.syncRestrictedUsers();
+
+		await settle();
+		resolveOldestRead();
+		await sync;
+
+		await expect(gate.ensureActive()).resolves.toBe(true);
 	});
 
 	it('should reject a sync requested while another one is in flight', async () => {
