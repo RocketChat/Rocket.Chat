@@ -18,10 +18,25 @@ const AUDIO_FILE = 'sample-audio.mp3';
  */
 test.describe('audio player stops when the audio is no longer available', () => {
 	let poHomeChannel: HomeChannel;
+	let createdRoomIds: string[] = [];
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		createdRoomIds = [];
 	});
+
+	// In afterEach rather than at the end of each test: a failing test never reaches its own
+	// cleanup, and rooms left behind accumulate in the admin's sidebar, slowing every later run
+	// until the page stops hydrating within the timeout.
+	test.afterEach(async ({ api }) => {
+		await Promise.all(createdRoomIds.map((roomId) => api.post('/channels.delete', { roomId })));
+	});
+
+	const createRoom = async (api: Parameters<typeof createTargetChannelAndReturnFullRoom>[0], members?: string[]) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, members ? { members } : undefined);
+		createdRoomIds.push(channel._id);
+		return channel;
+	};
 
 	/**
 	 * The Now Playing card. Identified by the player's own slider rather than its play/pause
@@ -48,8 +63,8 @@ test.describe('audio player stops when the audio is no longer available', () => 
 	};
 
 	test('closes when the quoted original is deleted in another room', async ({ page, api }) => {
-		const { channel: originRoom } = await createTargetChannelAndReturnFullRoom(api);
-		const { channel: quotingRoom } = await createTargetChannelAndReturnFullRoom(api);
+		const originRoom = await createRoom(api);
+		const quotingRoom = await createRoom(api);
 
 		await test.step('send the audio in the origin room', async () => {
 			await sendAudio(originRoom.name!);
@@ -59,8 +74,11 @@ test.describe('audio player stops when the audio is no longer available', () => 
 			const originMessageId = await lastMessageIdOf(api, originRoom._id);
 			const permalink = `${new URL(page.url()).origin}/channel/${originRoom.name}?msg=${originMessageId}`;
 
-			await poHomeChannel.gotoChannel(quotingRoom.name!);
-			await poHomeChannel.content.sendMessage(permalink);
+			// Posted over REST and opened from the sidebar rather than a second `gotoChannel`: that
+			// helper does a full `page.goto`, and a second reload of the dev bundle is what made this
+			// test hang intermittently. The quote itself is built server-side either way.
+			expect((await api.post('/chat.postMessage', { roomId: quotingRoom._id, text: permalink })).status()).toBe(200);
+			await poHomeChannel.navbar.openChat(quotingRoom.name!);
 
 			// The quote is built server-side, so this also proves the permalink resolved.
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Play', exact: true })).toBeVisible();
@@ -78,13 +96,10 @@ test.describe('audio player stops when the audio is no longer available', () => 
 
 			await expect(nowPlayingCard(page)).not.toBeVisible();
 		});
-
-		await api.post('/channels.delete', { roomId: originRoom._id });
-		await api.post('/channels.delete', { roomId: quotingRoom._id });
 	});
 
 	test('keeps playing when a prune that excludes pinned messages spares the pinned message', async ({ page, api }) => {
-		const { channel: targetChannel } = await createTargetChannelAndReturnFullRoom(api);
+		const targetChannel = await createRoom(api);
 
 		await test.step('play the audio', async () => {
 			await sendAudio(targetChannel.name!);
@@ -124,12 +139,10 @@ test.describe('audio player stops when the audio is no longer available', () => 
 			await page.waitForTimeout(2000);
 			await expect(nowPlayingCard(page)).toBeVisible();
 		});
-
-		await api.post('/channels.delete', { roomId: targetChannel._id });
 	});
 
 	test('closes when the listener leaves the room the audio belongs to', async ({ page, api }) => {
-		const { channel: targetChannel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		const targetChannel = await createRoom(api, ['user1']);
 
 		await test.step('play the audio', async () => {
 			await sendAudio(targetChannel.name!);
@@ -144,7 +157,5 @@ test.describe('audio player stops when the audio is no longer available', () => 
 
 			await expect(nowPlayingCard(page)).not.toBeVisible();
 		});
-
-		await api.post('/channels.delete', { roomId: targetChannel._id });
 	});
 });
