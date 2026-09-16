@@ -1983,6 +1983,81 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		describe('username filter', () => {
+			const prefix = `ulf${Date.now()}`;
+			let lowerUser: TestUser<IUser>;
+			let mixedUser: TestUser<IUser>;
+			let dottedUser: TestUser<IUser>;
+
+			before(async () => {
+				[lowerUser, mixedUser, dottedUser] = await Promise.all([
+					createUser({ username: `${prefix}.john` }),
+					createUser({ username: `x.${prefix.toUpperCase()}.joanna` }),
+					createUser({ username: `${prefix}.bob` }),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([deleteUser(lowerUser), deleteUser(mixedUser), deleteUser(dottedUser)]);
+			});
+
+			const listUsernames = async (query: Record<string, string>, creds: Credentials = credentials): Promise<string[]> => {
+				const response = await request
+					.get(api('users.list'))
+					.set(creds)
+					.query({ count: 50, ...query })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				return response.body.users.map((user: IUser) => user.username);
+			};
+
+			it('should match any part of the username, ignoring case', async () => {
+				expect(await listUsernames({ username: `${prefix}.jo` })).to.have.members([lowerUser.username, mixedUser.username]);
+				expect(await listUsernames({ username: prefix })).to.have.members([lowerUser.username, mixedUser.username, dottedUser.username]);
+			});
+
+			it('should treat regex metacharacters literally', async () => {
+				expect(await listUsernames({ username: `${prefix}.*` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}\\.bob` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}.bob` })).to.have.members([dottedUser.username]);
+			});
+
+			it('should combine with the email filter', async () => {
+				expect(await listUsernames({ username: prefix, email: lowerUser.emails[0].address })).to.have.members([lowerUser.username]);
+				expect(await listUsernames({ username: `${prefix}.bob`, email: lowerUser.emails[0].address })).to.be.empty;
+			});
+
+			it('should not require view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				try {
+					expect(await listUsernames({ username: `${prefix}.bob` }, user2Credentials)).to.have.members([dottedUser.username]);
+				} finally {
+					await restorePermissionToRoles('view-full-other-user-info');
+				}
+			});
+
+			it('should reject an empty username instead of ignoring it', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ username: '' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
+			it('should reject a username that is not a plain string', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query('username[$ne]=x')
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+		});
+
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
