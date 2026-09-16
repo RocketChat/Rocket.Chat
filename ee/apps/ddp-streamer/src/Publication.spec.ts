@@ -117,4 +117,21 @@ describe('Publication', () => {
 		expect(() => publication.unblock()).toThrow('Method not implemented.');
 		expect(client.send).not.toHaveBeenCalled();
 	});
+
+	it('removes its client "close" listener when explicitly stopped', () => {
+		expect(client.listenerCount('close')).toBe(1);
+
+		publication.stop();
+
+		expect(client.listenerCount('close')).toBe(0);
+	});
+
+	it('does not accumulate client "close" listeners across subscription churn', () => {
+		for (let i = 0; i < 60; i++) {
+			const churned = new Publication(client, { ...makeSubscription(), id: `sub-${i}` }, server);
+			churned.stop();
+		}
+
+		expect(client.listenerCount('close')).toBe(1);
+	});
 });
