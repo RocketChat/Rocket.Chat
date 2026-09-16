@@ -155,7 +155,7 @@ const ConferencePreflight = ({
 							</Box>
 							{preferences.cam && (
 								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-									{t('Which_devices_are_used_is_chosen_in_the_call')}
+									{t('Choose_your_camera_and_microphone_inside_the_call')}
 								</Box>
 							)}
 						</Box>
@@ -231,7 +231,10 @@ const ConferencePreflight = ({
 						</Box>
 					)}
 
-					{action === 'start' && isDirect && (!canChooseRinging || ring) && (
+					{/* Only where a ring is actually going out: `canChooseRinging` is false both where ringing has no
+					    meaning and where this caller's ringing would be dropped, and promising a notification in
+					    either case is promising something that will not happen. */}
+					{action === 'start' && isDirect && canChooseRinging && ring && (
 						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
 							{t('__name__will_be_notified_when_you_start_the_call', { name })}
 						</Box>
@@ -242,7 +245,9 @@ const ConferencePreflight = ({
 							<Button type='submit' variant='primary' loading={confirming}>
 								{confirmLabel}
 							</Button>
-							<Button type='button' onClick={onCancel}>
+							{/* Not while the call is being created: cancelling between the start and the join would close
+						    this window over a conference that exists and that nobody has entered. */}
+							<Button type='button' disabled={confirming} onClick={onCancel}>
 								{t('Cancel')}
 							</Button>
 						</ButtonGroup>

@@ -23,7 +23,7 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 	useConfinedNavigation();
 
 	const { t } = useTranslation();
-	const { name, isDirect, capabilities, loading, error, starting, start } = useStartConference(rid);
+	const { name, isDirect, canRing, capabilities, loading, error, starting, start } = useStartConference(rid);
 
 	if (error) {
 		return <ConferencePageError />;
@@ -46,8 +46,9 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 			capabilities={capabilities}
 			// Confirming here is what creates the call, so this is the one screen whose answer about ringing can
 			// still be acted on. Only offered where a ring is possible at all: a channel or a team announces a call
-			// rather than ringing it, so there would be nothing for the switch to change.
-			canChooseRinging={isDirect}
+			// rather than ringing it, and a caller without `videoconf-ring-users` has their ringing dropped by the
+			// server — so in neither case would the switch change anything.
+			canChooseRinging={canRing}
 			confirming={starting}
 			onConfirm={(preferences, chosenName, ring) => start({ state: preferences, name: chosenName, ring })}
 			onCancel={closeCallWindow}

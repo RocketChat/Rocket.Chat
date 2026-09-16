@@ -13,8 +13,16 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouter: () => ({ navigate, buildRoutePath: () => '/conference/new-call' }),
 }));
 
+// A direct subscription is named after the other person, which is the whole reason this screen reads the
+// subscription rather than the room — so the fixture says a person's name there and a room's name otherwise.
 const subscription = (t: 'c' | 'd') => ({
-	subscription: { _id: 'sub', rid: 'room-id', t, fname: 'general', name: 'general' },
+	subscription: {
+		_id: 'sub',
+		rid: 'room-id',
+		t,
+		fname: t === 'd' ? 'Ada Lovelace' : 'general',
+		name: t === 'd' ? 'ada' : 'general',
+	},
 	success: true,
 });
 
@@ -22,6 +30,13 @@ const renderStart = (t: 'c' | 'd' = 'c') =>
 	render(<ConferenceStartPage rid='room-id' />, {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
+			// The two strings the name is *put into*. Everything else here is asserted by key, which says what was
+			// rendered; these two have to say what was rendered into them, since carrying the name is their job and
+			// an untranslated key carries nothing.
+			.withTranslations('en', 'core', {
+				Meeting_in__roomName__: 'Meeting in "{{roomName}}"',
+				Call__name__: 'Call {{name}}',
+			})
 			.withEndpoint('GET', '/v1/subscriptions.getOne', () => subscription(t) as any)
 			.withEndpoint(
 				'GET',
@@ -54,7 +69,7 @@ it('creates no conference until it is asked to', async () => {
 it('names the call after the room it is being started in', async () => {
 	renderStart();
 
-	expect(await screen.findByLabelText('Call_name')).toHaveValue('Meeting_in__roomName__');
+	expect(await screen.findByLabelText('Call_name')).toHaveValue('Meeting in "general"');
 });
 
 it('starts the conference with the name and devices it was given', async () => {
@@ -83,6 +98,6 @@ it('becomes the conference it started', async () => {
 it('offers to call the person in a direct message', async () => {
 	renderStart('d');
 
-	expect(await screen.findByRole('button', { name: 'Call__name__' })).toBeInTheDocument();
+	expect(await screen.findByRole('button', { name: 'Call Ada Lovelace' })).toBeInTheDocument();
 	expect(screen.queryByLabelText('Call_name')).not.toBeInTheDocument();
 });
