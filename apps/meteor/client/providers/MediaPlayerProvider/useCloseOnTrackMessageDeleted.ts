@@ -48,8 +48,11 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 			}
 
 			// Only the id and timestamp of the quoted original are known on the client, so the
-			// pinned, discussion and author filters cannot be evaluated for it.
-			if (originMid && originMid !== mid && originTs && !params.users?.length) {
+			// pinned, discussion and author filters cannot be evaluated for it. A synthetic message
+			// without `pinned`/`drid` would satisfy `excludePinned`/`ignoreDiscussion`, closing the
+			// player for an original the prune actually spared, so the timestamp fallback is limited
+			// to prunes that use none of those filters.
+			if (originMid && originMid !== mid && originTs && !params.users?.length && !params.excludePinned && !params.ignoreDiscussion) {
 				const originMessage = { _id: originMid, rid, ts: originTs } as IMessage;
 
 				if (matchesCriteria(originMessage)) {

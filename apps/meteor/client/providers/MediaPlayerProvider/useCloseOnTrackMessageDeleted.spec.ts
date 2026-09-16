@@ -361,6 +361,76 @@ describe('useCloseOnTrackMessageDeleted', () => {
 
 			expect(close).not.toHaveBeenCalled();
 		});
+
+		it('does not evaluate the original against a prune that excludes pinned messages, since its pinned state is unknown', () => {
+			const notifyRef: StreamControllerRef<'notify-room'> = {};
+			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+			const close = jest.fn();
+			const track = buildQuotedTrack();
+
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+			});
+
+			notifyRef.controller?.emit(`${track.rid}/deleteMessageBulk`, [
+				{
+					rid: track.rid!,
+					excludePinned: true,
+					ignoreDiscussion: false,
+					ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
+					users: [],
+				},
+			]);
+
+			expect(close).not.toHaveBeenCalled();
+		});
+
+		it('does not evaluate the original against a prune that ignores discussions, since its discussion is unknown', () => {
+			const notifyRef: StreamControllerRef<'notify-room'> = {};
+			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+			const close = jest.fn();
+			const track = buildQuotedTrack();
+
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+			});
+
+			notifyRef.controller?.emit(`${track.rid}/deleteMessageBulk`, [
+				{
+					rid: track.rid!,
+					excludePinned: false,
+					ignoreDiscussion: true,
+					ts: { $gt: new Date('2023-12-30T00:00:00.000Z'), $lt: new Date('2023-12-31T12:00:00.000Z') },
+					users: [],
+				},
+			]);
+
+			expect(close).not.toHaveBeenCalled();
+		});
+
+		it('still closes for an explicit id even when the prune excludes pinned and ignores discussions', () => {
+			const notifyRef: StreamControllerRef<'notify-room'> = {};
+			const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+			const close = jest.fn();
+			const track = buildQuotedTrack();
+
+			renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
+			});
+
+			notifyRef.controller?.emit(`${track.rid}/deleteMessageBulk`, [
+				{
+					rid: track.rid!,
+					excludePinned: true,
+					ignoreDiscussion: true,
+					ts: { $gt: new Date(0) },
+					users: [],
+					ids: ['mid1'],
+				},
+			]);
+
+			expect(close).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	it('does not subscribe to streams when track is null', () => {
