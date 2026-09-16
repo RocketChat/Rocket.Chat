@@ -75,19 +75,22 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 			// with 5. Asking once and assuming the answer was complete left room members in the picker as if they
 			// were not members at all.
 			//
-			// So the response says when to stop. `total` is the room's membership, and paging until we hold it is
-			// a handful of requests when the modal opens, once — which is what it costs to be right about who is
-			// already here.
-			const members = [];
+			// So the first answer says how many there are, and the rest are asked for at once rather than one
+			// after another: a room of a thousand under a low cap is a queue of requests the picker waits behind,
+			// and they do not depend on each other.
+			const first = await getMembers({ roomId: rid, offset: 0, count: MEMBERS_PAGE });
 
-			for (;;) {
-				const page = await getMembers({ roomId: rid, offset: members.length, count: MEMBERS_PAGE });
-				members.push(...page.members);
-
-				if (!page.count || members.length >= page.total) {
-					return members;
-				}
+			if (!first.count || first.members.length >= first.total) {
+				return first.members;
 			}
+
+			const rest = await Promise.all(
+				Array.from({ length: Math.ceil((first.total - first.count) / first.count) }, (_, page) =>
+					getMembers({ roomId: rid, offset: first.count * (page + 1), count: MEMBERS_PAGE }),
+				),
+			);
+
+			return [...first.members, ...rest.flatMap(({ members }) => members)];
 		},
 	});
 

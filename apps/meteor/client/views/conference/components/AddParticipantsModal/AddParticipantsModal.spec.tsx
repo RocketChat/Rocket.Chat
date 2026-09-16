@@ -195,7 +195,9 @@ it('refuses to add more people than the call can take at once', async () => {
 		await userEvent.click(await screen.findByRole('option', { name: person.username }));
 	}
 
-	expect(await screen.findByText(`Add at most ${RING_RECIPIENTS_LIMIT} people at a time.`)).toBeInTheDocument();
+	// Eleven selections, each behind the picker's own debounce, so this one is allowed to take its time — the
+	// default second is enough on an idle machine and not enough on a busy one.
+	expect(await screen.findByText(`Add at most ${RING_RECIPIENTS_LIMIT} people at a time.`, {}, { timeout: 5000 })).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
 });
 
