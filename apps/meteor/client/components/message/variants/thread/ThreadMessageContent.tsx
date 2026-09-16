@@ -60,6 +60,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 						username: message.u.username,
 						name: message.u.name,
 						ts: message.ts,
+						drid: message.drid,
 					}}
 				/>
 			)}
@@ -91,6 +92,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 						username: message.u.username,
 						name: message.u.name,
 						ts: message.ts,
+						drid: message.drid,
 					}}
 				/>
 			)}

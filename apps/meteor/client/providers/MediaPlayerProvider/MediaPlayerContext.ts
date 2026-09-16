@@ -31,6 +31,12 @@ export type PersistentAudioTrack = {
 	 * only when its id changes, so anything that can change mid-playback would go stale.
 	 */
 	ts?: Date;
+	/**
+	 * Discussion room id the owning message links to (used to match bulk-delete criteria).
+	 * A message is created with its `drid` and never gains or loses one, so this snapshot
+	 * stays accurate for as long as the track lives.
+	 */
+	drid?: string;
 	/** When played from a quote, the id of the original message that holds the attachment (its deletion also closes the player). */
 	originMid?: string;
 	/** Timestamp of the original quoted message (used to match bulk-delete criteria). */

@@ -57,6 +57,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 		username: message.u.username,
 		name: message.u.name,
 		ts: message.ts,
+		drid: message.drid,
 	};
 
 	if (message.t === 'livechat-close') {

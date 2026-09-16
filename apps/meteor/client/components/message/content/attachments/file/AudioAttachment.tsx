@@ -16,6 +16,8 @@ export type AudioAttachmentSource = {
 	username?: string;
 	name?: string;
 	ts?: Date;
+	/** Discussion room id the owning message links to. Immutable once set, so it is safe to snapshot. */
+	drid?: string;
 	/** When the audio is rendered inside a quote, the id of the original message that holds the attachment. */
 	originMid?: string;
 	/** Timestamp of the original quoted message. */
@@ -57,6 +59,7 @@ const AudioAttachment = ({
 			username: source?.username,
 			name: source?.name,
 			ts: source?.ts,
+			drid: source?.drid,
 			originMid: source?.originMid,
 			originTs: source?.originTs,
 			originRid: source?.originRid,
@@ -67,6 +70,7 @@ const AudioAttachment = ({
 			source?.username,
 			source?.name,
 			source?.ts,
+			source?.drid,
 			source?.originMid,
 			source?.originTs,
 			source?.originRid,
