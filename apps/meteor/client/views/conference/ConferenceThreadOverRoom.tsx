@@ -1,5 +1,5 @@
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useCurrentModal, useSetModal } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 
 import ConferenceThreadModal from './ConferenceThreadModal';
 
@@ -21,10 +21,25 @@ type ConferenceThreadOverRoomProps = {
 const ConferenceThreadOverRoom = ({ tmid, onClose }: ConferenceThreadOverRoomProps) => {
 	const setModal = useSetModal();
 
-	useEffect(() => {
-		setModal(<ConferenceThreadModal tmid={tmid} onClose={onClose} />);
+	// Read through a ref so the cleanup can see what is current *then* without the effect re-running — and
+	// therefore reopening the thread — every time the region's modal changes.
+	const currentModal = useCurrentModal();
+	const currentModalRef = useRef(currentModal);
+	currentModalRef.current = currentModal;
 
-		return () => setModal(null);
+	useEffect(() => {
+		const ours = <ConferenceThreadModal tmid={tmid} onClose={onClose} />;
+
+		setModal(ours);
+
+		// Only if it is still ours. The region holds one modal at a time, so something else opening in it has
+		// already replaced this one — and clearing then would close that instead, on the way out of a thread that
+		// is no longer on screen anyway.
+		return () => {
+			if (currentModalRef.current === ours) {
+				setModal(null);
+			}
+		};
 	}, [tmid, onClose, setModal]);
 
 	return null;
