@@ -1,0 +1,22 @@
+docs/adr/0002-streamer-package-subpath-entries.md
+  s_00ff27bda72447::t_f2ee0952cf033c 1-31,34-35
+  s_00ff27bda72447::t_0e870f94f2ba0c 32-33
+CONTEXT.md
+  s_00ff27bda72447::t_dba2dd52660913 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6f5abe05ff54f150ce54cb2ca4d11b2f60e06453",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": null
+    }
+  }
+}

@@ -1,0 +1,21 @@
+packages/streamer/src/streamer.module.spec.ts
+  s_00ff27bda72447::t_2b018a7ced9602 1-107
+packages/streamer/src/notifications.module.spec.ts
+  s_00ff27bda72447::t_ac0479b2bad246 1-154,157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "860d7c4350ea5847c1d9e1edca18c5fe16444eca",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

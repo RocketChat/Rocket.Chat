@@ -1,0 +1,27 @@
+apps/meteor/server/modules/streamer/streamer.module.ts
+  s_00ff27bda72447::t_62bbacce9b0fc2 328
+  s_00ff27bda72447::t_6d8d51972afb93 264
+  s_00ff27bda72447::t_54fff6b5c148f0 3,7-8
+  s_00ff27bda72447::t_b0bb79930058c0 87
+apps/meteor/server/modules/notifications/notifications.module.ts
+  s_00ff27bda72447::t_c22b041ade2cd8 20-21
+  s_00ff27bda72447::t_0ce0cc41ed2eb7 2-10,12
+  s_00ff27bda72447::t_8efb90fff2265e 560
+  s_00ff27bda72447::t_5f5ab55930e690 240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d7e987d6e7ea63f720c57b6e40441e5be1027c46",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": null
+    }
+  }
+}

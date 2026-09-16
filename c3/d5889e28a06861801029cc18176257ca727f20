@@ -1,0 +1,41 @@
+packages/authorization/jest.config.ts
+  s_2939f6c2b3a8e1::t_bfbf9b4ab1ed6b 1-7
+packages/authorization/package.json
+  s_2939f6c2b3a8e1::t_dafe6d88c91536 1-38
+packages/authorization/tsconfig.json
+  s_2939f6c2b3a8e1::t_8e992b9e99110a 1-9
+packages/authorization/.gitignore
+  s_2939f6c2b3a8e1::t_1f856ea5442145 1
+apps/meteor/server/services/startup.ts
+  s_2939f6c2b3a8e1::t_0daf9552cdf17e 73
+apps/meteor/app/authorization/lib/createAuthorizationFunctions.ts
+  s_2939f6c2b3a8e1::t_c1a6d59fe83908 1
+apps/meteor/package.json
+  s_2939f6c2b3a8e1::t_bd941f9f365c16 101
+packages/authorization/src/Authorization.ts
+  s_2939f6c2b3a8e1::t_bab1c03c0a6a9b 7
+apps/meteor/client/views/admin/permissions/PermissionsTable/RoleCell.tsx
+  s_2939f6c2b3a8e1::t_01619b58c73b6d 1,10
+apps/meteor/client/views/root/hooks/loggedIn/useRestrictedRoles.ts
+  s_2939f6c2b3a8e1::t_43d759056c5ea8 1
+apps/meteor/server/lib/authorization/permissionRole.ts
+  s_2939f6c2b3a8e1::t_0253691c1c0818 1,7
+yarn.lock
+  s_2939f6c2b3a8e1::t_2ccc7d67edf3a0 9192,9222-9240,10119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c3d5889e28a06861801029cc18176257ca727f20",
+  "prompts": {},
+  "sessions": {
+    "s_2939f6c2b3a8e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "99c6b675-c41f-413e-bf46-744437e9da57",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
