@@ -9190,6 +9190,7 @@ __metadata:
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
   dependencies:
     "@rocket.chat/abac": "workspace:^"
+    "@rocket.chat/authorization": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "workspace:~"
@@ -9215,6 +9216,25 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/authorization@workspace:^, @rocket.chat/authorization@workspace:packages/authorization":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/authorization@workspace:packages/authorization"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    "@types/node": "npm:~24.13.2"
+    eslint: "npm:~9.39.5"
+    jest: "npm:~30.2.0"
+    mem: "npm:^8.1.1"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10097,6 +10117,7 @@ __metadata:
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/apps-engine": "workspace:^"
+    "@rocket.chat/authorization": "workspace:^"
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"

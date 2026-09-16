@@ -1,0 +1,38 @@
+{
+	"name": "@rocket.chat/authorization",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Rocket.Chat Authorization service",
+	"main": "./dist/Authorization.js",
+	"typings": "./dist/Authorization.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
+		"mem": "^8.1.1",
+		"mongodb": "6.16.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"@types/node": "~24.13.2",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
