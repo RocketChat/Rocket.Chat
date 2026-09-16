@@ -71,6 +71,8 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 			}
 		}
 
+		await CredentialTokens.removeById(loginRequest.credentialToken);
+
 		return makeError(message);
 	}
 });
