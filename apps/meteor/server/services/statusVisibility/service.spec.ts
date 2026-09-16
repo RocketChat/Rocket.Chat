@@ -223,7 +223,7 @@ describe('status visibility service', () => {
 		expect((await service.getRestrictedUsers()).sort()).toEqual(['ana']);
 	});
 
-	it('rebroadcasts a user the admin just disabled, so connected clients are corrected', async () => {
+	it('returns a user the admin just disabled among the affected users, so the listener can correct clients', async () => {
 		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
 
 		const affected = await service.refresh(['ana']);

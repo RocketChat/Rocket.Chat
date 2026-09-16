@@ -40,6 +40,8 @@ class UserPresence {
 
 	private pendingCorrections = new Set<IUser['_id']>();
 
+	private refreshing: Promise<void> = Promise.resolve();
+
 	private stale = true;
 
 	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
@@ -69,6 +71,11 @@ class UserPresence {
 	}
 
 	async refreshHiddenUsers(): Promise<void> {
+		this.refreshing = this.refreshing.catch(() => undefined).then(() => this.applyHiddenUsers());
+		return this.refreshing;
+	}
+
+	private async applyHiddenUsers(): Promise<void> {
 		if (!(await statusVisibilityGate.ensureActive())) {
 			this.scope = NOTHING_HIDDEN;
 			this.pendingCorrections = new Set();

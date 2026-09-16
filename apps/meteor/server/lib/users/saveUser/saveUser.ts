@@ -209,7 +209,9 @@ const _saveUser = (session?: ClientSession) =>
 
 		const deniedByAdmin =
 			userData.statusVisibilityDeniedByAdmin !== undefined
-				? await resolveUsersByUsernames(userData.statusVisibilityDeniedByAdmin.filter((username) => username !== oldUserData?.username))
+				? await resolveUsersByUsernames(
+						(userData.statusVisibilityDeniedByAdmin ?? []).filter((username) => username !== oldUserData?.username),
+					)
 				: undefined;
 
 		if (deniedByAdmin) {
@@ -264,11 +266,13 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+			const { statusVisibilityDeniedByAdmin: _adminOnly, ...notifiableUserData } = userData;
+
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
 				diff: {
-					...userData,
+					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
 			});

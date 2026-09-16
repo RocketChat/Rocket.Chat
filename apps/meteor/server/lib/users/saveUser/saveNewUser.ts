@@ -62,6 +62,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	await Users.updateFromUpdater({ _id }, updater);
 
+	if (userData.presenceDisabledByAdmin) {
+		void StatusVisibility.invalidate([_id], { allViewers: true });
+	}
+
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);
 	}
@@ -71,10 +75,6 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	}
 
 	userData._id = _id;
-
-	if (userData.presenceDisabledByAdmin) {
-		void StatusVisibility.invalidate([_id], { allViewers: true });
-	}
 
 	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
 

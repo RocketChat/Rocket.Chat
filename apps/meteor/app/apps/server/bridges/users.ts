@@ -48,7 +48,7 @@ export class AppUserBridge extends UserBridge {
 
 		const user = await Users.findOneByAppId(appId);
 
-		return this.orch.getConverters()?.get('users').convertToApp(user);
+		return this.redactPresence(await this.orch.getConverters()?.get('users').convertToApp(user));
 	}
 
 	protected async getBySipExtension(extension: string, _appId: string): Promise<IUser | undefined> {
