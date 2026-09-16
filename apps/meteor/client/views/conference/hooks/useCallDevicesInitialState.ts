@@ -1,5 +1,6 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useMemo } from 'react';
 
 /**
@@ -30,6 +31,24 @@ type StoredCallPreferences = CallPreferences & CallRingPreference;
  */
 const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
 
+const STORAGE_KEY = 'videoconf-call-preferences';
+
+/**
+ * The ring habit, read out of a record somebody else is already holding.
+ *
+ * Takes the record rather than reading it, because two `useLocalStorage` hooks on one key are two copies of it:
+ * each holds its own state and neither hears the other's writes within the tab, so a screen that toggled a device
+ * and then the ring wrote the second change over a record that still had the first one's old value.
+ */
+const useRingIn = (stored: StoredCallPreferences, setStored: Dispatch<SetStateAction<StoredCallPreferences>>) => {
+	// `?? true` because the stored value predates this preference: a user who has arrived at a call before has a
+	// stored object without it, and reading that as "don't ring" would silently stop their calls ringing.
+	const ring = stored.ring ?? true;
+	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !(current.ring ?? true) })), [setStored]);
+
+	return { ring, toggleRing };
+};
+
 /**
  * Whether to ring the people being called — the same answer wherever it is asked.
  *
@@ -41,14 +60,9 @@ const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
  * one of its own: the two hooks read and write the same record.
  */
 export const useCallRingPreference = () => {
-	const [stored, setStored] = useLocalStorage<StoredCallPreferences>('videoconf-call-preferences', DEFAULTS);
+	const [stored, setStored] = useLocalStorage<StoredCallPreferences>(STORAGE_KEY, DEFAULTS);
 
-	// `?? true` because the stored value predates this preference: a user who has arrived at a call before has a
-	// stored object without it, and reading that as "don't ring" would silently stop their calls ringing.
-	const ring = stored.ring ?? true;
-	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !(current.ring ?? true) })), [setStored]);
-
-	return { ring, toggleRing };
+	return useRingIn(stored, setStored);
 };
 
 /**
@@ -60,7 +74,7 @@ export const useCallRingPreference = () => {
  * about a device has that device reported as off so nothing claims to have configured something it can't.
  */
 export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabilities) => {
-	const [stored, setStored] = useLocalStorage<StoredCallPreferences>('videoconf-call-preferences', DEFAULTS);
+	const [stored, setStored] = useLocalStorage<StoredCallPreferences>(STORAGE_KEY, DEFAULTS);
 
 	const preferences = useMemo(
 		(): CallPreferences => ({
@@ -75,7 +89,9 @@ export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabili
 		[setStored],
 	);
 
-	const { ring, toggleRing } = useCallRingPreference();
+	// From this hook's own copy of the record, not from `useCallRingPreference`: a second `useLocalStorage` on the
+	// same key here held a stale copy, so toggling a device and then the ring put the device back as it was.
+	const { ring, toggleRing } = useRingIn(stored, setStored);
 
 	return { preferences, ring, toggle, toggleRing };
 };
