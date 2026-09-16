@@ -65,7 +65,7 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 							rules={{
 								maxLength: {
 									value: MAX_PHONE_NUMBER_LABEL_LENGTH,
-									message: t('Max_length_is', { postProcess: 'sprintf', sprintf: [MAX_PHONE_NUMBER_LABEL_LENGTH] }),
+									message: t('Max_length_is', { limit: MAX_PHONE_NUMBER_LABEL_LENGTH }),
 								},
 							}}
 							render={({ field, fieldState: { error } }) => (
