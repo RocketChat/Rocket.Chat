@@ -5,6 +5,7 @@ export type CallContact = {
 	id?: string;
 	contractId?: string;
 
+	uid?: string;
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;

@@ -1,6 +1,7 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import Dialpad from './Dialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -14,11 +15,14 @@ import {
 	DevicePicker,
 	ActionButton,
 	useInfoSlots,
+	useDraggableWidget,
 	CardWidgetContainer,
 	StreamCard,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 import { isExternalPeer } from '../../utils/isExternalPeer';
 
@@ -40,6 +44,7 @@ const OngoingCall = () => {
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
+	const isInline = !useDraggableWidget();
 
 	const screenShareAvailable = supportedFeatures.includes('screen-share');
 	const holdAvailable = supportedFeatures.includes('hold');
@@ -56,10 +61,14 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const appActions = useVisibleAppActions();
+
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
 	}
+
+	const isSip = 'number' in peerInfo;
 
 	return (
 		<Widget>
@@ -85,6 +94,8 @@ const OngoingCall = () => {
 			<WidgetContent>
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+
+					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
@@ -122,6 +133,8 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 

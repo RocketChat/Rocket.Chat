@@ -10,7 +10,7 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 };
 
-type MediaCallViewContextValue = {
+export type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	targetPeer?: PeerInfo;
 	onClickDirectMessage?: () => void;
@@ -46,6 +46,7 @@ export const defaultSessionState: SessionState = {
 	callId: undefined,
 	startedAt: undefined,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	confirmed: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
