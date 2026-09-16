@@ -49,7 +49,7 @@ const meta = {
 	// The list is only ever seen inside the navbar dropdown, which is what gives it its width and its surface.
 	decorators: [
 		(Story) => (
-			<Box width='x280' paddingBlock={8} borderRadius='x8' backgroundColor='surface-light'>
+			<Box width='x280' paddingBlock={8} borderRadius='large' backgroundColor='surface-light'>
 				<Story />
 			</Box>
 		),

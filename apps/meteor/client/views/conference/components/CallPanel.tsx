@@ -132,6 +132,10 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 				will-change: transform;
 			`
 		: css`
+				/* Rounded only where it meets the call: the borderRadius prop names whole-box tokens, not corners. */
+				border-start-start-radius: 0.25rem;
+				border-end-start-radius: 0.25rem;
+
 				visibility: ${visible ? 'visible' : 'hidden'};
 				transition:
 					width ${CLOSE_MS}ms ease,
@@ -160,13 +164,12 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			position={sheet ? 'fixed' : 'relative'}
 			width={sheet ? undefined : dockedInlineSize}
 			minWidth={sheet ? undefined : dockedInlineSize}
-			borderBlockWidth={sheet ? 0 : 'default'}
+			borderBlockWidth={sheet ? 'none' : 'default'}
 			borderBlockStyle='solid'
 			borderBlockColor='stroke-extra-light'
-			borderInlineStartWidth={sheet || !visible ? 0 : 'default'}
+			borderInlineStartWidth={sheet || !visible ? 'none' : 'default'}
 			borderInlineStartStyle='solid'
 			borderInlineStartColor='stroke-extra-light'
-			borderRadius={sheet ? undefined : '0.25rem 0 0 0.25rem'}
 		>
 			<Box display='flex' flexDirection='column' width='100%' minWidth={sheet ? 0 : PANEL_INLINE_SIZE} height='100%'>
 				{/* `visible` as well as `mounted`, so opening shows the contents on the frame it is asked for rather

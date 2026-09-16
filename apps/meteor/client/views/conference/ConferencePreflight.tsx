@@ -136,7 +136,7 @@ const ConferencePreflight = ({
 						flexDirection='column'
 						alignItems='center'
 						justifyContent='center'
-						borderRadius='x8'
+						borderRadius='large'
 						overflow='hidden'
 						className={previewTileStyle}
 					>

@@ -98,7 +98,7 @@ const NavBarItemOngoingCalls = () => {
 							}}
 							paddingBlock={8}
 							width='x280'
-							borderRadius='x8'
+							borderRadius='large'
 							backgroundColor='surface-light'
 						>
 							<OngoingCallsList />

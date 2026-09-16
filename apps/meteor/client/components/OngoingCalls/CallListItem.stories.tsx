@@ -26,7 +26,7 @@ const meta = {
 	},
 	decorators: [
 		(Story) => (
-			<Box width='x280' borderRadius='x8' backgroundColor='surface-light'>
+			<Box width='x280' borderRadius='large' backgroundColor='surface-light'>
 				<Story />
 			</Box>
 		),

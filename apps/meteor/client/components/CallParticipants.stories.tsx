@@ -15,7 +15,7 @@ const meta = {
 	parameters: { layout: 'centered' },
 	decorators: [
 		(Story) => (
-			<Box backgroundColor='surface-light' padding={12} borderRadius='x4'>
+			<Box backgroundColor='surface-light' padding={12} borderRadius='medium'>
 				<Story />
 			</Box>
 		),
