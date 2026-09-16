@@ -1617,6 +1617,113 @@ describe('[Rooms]', () => {
 					});
 			});
 		});
+
+		describe('rooms the caller is not a member of', () => {
+			let owner: TestUser<IUser>;
+			let ownerCredentials: Credentials;
+			let outsider: TestUser<IUser>;
+			let outsiderCredentials: Credentials;
+			let ownerGroup: IRoom;
+			let ownerDM: IRoom;
+
+			before(async () => {
+				[owner, outsider] = await Promise.all([createUser(), createUser()]);
+				[ownerCredentials, outsiderCredentials] = await Promise.all([login(owner.username, password), login(outsider.username, password)]);
+
+				ownerGroup = (await createRoom({ type: 'p', name: `rooms.info.admin.${Date.now()}`, credentials: ownerCredentials })).body.group;
+				ownerDM = (await createRoom({ type: 'd', username: outsider.username, credentials: ownerCredentials })).body.room;
+
+				await request
+					.post(api('rooms.saveRoomSettings'))
+					.set(ownerCredentials)
+					.send({ rid: ownerGroup._id, roomCustomFields: { ssn: 'abc' }, systemMessages: ['uj'] })
+					.expect(200);
+				await sendSimpleMessage({ roomId: ownerGroup._id, userCredentials: ownerCredentials });
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('view-room-administration');
+				await Promise.all([deleteRoom({ type: 'p', roomId: ownerGroup._id }), deleteRoom({ type: 'd', roomId: ownerDM._id })]);
+				await Promise.all([deleteUser(owner), deleteUser(outsider)]);
+			});
+
+			it('should return the whole private group to an admin by roomId', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.room).to.have.property('_id', ownerGroup._id);
+				expect(res.body.room).to.have.nested.property('u.username', owner.username);
+				expect(res.body.room).to.have.deep.property('customFields', { ssn: 'abc' });
+				expect(res.body.room).to.have.deep.property('sysMes', ['uj']);
+				expect(res.body.room).to.include.all.keys('_updatedAt', 'ts', 'msgs', 'usersCount', 'lastMessage');
+			});
+
+			it('should return a private group to an admin by roomName', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomName: ownerGroup.name })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('_id', ownerGroup._id);
+			});
+
+			it('should keep returning the whole room to members', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(ownerCredentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('lastMessage').that.is.an('object');
+			});
+
+			it('should not return a direct message the admin is not part of', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerDM._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('error', 'not-allowed');
+			});
+
+			it('should not return a private group to a user without view-room-administration', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(outsiderCredentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('error', 'not-allowed');
+			});
+
+			it('should not return a private group to an admin once view-room-administration is revoked', async () => {
+				await updatePermission('view-room-administration', []);
+
+				try {
+					const res = await request
+						.get(api('rooms.info'))
+						.set(credentials)
+						.query({ roomId: ownerGroup._id })
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+
+					expect(res.body).to.have.property('error', 'not-allowed');
+				} finally {
+					await restorePermissionToRoles('view-room-administration');
+				}
+			});
+		});
 	});
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;
