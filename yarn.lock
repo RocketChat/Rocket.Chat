@@ -11321,6 +11321,7 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/react": "npm:^9.1.20"
+    "@tanstack/react-query": "npm:~5.65.1"
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~19.2.18"
@@ -11342,6 +11343,7 @@ __metadata:
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
   languageName: unknown

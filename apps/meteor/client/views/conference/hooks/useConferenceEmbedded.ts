@@ -2,6 +2,7 @@ import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.ch
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
+import { useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
@@ -56,7 +57,6 @@ export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const subscribeToVideoConference = useStream('video-conference');
 	const queryClient = useQueryClient();
 	const uid = useUserId();
@@ -72,10 +72,14 @@ export const useConferenceEmbedded = (callId: string) => {
 		data: info,
 		isPending: isInfoPending,
 		error: infoError,
-	} = useQuery({
-		queryKey: videoConferenceQueryKeys.conference(callId),
-		queryFn: async () => getConferenceInfo({ callId }),
+	} = useVideoConferenceInfo(callId, {
+		// A conference this user may not have, or that never existed, is an answer and not a hiccup — the window
+		// should say so at once rather than three attempts later.
 		retry: false,
+		// The shared default holds a conference indefinitely because the room's message block is told about
+		// changes. This window is too, over `{callId}/updated` below — but a dropped socket loses that, and a
+		// window that comes back to a call it is *in* has to come back to the truth. Nothing else here would ask.
+		refetchOnReconnect: 'always',
 	});
 
 	// The conference can change under a participant in several ways — the chat moves to another room, the same room

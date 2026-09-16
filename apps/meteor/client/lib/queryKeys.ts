@@ -9,6 +9,7 @@ import type {
 	RoomType,
 } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -190,7 +191,12 @@ export const marketplaceQueryKeys = {
 export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
-	conference: (callId: string) => [...videoConferenceQueryKeys.all, callId] as const,
+	/**
+	 * Taken from the hook that owns the entry rather than restated here, so there is one spelling of it.
+	 *
+	 * @see useVideoConferenceInfo
+	 */
+	conference: videoConferenceInfoQueryKey,
 	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
