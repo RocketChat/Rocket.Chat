@@ -46,7 +46,12 @@ const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?
 };
 
 const typeFilter = async (term: string) => {
-	await userEvent.type(screen.getByRole('combobox'), term);
+	// The picker stays shut until the room's membership is in, since that is what keeps existing members out of
+	// the options — so waiting for it to open is part of using it.
+	const picker = screen.getByRole('combobox');
+	await waitFor(() => expect(picker).toBeEnabled());
+
+	await userEvent.type(picker, term);
 };
 
 // The shared picker labels an option with the username unless the workspace displays real names, which is the

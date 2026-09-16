@@ -23,7 +23,9 @@ const meta = {
 	decorators: [
 		withCallProviders(
 			conferenceAppRoot()
-				.withEndpoint('POST', '/v1/video-conference.add-participants', () => ({ added: ['grace'], success: true }) as any)
+				// Answers with whoever was submitted. A fixed name came back however the picker was used, so choosing
+				// Alan reported Grace added — an answer the endpoint cannot give.
+				.withEndpoint('POST', '/v1/video-conference.add-participants', ({ users }: any) => ({ added: users, success: true }) as any)
 				.withEndpoint(
 					'GET',
 					'/v1/users.autocomplete',

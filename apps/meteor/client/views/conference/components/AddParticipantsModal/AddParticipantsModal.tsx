@@ -142,10 +142,21 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 					<FieldRow>
 						{/* The product's own way of picking people, the same as adding them to a room — this used to be
 						    hand-rolled here, down to the chips and the remove buttons. */}
+						{/* Shut until the room's membership is in, when there is one to wait for: `exceptions` is what keeps
+						    existing members out of the options, and typing before it arrived offered them as if they
+						    were not members at all. `isLoading` and not `isPending`, which a query disabled for the
+						    rooms that have no member list to ask for never stops being. */}
 						<Controller
 							control={control}
 							name='users'
-							render={({ field }) => <UserAutoCompleteMultiple {...field} exceptions={memberUsernames} placeholder={t('Choose_users')} />}
+							render={({ field }) => (
+								<UserAutoCompleteMultiple
+									{...field}
+									disabled={membersQuery.isLoading}
+									exceptions={memberUsernames}
+									placeholder={t('Choose_users')}
+								/>
+							)}
 						/>
 					</FieldRow>
 				</Field>
