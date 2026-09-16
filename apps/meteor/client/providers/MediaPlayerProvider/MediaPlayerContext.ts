@@ -25,12 +25,12 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
-	/** Timestamp of the message the audio belongs to (used to match bulk-delete criteria). */
+	/**
+	 * Timestamp of the message the audio belongs to (used to match bulk-delete criteria).
+	 * Only immutable message state is kept here: a track is replaced on the shared element
+	 * only when its id changes, so anything that can change mid-playback would go stale.
+	 */
 	ts?: Date;
-	/** Whether the owning message is pinned (used to match bulk-delete criteria). */
-	pinned?: boolean;
-	/** Discussion room id the owning message belongs to (used to match bulk-delete criteria). */
-	drid?: string;
 	/** When played from a quote, the id of the original message that holds the attachment (its deletion also closes the player). */
 	originMid?: string;
 	/** Timestamp of the original quoted message (used to match bulk-delete criteria). */

@@ -73,8 +73,6 @@ const ContextMessage = ({
 		username: message.u.username,
 		name: message.u.name,
 		ts: new Date(message.ts),
-		pinned: message.pinned,
-		drid: message.drid,
 	};
 
 	return (

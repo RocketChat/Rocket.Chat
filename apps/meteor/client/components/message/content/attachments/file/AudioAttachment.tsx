@@ -16,8 +16,6 @@ export type AudioAttachmentSource = {
 	username?: string;
 	name?: string;
 	ts?: Date;
-	pinned?: boolean;
-	drid?: string;
 	/** When the audio is rendered inside a quote, the id of the original message that holds the attachment. */
 	originMid?: string;
 	/** Timestamp of the original quoted message. */
@@ -59,8 +57,6 @@ const AudioAttachment = ({
 			username: source?.username,
 			name: source?.name,
 			ts: source?.ts,
-			pinned: source?.pinned,
-			drid: source?.drid,
 			originMid: source?.originMid,
 			originTs: source?.originTs,
 			originRid: source?.originRid,
@@ -71,8 +67,6 @@ const AudioAttachment = ({
 			source?.username,
 			source?.name,
 			source?.ts,
-			source?.pinned,
-			source?.drid,
 			source?.originMid,
 			source?.originTs,
 			source?.originRid,
