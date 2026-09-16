@@ -1,0 +1,32 @@
+packages/rest-typings/src/v1/groups/GroupsListAllProps.ts
+  s_be4edfb521966b::t_1b79bfb3ddee4f 4
+  s_be4edfb521966b::t_c3b3beeff3c1f8 1-3,5-8,10-16
+  s_be4edfb521966b::t_6a2911a1c275d1 9
+apps/meteor/server/api/v1/groups.ts
+  s_be4edfb521966b::t_1b79bfb3ddee4f 23,1006,1020-1022
+  s_be4edfb521966b::t_6a2911a1c275d1 1023
+.changeset/brave-rooms-point.md
+  s_be4edfb521966b::t_1b79bfb3ddee4f 1-6
+packages/rest-typings/src/v1/groups/index.ts
+  s_be4edfb521966b::t_1b79bfb3ddee4f 23
+apps/meteor/tests/end-to-end/api/groups.ts
+  s_be4edfb521966b::t_1b79bfb3ddee4f 1757-1852
+packages/rest-typings/src/v1/groups/groups.ts
+  s_be4edfb521966b::t_1b79bfb3ddee4f 20,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fd118dc7a4a015ba528d498a5c0884fbd83d707e",
+  "prompts": {},
+  "sessions": {
+    "s_be4edfb521966b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c25b941c-3d30-4008-934e-b55858c60777",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
