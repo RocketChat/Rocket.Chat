@@ -34,6 +34,40 @@ const settled = async (element: HTMLElement) => {
 	});
 };
 
+/**
+ * A fixed now, set to the day the fixtures say their calls started.
+ *
+ * Without it these rows render the *date* a call began, because that date is in the past — and the string moves
+ * on as the calendar does, so a snapshot of it goes stale on its own. Frozen alongside the fixture, the row says
+ * the time the call started, which is what it says for a call running now.
+ *
+ * Only `Date` is faked; timers stay real, so the queries and the interactions below behave as in a browser.
+ */
+beforeEach(() => {
+	jest.useFakeTimers({
+		doNotFake: [
+			'setTimeout',
+			'clearTimeout',
+			'setInterval',
+			'clearInterval',
+			'setImmediate',
+			'clearImmediate',
+			'nextTick',
+			'queueMicrotask',
+			'requestAnimationFrame',
+			'cancelAnimationFrame',
+			'requestIdleCallback',
+			'cancelIdleCallback',
+			'performance',
+		],
+	});
+	jest.setSystemTime(new Date('2026-08-03T10:00:00.000Z'));
+});
+
+afterEach(() => {
+	jest.useRealTimers();
+});
+
 describe('NavBarItemOngoingCalls', () => {
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 		const { baseElement } = render(<Story />);

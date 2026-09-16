@@ -8,9 +8,18 @@ const start = jest.fn(() => ({ data: { type: 'videoconference', callId: 'new-cal
 const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
 const navigate = jest.fn();
 
+/**
+ * One router, not one per call.
+ *
+ * The page reads it from two hooks, and `useConfinedNavigation` patches `router.navigate` on the object it was
+ * handed — so a fresh object per consumer left the patch on one and the start's navigation going through the
+ * other, which is not the path the product takes. Rebuilt per test so a patch cannot outlive its render.
+ */
+let router: { navigate: typeof navigate; buildRoutePath: () => string };
+
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
-	useRouter: () => ({ navigate, buildRoutePath: () => '/conference/new-call' }),
+	useRouter: () => router,
 }));
 
 // A direct subscription is named after the other person, which is the whole reason this screen reads the
@@ -49,6 +58,7 @@ const renderStart = (t: 'c' | 'd' = 'c') =>
 	});
 
 beforeEach(() => {
+	router = { navigate, buildRoutePath: () => '/conference/new-call' };
 	start.mockClear();
 	join.mockClear();
 	navigate.mockClear();

@@ -28,7 +28,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div
@@ -91,7 +91,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div
@@ -160,7 +160,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div
@@ -298,7 +298,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div
@@ -361,7 +361,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div
@@ -567,7 +567,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-css-7j82ur"
           >
-            Aug 3rd
+            10:00 AM
           </div>
         </div>
         <div

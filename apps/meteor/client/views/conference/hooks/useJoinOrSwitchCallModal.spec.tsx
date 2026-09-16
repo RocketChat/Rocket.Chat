@@ -84,6 +84,16 @@ describe('when the user is already in another call', () => {
 	// The shared window replacing the old call's page is not the same as leaving it: without this the abandoned
 	// call keeps counting its participant, so it stays listed as occupied and never empties.
 	it('leaves the current call before joining the new one', async () => {
+		// The leave is held open, because "both eventually happened" is true of the order this exists to prevent
+		// as well. What is asserted is that nothing joins while the leave is still out.
+		let answerLeave: () => void = () => undefined;
+		leave.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					answerLeave = () => resolve({ success: true } as any);
+				}) as any,
+		);
+
 		const join = await renderJoin(calls);
 
 		await join('wanted');
@@ -91,6 +101,12 @@ describe('when the user is already in another call', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Join' }));
 
 		await waitFor(() => expect(leave).toHaveBeenCalledWith({ callId: 'current' }));
+		expect(joinCall).not.toHaveBeenCalled();
+
+		await act(async () => {
+			answerLeave();
+		});
+
 		await waitFor(() => expect(joinCall).toHaveBeenCalledWith('wanted'));
 	});
 

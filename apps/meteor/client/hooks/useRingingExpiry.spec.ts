@@ -67,7 +67,12 @@ it('still wakes for a later ring when an earlier one has already lapsed', () => 
 	const { renderCount } = renderExpiry([agoBy(VIDEO_CONF_RINGING_WINDOW_MS + 5_000), agoBy(2_000)]);
 	const before = renderCount();
 
-	act(() => jest.advanceTimersByTime(VIDEO_CONF_RINGING_WINDOW_MS - 2_000 + 200));
+	// Up to just short of the live ring's own expiry. The lapsed one is long past by now, so anything waking in
+	// here would be waking for it — which is what makes the wake-up below attributable to the ring that is left.
+	act(() => jest.advanceTimersByTime(VIDEO_CONF_RINGING_WINDOW_MS - 2_000 - 100));
+	expect(renderCount()).toBe(before);
+
+	act(() => jest.advanceTimersByTime(300));
 
 	expect(renderCount()).toBeGreaterThan(before);
 });
