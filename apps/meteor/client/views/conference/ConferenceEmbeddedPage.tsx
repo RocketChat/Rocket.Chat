@@ -100,7 +100,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
 	const unread = !chatVisible && showUnread ? unreadCount.total : 0;
-	const hasUnseenActivity = !chatVisible && !unread && Boolean(subscription?.alert);
+	// `hideUnreadStatus` is the reader saying they do not want to be told about this room, and the sidebar honours
+	// it for exactly this kind of mark — so the dot on the chat button honours it too.
+	const hasUnseenActivity = !chatVisible && !unread && Boolean(subscription?.alert) && !subscription?.hideUnreadStatus;
 
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 	const presentCount = present.length;

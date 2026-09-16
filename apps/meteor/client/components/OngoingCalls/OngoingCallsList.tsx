@@ -17,9 +17,11 @@ const OngoingCallsList = () => {
 	const remainingSlots = Math.max(0, MAX_VISIBLE - visibleActive.length);
 	const visibleDeclined = showAll ? declined : declined.slice(0, remainingSlots);
 
-	const hiddenActive = active.length - visibleActive.length;
+	// Everything the control would reveal, declined calls included — counting only the active ones left it saying
+	// "Show all" with no number in the one case where the cap is what hid a declined call.
+	const hidden = total - (visibleActive.length + visibleDeclined.length);
 
-	const showAllLabel = hiddenActive > 0 ? t('Show_all_count_new', { count: hiddenActive }) : t('Show_all');
+	const showAllLabel = hidden > 0 ? t('Show_all_count_new', { count: hidden }) : t('Show_all');
 
 	return (
 		<Box display='flex' flexDirection='column'>

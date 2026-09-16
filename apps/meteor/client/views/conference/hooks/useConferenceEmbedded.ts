@@ -249,8 +249,15 @@ export const useConferenceEmbedded = (callId: string) => {
 			 * page reading that as a join that went wrong, so it asks this first.
 			 */
 			embedded: data ? data.url === '' : false,
-			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */
-			joined: !!data || !!(ownMember && isInVideoConference(ownMember)),
+			/**
+			 * Whether *this window* has joined — which is to say, whether it holds a session to render.
+			 *
+			 * Deliberately not "is this user in the call": a reload keeps the membership the server recorded but
+			 * loses the join it was built on, and a window that read that membership as a session had nothing to
+			 * show and no way back — it went past the preflight and straight into the unexpected-error page. What
+			 * the membership is still good for is knowing how to leave, which `departure` above reads for itself.
+			 */
+			joined: !!data,
 			loading: isPending,
 			error,
 			join,

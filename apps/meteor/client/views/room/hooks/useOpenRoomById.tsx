@@ -17,6 +17,14 @@ import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromAp
 import { Rooms, Subscriptions } from '../../../stores';
 
 /**
+ * Whether this room's type is looked up by id rather than by name.
+ *
+ * `findRoom` matches channels and groups by name, but a direct room has no usable one and an omnichannel room is
+ * fetched by id outright — so for those two the identifier is the rid.
+ */
+const isRoomFoundById = (room: IRoom): boolean => room.t === 'd' || room.t === 'l';
+
+/**
  * Whether the server answered, and its answer was no.
  *
  * Two shapes, because the app's client rewrites one of them: `RestClient` rejects with the `Response` for
@@ -75,7 +83,7 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 			if (cached) {
 				const room = Rooms.state.get(rid);
 				if (room) {
-					const openIdentifier = room.t === 'd' ? rid : room.name;
+					const openIdentifier = isRoomFoundById(room) ? rid : room.name;
 					if (openIdentifier) {
 						LegacyRoomManager.open({ typeName: room.t + openIdentifier, rid });
 					}
@@ -133,10 +141,9 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 			}
 
 			// LegacyRoomManager starts the message stream that the composer waits on (via `streamActive`). It
-			// resolves the room through `findRoom`, which matches channels/groups by name but DMs by rid (DM
-			// rooms have no usable `name`). Passing the wrong identifier leaves the composer stuck loading, so
-			// pick per room type.
-			const openIdentifier = room.t === 'd' ? rid : room.name;
+			// resolves the room through `findRoom`, and passing the wrong identifier leaves the composer stuck
+			// loading, so pick per room type.
+			const openIdentifier = isRoomFoundById(room) ? rid : room.name;
 			if (openIdentifier) {
 				LegacyRoomManager.open({ typeName: room.t + openIdentifier, rid });
 			}
