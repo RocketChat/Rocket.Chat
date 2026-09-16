@@ -500,7 +500,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
@@ -514,7 +514,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
@@ -540,7 +540,7 @@ test.describe('SAML', () => {
 		await poRegistration2.goto();
 		await expect(page2).toHaveURL('/home');
 
-		await page.goto(`/invite/${inviteId}`);
+		await poRegistration.gotoInvite(inviteId);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
