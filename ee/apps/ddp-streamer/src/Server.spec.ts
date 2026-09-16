@@ -341,6 +341,9 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id', error: expectedError }]);
+		// The publication created before the handler rejected must not outlive the failed subscription.
+		expect(client.subscriptions.size).toBe(0);
+		expect(client.listenerCount('close')).toBe(0);
 	});
 
 	it('handles a synchronous publication failure', async () => {
@@ -353,6 +356,8 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+		expect(client.subscriptions.size).toBe(0);
+		expect(client.listenerCount('close')).toBe(0);
 	});
 
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
