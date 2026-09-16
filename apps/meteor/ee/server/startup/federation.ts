@@ -58,8 +58,10 @@ export const startFederationService = async (): Promise<void> => {
 
 		if (name === 'notify-room' && eventName.endsWith('user-activity')) {
 			const [rid] = eventName.split('/');
-			const [, activity] = args;
-			void FederationMatrixService.notifyUserTyping(rid, uid, activity.includes('user-typing'));
+			const [, activities] = args;
+			const isTyping = Array.isArray(activities) && activities.includes('user-typing');
+
+			void FederationMatrixService.notifyUserTyping(rid, uid, isTyping);
 		}
 	});
 
