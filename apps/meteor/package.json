@@ -221,7 +221,7 @@
 		"hono": "4.13.5",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
-		"i18next-http-backend": "^3.0.6",
+		"i18next-http-backend": "^4.0.2",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"iconv-lite": "^0.6.3",
 		"image-size": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
