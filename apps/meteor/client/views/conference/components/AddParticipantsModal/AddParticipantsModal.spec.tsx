@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { QueryClient } from '@tanstack/react-query';
@@ -35,6 +36,9 @@ const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true })
 // nothing — so it is given per test rather than seeded globally.
 const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?: IRoom) => {
 	const appRoot = mockAppRoot()
+		// The message the limit is reported with is the one thing here asserted by its words rather than its key,
+		// since the number in it is what the case is about.
+		.withTranslations('en', 'core', { Add_at_most__limit__people_at_a_time: 'Add at most {{limit}} people at a time.' })
 		.withEndpoint('GET', '/v1/users.autocomplete', autocomplete)
 		.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', roomMembers)
 		.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
@@ -62,7 +66,8 @@ const selectOutsider = async () => {
 };
 
 beforeEach(() => {
-	autocomplete.mockClear();
+	autocomplete.mockReset();
+	autocomplete.mockImplementation(() => ({ items: [outsider, memberUser] }) as any);
 	// `mockReset` and not `mockClear`: the paging test installs an implementation of its own, and clearing leaves
 	// it in place for whatever runs next — which makes those tests depend on the order they happen to run in.
 	roomMembers.mockReset();
@@ -168,6 +173,32 @@ it('keeps asking until it holds the whole membership, however small the pages ar
 // This is the regression that matters: a conference member added from outside the room has no room to
 // read, and the autocomplete used to be gated on `enabled: !!room`, which left it permanently empty for
 // exactly the people this modal exists to serve.
+// The endpoint refuses more than `RING_RECIPIENTS_LIMIT` outright, so a picker that kept accepting names was
+// collecting a selection it could only fail to send.
+it('refuses to add more people than the call can take at once', async () => {
+	const many = Array.from({ length: RING_RECIPIENTS_LIMIT + 1 }, (_, index) => ({
+		_id: `person-${index}`,
+		username: `person${index}`,
+		name: `Person ${index}`,
+		nickname: '',
+		status: 'online',
+		avatarETag: '',
+	}));
+	autocomplete.mockImplementation(() => ({ items: many }) as any);
+
+	renderModal();
+
+	for (const person of many) {
+		// eslint-disable-next-line no-await-in-loop
+		await typeFilter(person.username);
+		// eslint-disable-next-line no-await-in-loop
+		await userEvent.click(await screen.findByRole('option', { name: person.username }));
+	}
+
+	expect(await screen.findByText(`Add at most ${RING_RECIPIENTS_LIMIT} people at a time.`)).toBeInTheDocument();
+	expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+});
+
 it('still fetches and offers users when there is no room to read', async () => {
 	renderModal();
 

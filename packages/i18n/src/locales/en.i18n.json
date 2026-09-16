@@ -493,6 +493,7 @@
   "Add": "Add",
   "Add_a_Message": "Add a Message",
   "Add_agent": "Add agent",
+  "Add_at_most__limit__people_at_a_time": "Add at most {{limit}} people at a time.",
   "Add_contact": "Add contact",
   "Add_custom_oauth": "Add custom OAuth",
   "Add_Domain": "Add Domain",

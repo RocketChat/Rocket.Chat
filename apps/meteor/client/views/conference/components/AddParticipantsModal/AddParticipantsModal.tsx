@@ -1,6 +1,6 @@
-import { isDirectMessageRoom, isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { RING_RECIPIENTS_LIMIT, isDirectMessageRoom, isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { CheckBox, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
+import { CheckBox, Field, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -30,9 +30,18 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { control, handleSubmit, watch } = useForm<AddParticipantsFormValues>({ defaultValues: { users: [] } });
+	const {
+		control,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm<AddParticipantsFormValues>({ defaultValues: { users: [] }, mode: 'onChange' });
 
 	const { users } = watch();
+
+	// The endpoint takes at most `RING_RECIPIENTS_LIMIT` at a time and refuses the whole body past that, so a
+	// picker that went on accepting names was collecting a selection it could only fail to send.
+	const tooMany = users.length > RING_RECIPIENTS_LIMIT;
 
 	// The same habit the preflight remembers, asked here for the same reason: a ring is an interruption, and
 	// someone added so they can join later is not someone to interrupt now.
@@ -129,7 +138,7 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 			icon={null}
 			title={t('Add_people')}
 			confirmText={t('Add')}
-			confirmDisabled={!users.length}
+			confirmDisabled={!users.length || tooMany}
 			confirmLoading={addParticipantsMutation.isPending}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAdd)} {...props} />}
 			onCancel={onClose}
@@ -149,16 +158,22 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 						<Controller
 							control={control}
 							name='users'
+							rules={{
+								validate: (value) =>
+									value.length <= RING_RECIPIENTS_LIMIT || t('Add_at_most__limit__people_at_a_time', { limit: RING_RECIPIENTS_LIMIT }),
+							}}
 							render={({ field }) => (
 								<UserAutoCompleteMultiple
 									{...field}
 									disabled={membersQuery.isLoading}
+									error={errors.users?.message}
 									exceptions={memberUsernames}
 									placeholder={t('Choose_users')}
 								/>
 							)}
 						/>
 					</FieldRow>
+					{errors.users && <FieldError>{errors.users.message}</FieldError>}
 				</Field>
 				{/* Under the names, because it is a question about the people just chosen. */}
 				<Field>
