@@ -15,12 +15,12 @@ export type MessageQuoteAttachment = {
 	 * Room the quoted message lives in. A quote may point at a different room than the one it is
 	 * rendered in, so this is not necessarily the room of the message carrying the attachment.
 	 * Absent on quotes stored before this field was introduced.
+	 *
+	 * Only immutable identity is stored here. Mutable state such as `pinned` or `drid` would be a
+	 * snapshot from the moment the quote was created — nothing refreshes a stored quote attachment
+	 * when the original is later pinned or moved into a discussion — so consumers must not infer it.
 	 */
 	rid?: string;
-	/** Whether the quoted message is pinned. Absent on quotes stored before this field was introduced. */
-	pinned?: boolean;
-	/** Discussion room id of the quoted message, when it belongs to one. */
-	drid?: string;
 } & MessageAttachmentBase;
 
 export const isQuoteAttachment = (attachment: MessageAttachment): attachment is MessageQuoteAttachment =>

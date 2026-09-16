@@ -37,14 +37,10 @@ export type PersistentAudioTrack = {
 	originTs?: Date;
 	/**
 	 * Room of the original quoted message. A quote may point at another room, in which case the
-	 * player also watches that room for deletions. Absent on quotes stored before the origin
-	 * metadata was persisted, which is what tells the player its criteria cannot be evaluated.
+	 * player also watches that room for deletions. Absent on quotes stored before the origin room
+	 * was persisted, which fall back to assuming the quoting room.
 	 */
 	originRid?: string;
-	/** Whether the original quoted message is pinned (used to match bulk-delete criteria). */
-	originPinned?: boolean;
-	/** Discussion room id of the original quoted message (used to match bulk-delete criteria). */
-	originDrid?: string;
 };
 
 export type MediaPlayerContextValue = {

@@ -24,8 +24,6 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 	const originMid = track?.originMid;
 	const originTs = track?.originTs;
 	const originRid = track?.originRid;
-	const originPinned = track?.originPinned;
-	const originDrid = track?.originDrid;
 
 	useEffect(() => {
 		if (!rid || !mid) {
@@ -33,9 +31,8 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 		}
 
 		const hasOrigin = Boolean(originMid && originMid !== mid);
-		// Quotes stored before the origin metadata existed carry only an id and a timestamp. Their
+		// Quotes stored before the origin room existed carry only an id and a timestamp. Their
 		// original is assumed to live in the quoting room, which is what the player watched before.
-		const hasOriginMetadata = Boolean(originRid);
 		const originRoom = hasOrigin ? (originRid ?? rid) : undefined;
 
 		const watches = new Map<string, RoomWatch>();
@@ -60,12 +57,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 			if (originTs) {
 				originWatch.criteria.push({
-					message: {
-						_id: originMid,
-						rid: originRoom,
-						ts: originTs,
-						...(hasOriginMetadata && { pinned: originPinned, ...(originDrid && { drid: originDrid }) }),
-					} as IMessage,
+					message: { _id: originMid, rid: originRoom, ts: originTs } as IMessage,
 					isOrigin: true,
 				});
 			}
@@ -86,21 +78,14 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 				const matchesCriteria = createDeleteCriteria(params);
 
-				// The author of a quoted original is not persisted, so a prune filtered by user can
-				// never be evaluated for it. Without the origin metadata `pinned` and `drid` are
-				// unknown too, and a synthetic message missing them would satisfy `excludePinned`
-				// and `ignoreDiscussion`, closing the player for an original the prune spared.
-				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean => {
-					if (!isOrigin) {
-						return true;
-					}
-
-					if (params.users?.length) {
-						return false;
-					}
-
-					return hasOriginMetadata || (!params.excludePinned && !params.ignoreDiscussion);
-				};
+				// Only the id, room and timestamp of a quoted original are known. Its author is not
+				// persisted, and its pinned and discussion state cannot be either: those change after
+				// the quote is saved and nothing refreshes a stored quote attachment, so any snapshot
+				// would go stale silently. A synthetic message missing them satisfies
+				// `pinned: { $ne: true }` and `drid: { $exists: false }`, which would close the player
+				// for an original the prune spared, so those prunes skip the origin entirely.
+				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean =>
+					!isOrigin || (!params.users?.length && !params.excludePinned && !params.ignoreDiscussion);
 
 				if (criteria.some((entry) => canEvaluate(entry) && matchesCriteria(entry.message))) {
 					close();
@@ -115,20 +100,5 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 		]);
 
 		return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
-	}, [
-		rid,
-		mid,
-		ts,
-		pinned,
-		username,
-		drid,
-		originMid,
-		originTs,
-		originRid,
-		originPinned,
-		originDrid,
-		subscribeToNotifyRoom,
-		subscribeToRoomMessages,
-		close,
-	]);
+	}, [rid, mid, ts, pinned, username, drid, originMid, originTs, originRid, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
 };
