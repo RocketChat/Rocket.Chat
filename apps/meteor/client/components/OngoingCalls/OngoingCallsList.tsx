@@ -17,7 +17,6 @@ const OngoingCallsList = () => {
 	const remainingSlots = Math.max(0, MAX_VISIBLE - visibleActive.length);
 	const visibleDeclined = showAll ? declined : declined.slice(0, remainingSlots);
 
-	const hasMore = total > MAX_VISIBLE && !showAll;
 	const hiddenActive = active.length - visibleActive.length;
 
 	const showAllLabel = hiddenActive > 0 ? t('Show_all_count_new', { count: hiddenActive }) : t('Show_all');
@@ -57,8 +56,11 @@ const OngoingCallsList = () => {
 			)}
 
 			{/* Outside the lists: it is a control over them, not a call in them, and counting it as one told a
-			    reader there was one more call than there is. */}
-			{(hasMore || showAll) && (
+			    reader there was one more call than there is.
+
+			    On `total`, not on `showAll`: a list that was expanded and has since shrunk to five or fewer has
+			    nothing left to collapse, and went on offering "Show fewer" anyway. */}
+			{total > MAX_VISIBLE && (
 				<Box paddingInline={16} paddingBlock={4}>
 					<Button small secondary width='100%' onClick={toggleShowAll}>
 						{showAll ? t('Show_fewer') : showAllLabel}

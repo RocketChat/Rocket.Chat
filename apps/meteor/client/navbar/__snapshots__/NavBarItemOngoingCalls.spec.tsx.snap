@@ -36,7 +36,6 @@ exports[`NavBarItemOngoingCalls renders OneOngoing without crashing 1`] = `
           <div
             aria-hidden="true"
             class="rcx-box rcx-box--full rcx-css-rv30ce"
-            style="pointer-events: none;"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
@@ -107,7 +106,6 @@ exports[`NavBarItemOngoingCalls renders Ringing without crashing 1`] = `
           <div
             aria-hidden="true"
             class="rcx-box rcx-box--full rcx-css-rv30ce"
-            style="pointer-events: none;"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
@@ -260,7 +258,6 @@ exports[`NavBarItemOngoingCalls renders SeveralOngoing without crashing 1`] = `
           <div
             aria-hidden="true"
             class="rcx-box rcx-box--full rcx-css-rv30ce"
-            style="pointer-events: none;"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"

@@ -45,11 +45,17 @@ describe('NavBarItemOngoingCalls', () => {
 	// Settled first, for the same reason the snapshots are: the list is fetched, so an unsettled render is an
 	// empty box — and an empty box has no violations to find. What these stories are here to check is the button,
 	// its badge and the open dropdown.
+	//
+	// Audited from `baseElement` and not from `container`: the dropdown is portalled to the body, so a run over
+	// the render container covered the button and nothing the button opens — including the story that opens the
+	// list on its own.
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container, baseElement } = render(<Story />);
+		const { baseElement } = render(<Story />);
 		await settled(baseElement);
 
-		const results = await axe(container);
+		// `region` off: it asks that every piece of page content sit inside a landmark, and the page here is one
+		// navbar item rendered on its own — in the product this sits inside the navigation bar's own landmark.
+		const results = await axe(baseElement, { rules: { region: { enabled: false } } });
 		expect(results).toHaveNoViolations();
 	});
 

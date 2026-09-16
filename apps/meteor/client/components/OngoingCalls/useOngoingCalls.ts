@@ -24,12 +24,14 @@ export const useOngoingCallsList = () => {
 
 	useRingingExpiry(ringing.map(({ ringingAt }) => ringingAt));
 
-	return { ringing, ongoing, declined };
+	// `calls` comes back whole as well as sorted: switching calls needs the one this user is already in, and a
+	// second hook fetching the same list for it also subscribed a second time to the same stream.
+	return { calls, ringing, ongoing, declined };
 };
 
 export const useOngoingCalls = () => {
-	const { ringing, ongoing, declined } = useOngoingCallsList();
-	const joinCall = useJoinOrSwitchCallModal();
+	const { calls, ringing, ongoing, declined } = useOngoingCallsList();
+	const joinCall = useJoinOrSwitchCallModal(calls);
 	const declineCall = useEndpoint('POST', '/v1/video-conference.decline');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

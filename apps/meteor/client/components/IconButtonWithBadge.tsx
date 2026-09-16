@@ -28,9 +28,9 @@ type IconButtonWithBadgeProps = {
 const IconButtonWithBadge = ({ badge, badgeVariant, badgeTitle, children, ...props }: IconButtonWithBadgeProps) => (
 	<IconButton position='relative' overflow='visible' {...props}>
 		{badge !== undefined && (
-			// `pointerEvents` is not one of Box's styling props — written as one it reached the DOM as an invalid
-			// `pointer-events` attribute and did nothing, which the snapshots had been recording as normal.
-			<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} style={{ pointerEvents: 'none' }} aria-hidden='true'>
+			// Hit-testable, because `badgeTitle` promises a tooltip and `pointer-events: none` is precisely what
+			// stops one appearing. The badge sits inside the button, so a click on it is a click on the button.
+			<Box position='absolute' insetBlockStart={-6} insetInlineEnd={-6} aria-hidden='true'>
 				<Badge variant={badgeVariant} title={badgeTitle}>
 					{badge}
 				</Badge>

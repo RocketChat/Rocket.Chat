@@ -21,19 +21,28 @@ const leave = jest.fn(() => ({ success: true }) as any);
  * would take the "no other call" path every time. This waits for the data, then hands back the join function.
  */
 const renderJoin = async (calls: JoinableVideoConference[]) => {
-	const { result } = renderHook(() => ({ join: useJoinOrSwitchCallModal(), loaded: useJoinableCalls().calls.length }), {
-		wrapper: mockAppRoot()
-			.withJohnDoe()
-			// Naming the call being left is the point of the confirmation, and the name only reaches the screen
-			// through this string's interpolation — the untranslated key would carry no name at all.
-			.withTranslations('en', 'core', {
-				Leave__name__to_join_this_call: 'You are in <b>{{name}}</b>. Joining this call will leave it.',
-				Could_not_leave_the_call_you_are_in: 'Could not leave the call you are in. Please try again.',
-			})
-			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
-			.withEndpoint('POST', '/v1/video-conference.leave', leave)
-			.build(),
-	});
+	const { result } = renderHook(
+		() => {
+			// Through `useJoinableCalls` rather than handed the fixture directly: what the hook is given is what a
+			// caller reads from there, timestamps revived and all.
+			const { calls: loaded } = useJoinableCalls();
+
+			return { join: useJoinOrSwitchCallModal(loaded), loaded: loaded.length };
+		},
+		{
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				// Naming the call being left is the point of the confirmation, and the name only reaches the screen
+				// through this string's interpolation — the untranslated key would carry no name at all.
+				.withTranslations('en', 'core', {
+					Leave__name__to_join_this_call: 'You are in <b>{{name}}</b>. Joining this call will leave it.',
+					Could_not_leave_the_call_you_are_in: 'Could not leave the call you are in. Please try again.',
+				})
+				.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
+				.withEndpoint('POST', '/v1/video-conference.leave', leave)
+				.build(),
+		},
+	);
 
 	await waitFor(() => expect(result.current.loaded).toBe(calls.length));
 
@@ -111,6 +120,40 @@ describe('when the user is already in another call', () => {
 		expect(await screen.findByRole('alert')).toHaveTextContent('Could not leave the call you are in');
 		expect(screen.getByRole('button', { name: 'Join' })).toBeInTheDocument();
 		expect(joinCall).not.toHaveBeenCalled();
+	});
+
+	// The list the choice was made from is still there behind the confirmation, so a second call can be picked
+	// while the first leave is in flight — and two leave-and-joins running at once are two joins racing, either of
+	// which can win.
+	it('ignores a second choice while it is still leaving', async () => {
+		let answerLeave: () => void = () => undefined;
+		leave.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					answerLeave = () => resolve({ success: true } as any);
+				}) as any,
+		);
+
+		const join = await renderJoin([
+			call({ callId: 'current', name: 'Standup', joined: true }),
+			call({ callId: 'wanted' }),
+			call({ callId: 'other' }),
+		]);
+
+		await join('wanted');
+		await userEvent.click(await screen.findByRole('button', { name: 'Join' }));
+
+		await waitFor(() => expect(leave).toHaveBeenCalledTimes(1));
+
+		await join('other');
+		expect(leave).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			answerLeave();
+		});
+
+		await waitFor(() => expect(joinCall).toHaveBeenCalledTimes(1));
+		expect(joinCall).toHaveBeenCalledWith('wanted');
 	});
 
 	// Clicking the call they are already in shouldn't offer to leave it in order to rejoin it.
