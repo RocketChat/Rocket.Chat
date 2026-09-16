@@ -302,7 +302,6 @@ exports[`renders NotRinging without crashing 1`] = `
                     <input
                       aria-describedby=""
                       aria-invalid="false"
-                      checked=""
                       class="rcx-box rcx-box--full rcx-check-box__input"
                       id="react-aria-_r_5_-label"
                       type="checkbox"

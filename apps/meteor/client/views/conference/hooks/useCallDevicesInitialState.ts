@@ -1,7 +1,5 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { Dispatch, SetStateAction } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 /**
  * Whether to arrive with mic and camera on. This is the part the *server* is told, so it stays exactly what the
@@ -33,18 +31,75 @@ const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
+const listeners = new Set<() => void>();
+
+let snapshot: StoredCallPreferences = DEFAULTS;
+let snapshotOf: string | null | undefined;
+
 /**
- * The ring habit, read out of a record somebody else is already holding.
+ * The record as it stands, as one object.
  *
- * Takes the record rather than reading it, because two `useLocalStorage` hooks on one key are two copies of it:
- * each holds its own state and neither hears the other's writes within the tab, so a screen that toggled a device
- * and then the ring wrote the second change over a record that still had the first one's old value.
+ * Read through rather than kept in state, and the same object returned while the stored text is unchanged: every
+ * reader has to see the same record, or the last one to write puts its whole copy back and undoes what the
+ * others changed. Reading the key is cheap; disagreeing about it is not.
  */
-const useRingIn = (stored: StoredCallPreferences, setStored: Dispatch<SetStateAction<StoredCallPreferences>>) => {
-	// `?? true` because the stored value predates this preference: a user who has arrived at a call before has a
-	// stored object without it, and reading that as "don't ring" would silently stop their calls ringing.
+const read = (): StoredCallPreferences => {
+	let raw: string | null = null;
+
+	try {
+		raw = localStorage.getItem(STORAGE_KEY);
+	} catch {
+		raw = null;
+	}
+
+	if (raw !== snapshotOf) {
+		snapshotOf = raw;
+
+		try {
+			// Spread over the defaults, because the stored object predates some of these: a user who has arrived at
+			// a call before has a record without `ring`, and reading that as "don't ring" would silently stop their
+			// calls ringing.
+			snapshot = raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<StoredCallPreferences>) } : DEFAULTS;
+		} catch {
+			snapshot = DEFAULTS;
+		}
+	}
+
+	return snapshot;
+};
+
+const write = (update: (current: StoredCallPreferences) => StoredCallPreferences) => {
+	const next = update(read());
+
+	try {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+	} catch {
+		// Storage can be refused — a private window, or a browser told to keep nothing. The preference is a
+		// convenience, so it is lost rather than made into an error.
+	}
+
+	snapshotOf = undefined;
+	listeners.forEach((listener) => listener());
+};
+
+const subscribe = (listener: () => void) => {
+	listeners.add(listener);
+	// Another tab writing the same key, which is the one change this window does not make itself.
+	window.addEventListener('storage', listener);
+
+	return () => {
+		listeners.delete(listener);
+		window.removeEventListener('storage', listener);
+	};
+};
+
+/** Everything here reads the record through this, so there is one of it. */
+const useStoredCallPreferences = () => [useSyncExternalStore(subscribe, read), write] as const;
+
+/** The ring habit, read out of the shared record. */
+const useRingIn = (stored: StoredCallPreferences) => {
 	const ring = stored.ring ?? true;
-	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !(current.ring ?? true) })), [setStored]);
+	const toggleRing = useCallback(() => write((current) => ({ ...current, ring: !(current.ring ?? true) })), []);
 
 	return { ring, toggleRing };
 };
@@ -60,9 +115,9 @@ const useRingIn = (stored: StoredCallPreferences, setStored: Dispatch<SetStateAc
  * one of its own: the two hooks read and write the same record.
  */
 export const useCallRingPreference = () => {
-	const [stored, setStored] = useLocalStorage<StoredCallPreferences>(STORAGE_KEY, DEFAULTS);
+	const [stored] = useStoredCallPreferences();
 
-	return useRingIn(stored, setStored);
+	return useRingIn(stored);
 };
 
 /**
@@ -74,7 +129,7 @@ export const useCallRingPreference = () => {
  * about a device has that device reported as off so nothing claims to have configured something it can't.
  */
 export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabilities) => {
-	const [stored, setStored] = useLocalStorage<StoredCallPreferences>(STORAGE_KEY, DEFAULTS);
+	const [stored] = useStoredCallPreferences();
 
 	const preferences = useMemo(
 		(): CallPreferences => ({
@@ -84,14 +139,9 @@ export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabili
 		[capabilities.cam, capabilities.mic, stored.cam, stored.mic],
 	);
 
-	const toggle = useCallback(
-		(device: keyof CallPreferences) => setStored((current) => ({ ...current, [device]: !current[device] })),
-		[setStored],
-	);
+	const toggle = useCallback((device: keyof CallPreferences) => write((current) => ({ ...current, [device]: !current[device] })), []);
 
-	// From this hook's own copy of the record, not from `useCallRingPreference`: a second `useLocalStorage` on the
-	// same key here held a stale copy, so toggling a device and then the ring put the device back as it was.
-	const { ring, toggleRing } = useRingIn(stored, setStored);
+	const { ring, toggleRing } = useRingIn(stored);
 
 	return { preferences, ring, toggle, toggleRing };
 };
