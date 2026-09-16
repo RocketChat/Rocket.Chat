@@ -1,7 +1,7 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
@@ -18,6 +18,8 @@ export type AudioAttachmentSource = {
 	ts?: Date;
 	/** Discussion room id the owning message links to. Immutable once set, so it is safe to snapshot. */
 	drid?: string;
+	/** Whether the owning message is pinned. Mutable, so the player is refreshed while this is rendered. */
+	pinned?: boolean;
 	/** When the audio is rendered inside a quote, the id of the original message that holds the attachment. */
 	originMid?: string;
 	/** Timestamp of the original quoted message. */
@@ -45,7 +47,7 @@ const AudioAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 
-	const { play, toggle, seek, cyclePlaybackRate, isActive, playing, currentTime, duration, playbackRate } = useMediaPlayer();
+	const { play, toggle, seek, cyclePlaybackRate, isActive, updateTrack, playing, currentTime, duration, playbackRate } = useMediaPlayer();
 
 	const track = useMemo<PersistentAudioTrack>(
 		() => ({
@@ -60,6 +62,7 @@ const AudioAttachment = ({
 			name: source?.name,
 			ts: source?.ts,
 			drid: source?.drid,
+			pinned: source?.pinned,
 			originMid: source?.originMid,
 			originTs: source?.originTs,
 			originRid: source?.originRid,
@@ -71,6 +74,7 @@ const AudioAttachment = ({
 			source?.name,
 			source?.ts,
 			source?.drid,
+			source?.pinned,
 			source?.originMid,
 			source?.originTs,
 			source?.originRid,
@@ -83,6 +87,14 @@ const AudioAttachment = ({
 	);
 
 	const active = isActive(track.id);
+
+	// The shared player keeps the descriptor it was handed, so hand it a fresh one whenever this
+	// message re-renders with different mutable state while it owns playback.
+	useEffect(() => {
+		if (active) {
+			updateTrack(track);
+		}
+	}, [active, track, updateTrack]);
 	const [previewDuration, setPreviewDuration] = useState(0);
 
 	return (

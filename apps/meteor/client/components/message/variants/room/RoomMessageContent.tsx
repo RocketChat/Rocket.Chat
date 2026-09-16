@@ -65,6 +65,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 						username: message.u.username,
 						name: message.u.name,
 						ts: message.ts,
+						pinned: message.pinned,
 						drid: message.drid,
 					}}
 				/>
@@ -95,6 +96,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 						username: message.u.username,
 						name: message.u.name,
 						ts: message.ts,
+						pinned: message.pinned,
 						drid: message.drid,
 					}}
 				/>

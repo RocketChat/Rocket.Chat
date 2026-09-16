@@ -20,6 +20,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 	const ts = track?.ts;
 	const username = track?.username;
 	const drid = track?.drid;
+	const pinned = track?.pinned;
 	const originMid = track?.originMid;
 	const originTs = track?.originTs;
 	const originRid = track?.originRid;
@@ -48,7 +49,7 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 		const trackWatch = watchRoom(rid);
 		trackWatch.ids.push(mid);
-		trackWatch.criteria.push({ message: { _id: mid, rid, ts, drid, u: { username } } as IMessage, isOrigin: false });
+		trackWatch.criteria.push({ message: { _id: mid, rid, ts, drid, pinned, u: { username } } as IMessage, isOrigin: false });
 
 		if (hasOrigin && originMid && originRoom) {
 			const originWatch = watchRoom(originRoom);
@@ -77,27 +78,15 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 				const matchesCriteria = createDeleteCriteria(params);
 
-				// `pinned` flips over a message's lifetime and every copy the player holds is a
-				// snapshot: the active track is only replaced when its id changes, and a stored quote
-				// attachment is never rewritten. Matching a stale value against `pinned: { $ne: true }`
-				// would close the player for a message the prune spared, so no prune filtering on it is
-				// evaluated. A deletion naming the message by id still closes it either way.
+				// The playing message is matched on its full state: `drid` never changes once set, and
+				// `pinned` is refreshed by the provider while that message is rendered. It can still drift
+				// if the message is unmounted, which is accepted — leaving the player running on audio the
+				// server deleted, and whose file is gone, is the worse outcome.
 				//
-				// `drid` is different: a message is created with its discussion id and never gains or
-				// loses one, so the snapshot cannot go stale and `ignoreDiscussion` stays matchable for
-				// the playing message. A quoted original carries neither its author nor its `drid`, so
-				// both of those filters remain unanswerable for it.
-				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean => {
-					if (params.excludePinned) {
-						return false;
-					}
-
-					if (!isOrigin) {
-						return true;
-					}
-
-					return !params.users?.length && !params.ignoreDiscussion;
-				};
+				// A quoted original has no such refresh: the attachment stores its room but not its author
+				// or pinned state, so prunes filtering on those cannot be evaluated for it.
+				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean =>
+					!isOrigin || (!params.users?.length && !params.excludePinned && !params.ignoreDiscussion);
 
 				if (criteria.some((entry) => canEvaluate(entry) && matchesCriteria(entry.message))) {
 					close();
@@ -112,5 +101,5 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 		]);
 
 		return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
-	}, [rid, mid, ts, username, drid, originMid, originTs, originRid, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
+	}, [rid, mid, ts, username, drid, pinned, originMid, originTs, originRid, subscribeToNotifyRoom, subscribeToRoomMessages, close]);
 };
