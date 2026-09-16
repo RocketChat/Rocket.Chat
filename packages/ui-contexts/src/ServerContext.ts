@@ -17,12 +17,21 @@ export type UploadResult = {
 	[key: string]: unknown;
 };
 
+/** Page size used when the server has published none. */
+export const API_COUNT_LIMIT_DEFAULT = 50;
+
 export type ServerContextValue = {
 	connected: boolean;
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 	retryCount: number;
 	retryTime?: number | undefined;
 	info?: IServerInfo;
+	/**
+	 * How many items to ask a paginated endpoint for. A suggestion: the workspace caps it at its
+	 * `API_Upper_Count_Limit`, so a page can come back smaller. Page by what the response
+	 * carried, never by this.
+	 */
+	apiCountLimit?: number;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
 		methodName: MethodName,
@@ -63,6 +72,7 @@ export const ServerContext = createContext<ServerContextValue>({
 	status: 'connected',
 	retryCount: 0,
 	info: undefined,
+	apiCountLimit: API_COUNT_LIMIT_DEFAULT,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {
 		throw new Error('not implemented');

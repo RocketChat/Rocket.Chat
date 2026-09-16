@@ -1,6 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { CustomSoundContext, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { CustomSoundContext, useApiCountLimit, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
@@ -17,6 +17,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
 	const getCustomSounds = useEndpoint('GET', '/v1/custom-sounds.list');
+	const apiCountLimit = useApiCountLimit();
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
 	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
@@ -30,7 +31,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			const sounds: Awaited<ReturnType<typeof getCustomSounds>>['sounds'] = [];
 			let total = Infinity;
 			while (sounds.length < total) {
-				const page = await getCustomSounds({ count: 100, offset: sounds.length });
+				const page = await getCustomSounds({ count: apiCountLimit, offset: sounds.length });
 				total = page.total;
 				sounds.push(...page.sounds);
 				if (!page.sounds.length) {

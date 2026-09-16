@@ -18,6 +18,7 @@ import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 import { Info as info } from '../../app/utils/rocketchat.info';
 import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
+import { getApiCountLimit } from '../lib/getApiCountLimit';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
 
@@ -183,6 +184,8 @@ export type ServerProviderProps = { children?: ReactNode };
 const ServerProvider = ({ children }: ServerProviderProps) => {
 	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
 
+	const apiCountLimit = getApiCountLimit();
+
 	const value = useMemo(
 		(): ServerContextValue => ({
 			connected,
@@ -190,6 +193,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			retryCount,
 			retryTime,
 			info,
+			apiCountLimit,
 			absoluteUrl,
 			callMethod,
 			callEndpoint,
@@ -200,7 +204,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 			disconnect,
 			reconnect,
 		}),
-		[connected, retryCount, retryTime, status],
+		[apiCountLimit, connected, retryCount, retryTime, status],
 	);
 
 	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
