@@ -194,21 +194,28 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(close).not.toHaveBeenCalled();
 	});
 
-	it('does not close the player for a prune that excludes pinned messages, since the tracked pin state is a snapshot', () => {
+	it('does not close the player when deleteMessageBulk excludes pinned messages and the track is pinned, but closes when it is not', () => {
 		const notifyRef: StreamControllerRef<'notify-room'> = {};
 		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
-		const close = jest.fn();
-		const track = buildTrack();
+		const closePinned = jest.fn();
+		const closeUnpinned = jest.fn();
 
-		renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
+		const { rerender } = renderHook(({ track, close }) => useCloseOnTrackMessageDeleted(track, close), {
+			initialProps: { track: buildTrack({ pinned: true }) as PersistentAudioTrack | null, close: closePinned },
 			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 		});
 
-		notifyRef.controller?.emit(`${track.rid}/deleteMessageBulk`, [
-			{ rid: track.rid!, excludePinned: true, ignoreDiscussion: false, ts: { $gt: new Date(0) }, users: [] },
-		]);
+		const bulkParams = { rid: 'room1', excludePinned: true, ignoreDiscussion: false, ts: { $gt: new Date(0) }, users: [] };
 
-		expect(close).not.toHaveBeenCalled();
+		notifyRef.controller?.emit('room1/deleteMessageBulk', [bulkParams]);
+
+		expect(closePinned).not.toHaveBeenCalled();
+
+		rerender({ track: buildTrack({ pinned: false }), close: closeUnpinned });
+
+		notifyRef.controller?.emit('room1/deleteMessageBulk', [bulkParams]);
+
+		expect(closeUnpinned).toHaveBeenCalledTimes(1);
 	});
 
 	it('does not close the player when deleteMessageBulk ignores discussions and the track belongs to one, but closes when it does not', () => {

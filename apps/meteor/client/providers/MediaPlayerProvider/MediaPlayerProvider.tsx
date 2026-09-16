@@ -57,6 +57,19 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		audio.play().catch((err) => console.warn('Failed to start audio playback:', err));
 	});
 
+	// `play` only swaps the track when its id changes, so a message that is re-rendered with new
+	// mutable state (pinning, for instance) would otherwise leave the player matching delete
+	// criteria against the values captured when playback started.
+	const updateTrack = useStableCallback((next: PersistentAudioTrack) => {
+		setTrack((current) => {
+			if (!current || current.id !== next.id || (current.pinned === next.pinned && current.drid === next.drid)) {
+				return current;
+			}
+
+			return { ...current, pinned: next.pinned, drid: next.drid };
+		});
+	});
+
 	const toggle = useStableCallback(() => {
 		const audio = audioRef.current;
 		if (!audio || !trackRef.current) {
@@ -106,8 +119,8 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	useCloseOnTrackMessageDeleted(track, close);
 
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, updateTrack, isActive }),
+		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, updateTrack, isActive],
 	);
 
 	return (
