@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CONFERENCE_THEMED_CLASS } from '../panelStyles';
 
@@ -51,6 +52,33 @@ const CLOSE_MS = 200;
 const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 	// The docked panel's width is what animates; a sheet's is the window's, and it animates its position instead.
 	const dockedInlineSize = visible ? PANEL_INLINE_SIZE : 0;
+
+	/*
+	 * What was in the panel, kept for as long as it takes to leave.
+	 *
+	 * The page renders the open panel's contents and nothing else, so the moment one closes there is nothing left
+	 * inside to slide out — the animation played over an empty box. The contents are held here instead and let go
+	 * when the slide ends, rather than kept forever: a chat left mounted behind a closed panel goes on listening.
+	 *
+	 * In a ref because `children` is a new element every render, so state would re-enter itself.
+	 */
+	const leaving = useRef(children);
+	if (visible) {
+		leaving.current = children;
+	}
+
+	const [mounted, setMounted] = useState(visible);
+
+	useEffect(() => {
+		if (visible) {
+			setMounted(true);
+			return;
+		}
+
+		const timer = setTimeout(() => setMounted(false), CLOSE_MS);
+
+		return () => clearTimeout(timer);
+	}, [visible]);
 
 	/*
 	 * Written here rather than at module scope because what it says depends on the props. A static class plus an
@@ -141,7 +169,9 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			borderRadius={sheet ? undefined : '0.25rem 0 0 0.25rem'}
 		>
 			<Box display='flex' flexDirection='column' width='100%' minWidth={sheet ? 0 : PANEL_INLINE_SIZE} height='100%'>
-				{children}
+				{/* `visible` as well as `mounted`, so opening shows the contents on the frame it is asked for rather
+				    than on the one after the effect runs. */}
+				{visible || mounted ? leaving.current : null}
 			</Box>
 		</Box>
 	);
