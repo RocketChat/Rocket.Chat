@@ -8,10 +8,12 @@ import { useEffect, useState } from 'react';
  * ringing?" would keep saying yes until something unrelated moved. Both readers of that question need this: the
  * list, to let a ringing call settle into an ordinary one, and a member's row, to offer to ring them again.
  *
- * @param ringingAt when each ring started; anything absent is ignored.
+ * @param ringingAt when each ring started; anything absent, or already lapsed, is ignored.
  */
 export const useRingingExpiry = (ringingAt: (Date | undefined)[]): void => {
 	const [, setElapsed] = useState(0);
+
+	const now = Date.now();
 
 	// The moments are what matter, not the array identity — a fresh array of the same rings must not restart the
 	// timer, and callers build these lists inline.
@@ -21,6 +23,15 @@ export const useRingingExpiry = (ringingAt: (Date | undefined)[]): void => {
 		}
 
 		const stopsAt = at.getTime() + VIDEO_CONF_RINGING_WINDOW_MS;
+
+		// A ring that has already lapsed has nothing left to announce, and taking it as the earliest would park
+		// this on a moment in the past and keep it there: the rings are unchanged after the wake-up, so `earliest`
+		// would not change, the effect would not run again, and every later ring would lapse unannounced. Dropping
+		// what has passed is what makes each wake-up schedule the next one.
+		if (stopsAt <= now) {
+			return soonest;
+		}
+
 		return soonest === undefined || stopsAt < soonest ? stopsAt : soonest;
 	}, undefined);
 

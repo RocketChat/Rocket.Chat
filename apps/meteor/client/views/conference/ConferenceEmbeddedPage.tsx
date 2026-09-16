@@ -119,8 +119,11 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	const { callSounds } = useCustomSound();
 	const otherMembers = call.canRing && conference.joined ? call.members.filter((m) => m._id !== user?._id && !isInVideoConference(m)) : [];
-	useRingingExpiry(otherMembers.map((m) => m.ringingAt));
-	const someoneRinging = otherMembers.some((m) => isRingingVideoConferenceMember(m));
+	// Only the rings that are actually ringing: a member who declined stopped ringing when they declined, and
+	// handing that member's `ringingAt` over as a ring still to lapse would spend the wake-up on nothing.
+	const ringingMembers = otherMembers.filter((m) => isRingingVideoConferenceMember(m));
+	useRingingExpiry(ringingMembers.map((m) => m.ringingAt));
+	const someoneRinging = ringingMembers.length > 0;
 	useEffect(() => {
 		if (someoneRinging) {
 			callSounds.playDialer();
