@@ -1635,7 +1635,7 @@ describe('[Rooms]', () => {
 
 				await request
 					.post(api('rooms.saveRoomSettings'))
-					.set(ownerCredentials)
+					.set(credentials)
 					.send({ rid: ownerGroup._id, roomCustomFields: { ssn: 'abc' }, systemMessages: ['uj'] })
 					.expect(200);
 				await sendSimpleMessage({ roomId: ownerGroup._id, userCredentials: ownerCredentials });
