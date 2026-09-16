@@ -63,11 +63,21 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	// criteria against the values captured when playback started.
 	const updateTrack = useStableCallback((next: PersistentAudioTrack) => {
 		setTrack((current) => {
-			if (!current || current.id !== next.id || (current.pinned === next.pinned && current.drid === next.drid)) {
+			if (!current || current.id !== next.id) {
 				return current;
 			}
 
-			return { ...current, pinned: next.pinned, drid: next.drid };
+			// A descriptor that omits a field says nothing about it, so keep what was last known
+			// rather than letting a partial snapshot clear state a fuller one had refreshed.
+			// Unpinning sends `false`, not `undefined`, so it still comes through.
+			const pinned = next.pinned ?? current.pinned;
+			const drid = next.drid ?? current.drid;
+
+			if (current.pinned === pinned && current.drid === drid) {
+				return current;
+			}
+
+			return { ...current, pinned, drid };
 		});
 	});
 
