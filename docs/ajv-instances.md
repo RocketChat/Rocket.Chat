@@ -10,15 +10,15 @@ Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configur
 
 | Option            | `ajv`   | `ajvQuery` |
 |-------------------|---------|------------|
-| `coerceTypes`     | `false` | `true`    |
-| `allowUnionTypes` | `true`  | `true`    |
-| `code.source`     | `true`  | `true`    |
-| `discriminator`   | `true`  | `true`    |
+| `coerceTypes`     | `true`  | `'array'`  |
+| `allowUnionTypes` | `true`  | `true`     |
+| `code.source`     | `true`  | `true`     |
+| `discriminator`   | `true`  | `true`     |
 
 In short:
 
-- **`ajv`**: does not change data types; values must already match the types expected by the schema.
-- **`ajvQuery`**: attempts to **coerce** types when the schema expects `number`, `integer`, or `boolean` (e.g. the string `"50"` becomes the number `50`).
+- **`ajv`**: coerces scalars, so the string `"50"` satisfies a `number` and `"true"` a `boolean`.
+- **`ajvQuery`**: does that too, and additionally coerces between a scalar and a one-item array, so `?types=c` satisfies an `array` of strings.
 
 Custom formats (`addFormats`) and keywords (e.g. `isNotEmpty`) are registered on both instances.
 
@@ -38,9 +38,15 @@ If the schema expects `count` as `number` or `open` as `boolean`, a validator th
 - `"25"` is not of type `number` → error like "must be number" / "invalid-params".
 - `"true"` is not of type `boolean` → validation error.
 
+### A query param can also be repeated, or not
+
+`?types=c&types=p` arrives as an array and `?types=c` as a bare string, for the same parameter. Only
+`ajvQuery` reconciles the two, which is what `coerceTypes: 'array'` buys over plain `coerceTypes: true`.
+
 ### Body can already be typed
 
-For the **body** (JSON in POST/PUT/PATCH etc.), the client sends JSON. Parsing (e.g. `JSON.parse`) already yields numbers and booleans. In that case we do not want the validator to mutate values; we use the instance **without** coercion (`ajv`).
+For the **body** (JSON in POST/PUT/PATCH etc.), the client sends JSON, and parsing already yields
+numbers and booleans, so there is usually nothing to coerce. `ajv` is the instance for it.
 
 ---
 

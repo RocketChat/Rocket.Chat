@@ -14,6 +14,7 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -42,14 +43,7 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 		selector: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -300,14 +294,7 @@ const RoomsAdminRoomsSchema = {
 			},
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -645,14 +632,7 @@ const RoomsBannedUsersSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -676,14 +656,7 @@ const roomsImagesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -831,12 +804,7 @@ const membersOrderedByRoleRolePropsSchema = {
 		filter: {
 			type: 'string',
 		},
-		count: {
-			type: 'integer',
-		},
-		offset: {
-			type: 'integer',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
