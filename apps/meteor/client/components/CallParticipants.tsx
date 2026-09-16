@@ -59,7 +59,9 @@ const CallParticipants = ({ people, total, size = 'small' }: CallParticipantsPro
 	const remaining = total - faces.length;
 
 	return (
-		<Box display='flex' alignItems='center' aria-label={label} title={label} style={{ gap: 6 }}>
+		// `role='img'`, because a generic container's `aria-label` is not announced — and these faces are one
+		// picture of who is in the call, whose alternative text is the count.
+		<Box role='img' display='flex' alignItems='center' aria-label={label} title={label} style={{ gap: 6 }}>
 			{/* Side by side with a little air between them, rather than overlapped: there are only ever a few, and
 			    a face half behind another face is a worse picture of who is in the call. */}
 			<Box display='flex' alignItems='center' style={{ gap: 4 }}>

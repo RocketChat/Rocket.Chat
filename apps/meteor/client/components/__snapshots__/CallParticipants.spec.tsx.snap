@@ -9,6 +9,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
       <div
         aria-label="3 people in the call"
         class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
         style="gap: 6px;"
         title="3 people in the call"
       >
@@ -89,6 +90,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
       <div
         aria-label="7 people in the call"
         class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
         style="gap: 6px;"
         title="7 people in the call"
       >
@@ -169,6 +171,7 @@ exports[`CallParticipants renders SinglePerson without crashing 1`] = `
       <div
         aria-label="1 person in the call"
         class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
         style="gap: 6px;"
         title="1 person in the call"
       >
@@ -209,6 +212,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
       <div
         aria-label="12 people in the call"
         class="rcx-box rcx-box--full rcx-css-127j9mz"
+        role="img"
         style="gap: 6px;"
         title="12 people in the call"
       >

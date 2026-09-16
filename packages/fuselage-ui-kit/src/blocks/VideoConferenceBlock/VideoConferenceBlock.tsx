@@ -103,8 +103,12 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	// `users` is the conference's membership list, not who's currently in the call — a member can be added
 	// without ever joining, so this must be filtered down to those who actually joined before it's counted
-	// or displayed anywhere below.
-	const joinedUsers = useMemo(() => result.data?.users.filter(hasJoinedVideoConference) ?? [], [result.data?.users]);
+	// or displayed anywhere below. Without a username there is no avatar to draw either, so such a member would
+	// consume a place in the stack and still be counted in the footer.
+	const joinedUsers = useMemo(
+		() => result.data?.users.filter((user) => !!user.username && hasJoinedVideoConference(user)) ?? [],
+		[result.data?.users],
+	);
 
 	const messageFooterText = useMemo(() => {
 		const usersCount = joinedUsers.length;

@@ -1,4 +1,4 @@
-import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
@@ -27,8 +27,9 @@ const ChatAccessNotice = ({ callId, access, onDismiss }: ChatAccessNoticeProps) 
 	const uid = useUserId();
 
 	// Someone merely invited may never turn up, and telling everyone else about a person who isn't there is
-	// noise. The situation only exists once they are in the call and can't read what is being said.
-	const present = access.members.filter(hasJoinedVideoConference);
+	// noise. The situation only exists once they are in the call and can't read what is being said — and it ends
+	// when they leave, which `hasJoinedVideoConference` does not notice: joining is recorded and never taken back.
+	const present = access.members.filter(isInVideoConference);
 
 	// Only shown to participants who can act on it: a member who can't read the chat can't share it either.
 	if (!present.length || !hasConferenceChatAccess(access, uid)) {

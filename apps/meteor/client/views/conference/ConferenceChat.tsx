@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
@@ -67,7 +67,9 @@ const ConferenceChat = ({
 	// Membership grants no room access, so the chat may be a room this user can't read. The server already
 	// worked out who those members are, which beats letting the room fetch fail and calling it a missing page.
 	const shared = hasConferenceChatAccess(chatAccess, uid);
-	const presentWithoutAccess = shared && chatAccess ? chatAccess.members.filter(hasJoinedVideoConference).length : 0;
+	// In the call now, not merely recorded as having joined it: `joined` is never taken back, so counting on it
+	// went on reporting people who had already left as unable to read a chat they are no longer in.
+	const presentWithoutAccess = shared && chatAccess ? chatAccess.members.filter(isInVideoConference).length : 0;
 
 	// One sentence, with the room's icon interpolated into it, rather than three pieces concatenated in this
 	// file: a language that puts the room before the word — or drops the preposition — has nowhere to say so

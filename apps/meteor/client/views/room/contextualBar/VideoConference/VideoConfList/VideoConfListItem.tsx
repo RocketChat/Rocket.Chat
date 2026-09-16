@@ -51,8 +51,10 @@ const VideoConfListItem = ({
 
 	const displayName = useUserDisplayName({ name, username });
 	// Excludes the creator, and also members who never joined: `users` is the conference's membership list, so
-	// someone added to the call is in it whether or not they ever answered.
-	const joinedUsers = users.filter((user) => user._id !== _id && hasJoinedVideoConference(user));
+	// someone added to the call is in it whether or not they ever answered. A member with no username is left out
+	// too — the avatar stack has nothing to draw for them, so they took a place in the row and left a gap in it
+	// while still counting towards the total underneath.
+	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
 	const hovered = css`
 		&:hover,
