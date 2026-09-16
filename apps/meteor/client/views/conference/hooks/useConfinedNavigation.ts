@@ -2,14 +2,21 @@ import type { RouterContextValue, To } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
+import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
+
 /**
  * Whether a URL is a conference — the one place this window is allowed to go.
  *
  * The window starts on `/conference/new` when it is about to create a call and moves to
  * `/conference/:callId` once it has, and that move is the whole point of the screen. Everything else is somebody
  * else's page, and taking this window there would end the call.
+ *
+ * Through the site root, because the router builds its paths that way: under a `ROOT_URL_PATH_PREFIX` the move
+ * this window exists to make is to `/subdir/conference/<id>`, and a test for a bare `/conference/` would read it
+ * as somebody else's page and open the call it just created in a tab.
  */
-const isConference = (url: URL): boolean => url.origin === window.location.origin && url.pathname.startsWith('/conference/');
+const isConference = (url: URL): boolean =>
+	url.origin === window.location.origin && url.pathname.startsWith(_relativeToSiteRootUrl('/conference/'));
 
 /**
  * Anything that isn't this conference opens in a new tab, leaving the call where it is.

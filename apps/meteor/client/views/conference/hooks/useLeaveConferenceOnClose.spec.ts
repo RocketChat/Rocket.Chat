@@ -54,6 +54,17 @@ it('stops reporting once the page is no longer showing a conference', () => {
 });
 
 describe('leaving on purpose', () => {
+	// `closeCallWindow` arms a fallback navigation for the case where `window.close()` is refused — a browser
+	// will not close a window it did not open by script. Left on a real clock, that timer outlives the test and
+	// navigates jsdom half a second into whatever is running by then.
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
 	// The user who picks "leave" rather than closing the window should not have to close it themselves.
 	it('reports leaving and then closes the window', async () => {
 		const close = jest.spyOn(window, 'close').mockImplementation(() => undefined);
