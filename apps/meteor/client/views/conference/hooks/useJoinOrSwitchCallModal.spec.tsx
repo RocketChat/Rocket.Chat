@@ -28,6 +28,7 @@ const renderJoin = async (calls: JoinableVideoConference[]) => {
 			// through this string's interpolation — the untranslated key would carry no name at all.
 			.withTranslations('en', 'core', {
 				Leave__name__to_join_this_call: 'You are in <b>{{name}}</b>. Joining this call will leave it.',
+				Could_not_leave_the_call_you_are_in: 'Could not leave the call you are in. Please try again.',
 			})
 			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
 			.withEndpoint('POST', '/v1/video-conference.leave', leave)
@@ -92,6 +93,23 @@ describe('when the user is already in another call', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
 
 		expect(leave).not.toHaveBeenCalled();
+		expect(joinCall).not.toHaveBeenCalled();
+	});
+
+	// The whole reason the leave goes first: joining tears the old call's page down, and by then it can no longer
+	// report its own departure. A leave that failed is not something to join past.
+	it('stays put, and says so where it was asked, when the leave fails', async () => {
+		leave.mockRejectedValueOnce(new Error('nope'));
+
+		const join = await renderJoin([call({ callId: 'current', joined: true, name: 'Daily standup' }), call({ callId: 'wanted' })]);
+
+		await join('wanted');
+		await userEvent.click(screen.getByRole('button', { name: 'Join' }));
+
+		// Next to the button that caused it, not in a toast on a screen the modal would have left: the modal is
+		// still open, and the failure is inside it.
+		expect(await screen.findByRole('alert')).toHaveTextContent('Could not leave the call you are in');
+		expect(screen.getByRole('button', { name: 'Join' })).toBeInTheDocument();
 		expect(joinCall).not.toHaveBeenCalled();
 	});
 
