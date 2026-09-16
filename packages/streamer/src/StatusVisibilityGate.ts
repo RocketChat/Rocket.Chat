@@ -30,7 +30,7 @@ export class StatusVisibilityGate {
 		});
 	}
 
-	private isSettingEnabled(id: string): Promise<boolean> {
+	private isSettingEnabled(id: string, onFailure: boolean): Promise<boolean> {
 		const cached = this.settingCache.get(id);
 
 		if (cached) {
@@ -41,7 +41,7 @@ export class StatusVisibilityGate {
 			.then((value) => value !== false)
 			.catch(() => {
 				this.settingCache.delete(id);
-				return true;
+				return onFailure;
 			});
 
 		this.settingCache.set(id, lookup);
@@ -50,7 +50,7 @@ export class StatusVisibilityGate {
 	}
 
 	private async hidesEveryone(): Promise<boolean> {
-		return !(await this.isSettingEnabled(USER_STATUS_SETTING_ID));
+		return !(await this.isSettingEnabled(USER_STATUS_SETTING_ID, false));
 	}
 
 	isActive(): boolean {
@@ -67,7 +67,7 @@ export class StatusVisibilityGate {
 	}
 
 	async ensureActive(): Promise<boolean> {
-		return (await this.hidesEveryone()) || (await this.isSettingEnabled(STATUS_VISIBILITY_SETTING_ID)) || this.isActive();
+		return (await this.hidesEveryone()) || (await this.isSettingEnabled(STATUS_VISIBILITY_SETTING_ID, true)) || this.isActive();
 	}
 
 	hasRestrictions(targetId: IUser['_id']): boolean {
