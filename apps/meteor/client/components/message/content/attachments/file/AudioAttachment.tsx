@@ -22,6 +22,12 @@ export type AudioAttachmentSource = {
 	originMid?: string;
 	/** Timestamp of the original quoted message. */
 	originTs?: Date;
+	/** Room of the original quoted message, which may differ from the room the quote is rendered in. */
+	originRid?: string;
+	/** Whether the original quoted message is pinned. */
+	originPinned?: boolean;
+	/** Discussion room id of the original quoted message, when it belongs to one. */
+	originDrid?: string;
 };
 
 type AudioAttachmentComponentProps = AudioAttachmentProps & {
@@ -61,6 +67,9 @@ const AudioAttachment = ({
 			drid: source?.drid,
 			originMid: source?.originMid,
 			originTs: source?.originTs,
+			originRid: source?.originRid,
+			originPinned: source?.originPinned,
+			originDrid: source?.originDrid,
 		}),
 		[
 			source?.mid,
@@ -72,6 +81,9 @@ const AudioAttachment = ({
 			source?.drid,
 			source?.originMid,
 			source?.originTs,
+			source?.originRid,
+			source?.originPinned,
+			source?.originDrid,
 			url,
 			src,
 			type,

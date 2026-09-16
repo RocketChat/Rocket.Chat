@@ -16,5 +16,11 @@ export function createQuoteAttachment(
 		author_icon: userAvatarUrl,
 		attachments: message.attachments || [],
 		ts: message.ts,
+		// Identity of the quoted message, so clients can tell whether a deletion in its room applies
+		// to it. `pinned` is normalised to a boolean: `undefined` then means "quote stored before
+		// these fields existed", which is distinct from "known to be unpinned".
+		rid: message.rid,
+		pinned: Boolean(message.pinned),
+		...(message.drid && { drid: message.drid }),
 	};
 }
