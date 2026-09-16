@@ -3,6 +3,8 @@ import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { useMediaPlayer } from '../../../../providers/MediaPlayerProvider/MediaPlayerContext';
+
 const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 	const { t } = useTranslation();
 	const deleteMessage = useEndpoint('POST', '/v1/chat.delete');
@@ -10,6 +12,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
+	const { track, close: closeMediaPlayer } = useMediaPlayer();
 
 	const handleDeleteMessages = useMutation({
 		mutationFn: deleteMessage,
@@ -18,6 +21,13 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			setModal();
 		},
 		onSuccess: async () => {
+			// Moderation only requires `view-moderation-console`, but the `notify-room` and
+			// `room-messages` deletion streams are authorized against room access, so a moderator
+			// acting on a room they have not joined never receives the event that closes the track.
+			if (track?.mid === mid) {
+				closeMediaPlayer();
+			}
+
 			await handleDismissMessage.mutateAsync({ msgId: mid });
 		},
 	});
