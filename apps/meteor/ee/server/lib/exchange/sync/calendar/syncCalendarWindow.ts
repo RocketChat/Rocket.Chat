@@ -119,10 +119,9 @@ export const syncCalendarWindow = async (
 	const sameSource = state?.mailbox === mailbox && state?.provider === provider.id;
 	const sameWindow = state?.syncWindowDays === syncWindowDays && state?.windowStart?.getTime() === timeWindow.start.getTime();
 
-	// The window only invalidates a cursor that answers about one, which is why the anchored start exists.
-	// A Graph delta link bakes the window into itself, so a moved window makes it answer about the old one.
-	// An EWS sync state is scoped to the folder and carries no dates, so it outlives any window: applying
-	// the rule to it would throw away a valid cursor and pay a full window read for nothing.
+	// Graph delta links have the time window hardcoded inside them. If the window changes, the cursor becomes invalid.
+	// EWS sync states are tied only to the folder, not the dates. They remain valid even if the time window changes.
+	// Discarding an EWS cursor just because the time window changed would force a useless and expensive full sync.
 	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || provider.id !== 'graph');
 
 	let changed = false;
