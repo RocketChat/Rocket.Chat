@@ -31,7 +31,20 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 				{t('Are_you_sure_you_want_to_pin_this_message')}
 			</Box>
 			<AttachmentProvider>
-				<QuoteAttachment attachment={attachment} />
+				<QuoteAttachment
+					attachment={attachment}
+					// Audio previewed here plays through the shared player, so it needs the message's
+					// identity for the player to notice that message going away.
+					source={{
+						rid: message.rid,
+						mid: message._id,
+						username: message.u.username,
+						name: message.u.name,
+						ts: message.ts,
+						drid: message.drid,
+						pinned: message.pinned,
+					}}
+				/>
 			</AttachmentProvider>
 			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
