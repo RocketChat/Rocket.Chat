@@ -19,8 +19,8 @@
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"i18next": "~23.4.9",
-		"react-i18next": "~13.2.2"
+		"i18next": "~26.4.2",
+		"react-i18next": "~17.0.14"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "~8.0.2",
