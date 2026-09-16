@@ -18,8 +18,8 @@ export interface IExchangeProvider {
 	/** `timeWindow` bounds the range, `cursor` is an opaque delta token, omitted for an initial sync. */
 	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
 
-	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
+	listContactFolders(mailbox: string): Promise<ContactFolder[]>;
 
 	/** Per folder, because both providers scope the contact delta token to one. */
-	listContacts?(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
+	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
 }

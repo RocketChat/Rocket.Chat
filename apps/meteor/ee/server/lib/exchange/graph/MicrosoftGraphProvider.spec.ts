@@ -201,7 +201,7 @@ describe('MicrosoftGraphProvider', () => {
 
 			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
 
-			expect(page.isCompleteForWindow).toBe(true);
+			expect(page.isCompleteSnapshot).toBe(true);
 		});
 
 		it('never calls a resumed delta complete: it carries changes, not the window', async () => {
@@ -213,7 +213,7 @@ describe('MicrosoftGraphProvider', () => {
 				'https://graph.microsoft.com/v1.0/users/u/calendarView/delta?$deltatoken=abc',
 			);
 
-			expect(page.isCompleteForWindow).toBe(false);
+			expect(page.isCompleteSnapshot).toBe(false);
 		});
 	});
 

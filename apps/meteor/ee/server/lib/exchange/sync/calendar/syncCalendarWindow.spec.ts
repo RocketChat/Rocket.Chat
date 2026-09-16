@@ -54,15 +54,12 @@ const deletion = (externalId: string): ExchangeEvent => ({ kind: 'deleted', exte
 const page = (items: ExchangeEvent[], over: Partial<Page<ExchangeEvent>> = {}): Page<ExchangeEvent> => ({
 	items,
 	hasMore: false,
-	isCompleteForWindow: false,
+	isCompleteSnapshot: false,
 	...over,
 });
 
-const capabilities = (cursorIsWindowScoped = true) => ({
-	supportsDelta: true,
+const capabilities = () => ({
 	supportsWebhooks: false,
-	supportsContacts: false,
-	cursorIsWindowScoped,
 });
 
 const providerReturning = (...pages: Page<ExchangeEvent>[]): IExchangeProvider => {
@@ -140,8 +137,8 @@ describe('syncCalendarWindow', () => {
 		it('prunes against the newest complete page, not the union of every page', async () => {
 			// Each complete page is an independent snapshot, so B disappearing from the second one is a removal
 			const provider = providerReturning(
-				page([upsert('A'), upsert('B')], { hasMore: true, cursor: 'c1', isCompleteForWindow: true }),
-				page([upsert('A')], { isCompleteForWindow: true }),
+				page([upsert('A'), upsert('B')], { hasMore: true, cursor: 'c1', isCompleteSnapshot: true }),
+				page([upsert('A')], { isCompleteSnapshot: true }),
 			);
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
@@ -150,7 +147,7 @@ describe('syncCalendarWindow', () => {
 		});
 
 		it('prunes after the upserts landed, so it cannot remove what this run is reviving', async () => {
-			const provider = providerReturning(page([upsert('A')], { isCompleteForWindow: true }));
+			const provider = providerReturning(page([upsert('A')], { isCompleteSnapshot: true }));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -170,7 +167,15 @@ describe('syncCalendarWindow', () => {
 		const folderScopedProvider = (): IExchangeProvider =>
 			({
 				id: 'ews',
-				capabilities: capabilities(false),
+				capabilities: capabilities(),
+				testConnection: jest.fn(),
+				listEvents: jest.fn(async () => page([])),
+			}) as unknown as IExchangeProvider;
+
+		const graphProvider = (): IExchangeProvider =>
+			({
+				id: 'graph',
+				capabilities: capabilities(),
 				testConnection: jest.fn(),
 				listEvents: jest.fn(async () => page([])),
 			}) as unknown as IExchangeProvider;
@@ -187,12 +192,23 @@ describe('syncCalendarWindow', () => {
 		it.each([
 			['the mailbox changed', { mailbox: 'other@corp.example' }],
 			['the provider changed', { provider: 'graph' }],
-			['the window length changed', { syncWindowDays: 5 }],
-			['the window start moved', { windowStart: new Date('2026-09-06T00:00:00Z') }],
 			['there is no cursor', { cursor: undefined }],
 		])('starts over when %s', async (_label, difference) => {
 			findOneByUserId.mockResolvedValue({ ...stored, ...difference });
 			const provider = providerReturning(page([]));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(provider.listEvents).toHaveBeenCalledWith(MAILBOX, timeWindow, undefined);
+		});
+
+		// Both sides say graph, so the window is the only difference and the test cannot pass for another reason.
+		it.each([
+			['the window length changed', { syncWindowDays: 5 }],
+			['the window start moved', { windowStart: new Date('2026-09-06T00:00:00Z') }],
+		])('starts over on graph when %s', async (_label, difference) => {
+			findOneByUserId.mockResolvedValue({ ...stored, provider: 'graph', ...difference });
+			const provider = graphProvider();
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -293,7 +309,7 @@ describe('syncCalendarWindow', () => {
 
 	it('reports removedEvents when the prune removed something, which is what may end a busy claim', async () => {
 		pruneImportedWindow.mockResolvedValue(batch({ changed: true, deleted: 2 }));
-		const provider = providerReturning(page([upsert('A')], { isCompleteForWindow: true }));
+		const provider = providerReturning(page([upsert('A')], { isCompleteSnapshot: true }));
 
 		const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 

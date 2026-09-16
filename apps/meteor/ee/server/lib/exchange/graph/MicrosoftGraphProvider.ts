@@ -113,10 +113,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	public readonly id = 'graph' as const;
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
-		supportsDelta: true,
 		supportsWebhooks: true,
-		supportsContacts: true,
-		cursorIsWindowScoped: true,
 	};
 
 	private readonly tokenClient: GraphTokenClient;
@@ -147,7 +144,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			const nextLink = asString(payload['@odata.nextLink']);
 
 			if (!nextLink) {
-				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteForWindow: fullRead };
+				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteSnapshot: fullRead };
 			}
 
 			url = nextLink;
@@ -155,7 +152,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		logger.warn({ msg: 'Graph calendar view paged out before the window was fully read', pages: MAX_DELTA_PAGES });
 
-		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
+		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
 	}
 
 	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
@@ -210,7 +207,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			const nextLink = asString(payload['@odata.nextLink']);
 
 			if (!nextLink) {
-				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteForWindow: !cursor };
+				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteSnapshot: !cursor };
 			}
 
 			url = nextLink;
@@ -218,7 +215,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		logger.warn({ msg: 'Graph contact folder paged out before it was fully read', folderId, pages: MAX_DELTA_PAGES });
 
-		return { items, cursor: url, hasMore: true, isCompleteForWindow: false };
+		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
 	}
 
 	private contactsDeltaUrl(mailbox: string, folderId: string): string {

@@ -50,7 +50,7 @@ const toCalendarEvent = (uid: IUser['_id'], event: ExchangeEventUpsert): Omit<In
 /**
  * Deletion works differently per provider and the difference cannot be flattened: Graph reports removals
  * explicitly, EWS reports them only by not returning an event in a complete window snapshot. `page`
- * carries `isCompleteForWindow` to say which it gave us, and only a complete set may prune.
+ * carries `isCompleteSnapshot` to say which it gave us, and only a complete set may prune.
  */
 type Collected = {
 	upserts: Map<string, ExchangeEventUpsert>;
@@ -93,7 +93,7 @@ const collectPages = async (
 		}
 
 		// Each complete page is an independent full-window snapshot, so the newest one supersedes any earlier one
-		if (page.isCompleteForWindow) {
+		if (page.isCompleteSnapshot) {
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
@@ -120,8 +120,10 @@ export const syncCalendarWindow = async (
 	const sameWindow = state?.syncWindowDays === syncWindowDays && state?.windowStart?.getTime() === timeWindow.start.getTime();
 
 	// The window only invalidates a cursor that answers about one, which is why the anchored start exists.
-	// Applying it to a folder scoped cursor would throw away a valid one and pay a full window read for it.
-	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || !provider.capabilities.cursorIsWindowScoped);
+	// A Graph delta link bakes the window into itself, so a moved window makes it answer about the old one.
+	// An EWS sync state is scoped to the folder and carries no dates, so it outlives any window: applying
+	// the rule to it would throw away a valid cursor and pay a full window read for nothing.
+	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || provider.id !== 'graph');
 
 	let changed = false;
 	let removedEvents = false;

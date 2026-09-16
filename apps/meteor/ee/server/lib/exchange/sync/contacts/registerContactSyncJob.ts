@@ -10,11 +10,6 @@ export const CONTACT_SYNC_JOB = 'Exchange_Contacts_Sync';
 
 const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'];
 
-/**
- * The job wakes once a day and the run decides which mailboxes are due, so the configured interval is
- * honoured exactly and needs no upper bound. Cron itself could not express one: its day field is a day of
- * month, so a step restarts every month and leaves a short gap at the boundary.
- */
 const DAILY_AT_HOUR = 3;
 
 const stopContactSyncJob = async (): Promise<void> => {

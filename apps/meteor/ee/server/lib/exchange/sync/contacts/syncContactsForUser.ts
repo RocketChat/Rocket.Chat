@@ -8,13 +8,8 @@ import { settings } from '../../../../../../server/settings';
 import { getExchangeProvider } from '../../ExchangeProviderRegistry';
 import { ExchangeError } from '../../errors';
 
-// Separate from the calendar's guard: one on-demand contact sync must not block an on-demand calendar one.
 const inFlight = new Set<IUser['_id']>();
 
-/**
- * The on-demand entry point, which resolves for one user what the scheduled run resolves in bulk. Unlike
- * that run it never skips quietly: a user asking for a sync is told why it could not happen.
- */
 export const syncContactsForUser = async (uid: IUser['_id']): Promise<UserContactSyncOutcome> => {
 	if (inFlight.has(uid)) {
 		throw new ExchangeError('rate-limited', 'A contact sync for this mailbox is already in progress');
@@ -24,10 +19,6 @@ export const syncContactsForUser = async (uid: IUser['_id']): Promise<UserContac
 
 	try {
 		const provider = getExchangeProvider();
-
-		if (!provider.capabilities.supportsContacts) {
-			throw new ExchangeError('not-configured', 'The configured Exchange provider cannot read contacts');
-		}
 
 		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails'>>(uid, { projection: { emails: 1 } });
 		const mailbox = user && resolveMailbox(user);

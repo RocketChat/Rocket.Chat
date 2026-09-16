@@ -56,14 +56,8 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 
 		const provider = getExchangeProvider();
 
-		if (!provider.capabilities.supportsContacts) {
-			logger.warn({ msg: 'Skipping Exchange contact sync run: the configured provider cannot read contacts', provider: provider.id });
-			return summary;
-		}
-
 		const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
 
-		// The job ticks daily and the interval is enforced here, per mailbox, so any number of days works.
 		const intervalDays = Math.max(
 			Math.trunc(settings.get<number>('Exchange_Contacts_Sync_Interval_Days')) || MIN_INTERVAL_DAYS,
 			MIN_INTERVAL_DAYS,

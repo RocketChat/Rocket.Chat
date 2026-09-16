@@ -18,8 +18,7 @@ export type UserContactSyncOutcome = {
 const EMPTY: UserContactSyncOutcome = { folders: 0, upserted: 0, modified: 0, deleted: 0, pruned: 0, failed: 0, fatal: false };
 
 /**
- * A folder the user deleted stops being listed, and its contacts would otherwise sit here forever: no delta
- * page ever mentions them again. So what is no longer listed is dropped along with its cursor.
+ * A folder the user deleted stops being listed, and its contacts would otherwise sit here forever
  */
 const dropVanishedFolders = async (uid: IUser['_id'], liveFolderIds: string[]): Promise<void> => {
 	const known = await ExchangeContactSyncState.findFolderIdsByUserId(uid);
@@ -44,10 +43,6 @@ export const syncUserContacts = async (
 	mailbox: string,
 	defaultRegion: string,
 ): Promise<UserContactSyncOutcome> => {
-	if (!provider.capabilities.supportsContacts || !provider.listContactFolders || !provider.listContacts) {
-		return EMPTY;
-	}
-
 	const folders = await provider.listContactFolders(mailbox);
 	const summary: UserContactSyncOutcome = { ...EMPTY, folders: folders.length };
 
@@ -63,7 +58,6 @@ export const syncUserContacts = async (
 			summary.failed++;
 		}
 
-		// Credentials or throttling: the next folder would fail the same way, and so would the next mailbox.
 		if (outcome.fatal) {
 			summary.fatal = true;
 			return summary;

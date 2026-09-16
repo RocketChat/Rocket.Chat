@@ -1,16 +1,7 @@
 export type ExchangeProviderId = 'graph' | 'ews';
 
 export type ExchangeProviderCapabilities = {
-	/** True for both: Graph has `deltaLink`, EWS has `SyncFolderItems`. */
-	supportsDelta: boolean;
 	supportsWebhooks: boolean;
-	supportsContacts: boolean;
-	/**
-	 * True when the cursor answers about one time window, so it stops being valid once the window moves. A
-	 * Graph delta link bakes the window into itself; an EWS sync state is scoped to the folder and outlives
-	 * any window, so it must persist across days.
-	 */
-	cursorIsWindowScoped: boolean;
 };
 
 export type DateRange = {
@@ -24,10 +15,11 @@ export type Page<T> = {
 	cursor?: string;
 	hasMore: boolean;
 	/**
-	 * True when `items` is the complete set for the window, so anything stored inside that window and
-	 * absent from it has been removed. False when `items` carries only what changed, deletions included.
+	 * True when `items` is the complete set for whatever scope was asked about, so anything stored in that
+	 * scope and absent from it has been removed. The scope is the time window for events and the folder for
+	 * contacts. False when `items` carries only what changed, deletions included.
 	 */
-	isCompleteForWindow: boolean;
+	isCompleteSnapshot: boolean;
 };
 
 export type ExchangeEventDeletion = {

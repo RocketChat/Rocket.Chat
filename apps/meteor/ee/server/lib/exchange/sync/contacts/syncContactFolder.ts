@@ -35,7 +35,6 @@ const toContact = (uid: IUser['_id'], contact: ExchangeContactUpsert, defaultReg
 	...(contact.officeLocation && { officeLocation: contact.officeLocation }),
 	emails: contact.emails,
 	categories: contact.categories,
-	// Normalizing here rather than in the providers keeps one region policy instead of one per provider.
 	phones: contact.phones.map(({ raw, label }) => {
 		const e164 = normalizeE164(raw, defaultRegion);
 
@@ -52,7 +51,7 @@ type Collected = {
 };
 
 const collectPages = async (
-	provider: Required<Pick<IExchangeProvider, 'listContacts'>>,
+	provider: IExchangeProvider,
 	mailbox: string,
 	folderId: string,
 	startCursor: string | undefined,
@@ -84,7 +83,7 @@ const collectPages = async (
 		}
 
 		// Each complete page is an independent full read of the folder, so the newest one supersedes any earlier one
-		if (page.isCompleteForWindow) {
+		if (page.isCompleteSnapshot) {
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
@@ -103,22 +102,16 @@ export const syncContactFolder = async (
 	folderId: string,
 	defaultRegion: string,
 ): Promise<ContactFolderSyncOutcome> => {
-	if (!provider.listContacts) {
-		return EMPTY;
-	}
-
-	const listContacts = provider.listContacts.bind(provider);
 	const identity = { mailbox, provider: provider.id };
 
 	const state = await ExchangeContactSyncState.findOneByUserIdAndFolder(uid, folderId);
 
-	// No window here, unlike the calendar: a contact folder cursor only goes stale when the source changes.
 	const sameSource = state?.mailbox === mailbox && state?.provider === provider.id;
 	const reusable = Boolean(state?.cursor) && sameSource;
 
 	try {
 		const { upserts, removals, keepExternalIds, cursor } = await collectPages(
-			{ listContacts },
+			provider,
 			mailbox,
 			folderId,
 			reusable ? state?.cursor : undefined,

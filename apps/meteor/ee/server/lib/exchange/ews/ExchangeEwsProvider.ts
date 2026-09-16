@@ -2,7 +2,7 @@ import type { IEwsTransport } from './IEwsTransport';
 import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
 import { findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type { ContactFolder, DateRange, ExchangeContact, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 
@@ -25,10 +25,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	public readonly id = 'ews' as const;
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
-		supportsDelta: true,
 		supportsWebhooks: false,
-		supportsContacts: false,
-		cursorIsWindowScoped: false,
 	};
 
 	private readonly transport: IEwsTransport;
@@ -63,14 +60,14 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
 
 		if (!changed) {
-			return { items: [], cursor: syncState, hasMore: !includesLastItem, isCompleteForWindow: false };
+			return { items: [], cursor: syncState, hasMore: !includesLastItem, isCompleteSnapshot: false };
 		}
 
 		return {
 			items: await this.snapshotWindow(mailbox, timeWindow),
 			cursor: syncState,
 			hasMore: !includesLastItem,
-			isCompleteForWindow: true,
+			isCompleteSnapshot: true,
 		};
 	}
 
@@ -127,5 +124,13 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			busy: isBusyStatus(textOf(firstByTag(node, TYPES_NS, 'LegacyFreeBusyStatus'))),
 			...(reminderMinutes !== undefined && Number.isFinite(reminderMinutes) && { reminderMinutesBeforeStart: reminderMinutes }),
 		};
+	}
+
+	public async listContactFolders(_mailbox: string): Promise<ContactFolder[]> {
+		return [];
+	}
+
+	public async listContacts(_mailbox: string, _folderId: string, _cursor?: string): Promise<Page<ExchangeContact>> {
+		return { items: [], cursor: '', hasMore: true, isCompleteSnapshot: false };
 	}
 }

@@ -15,9 +15,7 @@ export interface IContactEmail {
 	address: string;
 }
 
-/**
- * A personal contact. Distinct from `ILivechatContact`
- */
+/** A personal contact. Distinct from `ILivechatContact` */
 export interface IContact extends IRocketChatRecord {
 	uid: IUser['_id'];
 	source: ContactSource;
