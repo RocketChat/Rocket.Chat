@@ -12,11 +12,20 @@ const REAL_NAME_SETTING = 'UI_Use_Real_Name';
 const remoteUser = federationConfig.hs1.additionalUser1;
 
 const stamp = Date.now();
+const SHARED_NAME = 'Wilhelmina Featherstonehaugh';
+
 const localUser = {
 	username: `fed-typist-${stamp}`,
 	password: 'typing-spec-pass',
-	name: 'Wilhelmina Featherstonehaugh',
+	name: SHARED_NAME,
 	matrixUserId: `@fed-typist-${stamp}:${federationConfig.rc1.domain}`,
+};
+
+const namesake = {
+	username: `fed-typist-namesake-${stamp}`,
+	password: 'typing-spec-pass',
+	name: SHARED_NAME,
+	matrixUserId: `@fed-typist-namesake-${stamp}:${federationConfig.rc1.domain}`,
 };
 
 (IS_EE ? describe : describe.skip)('Federation typing indicators', () => {
@@ -24,7 +33,8 @@ const localUser = {
 	let rc1UserRequestConfig: IRequestConfig;
 	let hs1UserApp: SynapseClient;
 	let ddp: DDPListener;
-	let createdUserId: string;
+	let namesakeDdp: DDPListener;
+	const createdUserIds: string[] = [];
 	let originalRealName: boolean;
 	let matrixRoomId: string;
 	let roomId: string;
@@ -36,6 +46,9 @@ const localUser = {
 			.send({ value })
 			.expect(200);
 	};
+
+	const remoteTypingUserIds = (): string[] =>
+		(hs1UserApp.matrixClient.getRoom(matrixRoomId)?.getMembers() ?? []).filter((member) => member.typing).map((member) => member.userId);
 
 	const expectRemoteTyping = async (shouldBeTyping: boolean) =>
 		retry(
@@ -55,16 +68,13 @@ const localUser = {
 			federationConfig.rc1.adminPassword,
 		);
 
-		const created = await createUser(
-			{
-				username: localUser.username,
-				password: localUser.password,
-				email: `${localUser.username}@rocket.chat`,
-				name: localUser.name,
-			},
-			rc1AdminRequestConfig,
-		);
-		createdUserId = (created as unknown as { _id: string })._id;
+		for await (const user of [localUser, namesake]) {
+			const created = await createUser(
+				{ username: user.username, password: user.password, email: `${user.username}@rocket.chat`, name: user.name },
+				rc1AdminRequestConfig,
+			);
+			createdUserIds.push((created as unknown as { _id: string })._id);
+		}
 
 		rc1UserRequestConfig = await getRequestConfig(federationConfig.rc1.url, localUser.username, localUser.password);
 
@@ -110,8 +120,18 @@ const localUser = {
 
 		await hs1UserApp.matrixClient.joinRoom(matrixRoomId);
 
+		await rc1UserRequestConfig.request
+			.post(api('groups.invite'))
+			.set(rc1UserRequestConfig.credentials)
+			.send({ roomId, username: namesake.username })
+			.expect(200);
+
 		ddp = new DDPListener(federationConfig.rc1.url, rc1UserRequestConfig);
 		await ddp.connect();
+
+		const namesakeRequestConfig = await getRequestConfig(federationConfig.rc1.url, namesake.username, namesake.password);
+		namesakeDdp = new DDPListener(federationConfig.rc1.url, namesakeRequestConfig);
+		await namesakeDdp.connect();
 
 		const current = await rc1AdminRequestConfig.request
 			.get(api('settings'))
@@ -123,9 +143,10 @@ const localUser = {
 
 	afterAll(async () => {
 		ddp?.disconnect();
+		namesakeDdp?.disconnect();
 		await setRealName(originalRealName).catch(() => undefined);
-		if (createdUserId) {
-			await deleteUser({ _id: createdUserId }, { confirmRelinquish: true }, rc1AdminRequestConfig).catch(() => undefined);
+		for await (const _id of createdUserIds) {
+			await deleteUser({ _id }, { confirmRelinquish: true }, rc1AdminRequestConfig).catch(() => undefined);
 		}
 		await hs1UserApp?.close();
 	});
@@ -156,5 +177,23 @@ const localUser = {
 
 			await expectRemoteTyping(true);
 		}, 60000);
+
+		it('should attribute typing to the account that published it, not to a namesake', async () => {
+			await ddp.publishUserActivity(roomId, localUser.name, []);
+			await expectRemoteTyping(false);
+
+			await namesakeDdp.publishUserActivity(roomId, namesake.name, ['user-typing']);
+
+			await retry(
+				`waiting for Synapse to report ${namesake.matrixUserId} typing`,
+				async () => {
+					const typing = remoteTypingUserIds();
+
+					expect(typing).toContain(namesake.matrixUserId);
+					expect(typing).not.toContain(localUser.matrixUserId);
+				},
+				{ retries: 10, delayMs: 2000 },
+			);
+		}, 120000);
 	});
 });

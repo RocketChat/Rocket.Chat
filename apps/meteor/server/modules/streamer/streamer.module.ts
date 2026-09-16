@@ -248,7 +248,11 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 					return;
 				}
 
-				StreamerCentral.emit('publish', name, eventName, args, this.userId);
+				try {
+					StreamerCentral.emit('publish', name, eventName, args, this.userId);
+				} catch (err) {
+					SystemLogger.error({ msg: 'Error emitting publish event', name, eventName, err });
+				}
 
 				__emit(eventName, ...args);
 
