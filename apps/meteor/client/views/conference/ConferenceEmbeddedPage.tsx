@@ -1,4 +1,4 @@
-import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useUser, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -23,7 +23,7 @@ import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { PREFLIGHT_FACES_SHOWN } from '../../../lib/videoConference/constants';
 import IconButtonWithBadge from '../../components/IconButtonWithBadge';
-import { useRingingExpiry } from '../../hooks/useRingingExpiry';
+import { useRinging } from '../../hooks/useRinging';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
 type ConferenceEmbeddedPageProps = {
@@ -121,10 +121,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	const { callSounds } = useCustomSound();
 	const otherMembers = call.canRing && conference.joined ? call.members.filter((m) => m._id !== user?._id && !isInVideoConference(m)) : [];
-	// Only the rings that are actually ringing: a member who declined stopped ringing when they declined, and
-	// handing that member's `ringingAt` over as a ring still to lapse would spend the wake-up on nothing.
-	const ringingMembers = otherMembers.filter((m) => isRingingVideoConferenceMember(m));
-	useRingingExpiry(ringingMembers.map((m) => m.ringingAt));
+	// Only the ones actually ringing — a member who declined stopped ringing when they declined — and kept true
+	// as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
+	const ringingMembers = useRinging(otherMembers);
 	const someoneRinging = ringingMembers.length > 0;
 	useEffect(() => {
 		if (someoneRinging) {

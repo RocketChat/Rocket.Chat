@@ -1,5 +1,4 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
-import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting } from '@rocket.chat/ui-contexts';
@@ -9,7 +8,7 @@ import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import type { ConferenceMemberStatus } from '../../../../../lib/videoConference/memberStatus';
 import { canRingConferenceMember, getConferenceMemberStatus } from '../../../../../lib/videoConference/memberStatus';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import { useRingingExpiry } from '../../../../hooks/useRingingExpiry';
+import { useIsRinging } from '../../../../hooks/useRinging';
 import type { ConferenceMember } from '../../hooks/useConferenceEmbedded';
 
 type CallMemberItemProps = {
@@ -32,8 +31,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
 	const status = getConferenceMemberStatus(member);
 
-	const ringing = isRingingVideoConferenceMember(member);
-	useRingingExpiry([ringing ? member.ringingAt : undefined]);
+	const ringing = useIsRinging(member);
 
 	return (
 		<Option>

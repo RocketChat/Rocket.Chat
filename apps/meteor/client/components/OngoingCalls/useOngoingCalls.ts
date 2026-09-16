@@ -1,11 +1,10 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
-import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVideoConfDismissCall } from '@rocket.chat/ui-video-conf';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
-import { useRingingExpiry } from '../../hooks/useRingingExpiry';
+import { useRinging } from '../../hooks/useRinging';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 import { useJoinOrSwitchCallModal } from '../../views/conference/hooks/useJoinOrSwitchCallModal';
 import { useJoinableCalls } from '../../views/conference/hooks/useJoinableCalls';
@@ -13,16 +12,15 @@ import { useJoinableCalls } from '../../views/conference/hooks/useJoinableCalls'
 export const useOngoingCallsList = () => {
 	const { calls } = useJoinableCalls();
 
-	// Not memoized: `isRingingVideoConferenceMember` is time-dependent (uses Date.now()), and the re-render
-	// triggered by `useRingingExpiry` must see a fresh evaluation to move a call from ringing to ongoing.
-	const isRinging = (call: JoinableVideoConference) => isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
 	const asked = calls.filter((call) => call.joined || !call.declined);
 
-	const ringing = asked.filter((call) => !call.joined && isRinging(call));
-	const ongoing = asked.filter((call) => call.joined || !isRinging(call));
-	const declined = calls.filter((call) => !call.joined && call.declined);
+	// Which of them are ringing is an answer with a clock in it, so it is asked for rather than worked out here:
+	// the groups below are then plain facts about a list, and change when the answer does.
+	const stillRinging = new Set(useRinging(asked));
 
-	useRingingExpiry(ringing.map(({ ringingAt }) => ringingAt));
+	const ringing = asked.filter((call) => !call.joined && stillRinging.has(call));
+	const ongoing = asked.filter((call) => call.joined || !stillRinging.has(call));
+	const declined = calls.filter((call) => !call.joined && call.declined);
 
 	// `calls` comes back whole as well as sorted: switching calls needs the one this user is already in, and a
 	// second hook fetching the same list for it also subscribed a second time to the same stream.
