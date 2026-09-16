@@ -30,6 +30,15 @@ const SwitchCallModal = ({ leaving, onConfirm, onCancel }: SwitchCallModalProps)
 
 	const { mutate: confirm, isPending, error } = useMutation({ mutationFn: onConfirm });
 
+	// A leave already on its way cannot be called back, so there is nothing left for this to cancel: dismissing
+	// here would hide a failure the user has to see, or leave the join to arrive on a screen that has gone. The
+	// close button stays where it is and does nothing, rather than vanishing for the length of a request.
+	const dismiss = () => {
+		if (!isPending) {
+			onCancel();
+		}
+	};
+
 	return (
 		<GenericModal
 			variant='warning'
@@ -37,8 +46,9 @@ const SwitchCallModal = ({ leaving, onConfirm, onCancel }: SwitchCallModalProps)
 			title={t('Leave_the_call_you_are_in')}
 			confirmText={t('Join')}
 			confirmLoading={isPending}
+			cancelDisabled={isPending}
 			onConfirm={() => confirm()}
-			onCancel={onCancel}
+			onCancel={dismiss}
 		>
 			{/* The call being left is the whole point of asking, so its name is emphasised rather than buried in the
 			    sentence — which needs `Trans`, since `t` would put the markup on screen as text. */}

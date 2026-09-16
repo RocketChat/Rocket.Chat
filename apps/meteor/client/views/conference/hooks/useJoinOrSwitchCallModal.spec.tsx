@@ -122,6 +122,34 @@ describe('when the user is already in another call', () => {
 		expect(joinCall).not.toHaveBeenCalled();
 	});
 
+	// A leave on its way cannot be called back, so the confirmation stops being dismissable until it comes back:
+	// closing it would hide a failure the user has to see, or leave the join arriving on a screen that has gone.
+	it('cannot be dismissed while it is still leaving', async () => {
+		let answerLeave: () => void = () => undefined;
+		leave.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					answerLeave = () => resolve({ success: true } as any);
+				}) as any,
+		);
+
+		const join = await renderJoin(calls);
+
+		await join('wanted');
+		await userEvent.click(await screen.findByRole('button', { name: 'Join' }));
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled());
+
+		await userEvent.keyboard('{Escape}');
+		expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+		await act(async () => {
+			answerLeave();
+		});
+
+		await waitFor(() => expect(joinCall).toHaveBeenCalledWith('wanted'));
+	});
+
 	// The list the choice was made from is still there behind the confirmation, so a second call can be picked
 	// while the first leave is in flight — and two leave-and-joins running at once are two joins racing, either of
 	// which can win.
