@@ -1,4 +1,4 @@
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import type { ComposerAPI } from './chats/ChatAPI';
 
 const UNORDERED_MARKER = String.raw`[-*][ \t]+(?!\[[ x]\][ \t]+)`;
 const ORDERED_MARKER = String.raw`\d+\.[ \t]+`;
