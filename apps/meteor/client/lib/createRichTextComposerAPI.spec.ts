@@ -1,8 +1,8 @@
 import { createRichTextComposerAPI } from './createRichTextComposerAPI';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
-jest.mock('../../../../client/lib/chats/uploads', () => ({
-	createUploadsAPI: () => ({}),
+jest.mock('./chats/uploads', () => ({
+	createUploadsAPI: jest.fn(() => ({})),
 }));
 
 let innerTextDescriptor: PropertyDescriptor | undefined;
