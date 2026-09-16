@@ -115,7 +115,7 @@ const waitForRoomEvent = async (
 						{
 							username: userDm,
 							password: 'random',
-							email: `${userDm}}@rocket.chat`,
+							email: `${userDm}@rocket.chat`,
 							name: userDmName,
 						},
 						rc1AdminRequestConfig,
@@ -221,7 +221,7 @@ const waitForRoomEvent = async (
 				let subscriptionInvite: ISubscription;
 				let rcRoom: IRoom;
 
-				const userDm = `dm-federation-user-${Date.now()}`;
+				const userDm = `dm-federation-perm-user-${Date.now()}`;
 				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
 
 				beforeAll(async () => {
@@ -230,7 +230,7 @@ const waitForRoomEvent = async (
 						{
 							username: userDm,
 							password: 'random',
-							email: `${userDm}}@rocket.chat`,
+							email: `${userDm}@rocket.chat`,
 							name: `DM Federation User ${Date.now()}`,
 						},
 						rc1AdminRequestConfig,
@@ -532,7 +532,7 @@ const waitForRoomEvent = async (
 					{
 						username: userDm1,
 						password: 'random',
-						email: `${userDm1}}@rocket.chat`,
+						email: `${userDm1}@rocket.chat`,
 						name: userDm1Name,
 					},
 					rc1AdminRequestConfig,
@@ -544,7 +544,7 @@ const waitForRoomEvent = async (
 					{
 						username: userDm2,
 						password: 'random',
-						email: `${userDm2}}@rocket.chat`,
+						email: `${userDm2}@rocket.chat`,
 						name: userDm2Name,
 					},
 					rc1AdminRequestConfig,
@@ -685,7 +685,7 @@ const waitForRoomEvent = async (
 						{
 							username: userDm3,
 							password: 'random',
-							email: `${userDm3}}@rocket.chat`,
+							email: `${userDm3}@rocket.chat`,
 							name: userDm3Name,
 						},
 						rc1AdminRequestConfig,
@@ -1126,7 +1126,7 @@ const waitForRoomEvent = async (
 						{
 							username: userDm3,
 							password: 'random',
-							email: `${userDm3}}@rocket.chat`,
+							email: `${userDm3}@rocket.chat`,
 							name: userDm3Name,
 						},
 						rc1AdminRequestConfig,
