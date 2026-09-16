@@ -178,7 +178,7 @@ describe('Password Policy', () => {
 			expect(passwordPolicy.sendValidationMessage('password')).toEqual([]);
 		});
 
-		it.each([null, undefined, ''])('should return an empty array for invalid input: %p', (password) => {
+		it.each([null, undefined, '', '   '])('should return an empty array for invalid input: %p', (password) => {
 			const passwordPolicy = new PasswordPolicy({ enabled: true, minLength: 5, throwError: false });
 
 			expect(passwordPolicy.sendValidationMessage(password as any)).toEqual([]);
