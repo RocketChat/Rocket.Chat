@@ -46,6 +46,26 @@ test.describe('Messaging', () => {
 			await channelPage.roomToolbar.waitFor();
 		});
 
+		test('should leave the room toolbar with Tab', async ({ page }) => {
+			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
+			await threadsAction.focus();
+			await expect(threadsAction).toBeFocused();
+
+			await page.keyboard.press('Tab');
+
+			await expect(channelPage.content.lastUserMessage).toBeFocused();
+		});
+
+		test('should leave the room toolbar with Shift+Tab', async ({ page }) => {
+			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
+			await threadsAction.focus();
+			await expect(threadsAction).toBeFocused();
+
+			await page.keyboard.press('Shift+Tab');
+
+			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
+		});
+
 		test('should navigate properly on the user card', async ({ page }) => {
 			await test.step('open UserCard', async () => {
 				await page.keyboard.press('Shift+Tab');

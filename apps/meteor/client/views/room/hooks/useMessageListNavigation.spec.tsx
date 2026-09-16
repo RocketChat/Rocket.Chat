@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Match the focusable list items rendered by RoomMessage and SystemMessage. */
 import { FocusScope } from '@react-aria/focus';
+import { Message, MessageSystem } from '@rocket.chat/fuselage';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -27,17 +27,17 @@ const Room = () => {
 				<button>Favorite</button>
 			</header>
 			<div ref={messageListRef} role='list' aria-label='Messages'>
-				<div role='listitem' tabIndex={0} className='rcx-message-system' aria-label='System message'>
+				<MessageSystem role='listitem' tabIndex={0} aria-label='System message'>
 					Channel created
-				</div>
+				</MessageSystem>
 				{['msg1', 'msg2'].map((message) => (
-					<div key={message} role='listitem' tabIndex={0} aria-label={message}>
+					<Message key={message} role='listitem' tabIndex={0} aria-label={message}>
 						<button aria-label={`Author of ${message}`}>User</button>
 						{message}
 						<div role='toolbar' aria-label={`Actions for ${message}`}>
 							<button aria-label={`React to ${message}`}>Add reaction</button>
 						</div>
-					</div>
+					</Message>
 				))}
 			</div>
 			<textarea aria-label='Message composer' />
