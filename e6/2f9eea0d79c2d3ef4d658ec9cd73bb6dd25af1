@@ -1,0 +1,27 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_be4edfb521966b::t_8f0364eb2a67c9 1620-1649,1651-1662,1664-1726
+  s_be4edfb521966b::t_e62a597b1ebc5c 1650,1663
+.changeset/calm-admins-read.md
+  s_be4edfb521966b::t_9dc5a848665a96 1-4
+  s_be4edfb521966b::t_e62a597b1ebc5c 5
+apps/meteor/server/api/v1/rooms.ts
+  s_be4edfb521966b::t_18093cb985f23f 552
+  s_be4edfb521966b::t_0dfb5f9ce3313d 55
+  s_be4edfb521966b::t_e62a597b1ebc5c 547-551,553
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e62f9eea0d79c2d3ef4d658ec9cd73bb6dd25af1",
+  "prompts": {},
+  "sessions": {
+    "s_be4edfb521966b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c25b941c-3d30-4008-934e-b55858c60777",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
