@@ -15,7 +15,6 @@ import type { BlurLevel, BlurModel, CallPreferences, NoiseMethod, VideoQuality }
 import {
 	useBackgroundBlurPreference,
 	useCallPreferences,
-	useCallRingPreference,
 	useNoiseSuppressionPreference,
 	useVideoQualityPreference,
 } from './hooks/useCallPreferences';
@@ -161,10 +160,12 @@ const ConferencePreflight = ({
 	onCancel,
 }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
-	const { preferences, devices, toggle, selectDevice } = useCallPreferences(capabilities);
 	// Remembered across calls, like everything else on this screen: whoever always rings should not have to say so
 	// every time. What it is *allowed* to do is the room's business, not this preference's — see `canChooseRinging`.
-	const { ring, toggleRing } = useCallRingPreference();
+	//
+	// The ring comes from the same call as the devices: a second `useLocalStorage` on the same key is a second
+	// copy of the record, and toggling a device and then the ring wrote one of them over the other.
+	const { preferences, devices, ring, toggle, toggleRing, selectDevice } = useCallPreferences(capabilities);
 
 	// Chosen here, applied to this preview and carried into the call. The same choices appear in the call itself and
 	// read from the same preference/session stores, so the self-view remains an honest preview of what will be sent.
@@ -314,8 +315,10 @@ const ConferencePreflight = ({
 						style={{ paddingBlockEnd: TOGGLES_ZONE }}
 					>
 						<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
+						{/* Both in the future: this is the branch with no self-view, so there is no camera on screen to
+						    be on or off — only what will be true once the call opens. */}
 						<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-							{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
+							{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
 						</Box>
 						{preferences.cam && !canChooseDevices && (
 							<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
@@ -481,7 +484,7 @@ const ConferencePreflight = ({
 						{t('People_in_the_call')}
 					</Box>
 					<Box marginBlockStart={8}>
-						<CallParticipants {...participants} size='x24' />
+						<CallParticipants {...participants} size='large' />
 					</Box>
 				</Box>
 			)}
@@ -504,7 +507,10 @@ const ConferencePreflight = ({
 
 			{/* Nobody's phone is ringing yet — going in is what rings it, and saying so is what makes the wait
 			    afterwards make sense. Only said when it is true: with ringing turned off, nobody is notified. */}
-			{action === 'start' && isDirect && (!canChooseRinging || ring) && (
+			{/* Only where a ring is actually going out: `canChooseRinging` is false both where ringing has no
+			    meaning and where this caller's ringing would be dropped, and promising a notification in either
+			    case is promising something that will not happen. */}
+			{action === 'start' && isDirect && canChooseRinging && ring && (
 				<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
 					{t('__name__will_be_notified_when_you_start_the_call', { name })}
 				</Box>
@@ -518,7 +524,9 @@ const ConferencePreflight = ({
 					<Button type='submit' primary loading={confirming}>
 						{confirmLabel}
 					</Button>
-					<Button type='button' onClick={onCancel}>
+					{/* Not while the call is being created: cancelling between the start and the join would close this
+					    window over a conference that exists and that nobody has entered. */}
+					<Button type='button' disabled={confirming} onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 				</ButtonGroup>
@@ -558,134 +566,8 @@ const ConferencePreflight = ({
 				paddingBlock={24}
 				style={{ gap: columns ? 48 : 32 }}
 			>
-				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
-					<Box
-						position='relative'
-						width='100%'
-						display='flex'
-						flexDirection='column'
-						alignItems='center'
-						justifyContent='center'
-						borderRadius='large'
-						overflow='hidden'
-						className={previewTileStyle}
-					>
-						<Box
-							display='flex'
-							flexDirection='column'
-							alignItems='center'
-							justifyContent='center'
-							width='100%'
-							height='100%'
-							style={{ paddingBlockEnd: TOGGLES_ZONE }}
-						>
-							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-							{/* Both in the future, because neither is something this screen can show: the call is handed to a
-							    provider with a page of its own, so there is no camera here to be on or off yet — only what
-							    will be true once the call opens. */}
-							<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
-							</Box>
-							{preferences.cam && (
-								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-									{t('Choose_your_camera_and_microphone_inside_the_call')}
-								</Box>
-							)}
-						</Box>
-
-						<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
-							<ButtonGroup>
-								{capabilities.mic && (
-									<CallDeviceToggle
-										device='mic'
-										on={preferences.mic}
-										label={preferences.mic ? t('Mic_on') : t('Mic_off')}
-										onToggle={() => toggle('mic')}
-									/>
-								)}
-								{capabilities.cam && (
-									<CallDeviceToggle
-										device='cam'
-										on={preferences.cam}
-										label={preferences.cam ? t('Cam_on') : t('Cam_off')}
-										onToggle={() => toggle('cam')}
-									/>
-								)}
-							</ButtonGroup>
-						</Box>
-					</Box>
-				</Box>
-				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
-					{/* An `h2` rather than a `div` at heading size: it is the screen's heading, and this is the only thing
-		    that lets anyone — or anything — find it as one. */}
-					<Box is='h2' fontScale='h2' color='default' textAlign='center'>
-						{heading}
-					</Box>
-
-					{canName && (
-						<Box width='100%' marginBlockStart={16}>
-							{/* `Field` wires the label to the input itself, which is what the package is for — the id this
-				    carried was referenced by nothing, and the name was announced from an `aria-label` that
-				    nobody could see. */}
-							<Field>
-								<FieldLabel>{t('Call_name')}</FieldLabel>
-								<FieldRow>
-									<TextInput
-										value={title}
-										placeholder={defaultName ?? name}
-										onChange={(event) => setTitle((event.target as HTMLInputElement).value)}
-									/>
-								</FieldRow>
-							</Field>
-						</Box>
-					)}
-
-					{action === 'join' && participants && (
-						<Box marginBlockStart={16} display='flex' flexDirection='column' alignItems='center'>
-							<Box fontScale='c1' color='hint'>
-								{t('People_in_the_call')}
-							</Box>
-							<Box marginBlockStart={8}>
-								<CallParticipants {...participants} size='large' />
-							</Box>
-						</Box>
-					)}
-
-					{action === 'start' && canChooseRinging && (
-						<Box marginBlockStart={16} width='100%'>
-							<Field>
-								<FieldRow justifyContent='center'>
-									<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
-									<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
-										{t('Ring_people')}
-									</Box>
-								</FieldRow>
-							</Field>
-						</Box>
-					)}
-
-					{/* Only where a ring is actually going out: `canChooseRinging` is false both where ringing has no
-					    meaning and where this caller's ringing would be dropped, and promising a notification in
-					    either case is promising something that will not happen. */}
-					{action === 'start' && isDirect && canChooseRinging && ring && (
-						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
-							{t('__name__will_be_notified_when_you_start_the_call', { name })}
-						</Box>
-					)}
-
-					<Box marginBlockStart={24} width='100%'>
-						<ButtonGroup vertical stretch>
-							<Button type='submit' variant='primary' loading={confirming}>
-								{confirmLabel}
-							</Button>
-							{/* Not while the call is being created: cancelling between the start and the join would close
-						    this window over a conference that exists and that nobody has entered. */}
-							<Button type='button' disabled={confirming} onClick={onCancel}>
-								{t('Cancel')}
-							</Button>
-						</ButtonGroup>
-					</Box>
-				</Box>
+				{previewColumn}
+				{detailsColumn}
 			</Box>
 		</Box>
 	);

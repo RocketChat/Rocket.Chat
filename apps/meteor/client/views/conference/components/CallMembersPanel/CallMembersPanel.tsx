@@ -82,7 +82,6 @@ const CallMembersPanel = ({
 			// The row stops offering to ring once the member is ringing, but that is the server's answer coming
 			// back — until it does, this is what says the ask is already on its way.
 			ringing={ringingMembers.includes(member._id)}
-			onRing={ringMember}
 			handRaised={raisedHands?.has(member._id)}
 			muted={mutedMembers?.has(member._id)}
 			audioStream={audioStreams?.get(member._id)}
