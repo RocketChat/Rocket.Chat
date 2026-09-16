@@ -2,7 +2,7 @@ import { RING_RECIPIENTS_LIMIT, isDirectMessageRoom, isPrivateRoom, isPublicRoom
 import { Box } from '@rocket.chat/fuselage';
 import { CheckBox, Field, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -50,6 +50,10 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	// preference is the value. A copy of it in the form would have to be written back on every change, and the
 	// two could then disagree about what this user's habit is.
 	const { ring, toggleRing } = useCallRingPreference();
+
+	// The same permission the endpoint checks before it honours `ring`: without it the request is accepted and the
+	// ringing quietly dropped, so offering the choice would promise a call nobody's phone is going to make.
+	const canRingUsers = usePermission('videoconf-ring-users');
 
 	// Present only for participants who can read the chat: a member added from outside the room has no room
 	// here, and must still be able to add people.
@@ -134,7 +138,7 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 		},
 	});
 
-	const handleAdd = ({ users }: AddParticipantsFormValues) => addParticipantsMutation.mutate({ callId, users, ring });
+	const handleAdd = ({ users }: AddParticipantsFormValues) => addParticipantsMutation.mutate({ callId, users, ring: canRingUsers && ring });
 
 	return (
 		<GenericModal
@@ -179,14 +183,16 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 					{errors.users && <FieldError>{errors.users.message}</FieldError>}
 				</Field>
 				{/* Under the names, because it is a question about the people just chosen. */}
-				<Field>
-					<FieldRow justifyContent='flex-start'>
-						<CheckBox checked={ring} onChange={toggleRing} />
-						<Box marginInlineStart={8}>
-							<FieldLabel>{t('Ring_people')}</FieldLabel>
-						</Box>
-					</FieldRow>
-				</Field>
+				{canRingUsers && (
+					<Field>
+						<FieldRow justifyContent='flex-start'>
+							<CheckBox checked={ring} onChange={toggleRing} />
+							<Box marginInlineStart={8}>
+								<FieldLabel>{t('Ring_people')}</FieldLabel>
+							</Box>
+						</FieldRow>
+					</Field>
+				)}
 			</FieldGroup>
 		</GenericModal>
 	);

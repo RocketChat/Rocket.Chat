@@ -34,7 +34,7 @@ const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true })
 
 // The room is what the workspace knows about `rid`, and a conference member added from outside it knows
 // nothing — so it is given per test rather than seeded globally.
-const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?: IRoom) => {
+const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?: IRoom, { canRing = true } = {}) => {
 	const appRoot = mockAppRoot()
 		// The message the limit is reported with is the one thing here asserted by its words rather than its key,
 		// since the number in it is what the case is about.
@@ -43,6 +43,11 @@ const renderModal = (props: Partial<{ callId: string; rid: string }> = {}, room?
 		.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', roomMembers)
 		.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
 		.withJohnDoe();
+
+	// Ringing the people being added is offered only to a caller the workspace lets ring.
+	if (canRing) {
+		appRoot.withPermission('videoconf-ring-users');
+	}
 
 	return render(<AddParticipantsModal callId='call-id' rid='room-id' onClose={jest.fn()} {...props} />, {
 		wrapper: (room ? appRoot.withRoom(room) : appRoot).build(),
@@ -251,6 +256,20 @@ it('adds without ringing when ringing is turned off', async () => {
 
 // The window learns about other people's changes from the conference stream. Its own are not other people's:
 // leaning on that left the panel this was opened from still listing the call as it was before the add.
+// The endpoint drops `ring` for a caller without the permission and says nothing about it, so offering the
+// choice would promise a call nobody's phone is going to make.
+it('does not offer to ring where the workspace would not let this caller ring', async () => {
+	renderModal({}, undefined, { canRing: false });
+
+	await selectOutsider();
+
+	expect(screen.queryByRole('checkbox', { name: 'Ring_people' })).not.toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'], ring: false }));
+});
+
 it('has the call read again, so the panel it was opened from is not left stale', async () => {
 	const invalidateQueries = jest.spyOn(QueryClient.prototype, 'invalidateQueries');
 
