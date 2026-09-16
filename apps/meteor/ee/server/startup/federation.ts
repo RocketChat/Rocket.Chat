@@ -51,15 +51,15 @@ export const startFederationService = async (): Promise<void> => {
 	await registerFederationRoutes();
 
 	// TODO move to service/setup?
-	StreamerCentral.on('broadcast', (name, eventName, args) => {
-		if (!serviceEnabled) {
+	StreamerCentral.on('publish', (name, eventName, args, uid) => {
+		if (!serviceEnabled || !uid) {
 			return;
 		}
 
 		if (name === 'notify-room' && eventName.endsWith('user-activity')) {
 			const [rid] = eventName.split('/');
-			const [user, activity] = args;
-			void FederationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
+			const [, activity] = args;
+			void FederationMatrixService.notifyUserTyping(rid, uid, activity.includes('user-typing'));
 		}
 	});
 

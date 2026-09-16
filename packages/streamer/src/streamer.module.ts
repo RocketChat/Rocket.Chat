@@ -242,13 +242,15 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		const isWriteAllowed = this.isWriteAllowed.bind(this);
 		const __emit = this.__emit.bind(this);
 		const _emit = this._emit.bind(this);
-		const { retransmit } = this;
+		const { name, retransmit } = this;
 
 		const method: Record<string, (eventName: string, ...args: any[]) => any> = {
 			async [this.subscriptionName](this: IPublication, eventName, ...args): Promise<void> {
 				if ((await isWriteAllowed(this, eventName, args)) !== true) {
 					return;
 				}
+
+				StreamerCentral.emit('publish', name, eventName, args, this.userId);
 
 				__emit(eventName, ...args);
 

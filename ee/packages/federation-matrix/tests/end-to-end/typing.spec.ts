@@ -135,7 +135,7 @@ const localUser = {
 			await setRealName(false);
 		}, 30000);
 
-		it('should reach the remote server when the user types', async () => {
+		it('should reach the remote server when the activity identifies the user by username', async () => {
 			await ddp.publishUserActivity(roomId, localUser.username, ['user-typing']);
 
 			await expectRemoteTyping(true);
@@ -151,7 +151,7 @@ const localUser = {
 			await setRealName(true);
 		}, 120000);
 
-		it('should reach the remote server when the user types', async () => {
+		it('should reach the remote server when the activity identifies the user by real name', async () => {
 			await ddp.publishUserActivity(roomId, localUser.name, ['user-typing']);
 
 			await expectRemoteTyping(true);
