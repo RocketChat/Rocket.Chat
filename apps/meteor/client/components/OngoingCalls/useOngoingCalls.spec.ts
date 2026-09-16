@@ -24,9 +24,13 @@ it('splits the calls into ringing, running and declined', async () => {
 
 	await waitFor(() => expect(result.current.ongoing).toHaveLength(1));
 
-	expect(result.current.ringing.map(({ callId }) => callId)).toEqual(['ringing']);
-	expect(result.current.ongoing.map(({ callId }) => callId)).toEqual(['running']);
-	expect(result.current.declined.map(({ callId }) => callId)).toEqual(['refused']);
+	// The lengths as well as the names: what is being checked is that a call is in one group and not in the other
+	// two, and an assertion over the entries of a list says nothing at all about a list that came back empty.
+	expect(result.current.ringing).toHaveLength(1);
+	expect(result.current.ringing[0]).toHaveProperty('callId', 'ringing');
+	expect(result.current.ongoing[0]).toHaveProperty('callId', 'running');
+	expect(result.current.declined).toHaveLength(1);
+	expect(result.current.declined[0]).toHaveProperty('callId', 'refused');
 });
 
 // Declining quiets a call rather than losing it: it leaves the list proper, and the way back to it is the toggle
@@ -47,7 +51,10 @@ it('keeps the call the reader is already in, as one simply running', async () =>
 
 	await waitFor(() => expect(result.current.ongoing).toHaveLength(2));
 
-	expect(result.current.ongoing.map(({ callId }) => callId)).toEqual(['here', 'elsewhere']);
+	// By index, because the order is part of what is being checked: both fixtures carry the same `createdAt`, so
+	// this is what says they come back in the order they were sent rather than in some order of their own.
+	expect(result.current.ongoing[0]).toHaveProperty('callId', 'here');
+	expect(result.current.ongoing[1]).toHaveProperty('callId', 'elsewhere');
 	expect(result.current.declined).toHaveLength(0);
 });
 
