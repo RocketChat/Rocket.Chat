@@ -82,6 +82,7 @@ export const MessageList = function MessageList({
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const lastScrollSizeRef = useRef(0);
+	const initialCacheRef = useRef(RoomManager.getStore(rid)?.cache);
 
 	const messages = useMessages({ rid });
 
@@ -264,6 +265,7 @@ export const MessageList = function MessageList({
 					role='list'
 					className='messages-list'
 					keepMounted={keepMountedMessages}
+					cache={initialCacheRef.current}
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();

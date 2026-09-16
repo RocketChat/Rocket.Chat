@@ -21,7 +21,7 @@ export function useStoreScrollPosition({ rid, isAtBottom, virtualizerRef }: UseS
 
 			const store = RoomManager.getStore(rid);
 
-			store?.update({ scroll, atBottom: isAtBottom.current });
+			store?.update({ scroll, atBottom: isAtBottom.current, cache: virtualizerRef.current?.cache });
 		},
 		100,
 		[rid, isAtBottom, virtualizerRef],
