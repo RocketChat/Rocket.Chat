@@ -1234,6 +1234,7 @@
   "Call_transfered_to__name__": "Call transfered to {{name}}",
   "Call_transferred_bold": "*Voice call transferred*",
   "Call_unavailable_for_federation": "Call is unavailable for federated rooms",
+  "Call_using": "Call using",
   "Call_was_not_answered": "Call was not answered",
   "Call_window": "Call window",
   "Call_without_mic": "Call without mic",

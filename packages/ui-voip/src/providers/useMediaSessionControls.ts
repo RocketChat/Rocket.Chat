@@ -8,7 +8,7 @@ export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip', micless: boolean) => Promise<void>;
+	startCall: (id: string, kind: 'user' | 'sip', micless: boolean, device?: string) => Promise<void>;
 	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
@@ -76,13 +76,15 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			instanceState.call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip', micless: boolean) => {
+		const startCall = async (id: string, kind: 'user' | 'sip', micless: boolean, device?: string) => {
 			if (!instance) {
 				return;
 			}
 			try {
-				instance.micless = micless;
-				await instance.startCall(kind, id);
+				// A chosen device means the call runs on an external endpoint (cti) that handles its own
+				// audio, so the browser never captures a mic for it.
+				instance.micless = device ? true : micless;
+				await instance.startCall(kind, id, { ...(device && { device }) });
 			} catch (error) {
 				console.error('Error starting call', error);
 			}

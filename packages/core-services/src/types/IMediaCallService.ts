@@ -11,7 +11,9 @@ export interface IMediaCallService {
 	hangupAutoEscalatedCall(call: IMediaCall, uid: IUser['_id']): Promise<void>;
 	flagAsRemotelyEscalatedByCallId(callId: string): Promise<void>;
 
-	// cti (app-controlled device calls): app -> host intake
+	// cti (app-controlled device calls)
+	getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]>;
+	// app -> host intake
 	createIncomingCtiCall(params: { userId: IUser['_id']; from: MediaCallContact; device?: string; features?: string[] }): Promise<void>;
 	reportCtiCallRinging(callId: string): Promise<void>;
 	reportCtiCallAnswered(callId: string, features?: string[]): Promise<void>;

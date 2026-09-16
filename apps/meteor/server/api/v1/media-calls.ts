@@ -345,3 +345,53 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsInfoEndpoints {}
 }
+
+const mediaCallsDevicesEndpoints = API.v1.get(
+	'media-calls.devices',
+	{
+		response: {
+			200: ajv.compile<{
+				devices: { id: string; name: string; appId: string }[];
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					devices: {
+						type: 'array',
+						description: 'The external devices (e.g. desk phones) the user can place/receive calls on.',
+						items: {
+							type: 'object',
+							additionalProperties: false,
+							properties: {
+								id: { type: 'string' },
+								name: { type: 'string' },
+								appId: { type: 'string' },
+							},
+							required: ['id', 'name', 'appId'],
+						},
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['devices', 'success'],
+			}),
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+	},
+	async function action() {
+		const devices = await MediaCall.getUserMediaDevices(this.userId);
+
+		return API.v1.success({ devices });
+	},
+);
+
+type MediaCallsDevicesEndpoints = ExtractRoutesFromAPI<typeof mediaCallsDevicesEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsDevicesEndpoints {}
+}

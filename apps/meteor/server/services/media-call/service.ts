@@ -164,7 +164,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
-	// cti (app-controlled device calls): app -> host intake, called from the apps-engine media-call bridge.
+	// cti (app-controlled device calls)
+
+	public async getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]> {
+		return callServer.getUserMediaDevices(uid);
+	}
+
+	// app -> host intake, called from the apps-engine media-call bridge.
 
 	public async createIncomingCtiCall(params: {
 		userId: IUser['_id'];

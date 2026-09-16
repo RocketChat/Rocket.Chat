@@ -10,6 +10,7 @@ import {
 	WidgetHeader,
 	WidgetContent,
 	DevicePicker,
+	CallDeviceSelector,
 	ActionButton,
 	Keypad,
 	useDraggableWidget,
@@ -49,6 +50,7 @@ const NewCall = () => {
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					<DevicePicker secondary />
+					<CallDeviceSelector secondary />
 					<Button medium icon='phone' success flexGrow={1} onClick={onCall}>
 						{t('Call')}
 					</Button>
