@@ -184,9 +184,6 @@ export type ServerProviderProps = { children?: ReactNode };
 const ServerProvider = ({ children }: ServerProviderProps) => {
 	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
 
-	// Read at render, not at module scope: the server publishes this through a script tag
-	// appended to the end of <head>, which is not guaranteed to have run by the time this
-	// module is evaluated. By first render it has.
 	const apiCountLimit = getApiCountLimit();
 
 	const value = useMemo(
