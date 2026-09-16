@@ -130,6 +130,7 @@ export class UserPresence {
 				idleThreshold: idleTimeLimit,
 				setUserOnline: (online) => {
 					this.idle = !online;
+					this.setStatus.cancel();
 					this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
 				},
 			});

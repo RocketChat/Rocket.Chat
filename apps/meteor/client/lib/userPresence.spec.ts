@@ -251,6 +251,32 @@ describe('UserPresence', () => {
 		}
 	});
 
+	it('should report the latest desktop transition when the user returns within the debounce window', async () => {
+		let setUserOnline: ((online: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
+
+		try {
+			render();
+
+			setUserOnline?.(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT / 2);
+			setUserOnline?.(true);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+			expect(goAway).not.toHaveBeenCalled();
+			expect(goOnline).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
+	});
+
 	it('should go online again after interacting with the UI', async () => {
 		render();
 
