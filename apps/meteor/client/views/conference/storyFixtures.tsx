@@ -4,13 +4,15 @@
  */
 /* eslint-disable react/no-multi-comp */
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+import { VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { useCurrentModal } from '@rocket.chat/ui-contexts';
 import type { VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { Decorator } from '@storybook/react';
+import type { QueryKey } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
@@ -31,12 +33,6 @@ import { storybookI18n } from '../../stories/i18n';
 export const conferenceAppRoot = () => mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', true);
 
 type Builder = ReturnType<typeof mockAppRoot>;
-
-const ModalPortal = () => {
-	const modal = useCurrentModal();
-
-	return <>{modal}</>;
-};
 
 /**
  * Replaces the video-conf actions with logged ones.
@@ -80,11 +76,10 @@ export const withCallProviders = (builder: Builder): Decorator => {
 			    component reads — so the real copy has to go back in front of it, inside. Without this every string
 			    here renders as its key name. */}
 			<I18nextProvider i18n={storybookI18n}>
+				{/* Whatever a story opens as a modal is rendered by the builder's own providers, so there is no
+				    portal of ours here — a second one showed every modal twice. */}
 				<CallActions>
 					<Story />
-					{/* The mocked modal context holds what `setModal` was given but renders none of it, so a story
-					    whose only action opens a modal would look like it does nothing. */}
-					<ModalPortal />
 				</CallActions>
 			</I18nextProvider>
 		</Providers>
@@ -136,6 +131,82 @@ export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean
 	};
 };
 
+/** Re-stamped at a third of the ring window, so a ring is renewed well before it would lapse. */
+const RING_RESTAMP_MS = VIDEO_CONF_RINGING_WINDOW_MS / 3;
+
+/**
+ * A ring that stays a ring.
+ *
+ * `isRingingVideoConferenceMember` answers no once `ringingAt` is `VIDEO_CONF_RINGING_WINDOW_MS` old, and a
+ * fixture stamped when its module loaded is that old fifteen seconds into the session — so a story documented as
+ * ringing shows a ringing row to whoever opens Storybook first and an ordinary one to everybody after. This
+ * moves the moment forward on a timer instead, for as long as anyone is looking.
+ */
+export const useLiveRingingAt = (): Date => {
+	const [ringingAt, setRingingAt] = useState(() => new Date());
+
+	useEffect(() => {
+		const interval = setInterval(() => setRingingAt(new Date()), RING_RESTAMP_MS);
+
+		return () => clearInterval(interval);
+	}, []);
+
+	return ringingAt;
+};
+
+const LiveRing = ({ children }: { children: (ringingAt: Date) => ReactNode }) => <>{children(useLiveRingingAt())}</>;
+
+/**
+ * Re-stamps a story's rings with {@link useLiveRingingAt}.
+ *
+ * Which args are rings is the story's to say — a call here, a member there, a list of members elsewhere — so
+ * that is the argument, and this only carries the clock. Whatever has no `ringingAt` must come back without one:
+ * these sit on a whole file's `meta`, where most stories are of something that is not ringing at all.
+ */
+export const withLiveRings =
+	// Unparameterized `Decorator`: a `Decorator<TArgs>` in a `meta.decorators` array alongside plain ones widens
+	// the array to a union that `composeStories` cannot read the stories out of. The args are named by the
+	// caller's `restamp` instead, which is where the checking is worth having.
+	<TArgs,>(restamp: (args: TArgs, ringingAt: Date) => Partial<TArgs>): Decorator =>
+		// eslint-disable-next-line react/display-name
+		(Story, { args }) => (
+			// Spread, because `args` on a story replaces rather than merges: handing over only what was re-stamped
+			// dropped every other arg, callbacks included.
+			<LiveRing>{(ringingAt) => <Story args={{ ...args, ...restamp(args as unknown as TArgs, ringingAt) }} />}</LiveRing>
+		);
+
+const RingRenewal = ({ queryKey, children }: { queryKey: QueryKey; children: ReactNode }) => {
+	const queryClient = useQueryClient();
+
+	useEffect(() => {
+		const interval = setInterval(() => void queryClient.invalidateQueries({ queryKey }), RING_RESTAMP_MS);
+
+		return () => clearInterval(interval);
+	}, [queryClient, queryKey]);
+
+	return <>{children}</>;
+};
+
+/**
+ * Asks for a fetched fixture again, for the stories whose ring is stamped by a mocked endpoint rather than
+ * passed as an arg.
+ *
+ * Re-stamping per request is only half of it: what asks again decides how long the ring is stale for. The
+ * joinable list polls every twenty seconds against a fifteen-second window, and the conference itself is only
+ * re-read when the stream says so — which in Storybook is never. So the story asks, on its own account, often
+ * enough that the ring it is documented to show never lapses.
+ *
+ * Must sit *inside* the providers: it needs their query client. In a story's `decorators` that means first.
+ */
+export const withRingRenewal =
+	(queryKey: QueryKey): Decorator =>
+	// eslint-disable-next-line react/display-name
+	(Story) => (
+		<RingRenewal queryKey={queryKey}>
+			<Story />
+		</RingRenewal>
+	);
+
 /** Somewhere dark and call-shaped to put the chrome, which is only ever seen against a conference. */
 export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode; height?: string }) => (
 	<div style={{ backgroundColor: '#1f2329', borderRadius: 4, display: 'flex', flexDirection: 'column', height, overflow: 'hidden' }}>
@@ -145,7 +216,12 @@ export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode
 
 export const allCapabilities: VideoConferenceCapabilities = { mic: true, cam: true, title: true };
 
-/** The four states a member of a call can be in, which is what the members list is for. */
+/**
+ * The four states a member of a call can be in, which is what the members list is for.
+ *
+ * `ringing` is stamped here and re-stamped by {@link withLiveRings}, which every story showing it installs — on
+ * its own this timestamp is a ring for fifteen seconds and an unanswered invitation thereafter.
+ */
 export const members: Record<'joined' | 'ringing' | 'declined' | 'left', ConferenceMember> = {
 	joined: buildConferenceMember({ _id: 'joined', name: 'Ada Lovelace', username: 'ada' }),
 	ringing: buildConferenceMember({ _id: 'ringing', name: 'Grace Hopper', username: 'grace', joined: false, ringingAt: new Date() }),

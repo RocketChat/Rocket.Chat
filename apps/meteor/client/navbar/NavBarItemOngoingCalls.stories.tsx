@@ -3,13 +3,21 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import NavBarItemOngoingCalls from './NavBarItemOngoingCalls';
-import { conferenceAppRoot, withCallProviders } from '../views/conference/storyFixtures';
+import { videoConferenceQueryKeys } from '../lib/queryKeys';
+import { conferenceAppRoot, withCallProviders, withRingRenewal } from '../views/conference/storyFixtures';
 import { buildJoinableCall } from '../views/conference/testFixtures';
 
 const withCalls = (calls: JoinableVideoConference[], incoming: { callId: string; dismissed: boolean }[] = []) =>
 	withCallProviders(
 		conferenceAppRoot()
-			.withEndpoint('GET', '/v1/video-conference.joinable', () => ({ calls, success: true }) as any)
+			.withEndpoint(
+				'GET',
+				'/v1/video-conference.joinable',
+				() =>
+					// Stamped per request, not when this module loaded: a ring lasts fifteen seconds, and a fixture
+					// older than that turns the red button blue and shuts the dropdown while somebody is looking at it.
+					({ calls: calls.map((call) => (call.ringingAt ? { ...call, ringingAt: new Date() } : call)), success: true }) as any,
+			)
 			.withEndpoint('POST', '/v1/video-conference.decline', () => ({ success: true }) as any)
 			.withIncomingCalls(incoming as any),
 	);
@@ -54,6 +62,8 @@ export const OneOngoing: Story = {
  */
 export const Ringing: Story = {
 	decorators: [
+		// Inside the providers, so the twenty-second poll is not what the fifteen-second ring waits on.
+		withRingRenewal(videoConferenceQueryKeys.joinable()),
 		withCalls(
 			[
 				buildJoinableCall({

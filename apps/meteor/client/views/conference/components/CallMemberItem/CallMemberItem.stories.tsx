@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ComponentProps } from 'react';
 import { action } from 'storybook/actions';
 
 import CallMemberItem from './CallMemberItem';
-import { conferenceAppRoot, members, withCallProviders } from '../../storyFixtures';
+import { conferenceAppRoot, members, withCallProviders, withLiveRings } from '../../storyFixtures';
 
 /**
  * One member of a call, labelled with where they stand with it.
@@ -25,6 +26,11 @@ const meta = {
 				<Story />
 			</Box>
 		),
+		// `members.ringing` is stamped when its module loads, and a ring lapses fifteen seconds later — so the row
+		// documented as ringing would show the one for a member who was rung and did nothing.
+		withLiveRings<ComponentProps<typeof CallMemberItem>>(({ member }, ringingAt) => ({
+			member: member.ringingAt ? { ...member, ringingAt } : member,
+		})),
 		withCallProviders(conferenceAppRoot()),
 	],
 } satisfies Meta<typeof CallMemberItem>;

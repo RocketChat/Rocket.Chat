@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ComponentProps } from 'react';
 import { action } from 'storybook/actions';
 
 import CallListItem from './CallListItem';
-import { conferenceAppRoot, withCallProviders } from '../../views/conference/storyFixtures';
+import { conferenceAppRoot, withCallProviders, withLiveRings } from '../../views/conference/storyFixtures';
 import { buildJoinableCall } from '../../views/conference/testFixtures';
 
 /**
@@ -29,6 +30,11 @@ const meta = {
 				<Story />
 			</Box>
 		),
+		// Whichever of these stories is of a ringing call, its ring is kept ringing — the row reads `ringingAt`
+		// through `isRingingVideoConferenceMember`, which stops saying yes fifteen seconds after it was stamped.
+		withLiveRings<ComponentProps<typeof CallListItem>>(({ call }, ringingAt) => ({
+			call: call.ringingAt ? { ...call, ringingAt } : call,
+		})),
 		withCallProviders(conferenceAppRoot().withIncomingCalls([{ callId: 'ringing', dismissed: false }] as any)),
 	],
 } satisfies Meta<typeof CallListItem>;

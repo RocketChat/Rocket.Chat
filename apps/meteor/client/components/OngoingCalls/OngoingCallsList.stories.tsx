@@ -4,7 +4,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, within } from 'storybook/test';
 
 import OngoingCallsList from './OngoingCallsList';
-import { conferenceAppRoot, withCallProviders } from '../../views/conference/storyFixtures';
+import { videoConferenceQueryKeys } from '../../lib/queryKeys';
+import { conferenceAppRoot, withCallProviders, withRingRenewal } from '../../views/conference/storyFixtures';
 import { buildJoinableCall } from '../../views/conference/testFixtures';
 
 /**
@@ -61,7 +62,8 @@ type Story = StoryObj<typeof meta>;
 
 /** A call ringing this user right now: "Ringing…" where the time would be, and both Silence and Decline. */
 export const Ringing: Story = {
-	decorators: [withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
+	// Re-stamping per request is only half of it — the poll is twenty seconds against a fifteen-second window.
+	decorators: [withRingRenewal(videoConferenceQueryKeys.joinable()), withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
 };
 
 /**
@@ -71,7 +73,8 @@ export const Ringing: Story = {
  * quietened for the session, not answered.
  */
 export const RingingSilenced: Story = {
-	decorators: [withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
+	// Re-stamping per request is only half of it — the poll is twenty seconds against a fifteen-second window.
+	decorators: [withRingRenewal(videoConferenceQueryKeys.joinable()), withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -84,7 +87,7 @@ export const RingingSilenced: Story = {
  * only Decline is offered.
  */
 export const RingingNotHeardHere: Story = {
-	decorators: [withCalls([ringing])],
+	decorators: [withRingRenewal(videoConferenceQueryKeys.joinable()), withCalls([ringing])],
 };
 
 /** A call simply running. No ring to answer, so the only action is to turn it down. */
@@ -95,6 +98,7 @@ export const Ongoing: Story = {
 /** Ringing first, then the ones merely running. */
 export const Several: Story = {
 	decorators: [
+		withRingRenewal(videoConferenceQueryKeys.joinable()),
 		withCalls(
 			[
 				ringing,

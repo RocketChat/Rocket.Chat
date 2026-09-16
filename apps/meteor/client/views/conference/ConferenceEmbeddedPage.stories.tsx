@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { userEvent, within } from 'storybook/test';
 
 import ConferenceEmbeddedPage from './ConferenceEmbeddedPage';
-import { conferenceAppRoot, onPhone, withConferenceWindow } from './storyFixtures';
+import { conferenceAppRoot, onPhone, withConferenceWindow, withRingRenewal } from './storyFixtures';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 
 /**
@@ -47,7 +47,9 @@ const buildInfo = (users: Record<string, unknown>[], membersWithoutAccess: strin
 		title: 'Weekly sync',
 		createdAt: new Date(Date.now() - CALL_STARTED_MS_AGO).toISOString(),
 		createdBy: { _id: 'john.doe', username: 'john.doe', name: 'John Doe' },
-		users,
+		// Rings are stamped as this is answered, not when the fixture was written: a ring lasts fifteen seconds,
+		// and a member documented as still ringing would quietly become one who was rung and did nothing.
+		users: users.map((user) => (user.ringingAt ? { ...user, ringingAt: new Date().toISOString() } : user)),
 		messages: { started: 'started-message-id' },
 		capabilities: { mic: true, cam: true, title: true },
 		chatAccess: { rid: 'room-id', name: 'general', type: 'c', membersWithoutAccess, canInvite: true },
@@ -132,6 +134,9 @@ export const AloneInTheCall: Story = {
  */
 export const SeveralParticipants: Story = {
 	decorators: [
+		// Nothing re-reads the conference in a story — that is the stream's job, and there is none — so the ring
+		// above is only re-stamped because this asks for it again.
+		withRingRenewal(videoConferenceQueryKeys.conference(callId)),
 		withConferenceWindow(
 			joinedAppRoot([
 				viewer,

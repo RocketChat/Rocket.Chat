@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ComponentProps } from 'react';
 import { action } from 'storybook/actions';
 
 import CallMembersPanel from './CallMembersPanel';
-import { conferenceAppRoot, members, withCallProviders } from '../../storyFixtures';
+import { conferenceAppRoot, members, withCallProviders, withLiveRings } from '../../storyFixtures';
 import { buildChatAccess } from '../../testFixtures';
 
 /**
@@ -26,6 +27,11 @@ const meta = {
 				<Story />
 			</Box>
 		),
+		// A ring lapses fifteen seconds after it is stamped, and `members.ringing` is stamped when its module
+		// loads — so without this the rows documented as ringing are only ringing for whoever looks first.
+		withLiveRings<ComponentProps<typeof CallMembersPanel>>(({ members: shown }, ringingAt) => ({
+			members: shown.map((member) => (member.ringingAt ? { ...member, ringingAt } : member)),
+		})),
 		withCallProviders(
 			conferenceAppRoot()
 				.withEndpoint('POST', '/v1/video-conference.ring', () => ({ success: true }) as any)
@@ -69,8 +75,8 @@ export const WithoutChatAccess: Story = {
 };
 
 /**
- * Nobody has answered yet — a call just started, ringing everyone. Every row offers a ring except the ones
- * already ringing.
+ * Nobody has answered yet. One member's phone is ringing and the other is only invited — rung at some point, or
+ * never — which is what the two rows are for: a ring is offered to whoever isn't hearing one now.
  */
 export const NobodyAnsweredYet: Story = {
 	args: { members: [members.ringing, { ...members.declined, declined: false, declinedAt: undefined }] },
