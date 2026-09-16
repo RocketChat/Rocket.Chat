@@ -44,7 +44,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 	return (
 		<Box
 			className={hovered}
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			paddingInline={24}
