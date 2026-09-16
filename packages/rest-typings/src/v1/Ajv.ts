@@ -42,6 +42,40 @@ ajvQuery.addKeyword({
 	type: 'string',
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
 });
+
+// Strips whitespace from the property before it's checked against a `format`
+ajv.addKeyword({
+	keyword: 'transformTrimWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
+});
+ajvQuery.addKeyword({
+	keyword: 'transformTrimWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
+});
 export { ajv, ajvQuery };
 
 type BadRequestErrorResponse = {
