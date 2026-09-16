@@ -5,10 +5,10 @@ import { usePasswordPolicy } from './usePasswordPolicy';
 describe('usePasswordPolicy', () => {
 	const options = { enabled: true, minLength: 5, throwError: false };
 
-	it.each(['', '   '])('should reject blank passwords: %p', (password) => {
+	it.each([null, undefined, 1, '', '   '])('should reject invalid passwords: %p', (password) => {
 		const { result } = renderHook(() => usePasswordPolicy(options));
 
-		expect(result.current(password)).toEqual({ validations: [], valid: false });
+		expect(result.current(password as any)).toEqual({ validations: [], valid: false });
 	});
 
 	it('should accept a valid password', () => {
