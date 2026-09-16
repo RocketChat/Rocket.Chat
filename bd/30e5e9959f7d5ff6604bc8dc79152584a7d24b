@@ -1,0 +1,50 @@
+apps/meteor/server/services/authorization/service.ts
+  s_d851c55a9e28b5::t_f7f1d4b8cd96b5 145
+  s_d851c55a9e28b5::t_5502862fab254d 3
+  s_d851c55a9e28b5::t_6d60b74a2fd1c7 139-144,146-160
+packages/core-services/src/types/IAuthorization.ts
+  s_d851c55a9e28b5::t_f902471383d4ab 1
+  s_d851c55a9e28b5::t_cfa711873cb1a8 20
+apps/meteor/server/api/v1/videoConference.ts
+  s_d851c55a9e28b5::t_47148bfd0b8bd3 256
+  s_d851c55a9e28b5::t_b83dcb8b89ff1b 1
+  s_d851c55a9e28b5::t_f20d6900e31854 80
+apps/meteor/server/modules/notifications/notifications.module.ts
+  s_d851c55a9e28b5::t_f79c5ec11c5f38 483
+apps/meteor/tests/unit/server/services/authorization/service.spec.ts
+  s_d851c55a9e28b5::t_b26cd9e95d5e20 45-97,112,120,142
+  s_d851c55a9e28b5::t_39948d0a3823ea 1
+  s_d851c55a9e28b5::t_cf57e15714de6f 2-16
+  s_d851c55a9e28b5::t_d45143cf33898b 104,109
+  s_d851c55a9e28b5::t_dd195fc304563a 41,100-103,105-108,110-111,113-115,118-119,121-128,130-141,143-144
+  s_d851c55a9e28b5::t_629dcb8aca1894 129
+  s_d851c55a9e28b5::t_304e16d483bc33 116-117
+  s_d851c55a9e28b5::t_918107a1b70bc6 26-27
+  s_d851c55a9e28b5::t_5ac661277fd0e4 17-19
+  s_d851c55a9e28b5::t_19605b37ac450b 28-30
+  s_d851c55a9e28b5::t_d39e59096615f8 38-40
+  s_d851c55a9e28b5::t_27c657673c3dd2 43-44
+  s_d851c55a9e28b5::t_fcb684e999c34a 98-99
+  s_d851c55a9e28b5::t_07094b0d462880 20-23,31-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bd30e5e9959f7d5ff6604bc8dc79152584a7d24b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d851c55a9e28b5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4128f318-3240-4092-bbcd-53f1158a969e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
