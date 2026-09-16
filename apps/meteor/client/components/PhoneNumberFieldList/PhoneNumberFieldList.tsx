@@ -5,7 +5,8 @@ import type { ArrayPath, Control, FieldValues, Path } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-const E164_PHONE_REGEX = /^\+?[1-9]\d{1,14}$/;
+import { E164_PHONE_REGEX } from './e164PhoneRegex';
+
 const MAX_PHONE_NUMBER_LABEL_LENGTH = 50;
 
 export type PhoneFieldType = {
