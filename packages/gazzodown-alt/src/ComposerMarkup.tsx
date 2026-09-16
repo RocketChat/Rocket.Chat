@@ -4,6 +4,7 @@ import { memo, useContext } from 'react';
 
 import ComposerCodeBlock from './ComposerCodeBlock';
 import ComposerInlineElements from './ComposerInlineElements';
+import ComposerList from './ComposerList';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerPlainSpan from './ComposerPlainSpan';
 import { sourceOf } from './sourceOf';
@@ -88,30 +89,10 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
 
 					case 'UNORDERED_LIST':
-						return (
-							<span key={index}>
-								{block.value.map((item, iidx) => (
-									<span key={iidx}>
-										{'- '}
-										<ComposerInlineElements>{item.value}</ComposerInlineElements>
-										{'\n'}
-									</span>
-								))}
-							</span>
-						);
+						return <ComposerList key={index} items={block.value} marker={unorderedMarker} />;
 
 					case 'ORDERED_LIST':
-						return (
-							<span key={index}>
-								{block.value.map((item, iidx) => (
-									<span key={iidx}>
-										{`${item.number}. `}
-										<ComposerInlineElements>{item.value}</ComposerInlineElements>
-										{'\n'}
-									</span>
-								))}
-							</span>
-						);
+						return <ComposerList key={index} items={block.value} marker={orderedMarker} />;
 
 					case 'TASKS':
 						return (
@@ -143,6 +124,10 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 		</>
 	);
 };
+
+const unorderedMarker = (): string => '- ';
+
+const orderedMarker = (item: MessageParser.ListItem): string => `${item.number}. `;
 
 const headingStyles: Record<1 | 2 | 3 | 4, React.CSSProperties> = {
 	1: { fontWeight: 'bold', fontSize: '1.5em' },

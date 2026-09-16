@@ -7,6 +7,7 @@ import { createComposerAPICore, triggerEvent, type SetText } from './createCompo
 import { limitQuoteChain } from './limitQuoteChain';
 import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
@@ -20,6 +21,8 @@ export const createRichTextComposerAPI = (
 	const focus = (): void => {
 		input.focus();
 	};
+
+	const getText = (): string => input.innerText.replace(/\n$/, '');
 
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
@@ -76,10 +79,11 @@ export const createRichTextComposerAPI = (
 		composerRef,
 		room: { rid, tmid },
 		initialValue: initialDraft,
-		save: () => persistDraft(input.innerText),
+		save: () => persistDraft(getText()),
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
+		richText: true,
 	});
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
@@ -157,30 +161,42 @@ export const createRichTextComposerAPI = (
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
-		const { selectionStart, selectionEnd } = getSelectionRange(input);
-
 		// Selects the text that is connected to the cursor, then focus so execCommand has an active target
 		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		focus();
 		const textAreaTxt = input.innerText;
 		const expected = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 
-		document.execCommand?.('insertText', false, text);
-		if (input.innerText !== expected) {
-			input.innerText = expected;
-		}
-
 		const newStart = selection.start + text.length;
 		const newEnd = selection.start + text.length;
 
-		if (selectionStart !== selectionEnd) {
-			setSelectionRange(input, selectionStart, selectionStart);
-		} else {
-			setSelectionRange(input, newStart, newEnd);
+		const inserted = !text.includes('\n') && document.execCommand?.('insertText', false, text);
+
+		if (!inserted || input.innerText !== expected) {
+			input.innerText = expected;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
 		}
+
+		setSelectionRange(input, newStart, newEnd);
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
+	};
+
+	const insertNewLine = (): void => {
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const text = input.innerText;
+
+		const bare = selectionStart === selectionEnd ? bareLinePrefixRange(text, selectionStart) : undefined;
+
+		if (bare) {
+			replaceText('', bare);
+			return;
+		}
+
+		const marker = continueLinePrefix(text, selectionStart);
+
+		core.insertText(marker ? `\n${marker}` : '\n');
 	};
 
 	const replyWith = async (text: string): Promise<void> => {
@@ -196,11 +212,12 @@ export const createRichTextComposerAPI = (
 			input.removeEventListener('input', rerender);
 		},
 		setText,
+		insertNewLine,
 		wrapSelection,
 		replaceText,
 		replyWith,
 		substring: (start: number, end?: number) => {
-			return input.innerText.substring(start, end);
+			return getText().substring(start, end);
 		},
 		getCursorPosition: () => {
 			return getSelectionRange(input).selectionStart;
@@ -215,7 +232,7 @@ export const createRichTextComposerAPI = (
 			setSelectionRange(input, 0, 0);
 		},
 		get text(): string {
-			return input.innerText;
+			return getText();
 		},
 		get selection(): { start: number; end: number } {
 			const { selectionStart, selectionEnd } = getSelectionRange(input);
