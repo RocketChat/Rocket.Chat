@@ -1,6 +1,6 @@
 import type { IAuthorization, RoomAccessValidator, UserWithRoles } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, ISubscription, VideoConference } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -134,6 +134,28 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		const allowed = await Promise.all(rooms.map((room) => this.canAccessRoom(room, user)));
 
 		return allowed.every(Boolean);
+	}
+
+	/**
+	 * Whether someone may be near a conference at all: the one rule every endpoint that answers about one applies.
+	 *
+	 * Membership of the call counts on its own, because someone added from outside the room has no subscription to
+	 * check. See [video conferences](../../../../../docs/features/video-conference.md).
+	 */
+	async canAccessConference(call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>, userId?: IUser['_id']): Promise<boolean> {
+		if (!userId) {
+			return false;
+		}
+
+		if (call.users.some(({ _id }) => _id === userId)) {
+			return true;
+		}
+
+		if (await this.canAccessRoomId(call.rid, userId)) {
+			return true;
+		}
+
+		return !!call.discussionRid && this.canAccessRoomId(call.discussionRid, userId);
 	}
 
 	async getUsersFromPublicRoles(): Promise<

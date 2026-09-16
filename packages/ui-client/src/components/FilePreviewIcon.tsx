@@ -7,7 +7,7 @@ const FilePreviewIcon = ({ format }: FilePreviewIconProps) => {
 		<Box
 			width='x48'
 			height='x48'
-			borderRadius={4}
+			borderRadius='medium'
 			backgroundColor='surface-neutral'
 			justifyContent='center'
 			display='flex'
