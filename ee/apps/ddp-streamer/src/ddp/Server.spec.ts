@@ -224,6 +224,8 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: expectedError }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
 	});
 
 	it('handles a synchronous publication failure', async () => {
@@ -236,6 +238,20 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
+	});
+
+	it('runs the stop callbacks a failed publication registered before failing', async () => {
+		const onStop = jest.fn();
+		server.publish('messages', function (this: Publication) {
+			this.onStop(onStop);
+			throw new MeteorError(403, 'Forbidden');
+		});
+
+		await server.subscribe(session, makeSubscription());
+
+		expect(onStop).toHaveBeenCalledTimes(1);
 	});
 
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
