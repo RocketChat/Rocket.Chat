@@ -1,4 +1,4 @@
-import { type IMediaStreamWrapper } from '@rocket.chat/media-signaling';
+import { type IMediaStreamWrapper, type CallFeature } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
@@ -12,6 +12,7 @@ export type MediaCallStreams = {
 
 type MediaCallViewContextValue = {
 	sessionState: SessionState;
+	allowedFeatures: readonly CallFeature[];
 	targetPeer?: PeerInfo;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
@@ -50,6 +51,7 @@ export const defaultSessionState: SessionState = {
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
+	allowedFeatures: [],
 	targetPeer: undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
