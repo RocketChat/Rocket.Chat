@@ -1,4 +1,4 @@
-import { Apps } from '@rocket.chat/apps';
+import { getOrchestrator } from '@rocket.chat/apps';
 import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 
 import { addMigration } from '../../lib/migrations';
@@ -6,14 +6,15 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 294,
 	async up() {
-		if (!Apps.self) {
+		const orchestrator = getOrchestrator();
+		if (!orchestrator) {
 			throw new Error('Apps Orchestrator not registered.');
 		}
 
-		Apps.initialize();
+		orchestrator.initialize();
 
-		const sigMan = Apps.getManager().getSignatureManager();
-		const appsStorage = Apps.getStorage();
+		const sigMan = orchestrator.getManager().getSignatureManager();
+		const appsStorage = orchestrator.getStorage();
 
 		const apps = await appsStorage.retrieveAll();
 

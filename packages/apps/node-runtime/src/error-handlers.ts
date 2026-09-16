@@ -1,4 +1,4 @@
-import * as Messenger from '@rocket.chat/apps/base-runtime/dist/lib/messenger';
+import * as Messenger from '../../base-runtime/dist/lib/messenger';
 
 export default function registerErrorListeners() {
 	process.on('uncaughtException', (error: Error, origin: 'uncaughtException' | 'unhandledRejection') => {

@@ -86,7 +86,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
+		await Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -122,7 +122,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		void notifyOnRoomChanged(room);
 	});
 
-	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
+	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
 
 	return true;
 };

@@ -69,7 +69,7 @@ export async function saveGuest(
 	const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
 	setImmediate(() => {
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+		void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 	});
 
 	return ret;
