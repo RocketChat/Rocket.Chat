@@ -75,6 +75,11 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useId();
 
+	// The override is about the reply being written, so sending it ends it. Without this, unchecking the box on a
+	// first reply left it checked for the second: the thread now has a reply, so `defaultSendToChannel` flipped to
+	// false underneath an override that inverts it.
+	const handleSend = useCallback(() => setOverridden(false), []);
+
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
 	if (mainMessageQueryResult.isLoading) {
@@ -124,11 +129,12 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 					/>
 				</MessageListErrorBoundary>
 
-				<RoomComposer>
+				<RoomComposer aria-label={t('Thread_composer')}>
 					<ComposerContainer
 						tmid={mainMessage._id}
 						threadExists={isThreadMainMessage(mainMessage)}
 						subscription={subscription}
+						onSend={handleSend}
 						onEscape={onEscape}
 						onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 						onNavigateToNextMessage={handleNavigateToNextMessage}
