@@ -53,6 +53,7 @@ export const useAppSlashCommands = () => {
 		retryDelay: (attemptIndex) => Math.min(500 * Math.random() * 10 * 2 ** attemptIndex, 30000),
 		queryFn: async () => {
 			const fetchBatch = async (accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
+				// TODO: make `API_Upper_Count_Limit` public and use it here instead of this guess
 				const count = 50;
 				const { commands, appsLoaded, total } = await getSlashCommands({ offset: accumulator.length, count });
 
