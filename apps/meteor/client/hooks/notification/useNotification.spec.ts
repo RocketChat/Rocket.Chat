@@ -75,6 +75,8 @@ describe('useNotification', () => {
 	const originalNotification = window.Notification;
 
 	beforeEach(() => {
+		// the hook schedules a 10s auto-close timer for every notification it shows
+		jest.useFakeTimers();
 		jest.clearAllMocks();
 		MockNotification.listenersByInstance = [];
 		(window as any).Notification = MockNotification;
@@ -82,6 +84,10 @@ describe('useNotification', () => {
 		(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation((message: any) =>
 			Promise.resolve(message),
 		);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
 	});
 
 	afterAll(() => {
