@@ -1,0 +1,36 @@
+apps/meteor/ee/server/startup/federation.ts
+  s_00ff27bda72447::t_8dbb60372e85df 8
+apps/meteor/ee/server/apps/communication/websockets.ts
+  s_00ff27bda72447::t_9a0be747058a6b 6
+apps/meteor/ee/server/local-services/instance/service.ts
+  s_00ff27bda72447::t_69b338ad5f22c4 8
+apps/meteor/server/lib/import/classes/ImporterWebsocket.ts
+  s_00ff27bda72447::t_5994378dcade6e 2
+apps/meteor/server/services/meteor/service.ts
+  s_00ff27bda72447::t_39fc812e8784cd 41
+  s_00ff27bda72447::t_12a96d255f87f6 6-7
+apps/meteor/package.json
+  s_00ff27bda72447::t_7c0af30001e120 153
+apps/meteor/server/startup/localServices.ts
+  s_00ff27bda72447::t_396b53266a6547 2
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_00ff27bda72447::t_1bcb7e7ec4d6f6 3-4
+yarn.lock
+  s_00ff27bda72447::t_1290e24ce0cb7f 10156,11068
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "0c5100f7f85ec3fef782db63f77f8bedf131121e",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
