@@ -3,6 +3,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { CALL_TOP_BAR_MIN_HEIGHT } from './CallTopBar';
 import { CONFERENCE_THEMED_CLASS } from '../panelStyles';
 
 type CallPanelProps = {
@@ -96,8 +97,10 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 	 * - `inset-inline: 2px` leaves a hair of the call showing down both sides, so the sheet reads as something
 	 *   laid over the call rather than as the window's new contents. In px on purpose — a hairline that grew with
 	 *   the font size would stop being one.
-	 * - `inset-block-start` leaves the call visible above it, for the same reason. Proportional, so a landscape
-	 *   phone doesn't spend a tenth of its height on the gap, and capped, so a tall window doesn't open a chasm.
+	 * - `inset-block-start` clears the top bar, and then leaves a little of the call showing above the sheet for
+	 *   the same reason. The bar's own height is the floor: a proportional gap alone is shorter than the bar on a
+	 *   short screen, and the sheet began inside it, over its controls. What stays proportional is the air below
+	 *   the bar — capped, so a tall window doesn't open a chasm.
 	 * - The shadow is the product's own elevation-2 pair, scaled up and aimed upwards: a sheet is a much larger
 	 *   surface than the dropdown that shadow was drawn for, and what it has to lift away from is above it. It
 	 *   reads when there is something bright behind — a camera with a picture in it — and costs nothing over a
@@ -113,7 +116,7 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 		? css`
 				inset-inline: 2px;
 				inset-block-end: 0;
-				inset-block-start: clamp(1rem, 6dvh, 3rem);
+				inset-block-start: calc(${CALL_TOP_BAR_MIN_HEIGHT}px + clamp(0px, 2dvh, 1rem));
 
 				border-start-start-radius: 0.75rem;
 				border-start-end-radius: 0.75rem;

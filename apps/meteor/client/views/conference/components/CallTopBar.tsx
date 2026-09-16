@@ -12,6 +12,9 @@ const headerStyles = css`
 	font-variant-numeric: tabular-nums;
 `;
 
+/** What the bar is at least, which is what anything laid over the window has to start below. */
+export const CALL_TOP_BAR_MIN_HEIGHT = 48;
+
 type CallTopBarProps = {
 	/** When the call started, which is what the bar counts from. */
 	startAt?: Date;
@@ -46,7 +49,7 @@ const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
 			justifyContent='space-between'
 			flexShrink={0}
 			width='100%'
-			minHeight={48}
+			minHeight={CALL_TOP_BAR_MIN_HEIGHT}
 			paddingInline={12}
 			gap={8}
 		>

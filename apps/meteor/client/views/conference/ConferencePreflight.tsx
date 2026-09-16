@@ -85,7 +85,9 @@ const ConferencePreflight = ({
 	// little height it has on the preview, leaving the name and the call button off the bottom of the screen —
 	// so the columns come back on the viewport's shape as well as its width.
 	const wideEnough = useBreakpoints().includes('md');
-	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 480px)');
+	// 700px, not 480: the details column is a fixed 320 and the gap and padding take another 96, so below that
+	// the preview is a slot too narrow to see a camera in — which is the thing the columns exist to show.
+	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 700px)');
 	const columns = wideEnough || shortAndWide;
 
 	const [title, setTitle] = useState(defaultName ?? name);

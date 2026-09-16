@@ -6,10 +6,10 @@ import ConferenceThreadChat from './ConferenceThreadChat';
 import ConferenceThreadOverRoom from './ConferenceThreadOverRoom';
 import ConferenceChatNotShared from './components/ConferenceChatNotShared';
 import ConferenceRoomError from './components/ConferenceRoomError';
+import ConferenceRoomSkeleton from './components/ConferenceRoomSkeleton';
 import { narrowRoomStyle } from './panelStyles';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
-import RoomSkeleton from '../room/RoomSkeleton';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
@@ -57,8 +57,8 @@ const ConferenceRoomPanel = ({ rid, tmid, thread, onCloseThread, onEscape }: Con
 
 	return (
 		<Box className={narrowRoomStyle} display='flex' width='full' height='full'>
-			<Suspense fallback={<RoomSkeleton />}>
-				{isLoading && <RoomSkeleton />}
+			<Suspense fallback={<ConferenceRoomSkeleton />}>
+				{isLoading && <ConferenceRoomSkeleton />}
 				{/* `embedded` is said to the room rather than to the layout: this is a room rendered inside a panel,
 				    which is what the narrow composer and the missing header follow from. Not to be confused with the
 				    embedded *layout*, which is Rocket.Chat inside another application — the room asks one question
