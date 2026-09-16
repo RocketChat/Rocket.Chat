@@ -99,6 +99,7 @@ export class StatusVisibilityGate {
 				this.everyoneHidden = everyoneHidden;
 			})
 			.catch((err) => {
+				this.restrictedUsers = undefined;
 				logger.error({ msg: 'Failed to sync the status visibility gate, keeping every user restricted', err });
 			})
 			.finally(() => {

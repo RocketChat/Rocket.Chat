@@ -1,5 +1,6 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import escape from 'lodash.escape';
 
@@ -39,7 +40,7 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 	if (
 		!isUpdateUserData(userData) &&
 		userData.presenceDisabledByAdmin !== undefined &&
-		!(await hasPermissionAsync(userId, 'edit-other-user-info'))
+		(!(await hasPermissionAsync(userId, 'edit-other-user-info')) || !License.hasModule('unlimited-presence'))
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',
