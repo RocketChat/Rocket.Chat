@@ -17,6 +17,15 @@ import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromAp
 import { Rooms, Subscriptions } from '../../../stores';
 
 /**
+ * Whether the server answered, and its answer was no.
+ *
+ * The REST client rejects with the `Response` itself for anything that is not ok, and with fetch's own error when
+ * the request never got an answer at all. A 4xx is the server having looked: this room is missing, or is not this
+ * user's to read. A 5xx, or no answer, says nothing about the room and is worth asking again.
+ */
+const isRefusal = (error: unknown): boolean => error instanceof Response && error.status >= 400 && error.status < 500;
+
+/**
  * Opens a room by its id, for callers that already know the rid and can't go through the router-driven
  * `useOpenRoom` (which resolves a room by type + name/username).
  */
@@ -69,6 +78,13 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 				const result = await getRoomInfo({ roomId: rid });
 				roomData = result.room ? mapRoomFromApi(result.room) : null;
 			} catch (error) {
+				// `rooms.info` reports a missing room and an unreadable one as the same refusal, and the not-found
+				// screen is the right answer to both. A request that never arrived is not an answer about the room,
+				// so it is left to the retry below rather than reported as a room that does not exist.
+				if (!isRefusal(error)) {
+					throw error;
+				}
+
 				throw new RoomNotFoundError(undefined, { rid });
 			}
 
@@ -89,16 +105,16 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 
 			// Subscriptions.state may be empty when used without a pre-populating parent (e.g. the conference
 			// chat panel). Fetch the subscription as a fallback so openRoom.mutateAsync is not silently skipped.
+			//
+			// Not caught: having no subscription is an answer this endpoint gives as `subscription: null`, never as
+			// a failure. So a failure here is the request not arriving, and reading that as "not subscribed" put a
+			// public room's chat behind the screen explaining it was never shared with this user.
 			let sub = Subscriptions.state.find((record) => record.rid === rid);
-			if (!sub) {
-				try {
-					const subResult = await getSubscription({ roomId: rid });
-					if (subResult.subscription) {
-						SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subResult.subscription));
-						sub = Subscriptions.state.find((record) => record.rid === rid);
-					}
-				} catch {
-					// Not subscribed — falls through to the NotSubscribedToRoomError check below.
+			if (!sub && user?._id) {
+				const subResult = await getSubscription({ roomId: rid });
+				if (subResult.subscription) {
+					SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subResult.subscription));
+					sub = Subscriptions.state.find((record) => record.rid === rid);
 				}
 			}
 
@@ -125,6 +141,15 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 
 			return { rid };
 		},
-		retry: 0,
+		// The same shape as `useOpenRoom`'s: the answers about the room itself are final, and everything else is
+		// the server not having answered — which is worth asking again before the panel says the room is gone.
+		retry: (failureCount, error) => {
+			if (error instanceof RoomNotFoundError || error instanceof NotSubscribedToRoomError) {
+				return false;
+			}
+
+			return failureCount < 4;
+		},
+		retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
 	});
 }

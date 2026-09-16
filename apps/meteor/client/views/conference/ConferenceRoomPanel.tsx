@@ -5,8 +5,10 @@ import { lazy, Suspense } from 'react';
 import ConferenceThreadChat from './ConferenceThreadChat';
 import ConferenceThreadOverRoom from './ConferenceThreadOverRoom';
 import ConferenceChatNotShared from './components/ConferenceChatNotShared';
+import ConferenceRoomError from './components/ConferenceRoomError';
 import { narrowRoomStyle } from './panelStyles';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
+import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import RoomSkeleton from '../room/RoomSkeleton';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
@@ -26,7 +28,32 @@ type ConferenceRoomPanelProps = {
 };
 
 const ConferenceRoomPanel = ({ rid, tmid, thread, onCloseThread, onEscape }: ConferenceRoomPanelProps) => {
-	const { data, error, isSuccess, isError, isLoading } = useOpenRoomById(rid);
+	const { data, error, isSuccess, isError, isLoading, refetch } = useOpenRoomById(rid);
+
+	/**
+	 * What went wrong, told apart.
+	 *
+	 * A public room this participant has neither joined nor may preview is not a missing page, and is the one
+	 * error `useOpenRoomById` raises here with a better answer than "room not found" — it is the same situation
+	 * the server usually reports in advance through `chatAccess`, reached from the other end, such as a room that
+	 * became unreadable while the panel was open. Anything that is neither of those is the request having failed,
+	 * which says nothing about the room and must not be reported as its absence.
+	 */
+	const errorState = (() => {
+		if (!isError) {
+			return null;
+		}
+
+		if (error instanceof NotSubscribedToRoomError) {
+			return <ConferenceChatNotShared />;
+		}
+
+		if (error instanceof RoomNotFoundError) {
+			return <RoomNotFound />;
+		}
+
+		return <ConferenceRoomError onRetry={() => void refetch()} />;
+	})();
 
 	return (
 		<Box className={narrowRoomStyle} display='flex' width='full' height='full'>
@@ -53,11 +80,7 @@ const ConferenceRoomPanel = ({ rid, tmid, thread, onCloseThread, onEscape }: Con
 						</ModalProviderWithRegion>
 					</RoomProvider>
 				)}
-				{/* A public room this user has neither joined nor may preview: not a missing page, and the one error
-				    `useOpenRoomById` raises here that has a better answer than "room not found". It is the same
-				    situation the server usually reports in advance through `chatAccess`, reached from the other end —
-				    a room that became unreadable while the panel was open, say. */}
-				{isError && (error instanceof NotSubscribedToRoomError ? <ConferenceChatNotShared /> : <RoomNotFound />)}
+				{errorState}
 			</Suspense>
 		</Box>
 	);

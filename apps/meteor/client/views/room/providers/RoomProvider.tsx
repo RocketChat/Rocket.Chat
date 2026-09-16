@@ -140,7 +140,10 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		</RoomContext.Provider>
 	);
 
-	return embedded && !layout.isEmbedded ? <LayoutContext.Provider value={embeddedLayout}>{roomTree}</LayoutContext.Provider> : roomTree;
+	// Whenever the caller says so, even where the layout is already embedded: the conference route is itself an
+	// embedded layout, and skipping the override there left `showTopNavbarEmbeddedLayout` as the workspace set it —
+	// which on a workspace that has it on grew the full room header inside the call's chat panel.
+	return embedded ? <LayoutContext.Provider value={embeddedLayout}>{roomTree}</LayoutContext.Provider> : roomTree;
 };
 
 export default memo(RoomProvider);
