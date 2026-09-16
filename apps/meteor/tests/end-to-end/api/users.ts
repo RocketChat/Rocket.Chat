@@ -863,6 +863,45 @@ describe('[Users]', () => {
 			await deleteUser(res.body.user);
 		});
 
+		it('should trim whitespaces from phone numbers before validating and saving them', async () => {
+			const username = `phones_create_whitespace_${apiUsername}_${Date.now()}`;
+			const email = `phones_create_whitespace_${Date.now()}_${apiEmail}`;
+
+			const res = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: ' +1 555 123 4567 ', label: 'Work', primary: true },
+						{ number: '+1  555  765  4321', label: 'Mobile' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: res.body.user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+					expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+				});
+
+			await deleteUser(res.body.user);
+		});
+
 		it('should fail to create a user when phone number format is invalid', async () => {
 			await request
 				.post(api('users.create'))
@@ -2589,6 +2628,38 @@ describe('[Users]', () => {
 			await deleteUser(user);
 		});
 
+		it("should trim whitespaces from a user's phone number when updating by userId", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [{ number: ' +1 555 123 4567 ', label: 'Work', primary: true }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await deleteUser(user);
+		});
+
 		it("should clear a user's phones when updating with an empty phones array", async () => {
 			const user = await createUser();
 
@@ -3494,6 +3565,33 @@ describe('[Users]', () => {
 					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
 					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
 					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+				});
+		});
+
+		it('should trim whitespaces from the user own phone number when updating', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [{ number: ' +5511 91111 1111 ', label: 'Work', primary: true }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
 				});
 		});
 
