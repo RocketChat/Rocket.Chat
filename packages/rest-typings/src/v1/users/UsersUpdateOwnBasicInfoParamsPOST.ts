@@ -66,7 +66,7 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							number: { type: 'string', format: 'basic_phone_number' },
+							number: { type: 'string', transformTrimWhitespaces: true, format: 'basic_phone_number' },
 							label: { type: 'string', nullable: true, maxLength: 50 },
 							primary: { type: 'boolean', nullable: true },
 						},
