@@ -3,7 +3,7 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './MessageComposer.stories';
+import * as stories from './MessageComposer.stories.js';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

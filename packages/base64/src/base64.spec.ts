@@ -1,4 +1,4 @@
-import { Base64 } from './base64';
+import { Base64 } from './base64.js';
 
 describe('empty input', () => {
 	it('should encode empty string', () => {

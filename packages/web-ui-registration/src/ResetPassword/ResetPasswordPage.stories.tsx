@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import ResetPasswordPage from './ResetPasswordPage';
+import ResetPasswordPage from './ResetPasswordPage.js';
 
 export default {
 	component: ResetPasswordPage,

@@ -4,7 +4,7 @@ import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { LoginPoweredBy } from './components/LoginPoweredBy';
+import { LoginPoweredBy } from './components/LoginPoweredBy.js';
 
 export type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
