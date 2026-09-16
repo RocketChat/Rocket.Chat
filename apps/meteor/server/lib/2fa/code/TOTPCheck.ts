@@ -1,13 +1,11 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
-import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult, TwoFactorUser } from './ICodeCheck';
 import { settings } from '../../../settings';
 import { TOTP } from '../lib/totp';
 
 export class TOTPCheck implements ICodeCheck {
 	public readonly name: string = 'totp';
 
-	public isEnabled(user: IUser): boolean {
+	public isEnabled(user: TwoFactorUser): boolean {
 		if (!settings.get('Accounts_TwoFactorAuthentication_By_TOTP_Enabled')) {
 			return false;
 		}
@@ -15,7 +13,7 @@ export class TOTPCheck implements ICodeCheck {
 		return user.services?.totp?.enabled === true;
 	}
 
-	public async verify(user: IUser, code: string): Promise<boolean> {
+	public async verify(user: TwoFactorUser, code: string): Promise<boolean> {
 		if (!this.isEnabled(user)) {
 			return false;
 		}
@@ -39,7 +37,7 @@ export class TOTPCheck implements ICodeCheck {
 		};
 	}
 
-	public async maxFaildedAttemtpsReached(_user: IUser): Promise<boolean> {
+	public async maxFaildedAttemtpsReached(_user: TwoFactorUser): Promise<boolean> {
 		return false;
 	}
 }

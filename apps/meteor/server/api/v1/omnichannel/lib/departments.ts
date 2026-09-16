@@ -2,7 +2,7 @@ import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.cha
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document, Filter, FilterOperators, FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../lib/authorization/hasPermission';
@@ -141,7 +141,7 @@ export async function findDepartmentsToAutocomplete({
 	selector,
 	onlyMyDepartments = false,
 	showArchived = false,
-}: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartment[] }> {
+}: FindDepartmentToAutocompleteParams): Promise<{ items: Pick<ILivechatDepartment, '_id' | 'name'>[] }> {
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 

@@ -1,8 +1,8 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
+import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
 import type { Parameters, Decorator } from '@storybook/react';
 import { themes } from 'storybook/theming';
-import { useDarkMode } from 'storybook-dark-mode';
 
 import manifest from '../package.json';
 import DocsContainer from './DocsContainer';
@@ -31,10 +31,10 @@ export const parameters: Parameters = {
 	darkMode: {
 		dark: {
 			...themes.dark,
-			appBg: surface.surface.dark.sidebar,
-			appContentBg: surface.surface.dark.light,
+			appBg: surface.dark.sidebar,
+			appContentBg: surface.dark.light,
 			appPreviewBg: 'transparent',
-			barBg: surface.surface.dark.light,
+			barBg: surface.dark.light,
 			brandTitle: manifest.name,
 			brandImage: logo,
 		},

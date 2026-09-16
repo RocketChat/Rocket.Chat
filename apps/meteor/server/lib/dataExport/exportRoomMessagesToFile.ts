@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType, IExportOperation } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { settings } from '../../settings';
@@ -50,7 +50,7 @@ const getAttachmentData = (attachment: MessageAttachment, message: IMessage) => 
 };
 
 export type MessageData = Pick<IMessage, 'msg' | 'ts'> & {
-	username?: IUser['username'] | IUser['name'];
+	username?: IUser['username'];
 	attachments?: ReturnType<typeof getAttachmentData>[];
 	type?: IMessage['t'];
 };
@@ -148,7 +148,7 @@ export const getMessageData = (
 			});
 			break;
 		case 'wm':
-			messageObject.msg = i18n.t('Welcome', { user: username });
+			messageObject.msg = i18n.t('Welcome', { interpolation: { escapeValue: false }, user: username });
 			break;
 		case 'livechat-close':
 			messageObject.msg = i18n.t('Conversation_finished');

@@ -8,8 +8,8 @@ import { settings } from '../../../../server/settings';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list: Record<string, NodeJS.Timeout> = {};
-const debounceByRoomId = function (fn: (room: IRoom) => Promise<void>) {
-	return function (this: unknown, room: IRoom) {
+const debounceByRoomId = function <T extends Pick<IRoom, '_id'>>(fn: (room: T) => Promise<void>) {
+	return function (this: unknown, room: T) {
 		clearTimeout(list[room._id]);
 		list[room._id] = setTimeout(() => {
 			void fn.call(this, room);
@@ -18,7 +18,7 @@ const debounceByRoomId = function (fn: (room: IRoom) => Promise<void>) {
 	};
 };
 
-const updateMessages = debounceByRoomId(async ({ _id, lm }: IRoom) => {
+const updateMessages = debounceByRoomId(async ({ _id, lm }: Pick<IRoom, '_id' | 'lm'>) => {
 	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
 	const firstSubscription = await Subscriptions.getMinimumLastSeenByRoomId(_id);
 	if (!firstSubscription?.ls) {

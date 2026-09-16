@@ -3,7 +3,17 @@
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"outDir": "./dist",
-		"types": ["jest", "node"]
+		"types": ["jest", "node"],
+
+		/* This service typechecks sources from apps/meteor, which has
+		   `installConfig.hoistingLimits: "workspaces"` and therefore its own nested
+		   copy of mongodb. Without pinning, those sources resolve `mongodb` to
+		   apps/meteor/node_modules while @rocket.chat/models resolves it to the root
+		   copy, and the two identical-but-distinct instances fail to unify. */
+		"baseUrl": ".",
+		"paths": {
+			"mongodb": ["../../../node_modules/mongodb"]
+		}
 	},
 	"include": ["./src/**/*", "./definition"],
 	"exclude": ["./dist", "./ecosystem.config.js"]

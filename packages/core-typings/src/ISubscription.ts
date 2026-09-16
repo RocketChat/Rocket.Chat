@@ -22,6 +22,7 @@ export interface ISubscription extends IRocketChatRecord {
 	t: RoomType;
 	ls?: Date;
 	f?: boolean;
+	category?: string;
 	lr?: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
@@ -96,6 +97,8 @@ export interface IBannedSubscription extends ISubscription {
 	status: 'BANNED';
 }
 
-export const isBannedSubscription = (subscription: ISubscription): subscription is IBannedSubscription => {
+export const isBannedSubscription = <T extends Pick<ISubscription, 'status'>>(
+	subscription: T,
+): subscription is T & { status: 'BANNED' } => {
 	return subscription?.status === 'BANNED';
 };

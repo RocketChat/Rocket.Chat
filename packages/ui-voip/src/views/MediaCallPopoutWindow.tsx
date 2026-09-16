@@ -2,7 +2,7 @@ import { Box, OwnerDocument as FuselageOwnerDocument } from '@rocket.chat/fusela
 import { OwnerDocument as StyledOwnerDocument } from '@rocket.chat/styled';
 import { ModalProvider, ModalRegion, TooltipProvider, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import MediaCallPopoutView from './MediaCallPopoutView';
@@ -14,7 +14,6 @@ export type MediaCallPopoutWindowProps = {
 	onClosePopout: () => void;
 };
 const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWindowProps) => {
-	const [fullscreen, setFullscreen] = useState(false);
 	const [region] = useState(() => Symbol());
 
 	const user = useUser();
@@ -29,23 +28,6 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 
 	const { root, ownerDocument } = container;
 
-	const onClickFullscreen = useCallback(() => {
-		const requestFullScreen = async () => {
-			try {
-				if (!fullscreen) {
-					await ownerDocument.documentElement.requestFullscreen();
-					setFullscreen(true);
-				} else {
-					await ownerDocument.exitFullscreen();
-					setFullscreen(false);
-				}
-			} catch (error) {
-				console.error('Error requesting fullscreen', error);
-			}
-		};
-		void requestFullScreen();
-	}, [ownerDocument, fullscreen]);
-
 	const contextValue = useMemo(() => ({ document: ownerDocument }), [ownerDocument]);
 
 	return (
@@ -56,12 +38,7 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 						<TooltipProvider ownerDocument={ownerDocument}>
 							{createPortal(
 								<Box width='full' height='full' display='flex' flexDirection='column' justifyContent='space-between'>
-									<MediaCallPopoutView
-										user={ownUser}
-										onClickClosePopout={onClosePopout}
-										onClickFullscreen={onClickFullscreen}
-										fullscreen={fullscreen}
-									/>
+									<MediaCallPopoutView user={ownUser} onClickClosePopout={onClosePopout} />
 									<ModalRegion />
 								</Box>,
 								root,

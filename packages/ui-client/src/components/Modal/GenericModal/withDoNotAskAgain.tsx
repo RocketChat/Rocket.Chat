@@ -1,7 +1,8 @@
 import { Box, Label, CheckBox } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentType, ReactNode } from 'react';
 import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { DontAskAgainList } from '../../../hooks/useDontAskAgain';
 
@@ -21,7 +22,7 @@ export type RequiredModalProps = {
 function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentType<any>) {
 	type WrappedComponentProps = DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>;
 	const WrappedComponent = function ({ onConfirm, dontAskAgain, ...props }: WrappedComponentProps) {
-		const t = useTranslation();
+		const { t } = useTranslation();
 		const dontAskAgainId = useId();
 		const dontAskAgainList = useUserPreference<DontAskAgainList>('dontAskAgainList');
 		const { action, label } = dontAskAgain;

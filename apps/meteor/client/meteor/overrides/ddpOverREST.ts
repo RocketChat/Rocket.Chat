@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../lib/SDKClient';
 import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { clearStoredCredentials } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
@@ -151,7 +151,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 						reason: (e.reason as string) ?? (e.message as string) ?? 'Unknown error',
 						message: (e.message as string) ?? (e.reason as string) ?? 'Unknown error',
 						errorType: 'Meteor.Error',
-					} as unknown as Meteor.Error,
+					},
 				});
 				processResult(errorMessage);
 				console.error(error);

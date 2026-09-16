@@ -1,4 +1,4 @@
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import styled from '@rocket.chat/styled';
 import type { PropsWithChildren } from 'react';
 import { useState } from 'react';

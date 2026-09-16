@@ -1,13 +1,13 @@
 import { type IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { emojiParser } from '../../../../../../app/emoji/client/emojiParser';
 import { filterMarkdown } from '../../../../../../app/markdown/lib/markdown';
 import { MentionsParser } from '../../../../../../app/mentions/lib/MentionsParser';
+import { emojiParser } from '../../../../../lib/emoji/emojiParser';
 
 export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) => {
 	const { t } = useTranslation();

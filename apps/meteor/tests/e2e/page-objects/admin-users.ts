@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 import { expect } from '../utils/test';
 
@@ -18,6 +18,14 @@ export class AdminUsers extends Admin {
 		this.editUser = new EditUserFlexTab(page);
 		this.userInfo = new UserInfoFlexTab(page);
 		this.userRowMenu = new MenuMoreActions(page);
+	}
+
+	protected readonly route = AdminSectionsHref.users;
+
+	protected readonly title = 'Users';
+
+	override async waitForReady(): Promise<void> {
+		await this.inputSearchUsers.waitFor({ state: 'visible' });
 	}
 
 	get btnNewUser(): Locator {

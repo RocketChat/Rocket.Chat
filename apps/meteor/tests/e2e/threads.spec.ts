@@ -1,6 +1,7 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannel, createTargetChannelAndReturnFullRoom, deleteChannel, markRoomAsRead, sendMessage } from './utils';
+import { sendFillerMessages } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -207,5 +208,56 @@ test.describe.serial('Threads', () => {
 			await expect(page.locator('[name="msg"]').last()).toHaveValue('');
 			await expect(page).toHaveURL(/.*thread/);
 		});
+	});
+});
+
+test.describe.serial('Threads - small screens', () => {
+	let poHomeChannel: HomeChannel;
+	let targetChannel: { name: string; _id: string };
+
+	test.beforeAll(async ({ api }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = { name: channel.name as string, _id: channel._id };
+
+		await sendFillerMessages(api, targetChannel._id, 120);
+		const parentId = await sendMessage(api, targetChannel._id, 'thread parent');
+		await sendMessage(api, targetChannel._id, 'thread reply', parentId);
+		// Without this the room opens at the first unread message and loads the whole history at
+		// once, leaving no older page for the hidden list to drain.
+		await markRoomAsRead(api, targetChannel._id);
+	});
+
+	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel.name));
+
+	test('should not load older messages while the message list is hidden behind the full-width thread view', async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		await poHomeChannel.gotoChannel(targetChannel.name);
+		// Below the "sm" breakpoint (600px) the contextual bar takes the full room width and the
+		// message list is hidden behind it while staying mounted.
+		await page.setViewportSize({ width: 599, height: 700 });
+
+		await poHomeChannel.content.mainMessageListScroller.hover();
+		await page.mouse.wheel(0, -100);
+
+		// Role-based locators cannot see the list once it is display:none — count DOM nodes instead
+		// (thread messages carry a different aria-roledescription, so they never match).
+		const mainMessageListItems = page.locator('[role="listitem"][aria-roledescription="message"]');
+		const loadedMessages = await mainMessageListItems.count();
+		// 121 user messages were seeded — an unloaded older page must remain or there is nothing to drain
+		expect(loadedMessages).toBeLessThan(121);
+
+		await poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'View thread' }).click();
+		await expect(page).toHaveURL(/.*thread/);
+		await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('thread reply');
+		await expect(poHomeChannel.content.mainMessageListScroller).toBeHidden();
+
+		// A hidden-history drain re-triggers ~every 100ms, so with 71 older messages unloaded it pushes
+		// the count past 100 within the first sample. Hide-transition jitter can at most re-render the
+		// single already-loaded 50-message page, which stays under the +50 margin — the two outcomes
+		// cannot overlap.
+		for (let i = 0; i < 5; i++) {
+			await page.waitForTimeout(500);
+			expect(await mainMessageListItems.count()).toBeLessThan(loadedMessages + 50);
+		}
 	});
 });

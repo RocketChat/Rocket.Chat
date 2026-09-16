@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';

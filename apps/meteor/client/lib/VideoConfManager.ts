@@ -1,8 +1,8 @@
 import type { CallPreferences, DirectCallData, DirectCallParams, IRoom, IUser, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
+import { sdk } from './SDKClient';
 import { getConfig } from './utils/getConfig';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
 

@@ -3,18 +3,10 @@ import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, Fiel
 import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle } from '@rocket.chat/layout';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetting,
-	useRouter,
-	useRouteParameter,
-	useUser,
-	useMethod,
-	useTranslation,
-	useLoginWithToken,
-	useEndpoint,
-} from '@rocket.chat/ui-contexts';
+import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useLoginWithToken, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
 
@@ -25,7 +17,7 @@ const getChangePasswordReason = ({
 
 const ResetPasswordPage = () => {
 	const user = useUser();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');

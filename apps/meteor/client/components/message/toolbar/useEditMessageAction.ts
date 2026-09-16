@@ -3,7 +3,7 @@ import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { differenceInMinutes } from 'date-fns';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
 export const useEditMessageAction = (

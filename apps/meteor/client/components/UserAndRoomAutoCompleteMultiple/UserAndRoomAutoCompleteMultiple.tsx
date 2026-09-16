@@ -1,7 +1,7 @@
 import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -12,6 +12,8 @@ import { Rooms } from '../../stores';
 
 export type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	limit?: number;
+	excludeTypes?: RoomType[];
+	allowReadOnly?: boolean;
 };
 
 type OptionType = {
@@ -23,7 +25,14 @@ type OptionType = {
 	};
 }[];
 
-const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: UserAndRoomAutoCompleteMultipleProps) => {
+const UserAndRoomAutoCompleteMultiple = ({
+	value,
+	onChange,
+	limit,
+	excludeTypes,
+	allowReadOnly = false,
+	...props
+}: UserAndRoomAutoCompleteMultipleProps) => {
 	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
@@ -51,11 +60,13 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 			rooms.reduce<OptionType>((acc, room) => {
 				if (acc.length === limit) return acc;
 
+				if (excludeTypes?.includes(room.t)) return acc;
+
 				if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
 					return acc;
 				}
 
-				if (roomCoordinator.readOnly(Rooms.state.get(room.rid), user)) return acc;
+				if (!allowReadOnly && roomCoordinator.readOnly(Rooms.state.get(room.rid), user)) return acc;
 
 				return [
 					...acc,
@@ -69,7 +80,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 					},
 				];
 			}, []),
-		[limit, rooms, user],
+		[allowReadOnly, excludeTypes, limit, rooms, user],
 	);
 
 	return (

@@ -387,7 +387,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'], emails: [] }) as any, []);
-		expect(result).toEqual(rooms);
+		expect(result).toEqual([{ _id: 'r1' }]);
 		expect(apiCall).not.toHaveBeenCalled();
 	});
 
@@ -405,7 +405,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['rP', 'rD'] }) as any, []);
-		expect(result).toEqual([rooms[1]]);
+		expect(result).toEqual([{ _id: 'rD' }]);
 	});
 
 	it('still treats DECISION_UNSPECIFIED as non-compliant (LDAP-driven path cannot yield inconclusive decisions)', async () => {
@@ -416,7 +416,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, []);
-		expect(result).toEqual(rooms);
+		expect(result).toEqual([{ _id: 'r1' }]);
 	});
 
 	it('splits >200 rooms into multiple decision batches', async () => {

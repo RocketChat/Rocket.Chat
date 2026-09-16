@@ -1131,6 +1131,36 @@ describe('SAML', () => {
 				`saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`,
 			);
 		});
+
+		describe('authorize RelayState encoding', () => {
+			it('should keep the provider when no loginClient is provided', () => {
+				expect(SAMLUtils.encodeAuthorizeRelayState('test-sp')).to.be.equal('test-sp');
+			});
+
+			it('should ignore unsupported loginClient values and keep the provider', () => {
+				expect(SAMLUtils.encodeAuthorizeRelayState('test-sp', 'web')).to.be.equal('test-sp');
+				expect(SAMLUtils.encodeAuthorizeRelayState('test-sp', '')).to.be.equal('test-sp');
+			});
+
+			it('should round-trip provider and loginClient for supported clients', () => {
+				for (const loginClient of ['mobile', 'desktop']) {
+					const encoded = SAMLUtils.encodeAuthorizeRelayState('test-sp', loginClient);
+					expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'test-sp', loginClient });
+				}
+			});
+
+			it('should drop an unexpected loginClient echoed back in a compound RelayState', () => {
+				expect(SAMLUtils.decodeAuthorizeRelayState('provider=test-sp&loginClient=hacker')).to.be.deep.equal({
+					provider: 'test-sp',
+					loginClient: undefined,
+				});
+			});
+
+			it('should preserve providers containing URL-special characters', () => {
+				const encoded = SAMLUtils.encodeAuthorizeRelayState('a b&c=d', 'mobile');
+				expect(SAMLUtils.decodeAuthorizeRelayState(encoded)).to.be.deep.equal({ provider: 'a b&c=d', loginClient: 'mobile' });
+			});
+		});
 	});
 
 	describe('[SAML.processRequest] validate action - assertion replay protection', () => {
@@ -1168,7 +1198,7 @@ describe('SAML', () => {
 					Roles: {},
 				},
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
-				'@rocket.chat/string-helpers': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
+				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
 				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
 				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}`, Error } },
 				'./ServiceProvider': {
@@ -1185,6 +1215,7 @@ describe('SAML', () => {
 						warn: sinon.stub(),
 						log: sinon.stub(),
 						getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
+						decodeAuthorizeRelayState: (provider: string) => ({ provider }),
 					},
 				},
 				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },

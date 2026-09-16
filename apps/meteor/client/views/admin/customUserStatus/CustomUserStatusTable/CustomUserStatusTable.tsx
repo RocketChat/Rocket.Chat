@@ -1,6 +1,6 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -90,7 +90,9 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 						</GenericTableHeader>
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={2} />}
-							{data?.map((status) => <CustomUserStatusRow key={status._id} status={status} onClick={onClick} />)}
+							{data?.map((status) => (
+								<CustomUserStatusRow key={status._id} status={status} onClick={onClick} />
+							))}
 						</GenericTableBody>
 					</GenericTable>
 					{isFetched && (

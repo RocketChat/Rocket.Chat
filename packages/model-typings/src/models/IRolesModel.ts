@@ -1,28 +1,29 @@
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions, CountDocumentsOptions } from 'mongodb';
+import type { FindCursor, FindOptions, CountDocumentsOptions, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IRolesModel extends IBaseModel<IRole> {
-	findByUpdatedDate(updatedAfterDate: Date, options?: FindOptions<IRole>): FindCursor<IRole>;
+	findByUpdatedDate<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		updatedAfterDate: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
-	findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
-
-	findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options: FindOptions<IRole>): Promise<IRole | null>;
-
-	findOneByIdOrName<P extends Document>(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options: FindOptions<P extends IRole ? IRole : P>,
-	): Promise<P | null>;
-
-	findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options?: any): Promise<IRole | P | null>;
+	findOneByIdOrName<P extends Document = IRole, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		_idOrName: IRole['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<P, O> | null>;
 	findOneByName<P = IRole>(name: IRole['name'], options?: any): Promise<IRole | P | null>;
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	findInIdsOrNames<P>(
-		_idsOrNames: IRole['_id'][] | IRole['name'][],
+		_idsOrNames: IRole['_id'][],
 		options?: FindOptions<IRole>,
 	): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
-	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole>;
+	findByScope<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		scope: IRole['scope'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	updateById(
 		_id: IRole['_id'],
 		name: IRole['name'],
@@ -41,13 +42,11 @@ export interface IRolesModel extends IBaseModel<IRole> {
 	): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
 	/** @deprecated function getUsersInRole should be used instead */
-	findUsersInRole<P>(
-		roleId: IRole['_id'],
-		scope: IRoom['_id'] | undefined,
-		options?: any | undefined,
-	): Promise<FindCursor<IUser> | FindCursor<P>>;
+	findUsersInRole<P>(roleId: IRole['_id'], scope: IRoom['_id'] | undefined, options?: any): Promise<FindCursor<IUser> | FindCursor<P>>;
 
-	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole>;
+	findCustomRoles<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	createWithRandomId(
 		name: IRole['name'],

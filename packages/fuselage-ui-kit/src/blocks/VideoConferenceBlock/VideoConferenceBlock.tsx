@@ -1,5 +1,5 @@
 import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useSetting, useTranslation, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -17,6 +17,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../..';
 import { useGoToRoom } from './hooks/useGoToRoom';
@@ -29,7 +30,7 @@ export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 const MAX_USERS = 3;
 
 const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { callId, appId = 'videoconf-core' } = block;
 	const surfaceType = useSurfaceType();
 	const userId = useUserId();

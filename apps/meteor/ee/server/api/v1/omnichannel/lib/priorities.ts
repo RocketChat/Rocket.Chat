@@ -2,7 +2,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { ILivechatPriority, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { FindOptions } from 'mongodb';
 
 import { notifyOnLivechatInquiryChangedByRoom, notifyOnRoomChanged } from '../../../../../../server/lib/notifyListener';

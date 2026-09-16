@@ -18,8 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
 		registerUser(
 			formData:
-				| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
-				| { email?: null },
+				{ email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string } | { email?: null },
 		):
 			| {
 					token: string;
@@ -31,8 +30,7 @@ declare module '@rocket.chat/ddp-client' {
 
 export const registerUser = async (
 	formData:
-		| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
-		| { email?: null },
+		{ email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string } | { email?: null },
 ): Promise<
 	| {
 			token: string;

@@ -20,7 +20,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { sendSimpleMessage, sendMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import {
 	getSettingValueById,
@@ -2001,6 +2001,62 @@ describe('[Rooms]', () => {
 				expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
 			});
 		});
+
+		describe('E2E forced encryption for private rooms', () => {
+			let unencryptedPrivateParent: IRoom;
+			let encryptedPrivateParent: IRoom;
+			let createdDiscussionId: IRoom['_id'] | undefined;
+
+			before(async () => {
+				// the unencrypted private parent must exist before the policy is enforced
+				unencryptedPrivateParent = (await createRoom({ type: 'p', name: `unencrypted-parent-${Date.now()}` })).body.group;
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+				encryptedPrivateParent = (await createRoom({ type: 'p', name: `encrypted-parent-${Date.now()}`, extraData: { encrypted: true } }))
+					.body.group;
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('E2E_Enable', false),
+					updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
+					...(unencryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: unencryptedPrivateParent._id })] : []),
+					...(encryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: encryptedPrivateParent._id })] : []),
+					...(createdDiscussionId ? [deleteRoom({ type: 'p', roomId: createdDiscussionId })] : []),
+				]);
+			});
+
+			it('should reject creating a discussion in an unencrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: unencryptedPrivateParent._id,
+						t_name: `forced-discussion-${Date.now()}`,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-encrypted-private-rooms-enforced-discussion');
+					});
+			});
+
+			it('should create an encrypted discussion in an encrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: encryptedPrivateParent._id,
+						t_name: `forced-discussion-encrypted-${Date.now()}`,
+					})
+					.expect(200)
+					.expect((res) => {
+						createdDiscussionId = res.body.discussion?._id;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('discussion.t', 'p');
+						expect(res.body).to.have.nested.property('discussion.encrypted', true);
+					});
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {
@@ -2057,6 +2113,91 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('discussions').and.to.be.an('array');
 			expect(res.body.discussions).to.have.lengthOf(1);
+		});
+	});
+
+	describe('discussion messages count', () => {
+		let testChannel: IRoom;
+		let discussion: IRoom;
+
+		const getDiscussionMessage = async () => {
+			const { body } = await request.get(api('chat.getDiscussions')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+
+			return body.messages.find((message: IMessage & { drid: IRoom['_id'] }) => message.drid === discussion._id);
+		};
+
+		const saveDiscussionSettings = (settings: Record<string, unknown>) =>
+			request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({ rid: discussion._id, ...settings })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+		beforeEach(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
+
+			const { body } = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: testChannel._id, t_name: `discussion.test.${Date.now()}-${Math.random()}` })
+				.expect(200);
+
+			discussion = body.discussion;
+		});
+
+		// deleting the parent channel also deletes its discussions
+		afterEach(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		describe('with no system message hidden', () => {
+			it('should count the message just sent on the discussion', async () => {
+				const sentMessage = await sendSimpleMessage({ roomId: discussion._id });
+				const discussionMessage = await getDiscussionMessage();
+
+				expect(discussionMessage).to.have.property('dcount', 1);
+				expect(discussionMessage).to.have.property('dlm', sentMessage.body.message.ts);
+			});
+
+			it('should count the system messages of the discussion', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+		});
+
+		describe('with system messages hidden on the discussion', () => {
+			beforeEach(() => saveDiscussionSettings({ systemMessages: ['r'] }));
+
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+
+			it('should count them again once they are not hidden anymore', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await saveDiscussionSettings({ systemMessages: [] });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
+		});
+
+		describe('with system messages hidden by the global setting', () => {
+			before(() => updateSetting('Hide_System_Messages', ['r']));
+
+			// the setting applies to the whole workspace, so it has to be restored
+			after(() => updateSetting('Hide_System_Messages', []));
+
+			it('should not count the hidden system messages', async () => {
+				await saveDiscussionSettings({ roomName: `edited-discussion-name-${Date.now()}` });
+				expect(await getDiscussionMessage()).to.have.property('dcount', 0);
+
+				await sendSimpleMessage({ roomId: discussion._id });
+
+				expect(await getDiscussionMessage()).to.have.property('dcount', 1);
+			});
 		});
 	});
 
@@ -5159,5 +5300,331 @@ describe('[Rooms]', () => {
 			expect(firstPageIds.filter((id: string) => secondPageIds.includes(id))).to.be.empty;
 			expect([...firstPageIds, ...secondPageIds]).to.have.members(bannedUserIds);
 		});
+	});
+});
+
+describe('[/rooms.history]', () => {
+	let testChannel: IRoom;
+	const messageIds: IMessage['_id'][] = [];
+	const messageCount = 12;
+
+	before((done) => getCredentials(done));
+
+	before(async () => {
+		testChannel = (await createRoom({ type: 'c', name: `rooms-history-${Date.now()}` })).body.channel;
+
+		for (let i = 0; i < messageCount; i++) {
+			const res = await sendMessage({ message: { rid: testChannel._id, msg: `message-${i}` } });
+			messageIds.push(res.body.message._id);
+		}
+	});
+
+	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+	it('should return the newest page with no forward cursor', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: 5 })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body.messages).to.have.lengthOf(5);
+		expect(res.body.cursor).to.have.property('next', null);
+		expect(res.body.cursor.previous).to.be.a('string');
+
+		expect(res.body.messages[0]._id).to.equal(messageIds[messageCount - 1]);
+		expect(res.body.messages[0].msg).to.equal(`message-${messageCount - 1}`);
+	});
+
+	it('should page backwards through `previous` without repeating messages', async () => {
+		const firstPage = await request.get(api('rooms.history')).set(credentials).query({ roomId: testChannel._id, count: 5 }).expect(200);
+
+		const secondPage = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: 5, previous: firstPage.body.cursor.previous })
+			.expect(200);
+
+		const firstIds = firstPage.body.messages.map((m: IMessage) => m._id);
+		const secondIds = secondPage.body.messages.map((m: IMessage) => m._id);
+
+		expect(secondIds).to.have.lengthOf(5);
+		expect(firstIds.filter((id: string) => secondIds.includes(id))).to.be.empty;
+		expect(secondPage.body.cursor.next).to.be.a('string');
+	});
+
+	it('should page forwards through `next` and still return newest-first', async () => {
+		const firstPage = await request.get(api('rooms.history')).set(credentials).query({ roomId: testChannel._id, count: 5 }).expect(200);
+
+		const older = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: 5, previous: firstPage.body.cursor.previous })
+			.expect(200);
+
+		const forwards = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: 5, next: older.body.cursor.next })
+			.expect(200);
+
+		const timestamps = forwards.body.messages.map((m: IMessage) => new Date(m.ts).getTime());
+		expect(timestamps).to.deep.equal([...timestamps].sort((a, b) => b - a));
+
+		expect(forwards.body.messages.map((m: IMessage) => m._id)).to.have.members(firstPage.body.messages.map((m: IMessage) => m._id));
+	});
+
+	it('should exhaust the room and close the backward cursor', async () => {
+		let cursor: string | null = null;
+		const seen = new Set<string>();
+
+		for (let page = 0; page < 10; page++) {
+			const res: Awaited<ReturnType<typeof request.get>> = await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, count: 5, ...(cursor && { previous: cursor }) })
+				.expect(200);
+
+			res.body.messages.forEach((m: IMessage) => seen.add(m._id));
+			cursor = res.body.cursor.previous;
+
+			if (cursor === null) {
+				break;
+			}
+		}
+
+		expect(cursor).to.be.null;
+		messageIds.forEach((id) => expect(seen.has(id)).to.be.true);
+	});
+
+	it('should report unreads from `lastSeen` without truncating the page', async () => {
+		const all = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: messageCount })
+			.expect(200);
+
+		const marker = all.body.messages[Math.floor(messageCount / 2)];
+
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, count: 5, lastSeen: new Date(marker.ts).toISOString() })
+			.expect(200);
+
+		// `lastSeen` must not bound the page the way `oldest` does
+		expect(res.body.messages).to.have.lengthOf(5);
+		expect(res.body).to.have.property('unreadNotLoaded');
+		expect(res.body.unreadNotLoaded).to.be.a('number');
+	});
+
+	it('should serve private groups and DMs through the same endpoint', async () => {
+		const { group } = (await createRoom({ type: 'p', name: `rooms-history-group-${Date.now()}` })).body;
+		await sendMessage({ message: { rid: group._id, msg: 'group message' } });
+
+		const groupRes = await request.get(api('rooms.history')).set(credentials).query({ roomId: group._id }).expect(200);
+
+		expect(groupRes.body).to.have.property('success', true);
+		expect(groupRes.body.messages[0].msg).to.equal('group message');
+
+		const dm = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room;
+		await sendMessage({ message: { rid: dm._id, msg: 'dm message' } });
+
+		const dmRes = await request.get(api('rooms.history')).set(credentials).query({ roomId: dm._id }).expect(200);
+
+		expect(dmRes.body).to.have.property('success', true);
+		expect(dmRes.body.messages[0].msg).to.equal('dm message');
+
+		await Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteRoom({ type: 'd', roomId: dm._id })]);
+	});
+
+	// Regression: a null `attachments` on the quote attachment used to fail response validation.
+	it('should return messages carrying a quote attachment', async () => {
+		const parent = await sendMessage({ message: { rid: testChannel._id, msg: 'parent of a discussion' } });
+
+		const discussion = await request
+			.post(api('rooms.createDiscussion'))
+			.set(credentials)
+			.send({
+				prid: testChannel._id,
+				pmid: parent.body.message._id,
+				t_name: `rooms-history-discussion-${Date.now()}`,
+			})
+			.expect(200);
+
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: discussion.body.discussion._id })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body.messages[0].attachments).to.be.an('array');
+
+		await deleteRoom({ type: 'c', roomId: discussion.body.discussion._id });
+	});
+
+	it('should build a window around `aroundId` and expose both cursors', async () => {
+		const target = messageIds[Math.floor(messageCount / 2)];
+
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: target, count: 5 })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body.messages).to.have.lengthOf(5);
+		expect(res.body.messages.map((m: IMessage) => m._id)).to.include(target);
+
+		// the only request shape that can report more in both directions at once
+		expect(res.body.cursor.previous).to.be.a('string');
+		expect(res.body.cursor.next).to.be.a('string');
+
+		const timestamps = res.body.messages.map((m: IMessage) => new Date(m.ts).getTime());
+		expect(timestamps).to.deep.equal([...timestamps].sort((a, b) => b - a));
+	});
+
+	it('should close the cursors at the edges of the room', async () => {
+		// A dedicated room keeps the edges unambiguous: other tests keep appending to testChannel,
+		// so its newest message is whatever the previous test happened to send.
+		const edgeChannel = (await createRoom({ type: 'c', name: `rooms-history-edges-${Date.now()}` })).body.channel;
+		const ids: IMessage['_id'][] = [];
+		for (let i = 0; i < 6; i++) {
+			ids.push((await sendMessage({ message: { rid: edgeChannel._id, msg: `edge-${i}` } })).body.message._id);
+		}
+
+		try {
+			const newest = await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: edgeChannel._id, aroundId: ids[ids.length - 1], count: 5 })
+				.expect(200);
+
+			expect(newest.body.cursor.next).to.be.null;
+			expect(newest.body.cursor.previous).to.be.a('string');
+
+			const oldest = await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: edgeChannel._id, aroundId: ids[0], count: 5 })
+				.expect(200);
+
+			expect(oldest.body.cursor.previous).to.be.null;
+			expect(oldest.body.cursor.next).to.be.a('string');
+		} finally {
+			await deleteRoom({ type: 'c', roomId: edgeChannel._id });
+		}
+	});
+
+	it('should page in both directions from a window built by `aroundId`', async () => {
+		const around = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[Math.floor(messageCount / 2)], count: 5 })
+			.expect(200);
+
+		const windowIds = around.body.messages.map((m: IMessage) => m._id);
+
+		const [older, newer] = await Promise.all([
+			request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, previous: around.body.cursor.previous, count: 5 })
+				.expect(200),
+			request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: around.body.cursor.next, count: 5 })
+				.expect(200),
+		]);
+
+		const olderIds = older.body.messages.map((m: IMessage) => m._id);
+		const newerIds = newer.body.messages.map((m: IMessage) => m._id);
+
+		expect(olderIds.filter((id: string) => windowIds.includes(id))).to.be.empty;
+		expect(newerIds.filter((id: string) => windowIds.includes(id))).to.be.empty;
+	});
+
+	it('should fail when `aroundId` is combined with a cursor', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: messageIds[0], previous: '1' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
+	});
+
+	it('should report the cursor conflict even when `aroundId` does not resolve', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: 'does-not-exist', previous: '1' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
+	});
+
+	it('should not find a message that belongs to another room', async () => {
+		const other = (await createRoom({ type: 'c', name: `rooms-history-other-${Date.now()}` })).body.channel;
+		const stray = await sendMessage({ message: { rid: other._id, msg: 'stray message' } });
+
+		await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, aroundId: stray.body.message._id })
+			.expect(404);
+
+		await deleteRoom({ type: 'c', roomId: other._id });
+	});
+
+	it('should not find a hidden message', async () => {
+		// Message_KeepHistory without Message_ShowDeletedStatus hides the deleted message instead of removing it
+		await updateSetting('Message_KeepHistory', true);
+		try {
+			const hidden = await sendMessage({ message: { rid: testChannel._id, msg: 'to be hidden' } });
+			await deleteMessage({ roomId: testChannel._id, msgId: hidden.body.message._id });
+
+			await request
+				.get(api('rooms.history'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, aroundId: hidden.body.message._id })
+				.expect(404);
+		} finally {
+			await updateSetting('Message_KeepHistory', false);
+		}
+	});
+
+	it('should fail when both cursors are provided', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, next: '1', previous: '1' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-cursor-conflict');
+	});
+
+	it('should fail when a cursor is not parseable', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, previous: 'not-a-cursor' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-invalid-cursor');
+	});
+
+	it('should fail for a room that does not exist', async () => {
+		await request.get(api('rooms.history')).set(credentials).query({ roomId: 'does-not-exist' }).expect(404);
 	});
 });

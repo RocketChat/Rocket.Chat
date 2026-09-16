@@ -2,7 +2,7 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { filtered } from './parser/filtered/filtered';

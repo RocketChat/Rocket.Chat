@@ -1,15 +1,18 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import type { CallFeature } from '@rocket.chat/media-signaling';
+import { callFeatureList } from '@rocket.chat/media-signaling';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 import type { MockedInstanceProviderProps } from './MockedInstanceProvider';
 import MockedInstanceProvider, { avatarUrl, mockedPeers } from './MockedInstanceProvider';
 import MediaCallViewContext from '../context/MediaCallViewContext';
-import type { State, PeerInfo, SessionState } from '../context/definitions';
+import type { State, PeerInfo, SessionState, ConnectionState } from '../context/definitions';
 
 export type MockedMediaCallProviderProps = {
 	children: ReactNode;
 	state?: State;
+	connectionState?: ConnectionState;
 	transferredBy?: string;
 	remoteMuted?: boolean;
 	remoteHeld?: boolean;
@@ -17,11 +20,13 @@ export type MockedMediaCallProviderProps = {
 	held?: boolean;
 	onClickDirectMessage?: () => void;
 	instanceProps?: Partial<MockedInstanceProviderProps>;
+	supportedFeatures?: readonly CallFeature[];
 };
 
 const MockedMediaCallProvider = ({
 	children,
 	state = 'none',
+	connectionState = 'CONNECTED',
 	onClickDirectMessage = undefined,
 	transferredBy = undefined,
 	remoteMuted = false,
@@ -29,6 +34,7 @@ const MockedMediaCallProvider = ({
 	muted = false,
 	held = false,
 	instanceProps,
+	supportedFeatures = callFeatureList,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
 		displayName: 'John Doe',
@@ -111,7 +117,7 @@ const MockedMediaCallProvider = ({
 
 	const sessionState = {
 		state: widgetState,
-		connectionState: 'CONNECTED' as const,
+		connectionState,
 		peerInfo,
 		transferredBy,
 		hidden: false,
@@ -120,7 +126,7 @@ const MockedMediaCallProvider = ({
 		remoteMuted,
 		remoteHeld,
 		callId: undefined,
-		supportedFeatures: ['audio', 'screen-share', 'transfer', 'hold'],
+		supportedFeatures,
 	} as SessionState;
 
 	const contextValue = {

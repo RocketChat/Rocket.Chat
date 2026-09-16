@@ -22,7 +22,7 @@ test.describe('prune-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel.fname}/clean-history`);
+		await poHomeChannel.gotoChannelCleanHistory(targetChannel.fname as string);
 	});
 
 	test(

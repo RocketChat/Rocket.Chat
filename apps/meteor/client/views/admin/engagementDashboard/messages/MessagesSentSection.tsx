@@ -1,6 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { differenceInDays, addDays, format } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

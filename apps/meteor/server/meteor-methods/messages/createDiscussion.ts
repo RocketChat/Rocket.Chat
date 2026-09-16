@@ -124,15 +124,11 @@ const create = async ({
 	}
 
 	if (pmid) {
-		const discussionAlreadyExists = await Rooms.findOne(
-			{
-				prid,
-				pmid,
-			},
-			{
-				projection: { _id: 1 },
-			},
-		);
+		// No projection: the full room is spread into the returned discussion below.
+		const discussionAlreadyExists = await Rooms.findOne({
+			prid,
+			pmid,
+		});
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
 			await addUserToRoom(discussionAlreadyExists._id, user);
@@ -153,6 +149,19 @@ const create = async ({
 		throw new Meteor.Error('error-invalid-type', 'Cannot define discussion room type', {
 			method: 'DiscussionCreation',
 		});
+	}
+
+	if (
+		type === 'p' &&
+		!encrypted &&
+		settings.get<boolean>('E2E_Enable') &&
+		settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')
+	) {
+		throw new Meteor.Error(
+			'error-encrypted-private-rooms-enforced-discussion',
+			'Workspace policy requires all private rooms to be encrypted. To create this discussion, make the parent channel public or enable encryption on it.',
+			{ method: 'DiscussionCreation' },
+		);
 	}
 
 	const discussion = await createRoom(

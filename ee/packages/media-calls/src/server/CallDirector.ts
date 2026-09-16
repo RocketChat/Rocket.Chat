@@ -24,6 +24,7 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+	sipCallId?: string;
 };
 
 // expiration checks by call id
@@ -36,8 +37,7 @@ class MediaCallDirector {
 
 		const modified = await this.hangupCallById(call._id, { endedBy, reason });
 		if (modified) {
-			await actorAgent.onCallEnded(call._id);
-			await actorAgent.oppositeAgent?.onCallEnded(call._id);
+			await this.triggerOnCallEnded(call, actorAgent);
 		}
 	}
 
@@ -62,7 +62,12 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
+		data: {
+			calleeContractId: string;
+			webrtcAnswer?: RTCSessionDescriptionInit;
+			supportedFeatures: CallFeature[];
+			sipCallId?: string;
+		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
@@ -183,7 +188,8 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features, divertedBy } =
+			params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -232,8 +238,10 @@ class MediaCallDirector {
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
+			...(divertedBy && { divertedBy }),
 
 			features: allowedFeatures,
+			...(params.sipCallId && { sipCallId: params.sipCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -452,6 +460,22 @@ class MediaCallDirector {
 		} catch (err) {
 			logger.error({ msg: 'Failed to terminate call.', err, callId: call._id, params });
 			return modified;
+		}
+	}
+
+	private async getAgentFromCall(call: IMediaCall, role: CallRole): Promise<IMediaCallAgent | null> {
+		return this.cast.getAgentFromCall(call, role).catch(() => null);
+	}
+
+	private async triggerOnCallEnded(call: IMediaCall, agent: IMediaCallAgent): Promise<void> {
+		await agent.onCallEnded(call._id);
+		if (agent.oppositeAgent) {
+			return agent.oppositeAgent.onCallEnded(call._id);
+		}
+
+		const oppositeAgent = await this.getAgentFromCall(call, agent.oppositeRole);
+		if (oppositeAgent) {
+			await oppositeAgent?.onCallEnded(call._id);
 		}
 	}
 }

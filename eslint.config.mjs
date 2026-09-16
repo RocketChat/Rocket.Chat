@@ -473,4 +473,11 @@ export default [
 			'import-x/order': 'warn',
 		},
 	},
+	{
+		files: ['packages/mp3-encoder/src/**/*.ts'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'off',
+			'new-cap': 'off',
+		},
+	},
 ];

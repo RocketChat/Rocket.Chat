@@ -109,13 +109,11 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 				rid,
 			});
 
-			return roles.map(
-				(record): RoomRoles => ({
-					rid: record.rid,
-					u: record.u,
-					roles: record.roles ?? [],
-				}),
-			);
+			return roles.map((record): RoomRoles => ({
+				rid: record.rid,
+				u: record.u,
+				roles: record.roles ?? [],
+			}));
 		},
 		staleTime: Infinity,
 		...options,

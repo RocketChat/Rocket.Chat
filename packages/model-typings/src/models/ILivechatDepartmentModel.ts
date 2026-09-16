@@ -2,23 +2,44 @@ import type { ILivechatDepartment, LivechatDepartmentDTO } from '@rocket.chat/co
 import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment> {
 	countTotal(): Promise<number>;
-	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-	findByNameRegexWithExceptionsAndConditions(
+	findInIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentsIds: string[],
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findByNameRegexWithExceptionsAndConditions<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		searchTerm: string,
 		exceptions: string[],
 		conditions: Filter<ILivechatDepartment>,
-		options: FindOptions<ILivechatDepartment>,
-	): FindCursor<ILivechatDepartment>;
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findByBusinessHourId<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		businessHourId: string,
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number>;
 
-	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findEnabledByBusinessHourId<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		businessHourId: string,
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
-	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findActiveDepartmentsWithoutBusinessHour<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	addBusinessHourToDepartmentsByIds(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
@@ -39,11 +60,22 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 		_: any,
 		projection: FindOptions<T>['projection'],
 	): FindCursor<T>;
-	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
-	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findOneByIdOrName<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findByUnitIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		unitIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countDepartmentsInUnit(unitId: string): Promise<number>;
-	findActiveByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-	findNotArchived(options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findActiveByUnitIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		unitIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findNotArchived<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	getBusinessHoursWithDepartmentStatuses(): Promise<
 		{
 			_id: string;
@@ -53,7 +85,10 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	>;
 	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
 	countArchived(): Promise<number>;
-	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findEnabledInIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentsIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	archiveDepartment(_id: string): Promise<UpdateResult>;
 	unarchiveDepartment(_id: string): Promise<UpdateResult>;
 	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult>;

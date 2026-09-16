@@ -9,7 +9,7 @@ jest.mock('../../../../../../app/markdown/lib/markdown', () => ({
 	filterMarkdown: jest.fn((text: string) => text),
 }));
 
-jest.mock('../../../../../../app/emoji/client/emojiParser', () => ({
+jest.mock('../../../../../lib/emoji/emojiParser', () => ({
 	emojiParser: jest.fn((text: string) => text),
 }));
 

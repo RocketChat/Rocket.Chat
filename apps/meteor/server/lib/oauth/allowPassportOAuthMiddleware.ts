@@ -1,4 +1,4 @@
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 import type { NextFunction, Request, Response } from 'express';
 
 import { settings } from '../../settings';

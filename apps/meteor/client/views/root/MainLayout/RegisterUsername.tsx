@@ -84,7 +84,7 @@ const RegisterUsername = () => {
 			}
 
 			if ([error.errorType].includes('')) {
-				return setError('username', { type: 'username-invalid', message: t('Username_invalid') });
+				return setError('username', { type: 'username-invalid', message: t('Username_invalid', { username }) });
 			}
 
 			dispatchToastMessage({ type: 'error', message: error });

@@ -1,6 +1,7 @@
 import type {
 	CallPreferences,
 	DirectCallData,
+	IRole,
 	IRoom,
 	ISetting,
 	IUser,
@@ -236,18 +237,18 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = (() => {
-		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+	// Mutated by `withRoleDefinition` before render, then held stable, so the identity is
+	// a safe `useSyncExternalStore` snapshot.
+	private rolesMap = new Map<IRole['_id'], IRole>();
 
-		return {
-			queryPermission: () => [() => () => undefined, () => false],
-			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-			queryAllPermissions: () => [() => () => undefined, () => false],
-			queryRole: () => [() => () => undefined, () => false],
-			getRoles: () => dummyRolesMap,
-			subscribeToRoles: () => () => undefined,
-		};
-	})();
+	private authorization: ContextType<typeof AuthorizationContext> = {
+		queryPermission: () => [() => () => undefined, () => false],
+		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+		queryAllPermissions: () => [() => () => undefined, () => false],
+		queryRole: () => [() => () => undefined, () => false],
+		getRoles: () => this.rolesMap,
+		subscribeToRoles: () => () => undefined,
+	};
 
 	private authServices: LoginService[] = [];
 
@@ -528,6 +529,48 @@ export class MockedAppRootBuilder {
 		};
 
 		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
+	/**
+	 * Grants a role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — in a single room. Unlike {@link withRole}, the grant is not workspace-wide: a
+	 * check only passes when it carries that room as its scope, which is how the real
+	 * provider resolves a subscription role. The role is deliberately kept out of the user's
+	 * `roles`, where only a `Users`-scoped grant belongs.
+	 */
+	withRoleScoped(role: string, scope: IRoom['_id']): this {
+		const innerFn = this.authorization.queryRole;
+
+		const outerFn = (
+			innerRole: string | ObjectId,
+			innerScope?: string | undefined,
+		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
+			if (innerRole === role && innerScope === scope) {
+				return [() => () => undefined, () => true];
+			}
+
+			return innerFn(innerRole, innerScope);
+		};
+
+		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
+	/**
+	 * Registers a role in the workspace roles map without granting it. A custom role
+	 * has an id that differs from its name, so pass both to exercise code that
+	 * resolves a name to an id. Chain `withRole(_id)` to grant it to the user.
+	 */
+	withRoleDefinition(role: Pick<IRole, '_id' | 'name'> & Partial<IRole>): this {
+		this.rolesMap.set(role._id, {
+			description: '',
+			protected: false,
+			scope: 'Users',
+			...role,
+		} as IRole);
 
 		return this;
 	}

@@ -6,17 +6,25 @@
  * for end-to-end federation testing.
  */
 
+type FederationUserConfig = {
+	username: string;
+	password: string;
+	matrixUserId: string;
+};
+
 type FederationServerConfig = {
 	url: string;
 	domain: string;
 	adminUser: string;
 	adminPassword: string;
 	adminMatrixUserId: string;
-	additionalUser1: {
-		username: string;
-		password: string;
-		matrixUserId: string;
-	};
+	additionalUser1: FederationUserConfig;
+	/**
+	 * Reserved for tests that need a user the other side has never seen. Must not be used
+	 * anywhere else: the moment another spec touches it, the local user document exists and
+	 * first-contact behaviour can no longer be observed.
+	 */
+	firstContactUser: FederationUserConfig;
 };
 export interface IFederationConfig {
 	rc1: FederationServerConfig;
@@ -60,12 +68,17 @@ function getFederationConfig(): IFederationConfig {
 	const rcAdminPassword = validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', 'admin');
 	const rcAdditionalUser1 = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', 'user2');
 	const rcAdditionalUser1Password = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD', 'user2pass');
+	const rcFirstContactUser = validateEnvVar('FEDERATION_RC1_FIRST_CONTACT_USER', 'user3');
+	const rcFirstContactUserPassword = validateEnvVar('FEDERATION_RC1_FIRST_CONTACT_USER_PASSWORD', 'user3pass');
 
 	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', 'hs1');
 	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', 'admin');
 	const hs1AdminPassword = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', 'admin');
 	const hs1AdditionalUser1 = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', 'alice');
 	const hs1AdditionalUser1Password = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', 'alice');
+	// `cleiton` is registered by docker-compose.test.yml and deliberately used by no other spec
+	const hs1FirstContactUser = validateEnvVar('FEDERATION_SYNAPSE_FIRST_CONTACT_USER', 'cleiton');
+	const hs1FirstContactUserPassword = validateEnvVar('FEDERATION_SYNAPSE_FIRST_CONTACT_USER_PASSWORD', 'cleiton');
 
 	return {
 		rc1: {
@@ -79,6 +92,11 @@ function getFederationConfig(): IFederationConfig {
 				password: rcAdditionalUser1Password,
 				matrixUserId: `@${rcAdditionalUser1}:${rcDomain}`,
 			},
+			firstContactUser: {
+				username: rcFirstContactUser,
+				password: rcFirstContactUserPassword,
+				matrixUserId: `@${rcFirstContactUser}:${rcDomain}`,
+			},
 		},
 		hs1: {
 			url: `https://${hs1Domain}`,
@@ -90,6 +108,11 @@ function getFederationConfig(): IFederationConfig {
 				username: hs1AdditionalUser1,
 				password: hs1AdditionalUser1Password,
 				matrixUserId: `@${hs1AdditionalUser1}:${hs1Domain}`,
+			},
+			firstContactUser: {
+				username: hs1FirstContactUser,
+				password: hs1FirstContactUserPassword,
+				matrixUserId: `@${hs1FirstContactUser}:${hs1Domain}`,
 			},
 		},
 	};

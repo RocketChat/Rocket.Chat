@@ -20,6 +20,10 @@ export class UserPresence {
 
 	private connected = true;
 
+	private lastActivityAt = Date.now();
+
+	private idle = false;
+
 	private goOnline: () => Promise<boolean | undefined> = async () => undefined;
 
 	private goAway: () => Promise<boolean | undefined> = async () => undefined;
@@ -29,20 +33,38 @@ export class UserPresence {
 	startTimer() {
 		this.stopTimer();
 		if (!this.awayTime) return;
-
-		this.timer = setTimeout(this.setAway, this.awayTime);
+		const remaining = Math.max(this.awayTime - (Date.now() - this.lastActivityAt), 0);
+		this.timer = setTimeout(this.setAway, remaining);
 	}
 
 	private stopTimer() {
 		clearTimeout(this.timer);
 	}
 
-	private readonly setOnline = () => this.setStatus(UserStatus.ONLINE);
+	private readonly registerActivity = () => {
+		this.lastActivityAt = Date.now();
+		this.idle = false;
+		this.setStatus(UserStatus.ONLINE);
+	};
 
-	private readonly setAway = () => this.setStatus(UserStatus.AWAY);
+	private readonly setAway = () => {
+		this.idle = true;
+		this.setStatus(UserStatus.AWAY);
+	};
 
-	private readonly setStatus = withDebouncing({ wait: 1000 })(async (newStatus: UserStatus.ONLINE | UserStatus.AWAY) => {
-		if (!this.connected || newStatus === this.status) {
+	private isIdle(): boolean {
+		if (this.awayTime) {
+			return Date.now() - this.lastActivityAt >= this.awayTime;
+		}
+		return this.idle;
+	}
+
+	private readonly applyStatus = async (newStatus: UserStatus.ONLINE | UserStatus.AWAY, { force = false } = {}) => {
+		if (!this.connected) {
+			return;
+		}
+
+		if (newStatus === this.status && !force) {
 			this.startTimer();
 			return;
 		}
@@ -53,18 +75,37 @@ export class UserPresence {
 
 		switch (newStatus) {
 			case UserStatus.ONLINE:
-				await this.goOnline();
 				this.startTimer();
+				await this.goOnline();
 				break;
 
 			case UserStatus.AWAY:
-				await this.goAway();
 				this.stopTimer();
+				await this.goAway();
 				break;
 		}
 
 		this.status = newStatus;
-	});
+	};
+
+	private readonly setStatus = withDebouncing({ wait: 1000 })(this.applyStatus);
+
+	/**
+	 * When auto-away is enabled, after a dropped socket, reconnection, or network change,
+	 * the server sets the user as online. Since we may have marked the user away in the UI,
+	 * we need to re-send away to the server if still idle.
+	 */
+	private readonly reassertPresence = () => {
+		this.setStatus.cancel();
+
+		if (!this.isIdle()) {
+			this.status = UserStatus.ONLINE;
+			this.startTimer();
+			return;
+		}
+
+		void this.applyStatus(UserStatus.AWAY, { force: true });
+	};
 
 	readonly use = () => {
 		const user = useUser() ?? undefined;
@@ -74,9 +115,10 @@ export class UserPresence {
 		const idleTimeLimit = useUserPreference<number>('idleTimeLimit') ?? 300;
 		const { RocketChatDesktop } = window;
 
+		const awayTime = enableAutoAway && !RocketChatDesktop ? idleTimeLimit * 1000 : undefined;
+
 		this.user = user;
 		this.connected = connected;
-		this.awayTime = enableAutoAway && !RocketChatDesktop ? idleTimeLimit * 1000 : undefined;
 		this.goOnline = useMethod('UserPresence:online');
 		this.goAway = useMethod('UserPresence:away');
 		this.storeUser = Users.use((state) => state.store);
@@ -89,10 +131,10 @@ export class UserPresence {
 				idleThreshold: idleTimeLimit,
 				setUserOnline: (online) => {
 					if (!online) {
-						this.goAway();
+						this.setAway();
 						return;
 					}
-					this.goOnline();
+					this.registerActivity();
 				},
 			});
 
@@ -109,28 +151,28 @@ export class UserPresence {
 			if (RocketChatDesktop) return;
 
 			const documentEvents = ['mousemove', 'mousedown', 'touchend', 'keydown'] as const;
-			documentEvents.forEach((key) => document.addEventListener(key, this.setOnline));
-			window.addEventListener('focus', this.setOnline);
+			documentEvents.forEach((key) => document.addEventListener(key, this.registerActivity));
+			window.addEventListener('focus', this.registerActivity);
 
 			return () => {
-				documentEvents.forEach((key) => document.removeEventListener(key, this.setOnline));
-				window.removeEventListener('focus', this.setOnline);
+				documentEvents.forEach((key) => document.removeEventListener(key, this.registerActivity));
+				window.removeEventListener('focus', this.registerActivity);
 			};
 		}, [RocketChatDesktop]);
 
 		useEffect(() => {
-			if (!user?._id || !connected || isLoggingIn) return;
-			this.startTimer();
-		}, [connected, isLoggingIn, user?._id]);
+			this.awayTime = awayTime;
 
-		useEffect(() => {
-			if (connected) {
-				this.startTimer();
-				this.status = UserStatus.ONLINE;
+			if (!connected) {
+				this.setStatus.cancel();
+				this.stopTimer();
+				this.status = UserStatus.OFFLINE;
 				return;
 			}
-			this.stopTimer();
-			this.status = UserStatus.OFFLINE;
-		}, [connected]);
+
+			if (!user?._id || isLoggingIn) return;
+
+			this.reassertPresence();
+		}, [connected, isLoggingIn, user?._id, awayTime]);
 	};
 }
