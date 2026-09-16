@@ -1,0 +1,21 @@
+apps/meteor/client/lib/userPresence.spec.ts
+  s_0143440c206b60::t_61f56595677231 254-279
+apps/meteor/client/lib/userPresence.ts
+  s_0143440c206b60::t_7b7974831ec28b 133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a6dc9bfe594349b5235f6961fe9fa2f5f5e543d0",
+  "prompts": {},
+  "sessions": {
+    "s_0143440c206b60": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f75ab5b3-2e1f-451c-a86e-386ec33d062e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
