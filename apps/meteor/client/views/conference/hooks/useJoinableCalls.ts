@@ -7,16 +7,6 @@ import { useEffect } from 'react';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
- * How often to poll for joinable calls as a safety net.
- *
- * The subscription to `notify-user/video-conference` below handles instant discovery when the server sends a
- * per-user event (ring, join, end, and — for embedded providers — started). Polling stays as a fallback for
- * edge cases (missed events, reconnections, server not yet broadcasting 'started') and keeps the list
- * self-healing.
- */
-const POLL_INTERVAL = 20_000;
-
-/**
  * The calls running now that this user may join, freshest first.
  *
  * Kept whole here — declined calls included — because who filters what is the reader's business: the sidebar
@@ -28,8 +18,8 @@ export const useJoinableCalls = () => {
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');
 
-	// A ring *is* announced, to the person being rung — and waiting up to the poll interval to show a call that is
-	// ringing right now would miss it entirely. So the ring is what asks for the list again.
+	// A ring *is* announced, to the person being rung, but the announcement arrives at the popup rather than here.
+	// So the ring is what asks for the list again.
 	const incomingCalls = useVideoConfIncomingCalls();
 
 	useEffect(() => {
@@ -41,8 +31,8 @@ export const useJoinableCalls = () => {
 	}, [incomingCalls, queryClient]);
 
 	// Embedded (LiveKit) calls don't ring — they send a 'started' event instead. Any other video-conference
-	// event (join, end) also means the joinable list may have changed. Subscribing here makes discovery
-	// effectively instant instead of waiting for the next poll.
+	// event (join, end) also means the joinable list may have changed. This subscription is how the list stays
+	// current; nothing asks on a timer.
 	useEffect(() => {
 		if (!uid) {
 			return;
@@ -68,7 +58,11 @@ export const useJoinableCalls = () => {
 				}))
 				.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 		},
-		refetchInterval: POLL_INTERVAL,
+		// What is left when the events are missed — a socket that dropped and came back having lost some. Asking
+		// again on a timer costs every connected client a request every twenty seconds to catch that; asking when
+		// the user returns to the window catches it at the only moment the answer is about to be read. The
+		// workspace turns this off for queries in general, so this one says it for itself.
+		refetchOnWindowFocus: true,
 	});
 
 	return { calls: data ?? [], isLoading };
