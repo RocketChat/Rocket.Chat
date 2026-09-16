@@ -31,16 +31,30 @@ export const useConferencePresenceLease = (callId: string, active: boolean) => {
 		// `performance.now()` and not `Date.now()`: the wall clock can go backwards — an NTP correction, a user
 		// setting it — and one that did would make every gap negative, so nothing would renew until real time
 		// caught up and the server's lease had long expired. This one only ever moves forward.
+		//
+		// One at a time, too: the server stamps each renewal as it arrives and writes it down whichever order they
+		// come in, so a slow renewal overtaken by the next one could put the lease back to when the slow one was
+		// sent — and a lease that moves backwards is one that can expire under a window still in the call.
 		let lastRenewedAt: number | undefined;
+		let renewing = false;
 		const renewNow = () => {
 			const now = performance.now();
+
+			if (renewing) {
+				return;
+			}
 
 			if (lastRenewedAt !== undefined && now - lastRenewedAt < PRESENCE_HEARTBEAT_MS) {
 				return;
 			}
 
 			lastRenewedAt = now;
-			void renew({ callId }).catch(() => undefined);
+			renewing = true;
+			void renew({ callId })
+				.catch(() => undefined)
+				.finally(() => {
+					renewing = false;
+				});
 		};
 
 		renewNow();
