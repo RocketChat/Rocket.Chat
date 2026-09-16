@@ -52,7 +52,7 @@ import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
+import { isABACManagedRoom, stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import * as dataExport from '../../lib/dataExport';
@@ -544,7 +544,13 @@ API.v1.get(
 		const room = await findRoomByIdOrName({ params: this.queryParams, checkedArchived: false });
 		const { fields } = await this.parseJsonQuery();
 
-		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+		const canAccess =
+			(await canAccessRoomAsync(room, { _id: this.userId })) ||
+			((isPublicRoom(room) || isPrivateRoom(room)) &&
+				!isABACManagedRoom(room) &&
+				(await hasPermissionAsync(this.userId, 'view-room-administration')));
+
+		if (!canAccess) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
 
