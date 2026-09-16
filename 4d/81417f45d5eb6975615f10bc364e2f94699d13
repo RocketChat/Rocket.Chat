@@ -1,0 +1,33 @@
+ee/apps/ddp-streamer/tsconfig.json
+  s_00ff27bda72447::t_c2ec62c6da4f5b 5-6
+ee/apps/ddp-streamer/package.json
+  s_00ff27bda72447::t_6f0291867adfff 32
+ee/apps/ddp-streamer/src/Publication.ts
+  s_00ff27bda72447::t_5683d4f1fc3f87 3-4
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_00ff27bda72447::t_6c86aabf718edc 6-10,23-26
+  s_00ff27bda72447::t_730d842b491533 38
+  s_00ff27bda72447::t_b5ca39f97ae718 27
+ee/apps/ddp-streamer/src/Streamer.ts
+  s_00ff27bda72447::t_809f02b75f946e 3-4
+ee/apps/ddp-streamer/src/service.ts
+  s_00ff27bda72447::t_9a64a9d20d216a 23
+yarn.lock
+  s_00ff27bda72447::t_aefbcb1bd60bd5 9382
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4d81417f45d5eb6975615f10bc364e2f94699d13",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

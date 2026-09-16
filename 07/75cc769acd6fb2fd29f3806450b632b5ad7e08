@@ -1,0 +1,19 @@
+.changeset/streamer-package.md
+  s_00ff27bda72447::t_8cfb827d601ef6 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "0775cc769acd6fb2fd29f3806450b632b5ad7e08",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

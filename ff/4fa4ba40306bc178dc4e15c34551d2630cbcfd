@@ -1,0 +1,21 @@
+CONTEXT.md
+  s_00ff27bda72447::t_dba2dd52660913 1-37
+docs/adr/0002-streamer-package-subpath-entries.md
+  s_00ff27bda72447::t_f2ee0952cf033c 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ff4fa4ba40306bc178dc4e15c34551d2630cbcfd",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

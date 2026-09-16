@@ -1,0 +1,14 @@
+.changeset/young-ties-rest.md
+  h_4c386397e672f4 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e265ca02edb64c727d483ad0d7c58fda8c5859ce",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
