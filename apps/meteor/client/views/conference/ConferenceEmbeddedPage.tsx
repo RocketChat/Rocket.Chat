@@ -4,7 +4,7 @@ import { Badge, Box, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useCustomSound, useSetModal, useUser, useUserAvatarPath, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useUser, useUserAvatarPath, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,6 @@ import CallBar from './components/CallBar/CallBar';
 import CallMembersPanel from './components/CallMembersPanel/CallMembersPanel';
 import type { Presenter } from './components/CallPresenting';
 import CallRaisedHands from './components/CallRaisedHands';
-import CallTimer from './components/CallTimer/CallTimer';
 import CallTopBar from './components/CallTopBar';
 import ChatAccessNotice from './components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from './components/ConferenceIframe';
@@ -286,18 +285,6 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// Who is actually in the call — the faces worth glancing at, and how many there are altogether.
 	const present = useMemo(() => call.members.filter(isInVideoConference), [call.members]);
 	const presentCount = present.length;
-
-	/**
-	 * What the chat button's badge says: the unread count, or — when something happened that carries no count —
-	 * an empty badge, which is the dot. `undefined` is no badge at all.
-	 */
-	const chatBadge = (() => {
-		if (unread > 0) {
-			return unread;
-		}
-
-		return hasUnseenActivity ? null : undefined;
-	})();
 
 	// A DM caller should hear a ringback tone while the other side's phone is still ringing.
 	const { callSounds } = useCustomSound();

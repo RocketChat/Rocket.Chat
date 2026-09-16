@@ -8,7 +8,7 @@ import {
 	embeddedCapabilities,
 	onPhone,
 	storeCallPreferences,
-	withCallProviders,
+	withConferenceWindow,
 	withFakeDevices,
 } from './storyFixtures';
 

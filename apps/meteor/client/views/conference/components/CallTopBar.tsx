@@ -46,7 +46,7 @@ type CallTopBarProps = {
  * Only a provider that renders in here has a header to give: one handed off to an iframe keeps its own chrome
  * inside that frame, so this bar isn't rendered at all for those.
  */
-const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
+const CallTopBar = ({ startAt, name, host, children }: CallTopBarProps) => {
 	const { t } = useTranslation();
 
 	return (

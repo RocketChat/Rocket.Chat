@@ -265,14 +265,15 @@ export const useCallRingPreference = () => {
 };
 
 /**
- * The state a call is about to start in: mic and camera as this user habitually arrives, narrowed to what the
- * provider can actually be told about, plus the ring habit the preflight also asks about.
+ * The state a call is about to start in: mic and camera as this user habitually arrives, which devices to use
+ * where the provider can be told, narrowed to what it can actually be told about — plus the ring habit the
+ * preflight also asks about.
  *
  * Named for what it answers rather than for where it reads from. It is not simply the stored preferences — those
  * are one of its two inputs, the provider's capabilities being the other, and a provider that cannot be told
  * about a device has that device reported as off so nothing claims to have configured something it can't.
  */
-export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabilities) => {
+export const useCallPreferences = (capabilities: VideoConferenceCapabilities) => {
 	const [stored, setStored] = useStoredCallPreferences();
 
 	const preferences = useMemo(
