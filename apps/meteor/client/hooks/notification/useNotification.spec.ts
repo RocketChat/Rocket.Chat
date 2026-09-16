@@ -14,7 +14,7 @@ jest.mock('../../lib/onClientMessageReceived', () => ({
 	onClientMessageReceived: jest.fn(),
 }));
 
-jest.mock('../../../app/utils/client/lib/SDKClient', () => ({
+jest.mock('../../lib/SDKClient', () => ({
 	sdk: {
 		rest: {
 			post: jest.fn(),
@@ -22,7 +22,7 @@ jest.mock('../../../app/utils/client/lib/SDKClient', () => ({
 	},
 }));
 
-jest.mock('../../../app/utils/client', () => ({
+jest.mock('../../lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));
 
