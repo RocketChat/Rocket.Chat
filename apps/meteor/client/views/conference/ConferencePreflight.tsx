@@ -150,8 +150,11 @@ const ConferencePreflight = ({
 							style={{ paddingBlockEnd: TOGGLES_ZONE }}
 						>
 							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
+							{/* Both in the future, because neither is something this screen can show: the call is handed to a
+							    provider with a page of its own, so there is no camera here to be on or off yet — only what
+							    will be true once the call opens. */}
 							<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_is_turned_off')}
+								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
 							</Box>
 							{preferences.cam && (
 								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
