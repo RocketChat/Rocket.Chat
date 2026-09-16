@@ -170,7 +170,10 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		);
 	}
 
-	if (!conference.url) {
+	// An embedded provider joins with no URL — it renders inside Rocket.Chat rather than at an address of its own —
+	// so having none is its documented answer, not a failed join. Everything else the window offers works either
+	// way; only the frame below has nothing to show.
+	if (!conference.url && !conference.embedded) {
 		return <ConferenceStatePage icon='warning' title={t('error-videoconf-unexpected')} action={{ label: t('Close'), onClick: leaveNow }} />;
 	}
 
@@ -210,7 +213,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-					<ConferenceIframe url={conference.url} />
+					{conference.url && <ConferenceIframe url={conference.url} />}
 				</Box>
 
 				<CallPanel visible={!!activePanel} sheet={sheetPanel}>

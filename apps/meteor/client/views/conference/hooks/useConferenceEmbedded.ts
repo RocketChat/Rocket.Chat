@@ -2,7 +2,7 @@ import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.ch
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useStream, useToastMessageDispatch, useUser, useUserId } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
 import type { CallPreferences } from './useCallDevicesInitialState';
@@ -142,11 +142,17 @@ export const useConferenceEmbedded = (callId: string) => {
 	//
 	// The result is held in the cache rather than in this hook's state, so a window that has *already* joined —
 	// one that just created the conference on the start screen — finds it there and goes straight into the call
-	// instead of asking again. Read with `useQuery` and `enabled: false`, that was a query declaring a `queryFn`
-	// it must never run; `getQueryData` says the same thing without the disclaimer.
-	// Not reactive, and it does not need to be: the only writer after this mounts is the mutation below, whose
-	// own settling is what re-renders this.
-	const data = queryClient.getQueryData<Awaited<ReturnType<typeof joinConference>>>(videoConferenceQueryKeys.join(callId));
+	// instead of asking again.
+	//
+	// Observed, rather than read once with `getQueryData`: an entry nothing observes is inactive, and React Query
+	// collects it after `gcTime` — five minutes, which is a short call. The window would then lose the URL it is
+	// showing and decide the join had failed, mid-conference. `skipToken` is what declares a query that is only
+	// ever written to: it holds the observer open without a `queryFn` there is no honest way to write, since the
+	// answer comes from joining and joining is the user's decision, made below.
+	const { data } = useQuery<Awaited<ReturnType<typeof joinConference>>>({
+		queryKey: videoConferenceQueryKeys.join(callId),
+		queryFn: skipToken,
+	});
 
 	const {
 		mutate: join,
@@ -238,6 +244,9 @@ export const useConferenceEmbedded = (callId: string) => {
 			 * A provider that runs the call inside Rocket.Chat rather than at a URL of its own. The server says so
 			 * by answering the join with an empty url — there is no page to send anyone to — so that is what this
 			 * reads, rather than a second capability the two sides would have to keep in step.
+			 *
+			 * `url` is `undefined` for these, which is the truth: there is no address. What must not happen is the
+			 * page reading that as a join that went wrong, so it asks this first.
 			 */
 			embedded: data ? data.url === '' : false,
 			/** Whether this window has joined yet, which for an embedded provider is all there is to wait for. */

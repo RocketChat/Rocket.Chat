@@ -1,6 +1,6 @@
 import type { StreamControllerRef } from '@rocket.chat/mock-providers';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useConferenceEmbedded } from './useConferenceEmbedded';
 
@@ -190,17 +190,30 @@ describe('naming on the way in', () => {
 		return { result, join };
 	};
 
-	it('renames the call before joining it', async () => {
-		const rename = jest.fn(() => ({ success: true }) as any);
+	// Before, and having waited for the answer: a name sent alongside the join rather than ahead of it lands after
+	// whoever is already in the call has seen the old one, and renames it under them. So the rename is held open
+	// here and the join has to still not have happened.
+	it('renames the call before joining it, and waits for the answer', async () => {
+		let answerRename: () => void = () => undefined;
+		const rename = jest.fn(
+			() =>
+				new Promise((resolve) => {
+					answerRename = () => resolve({ success: true } as any);
+				}) as any,
+		);
 		const { result, join } = renderForRename(rename);
 
 		await waitFor(() => expect(result.current.call.name).toBe('general'));
 		result.current.conference.join({ state: { mic: true, cam: false }, name: 'Release planning' });
 
-		await waitFor(() => {
-			expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' });
-			expect(join).toHaveBeenCalled();
+		await waitFor(() => expect(rename).toHaveBeenCalledWith({ callId, title: 'Release planning' }));
+		expect(join).not.toHaveBeenCalled();
+
+		await act(async () => {
+			answerRename();
 		});
+
+		await waitFor(() => expect(join).toHaveBeenCalled());
 	});
 
 	it('says nothing to the server when the name was left alone', async () => {
