@@ -609,9 +609,15 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 					// Synapse view: Check in Synapse (Matrix) for federated user
-					const room = hs1AdminApp.getRoom(channelName);
-					expect(room).toHaveProperty('name', channelName);
-					expect(room.getMyMembership()).toBe('join');
+					await retry(
+						'wait for the join to be processed',
+						() => {
+							const room = hs1AdminApp.getRoom(channelName);
+							expect(room).toHaveProperty('name', channelName);
+							expect(room.getMyMembership()).toBe('join');
+						},
+						{ retries: 5, delayMs: 1000 },
+					);
 				});
 
 				it('should show the 2 new users in the members list', async () => {
@@ -1117,9 +1123,15 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 						// Synapse view: Check in Synapse (Matrix) for federated user
-						const room = hs1AdminApp.getRoom(channelName);
-						expect(room).toHaveProperty('name', channelName);
-						expect(room.getMyMembership()).toBe('join');
+						await retry(
+							'wait for the join to be processed',
+							() => {
+								const room = hs1AdminApp.getRoom(channelName);
+								expect(room).toHaveProperty('name', channelName);
+								expect(room.getMyMembership()).toBe('join');
+							},
+							{ retries: 5, delayMs: 1000 },
+						);
 					});
 
 					it('should show the 2 new users in the members list', async () => {
@@ -1527,9 +1539,15 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 						// Synapse view: Check in Synapse (Matrix) for federated user
-						const room = hs1AdminApp.getRoom(channelName);
-						expect(room).toHaveProperty('name', channelName);
-						expect(room.getMyMembership()).toBe('join');
+						await retry(
+							'wait for the join to be processed',
+							() => {
+								const room = hs1AdminApp.getRoom(channelName);
+								expect(room).toHaveProperty('name', channelName);
+								expect(room.getMyMembership()).toBe('join');
+							},
+							{ retries: 5, delayMs: 1000 },
+						);
 					});
 
 					it('should show the 2 new users in the members list', async () => {
