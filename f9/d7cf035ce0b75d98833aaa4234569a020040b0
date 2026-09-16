@@ -1,0 +1,24 @@
+ee/apps/authorization-service/tsconfig.json
+  s_2939f6c2b3a8e1::t_106d796ebcdcde 5
+  s_2939f6c2b3a8e1::t_92c80aead6e526 6
+ee/apps/authorization-service/package.json
+  s_2939f6c2b3a8e1::t_6596b7c5f03800 23
+ee/apps/authorization-service/src/service.ts
+  s_2939f6c2b3a8e1::t_25ea170943fb40 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f9d7cf035ce0b75d98833aaa4234569a020040b0",
+  "prompts": {},
+  "sessions": {
+    "s_2939f6c2b3a8e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "99c6b675-c41f-413e-bf46-744437e9da57",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
