@@ -1,4 +1,4 @@
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, IRole, VideoConference } from '@rocket.chat/core-typings';
 
 /** Minimal user shape a permission check needs. `getRoles` only reads `_id` and `roles`. */
 export type UserWithRoles = Pick<IUser, '_id' | 'roles'>;
@@ -17,6 +17,7 @@ export interface IAuthorization {
 	canReadRoom: RoomAccessValidator;
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;
 	canAccessRoomIds(rids: IRoom['_id'][], user: UserWithRoles): Promise<boolean>;
+	canAccessConference(call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>, uid?: IUser['_id']): Promise<boolean>;
 	getUsersFromPublicRoles(): Promise<Pick<Required<IUser>, '_id' | 'username' | 'roles'>[]>;
 	hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
 }

@@ -6,7 +6,6 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
 import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
-import { canAccessConference } from '../../lib/videoConfAccess';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
@@ -481,7 +480,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return canAccessConference(call, user._id);
+			return Authorization.canAccessConference(call, user._id);
 		});
 
 		this.streamLocal.serverOnly = true;

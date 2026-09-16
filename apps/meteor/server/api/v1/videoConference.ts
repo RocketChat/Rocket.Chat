@@ -1,4 +1,4 @@
-import { VideoConf } from '@rocket.chat/core-services';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
 import {
 	ajv,
@@ -21,7 +21,6 @@ import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { canAccessConference } from '../../lib/videoConfAccess';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -78,7 +77,7 @@ const loadAccessibleConference = async (
 	userId: string,
 ): Promise<Omit<VideoConference, 'providerData'> | undefined> => {
 	const call = await VideoConf.get(callId);
-	if (!call || !(await canAccessConference(call, userId))) {
+	if (!call || !(await Authorization.canAccessConference(call, userId))) {
 		return undefined;
 	}
 
@@ -254,7 +253,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessConference(call, userId))) {
+		if (!(await Authorization.canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
