@@ -52,6 +52,18 @@ const TARGETS = {
 		test: 'tests/server/logging/AppConsole.test.ts',
 		source: 'src/server/logging/AppConsole.ts',
 	},
+	AppSettingsManager: {
+		test: 'tests/server/managers/AppSettingsManager.test.ts',
+		source: 'src/server/managers/AppSettingsManager.ts',
+	},
+	AppApiManager: {
+		test: 'tests/server/managers/AppApiManager.test.ts',
+		source: 'src/server/managers/AppApiManager.ts',
+	},
+	UIActionButtonManager: {
+		test: 'tests/server/managers/UIActionButtonManager.test.ts',
+		source: 'src/server/managers/UIActionButtonManager.ts',
+	},
 	AppListenerManager: {
 		test: 'tests/server/managers/AppListenerManager.test.ts',
 		source: 'src/server/managers/AppListenerManager.ts',
@@ -65,6 +77,47 @@ const target = TARGETS[TARGET];
 if (!target) {
 	throw new Error(`stryker.conf.js: no target named '${TARGET}'. Try one of: ${Object.keys(TARGETS).join(', ')}.`);
 }
+
+const DENO_SUBPROCESS_TESTS = ['DenoRuntimeSubprocessController.test.ts', 'SecureFieldsCodecCompatibility.test.ts'];
+
+/**
+ * The test files that may run. The two Deno subprocess tests are excluded for the reason given above.
+ */
+const feasibleTests = () => {
+	const found = [];
+	const walk = (dir) => {
+		for (const entry of fs.readdirSync(path.join(__dirname, dir), { withFileTypes: true })) {
+			const relative = `${dir}/${entry.name}`;
+			if (entry.isDirectory()) {
+				walk(relative);
+			} else if (entry.name.endsWith('.test.ts') && !DENO_SUBPROCESS_TESTS.some((name) => entry.name === name)) {
+				found.push(relative);
+			}
+		}
+	};
+	walk('tests');
+	return found.sort();
+};
+
+/**
+ * Which tests run against each mutant.
+ *
+ * - `own` — the target's own test file. This grades that one test.
+ * - `all` — every feasible test file.
+ * - `all-but-own` — every feasible test file except the target's own.
+ *
+ * Run `all` and `all-but-own` and diff the two reports to find what the target's test catches that nothing
+ * else does. A mutant killed under `all` and surviving under `all-but-own` is a unique kill, and unique kills
+ * are what a test is worth. See docs/mutation-testing.md, "Is a shallow test worth keeping".
+ */
+const SCOPE = process.env.SCOPE || 'own';
+
+const testFiles = (() => {
+	if (SCOPE === 'own') return [target.test];
+	if (SCOPE === 'all') return feasibleTests();
+	if (SCOPE === 'all-but-own') return feasibleTests().filter((file) => file !== target.test);
+	throw new Error(`stryker.conf.js: SCOPE must be 'own', 'all' or 'all-but-own', not '${SCOPE}'.`);
+})();
 
 /**
  * Finds the line range of a class member by name.
@@ -105,7 +158,7 @@ module.exports = {
 
 	testRunner: 'command',
 	commandRunner: {
-		command: `NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter dot --test-concurrency=1 --test-timeout=60000 --test ${target.test}`,
+		command: `NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter dot --test-concurrency=1 --test-timeout=60000 --test ${testFiles.join(' ')}`,
 	},
 
 	mutate,
@@ -118,8 +171,8 @@ module.exports = {
 	ignorePatterns: ['dist', 'base-runtime/dist', 'node-runtime/dist', '.deno-cache', 'deno-runtime', 'reports'],
 
 	reporters: ['html', 'json', 'clear-text', 'progress'],
-	htmlReporter: { fileName: 'reports/mutation/index.html' },
-	jsonReporter: { fileName: 'reports/mutation/mutation.json' },
+	htmlReporter: { fileName: `reports/mutation/${TARGET}.${SCOPE}.html` },
+	jsonReporter: { fileName: `reports/mutation/${TARGET}.${SCOPE}.json` },
 	clearTextReporter: { allowColor: true, maxTestsToLog: 3 },
 
 	// A survived mutant is a finding to read, not a build to fail. Raise `break` once a target holds a score.

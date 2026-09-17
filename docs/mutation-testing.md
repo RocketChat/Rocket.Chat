@@ -53,6 +53,44 @@ Two test files stay out of every target. `DenoRuntimeSubprocessController.test.t
 `SecureFieldsCodecCompatibility.test.ts` spawn a real Deno subprocess, take about four minutes each, and fail
 without the Deno cache. A red baseline stops Stryker before it mutates anything.
 
+## Is a shallow test worth keeping
+
+A test that asserts a collaborator was called, and does not check what it was called with, looks weak. Do not
+judge it by that. We measured the "asserts *that*" style against the mutation score over 133 specs and found
+ρ = −0.10 — no signal. See [docs/mutation-testing-scope-results.md](mutation-testing-scope-results.md).
+
+Ask the marginal question instead. **If this test went away, what would stop being caught?** A mutation score
+says how much of the behaviour some test checks. It does not say which test, so a test can score well on code
+another test already covers.
+
+Run the target twice and diff the reports:
+
+```bash
+cd packages/apps
+TARGET=UIActionButtonManager SCOPE=all         yarn testmutation
+TARGET=UIActionButtonManager SCOPE=all-but-own yarn testmutation
+node scripts/mutation-unique-kills.js UIActionButtonManager
+```
+
+A mutant killed under `all` and surviving under `all-but-own` is a **unique kill**. Unique kills are what the
+test is worth. A test with none is either redundant, or the last line on code nothing else reaches.
+
+The three managers we measured all came out the same way, and the shallow ones came out strongest:
+
+| Target | Score, all tests | Score without its own test | Unique kills |
+| --- | --- | --- | --- |
+| `AppSettingsManager` | 100% | 0% | 27 of 27 |
+| `UIActionButtonManager` | 92% | 2% | 36 of 37 |
+| `AppApiManager` | 80% | 2% | 50 of 51 |
+
+Nothing else in the package holds this code. A shallow test here is not a weak test; it is the only test.
+
+**What the measure does not settle.** A unique kill says the test notices a change. It does not say the
+change matters. Judge each survivor and each kill on whether anyone depends on the behaviour — a mutant that
+rewrites a log message or a Mongo projection is noise either way. For a bridge call the argument is often the
+whole contract, because the manager's job is to call the bridge correctly; there, an assertion on the call
+alone leaves a real gap. Read the surviving mutants to find it.
+
 ## Point it at your code
 
 The config is scoped to one spec and to the code that spec owns. Two constants at the top move together:
