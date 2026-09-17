@@ -46,6 +46,7 @@ describe('cssUrl', () => {
 	it('refuses a scheme that is split by whitespace the URL parser drops', () => {
 		expect(cssUrl('java\nscript:alert(1)')).toBe('none');
 		expect(cssUrl('java\tscript:alert(1)')).toBe('none');
+		expect(cssUrl('java\fscript:alert(1)')).toBe('none');
 		expect(cssUrl('da\r\nta:image/svg+xml,<svg/>')).toBe('none');
 	});
 
