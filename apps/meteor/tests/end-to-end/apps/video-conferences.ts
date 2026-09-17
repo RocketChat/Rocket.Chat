@@ -367,6 +367,32 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}/${userId}/mic`);
 					});
 			});
+
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.post(api('video-conference.join'))
+					.set(credentials)
+					.send({ callId: 'missing-video-conference' })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'invalid-params');
+					});
+			});
+		});
+
+		describe('[/video-conference.cancel]', () => {
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.post(api('video-conference.cancel'))
+					.set(credentials)
+					.send({ callId: 'missing-video-conference' })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'invalid-params');
+					});
+			});
 		});
 
 		describe('[/video-conference.info]', () => {
@@ -405,6 +431,18 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body).to.have.a.property('createdBy').that.is.an('object');
 						expect(res.body.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
 						expect(res.body.createdBy).to.have.a.property('username').equal(adminUsername);
+					});
+			});
+
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.get(api('video-conference.info'))
+					.set(credentials)
+					.query({ callId: 'missing-video-conference' })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'invalid-params');
 					});
 			});
 		});
@@ -950,6 +988,18 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body).to.have.a.property('total').that.is.greaterThanOrEqual(2);
 							expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(1);
 							expect(res.body.data[0]).to.have.a.property('_id').equal(callId1);
+						});
+				});
+
+				it('should reject an inaccessible room with invalid params', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({ roomId: 'missing-room' })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'invalid-params');
 						});
 				});
 			});
