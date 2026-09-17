@@ -4,6 +4,7 @@ import { renderHook } from '@testing-library/react';
 
 import { useNotification } from './useNotification';
 import { useNotificationAllowed } from './useNotificationAllowed';
+import { sdk } from '../../lib/SDKClient';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 jest.mock('./useNotificationAllowed', () => ({
@@ -143,6 +144,13 @@ describe('useNotification', () => {
 
 			expect(instance.close).not.toHaveBeenCalled();
 			expect(jest.getTimerCount()).toBe(0);
+
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'late reply' });
+
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: expect.objectContaining({ rid: 'roomId', msg: 'late reply' }),
+			});
 		});
 
 		it('does not schedule an auto-close timer when requireInteraction is set, even with a duration', async () => {
