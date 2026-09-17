@@ -43,6 +43,12 @@ describe('cssUrl', () => {
 		expect(cssUrl('vbscript:msgbox')).toBe('none');
 	});
 
+	it('refuses a scheme that is split by whitespace the URL parser drops', () => {
+		expect(cssUrl('java\nscript:alert(1)')).toBe('none');
+		expect(cssUrl('java\tscript:alert(1)')).toBe('none');
+		expect(cssUrl('da\r\nta:image/svg+xml,<svg/>')).toBe('none');
+	});
+
 	it('refuses a value that brings a scheme but does not parse', () => {
 		expect(cssUrl('https://[invalid]')).toBe('none');
 	});
