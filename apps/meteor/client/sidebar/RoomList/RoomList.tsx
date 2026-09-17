@@ -38,7 +38,7 @@ const RoomList = () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
+	const sidebarViewMode = useUserPreference<'extended' | 'condensed'>('sidebarViewMode') || 'condensed';
 
 	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
