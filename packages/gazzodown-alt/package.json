@@ -23,7 +23,7 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"@rocket.chat/message-parser": "0.31.34",
+		"@rocket.chat/message-parser": "workspace:^",
 		"react": "*"
 	},
 	"volta": {
