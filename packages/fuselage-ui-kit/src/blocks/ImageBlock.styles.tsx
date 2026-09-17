@@ -1,5 +1,7 @@
 import styled from '@rocket.chat/styled';
 
+import { cssUrl } from '../utils/cssUrl';
+
 const filterImageProps = ({
 	imageUrl: _imageUrl,
 	width: _width,
@@ -17,7 +19,7 @@ export const Image = styled('div', filterImageProps)`
 	background-position: 50%;
 	background-size: cover;
 	background-color: rgba(204, 204, 204, 38%);
-	background-image: url(${(props) => props.imageUrl});
+	background-image: ${(props) => cssUrl(props.imageUrl)};
 	width: ${(props) => String(props.width)}px;
 	height: ${(props) => String(props.height)}px;
 	overflow: hidden;
