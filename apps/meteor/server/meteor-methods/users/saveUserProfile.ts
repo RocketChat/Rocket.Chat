@@ -119,10 +119,7 @@ async function saveUserProfile(
 	}
 
 	if (Array.isArray(settings.phones)) {
-		await Users.setPhones(
-			user._id,
-			settings.phones.map(({ verified: _, ...phone }) => phone),
-		);
+		await Users.setPhones(user._id, settings.phones);
 
 		if (settings.phones.length === 0) {
 			unset.phones = true;

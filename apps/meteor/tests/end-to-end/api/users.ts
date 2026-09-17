@@ -846,7 +846,7 @@ describe('[Users]', () => {
 					username,
 					password,
 					phones: [
-						{ number: '+15551234567', label: 'Work', primary: true },
+						{ number: '+15551234567', label: 'Work' },
 						{ number: '+15557654321', label: 'Mobile' },
 					],
 				})
@@ -857,7 +857,6 @@ describe('[Users]', () => {
 			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
 			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
 			expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
-			expect(res.body).to.have.nested.property('user.phones[0].primary', true);
 			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
 
 			await deleteUser(res.body.user);
@@ -876,7 +875,7 @@ describe('[Users]', () => {
 					username,
 					password,
 					phones: [
-						{ number: ' +1 555 123 4567 ', label: 'Work', primary: true },
+						{ number: ' +1 555 123 4567 ', label: 'Work' },
 						{ number: '+1  555  765  4321', label: 'Mobile' },
 					],
 				})
@@ -1468,7 +1467,7 @@ describe('[Users]', () => {
 					username,
 					password,
 					phones: [
-						{ number: '+5511911111111', label: 'Work', primary: true },
+						{ number: '+5511911111111', label: 'Work' },
 						{ number: '+5511922222222', label: 'Home' },
 					],
 				})
@@ -1489,7 +1488,6 @@ describe('[Users]', () => {
 					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
 					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
 					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
-					expect(res.body).to.have.nested.property('user.phones[0].primary', true);
 					expect(res.body).to.have.nested.property('user.phones[1].number', '+5511922222222');
 				});
 
@@ -2602,7 +2600,7 @@ describe('[Users]', () => {
 					userId: user._id,
 					data: {
 						phones: [
-							{ number: '+15551234567', label: 'Work', primary: true },
+							{ number: '+15551234567', label: 'Work' },
 							{ number: '+15557654321', label: 'Mobile' },
 						],
 					},
@@ -2637,7 +2635,7 @@ describe('[Users]', () => {
 				.send({
 					userId: user._id,
 					data: {
-						phones: [{ number: ' +1 555 123 4567 ', label: 'Work', primary: true }],
+						phones: [{ number: ' +1 555 123 4567 ', label: 'Work' }],
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2669,7 +2667,7 @@ describe('[Users]', () => {
 				.send({
 					userId: user._id,
 					data: {
-						phones: [{ number: '+15551234567', label: 'Work', primary: true }],
+						phones: [{ number: '+15551234567', label: 'Work' }],
 					},
 				})
 				.expect(200);
@@ -2709,7 +2707,7 @@ describe('[Users]', () => {
 				.send({
 					userId: credentials['X-User-Id'],
 					data: {
-						phones: [{ number: '+15551234567', label: Random.hexString(51), primary: true }],
+						phones: [{ number: '+15551234567', label: Random.hexString(51) }],
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -3553,7 +3551,7 @@ describe('[Users]', () => {
 				.send({
 					data: {
 						phones: [
-							{ number: '+5511911111111', label: 'Work', primary: true },
+							{ number: '+5511911111111', label: 'Work' },
 							{ number: '+5511922222222', label: 'Home' },
 						],
 					},
@@ -3574,7 +3572,7 @@ describe('[Users]', () => {
 				.set(userCredentials)
 				.send({
 					data: {
-						phones: [{ number: ' +5511 91111 1111 ', label: 'Work', primary: true }],
+						phones: [{ number: ' +5511 91111 1111 ', label: 'Work' }],
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -3601,7 +3599,7 @@ describe('[Users]', () => {
 				.set(userCredentials)
 				.send({
 					data: {
-						phones: [{ number: '+5511911111111', label: 'Work', primary: true }],
+						phones: [{ number: '+5511911111111', label: 'Work' }],
 					},
 				})
 				.expect('Content-Type', 'application/json')
