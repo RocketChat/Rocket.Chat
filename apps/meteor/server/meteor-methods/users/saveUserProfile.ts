@@ -15,6 +15,7 @@ import { callbacks } from '../../lib/callbacks';
 import { compareUserPassword } from '../../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory';
 import { notifyOnUserChange } from '../../lib/notifyListener';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
 import { saveUserIdentity } from '../../lib/users/saveUserIdentity';
@@ -22,6 +23,8 @@ import { settings as rcSettings } from '../../settings';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
+
+const isBroken = shouldBreakInVersion('9.0.0');
 
 async function saveUserProfile(
 	this: AuthenticatedContext,
@@ -123,6 +126,13 @@ async function saveUserProfile(
 
 		if (settings.phones.length === 0) {
 			unset.phones = true;
+		}
+
+		// TODO: 9.0 - migrate `phone` to `phones`
+		unset.phone = true;
+
+		if (isBroken) {
+			throw new Error("IUser['phone'] is deprecated and should be migrated to IUser['phones']");
 		}
 	}
 
