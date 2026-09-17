@@ -39,8 +39,8 @@ export type PersistentAudioTrack = {
 	drid?: string;
 	/**
 	 * Whether the owning message is pinned (used to match bulk-delete criteria). Unlike `drid`
-	 * this can change while the track is active, so the provider refreshes it from the rendered
-	 * message; it can still drift while that message is unmounted.
+	 * this can change while the track is active, so it is refreshed both from the rendered message
+	 * and from the room stream — the latter keeps it accurate while the message is unmounted.
 	 */
 	pinned?: boolean;
 	/** When played from a quote, the id of the original message that holds the attachment (its deletion also closes the player). */
