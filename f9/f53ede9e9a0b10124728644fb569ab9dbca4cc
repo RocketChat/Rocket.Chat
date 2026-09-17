@@ -1,0 +1,11 @@
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.spec.ts
+  ai_agent 13-14,16,29-50
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 7,21,92,107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f9f53ede9e9a0b10124728644fb569ab9dbca4cc",
+  "prompts": {}
+}
