@@ -10,14 +10,6 @@ import { storybookI18n } from '../client/stories/i18n';
 
 const MockedAppRoot = mockAppRoot().build();
 
-/**
- * Puts the real English copy in front of `mockAppRoot`'s empty i18next instance.
- *
- * Innermost on purpose: the nearest `I18nextProvider` is the one a component reads, and `mockAppRoot` installs
- * one of its own. A story that builds its own `mockAppRoot` nests yet another provider inside this, so such
- * stories have to apply the same instance themselves — `withCallProviders` in the conference stories is an
- * example of doing that.
- */
 export const RocketChatDecorator: Decorator = (Story, { parameters }) => (
 	<MockedAppRoot>
 		<ServerContextMock {...parameters.serverContext}>
