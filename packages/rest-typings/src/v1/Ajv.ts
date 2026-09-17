@@ -45,7 +45,7 @@ ajvQuery.addKeyword({
 
 // Strips whitespace from the property before it's checked against a `format`
 ajv.addKeyword({
-	keyword: 'transformTrimWhitespaces',
+	keyword: 'transformStripWhitespaces',
 	type: 'string',
 	schemaType: 'boolean',
 	modifying: true,
@@ -61,7 +61,7 @@ ajv.addKeyword({
 	},
 });
 ajvQuery.addKeyword({
-	keyword: 'transformTrimWhitespaces',
+	keyword: 'transformStripWhitespaces',
 	type: 'string',
 	schemaType: 'boolean',
 	modifying: true,
