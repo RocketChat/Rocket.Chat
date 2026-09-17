@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
-// TODO: CRITICAL fix the race condition between the room composer and thread composer
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useSafeRefCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';

@@ -10,10 +10,7 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-// FIXME: Before merging, this test fails due the cache of the feature preview requiring reloads to update the UI
-// This can be observed by just trying to enable feature preview setting then the preference, the composer sometimes
-// needs more than one reload to show up on the UI.
-test.describe.skip('message-composer-history', () => {
+test.describe('message-composer-history', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let otherChannel: string;
@@ -22,17 +19,25 @@ test.describe.skip('message-composer-history', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
-		await setUserPreferences(api, {
-			featuresPreview: [{ name: 'realtimeMessageComposer', value: true }],
-		});
+		await setUserPreferences(
+			api,
+			{
+				featuresPreview: [{ name: 'realtimeMessageComposer', value: true }],
+			},
+			Users.user1.data._id,
+		);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 		otherChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setUserPreferences(api, {
-			featuresPreview: [{ name: 'realtimeMessageComposer', value: false }],
-		});
+		await setUserPreferences(
+			api,
+			{
+				featuresPreview: [{ name: 'realtimeMessageComposer', value: false }],
+			},
+			Users.user1.data._id,
+		);
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteChannel(api, otherChannel);
@@ -42,6 +47,8 @@ test.describe.skip('message-composer-history', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test('should undo and redo typed text', async ({ page }) => {
