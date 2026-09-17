@@ -23,9 +23,12 @@ export const useRefreshTrackFromRoomMessages = (
 	const subscribeToRoomMessages = useStream('room-messages');
 
 	// Read through a ref so a refresh does not change the effect's inputs and resubscribe the
-	// stream on every update it causes.
+	// stream on every update it causes. Synced after commit, so a callback never sees a track
+	// the render that introduced it has not finished with yet.
 	const trackRef = useRef<PersistentAudioTrack | null>(track);
-	trackRef.current = track;
+	useEffect(() => {
+		trackRef.current = track;
+	}, [track]);
 
 	const rid = track?.rid;
 	const mid = track?.mid;
@@ -42,15 +45,8 @@ export const useRefreshTrackFromRoomMessages = (
 			}
 
 			const { current } = trackRef;
-			// The ref is written during render, so between a track being swapped and this
-			// subscription being torn down it already points at the new track while this callback
-			// still belongs to the old one. Without this the previous message's state would be
-			// written onto a different track — `updateTrack`'s own id check cannot catch it,
-			// because the patch carries the id of whatever `current` is.
-			//
-			// That window is not reachable from the spec: `rerender` commits the teardown
-			// synchronously, so this is guarded by reasoning about the path rather than by a test.
-			if (!current || current.id !== id) {
+			// A callback that outlives its track must not patch whichever one replaced it.
+			if (current?.id !== id) {
 				return;
 			}
 
