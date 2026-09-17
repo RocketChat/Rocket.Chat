@@ -78,7 +78,9 @@ import { SynapseClient } from '../helper/synapse-client';
 			await hs1User1App.close();
 		}
 
-		await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		}
 	});
 
 	describe('Rooms', () => {
