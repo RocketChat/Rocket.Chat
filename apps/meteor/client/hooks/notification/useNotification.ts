@@ -10,7 +10,7 @@ import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {
-	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
+	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
 	const router = useRouter();
 	const notificationAllowed = useNotificationAllowed();
 
@@ -32,6 +32,10 @@ export const useNotification = () => {
 			notification: true,
 		} as any);
 
+		// A notification may demand interaction on its own — a conference ring outlives the
+		// recipient's preference, per INotificationDesktop.requireInteraction.
+		const requireInteraction = requireInteractionPreference || notification.requireInteraction;
+
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
@@ -42,7 +46,7 @@ export const useNotification = () => {
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
-		const notificationDuration = !requireInteraction ? (notification.duration ?? 0) - 0 || 10 : -1;
+		const notificationDuration = !requireInteraction && notification.duration ? notification.duration - 0 : 0;
 		if (notificationDuration > 0) {
 			setTimeout(() => n.close(), notificationDuration * 1000);
 		}
