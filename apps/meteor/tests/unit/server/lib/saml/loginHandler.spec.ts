@@ -17,7 +17,6 @@ const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id', token:
 const getUserForCheck = sinon.stub().resolves({ _id: 'user-id', services: {} });
 const doesUserRequire2FA = sinon.stub().returns(false);
 const removeById = sinon.stub().resolves();
-const findOneNotExpiredById = sinon.stub().resolves(null);
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
 	log: sinon.stub(),
@@ -28,7 +27,7 @@ const samlUtilsMock = {
 const handler = sinon.stub();
 proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'@rocket.chat/models': {
-		CredentialTokens: { removeById, findOneNotExpiredById },
+		CredentialTokens: { removeById },
 	},
 	'meteor/accounts-base': {
 		Accounts: {
@@ -59,8 +58,6 @@ describe('SAML loginHandler', () => {
 		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });
 		insertOrUpdateSAMLUser.reset();
 		insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'login-token' });
-		findOneNotExpiredById.reset();
-		findOneNotExpiredById.resolves({ _id: 'token', expireAt: new Date(Date.now() + 60000) });
 		removeById.reset();
 		removeById.resolves();
 		getUserForCheck.reset();
