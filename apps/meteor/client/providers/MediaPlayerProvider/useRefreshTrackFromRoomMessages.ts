@@ -47,6 +47,9 @@ export const useRefreshTrackFromRoomMessages = (
 			// still belongs to the old one. Without this the previous message's state would be
 			// written onto a different track — `updateTrack`'s own id check cannot catch it,
 			// because the patch carries the id of whatever `current` is.
+			//
+			// That window is not reachable from the spec: `rerender` commits the teardown
+			// synchronously, so this is guarded by reasoning about the path rather than by a test.
 			if (!current || current.id !== id) {
 				return;
 			}

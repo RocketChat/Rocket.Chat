@@ -61,7 +61,11 @@ describe('useRefreshTrackFromRoomMessages', () => {
 		expect(updateTrack).not.toHaveBeenCalled();
 	});
 
-	it('does not apply the previous message state after the player switches to another track in the same room', () => {
+	// Covers the committed path only: once the swap has been committed, the resubscribed callback
+	// rejects the old message on its id. The `current.id !== id` guard in the hook defends the
+	// window *before* that commit, which `rerender` cannot reproduce — it tears the old
+	// subscription down synchronously — so that guard is deliberately not claimed here.
+	it('ignores a stale event for the previous message once the player has switched tracks', () => {
 		const updateTrack = jest.fn();
 		const first = buildTrack({ id: 'mid1:url', mid: 'mid1' });
 		const second = buildTrack({ id: 'mid2:url', mid: 'mid2' });
