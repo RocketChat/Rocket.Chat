@@ -218,15 +218,20 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const unset: Record<string, number> = {};
+
 		if (Array.isArray(userData.phones)) {
 			if (userData.phones.length === 0) {
 				updater.unset('phones');
+				delete userData.phones;
+				unset.phones = 1;
 			} else {
 				updater.set('phones', userData.phones);
 			}
 
 			// TODO: 9.0 - migrate `phone` to `phones`
 			updater.unset('phone');
+			unset.phone = 1;
 
 			if (isBroken) {
 				throw new Error("IUser['phone'] is deprecated and should be migrated to IUser['phones']");
@@ -330,12 +335,6 @@ const _saveUser = (session?: ClientSession) =>
 				delete userData.verified;
 			}
 
-			const phonesProvided = Array.isArray(userData.phones);
-			const phonesUnset = Array.isArray(userData.phones) && userData.phones.length === 0;
-			if (phonesUnset) {
-				delete userData.phones;
-			}
-
 			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
 
 			void notifyOnUserChange({
@@ -345,12 +344,7 @@ const _saveUser = (session?: ClientSession) =>
 					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
-				...(phonesProvided && {
-					unset: {
-						...(phonesUnset && { phones: 1 }),
-						phone: 1,
-					},
-				}),
+				unset,
 			});
 		}, session);
 
