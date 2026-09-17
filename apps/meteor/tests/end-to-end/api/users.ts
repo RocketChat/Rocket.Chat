@@ -3851,6 +3851,21 @@ describe('[Users]', () => {
 				.set(userCredentials)
 				.send({
 					data: {
+						phones: [{ number: '+5511911111111', label: 'Work', primary: true }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
 						phones: [],
 					},
 				})
@@ -3858,6 +3873,16 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).not.have.nested.property('user.phones');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
 					expect(res.body).not.have.nested.property('user.phones');
 				});
 		});
