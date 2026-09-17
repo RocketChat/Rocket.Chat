@@ -32,6 +32,8 @@
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
+		"test:mutation": "node scripts/run-mutation-tests.mjs",
+		"test:mutation:tooling": "node --test scripts/run-mutation-tests.test.mjs",
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
@@ -212,6 +214,9 @@
 	"devDependencies": {
 		"@changesets/cli": "^2.27.12",
 		"@rocket.chat/eslint-config": "workspace:~",
+		"@stryker-mutator/api": "10.0.0",
+		"@stryker-mutator/core": "10.0.0",
+		"@stryker-mutator/jest-runner": "10.0.0",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~24.13.2",
