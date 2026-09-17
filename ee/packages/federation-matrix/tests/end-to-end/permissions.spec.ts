@@ -54,19 +54,27 @@ import { SynapseClient } from '../helper/synapse-client';
 			.expect(200);
 	});
 
-	afterAll(async () =>
+	afterAll(async () => {
+		if (!rc1AdminRequestConfig) {
+			return;
+		}
+
 		// Add permissions for access-federation to any user but admin
-		rc1AdminRequestConfig.request
+		await rc1AdminRequestConfig.request
 			.post(api('permissions.update'))
 			.set(rc1AdminRequestConfig.credentials)
 			.send({ permissions: [{ _id: 'access-federation', roles: ['admin', 'user'] }] })
 			.expect('Content-Type', 'application/json')
-			.expect(200),
-	);
+			.expect(200);
+	});
 
-	afterAll(async () => hs1AdminApp.close());
+	afterAll(async () => hs1AdminApp?.close());
 
-	afterAll(async () => deleteUser(rc1User1, {}, rc1AdminRequestConfig));
+	afterAll(async () => {
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		}
+	});
 
 	describe('Access Federation Permission', () => {
 		describe('Users without access-federation permission', () => {
