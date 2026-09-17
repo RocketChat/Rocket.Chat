@@ -1,6 +1,5 @@
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
-import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import {
 	addUserToRoomViaMethod,

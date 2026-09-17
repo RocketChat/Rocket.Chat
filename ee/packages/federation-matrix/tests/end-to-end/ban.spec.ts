@@ -1,7 +1,6 @@
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { Visibility } from 'matrix-js-sdk';
 
-import type {} from '../../../../../apps/meteor/app/api/server/v1/rooms.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { sendMessage } from '../../../../../apps/meteor/tests/data/messages.helper';
 import { createRoom, acceptRoomInvite, getRoomMembers } from '../../../../../apps/meteor/tests/data/rooms.helper';
