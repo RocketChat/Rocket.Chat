@@ -181,6 +181,10 @@ export class ListenersModule {
 				.catch((err) => logger.error({ msg: 'Failed to refresh status visibility', err, targets }));
 		});
 
+		service.onEvent('video-conference.updated', ({ callId }) => {
+			notifications.notifyVideoConferenceUpdated(callId);
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
@@ -453,10 +457,6 @@ export class ListenersModule {
 
 		service.onEvent('notify.updateInvites', (uid, data): void => {
 			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
-		});
-
-		service.onEvent('notify.webdav', (uid, data): void => {
-			notifications.notifyUserInThisInstance(uid, 'webdav', data);
 		});
 
 		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {

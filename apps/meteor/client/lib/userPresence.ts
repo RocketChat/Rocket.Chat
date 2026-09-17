@@ -14,7 +14,7 @@ export class UserPresence {
 
 	private timer: ReturnType<typeof setTimeout> | undefined;
 
-	private status: UserStatus | undefined;
+	private status: UserStatus = UserStatus.ONLINE;
 
 	private awayTime: number | undefined = 60_000;
 
@@ -99,8 +99,7 @@ export class UserPresence {
 		this.setStatus.cancel();
 
 		if (!this.isIdle()) {
-			this.status = UserStatus.ONLINE;
-			this.startTimer();
+			void this.applyStatus(UserStatus.ONLINE);
 			return;
 		}
 
@@ -130,11 +129,9 @@ export class UserPresence {
 				isAutoAwayEnabled: enableAutoAway ?? false,
 				idleThreshold: idleTimeLimit,
 				setUserOnline: (online) => {
-					if (!online) {
-						this.setAway();
-						return;
-					}
-					this.registerActivity();
+					this.idle = !online;
+					this.setStatus.cancel();
+					this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
 				},
 			});
 

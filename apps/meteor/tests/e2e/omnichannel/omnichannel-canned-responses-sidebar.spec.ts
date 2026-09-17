@@ -47,9 +47,9 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 		]);
 	});
 
-	test('OC - Canned Responses Sidebar - Create', async ({ page }) => {
+	test('OC - Canned Responses Sidebar - Create', async () => {
 		await test.step('expect send a message as a visitor', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');

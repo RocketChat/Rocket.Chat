@@ -63,7 +63,6 @@ export default {
 		],
 	].filter(Boolean) as unknown as PlaywrightTestConfig['reporter'],
 	testDir: 'tests/e2e',
-	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,

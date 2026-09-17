@@ -37,7 +37,7 @@ test.describe('OC - Manage Departments', () => {
 	test.describe('Create first department', async () => {
 		test.beforeEach(async ({ page }: { page: Page }) => {
 			poOmnichannelDepartments = new OmnichannelDepartments(page);
-			await poOmnichannelDepartments.goTo();
+			await poOmnichannelDepartments.goto();
 		});
 
 		test('Create department', async ({ page }) => {
@@ -125,7 +125,7 @@ test.describe('OC - Manage Departments', () => {
 			poOmnichannelDepartments = new OmnichannelDepartments(page);
 
 			department = await createDepartment(api).then((res) => res.data);
-			await page.goto('/omnichannel/departments');
+			await poOmnichannelDepartments.goto();
 		});
 
 		test.afterEach(async ({ api }) => {

@@ -1,10 +1,12 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-export class Directory {
-	public readonly page: Page;
+import { RoutedPage } from './routed-page';
 
-	constructor(page: Page) {
-		this.page = page;
+export class Directory extends RoutedPage {
+	protected readonly route = '/directory';
+
+	async waitForReady(): Promise<void> {
+		await this.directoryHeader.waitFor({ state: 'visible' });
 	}
 
 	async searchChannel(name: string) {
@@ -20,16 +22,7 @@ export class Directory {
 		await this.getSearchByChannelName(name).click();
 	}
 
-	async goto() {
-		await this.page.goto('/directory');
-		await this.waitForDirectory();
-	}
-
 	private get directoryHeader(): Locator {
 		return this.page.locator('main').getByRole('heading', { name: 'Directory', exact: true });
-	}
-
-	private async waitForDirectory(): Promise<void> {
-		await this.directoryHeader.waitFor();
 	}
 }

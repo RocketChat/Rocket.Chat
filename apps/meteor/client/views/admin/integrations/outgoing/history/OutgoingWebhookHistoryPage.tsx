@@ -6,7 +6,7 @@ import type { ComponentProps } from 'react';
 import { useMemo, useState, useEffect } from 'react';
 
 import HistoryContent from './HistoryContent';
-import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../../../../lib/SDKClient';
 
 const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();

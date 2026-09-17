@@ -23,5 +23,7 @@
  * ```
  */
 export type ExperimentalEndpoints = {
-	// No experimental endpoints are currently declared.
+	'/experimental/rooms.setCategory': {
+		POST: (params: { roomIds: string[]; category: string | null }) => { success: true };
+	};
 };

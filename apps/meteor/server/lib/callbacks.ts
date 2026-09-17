@@ -97,6 +97,7 @@ interface EventLikeCallbackSignatures {
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id' | 'businessHourId'>) => void;
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
+	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
 	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
@@ -116,7 +117,6 @@ type ChainedCallbackSignatures = {
 		newRoom: IOmnichannelRoom,
 		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
 	) => IOmnichannelRoom;
-	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;

@@ -18,7 +18,7 @@ import type { FormEvent, FormEventHandler } from 'react';
 import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { getButtonStyle } from './getButtonStyle';
-import { getURL } from '../../../../app/utils/client/getURL';
+import { getURL } from '../../../lib/getURL';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
