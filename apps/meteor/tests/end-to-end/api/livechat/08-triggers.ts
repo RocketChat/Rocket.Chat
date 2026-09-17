@@ -298,7 +298,15 @@ describe('LIVECHAT - triggers', () => {
 	(IS_EE ? describe : describe.skip)('POST livechat/triggers/external-service/test', () => {
 		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
 
-		after(() => Promise.all([updateSetting('Livechat_secret_token', ''), restorePermissionToRoles('view-livechat-manager')]));
+		before(() => updateSetting('SSRF_Allowlist', new URL(webhookUrl).hostname));
+
+		after(() =>
+			Promise.all([
+				updateSetting('Livechat_secret_token', ''),
+				updateSetting('SSRF_Allowlist', ''),
+				restorePermissionToRoles('view-livechat-manager'),
+			]),
+		);
 
 		it('should fail if user is not logged in', async () => {
 			await request.post(api('livechat/triggers/external-service/test')).send({}).expect(401);

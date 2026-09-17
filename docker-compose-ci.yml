@@ -220,6 +220,10 @@ services:
 
   httpbin:
     image: kong/httpbin
+    networks:
+      default:
+        aliases:
+          - httpbin.dev
 
   mock-server:
     image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
