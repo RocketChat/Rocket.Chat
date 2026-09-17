@@ -26,6 +26,8 @@ import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
 
+const isBroken = shouldBreakInVersion('9.0.0');
+
 export type SaveUserData = {
 	_id?: IUser['_id'];
 	setRandomPassword?: boolean;
@@ -222,6 +224,13 @@ const _saveUser = (session?: ClientSession) =>
 			} else {
 				updater.set('phones', userData.phones);
 			}
+
+			// TODO: 9.0 - migrate `phone` to `phones`
+			updater.unset('phone');
+
+			if (isBroken) {
+				throw new Error("IUser['phone'] is deprecated and should be migrated to IUser['phones']");
+			}
 		}
 
 		if (typeof userData.verified === 'boolean') {
@@ -321,6 +330,7 @@ const _saveUser = (session?: ClientSession) =>
 				delete userData.verified;
 			}
 
+			const phonesProvided = Array.isArray(userData.phones);
 			const phonesUnset = Array.isArray(userData.phones) && userData.phones.length === 0;
 			if (phonesUnset) {
 				delete userData.phones;
@@ -335,14 +345,18 @@ const _saveUser = (session?: ClientSession) =>
 					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
-				...(phonesUnset && { unset: { phones: 1 } }),
+				...(phonesProvided && {
+					unset: {
+						...(phonesUnset && { phones: 1 }),
+						phone: 1,
+					},
+				}),
 			});
 		}, session);
 
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
