@@ -27,12 +27,21 @@ describe('createComposerHistory', () => {
 	let clock = 0;
 	const now = () => clock;
 
+	const histories: ReturnType<typeof createComposerHistory>[] = [];
+
+	const makeHistory = (options: Parameters<typeof createComposerHistory>[0]) => {
+		const history = createComposerHistory(options);
+		histories.push(history);
+		return history;
+	};
+
 	beforeEach(() => {
 		clock = 0;
 		mockedGetSelectionRange.mockReturnValue({ selectionStart: 0, selectionEnd: 0 });
 	});
 
 	afterEach(() => {
+		histories.splice(0).forEach((history) => history.release());
 		document.body.innerHTML = '';
 		jest.clearAllMocks();
 	});
@@ -55,7 +64,7 @@ describe('createComposerHistory', () => {
 	it('coalesces consecutive typing into a single undo step', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'h');
 		typeInput(input, 'he');
@@ -71,7 +80,7 @@ describe('createComposerHistory', () => {
 	it('breaks the undo step when the caret moves between edits', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		typeInput(input, 'ab', 'b');
@@ -94,7 +103,7 @@ describe('createComposerHistory', () => {
 	it('restores the caret to the edit location after an edit at a moved caret', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'abc');
 
@@ -112,7 +121,7 @@ describe('createComposerHistory', () => {
 	it('breaks the undo step on whitespace boundaries', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'h');
 		typeInput(input, 'he');
@@ -133,7 +142,7 @@ describe('createComposerHistory', () => {
 	it('breaks the undo step after a pause longer than the coalesce timeout', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		clock = 2000;
@@ -148,7 +157,7 @@ describe('createComposerHistory', () => {
 	it('breaks the undo step when switching between insert and delete', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		typeInput(input, 'ab', 'b');
@@ -161,7 +170,7 @@ describe('createComposerHistory', () => {
 	it('treats a paste as its own undo step', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'x');
 		typeInput(input, 'xpasted', 'pasted', 'insertFromPaste');
@@ -173,7 +182,7 @@ describe('createComposerHistory', () => {
 	it('treats a programmatic change as its own undo step', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		programmatic(input, '*a*');
@@ -185,7 +194,7 @@ describe('createComposerHistory', () => {
 	it('does not create a ghost step for a re-selection after a formatting change', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'bold');
 
@@ -207,7 +216,7 @@ describe('createComposerHistory', () => {
 	it('starts a new undo step when typing replaces a selected range', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'foo');
 
@@ -224,7 +233,7 @@ describe('createComposerHistory', () => {
 	it('clears the redo stack when a new change is recorded after an undo', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		typeInput(input, 'ab', 'b');
@@ -243,7 +252,7 @@ describe('createComposerHistory', () => {
 			setState(input, entry.text);
 			input.dispatchEvent(new InputEvent('input', { inputType: 'insertText', bubbles: true }));
 		});
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		clock = 2000;
@@ -259,7 +268,7 @@ describe('createComposerHistory', () => {
 	it('caps the undo stack at the configured limit', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, limit: 2, now });
+		const history = makeHistory({ input, applyState, limit: 2, now });
 
 		programmatic(input, 'a');
 		programmatic(input, 'b');
@@ -276,7 +285,7 @@ describe('createComposerHistory', () => {
 	it('handles undo/redo keyboard shortcuts and prevents the default', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		typeInput(input, 'ab', 'b');
@@ -299,7 +308,7 @@ describe('createComposerHistory', () => {
 	it('commits a single undo step for an IME composition', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 
@@ -317,7 +326,7 @@ describe('createComposerHistory', () => {
 	it('stops recording after release', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
-		const history = createComposerHistory({ input, applyState, now });
+		const history = makeHistory({ input, applyState, now });
 
 		typeInput(input, 'a');
 		history.release();

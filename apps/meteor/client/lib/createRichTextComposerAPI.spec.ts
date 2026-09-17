@@ -40,12 +40,26 @@ afterAll(() => {
 
 const stripLineEnd = (text: string | null): string => (text ?? '').replace(/\n$/, '');
 
+const composers: ReturnType<typeof createRichTextComposerAPI>[] = [];
+
+const makeComposer = (...args: Parameters<typeof createRichTextComposerAPI>) => {
+	const composer = createRichTextComposerAPI(...args);
+	composers.push(composer);
+	return composer;
+};
+
+afterEach(() => {
+	composers.splice(0).forEach((composer) => composer.release());
+	window.getSelection()?.removeAllRanges();
+	document.body.innerHTML = '';
+});
+
 const setupComposer = (initialValue: string, cursor: { start: number; end: number }) => {
 	const input = document.createElement('div');
 	input.contentEditable = 'true';
 	document.body.appendChild(input);
 
-	const composer = createRichTextComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+	const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 	input.textContent = initialValue;
 	setSelectionRange(input, cursor.start, cursor.end);
@@ -54,11 +68,6 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 };
 
 describe('RichText Composer API - replaceText', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it('places the caret after a full emoji shortcode instead of one character in', () => {
 		const { composer, input } = setupComposer(':smi', { start: 4, end: 4 });
 
@@ -105,11 +114,6 @@ describe('RichText Composer API - replaceText', () => {
 });
 
 describe('RichText Composer API - toggleLinePrefix', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it.each([
 		['bullets', UNORDERED_LINE_PREFIX, '- one\n- two'],
 		['numbers', ORDERED_LINE_PREFIX, '1. one\n2. two'],
@@ -151,11 +155,6 @@ describe('RichText Composer API - toggleLinePrefix', () => {
 });
 
 describe('RichText Composer API - insertNewLine', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it.each([
 		['carries the bullet onto the new line', '- one', '- one\n- '],
 		['carries the next number onto the new line', '1. one', '1. one\n2. '],
@@ -268,11 +267,6 @@ describe('RichText Composer API - insertNewLine', () => {
 });
 
 describe('RichText Composer API - insertText', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it('inserts into an empty composer instead of doing nothing', () => {
 		const { composer, input } = setupComposer('', { start: 0, end: 0 });
 
@@ -286,7 +280,7 @@ describe('RichText Composer API - insertText', () => {
 		const input = document.createElement('div');
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
-		const composer = createRichTextComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		input.innerHTML = '<br>';
 		expect(input.firstChild?.nodeName).toBe('BR');
@@ -342,17 +336,12 @@ describe('RichText Composer API - insertText', () => {
 });
 
 describe('RichText Composer API - draft restore', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it('renders the restored draft markup without waiting for a keystroke', () => {
 		const input = document.createElement('div');
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
 
-		createRichTextComposerAPI(input, jest.fn(), '*bold*', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		makeComposer(input, jest.fn(), '*bold*', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		expect(input.querySelector('strong')).not.toBeNull();
 		expect(input.textContent).toBe('*bold*\n');
@@ -363,7 +352,7 @@ describe('RichText Composer API - draft restore', () => {
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
 
-		const composer = createRichTextComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		expect(input.textContent).toBe('');
 		expect(composer.text).toBe('');
@@ -371,17 +360,12 @@ describe('RichText Composer API - draft restore', () => {
 });
 
 describe('RichText Composer API - text', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it('does not expose the trailing newline the renderer appends', () => {
 		const input = document.createElement('div');
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
 
-		const composer = createRichTextComposerAPI(
+		const composer = makeComposer(
 			input,
 			jest.fn(),
 			'edited *message*',
@@ -408,11 +392,6 @@ describe('RichText Composer API - text', () => {
 });
 
 describe('RichText Composer API - wrapSelection', () => {
-	afterEach(() => {
-		window.getSelection()?.removeAllRanges();
-		document.body.innerHTML = '';
-	});
-
 	it('wraps a selection with the given pattern', () => {
 		const { composer, input } = setupComposer('test', { start: 0, end: 4 });
 
