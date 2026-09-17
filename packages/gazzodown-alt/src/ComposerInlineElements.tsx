@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import ComposerBoldSpan from './ComposerBoldSpan';
 import ComposerCodeElement from './ComposerCodeElement';
 import ComposerItalicSpan from './ComposerItalicSpan';
+import ComposerLinkSpan from './ComposerLinkSpan';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerMentionChannel from './ComposerMentionChannel';
 import ComposerMentionUser from './ComposerMentionUser';
@@ -47,6 +48,9 @@ const ComposerInlineElements = ({ children }: ComposerInlineElementsProps): Reac
 
 					case 'INLINE_CODE':
 						return <ComposerCodeElement key={index} code={child.value.value} />;
+
+					case 'LINK':
+						return <ComposerLinkSpan key={index} href={child.value.src.value} text={sourceOf(child, source)} />;
 
 					default: {
 						if (child.type === undefined) {
