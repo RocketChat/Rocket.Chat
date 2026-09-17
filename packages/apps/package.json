@@ -27,13 +27,15 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
+		"typecheck:types": "tsc -p tsconfig-types-test.json",
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/tools": "workspace:^",
 		"acorn": "8.17.0",
 		"acorn-walk": "8.3.5",
 		"adm-zip": "^0.6.0",
