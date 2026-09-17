@@ -1,0 +1,23 @@
+apps/meteor/tests/unit/app/authorization/lib/AuthorizationUtils.spec.ts
+  s_cf18a0522dffd4::t_d60ddde881169f 37,39,43
+  s_cf18a0522dffd4::t_cecdc706eaf52c 101
+  s_cf18a0522dffd4::t_7f7ff585c951d8 32,34,38,40-42,44-45,55-56,58,61-65,67,73,75-81,84-85,92,95,99-100,108-112,115-116
+  s_cf18a0522dffd4::t_b244cedbde05a7 25
+  s_cf18a0522dffd4::t_43ec905cb1708f 1-24,26-31,33,35-36,46-54,57,59-60,66,68-72,74,82-83,86-91,93-94,96-98,102-107,113-114,117-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "811c94cf81fa51ba4ec1c2c1111d95a558feb539",
+  "prompts": {},
+  "sessions": {
+    "s_cf18a0522dffd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "21a9e87d-77cb-4056-815b-bf0f2a77366c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
