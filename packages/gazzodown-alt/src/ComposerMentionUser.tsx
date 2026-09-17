@@ -1,7 +1,5 @@
 import type { ReactElement } from 'react';
-import { memo, useContext, useMemo } from 'react';
-
-import { ComposerMarkupContext } from './ComposerMarkupContext';
+import { memo } from 'react';
 
 type ComposerMentionUserProps = {
 	mention: string;
@@ -9,22 +7,9 @@ type ComposerMentionUserProps = {
 
 const highlightClassName = (variant: 'relevant' | 'other'): string => `rcx-message__highlight rcx-message__highlight--${variant}`;
 
-const ComposerMentionUser = ({ mention }: ComposerMentionUserProps): ReactElement => {
-	const { resolveUserMention } = useContext(ComposerMarkupContext);
-
-	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
-
-	const className = highlightClassName(mention === 'all' || mention === 'here' ? 'relevant' : 'other');
-
-	if (!resolved) {
-		return <span className={className}>@{mention}</span>;
-	}
-
-	return (
-		<span className={className} data-uid={resolved._id}>
-			@{resolved.username ?? mention}
-		</span>
-	);
-};
+// TODO: Once implemented add mention resolution logic
+const ComposerMentionUser = ({ mention }: ComposerMentionUserProps): ReactElement => (
+	<span className={highlightClassName(mention === 'all' || mention === 'here' ? 'relevant' : 'other')}>@{mention}</span>
+);
 
 export default memo(ComposerMentionUser);

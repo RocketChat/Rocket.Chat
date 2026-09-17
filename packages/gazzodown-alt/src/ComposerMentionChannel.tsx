@@ -1,7 +1,5 @@
 import type { ReactElement } from 'react';
-import { memo, useContext, useMemo } from 'react';
-
-import { ComposerMarkupContext } from './ComposerMarkupContext';
+import { memo } from 'react';
 
 type ComposerMentionChannelProps = {
 	mention: string;
@@ -9,16 +7,6 @@ type ComposerMentionChannelProps = {
 
 const className = 'rcx-message__highlight rcx-message__highlight--link';
 
-const ComposerMentionChannel = ({ mention }: ComposerMentionChannelProps): ReactElement => {
-	const { resolveChannelMention } = useContext(ComposerMarkupContext);
-
-	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);
-
-	if (!resolved) {
-		return <span className={className}>#{mention}</span>;
-	}
-
-	return <span className={className}>#{resolved.fname ?? mention}</span>;
-};
+const ComposerMentionChannel = ({ mention }: ComposerMentionChannelProps): ReactElement => <span className={className}>#{mention}</span>;
 
 export default memo(ComposerMentionChannel);
