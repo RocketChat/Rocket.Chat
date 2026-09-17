@@ -24,13 +24,26 @@ const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider Per
 const memberUser = { _id: 'member-id', username: 'member', name: 'Room Member', nickname: '', status: 'online', avatarETag: '' };
 
 const autocomplete = jest.fn((_params: { selector: string }) => ({ items: [outsider, memberUser] }) as any);
+
+/**
+ * What the picker asked the server for this term, if it asked at all.
+ *
+ * The mount-time query fires immediately with no term and no exceptions, and the members list arrives on its own
+ * schedule, so "has been called" and "the last call so far" prove nothing about either — including that typing
+ * still fetches anything. Every assertion about the picker's request goes through here.
+ */
+const askedFor = (term: string) =>
+	autocomplete.mock.calls.map(([params]) => JSON.parse(params.selector)).find((selector) => selector.term === term);
 // One endpoint for every room type that has a members list, paged: the modal keeps asking until it holds the
 // whole membership, because `API_Upper_Count_Limit` can cap a page well below what was requested.
 const oneRoomMember = (_params: { offset?: number }) =>
 	({ members: [{ _id: 'member-id', username: 'member' }], count: 1, offset: 0, total: 1, success: true }) as any;
 
 const roomMembers = jest.fn(oneRoomMember);
-const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true }) as any);
+// Answers with whoever was submitted, because what the modal reports is read off the answer — a fixture that
+// named a fixed person would report that person however the picker was used, and a test that passed on it
+// would pass on a modal that had stopped sending what was chosen.
+const addParticipants = jest.fn(({ users }: { users: string[] }) => ({ added: users, success: true }) as any);
 
 // The room is what the workspace knows about `rid`, and a conference member added from outside it knows
 // nothing — so it is given per test rather than seeded globally.
@@ -136,15 +149,11 @@ it('excludes the room members from the autocomplete when the workspace knows the
 
 	await typeFilter('outsider');
 
-	// The mount-time query fires immediately with no term and no exceptions, and the members list arrives on its
-	// own schedule, so "has been called" and "the last call so far" prove nothing about either. Wait for the query
-	// the test is about — the debounced term and the loaded exceptions travelling together — and read that one.
-	const selectorFor = (term: string) =>
-		autocomplete.mock.calls.map(([params]) => JSON.parse(params.selector)).find((selector) => selector.term === term);
+	// The debounced term and the loaded exceptions have to travel together, so this waits for the one request the
+	// test is about rather than for whichever went first.
+	await waitFor(() => expect(askedFor('outsider')).toBeDefined());
 
-	await waitFor(() => expect(selectorFor('outsider')).toBeDefined());
-
-	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: ['member'] });
+	expect(askedFor('outsider')).toEqual({ term: 'outsider', exceptions: ['member'] });
 });
 
 // `API_Upper_Count_Limit` caps every paginated endpoint and cannot be read from the client, so a workspace
@@ -167,12 +176,9 @@ it('keeps asking until it holds the whole membership, however small the pages ar
 
 	await typeFilter('outsider');
 
-	const selectorFor = (term: string) =>
-		autocomplete.mock.calls.map(([params]) => JSON.parse(params.selector)).find((selector) => selector.term === term);
+	await waitFor(() => expect(askedFor('outsider')).toBeDefined());
 
-	await waitFor(() => expect(selectorFor('outsider')).toBeDefined());
-
-	expect(selectorFor('outsider')).toEqual({ term: 'outsider', exceptions: everyone });
+	expect(askedFor('outsider')).toEqual({ term: 'outsider', exceptions: everyone });
 });
 
 // This is the regression that matters: a conference member added from outside the room has no room to
@@ -211,7 +217,9 @@ it('still fetches and offers users when there is no room to read', async () => {
 
 	await typeFilter('outsider');
 
-	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
+	// For the request the typing made, not merely for one: the picker asks once on mount with an empty term, so
+	// `toHaveBeenCalled` would hold even if typing had stopped fetching anything at all.
+	await waitFor(() => expect(askedFor('outsider')).toBeDefined());
 	expect(await screen.findByRole('option', { name: outsider.username })).toBeInTheDocument();
 });
 

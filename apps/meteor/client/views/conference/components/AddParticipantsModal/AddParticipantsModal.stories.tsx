@@ -26,8 +26,8 @@ const meta = {
 				// The ring control is only offered to a caller the workspace lets ring people, and it is half of what
 				// these stories are about.
 				.withPermission('videoconf-ring-users')
-				// Answers with whoever was submitted. A fixed name came back however the picker was used, so choosing
-				// Alan reported Grace added — an answer the endpoint cannot give.
+				// Answers with whoever was submitted, because what the modal reports is read off the answer: a fixture
+				// that named a fixed person would have the modal reporting someone the picker never chose.
 				.withEndpoint('POST', '/v1/video-conference.add-participants', ({ users }: any) => ({ added: users, success: true }) as any)
 				.withEndpoint(
 					'GET',
