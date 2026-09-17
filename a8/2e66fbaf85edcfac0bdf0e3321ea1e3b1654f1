@@ -1,0 +1,47 @@
+apps/meteor/client/views/admin/users/hooks/useManageUserStatusAction.ts
+  ai_agent 1,7,9,11,13,17
+apps/meteor/tests/e2e/admin-status-and-presence.spec.ts
+  ai_agent 1,5,7,30-33,48-50,54-55,59,61,80-81,99
+apps/meteor/client/views/admin/users/UsersTable/UsersTableRow.tsx
+  ai_agent 85
+apps/meteor/client/views/admin/statusAndPresence/SettingsTab.tsx
+  ai_agent 8-13,31
+apps/meteor/client/views/account/profile/UserStatusDisabledInfo.tsx
+  ai_agent 4
+apps/meteor/tests/e2e/page-objects/index.ts
+  ai_agent 11
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresencePage.tsx
+  ai_agent 2,12,14-15,20,37-38,43-45,47,49,51,53,55,57-59,63,75,79-81,87-88,90
+apps/meteor/client/views/admin/statusAndPresence/useManagedPresenceUsers.ts
+  ai_agent 1,6-7,14,21-45
+apps/meteor/client/views/admin/statusAndPresence/UserPresenceEditorFormWithData.tsx
+  ai_agent 1-21
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresenceTabs.tsx
+  ai_agent 6
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresenceRoute.tsx
+  ai_agent 1,6,21,34-37,41,44-45,47-51
+apps/meteor/client/views/admin/statusAndPresence/UserPresenceEditorForm.tsx
+  ai_agent 14,19,24,26-27,36,38,42,46,63,69-70,74,94,97-98,101-102,107-108,117-119,130-139,141-142,144-146,148-152,154,156,158-160,162-166,168-171,173-174,176-178,192,196,211-213,219-224,227,229-241,268,274,281
+apps/meteor/client/views/admin/statusAndPresence/UserPresenceTab.tsx
+  ai_agent 20
+apps/meteor/client/views/admin/statusAndPresence/UserPresenceTabRow.tsx
+  ai_agent 5,11,22-28,30
+apps/meteor/client/views/admin/users/AdminUserForm.tsx
+  ai_agent 143
+apps/meteor/tests/e2e/utils/getUserStatusAsViewer.ts
+  ai_agent 1-10
+apps/meteor/tests/e2e/utils/index.ts
+  ai_agent 5
+apps/meteor/client/views/admin/sidebarItems.ts
+  ai_agent 67
+apps/meteor/tests/e2e/page-objects/admin-status-and-presence.ts
+  ai_agent 1-38
+apps/meteor/client/lib/queryKeys.ts
+  ai_agent 199-204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a82e66fbaf85edcfac0bdf0e3321ea1e3b1654f1",
+  "prompts": {}
+}
