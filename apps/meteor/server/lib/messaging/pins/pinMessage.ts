@@ -92,6 +92,12 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+	// Unpinning already broadcasts the changed message; pinning did not, so a client that was not
+	// rendering the message never learned it became pinned. Anything deciding on `pinned` from the
+	// stream — the audio player, for one — would keep evaluating a stale value.
+	void notifyOnMessageChange({
+		id: originalMessage._id,
+	});
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 	}

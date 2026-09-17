@@ -79,9 +79,8 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 				const matchesCriteria = createDeleteCriteria(params);
 
 				// The playing message is matched on its full state: `drid` never changes once set, and
-				// `pinned` is refreshed by the provider while that message is rendered. It can still drift
-				// if the message is unmounted, which is accepted — leaving the player running on audio the
-				// server deleted, and whose file is gone, is the worse outcome.
+				// `pinned` is kept current from the room stream, so it holds even while the message is
+				// unmounted — which is exactly when a prune's refetch would otherwise leave it stale.
 				//
 				// A quoted original has no such refresh: the attachment stores its room but not its author
 				// or pinned state, so prunes filtering on those cannot be evaluated for it.

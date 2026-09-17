@@ -6,6 +6,7 @@ import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlaye
 import { MediaPlayerContext } from './MediaPlayerContext';
 import { useCloseOnTrackMessageDeleted } from './useCloseOnTrackMessageDeleted';
 import { useCloseOnTrackRoomLeft } from './useCloseOnTrackRoomLeft';
+import { useRefreshTrackFromRoomMessages } from './useRefreshTrackFromRoomMessages';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
@@ -127,6 +128,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
+	useRefreshTrackFromRoomMessages(track, updateTrack);
 	useCloseOnTrackMessageDeleted(track, close);
 	useCloseOnTrackRoomLeft(track, close);
 
