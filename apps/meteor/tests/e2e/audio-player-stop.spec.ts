@@ -14,6 +14,11 @@ const AUDIO_FILE = 'sample-audio.mp3';
 // Rendered text of the `message_pinned` system message, from the `Pinned_a_message` key.
 const PINNED_SYSTEM_MESSAGE = 'Pinned a message:';
 
+// Title of the pin status indicator, from the `Message_has_been_pinned` key. It is rendered from
+// the same message state the player reads `pinned` from, so it is the client-side proof that the
+// pin landed — which the server saying "pinned" on its own does not give.
+const PINNED_INDICATOR_TITLE = 'Message has been pinned';
+
 /**
  * The shared player is only meant to keep running while the audio is still the listener's to
  * hear. These cover the three ways that can stop being true without the playing message itself
@@ -123,6 +128,10 @@ test.describe('audio player stops when the audio is no longer available', () => 
 
 			// Separates a server-side pin failure from a player bug if this ever regresses.
 			await expect.poll(async () => (await (await api.get(`/chat.getMessage?msgId=${audioMessageId}`)).json()).message?.pinned).toBe(true);
+
+			// The server having stored the pin does not mean the client has processed it, and the
+			// prune below is only a test of the player once it has. Without this the step can race.
+			await expect(page.getByTitle(PINNED_INDICATOR_TITLE)).toBeVisible();
 		});
 
 		await test.step('a prune excluding pinned messages leaves playback alone', async () => {
