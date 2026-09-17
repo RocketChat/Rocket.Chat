@@ -1,0 +1,19 @@
+packages/authorization/src/canAccessRoom.spec.ts
+  s_2939f6c2b3a8e1::t_3ada1bee1ddec0 1-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "95331d32ff1f52075bc6a75e4f63c9cd58787fd4",
+  "prompts": {},
+  "sessions": {
+    "s_2939f6c2b3a8e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "99c6b675-c41f-413e-bf46-744437e9da57",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
