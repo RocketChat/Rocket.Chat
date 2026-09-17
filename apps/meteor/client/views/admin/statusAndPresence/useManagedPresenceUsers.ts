@@ -24,12 +24,15 @@ export const useFindManagedUser = () => {
 
 	return useStableCallback(async (username: string) => {
 		const count = 50;
+		let offset = 0;
 
-		for (let offset = 0; ; offset += count) {
+		for (;;) {
 			const { users, total } = await listStatusVisibility({ searchTerm: username, count, offset });
 			const found = users.find((user) => user.username === username);
 
-			if (found || !users.length || offset + users.length >= total) {
+			offset += users.length;
+
+			if (found || !users.length || offset >= total) {
 				return found;
 			}
 		}
