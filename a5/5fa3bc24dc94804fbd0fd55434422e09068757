@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  s_42b575b842b0f0::t_ae561fb71d21d8 76-80,82-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a55fa3bc24dc94804fbd0fd55434422e09068757",
+  "prompts": {},
+  "sessions": {
+    "s_42b575b842b0f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8fe2c112-cefd-4a9e-aa60-0839650882e3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
