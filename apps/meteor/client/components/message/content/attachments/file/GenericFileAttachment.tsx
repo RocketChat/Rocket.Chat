@@ -22,6 +22,9 @@ import AttachmentSize from '../structure/AttachmentSize';
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 const supportedDocumentViewerFormats = window.RocketChatDesktop?.supportedDocumentViewerFormats;
 
+// `format` comes from getFileExtension, which upper-cases the extension.
+const MARKDOWN_FILE_FORMATS = ['MD', 'MARKDOWN'];
+
 export type GenericFileAttachmentProps = MessageAttachmentBase;
 
 const GenericFileAttachment = ({
@@ -46,6 +49,7 @@ const GenericFileAttachment = ({
 		}
 
 		const isEncrypted = link.includes('/file-decrypt/');
+		const isMarkdown = MARKDOWN_FILE_FORMATS.includes(format ?? '');
 
 		try {
 			if (format === 'PDF' && openDocumentViewer) {
@@ -62,7 +66,7 @@ const GenericFileAttachment = ({
 				return;
 			}
 
-			if (format === 'MD' && !isEncrypted && openDocumentViewer && supportedDocumentViewerFormats?.().includes('markdown')) {
+			if (isMarkdown && !isEncrypted && openDocumentViewer && supportedDocumentViewerFormats?.().includes('markdown')) {
 				event.preventDefault();
 
 				const url = new URL(getURL(link), window.location.origin);
