@@ -85,7 +85,7 @@ const callHistoryListEndpoints = API.v1.get(
 		authRequired: true,
 	},
 	async function action() {
-		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort } = await this.parseJsonQuery();
 
 		const { direction, state, filter } = this.queryParams;
