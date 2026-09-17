@@ -298,11 +298,11 @@ describe('useAppSlashCommands', () => {
 		expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 25, count: 25 });
 	});
 
-	it('should fallback to 100 when API_Upper_Count_Limit is 0 or negative', async () => {
+	it.each([0, -1])('should fallback to 100 when API_Upper_Count_Limit is %i', async (upperCountLimit) => {
 		renderHook(() => useAppSlashCommands(), {
 			wrapper: mockAppRoot()
 				.withJohnDoe()
-				.withSetting('API_Upper_Count_Limit', 0)
+				.withSetting('API_Upper_Count_Limit', upperCountLimit)
 				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
 				.build(),
 		});
