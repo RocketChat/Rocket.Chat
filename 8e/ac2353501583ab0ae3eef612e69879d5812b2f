@@ -1,0 +1,24 @@
+apps/meteor/tests/data/users.helper.ts
+  s_de75916b5ae829::t_22b8a7103d5a75 76-78,84,92-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8eac2353501583ab0ae3eef612e69879d5812b2f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_de75916b5ae829": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c44cee78-0b30-4ec1-91d3-b82fbb016a06",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+ee/packages/federation-matrix/tests/end-to-end/ban.spec.ts
+  s_a5c6d13be454dc::t_8b88dac04fe026 8-14
+  s_a5c6d13be454dc::t_f4bc51aea914e6 56-57
+  s_a5c6d13be454dc::t_19f2fbcdc11635 70,87,122,161,180,242,266,275,303,333,360,369,397,403,412,434
+  s_a5c6d13be454dc::t_64230ec867e011 23,26-28,36,38-41,46
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  s_a5c6d13be454dc::t_64c0530c57bf5f 70
+  s_a5c6d13be454dc::t_dd5f3acf576c57 21,24-25,34-42,45
+  s_a5c6d13be454dc::t_48b864748c6795 46
+  s_a5c6d13be454dc::t_aafbb3274dd270 71
+ee/packages/federation-matrix/tests/end-to-end/messaging.spec.ts
+  s_a5c6d13be454dc::t_2bbbf47a88335b 12
+ee/packages/federation-matrix/tests/helper/config.ts
+  s_a5c6d13be454dc::t_49615dd49f5b74 24-25
+  s_a5c6d13be454dc::t_7d391d9556e342 21-23,26-27,36,39
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  s_a5c6d13be454dc::t_5b24ce3adeb454 56-64
+  s_a5c6d13be454dc::t_85a26e9ae02412 19-25
+  s_a5c6d13be454dc::t_dd2b311fe70f07 79
+  s_a5c6d13be454dc::t_2fc6f78f809f4c 39
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_a5c6d13be454dc::t_d004c236fdfa13 32,36-38,47-48,50-53,58
+  s_a5c6d13be454dc::t_29ffd49f13429c 627,647,1131,1151,1187,1206,1535,1555,1592,1611,1799
+  s_a5c6d13be454dc::t_6aa62d042ea9a3 80-81
+  s_a5c6d13be454dc::t_b6578e4772086e 120,188,575,664,684,692,704,1089,1168,1191,1210,1494,1572,1596,1619,1726
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1f1d85b8e4a2f1f672509916eae7c7a6bfd40b7e",
+  "prompts": {},
+  "sessions": {
+    "s_a5c6d13be454dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66daf2f3-4c29-49b1-8e5c-99f3a70862a2",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

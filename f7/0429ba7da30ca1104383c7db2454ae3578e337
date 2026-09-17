@@ -1,0 +1,25 @@
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_de75916b5ae829::t_3244b77de77e7a 1126-1134,1542-1550
+  s_de75916b5ae829::t_e02df2221958e2 612-620
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f70429ba7da30ca1104383c7db2454ae3578e337",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_de75916b5ae829": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c44cee78-0b30-4ec1-91d3-b82fbb016a06",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
