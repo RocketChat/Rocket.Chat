@@ -263,6 +263,55 @@ describe('useAppSlashCommands', () => {
 		});
 	});
 
+	it('should respect API_Upper_Count_Limit setting for batch size', async () => {
+		const mockCommands: SlashCommand[] = Array.from({ length: 30 }, (_, i) => ({
+			command: `/command${i + 1}`,
+			description: `Description for command ${i + 1}`,
+			params: '',
+			clientOnly: false,
+			providesPreview: false,
+			appId: `app-${i + 1}`,
+			permission: undefined,
+		}));
+
+		mockGetSlashCommands.mockImplementation(({ offset, count }) => {
+			return Promise.resolve({
+				commands: mockCommands.slice(offset, offset + count),
+				total: mockCommands.length,
+				appsLoaded: true,
+			});
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('API_Upper_Count_Limit', 25)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		await waitFor(() => {
+			expect(Object.keys(slashCommands.commands)).toHaveLength(mockCommands.length);
+		});
+
+		expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 25 });
+		expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 25, count: 25 });
+	});
+
+	it('should fallback to 100 when API_Upper_Count_Limit is 0 or negative', async () => {
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('API_Upper_Count_Limit', 0)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 100 });
+		});
+	});
+
 	it('should fetch all commands when the server returns fewer items than requested', async () => {
 		const serverPageSizeLimit = 20;
 
