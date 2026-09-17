@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/tests/end-to-end/ban.spec.ts
+  s_42b575b842b0f0::t_c02712a5632b62 56-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "713644e6fb4696fd23977287821d700de480c74c",
+  "prompts": {},
+  "sessions": {
+    "s_42b575b842b0f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8fe2c112-cefd-4a9e-aa60-0839650882e3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
