@@ -1,7 +1,7 @@
 import { useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { CallPreferences } from './useCallDevicesInitialState';
+import type { CallPreferences } from './useCallPreferences';
 import { useRoomSubscriptionQuery } from './useRoomSubscriptionQuery';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 

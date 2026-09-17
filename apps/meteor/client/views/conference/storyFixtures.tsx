@@ -17,7 +17,7 @@ import { I18nextProvider } from 'react-i18next';
 import { action } from 'storybook/actions';
 
 import ConferenceViewport from './ConferenceViewport';
-import { callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
+import { callPreferencesStorageKey } from './hooks/useCallPreferences';
 import type { ConferenceMember } from './hooks/useConferenceEmbedded';
 import { buildConferenceMember } from './testFixtures';
 import { storybookI18n } from '../../stories/i18n';
@@ -127,7 +127,10 @@ const CALL_PREFERENCES_KEY = callPreferencesStorageKey('john.doe');
 export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean; ring?: boolean }) => () => {
 	const previous = localStorage.getItem(CALL_PREFERENCES_KEY);
 
-	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, ...preferences }));
+	localStorage.setItem(
+		CALL_PREFERENCES_KEY,
+		JSON.stringify({ mic: true, cam: false, ring: true, blurLevel: 'none', videoQuality: 'auto', ...preferences }),
+	);
 
 	// Put back whatever was there, so one story's camera doesn't decide the next one's.
 	return () => {
@@ -223,6 +226,44 @@ export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode
 );
 
 export const allCapabilities: VideoConferenceCapabilities = { mic: true, cam: true, title: true };
+
+/**
+ * A provider that runs the call in our own window, which is what `canChooseDevices` is: only then does the
+ * preflight offer the microphone, speaker and camera pickers, because only then is the choice ours to make.
+ */
+export const embeddedCapabilities: VideoConferenceCapabilities = { ...allCapabilities, embedded: true };
+
+/**
+ * Media devices, since Storybook has none.
+ *
+ * `useCallDevicePreview` reads them from `navigator.mediaDevices`, so without this the preflight finds nothing
+ * to choose between and leaves the picker row out entirely — and that row is most of what the phone layouts are
+ * about. `getUserMedia` is deliberately absent: the hooks check for it, so the preview stays a placeholder
+ * instead of asking Storybook for a camera.
+ */
+export const withFakeDevices = () => () => {
+	const previous = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices');
+	const devices = [
+		{ deviceId: 'default', kind: 'audioinput', label: 'MacBook Pro Microphone', groupId: 'built-in' },
+		{ deviceId: 'yeti', kind: 'audioinput', label: 'Yeti Stereo Microphone', groupId: 'usb' },
+		{ deviceId: 'default', kind: 'audiooutput', label: 'MacBook Pro Speakers', groupId: 'built-in' },
+		{ deviceId: 'facetime', kind: 'videoinput', label: 'FaceTime HD Camera', groupId: 'built-in' },
+	] as unknown as MediaDeviceInfo[];
+
+	Object.defineProperty(navigator, 'mediaDevices', {
+		configurable: true,
+		value: { enumerateDevices: async () => devices, addEventListener: () => undefined, removeEventListener: () => undefined },
+	});
+
+	// Put the real thing back, so one story's devices don't decide the next one's.
+	return () => {
+		if (previous) {
+			Object.defineProperty(navigator, 'mediaDevices', previous);
+			return;
+		}
+		Reflect.deleteProperty(navigator, 'mediaDevices');
+	};
+};
 
 /**
  * The four states a member of a call can be in, which is what the members list is for.

@@ -20,21 +20,33 @@ type CallTopBarProps = {
 	startAt?: Date;
 	/** What the call is called, if it has been given a name. */
 	name?: string;
+	/**
+	 * A header of someone else's, in place of the one built from `startAt` and `name`.
+	 *
+	 * Only for a provider that renders the call in here and brings its own: there is a real header to mount, and
+	 * nothing this window could build from the call would be as good as the one the call is already drawing.
+	 */
+	host?: ReactNode;
 	/** This window's own actions about the call, at the inline end. */
 	children: ReactNode;
 };
 
 /**
- * The conference window's top bar, spanning the whole window above the call and its side panels.
+ * The conference window's top bar, spanning the whole window above the call *and* its side panels — the mirror
+ * of the bottom bar below them.
  *
- * It sits up here rather than inside the call area because what it says is about the call, not about the slice
- * of the window the call happens to occupy: put in the call area it stopped at the panel's edge and shifted
- * every time a panel opened. Fixed above them, the panels hang beneath it.
+ * It exists because a call that runs inside Rocket.Chat has a header of its own, and that header is about the
+ * call rather than about the slice of the window the call happens to occupy: put inside the call area it stopped
+ * at the panel's edge and shifted every time a panel opened. Up here it is fixed, and the panels hang beneath
+ * it — which is also where every other conferencing product puts it.
  *
  * What it says about the call, it builds. It used to take that as a `host` node, which meant the one page that
  * renders it also had to know how a call header is laid out — and that page has enough to do.
+ *
+ * Only a provider that renders in here has a header to give: one handed off to an iframe keeps its own chrome
+ * inside that frame, so this bar isn't rendered at all for those.
  */
-const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
+const CallTopBar = ({ startAt, name, host, children }: CallTopBarProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -53,25 +65,27 @@ const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
 			paddingInline={12}
 			gap={8}
 		>
-			<Box className={headerStyles}>
-				<CallTimer startAt={startAt} />
-				{/* The rule between the clock and the name is drawn, not typed. As a character it was content — read
+			{host ?? (
+				<Box className={headerStyles}>
+					<CallTimer startAt={startAt} />
+					{/* The rule between the clock and the name is drawn, not typed. As a character it was content — read
 				    out as "vertical line" by anything reading the header — and styled by nudging its opacity until it
 				    looked like a rule. */}
-				{name && (
-					<Box
-						is='span'
-						withTruncatedText
-						marginInlineStart={8}
-						paddingInlineStart={8}
-						borderInlineStartWidth='default'
-						borderInlineStartStyle='solid'
-						borderInlineStartColor='stroke-extra-light'
-					>
-						{name}
-					</Box>
-				)}
-			</Box>
+					{name && (
+						<Box
+							is='span'
+							withTruncatedText
+							marginInlineStart={8}
+							paddingInlineStart={8}
+							borderInlineStartWidth='default'
+							borderInlineStartStyle='solid'
+							borderInlineStartColor='stroke-extra-light'
+						>
+							{name}
+						</Box>
+					)}
+				</Box>
+			)}
 			{/* `ButtonGroup` has no `gap` prop — only `align`, `stretch`, `wrap`, `vertical`, `small` and `large` —
 			    so this one stays a style. */}
 			<ButtonGroup style={{ gap: 8 }}>{children}</ButtonGroup>

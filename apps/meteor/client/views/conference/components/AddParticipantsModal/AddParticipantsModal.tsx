@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomsQueryKeys, videoConferenceQueryKeys } from '../../../../lib/queryKeys';
-import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
+import { useCallRingPreference } from '../../hooks/useCallPreferences';
 
 /** What to ask for per page. The server may answer with fewer — see the query below. */
 const MEMBERS_PAGE = 100;

@@ -2,7 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import ConferencePreflight from './ConferencePreflight';
-import { allCapabilities, conferenceAppRoot, onPhone, storeCallPreferences, withConferenceWindow } from './storyFixtures';
+import {
+	allCapabilities,
+	conferenceAppRoot,
+	embeddedCapabilities,
+	onPhone,
+	storeCallPreferences,
+	withConferenceWindow,
+	withFakeDevices,
+} from './storyFixtures';
 
 /**
  * The screen a call actually starts on: what the camera will do on arrival, and what the call is called.
@@ -108,12 +116,16 @@ export const Confirming: Story = {
 };
 
 /**
- * The preflight on a phone held upright: one column, preview first, and everything down to Cancel fitting
- * without a scroll.
+ * The preflight on a phone held upright.
+ *
+ * One column, preview first. The three device pickers are what to look at: they wrap to a row each here, since
+ * three across a 393px screen left every device name cut to `Disp…`. Everything down to Cancel fits without
+ * scrolling.
  */
 export const MobilePortrait: Story = {
 	...onPhone('phonePortrait'),
-	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync' },
+	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync', capabilities: embeddedCapabilities },
+	beforeEach: withFakeDevices(),
 };
 
 /**
@@ -126,7 +138,8 @@ export const MobilePortrait: Story = {
  */
 export const MobileLandscape: Story = {
 	...onPhone('phoneLandscape'),
-	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync' },
+	args: { isDirect: false, canName: true, name: 'Weekly sync', defaultName: 'Weekly sync', capabilities: embeddedCapabilities },
+	beforeEach: withFakeDevices(),
 };
 
 /**
@@ -135,5 +148,6 @@ export const MobileLandscape: Story = {
  */
 export const MobileLandscapeCameraOn: Story = {
 	...onPhone('phoneLandscape'),
-	beforeEach: storeCallPreferences({ cam: true }),
+	args: { capabilities: embeddedCapabilities },
+	beforeEach: [withFakeDevices(), storeCallPreferences({ cam: true })],
 };
