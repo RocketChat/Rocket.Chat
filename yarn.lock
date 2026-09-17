@@ -9854,6 +9854,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@stryker-mutator/core": "npm:^10.0.0"
     "@types/debug": "npm:^4.1.13"
     "@types/lodash.clonedeep": "npm:^4.5.9"
     "@types/node": "npm:~24.13.2"

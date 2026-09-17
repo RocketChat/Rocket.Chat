@@ -30,6 +30,29 @@ specs that score below 60%.
 Pick the target for what a missed fault would cost: churn multiplied by blast radius. Code that changes often
 and that many callers depend on earns the attention. A regex over the spec does not tell you that.
 
+## The Apps-Engine package
+
+`packages/apps` carries its own config, because it runs `node:test` rather than mocha.
+
+```bash
+cd packages/apps && yarn testmutation          # the default target
+cd packages/apps && TARGET=AppConsole yarn testmutation
+```
+
+[packages/apps/stryker.conf.js](../packages/apps/stryker.conf.js) names the targets, and each target pairs a
+test file with the code that test file owns. Two things read differently there.
+
+- **There is no `NoCoverage`.** `node:test` has no Stryker runner, so the run goes through the generic command
+  runner. Stryker cannot ask a command which test reached which line, so a mutant nothing reaches still exits
+  0 and reports as `Survived`. Read a survivor in a member the test never calls as "not tested", not as "not
+  checked".
+- **Every mutant reruns the whole command.** `coverageAnalysis` must be `off` for the same reason. Keep the
+  target's `test` pointed at one test file; the package's full suite takes nine minutes.
+
+Two test files stay out of every target. `DenoRuntimeSubprocessController.test.ts` and
+`SecureFieldsCodecCompatibility.test.ts` spawn a real Deno subprocess, take about four minutes each, and fail
+without the Deno cache. A red baseline stops Stryker before it mutates anything.
+
 ## Point it at your code
 
 The config is scoped to one spec and to the code that spec owns. Two constants at the top move together:
