@@ -17,7 +17,6 @@ const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id', token:
 const getUserForCheck = sinon.stub().resolves({ _id: 'user-id', services: {} });
 const doesUserRequire2FA = sinon.stub().returns(false);
 const removeById = sinon.stub().resolves();
-const extendExpirationById = sinon.stub().resolves();
 const findOneNotExpiredById = sinon.stub().resolves(null);
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
@@ -29,7 +28,7 @@ const samlUtilsMock = {
 const handler = sinon.stub();
 proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'@rocket.chat/models': {
-		CredentialTokens: { removeById, extendExpirationById, findOneNotExpiredById },
+		CredentialTokens: { removeById, findOneNotExpiredById },
 	},
 	'meteor/accounts-base': {
 		Accounts: {
@@ -60,8 +59,6 @@ describe('SAML loginHandler', () => {
 		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });
 		insertOrUpdateSAMLUser.reset();
 		insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'login-token' });
-		extendExpirationById.reset();
-		extendExpirationById.resolves();
 		findOneNotExpiredById.reset();
 		findOneNotExpiredById.resolves({ _id: 'token', expireAt: new Date(Date.now() + 60000) });
 		removeById.reset();
@@ -96,7 +93,6 @@ describe('SAML loginHandler', () => {
 
 		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
 		expect(removeById.calledOnceWith('token')).to.be.true;
-		expect(extendExpirationById.called).to.be.false;
 	});
 
 	it('should keep the credential alive when a second factor is required', async () => {
@@ -105,7 +101,6 @@ describe('SAML loginHandler', () => {
 		const result = await handler({ saml: true, credentialToken: 'token' });
 
 		expect(result).to.deep.equal({ userId: 'user-id', token: 'login-token' });
-		expect(extendExpirationById.calledOnceWith('token')).to.be.true;
 		expect(removeById.called).to.be.false;
 	});
 
@@ -114,6 +109,5 @@ describe('SAML loginHandler', () => {
 		await handler({ saml: true, credentialToken: 'token' });
 
 		expect(removeById.called).to.be.true;
-		expect(extendExpirationById.called).to.be.false;
 	});
 });
