@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
+import { request as playwrightRequest } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -13,17 +15,17 @@ test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ api, browser }) => {
-		targetChannel = await createTargetChannel(api);
-		const page = await browser.newPage({ storageState: Users.user1.state });
+	test.beforeAll(async ({ api }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: [Users.user1.data.username] });
+		targetChannel = channel.name as string;
+		const request = await playwrightRequest.newContext();
 		try {
-			const channel = new HomeChannel(page);
-			await channel.goto();
-			await channel.navbar.openChat(targetChannel);
-			await channel.content.sendMessage('msg1');
-			await channel.content.sendMessage('msg2');
+			for (const message of ['msg1', 'msg2']) {
+				const response = await sendMessageFromUser(request, Users.user1, channel._id, message);
+				expect(response.success).toBe(true);
+			}
 		} finally {
-			await page.close();
+			await request.dispose();
 		}
 	});
 
