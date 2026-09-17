@@ -609,6 +609,13 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Always_show_thread_replies_in_main_channel',
 			});
 
+			await this.add('Accounts_Default_User_Preferences_showVoiceTranscriptions', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Show_voice_transcriptions',
+				i18nDescription: 'Show_voice_transcriptions_Description',
+			});
+
 			await this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
 				type: 'select',
 				values: [

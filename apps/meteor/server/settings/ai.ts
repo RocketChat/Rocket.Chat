@@ -192,4 +192,121 @@ export const createAISettings = async (): Promise<void> => {
 		i18nLabel: 'MCP_Expose_Extended_API',
 		i18nDescription: 'MCP_Expose_Extended_API_Description',
 	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Enabled', false, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'AI_Voice_Transcription_Enabled',
+		i18nDescription: 'AI_Voice_Transcription_Enabled_Description',
+		invalidValue: false,
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Engine', 'whisper-cpp-server', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'select',
+		values: [
+			{ key: 'whisper-cpp-server', i18nLabel: 'AI_Voice_Transcription_Engine_whisper_cpp_server' },
+			{ key: 'openai-compatible', i18nLabel: 'AI_Voice_Transcription_Engine_openai_compatible' },
+		],
+		i18nLabel: 'AI_Voice_Transcription_Engine',
+		i18nDescription: 'AI_Voice_Transcription_Engine_Description',
+		invalidValue: 'whisper-cpp-server',
+		enableQuery: { _id: 'AI_Voice_Transcription_Enabled', value: true },
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Whisper_Server_URL', 'http://localhost:8080', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'string',
+		i18nLabel: 'AI_Voice_Transcription_Whisper_Server_URL',
+		i18nDescription: 'AI_Voice_Transcription_Whisper_Server_URL_Description',
+		invalidValue: '',
+		enableQuery: [
+			{ _id: 'AI_Voice_Transcription_Enabled', value: true },
+			{ _id: 'AI_Voice_Transcription_Engine', value: 'whisper-cpp-server' },
+		],
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_OpenAI_Base_URL', 'https://api.openai.com/v1', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'string',
+		i18nLabel: 'AI_Voice_Transcription_OpenAI_Base_URL',
+		i18nDescription: 'AI_Voice_Transcription_OpenAI_Base_URL_Description',
+		invalidValue: '',
+		enableQuery: [
+			{ _id: 'AI_Voice_Transcription_Enabled', value: true },
+			{ _id: 'AI_Voice_Transcription_Engine', value: 'openai-compatible' },
+		],
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_OpenAI_API_Key', '', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'password',
+		secret: true,
+		i18nLabel: 'AI_Voice_Transcription_OpenAI_API_Key',
+		i18nDescription: 'AI_Voice_Transcription_OpenAI_API_Key_Description',
+		invalidValue: '',
+		enableQuery: [
+			{ _id: 'AI_Voice_Transcription_Enabled', value: true },
+			{ _id: 'AI_Voice_Transcription_Engine', value: 'openai-compatible' },
+		],
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_OpenAI_Model', 'whisper-1', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'string',
+		i18nLabel: 'AI_Voice_Transcription_OpenAI_Model',
+		i18nDescription: 'AI_Voice_Transcription_OpenAI_Model_Description',
+		invalidValue: '',
+		enableQuery: [
+			{ _id: 'AI_Voice_Transcription_Enabled', value: true },
+			{ _id: 'AI_Voice_Transcription_Engine', value: 'openai-compatible' },
+		],
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Language', '', {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'string',
+		i18nLabel: 'AI_Voice_Transcription_Language',
+		i18nDescription: 'AI_Voice_Transcription_Language_Description',
+		invalidValue: '',
+		enableQuery: { _id: 'AI_Voice_Transcription_Enabled', value: true },
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Max_File_Size_KB', 25600, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'int',
+		i18nLabel: 'AI_Voice_Transcription_Max_File_Size_KB',
+		i18nDescription: 'AI_Voice_Transcription_Max_File_Size_KB_Description',
+		invalidValue: 25600,
+		enableQuery: { _id: 'AI_Voice_Transcription_Enabled', value: true },
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Timeout_Seconds', 120, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'int',
+		i18nLabel: 'AI_Voice_Transcription_Timeout_Seconds',
+		i18nDescription: 'AI_Voice_Transcription_Timeout_Seconds_Description',
+		invalidValue: 120,
+		enableQuery: { _id: 'AI_Voice_Transcription_Enabled', value: true },
+	});
+
+	await settingsRegistry.add('AI_Voice_Transcription_Max_Concurrent_Jobs', 1, {
+		group: AI_SETTINGS_GROUP,
+		section: 'Voice_Transcription',
+		type: 'int',
+		i18nLabel: 'AI_Voice_Transcription_Max_Concurrent_Jobs',
+		i18nDescription: 'AI_Voice_Transcription_Max_Concurrent_Jobs_Description',
+		invalidValue: 1,
+		enableQuery: { _id: 'AI_Voice_Transcription_Enabled', value: true },
+	});
 };

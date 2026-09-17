@@ -1,6 +1,6 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useMediaUrl, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
@@ -8,6 +8,7 @@ import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerP
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
+import AudioAttachmentTranscription from './AudioAttachmentTranscription';
 
 /** Extra context about the message that owns this audio, used by the shared player. */
 export type AudioAttachmentSource = {
@@ -31,10 +32,14 @@ const AudioAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
+	transcription,
 	source,
 }: AudioAttachmentComponentProps) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
+	const transcriptionEnabled = useSetting('AI_Voice_Transcription_Enabled') === true;
+	const showVoiceTranscriptions = useUserPreference<boolean>('showVoiceTranscriptions') ?? true;
+	const shouldRenderTranscription = transcriptionEnabled && showVoiceTranscriptions && Boolean(transcription);
 
 	const { play, toggle, seek, cyclePlaybackRate, isActive, playing, currentTime, duration, playbackRate } = useMediaPlayer();
 
@@ -90,6 +95,7 @@ const AudioAttachment = ({
 					>
 						<track kind='captions' />
 					</audio>
+					{shouldRenderTranscription && transcription ? <AudioAttachmentTranscription transcription={transcription} /> : null}
 				</Box>
 			</MessageCollapsible>
 		</>

@@ -56,6 +56,17 @@ const PreferencesMessagesSection = () => {
 					<FieldHint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</FieldHint>
 				</Field>
 				<Field>
+					<FieldRow>
+						<FieldLabel>{t('Show_voice_transcriptions')}</FieldLabel>
+						<Controller
+							name='showVoiceTranscriptions'
+							control={control}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
+						/>
+					</FieldRow>
+					<FieldHint>{t('Show_voice_transcriptions_Description')}</FieldHint>
+				</Field>
+				<Field>
 					<FieldLabel>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
 					<FieldRow>
 						<Controller

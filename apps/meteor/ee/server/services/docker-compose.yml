@@ -111,6 +111,21 @@ services:
     depends_on:
       - nats
 
+  transcription-service:
+    container_name: transcription-service
+    build:
+      context: .
+      args:
+        SERVICE: transcription-service
+    image: rocketchat/transcription-service:latest
+    env_file: .config/services/service.env
+    # Lets the service reach a whisper-server running on the host (for example the
+    # native macOS build) via http://host.docker.internal:8080.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
   nats:
     image: nats
     ports:

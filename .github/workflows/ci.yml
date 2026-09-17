@@ -394,7 +394,7 @@ jobs:
         service:
           [
             [authorization-service, queue-worker-service, ddp-streamer-service],
-            [account-service, presence-service, omnichannel-transcript-service],
+            [account-service, presence-service, omnichannel-transcript-service, transcription-service],
             [rocketchat],
           ]
         type:

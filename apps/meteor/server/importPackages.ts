@@ -87,6 +87,7 @@ import './slashcommands/unarchiveroom';
 import './bridges/smarsh';
 import './settings/theme';
 import './hooks/messages/processThreads';
+import './hooks/messages/transcribeAudioAttachments';
 import './lib/ui-master';
 import './bridges/webdav';
 import './lib/auth-providers/wordpress';
