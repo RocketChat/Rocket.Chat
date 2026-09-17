@@ -24,6 +24,7 @@ import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useFindManagedUser } from './useManagedPresenceUsers';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 type UserPresenceEditorFormValues = {
@@ -43,7 +44,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 	const { t } = useTranslation();
 	const userId = user?._id;
 	const defaultValues: UserPresenceEditorFormValues = {
-		username: user?.username ?? defaultUsername ?? '',
+		username: defaultUsername ?? '',
 		presenceEnabled: !user?.presenceDisabledByAdmin,
 		statusText: user?.statusText ?? '',
 		hiddenFrom: user?.statusVisibilityDeniedByAdmin ?? [],
@@ -70,6 +71,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 	} = useForm<UserPresenceEditorFormValues>({ defaultValues });
 
 	const presenceEnabled = watch('presenceEnabled');
+	const targetUsername = watch('username');
 
 	const applyPresence = useStableCallback(
 		async (
@@ -247,11 +249,27 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 							<Controller
 								control={control}
 								name='statusText'
+								rules={{
+									maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }) },
+								}}
 								render={({ field: { value, onChange } }) => (
-									<TextInput id={statusTextFieldId} value={value} onChange={onChange} disabled={!presenceEnabled} />
+									<TextInput
+										id={statusTextFieldId}
+										value={value}
+										onChange={onChange}
+										disabled={!presenceEnabled}
+										error={errors.statusText?.message}
+										aria-invalid={errors.statusText ? 'true' : 'false'}
+										aria-describedby={`${statusTextFieldId}-error`}
+									/>
 								)}
 							/>
 						</FieldRow>
+						{errors.statusText && (
+							<FieldError aria-live='assertive' id={`${statusTextFieldId}-error`}>
+								{errors.statusText.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={hiddenFromFieldId}>{t('Hide_presence_from')}</FieldLabel>
@@ -265,6 +283,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 										value={value}
 										onChange={onChange}
 										disabled={!presenceEnabled}
+										exceptions={targetUsername ? [targetUsername] : undefined}
 										aria-describedby={`${hiddenFromFieldId}-hint`}
 										placeholder={t('Select_users')}
 									/>

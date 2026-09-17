@@ -104,9 +104,10 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				!isFederatedUser && {
 					changeUserStatusAction,
 				}),
-			...(manageUserStatusAction && {
-				manageUserStatusAction,
-			}),
+			...(manageUserStatusAction &&
+				!isFederatedUser && {
+					manageUserStatusAction,
+				}),
 			...(deleteUserAction && {
 				deleteUserAction,
 			}),

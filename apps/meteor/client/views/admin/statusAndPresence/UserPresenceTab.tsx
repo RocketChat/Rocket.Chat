@@ -15,6 +15,7 @@ import UserPresenceTabRow from './UserPresenceTabRow';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useManagedPresenceUsers } from './useManagedPresenceUsers';
 import FilterByText from '../../../components/FilterByText';
+import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults';
 
 export type UserPresenceTabProps = {
@@ -35,7 +36,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 		onSetCurrent(0);
 	}, [text, onSetCurrent]);
 
-	const { data, isLoading, isSuccess } = useManagedPresenceUsers(query);
+	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(query);
 
 	const headers = (
 		<>
@@ -50,6 +51,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)}>
 				<Button onClick={() => onEdit()}>{t('Manage_user_presence')}</Button>
 			</FilterByText>
+			{isError && <GenericError icon='circle-exclamation' buttonAction={() => refetch()} />}
 			{isSuccess && data.users.length === 0 && (
 				<GenericNoResults title={t('No_managed_users')} description={t('No_managed_users_description')} />
 			)}

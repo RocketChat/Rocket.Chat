@@ -48,6 +48,7 @@ import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
@@ -113,6 +114,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const { data: hasPresenceLicense = false } = useHasLicenseModule('unlimited-presence');
 	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
+	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -139,7 +141,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
-	const showUserStatusSection = hasPresenceLicense && userStatusEnabled && canViewFullOtherUserInfo;
+	const showUserStatusSection = hasPresenceLicense && userStatusEnabled && canViewFullOtherUserInfo && canEditOtherUserInfo;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
@@ -158,6 +160,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
+			queryClient.invalidateQueries({ queryKey: managedPresenceQueryKeys.all });
 			router.navigate(`/admin/users/info/${_id}`);
 			onReload();
 			refetchUserFormData?.();
@@ -187,16 +190,22 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
 				userId: userData?._id,
-				data: { ...userFormData, ...(showUserStatusSection && statusVisibilityDeniedByAdmin && { statusVisibilityDeniedByAdmin }) },
+				data: {
+					...userFormData,
+					...(showUserStatusSection && {
+						presenceDisabledByAdmin,
+						...(statusVisibilityDeniedByAdmin && { statusVisibilityDeniedByAdmin }),
+					}),
+				},
 			});
 		}
 
-		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
+		return handleCreateUser.mutateAsync({ ...userFormData, ...(showUserStatusSection && { presenceDisabledByAdmin }), fields: '' });
 	});
 
 	const nameId = useId();
