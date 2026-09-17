@@ -241,6 +241,12 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+
+			const phonesUnset = Array.isArray(userData.phones) && userData.phones.length === 0;
+			if (phonesUnset) {
+				delete userData.phones;
+			}
+
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
@@ -248,6 +254,7 @@ const _saveUser = (session?: ClientSession) =>
 					...userData,
 					emails: userUpdated?.emails,
 				},
+				...(phonesUnset && { unset: { phones: 1 } }),
 			});
 		}, session);
 
