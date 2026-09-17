@@ -1,0 +1,37 @@
+apps/meteor/client/views/admin/statusAndPresence/UserPresenceEditorForm.tsx
+  s_3b9b807a6b94df::t_3ae9376baac7df 15
+  s_3b9b807a6b94df::t_7b38e650f44e38 208-228
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_3b9b807a6b94df::t_7f1d766457d5c9 2-3,76-78,80-93,157,252-255,262-264,296
+  s_3b9b807a6b94df::t_99fd4edcd3676a 79
+apps/meteor/tests/e2e/admin-status-and-presence.spec.ts
+  s_3b9b807a6b94df::t_1a8e65c32c14a1 60
+  s_3b9b807a6b94df::t_6a1d3a6365cf50 1,4,6,11,27
+  s_3b9b807a6b94df::t_7c1d9e44e1af8b 55-56,58
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresencePage.tsx
+  s_3b9b807a6b94df::t_c648b7609a2e15 33,36
+  s_3b9b807a6b94df::t_455453e4e26196 98
+  s_3b9b807a6b94df::t_b00a801021f875 71
+apps/meteor/client/views/admin/statusAndPresence/SettingsTab.tsx
+  s_3b9b807a6b94df::t_ef6177c56c2a40 8-14,16,21,28-30
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresenceRoute.tsx
+  s_3b9b807a6b94df::t_eb04f026f4f1ae 66
+  s_3b9b807a6b94df::t_d094f8db96467c 37,73
+  s_3b9b807a6b94df::t_77f080ef070dfa 1-9,11,21-22,28,31-32,36,38-40,42,61-65,67-72,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "158b847a35a6d9c3035d6904ff422a57f54de8dc",
+  "prompts": {},
+  "sessions": {
+    "s_3b9b807a6b94df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58777f1b-22b9-4ea0-90b4-84449b67068a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

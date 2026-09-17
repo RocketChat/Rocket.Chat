@@ -1,0 +1,27 @@
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_3b9b807a6b94df::t_7f1d766457d5c9 2-3,76-78,80-93,157,252-255,262-264,296
+  s_3b9b807a6b94df::t_99fd4edcd3676a 79
+.changeset/admin-status-text-manual-status.md
+  s_3b9b807a6b94df::t_53c5943834d248 1-5
+apps/meteor/tests/end-to-end/api/users.ts
+  s_3b9b807a6b94df::t_07561eec44af0b 3220-3221
+  s_3b9b807a6b94df::t_655d5c42268964 13
+  s_3b9b807a6b94df::t_1f2ecc7d1998b7 26
+  s_3b9b807a6b94df::t_4689c2e66f3843 3181-3219,3222-3275
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6d8a28758515fa27320f5588e59f5f26948d2f13",
+  "prompts": {},
+  "sessions": {
+    "s_3b9b807a6b94df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58777f1b-22b9-4ea0-90b4-84449b67068a",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}

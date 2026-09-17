@@ -1,0 +1,24 @@
+.changeset/admin-status-text-manual-status.md
+  ai_agent 1-5
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_3b9b807a6b94df::t_99fd4edcd3676a 79
+  s_3b9b807a6b94df::t_7f1d766457d5c9 2-3,76-78,80-93,157,252-255,262-264,296
+apps/meteor/tests/end-to-end/api/users.ts
+  ai_agent 13,26,3181-3272
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "aff3b4805ad145e3e682cd6412cff3f73e287676",
+  "prompts": {},
+  "sessions": {
+    "s_3b9b807a6b94df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58777f1b-22b9-4ea0-90b4-84449b67068a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
