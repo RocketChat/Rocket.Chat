@@ -29,19 +29,29 @@ export const useRefreshTrackFromRoomMessages = (
 
 	const rid = track?.rid;
 	const mid = track?.mid;
+	const id = track?.id;
 
 	useEffect(() => {
-		if (!rid || !mid) {
+		if (!rid || !mid || !id) {
 			return;
 		}
 
 		return subscribeToRoomMessages(rid, (message: IMessage) => {
+			if (message._id !== mid) {
+				return;
+			}
+
 			const { current } = trackRef;
-			if (!current || message._id !== mid) {
+			// The ref is written during render, so between a track being swapped and this
+			// subscription being torn down it already points at the new track while this callback
+			// still belongs to the old one. Without this the previous message's state would be
+			// written onto a different track — `updateTrack`'s own id check cannot catch it,
+			// because the patch carries the id of whatever `current` is.
+			if (!current || current.id !== id) {
 				return;
 			}
 
 			updateTrack({ ...current, pinned: message.pinned, drid: message.drid });
 		});
-	}, [rid, mid, subscribeToRoomMessages, updateTrack]);
+	}, [rid, mid, id, subscribeToRoomMessages, updateTrack]);
 };

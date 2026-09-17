@@ -61,6 +61,24 @@ describe('useRefreshTrackFromRoomMessages', () => {
 		expect(updateTrack).not.toHaveBeenCalled();
 	});
 
+	it('does not apply the previous message state after the player switches to another track in the same room', () => {
+		const updateTrack = jest.fn();
+		const first = buildTrack({ id: 'mid1:url', mid: 'mid1' });
+		const second = buildTrack({ id: 'mid2:url', mid: 'mid2' });
+		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
+
+		const { rerender } = renderHook(({ track }) => useRefreshTrackFromRoomMessages(track, updateTrack), {
+			initialProps: { track: first as PersistentAudioTrack | null },
+			wrapper: mockAppRoot().withStream('room-messages', roomMessagesRef).build(),
+		});
+
+		rerender({ track: second });
+
+		roomMessagesRef.controller?.emit(first.rid!, [{ _id: first.mid!, pinned: true } as IMessage]);
+
+		expect(updateTrack).not.toHaveBeenCalled();
+	});
+
 	it('does nothing when there is no track', () => {
 		const updateTrack = jest.fn();
 
