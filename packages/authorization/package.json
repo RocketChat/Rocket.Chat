@@ -9,7 +9,8 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
