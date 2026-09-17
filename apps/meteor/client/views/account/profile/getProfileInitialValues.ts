@@ -29,6 +29,6 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 		nickname: user?.nickname ?? '',
 		statusVisibilityDenied: user?.settings?.preferences?.statusVisibilityDenied ?? [],
 		...getUserStatusInitialValues(user),
-		phones: user?.phones ?? (user?.phone ? [{ number: user.phone }] : []),
+		phones: user?.phones?.map(({ verified: _verified, ...phone }) => phone) ?? (user?.phone ? [{ number: user.phone }] : []),
 	};
 };
