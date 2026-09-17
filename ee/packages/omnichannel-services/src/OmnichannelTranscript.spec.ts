@@ -78,7 +78,6 @@ describe('OmnichannelTranscript', () => {
 					Conversation_closed: 'Conversation closed: {{comment}}.',
 				}),
 			},
-			initAsync: true,
 		});
 
 		omnichannelTranscript = new OmnichannelTranscript(Logger, i18n);

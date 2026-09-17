@@ -24,7 +24,6 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps) => {
 				prefix: '__',
 				suffix: '__',
 			},
-			initAsync: false,
 		});
 
 		const translate = (key: string, ...replaces: unknown[]): string => {

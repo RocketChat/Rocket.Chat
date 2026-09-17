@@ -21,7 +21,6 @@ void i18n.init({
 			),
 		]),
 	),
-	initAsync: false,
 });
 
 export { i18n };
