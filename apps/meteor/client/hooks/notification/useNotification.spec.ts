@@ -153,6 +153,21 @@ describe('useNotification', () => {
 			});
 		});
 
+		it('honours a notification that requires interaction even when the preference is disabled', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().withUserPreference('desktopNotificationRequireInteraction', false).build(),
+			});
+
+			await result.current({ ...buildPayload(undefined, 5), requireInteraction: true });
+
+			const [instance] = MockNotification.instances;
+			expect(instance.options?.requireInteraction).toBe(true);
+
+			jest.advanceTimersByTime(60_000);
+
+			expect(instance.close).not.toHaveBeenCalled();
+		});
+
 		it('does not schedule an auto-close timer when requireInteraction is set, even with a duration', async () => {
 			const { result } = renderHook(() => useNotification(), {
 				wrapper: mockAppRoot().withUserPreference('desktopNotificationRequireInteraction', true).build(),

@@ -10,7 +10,7 @@ import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {
-	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
+	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
 	const router = useRouter();
 	const notificationAllowed = useNotificationAllowed();
 
@@ -31,6 +31,10 @@ export const useNotification = () => {
 			msg: notification.text,
 			notification: true,
 		} as any);
+
+		// A notification may demand interaction on its own — a conference ring outlives the
+		// recipient's preference, per INotificationDesktop.requireInteraction.
+		const requireInteraction = requireInteractionPreference || notification.requireInteraction;
 
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
