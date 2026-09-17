@@ -82,8 +82,7 @@ ENV DEPLOY_METHOD=docker \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \
-    Accounts_AvatarStorePath=/app/uploads \
-    APPS_ENGINE_RUNTIME_BACKEND=node
+    Accounts_AvatarStorePath=/app/uploads
 
 # the hardened image has no /etc/alpine-release, so node-gyp-build would detect
 # glibc and load the wrong prebuild for native modules

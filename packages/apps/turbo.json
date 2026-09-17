@@ -8,7 +8,7 @@
                 "base-runtime/**",
                 "node-runtime/**",
                 "scripts/**",
-                "dist/**",
+                "dist/**"
             ]
         }
     }
