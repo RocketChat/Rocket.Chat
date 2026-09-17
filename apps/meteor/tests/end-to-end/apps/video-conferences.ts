@@ -10,11 +10,23 @@ import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
+const assertMissingConferenceResponse = (res: Response, expectNotFound: boolean) => {
+	expect(res.status).to.equal(expectNotFound ? 404 : 400);
+	expect(res.body).to.have.property('success', false);
+	expect(res.body).to.have.property('error', expectNotFound ? 'Resource not found' : 'invalid-params');
+};
+
 describe('Apps - Video Conferences', () => {
 	before((done) => getCredentials(done));
 
+	let expectNotFound = false;
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;
+
+	before(async () => {
+		const res = await request.get('/api/info').set(credentials).expect(200);
+		expectNotFound = Number.parseInt(res.body.info.version, 10) >= 9;
+	});
 
 	before(async () => {
 		const res = await createRoom({
@@ -373,11 +385,7 @@ describe('Apps - Video Conferences', () => {
 					.post(api('video-conference.join'))
 					.set(credentials)
 					.send({ callId: 'missing-video-conference' })
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'invalid-params');
-					});
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 
@@ -387,11 +395,7 @@ describe('Apps - Video Conferences', () => {
 					.post(api('video-conference.cancel'))
 					.set(credentials)
 					.send({ callId: 'missing-video-conference' })
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'invalid-params');
-					});
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 
@@ -439,11 +443,7 @@ describe('Apps - Video Conferences', () => {
 					.get(api('video-conference.info'))
 					.set(credentials)
 					.query({ callId: 'missing-video-conference' })
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'invalid-params');
-					});
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 
@@ -996,11 +996,7 @@ describe('Apps - Video Conferences', () => {
 						.get(api('video-conference.list'))
 						.set(credentials)
 						.query({ roomId: 'missing-room' })
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'invalid-params');
-						});
+						.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 				});
 			});
 
