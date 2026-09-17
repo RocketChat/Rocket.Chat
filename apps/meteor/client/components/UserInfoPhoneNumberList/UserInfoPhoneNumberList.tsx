@@ -8,7 +8,7 @@ const UserInfoPhoneNumberList = ({ phones }: { phones: IUserPhoneNumber[] }) => 
 		{phones.map((p, index) => (
 			<Box is='li' key={`${p.number}${p.label}${index}`} display='flex' flexDirection='row' alignItems='center'>
 				<Box is='a' withTruncatedText href={`tel:${p.number}`} style={{ textDecoration: 'none' }}>
-					<span style={{ textDecoration: 'underline' }}>{formatPhoneNumber(p.number)}</span>
+					<span style={{ textDecoration: 'underline' }}>{p.number.startsWith('+') ? formatPhoneNumber(p.number) : p.number}</span>
 					{p.label && (
 						<Box marginInlineStart={4} fontScale='p2' color='hint' is='span' withTruncatedText>
 							({p.label})
