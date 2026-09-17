@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 export type StatusAndPresenceTab = 'settings' | 'custom-status' | 'user-presence';
 
-type StatusAndPresenceTabsProps = {
+export type StatusAndPresenceTabsProps = {
 	currentTab: StatusAndPresenceTab;
 	onChange: (tab: StatusAndPresenceTab) => void;
 	canManageCustomStatus: boolean;
