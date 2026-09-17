@@ -1,0 +1,19 @@
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  s_42b575b842b0f0::t_34a5092b87094e 57-61,63,68-69,71,73-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9fb23fd73107b1b4805d6ee3dbc264a5667e0fac",
+  "prompts": {},
+  "sessions": {
+    "s_42b575b842b0f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8fe2c112-cefd-4a9e-aa60-0839650882e3",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
