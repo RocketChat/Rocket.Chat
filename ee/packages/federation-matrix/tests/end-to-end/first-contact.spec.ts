@@ -16,7 +16,13 @@ import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
 const remoteUser = federationConfig.hs1.firstContactUser;
-const localUser = federationConfig.rc1.firstContactUser;
+
+const localUserName = `fed-first-contact-user-${Date.now()}`;
+const localUser = {
+	username: localUserName,
+	password: 'random',
+	matrixUserId: `@${localUserName}:${federationConfig.rc1.domain}`,
+};
 
 /**
  * Every other federation spec reuses Synapse users that earlier specs have already pulled into
@@ -30,6 +36,7 @@ const localUser = federationConfig.rc1.firstContactUser;
 (IS_EE ? describe : describe.skip)('Federation first contact', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1InviteeRequestConfig: IRequestConfig;
+	let rc1Invitee: IUser;
 	let hs1FirstContactApp: SynapseClient;
 
 	const forgetRemoteUserLocally = async () => {
@@ -46,18 +53,15 @@ const localUser = federationConfig.rc1.firstContactUser;
 			federationConfig.rc1.adminPassword,
 		);
 
-		const existingLocalUser = await getUserByUsername(localUser.username, rc1AdminRequestConfig);
-		if (!existingLocalUser?._id) {
-			await createUser(
-				{
-					username: localUser.username,
-					password: localUser.password,
-					email: `${localUser.username}@rocket.chat`,
-					name: localUser.username,
-				},
-				rc1AdminRequestConfig,
-			);
-		}
+		rc1Invitee = await createUser(
+			{
+				username: localUser.username,
+				password: localUser.password,
+				email: `${localUser.username}@rocket.chat`,
+				name: localUser.username,
+			},
+			rc1AdminRequestConfig,
+		);
 
 		rc1InviteeRequestConfig = await getRequestConfig(federationConfig.rc1.url, localUser.username, localUser.password);
 
@@ -72,6 +76,7 @@ const localUser = federationConfig.rc1.firstContactUser;
 		// leave the environment cold so a rerun against persistent containers still tests first contact
 		await forgetRemoteUserLocally();
 		await hs1FirstContactApp?.close();
+		await deleteUser(rc1Invitee, {}, rc1AdminRequestConfig);
 	});
 
 	it('should not know the remote user before the first interaction', async () => {

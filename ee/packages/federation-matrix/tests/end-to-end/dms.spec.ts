@@ -52,17 +52,6 @@ const waitForRoomEvent = async (
 			federationConfig.rc1.adminPassword,
 		);
 
-		// Create user1 in RC1 using federation config values
-		await createUser(
-			{
-				username: federationConfig.rc1.additionalUser1.username,
-				password: federationConfig.rc1.additionalUser1.password,
-				email: `${federationConfig.rc1.additionalUser1.username}@rocket.chat`,
-				name: federationConfig.rc1.additionalUser1.username,
-			},
-			rc1AdminRequestConfig,
-		);
-
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
