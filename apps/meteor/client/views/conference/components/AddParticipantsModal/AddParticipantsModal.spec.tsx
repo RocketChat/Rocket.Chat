@@ -200,9 +200,8 @@ it('refuses to add more people than the call can take at once', async () => {
 	renderModal();
 
 	for (const person of many) {
-		// eslint-disable-next-line no-await-in-loop
 		await typeFilter(person.username);
-		// eslint-disable-next-line no-await-in-loop
+
 		await userEvent.click(await screen.findByRole('option', { name: person.username }));
 	}
 

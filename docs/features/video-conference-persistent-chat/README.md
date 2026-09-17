@@ -761,10 +761,11 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 ### Talking to the provider's page
 
 A provider reached by URL renders in this window's iframe, and its page can carry controls of its own — a chat
-button in its in-meeting toolbar, a Leave button. Those controls know nothing about the panels beside the frame
-unless something tells them. `useProviderPlugin` is the protocol that does: the provider's chat button becomes a
-remote control for the chat panel this window owns, and this window hears about a call the user left from inside
-the frame.
+button in its in-meeting toolbar, a Leave button, a participant list with a host's controls on it. Those controls
+know nothing about the panels beside the frame unless something tells them. `useProviderPlugin` is the protocol
+that does: the provider's chat button becomes a remote control for the chat panel this window owns, this window
+hears about a call the user left from inside the frame, and the people panel becomes the call's own participant
+list.
 
 The namespace is Rocket.Chat's, not any provider's — `{ action: 'rocketchat:videoconf/<name>', ...payload }` —
 so any provider plugin that speaks it gets the same behaviour. Pexip's
@@ -774,12 +775,21 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 
 | Direction | Action | Payload | What it means here |
 |---|---|---|---|
-| plugin → window | `ready` | — | The control rendered, and knows nothing. Answered with the panel's state and its unread — the one message that *must* be answered |
+| plugin → window | `ready` | `{ features }` | The capability announcement, and the one message that *must* be answered — with the panel's state and its unread. A control is offered only for a feature named here |
 | plugin → window | `toggle-chat` | `{ active }` | The control was used; the chat panel opens or closes |
 | plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
 | plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
 | window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
+| plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
+| plugin → window | `roster` | `{ participants }` | Who the provider has in the call, the whole list on every change |
 | window → plugin | `chat-unread` | `{ unread }` | The same unread that badges the top bar's chat toggle |
+| window → plugin | `mute` / `mute-video` | `{ participantUuid, muted }` | The conference's own mute, which is the one a host can undo |
+| window → plugin | `admit` / `disconnect` | `{ participantUuid }` | Let somebody in, or hang up on them — turning someone away at the door is the same request as the latter |
+| window → plugin | `spotlight` | `{ participantUuid, active }` | |
+| window → plugin | `set-role` | `{ participantUuid, role: 'host' \| 'guest' }` | The provider's own vocabulary may differ; translating it is the plugin's |
+| window → plugin | `transfer` | `{ participantUuid, alias, role?, pin? }` | Move somebody to another conference. The role is deliberately never sent, so a transfer cannot quietly promote anyone |
+| window → plugin | `dtmf` | `{ participantUuid, digits }` | Keypad tones for whoever joined over a telephone line |
+| window → plugin | `mute-all-guests` | `{ muted }` | Silences the call at once, offered to whoever `self.canControl` says may |
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 
@@ -799,6 +809,43 @@ Rocket.Chat that is itself embedded in another page would never see those messag
 Pexip's plugin also exposes `dial-out`, which would let this window dial a phone or SIP destination into the
 call. It is deliberately not part of the protocol above: nothing here can send it, because the participants
 modal takes usernames only.
+
+### Who is in the call, and what may be done to them
+
+The people panel shows two lists of people that describe the same call and contain different sets of them.
+
+Ours is the record of who was **asked**: it carries the avatars, the usernames and where each of them stands —
+invited, ringing, declined, left — and it holds people who are not in the call at all. The provider's roster is
+who is **connected** right now, which is the only list whose entries can be muted, spotlit or hung up on, and it
+holds people the conference has never heard of: guests with a link, SIP dial-ins, anyone who arrived by an
+address rather than an invitation.
+
+Neither overrules the other. Our membership decides which group a member is listed under, because the rest of
+the window already counts on it and a provider with no plugin would otherwise show a call with nobody in it. The
+provider decides what a row can *do*: a member it has in the call carries that participant's controls, and one
+it does not carries none. A participant belonging to no member is a row of its own, under the name the provider
+gave. Where the two disagree, both are simply shown — someone we still record as present who has left the call
+keeps their row with nothing to press on it, and someone whose join we have not heard about yet is listed as not
+in the call with the controls that do work.
+
+The lobby is the exception: anyone the provider has waiting is lifted into a group of their own ahead of the
+rest, because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
+would be offered a ring instead of the admit they need.
+
+**A control is offered only when the provider announced the feature in `ready` *and* that participant's own
+`can.*` flag allows it.** That rule is not a nicety: the protocol carries no replies, so a request the provider
+refuses is a 403 logged in a console this window cannot read, and the only sign of it is the next roster looking
+exactly like the last one. A control offered against either half is a button that silently does nothing, every
+time it is pressed.
+
+Identity is `client/views/conference/lib/callParticipants.ts`. Every control is addressed by the participant's
+`uuid` and never by a name; whether that participant *is* a known user is a separate question, answered by a
+uuid the member's own client claimed with the display name corroborating it, or — failing a claim — by exactly
+one member wearing that name. Two namesakes with nothing to separate them is a coin toss rather than a match,
+and losing it would put one person's microphone under another's face, so it resolves to an external participant
+instead. The claim is self-reported and unverifiable against the provider, which is why the name still has to
+agree: impersonation is narrowed to two users who are already indistinguishable on screen, which was accepted
+deliberately.
 
 ## Settings
 

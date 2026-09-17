@@ -106,14 +106,17 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// it for exactly this kind of mark — so the dot on the chat button honours it too.
 	const hasUnseenActivity = !chatVisible && !unread && Boolean(subscription?.alert) && !subscription?.hideUnreadStatus;
 
-	// A provider page can carry a chat control of its own, and a plugin there can hand it to the panel this page
+	// A provider page can carry controls of its own, and a plugin there can hand them to the panels this page
 	// owns — see `useProviderPlugin` for the protocol. Same badge as the top bar's toggle, since it is the same
-	// panel and the same unread behind both.
-	useProviderPlugin({
+	// panel and the same unread behind both. What comes back is who the provider has in the call and what may
+	// be asked of them, which is what the people panel renders its controls from.
+	const provider = useProviderPlugin({
 		conferenceUrl: conference.url,
 		chatVisible,
+		participantsVisible: activePanel === 'members',
 		hasUnread: unread > 0 || hasUnseenActivity,
 		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
+		onToggleParticipants: (active) => setActivePanel(active ? 'members' : undefined),
 		// The same thing hanging up does for a provider that runs the call in here: report the departure and
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
@@ -257,6 +260,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 							rid={room.rid}
 							members={call.members}
 							chatAccess={room.chatAccess}
+							provider={provider}
 							onClose={() => togglePanel('members')}
 						/>
 					)}

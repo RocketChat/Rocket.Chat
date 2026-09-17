@@ -10,12 +10,20 @@ import { canRingConferenceMember, getConferenceMemberStatus } from '../../../../
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { useIsRinging } from '../../../../hooks/useRinging';
 import type { ConferenceMember } from '../../hooks/useConferenceEmbedded';
+import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
+import CallParticipantControls from '../CallParticipantControls/CallParticipantControls';
+import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus';
 
 type CallMemberItemProps = {
 	member: ConferenceMember;
 	hasChatAccess: boolean;
 	/** Whether this member's ring has been asked for and not yet answered. */
 	ringing?: boolean;
+	/**
+	 * What the provider lets this row do, for a member it has in the call. Absent for everyone else: a member
+	 * the provider does not have is one no request could name.
+	 */
+	controls?: Omit<CallParticipantControlsProps, 'name'>;
 	onRing: (memberId: string) => void;
 };
 
@@ -25,7 +33,7 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	invited: 'Waiting_for_answer',
 };
 
-const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, onRing }: CallMemberItemProps) => {
+const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, controls, onRing }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 	// Ringing is a workspace-level permission, and `video-conference.ring` refuses without it — so a caller who
@@ -52,6 +60,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 							{displayUsername}
 						</Box>
 					)}
+					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
 						// The icon is decorative — `Icon` renders `aria-hidden`, so the label it carried was read by
 						// nothing. What this row is announced as is its own content, so the fact goes in as text: seen
@@ -80,6 +89,11 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 						disabled={ringRequested}
 						onClick={() => onRing(member._id)}
 					/>
+				</OptionColumn>
+			)}
+			{controls && (
+				<OptionColumn>
+					<CallParticipantControls name={nameOrUsername} {...controls} />
 				</OptionColumn>
 			)}
 		</Option>
