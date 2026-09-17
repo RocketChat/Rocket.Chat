@@ -1,7 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type UserStatusDisabledInfoProps = { workspace: boolean };
+export type UserStatusDisabledInfoProps = { workspace: boolean };
 
 const UserStatusDisabledInfo = ({ workspace }: UserStatusDisabledInfoProps) => {
 	const { t } = useTranslation();

@@ -1,12 +1,16 @@
 import { AccordionItem, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Setting from '../settings/Setting';
 import SettingsGroupPage from '../settings/SettingsGroupPage';
 
-const SettingsTab = ({ tabs, headerButtons }: { tabs: ReactNode; headerButtons?: ReactNode }) => {
+export type SettingsTabProps = {
+	tabs: ReactNode;
+	headerButtons?: ReactNode;
+};
+
+const SettingsTab = ({ tabs, headerButtons }: SettingsTabProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -24,4 +28,4 @@ const SettingsTab = ({ tabs, headerButtons }: { tabs: ReactNode; headerButtons?:
 	);
 };
 
-export default memo(SettingsTab);
+export default SettingsTab;

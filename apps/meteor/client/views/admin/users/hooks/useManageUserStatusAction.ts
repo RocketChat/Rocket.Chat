@@ -1,20 +1,20 @@
-import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
-export const useManageUserStatusAction = (): AdminUserAction | undefined => {
+export const useManageUserStatusAction = (username?: string): AdminUserAction | undefined => {
 	const { t } = useTranslation();
-	const statusRoute = useRoute('user-status');
+	const router = useRouter();
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
-	const { data: hasUnlimitedPresence } = useHasLicenseModule('unlimited-presence');
+	const { data: hasUnlimitedPresence = false } = useHasLicenseModule('unlimited-presence');
 
-	return canEditOtherUserInfo && hasUnlimitedPresence
+	return canEditOtherUserInfo && hasUnlimitedPresence && username
 		? {
 				icon: 'circle-unfilled',
 				content: t('Manage_status'),
-				onClick: () => statusRoute.push({ tab: 'user-presence' }),
+				onClick: () => router.navigate({ name: 'user-status', params: { tab: 'user-presence', context: 'edit', id: username } }),
 			}
 		: undefined;
 };

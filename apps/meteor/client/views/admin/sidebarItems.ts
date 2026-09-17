@@ -64,7 +64,7 @@ export const {
 		href: '/admin/user-status',
 		i18nLabel: 'Status_and_presence',
 		icon: 'user',
-		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status', 'edit-other-user-info']),
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
 	},
 	{
 		href: '/admin/permissions',

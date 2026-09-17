@@ -140,7 +140,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
 	const showUserStatusSection = hasPresenceLicense && userStatusEnabled && canViewFullOtherUserInfo;
-	const statusFieldsDisabled = showUserStatusSection && presenceDisabledByAdmin === true;
+	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');

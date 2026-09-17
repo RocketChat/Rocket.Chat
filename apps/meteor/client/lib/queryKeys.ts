@@ -207,3 +207,9 @@ export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
 };
+
+export const managedPresenceQueryKeys = {
+	all: ['admin', 'managed-presence-users'] as const,
+	list: (query: PaginatedRequest) => [...managedPresenceQueryKeys.all, query] as const,
+	byUsername: (username?: IUser['username']) => [...managedPresenceQueryKeys.all, 'byUsername', username] as const,
+};
