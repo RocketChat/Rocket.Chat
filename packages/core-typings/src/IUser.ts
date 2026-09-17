@@ -156,8 +156,6 @@ export interface IUserEmail {
 export interface IUserPhoneNumber {
 	number: string;
 	label?: string;
-	primary?: boolean;
-	verified?: boolean;
 }
 
 export interface IUserCalendar {

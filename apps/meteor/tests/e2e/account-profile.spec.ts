@@ -118,8 +118,8 @@ test.describe.serial('settings-account-profile', () => {
 
 			test('should remove a phone on account profile and persist result', async ({ api, page }) => {
 				await setUserPhones(api, Users.user3.data._id, [
-					{ number: '+15554440001', label: 'Work', primary: true },
-					{ number: '+15554440002', label: 'Home', primary: false },
+					{ number: '+15554440001', label: 'Work' },
+					{ number: '+15554440002', label: 'Home' },
 				]);
 
 				await page.reload();

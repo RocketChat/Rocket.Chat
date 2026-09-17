@@ -114,10 +114,8 @@ const UsersUpdateParamsPostSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							number: { type: 'string', transformTrimWhitespaces: true, format: 'basic_phone_number' },
+							number: { type: 'string', transformStripWhitespaces: true, format: 'basic_phone_number' },
 							label: { type: 'string', maxLength: 50 },
-							primary: { type: 'boolean' },
-							verified: { type: 'boolean' },
 						},
 						required: ['number'],
 						additionalProperties: false,
