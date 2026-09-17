@@ -1,13 +1,14 @@
-import type { BrowserContext, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
+import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
-import { AdminStatusAndPresence, Authenticated, Login } from './page-objects';
+import { AdminStatusAndPresence } from './page-objects';
 import { expectPollUserStatus } from './utils/expectPollUserStatus';
 import { getUserStatusAsViewer } from './utils/getUserStatusAsViewer';
 import { expect, test } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
-import { createTestUser } from './utils/user-helpers';
+import { createTestUser, loginTestUser } from './utils/user-helpers';
 
 test.describe('Admin > Status and presence > User status', () => {
 	test.skip(!IS_EE);
@@ -16,7 +17,6 @@ test.describe('Admin > Status and presence > User status', () => {
 	let hiddenUser: ITestUser;
 	let blockedViewer: ITestUser;
 	let controlViewer: ITestUser;
-	let hiddenUserContext: BrowserContext;
 	let hiddenUserPage: Page;
 
 	test.beforeAll(async ({ api, browser }) => {
@@ -24,21 +24,13 @@ test.describe('Admin > Status and presence > User status', () => {
 		blockedViewer = await createTestUser(api);
 		controlViewer = await createTestUser(api);
 
-		hiddenUserContext = await browser.newContext();
-		hiddenUserPage = await hiddenUserContext.newPage();
-
-		const login = new Login(hiddenUserPage);
-
-		await login.goto('/login');
-		await login.login(hiddenUser.data.username, DEFAULT_USER_CREDENTIALS.password);
-		await new Authenticated(hiddenUserPage).waitForDisplay();
+		({ page: hiddenUserPage } = await createAuxContext(browser, await loginTestUser(api, hiddenUser)));
 
 		await expectPollUserStatus(api, hiddenUser.data.username, 'online');
 	});
 
 	test.afterAll(async () => {
 		await hiddenUserPage.close();
-		await hiddenUserContext.close();
 		await hiddenUser.delete();
 		await blockedViewer.delete();
 		await controlViewer.delete();
@@ -60,11 +52,12 @@ test.describe('Admin > Status and presence > User status', () => {
 
 			const dialog = admin.editor;
 
-			await dialog.getByRole('combobox', { name: 'User', exact: true }).pressSequentially(hiddenUser.data.username);
-			await listbox.selectOption(hiddenUser.data.username);
+			await dialog.getByRole('textbox', { name: 'User', exact: true }).pressSequentially(hiddenUser.data.username);
+			await listbox.selectOption(hiddenUser.data.name || hiddenUser.data.username);
 
-			await dialog.getByLabel('Hide status from', { exact: true }).getByRole('textbox').fill(blockedViewer.data.username);
+			await dialog.getByRole('combobox', { name: 'Select users', exact: true }).pressSequentially(blockedViewer.data.username);
 			await listbox.selectOption(blockedViewer.data.username);
+			await page.keyboard.press('Tab');
 
 			await dialog.getByRole('button', { name: 'Save', exact: true }).click();
 			await expect(dialog).not.toBeVisible();

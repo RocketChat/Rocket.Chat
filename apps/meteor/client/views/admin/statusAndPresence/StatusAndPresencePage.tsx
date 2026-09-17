@@ -30,10 +30,10 @@ export type StatusAndPresencePageProps = {
 	tab: StatusAndPresenceTab;
 	canManageCustomStatus: boolean;
 	canManageUserPresence: boolean;
-	canViewSettings: boolean;
+	settingIds: string[];
 };
 
-const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresence, canViewSettings }: StatusAndPresencePageProps) => {
+const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresence, settingIds }: StatusAndPresencePageProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -68,7 +68,7 @@ const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresen
 			onChange={handleTabChange}
 			canManageCustomStatus={canManageCustomStatus}
 			canManageUserPresence={canManageUserPresence}
-			canViewSettings={canViewSettings}
+			canViewSettings={settingIds.length > 0}
 		/>
 	);
 
@@ -95,7 +95,7 @@ const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresen
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				{tab === 'settings' ? (
-					<SettingsTab tabs={tabs} headerButtons={headerButtons} />
+					<SettingsTab settingIds={settingIds} tabs={tabs} headerButtons={headerButtons} />
 				) : (
 					<>
 						<PageHeader title={t('Status_and_presence')}>

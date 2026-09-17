@@ -1,6 +1,14 @@
-import { useIsPrivilegedSettingsContext, usePermission, useRouteParameter, useRouter, useSetting } from '@rocket.chat/ui-contexts';
-import { memo, useEffect, useLayoutEffect } from 'react';
+import {
+	useIsPrivilegedSettingsContext,
+	usePermission,
+	useRouteParameter,
+	useRouter,
+	useSetting,
+	useSettings,
+} from '@rocket.chat/ui-contexts';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
+import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -10,19 +18,28 @@ import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
 const TAB_ORDER = ['settings', 'custom-status', 'user-presence'] as const;
 
+const statusSettingsQuery = { _id: STATUS_SETTING_IDS };
+
 const StatusAndPresenceRoute = () => {
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const presenceServiceOpened = useRef(false);
 
 	const canManageCustomStatus = usePermission('manage-user-status');
-	const canViewSettings = useIsPrivilegedSettingsContext();
+	const hasPrivateSettings = useIsPrivilegedSettingsContext();
+	const statusSettings = useSettings(statusSettingsQuery);
 	const { data: hasUnlimitedPresence, isPending: isLicensePending } = useHasLicenseModule('unlimited-presence');
 	const canManageUserPresence = usePermission('edit-other-user-info') && !!hasUnlimitedPresence;
 
+	const settingIds = useMemo(
+		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),
+		[hasPrivateSettings, statusSettings],
+	);
+
 	const allowed: Record<StatusAndPresenceTab, boolean> = {
-		'settings': canViewSettings,
+		'settings': settingIds.length > 0,
 		'custom-status': canManageCustomStatus,
 		'user-presence': canManageUserPresence,
 	};
@@ -41,8 +58,19 @@ const StatusAndPresenceRoute = () => {
 	}, [router, firstAllowedTab, currentTab, isLicensePending]);
 
 	useEffect(() => {
-		if (presenceDisabled && canManageCustomStatus && currentTab && context !== 'presence-service') {
-			router.navigate({ name: 'user-status', params: { tab: currentTab, context: 'presence-service' } });
+		if (!presenceDisabled) {
+			presenceServiceOpened.current = false;
+			return;
+		}
+
+		if (presenceServiceOpened.current || !canManageCustomStatus || !currentTab) {
+			return;
+		}
+
+		presenceServiceOpened.current = true;
+
+		if (context !== 'presence-service') {
+			router.navigate({ name: 'user-status', params: { tab: currentTab, context: 'presence-service' } }, { replace: true });
 		}
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
 
@@ -64,7 +92,7 @@ const StatusAndPresenceRoute = () => {
 				tab={currentTab}
 				canManageCustomStatus={canManageCustomStatus}
 				canManageUserPresence={canManageUserPresence}
-				canViewSettings={canViewSettings}
+				settingIds={settingIds}
 			/>
 		</EditableSettingsProvider>
 	);

@@ -12,6 +12,7 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { ContextualbarFooter, ContextualbarScrollableContent, GenericModal, UserAutoComplete } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -204,18 +205,27 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								control={control}
 								name='username'
 								rules={{ required: t('Required_field', { field: t('User') }) }}
-								render={({ field: { value, onChange } }) => (
-									<UserAutoComplete
-										id={usernameFieldId}
-										value={value}
-										onChange={onChange}
-										disabled={Boolean(userId)}
-										error={Boolean(errors.username)}
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${usernameFieldId}-error ${usernameFieldId}-hint`}
-										placeholder={value ? undefined : t('Select_user')}
-									/>
-								)}
+								render={({ field: { value, onChange } }) =>
+									defaultUsername ? (
+										<TextInput
+											id={usernameFieldId}
+											value={value}
+											disabled
+											startAddon={<UserAvatar size='x20' username={value} />}
+											aria-describedby={`${usernameFieldId}-hint`}
+										/>
+									) : (
+										<UserAutoComplete
+											id={usernameFieldId}
+											value={value}
+											onChange={onChange}
+											error={Boolean(errors.username)}
+											aria-invalid={errors.username ? 'true' : 'false'}
+											aria-describedby={`${usernameFieldId}-error ${usernameFieldId}-hint`}
+											placeholder={t('Select_user')}
+										/>
+									)
+								}
 							/>
 						</FieldRow>
 						{errors.username && (
