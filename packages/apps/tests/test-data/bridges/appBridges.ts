@@ -8,6 +8,7 @@ import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
 import { TestExperimentalBridge } from './experimentalBridge';
+import { TestsCallHistoryBridge } from './callHistoryBridge';
 import { TestsHttpBridge } from './httpBridge';
 import { TestsInternalBridge } from './internalBridge';
 import { TestsInternalFederationBridge } from './internalFederationBridge';
@@ -35,6 +36,7 @@ import type {
 	HttpBridge,
 	IInternalBridge,
 	IListenerBridge,
+	CallHistoryBridge,
 	LivechatBridge,
 	MessageBridge,
 	ModerationBridge,
@@ -110,6 +112,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly experimentalBridge: TestExperimentalBridge;
 
+	private readonly callHistoryBridge: TestsCallHistoryBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -139,6 +143,7 @@ export class TestsAppBridges extends AppBridges {
 		this.contactBridge = new TestContactBridge();
 		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
 		this.experimentalBridge = new TestExperimentalBridge();
+		this.callHistoryBridge = new TestsCallHistoryBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -251,5 +256,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getExperimentalBridge(): ExperimentalBridge {
 		return this.experimentalBridge;
+	}
+
+	public getCallHistoryBridge(): CallHistoryBridge {
+		return this.callHistoryBridge;
 	}
 }
