@@ -4,7 +4,7 @@
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"main": "./dist/Authorization.js",
-	"typings": "./dist/Authorization.d.ts",
+	"types": "./dist/Authorization.d.ts",
 	"files": [
 		"/dist"
 	],
