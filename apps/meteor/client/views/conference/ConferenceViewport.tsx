@@ -5,8 +5,8 @@ import type { ReactNode } from 'react';
 import { CONFERENCE_THEMED_CLASS } from './panelStyles';
 
 /**
- * The conference renders standalone, outside the app's navigation chrome, so it has no `MainContent`
- * ancestor to inherit a height from — this establishes the viewport box the conference fills.
+ * The conference is a window of its own rather than a page inside the workspace, so it cannot rely on an
+ * ancestor for its height — this establishes the viewport box it fills.
  *
  * It also carries the window's palette, which is two style tags and no change to anything outside this file.
  *
