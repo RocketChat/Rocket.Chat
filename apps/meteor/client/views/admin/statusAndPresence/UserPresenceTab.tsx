@@ -17,7 +17,7 @@ import { useManagedPresenceUsers } from './useManagedPresenceUsers';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type UserPresenceTabProps = {
+export type UserPresenceTabProps = {
 	onEdit: (user?: ManagedPresenceUser) => void;
 };
 

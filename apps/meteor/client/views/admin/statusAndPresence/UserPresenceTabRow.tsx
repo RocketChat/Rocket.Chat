@@ -2,12 +2,13 @@ import { UserStatus as Status } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
+import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { UserStatus } from '../../../components/UserStatus';
 
-type UserPresenceTabRowProps = {
+export type UserPresenceTabRowProps = {
 	user: ManagedPresenceUser;
 	onClick: (user: ManagedPresenceUser) => void;
 };
@@ -18,8 +19,15 @@ const UserPresenceTabRow = ({ user, onClick }: UserPresenceTabRowProps) => {
 
 	const handleClick = () => onClick(user);
 
+	const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			handleClick();
+		}
+	};
+
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' action onClick={handleClick} onKeyDown={handleClick}>
+		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x28' username={username ?? ''} />

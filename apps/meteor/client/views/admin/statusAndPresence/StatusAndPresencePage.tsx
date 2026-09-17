@@ -1,4 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarClose,
@@ -8,14 +9,15 @@ import {
 	PageHeader,
 	PageContent,
 } from '@rocket.chat/ui-client';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SettingsTab from './SettingsTab';
 import StatusAndPresenceTabs from './StatusAndPresenceTabs';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
-import UserPresenceEditorForm from './UserPresenceEditorForm';
+import UserPresenceEditorFormWithData from './UserPresenceEditorFormWithData';
 import UserPresenceTab from './UserPresenceTab';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -32,32 +34,33 @@ export type StatusAndPresencePageProps = {
 };
 
 const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresence, canViewSettings }: StatusAndPresencePageProps) => {
-	const t = useTranslation();
-	const route = useRoute('user-status');
+	const { t } = useTranslation();
+	const router = useRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const { data: license } = useIsEnterprise();
 
-	const [editing, setEditing] = useState<{ user?: ManagedPresenceUser }>();
+	const navigate = useStableCallback((params: { tab: StatusAndPresenceTab; context?: string; id?: string }) =>
+		router.navigate({ name: 'user-status', params }),
+	);
 
-	const handleTabChange = useCallback((next: StatusAndPresenceTab) => route.push({ tab: next }), [route]);
+	const handleTabChange = useStableCallback((next: StatusAndPresenceTab) => navigate({ tab: next }));
 
-	const handleItemClick = useCallback((id: string) => route.push({ tab, context: 'edit', id }), [route, tab]);
+	const handleItemClick = useStableCallback((id: string) => navigate({ tab, context: 'edit', id }));
 
-	const handleNewButtonClick = useCallback(() => route.push({ tab, context: 'new' }), [route, tab]);
+	const handleNewButtonClick = useStableCallback(() => navigate({ tab, context: 'new' }));
 
-	const handlePresenceServiceClick = useCallback(() => route.push({ tab, context: 'presence-service' }), [route, tab]);
+	const handlePresenceServiceClick = useStableCallback(() => navigate({ tab, context: 'presence-service' }));
 
-	const handleClose = useCallback(() => {
-		setEditing(undefined);
-		route.push({ tab });
-	}, [route, tab]);
+	const handleClose = useStableCallback(() => navigate({ tab }));
 
-	const handleEdit = useCallback((user?: ManagedPresenceUser) => setEditing({ user }), []);
+	const handleEdit = useStableCallback((user?: ManagedPresenceUser) =>
+		navigate(user?.username ? { tab, context: 'edit', id: user.username } : { tab, context: 'new' }),
+	);
 
 	const reload = useRef(() => null);
 
-	const handleReload = useCallback(() => reload.current(), [reload]);
+	const handleReload = useStableCallback(() => reload.current());
 
 	const tabs = (
 		<StatusAndPresenceTabs
@@ -69,19 +72,22 @@ const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresen
 		/>
 	);
 
-	const headerButtons = <Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>;
+	const headerButtons = canManageCustomStatus ? <Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button> : undefined;
 
 	const contextualBar: { title: string; content: ReactElement } | undefined =
-		(context === 'presence-service' && { title: t('Presence_service_cap'), content: <CustomUserStatusService /> }) ||
 		(canManageCustomStatus &&
+			context === 'presence-service' && { title: t('Presence_service_cap'), content: <CustomUserStatusService /> }) ||
+		(canManageCustomStatus &&
+			tab === 'custom-status' &&
 			(context === 'new' || context === 'edit') && {
 				title: t(context === 'new' ? 'Custom_User_Status_Add' : 'Custom_User_Status_Edit'),
 				content: <CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />,
 			}) ||
 		(canManageUserPresence &&
-			editing && {
+			tab === 'user-presence' &&
+			(context === 'new' || context === 'edit') && {
 				title: t('Manage_user_presence'),
-				content: <UserPresenceEditorForm user={editing.user} onClose={handleClose} />,
+				content: <UserPresenceEditorFormWithData username={id} onClose={handleClose} />,
 			}) ||
 		undefined;
 

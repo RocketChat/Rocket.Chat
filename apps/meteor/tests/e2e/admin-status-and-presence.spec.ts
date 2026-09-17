@@ -1,19 +1,13 @@
-import type { APIRequestContext, BrowserContext, Page } from '@playwright/test';
+import type { BrowserContext, Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Authenticated, Login } from './page-objects';
-import { Listbox } from './page-objects/fragments/listbox';
+import { AdminStatusAndPresence, Authenticated, Login } from './page-objects';
 import { expectPollUserStatus } from './utils/expectPollUserStatus';
+import { getUserStatusAsViewer } from './utils/getUserStatusAsViewer';
 import { expect, test } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
-
-const getStatusAsViewer = async (viewerApi: APIRequestContext, username: string): Promise<string | undefined> => {
-	const response = await viewerApi.get('/users.info', { params: { username } });
-	const body = await response.json();
-	return body.user?.status;
-};
 
 test.describe('Admin > Status and presence > User status', () => {
 	test.skip(!IS_EE);
@@ -33,8 +27,10 @@ test.describe('Admin > Status and presence > User status', () => {
 		hiddenUserContext = await browser.newContext();
 		hiddenUserPage = await hiddenUserContext.newPage();
 
-		await hiddenUserPage.goto('/login');
-		await new Login(hiddenUserPage).login(hiddenUser.data.username, DEFAULT_USER_CREDENTIALS.password);
+		const login = new Login(hiddenUserPage);
+
+		await login.goto('/login');
+		await login.login(hiddenUser.data.username, DEFAULT_USER_CREDENTIALS.password);
 		await new Authenticated(hiddenUserPage).waitForDisplay();
 
 		await expectPollUserStatus(api, hiddenUser.data.username, 'online');
@@ -49,20 +45,20 @@ test.describe('Admin > Status and presence > User status', () => {
 	});
 
 	test('hides a user from a named viewer and restores it through the confirmation modal', async ({ page, api }) => {
-		const listbox = new Listbox(page);
-		const row = page.locator('tr', { hasText: hiddenUser.data.name || hiddenUser.data.username }).first();
+		const admin = new AdminStatusAndPresence(page);
+		const { listbox } = admin;
+		const row = admin.rowOf(hiddenUser.data.name || hiddenUser.data.username);
 		const asBlockedViewer = await api.login({ username: blockedViewer.data.username, password: DEFAULT_USER_CREDENTIALS.password });
 
 		await test.step('open Status and presence > User status', async () => {
-			await page.goto('/admin/user-status');
-			await page.getByRole('tab', { name: 'User status', exact: true }).click();
+			await admin.goto();
+			await admin.openUserStatusTab();
 		});
 
 		await test.step('create a rule hiding the user from the blocked viewer', async () => {
-			await page.getByRole('button', { name: 'Manage user status', exact: true }).click();
+			await admin.openEditor();
 
-			const dialog = page.getByRole('dialog', { name: 'Manage user status' });
-			await expect(dialog).toBeVisible();
+			const dialog = admin.editor;
 
 			await dialog.getByRole('combobox', { name: 'User', exact: true }).pressSequentially(hiddenUser.data.username);
 			await listbox.selectOption(hiddenUser.data.username);
@@ -81,8 +77,8 @@ test.describe('Admin > Status and presence > User status', () => {
 		await test.step('the blocked viewer sees the user as offline while the control viewer sees the real status', async () => {
 			const asControlViewer = await api.login({ username: controlViewer.data.username, password: DEFAULT_USER_CREDENTIALS.password });
 
-			await expect.poll(async () => getStatusAsViewer(asBlockedViewer, hiddenUser.data.username)).toBe('offline');
-			await expect.poll(async () => getStatusAsViewer(asControlViewer, hiddenUser.data.username)).toBe('online');
+			await expect.poll(async () => getUserStatusAsViewer(asBlockedViewer, hiddenUser.data.username)).toBe('offline');
+			await expect.poll(async () => getUserStatusAsViewer(asControlViewer, hiddenUser.data.username)).toBe('online');
 		});
 
 		await test.step('the admin removes the rule through the confirmation modal', async () => {
@@ -100,7 +96,7 @@ test.describe('Admin > Status and presence > User status', () => {
 		});
 
 		await test.step('the blocked viewer sees the real status again', async () => {
-			await expect.poll(async () => getStatusAsViewer(asBlockedViewer, hiddenUser.data.username)).toBe('online');
+			await expect.poll(async () => getUserStatusAsViewer(asBlockedViewer, hiddenUser.data.username)).toBe('online');
 		});
 	});
 });
