@@ -1,7 +1,7 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
@@ -28,6 +28,9 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, onRing }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	const useRealName = useSetting('UI_Use_Real_Name', false);
+	// Ringing is a workspace-level permission, and `video-conference.ring` refuses without it — so a caller who
+	// does not have it is offered nothing to press rather than a button that can only fail.
+	const canRingUsers = usePermission('videoconf-ring-users');
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
 	const status = getConferenceMemberStatus(member);
 
@@ -65,7 +68,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 					</Box>
 				)}
 			</OptionContent>
-			{canRingConferenceMember(member) && (
+			{canRingUsers && canRingConferenceMember(member) && (
 				<OptionColumn>
 					{/* The button stays until the server says the phone is ringing, which is a round trip away — so
 					    while the request is out it refuses a second one. Clicking three times rang three times. */}

@@ -31,7 +31,9 @@ const meta = {
 		withLiveRings<ComponentProps<typeof CallMemberItem>>(({ member }, ringingAt) => ({
 			member: member.ringingAt ? { ...member, ringingAt } : member,
 		})),
-		withCallProviders(conferenceAppRoot()),
+		// The ring button is offered only to a caller the workspace lets ring, which most of these stories are
+		// about — the one that is not says so.
+		withCallProviders(conferenceAppRoot().withPermission('videoconf-ring-users')),
 	],
 } satisfies Meta<typeof CallMemberItem>;
 
@@ -75,5 +77,14 @@ export const WithoutChatAccess: Story = {
 /** With real names on, the username is kept alongside rather than replaced. */
 export const ShowingBothNames: Story = {
 	args: { member: members.joined },
-	decorators: [withCallProviders(conferenceAppRoot().withSetting('UI_Use_Real_Name', true))],
+	decorators: [withCallProviders(conferenceAppRoot().withPermission('videoconf-ring-users').withSetting('UI_Use_Real_Name', true))],
+};
+
+/**
+ * The same row for a caller the workspace does not let ring people. `video-conference.ring` refuses without the
+ * permission, so the button would only ever fail — the row says where they stand and offers nothing to press.
+ */
+export const WithoutRingPermission: Story = {
+	args: { member: members.declined },
+	decorators: [withCallProviders(conferenceAppRoot())],
 };

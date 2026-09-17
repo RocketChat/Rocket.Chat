@@ -68,6 +68,8 @@ const joinedAppRoot = (users: Record<string, unknown>[], membersWithoutAccess: s
 
 	return (
 		conferenceAppRoot()
+			// Ringing someone back from the members panel is offered only to a caller the workspace lets ring.
+			.withPermission('videoconf-ring-users')
 			.withQueryClient(queryClient)
 			.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo(users, membersWithoutAccess))
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'about:blank', providerName: 'storybook' }) as any)

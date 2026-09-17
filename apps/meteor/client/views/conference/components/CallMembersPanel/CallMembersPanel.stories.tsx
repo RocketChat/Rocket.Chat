@@ -34,6 +34,9 @@ const meta = {
 		})),
 		withCallProviders(
 			conferenceAppRoot()
+				// Ringing someone back is what half of these rows are for, and it is offered only to a caller the
+				// workspace lets ring.
+				.withPermission('videoconf-ring-users')
 				.withEndpoint('POST', '/v1/video-conference.ring', () => ({ success: true }) as any)
 				.withEndpoint('POST', '/v1/video-conference.add-participants', () => ({ added: [], success: true }) as any)
 				.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [], success: true }) as any),
