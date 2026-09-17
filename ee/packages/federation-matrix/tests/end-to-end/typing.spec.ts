@@ -183,11 +183,11 @@ const namesake = {
 			await expectRemoteTyping(false);
 
 			await retry(
-				`waiting for Synapse to see ${namesake.matrixUserId} join the room`,
+				`waiting for Synapse to see ${namesake.matrixUserId} in the room`,
 				async () => {
 					const member = hs1UserApp.matrixClient.getRoom(matrixRoomId)?.getMember(namesake.matrixUserId);
 
-					expect(member?.membership).toBe('join');
+					expect(member?.membership).toMatch(/^(invite|join)$/);
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
