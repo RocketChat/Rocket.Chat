@@ -11,6 +11,9 @@ test.describe.configure({ timeout: 180 * 1000 });
 
 const AUDIO_FILE = 'sample-audio.mp3';
 
+// Rendered text of the `message_pinned` system message, from the `Pinned_a_message` key.
+const PINNED_SYSTEM_MESSAGE = 'Pinned a message:';
+
 /**
  * The shared player is only meant to keep running while the audio is still the listener's to
  * hear. These cover the three ways that can stop being true without the playing message itself
@@ -123,6 +126,12 @@ test.describe('audio player stops when the audio is no longer available', () => 
 		});
 
 		await test.step('a prune excluding pinned messages leaves playback alone', async () => {
+			// The pin's own system message is not itself pinned, so the prune takes it while
+			// sparing the audio. That gives the step something observable to wait on: asserting
+			// the player is still up is only meaningful once the client has actually applied the
+			// deletion, and a fixed wait would let a slow stream arrive after the assertion.
+			await expect(poHomeChannel.content.getSystemMessageByText(PINNED_SYSTEM_MESSAGE)).toBeVisible();
+
 			expect(
 				(
 					await api.post('/rooms.cleanHistory', {
@@ -134,9 +143,11 @@ test.describe('audio player stops when the audio is no longer available', () => 
 				).status(),
 			).toBe(200);
 
-			// The server kept the message, so the player must keep it too. Give the deletion
-			// streams a chance to arrive before trusting that nothing closed it.
-			await page.waitForTimeout(2000);
+			// Longer than the default: the client reacts to the prune by refetching the history,
+			// so this waits on a round trip rather than on a local state update.
+			await expect(poHomeChannel.content.getSystemMessageByText(PINNED_SYSTEM_MESSAGE)).not.toBeVisible({ timeout: 15_000 });
+
+			// The server kept the pinned message, so the player must keep it too.
 			await expect(nowPlayingCard(page)).toBeVisible();
 		});
 	});
