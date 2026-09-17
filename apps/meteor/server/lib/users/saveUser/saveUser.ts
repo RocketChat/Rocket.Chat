@@ -214,7 +214,12 @@ const _saveUser = (session?: ClientSession) =>
 					)
 				: undefined;
 
-		if (deniedByAdmin) {
+		const storedDeniedByAdmin = oldUserData?.statusVisibilityDeniedByAdmin ?? [];
+		const deniedByAdminChanged =
+			deniedByAdmin !== undefined &&
+			(deniedByAdmin.ids.length !== storedDeniedByAdmin.length || deniedByAdmin.ids.some((id) => !storedDeniedByAdmin.includes(id)));
+
+		if (deniedByAdminChanged) {
 			if (deniedByAdmin.ids.length) {
 				updater.set('statusVisibilityDeniedByAdmin', deniedByAdmin.ids);
 			} else {
@@ -239,7 +244,7 @@ const _saveUser = (session?: ClientSession) =>
 				void options.auditStore.commitAuditEvent();
 			}
 
-			if (presenceChanged || deniedByAdmin) {
+			if (presenceChanged || deniedByAdminChanged) {
 				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged });
 			}
 

@@ -88,7 +88,9 @@ class UserPresence {
 			const previous = this.scope;
 
 			this.scope = scope;
-			this.pendingCorrections = new Set([...this.listeners].filter((uid) => isHiddenFor(scope, uid) && !isHiddenFor(previous, uid)));
+			this.pendingCorrections = new Set(
+				[...this.listeners].filter((uid) => isHiddenFor(scope, uid) && (!isHiddenFor(previous, uid) || this.pendingCorrections.has(uid))),
+			);
 			this.stale = false;
 		} catch (error) {
 			this.stale = true;
