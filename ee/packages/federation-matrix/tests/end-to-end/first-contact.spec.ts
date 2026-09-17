@@ -73,10 +73,16 @@ const localUser = {
 	}, 60000);
 
 	afterAll(async () => {
-		// leave the environment cold so a rerun against persistent containers still tests first contact
-		await forgetRemoteUserLocally();
+		if (rc1AdminRequestConfig) {
+			// leave the environment cold so a rerun against persistent containers still tests first contact
+			await forgetRemoteUserLocally();
+		}
+
 		await hs1FirstContactApp?.close();
-		await deleteUser(rc1Invitee, {}, rc1AdminRequestConfig);
+
+		if (rc1Invitee?._id) {
+			await deleteUser(rc1Invitee, {}, rc1AdminRequestConfig);
+		}
 	});
 
 	it('should not know the remote user before the first interaction', async () => {
