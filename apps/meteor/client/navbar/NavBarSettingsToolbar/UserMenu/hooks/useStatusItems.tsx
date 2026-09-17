@@ -17,6 +17,7 @@ import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
 import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
+import UserStatusDisabledInfo from '../../../../views/account/profile/UserStatusDisabledInfo';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
@@ -86,20 +87,12 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 	return useMemo<GenericMenuItemProps[]>(() => {
 		if (userPresenceDisabled || workspacePresenceDisabled) {
-			const statusDisabledReason = workspacePresenceDisabled
-				? t('User_status_disabled_on_this_workspace')
-				: t('User_status_disabled_by_an_admin');
-
 			return [
 				{
 					id: 'user-status-disabled',
 					status: <UserStatus status={UserStatusEnum.OFFLINE} />,
 					content: t('Offline'),
-					addon: (
-						<Box role='img' aria-label={statusDisabledReason} title={statusDisabledReason}>
-							<Icon name='info-circled' size='x20' color='info' />
-						</Box>
-					),
+					addon: <UserStatusDisabledInfo workspace={workspacePresenceDisabled} />,
 				},
 			];
 		}
