@@ -2,7 +2,7 @@ import type { SlashCommand } from '@rocket.chat/core-typings';
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
++import { createElement, type ReactNode } from 'react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
 import { appsQueryKeys } from '../lib/queryKeys';
@@ -321,7 +321,7 @@ describe('useAppSlashCommands', () => {
 					.withSetting('API_Upper_Count_Limit', limit)
 					.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
 					.build();
-				return <AppRoot>{children}</AppRoot>;
+				return createElement(AppRoot, undefined, children);
 			},
 			initialProps: { limit: 100 },
 		});
