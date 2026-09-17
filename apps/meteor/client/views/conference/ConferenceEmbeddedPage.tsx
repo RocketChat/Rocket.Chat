@@ -24,6 +24,7 @@ import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { PREFLIGHT_FACES_SHOWN } from '../../../lib/videoConference/constants';
 import IconButtonWithBadge from '../../components/IconButtonWithBadge';
 import { useRinging } from '../../hooks/useRinging';
+import { isRefusal } from '../../lib/utils/isRefusal';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
 type ConferenceEmbeddedPageProps = {
@@ -134,12 +135,29 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		return () => callSounds.stopDialer();
 	}, [someoneRinging, callSounds]);
 
+	// A refusal is an answer about this call — it is gone, or was never this reader's — and the screens below say
+	// so, finally. Anything else is the server not having been reached, which says nothing about the call: telling
+	// someone their call does not exist because a request dropped sends them away from one that is still running.
 	if (room.error) {
-		return <ConferenceUnauthorizedPage />;
+		return isRefusal(room.error) ? (
+			<ConferenceUnauthorizedPage />
+		) : (
+			<ConferenceStatePage
+				icon='warning'
+				title={t('Something_went_wrong')}
+				action={{ label: t('Retry'), onClick: () => void room.retry() }}
+			/>
+		);
 	}
 
 	if (conference.error) {
-		return <ConferencePageError />;
+		return isRefusal(conference.error) ? (
+			<ConferencePageError />
+		) : (
+			// Back to the preflight rather than straight into another attempt: the devices they chose are still
+			// there, and a join that failed is a thing to decide about rather than to repeat behind their back.
+			<ConferenceStatePage icon='warning' title={t('Something_went_wrong')} action={{ label: t('Retry'), onClick: conference.retry }} />
+		);
 	}
 
 	if (conference.loading) {

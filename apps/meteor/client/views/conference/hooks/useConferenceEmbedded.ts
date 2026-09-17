@@ -12,6 +12,7 @@ import { conferenceNameFor } from '../../../../lib/videoConference/conferenceNam
 import type { PersistentChatMode } from '../../../../lib/videoConference/constants';
 import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
+import { isRefusal } from '../../../lib/utils/isRefusal';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 
 /**
@@ -72,10 +73,12 @@ export const useConferenceEmbedded = (callId: string) => {
 		data: info,
 		isPending: isInfoPending,
 		error: infoError,
+		refetch: refetchInfo,
 	} = useVideoConferenceInfo(callId, {
-		// A conference this user may not have, or that never existed, is an answer and not a hiccup — the window
-		// should say so at once rather than three attempts later.
-		retry: false,
+		// A conference this user may not have, or that never existed, is an answer: say so at once rather than
+		// three attempts later. A request that never arrived is not an answer about anything, and a call window is
+		// opened once — so that one is worth another go before the window gives up on it.
+		retry: (failureCount, error) => !isRefusal(error) && failureCount < 2,
 		// The shared default holds a conference indefinitely because the room's message block is told about
 		// changes. This window is too, over `{callId}/updated` below — but a dropped socket loses that, and a
 		// window that comes back to a call it is *in* has to come back to the truth. Nothing else here would ask.
@@ -162,6 +165,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		mutate: join,
 		isPending,
 		error,
+		reset: resetJoin,
 	} = useMutation({
 		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
 			// Naming is not worth failing the join over: if it doesn't take, the toast says so and the user still
@@ -222,6 +226,8 @@ export const useConferenceEmbedded = (callId: string) => {
 			type: info?.chatAccess.type,
 			loading: isInfoPending,
 			error: infoError,
+			/** For a read that failed on the way rather than on the way back: there is nothing to do but ask again. */
+			retry: refetchInfo,
 			chatAccess,
 		} as const,
 		conference: {
@@ -264,6 +270,8 @@ export const useConferenceEmbedded = (callId: string) => {
 			joined: !!data,
 			loading: isPending,
 			error,
+			/** Clears a failed join, which puts the reader back on the preflight with the choice they made intact. */
+			retry: resetJoin,
 			join,
 		} as const,
 	};

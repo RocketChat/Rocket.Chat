@@ -12,6 +12,7 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { isRefusal } from '../../../lib/utils/isRefusal';
 import { mapRoomFromApi } from '../../../lib/utils/mapRoomFromApi';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms, Subscriptions } from '../../../stores';
@@ -23,25 +24,6 @@ import { Rooms, Subscriptions } from '../../../stores';
  * fetched by id outright — so for those two the identifier is the rid.
  */
 const isRoomFoundById = (room: IRoom): boolean => room.t === 'd' || room.t === 'l';
-
-/**
- * Whether the server answered, and its answer was no.
- *
- * Two shapes, because the app's client rewrites one of them: `RestClient` rejects with the `Response` for
- * anything that is not ok, and `RestApiClient`'s middleware then replaces it with the error body that response
- * carried — so in the browser what arrives here is the body, and in a spec against the bare client it is the
- * `Response`. Either way the server looked: the room is missing, or is not this user's to read.
- *
- * A request that never got an answer rejects with fetch's own error, which is neither of those — and that says
- * nothing about the room.
- */
-const isRefusal = (error: unknown): boolean => {
-	if (error instanceof Response) {
-		return error.status >= 400 && error.status < 500;
-	}
-
-	return typeof error === 'object' && error !== null && 'success' in error && (error as { success?: unknown }).success === false;
-};
 
 /**
  * Opens a room by its id, for callers that already know the rid and can't go through the router-driven
