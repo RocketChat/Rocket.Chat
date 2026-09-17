@@ -95,7 +95,7 @@ describe('PhoneNumberFieldList', () => {
 			await userEvent.click(screen.getByRole('button', { name: 'Add number' }));
 
 			expect(onAddPhone).toHaveBeenCalledTimes(1);
-			expect(onAddPhone).toHaveBeenCalledWith({ number: '', label: '', primary: false });
+			expect(onAddPhone).toHaveBeenCalledWith({ number: '', label: '' });
 		});
 
 		it('calls onRemovePhone with the correct index when clicking a remove button', async () => {
