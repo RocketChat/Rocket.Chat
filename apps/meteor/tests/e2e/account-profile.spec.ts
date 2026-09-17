@@ -10,6 +10,7 @@ import {
 	HomeChannel,
 } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
+import { setUserPhones } from './utils/setUserPhones';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -91,11 +92,13 @@ test.describe.serial('settings-account-profile', () => {
 		});
 
 		test.describe('Phones', () => {
-			test.beforeEach(async ({ api }) => {
-				await api.post('/users.update', {
-					userId: Users.user3.data._id,
-					data: { phones: [] },
-				});
+			test.beforeEach(async ({ api, page }) => {
+				await setUserPhones(api, Users.user3.data._id, []);
+				await page.reload();
+			});
+
+			test.afterEach(async ({ api }) => {
+				await setUserPhones(api, Users.user3.data._id, []);
 			});
 
 			test('should add and persist multiple phones on account profile', async ({ page }) => {
@@ -116,15 +119,10 @@ test.describe.serial('settings-account-profile', () => {
 			});
 
 			test('should remove a phone on account profile and persist result', async ({ api, page }) => {
-				await api.post('/users.update', {
-					userId: Users.user3.data._id,
-					data: {
-						phones: [
-							{ number: '+15554440001', label: 'Work', primary: true },
-							{ number: '+15554440002', label: 'Home', primary: false },
-						],
-					},
-				});
+				await setUserPhones(api, Users.user3.data._id, [
+					{ number: '+15554440001', label: 'Work', primary: true },
+					{ number: '+15554440002', label: 'Home', primary: false },
+				]);
 
 				await page.reload();
 
