@@ -182,6 +182,16 @@ const namesake = {
 			await ddp.publishUserActivity(roomId, localUser.name, []);
 			await expectRemoteTyping(false);
 
+			await retry(
+				`waiting for Synapse to see ${namesake.matrixUserId} join the room`,
+				async () => {
+					const member = hs1UserApp.matrixClient.getRoom(matrixRoomId)?.getMember(namesake.matrixUserId);
+
+					expect(member?.membership).toBe('join');
+				},
+				{ retries: 10, delayMs: 2000 },
+			);
+
 			await namesakeDdp.publishUserActivity(roomId, namesake.name, ['user-typing']);
 
 			await retry(

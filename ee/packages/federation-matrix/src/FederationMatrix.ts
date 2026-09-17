@@ -866,7 +866,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
 
-		void federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
+		await federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
 
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {

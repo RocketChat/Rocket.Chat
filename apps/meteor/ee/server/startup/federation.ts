@@ -61,7 +61,9 @@ export const startFederationService = async (): Promise<void> => {
 			const [, activities] = args;
 			const isTyping = Array.isArray(activities) && activities.includes('user-typing');
 
-			void FederationMatrixService.notifyUserTyping(rid, uid, isTyping);
+			FederationMatrixService.notifyUserTyping(rid, uid, isTyping).catch((err) => {
+				logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+			});
 		}
 	});
 
