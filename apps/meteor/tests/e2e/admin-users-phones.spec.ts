@@ -13,7 +13,7 @@ test.describe('Admin users phones', () => {
 	test.beforeEach(async ({ api }) => {
 		phoneTestUser = await createTestUser(api, {
 			data: {
-				phones: [{ number: '+15551110001', label: 'Initial', primary: true }],
+				phones: [{ number: '+15551110001', label: 'Initial' }],
 			},
 		});
 	});
