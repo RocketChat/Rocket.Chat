@@ -99,10 +99,19 @@ test.describe('message-composer-history', () => {
 	test('should reset history when switching rooms', async ({ page }) => {
 		const inputMessage = richComposerInput(page);
 
-		await inputMessage.pressSequentially('draft in first room');
-		await expect(inputMessage).toContainText('draft in first room');
+		await inputMessage.pressSequentially('firstdraft');
+		await expect(inputMessage).toContainText('firstdraft');
+
+		await poHomeChannel.gotoChannel(otherChannel);
+		await expect(inputMessage).not.toContainText('firstdraft');
+
+		await inputMessage.pressSequentially('seconddraft');
+		await expect(inputMessage).toContainText('seconddraft');
 
 		await page.keyboard.press('ControlOrMeta+z');
-		await expect(inputMessage).not.toContainText('draft in first room');
+		await expect(inputMessage).not.toContainText('seconddraft');
+
+		await page.keyboard.press('ControlOrMeta+z');
+		await expect(inputMessage).not.toContainText('firstdraft');
 	});
 });
