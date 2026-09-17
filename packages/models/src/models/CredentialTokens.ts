@@ -33,11 +33,8 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 		return this.findOne(query);
 	}
 
-	async extendExpirationById(_id: string): Promise<void> {
-		const twoFAGrace = 2 * 60 * 1000; // 2 minutes
-		const now = new Date();
-
-		await this.updateOne({ _id, expireAt: { $gt: now } }, { $set: { expireAt: new Date(now.getTime() + twoFAGrace) } });
+	async extendExpirationById(_id: string, expireAt: Date): Promise<void> {
+		await this.updateOne({ _id, expireAt: { $gt: new Date() } }, { $set: { expireAt } });
 	}
 
 	removeNotExpiredById(_id: string): Promise<ICredentialToken | null> {

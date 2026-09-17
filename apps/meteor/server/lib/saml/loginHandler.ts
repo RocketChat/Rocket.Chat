@@ -45,8 +45,11 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		const user = await getUserForCheck(updatedUser.userId);
-		if (user && doesUserRequire2FA(user)) {
-			await CredentialTokens.extendExpirationById(loginRequest.credentialToken);
+		const credential = await CredentialTokens.findOneNotExpiredById(loginRequest.credentialToken);
+
+		if (user && credential && doesUserRequire2FA(user)) {
+			const graceExpireAt = credential.expireAt.getTime() + 2 * 60 * 1000; // 2 minutes
+			await CredentialTokens.extendExpirationById(loginRequest.credentialToken, new Date(graceExpireAt));
 		} else {
 			await CredentialTokens.removeById(loginRequest.credentialToken);
 		}
