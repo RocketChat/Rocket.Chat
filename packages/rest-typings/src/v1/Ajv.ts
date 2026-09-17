@@ -56,7 +56,7 @@ ajv.addKeyword({
 	modifying: true,
 	before: 'format',
 	validate: (schema, data, _parentSchema, dataCxt): boolean => {
-		if (!schema || typeof data !== 'string' || !dataCxt) {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
 			return true;
 		}
 
@@ -72,7 +72,7 @@ ajvQuery.addKeyword({
 	modifying: true,
 	before: 'format',
 	validate: (schema, data, _parentSchema, dataCxt): boolean => {
-		if (!schema || typeof data !== 'string' || !dataCxt) {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
 			return true;
 		}
 
