@@ -125,7 +125,11 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				author_icon: getUserAvatarURL(originalMessage.u.username),
 				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
-				attachments: attachments.map(recursiveRemove),
+				// Passing `recursiveRemove` straight to `map` would hand it the array index as its
+				// depth, and it returns nothing for an attachment that is not a quote — which used
+				// to leave `[undefined]` here, serialize as `[null]`, and fail response validation
+				// for every pinned message carrying a file.
+				attachments: attachments.map((attachment) => recursiveRemove(attachment)).filter(isTruthy),
 			},
 		],
 	});
