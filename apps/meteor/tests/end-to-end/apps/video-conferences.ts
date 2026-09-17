@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import semver from 'semver';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
@@ -25,7 +26,7 @@ describe('Apps - Video Conferences', () => {
 
 	before(async () => {
 		const res = await request.get('/api/info').set(credentials).expect(200);
-		expectNotFound = Number.parseInt(res.body.info.version, 10) >= 9;
+		expectNotFound = semver.gte(res.body.info.version, '9.0.0');
 	});
 
 	before(async () => {
