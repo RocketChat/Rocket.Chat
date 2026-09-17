@@ -1,0 +1,21 @@
+packages/authorization/src/Authorization.spec.ts
+  s_2939f6c2b3a8e1::t_945b17b2eb7da3 4-141
+packages/authorization/src/Authorization.ts
+  s_2939f6c2b3a8e1::t_3dca295bd87c4c 143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "08f3e6ffe1d402c62e7c0563aa38664d85d70fce",
+  "prompts": {},
+  "sessions": {
+    "s_2939f6c2b3a8e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "99c6b675-c41f-413e-bf46-744437e9da57",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

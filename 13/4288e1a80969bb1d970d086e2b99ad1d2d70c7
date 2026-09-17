@@ -1,0 +1,19 @@
+packages/authorization/package.json
+  s_074749c897e6ef::t_5d0a9851a17019 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "134288e1a80969bb1d970d086e2b99ad1d2d70c7",
+  "prompts": {},
+  "sessions": {
+    "s_074749c897e6ef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "08632bb3-b564-4fd8-9fdc-74eb26e8cc1b",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
