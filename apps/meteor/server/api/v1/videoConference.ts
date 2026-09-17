@@ -240,7 +240,7 @@ API.v1.post(
 			200: joinResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			404: validateNotFoundErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -294,7 +294,7 @@ API.v1.post(
 			200: cancelResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			404: validateNotFoundErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -537,7 +537,7 @@ API.v1.get(
 			200: infoResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			404: validateNotFoundErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -593,7 +593,7 @@ API.v1.get(
 			200: listResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			404: validateNotFoundErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
