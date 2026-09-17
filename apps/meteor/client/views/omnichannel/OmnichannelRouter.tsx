@@ -6,7 +6,7 @@ import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 
-type OmnichannelRouterProps = {
+export type OmnichannelRouterProps = {
 	children?: ReactNode;
 };
 

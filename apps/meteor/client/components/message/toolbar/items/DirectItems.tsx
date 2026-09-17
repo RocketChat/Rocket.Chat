@@ -2,7 +2,7 @@ import type { IRoom, ISubscription, IMessage } from '@rocket.chat/core-typings';
 
 import JumpToMessageAction from './actions/JumpToMessageAction';
 
-type DirectItemsProps = {
+export type DirectItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

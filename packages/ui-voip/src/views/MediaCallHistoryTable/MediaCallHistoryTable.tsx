@@ -10,7 +10,7 @@ type SortProps = {
 	setSort: (sortBy: SortBy, direction?: 'asc' | 'desc') => void;
 };
 
-type MediaCallHistoryTableProps = {
+export type MediaCallHistoryTableProps = {
 	sort: SortProps;
 	children: ReactNode;
 };

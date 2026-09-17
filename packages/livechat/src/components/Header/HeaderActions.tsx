@@ -3,7 +3,7 @@ import type { ComponentChildren } from 'preact';
 import styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 
-type HeaderActionsProps = {
+export type HeaderActionsProps = {
 	children?: ComponentChildren;
 	className?: string;
 };

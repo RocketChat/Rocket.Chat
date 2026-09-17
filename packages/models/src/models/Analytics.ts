@@ -1,7 +1,7 @@
 import type { IAnalytics, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Random } from '@rocket.chat/random';
-import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document, Collection } from 'mongodb';
+import type { AggregationCursor, Db, IndexDescription, FindOptions, UpdateResult, Document, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -212,8 +212,8 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 		);
 	}
 
-	findByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): FindCursor<IAnalytics> {
-		return this.find({ type, date: { $lte: date } });
+	findOneByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): Promise<IAnalytics | null> {
+		return this.findOne({ type, date: { $lte: date } });
 	}
 
 	getRoomsWithNumberOfMessagesBetweenDateQuery({

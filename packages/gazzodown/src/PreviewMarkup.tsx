@@ -10,16 +10,20 @@ import PreviewKatexBlock from './katex/PreviewKatexBlock';
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-type PreviewMarkupProps = {
+export type PreviewMarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
+const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 	if (isOnlyBigEmojiBlock(tokens)) {
 		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
 
-	const firstBlock = tokens.find((block) => block.type !== 'LINE_BREAK');
+	const firstBlock =
+		tokens.find((block) => block.type !== 'LINE_BREAK' && block.type !== 'HORIZONTAL_RULE') ??
+		tokens.find((block) => block.type !== 'LINE_BREAK');
 
 	if (!firstBlock) {
 		return null;
@@ -84,8 +88,28 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps) => {
 				</KatexErrorBoundary>
 			);
 
-		default:
+		case 'TABLE':
+			return (
+				<>
+					{firstBlock.value.header.map((cell, index) => (
+						<span key={index}>
+							{index > 0 ? ' | ' : null}
+							<PreviewInlineElements>{cell.value}</PreviewInlineElements>
+						</span>
+					))}
+				</>
+			);
+
+		default: {
+			// Only the `[start, end]` offset form is rendered (sliced from source); the union
+			// keeps the original fallback form too, which we intentionally ignore.
+			const { fallback } = firstBlock as { fallback?: [number, number] | MessageParser.Plain };
+			if (Array.isArray(fallback) && source !== undefined) {
+				const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
+				return <PreviewInlineElements>{inlines}</PreviewInlineElements>;
+			}
 			return null;
+		}
 	}
 };
 

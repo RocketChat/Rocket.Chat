@@ -4,9 +4,9 @@ import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
+import { sdk } from './SDKClient';
 import { getDdpSdk } from './sdk/ddpSdk';
 import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -97,11 +97,14 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 				const fallbackStatus = status === 'disabled' ? UserStatus.DISABLED : UserStatus.OFFLINE;
 
-				users.forEach((user) => {
-					if (!store.has(user._id)) {
-						notify(user);
+				users.forEach(({ statusExpiresAt, ...rest }) => {
+					if (!store.has(rest._id)) {
+						notify({
+							...rest,
+							...(statusExpiresAt && { statusExpiresAt: new Date(statusExpiresAt) }),
+						});
 					}
-					currentUids.delete(user._id);
+					currentUids.delete(rest._id);
 				});
 
 				currentUids.forEach((uid) => {

@@ -5,7 +5,7 @@ import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DateRangePickerProps = {
+export type DateRangePickerProps = {
 	onChange(range: { start: string; end: string }): void;
 	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
 };

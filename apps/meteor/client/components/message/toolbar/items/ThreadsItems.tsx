@@ -5,7 +5,7 @@ import JumpToMessageAction from './actions/JumpToMessageAction';
 import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 
-type ThreadsItemsProps = {
+export type ThreadsItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

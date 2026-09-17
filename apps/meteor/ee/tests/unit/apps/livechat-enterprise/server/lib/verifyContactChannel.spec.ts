@@ -37,11 +37,11 @@ const queueManager = {
 };
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
-	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
-	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/QueueManager': { QueueManager: queueManager },
+	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
+	'../../../server/lib/omnichannel/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
+	'../../../server/lib/omnichannel/QueueManager': { QueueManager: queueManager },
 	'../../../server/database/utils': { client: clientMock },
-	'../../../app/livechat-enterprise/server/lib/logger': { logger: { info: sinon.stub(), debug: sinon.stub() } },
+	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
 	'@rocket.chat/models': modelsMock,
 });
 

@@ -5,7 +5,7 @@ import { GenericTableHeaderCell } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-type RoleHeaderProps = {
+export type RoleHeaderProps = {
 	_id: IRole['_id'];
 	name: IRole['name'];
 	description: IRole['description'];
@@ -22,7 +22,7 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps) => {
 	});
 
 	return (
-		<GenericTableHeaderCell pi={4} p={8}>
+		<GenericTableHeaderCell paddingInline={4} padding={8}>
 			<Button small icon='edit' secondary onClick={handleEditRole}>
 				{description || name}
 			</Button>

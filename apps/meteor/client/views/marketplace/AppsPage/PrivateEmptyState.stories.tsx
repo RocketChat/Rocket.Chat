@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import PrivateEmptyState from './PrivateEmptyState';
 
@@ -10,5 +10,7 @@ export default {
 	},
 } satisfies Meta<typeof PrivateEmptyState>;
 
-export const Default: StoryFn<typeof PrivateEmptyState> = () => <PrivateEmptyState />;
-Default.storyName = 'PageEmptyPrivateApps';
+export const Default: StoryObj<typeof PrivateEmptyState> = {
+	render: () => <PrivateEmptyState />,
+	name: 'PageEmptyPrivateApps',
+};

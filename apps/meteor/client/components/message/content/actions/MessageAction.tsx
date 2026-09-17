@@ -11,7 +11,7 @@ const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}
 	return legacyIcon?.replace(/^icon-/, '') as IconName;
 };
 
-type MessageActionProps = {
+export type MessageActionProps = {
 	icon: IconName;
 	i18nLabel?: TranslationKey;
 	label?: string;

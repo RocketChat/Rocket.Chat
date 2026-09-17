@@ -22,7 +22,7 @@ const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: Serialized<I
 
 	if (isError) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

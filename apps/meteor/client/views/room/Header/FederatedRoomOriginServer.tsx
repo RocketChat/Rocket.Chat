@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
-type FederatedRoomOriginServerProps = {
+export type FederatedRoomOriginServerProps = {
 	room: IRoomWithFederationOriginalName;
 };
 

@@ -2,8 +2,9 @@ import type { IAppRolesConverter } from '@rocket.chat/apps';
 import type { IRole as AppsEngineRole } from '@rocket.chat/apps-engine/definition/roles';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import * as z from 'zod';
 
-import { transformMappedData } from './transformMappedData';
+import { RoleCodec } from './codecs';
 
 export class AppRolesConverter implements IAppRolesConverter {
 	async convertById(roleId: string): Promise<AppsEngineRole | undefined> {
@@ -16,15 +17,6 @@ export class AppRolesConverter implements IAppRolesConverter {
 	}
 
 	async convertRole(role: IRole): Promise<AppsEngineRole> {
-		const map = {
-			id: '_id',
-			name: 'name',
-			description: 'description',
-			mandatory2fa: 'mandatory2fa',
-			protected: 'protected',
-			scope: 'scope',
-		} as const;
-
-		return transformMappedData(role, map);
+		return z.decode(RoleCodec, role) as unknown as AppsEngineRole;
 	}
 }

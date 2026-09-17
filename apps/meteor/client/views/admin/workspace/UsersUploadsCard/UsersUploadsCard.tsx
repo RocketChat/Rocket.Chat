@@ -11,7 +11,7 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type UsersUploadsCardProps = {
+export type UsersUploadsCardProps = {
 	statistics: IStats;
 };
 

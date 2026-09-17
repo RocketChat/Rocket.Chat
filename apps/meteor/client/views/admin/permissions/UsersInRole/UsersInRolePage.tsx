@@ -18,7 +18,9 @@ type UsersInRolePayload = {
 	users: string[];
 };
 
-const UsersInRolePage = ({ role }: { role: IRole }) => {
+export type UsersInRolePageProps = { role: IRole };
+
+const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -86,10 +88,10 @@ const UsersInRolePage = ({ role }: { role: IRole }) => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageContent>
-				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
+				<Box display='flex' flexDirection='column' width='full' marginInline='neg-x4'>
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe={4}>
+							<Field marginBlockEnd={4}>
 								<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
 								<FieldRow>
 									<Controller
@@ -136,7 +138,7 @@ const UsersInRolePage = ({ role }: { role: IRole }) => {
 										/>
 									)}
 								/>
-								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+								<Button marginInlineStart={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 									{t('Add')}
 								</Button>
 							</FieldRow>

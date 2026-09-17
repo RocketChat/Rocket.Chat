@@ -7,7 +7,7 @@ import { usePerformActionMutation } from './hooks/usePerformActionMutation';
 
 type ProcessingType = Exclude<MessageAttachmentAction['actions'][number]['msg_processing_type'], undefined>;
 
-type ActionAttachmentButtonProps = {
+export type ActionAttachmentButtonProps = {
 	children: ReactNode;
 	mid?: IMessage['_id'];
 	msg?: string;

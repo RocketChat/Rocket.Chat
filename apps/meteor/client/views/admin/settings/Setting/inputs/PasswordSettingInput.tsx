@@ -4,7 +4,7 @@ import type { ChangeEventHandler } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
+export type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
 
 function PasswordSettingInput({
 	_id,

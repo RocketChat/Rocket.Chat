@@ -9,7 +9,7 @@ import styles from './styles.scss';
 
 const handleMouseUp = ({ currentTarget }: TargetedEvent<HTMLElement, MouseEvent>) => currentTarget.blur();
 
-type ButtonElementProps = uikit.ButtonElement & {
+export type ButtonElementProps = uikit.ButtonElement & {
 	context: uikit.BlockContext;
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };

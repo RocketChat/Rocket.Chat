@@ -8,7 +8,9 @@ import { RoomIcon } from '../../../../../../components/RoomIcon';
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
-const VideoConfPopupRoomInfo = ({ room }: { room: IRoom }) => {
+export type VideoConfPopupRoomInfoProps = { room: IRoom };
+
+const VideoConfPopupRoomInfo = ({ room }: VideoConfPopupRoomInfoProps) => {
 	const ownUser = useUser();
 	const [userId] = room?.uids?.filter((uid) => uid !== ownUser?._id) || [];
 	const roomName = useVideoConfRoomName(room);

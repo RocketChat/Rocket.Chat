@@ -1,16 +1,15 @@
 import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { capitalize } from '@rocket.chat/string-helpers';
-import { isAbsoluteURL } from '@rocket.chat/tools';
+import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
+import { CustomOAuthError } from './CustomOAuthError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
-import { CustomOAuthError } from './CustomOAuthError';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
 
@@ -54,7 +53,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${capitalize(this.name) as Capitalize<TServiceName>}` as const;
+		const loginWithService = `loginWith${capitalize(this.name)}` as const;
 
 		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
 

@@ -1,8 +1,8 @@
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings';
 
+import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const isMakeLeaveParamsProps = ajv.compile({
@@ -56,8 +56,8 @@ const isMakeLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixMakeLeaveRoutes = () => {
-	const logger = new Logger('matrix-make-leave');
-
+	// GET /_matrix/federation/v1/make_leave/{roomId}/{userId}
+	// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1make_leaveroomiduserid
 	return new Router('/federation').get(
 		'/v1/make_leave/:roomId/:userId',
 		{

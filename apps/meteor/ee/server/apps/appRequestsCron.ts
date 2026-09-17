@@ -1,13 +1,18 @@
 import { cronJobs } from '@rocket.chat/cron';
+import { License } from '@rocket.chat/license';
 import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
+import { settings } from '../../../server/settings';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
+		if (License.hasOfflineLicense()) {
+			return;
+		}
+
 		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
 			return;

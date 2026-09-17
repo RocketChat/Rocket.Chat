@@ -1,7 +1,7 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +10,12 @@ import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingE
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
-const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
+export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
+
+const HistoryItem = ({ data }: HistoryItemProps) => {
 	const { t } = useTranslation();
 
-	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
+	const replayOutgoingIntegration = useEndpoint('POST', '/v1/integrations.replayOutgoing');
 
 	const {
 		_id,
@@ -54,9 +56,9 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	return (
 		<AccordionItem
 			title={
-				<Box display='inline-flex' w='full' flexDirection='row' justifyContent='space-between'>
+				<Box display='inline-flex' width='full' flexDirection='row' justifyContent='space-between'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Icon name='info-circled' size='x16' mie={4} />
+						<Icon name='info-circled' size='x16' marginInlineEnd={4} />
 						{formatDateAndTime(_createdAt)}
 					</Box>
 					<Button secondary onClick={handleClickReplay}>
@@ -69,7 +71,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{error ? t('Failure') : t('Success')}</code>
 						</Box>
 					</FieldRow>
@@ -77,7 +79,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Time_Triggered')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{createdAt}</code>
 						</Box>
 					</FieldRow>
@@ -85,7 +87,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Time_Ended_Or_Error')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{updatedAt}</code>
 						</Box>
 					</FieldRow>
@@ -93,7 +95,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 				<Field>
 					<FieldLabel>{t('Event_Trigger')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{t(outgoingEvents[event].label)}</code>
 						</Box>
 					</FieldRow>
@@ -101,7 +103,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 				<Field>
 					<FieldLabel>{t('Integration_Outgoing_WebHook_History_Trigger_Step')}</FieldLabel>
 					<FieldRow>
-						<Box withRichContent w='full'>
+						<Box withRichContent width='full'>
 							<code>{step}</code>
 						</Box>
 					</FieldRow>
@@ -110,7 +112,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(dataSentToTriggerCode) }}></code>
 								</pre>
@@ -122,7 +124,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prepareSentMessageCode) }}></code>
 								</pre>
@@ -134,7 +136,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processSentMessageCode) }}></code>
 								</pre>
@@ -146,7 +148,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('URL')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<code>{url}</code>
 							</Box>
 						</FieldRow>
@@ -156,7 +158,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_URL')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpCallDataCode) }}></code>
 								</pre>
@@ -168,7 +170,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Http_Response_Error')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpErrorCode) }}></code>
 								</pre>
@@ -180,7 +182,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Http_Response')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpResultCode) }}></code>
 								</pre>
@@ -192,7 +194,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					<Field>
 						<FieldLabel>{t('Integration_Outgoing_WebHook_History_Error_Stacktrace')}</FieldLabel>
 						<FieldRow>
-							<Box withRichContent w='full'>
+							<Box withRichContent width='full'>
 								<pre>
 									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(errorStackCode) }}></code>
 								</pre>

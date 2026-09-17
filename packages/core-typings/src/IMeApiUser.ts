@@ -28,6 +28,8 @@ type MeProjectedUserFields = Pick<
 	| 'status'
 	| 'statusDefault'
 	| 'statusText'
+	| 'statusSource'
+	| 'statusExpiresAt'
 	| 'statusConnection'
 	| 'bio'
 	| 'avatarOrigin'

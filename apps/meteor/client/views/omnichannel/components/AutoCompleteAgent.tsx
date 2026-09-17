@@ -5,7 +5,7 @@ import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
 
-type AutoCompleteAgentProps = Omit<
+export type AutoCompleteAgentProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {

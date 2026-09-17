@@ -231,7 +231,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 					</Button>
 				</ButtonGroup>
 				{customFieldData?._id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
 								{t('Delete')}

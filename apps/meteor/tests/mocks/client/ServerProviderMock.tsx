@@ -78,7 +78,7 @@ const contextValue: ServerContextValue = {
 	writeStream,
 };
 
-type ServerProviderMockProps = {
+export type ServerProviderMockProps = {
 	children?: ReactNode;
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };

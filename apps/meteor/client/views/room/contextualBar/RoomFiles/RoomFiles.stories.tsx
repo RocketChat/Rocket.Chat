@@ -1,6 +1,6 @@
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import RoomFiles from './RoomFiles';
 
@@ -20,8 +20,6 @@ export default {
 	},
 } satisfies Meta<typeof RoomFiles>;
 
-const Template: StoryFn<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
-
 const fakeItems = Array.from({ length: 10 }, (_, i) => ({
 	_id: String(i),
 	name: `File ${i}`,
@@ -34,21 +32,24 @@ const fakeItems = Array.from({ length: 10 }, (_, i) => ({
 	_updatedAt: new Date(),
 }));
 
-export const Default = Template.bind({});
-Default.args = {
-	filesItems: fakeItems,
-	total: fakeItems.length,
-	isSuccess: true,
+export const Default = {
+	args: {
+		filesItems: fakeItems,
+		total: fakeItems.length,
+		isSuccess: true,
+	},
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-	isPending: true,
+export const Loading = {
+	args: {
+		isPending: true,
+	},
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
-	isSuccess: true,
-	filesItems: [],
-	total: 0,
+export const Empty = {
+	args: {
+		isSuccess: true,
+		filesItems: [],
+		total: 0,
+	},
 };

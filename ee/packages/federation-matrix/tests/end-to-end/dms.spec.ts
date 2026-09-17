@@ -3,7 +3,12 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import { acceptRoomInvite, addUserToRoom, getRoomInfo, getSubscriptionByRoomId } from '../../../../../apps/meteor/tests/data/rooms.helper';
+import {
+	acceptRoomInvite,
+	addUserToRoomViaMethod,
+	getRoomInfo,
+	getSubscriptionByRoomId,
+} from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -689,7 +694,7 @@ const waitForRoomEvent = async (
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					const response = await addUserToRoom({
+					const response = await addUserToRoomViaMethod({
 						usernames: [userDmId3],
 						rid: rcRoom1._id,
 						config: rcUserConfig1,
@@ -1180,7 +1185,7 @@ const waitForRoomEvent = async (
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					const response = await addUserToRoom({
+					const response = await addUserToRoomViaMethod({
 						usernames: [rcUser3.username],
 						rid: rcRoom._id,
 						config: rcUserConfig2,
@@ -1751,7 +1756,7 @@ const waitForRoomEvent = async (
 					expect(dmCreate.body).toHaveProperty('success', true);
 					expect(dmCreate.body).toHaveProperty('room');
 
-					const response = await addUserToRoom({
+					const response = await addUserToRoomViaMethod({
 						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
 						rid: dmCreate.body.room._id,
 						config: rcUser1.config,
@@ -1802,7 +1807,7 @@ const waitForRoomEvent = async (
 
 				it('should send an invite to another Synapse user', async () => {
 					// invite from rocket.chat
-					const response = await addUserToRoom({
+					const response = await addUserToRoomViaMethod({
 						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
 						rid: rcRoom._id,
 						config: rcUser1.config,

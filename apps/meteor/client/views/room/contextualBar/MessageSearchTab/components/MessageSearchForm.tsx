@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
 
-type MessageSearchFormProps = {
+export type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
 	onSearch: (params: { searchText: string; globalSearch: boolean }) => void;
 	searchListId: string;
@@ -51,10 +51,10 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<Box is='form' onSubmit={submitHandler} w='full'>
+		<Box is='form' onSubmit={submitHandler} width='full'>
 			<Field>
 				<TextInput
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? searchListId : undefined}
@@ -72,7 +72,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 				</Field>
 			)}
 			{room.encrypted && (
-				<Callout type='warning' mbs={12} icon='circle-exclamation'>
+				<Callout type='warning' marginBlockStart={12} icon='circle-exclamation'>
 					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>

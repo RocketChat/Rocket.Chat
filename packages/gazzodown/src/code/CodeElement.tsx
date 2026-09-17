@@ -1,6 +1,6 @@
 import PlainSpan from '../elements/PlainSpan';
 
-type CodeElementProps = {
+export type CodeElementProps = {
 	code: string;
 };
 

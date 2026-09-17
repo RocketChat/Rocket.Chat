@@ -4,7 +4,7 @@ import { memo } from 'react';
 import type { BaseAvatarProps } from './BaseAvatar';
 import Avatar from './BaseAvatar';
 
-type RoomAvatarProps = Pick<BaseAvatarProps, 'size'> & {
+export type RoomAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	url?: string;
 	room: {
 		_id: string;

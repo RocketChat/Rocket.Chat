@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../../lib/chats/Upload';
 
-type UploadProgressIndicatorProps = {
+export type UploadProgressIndicatorProps = {
 	uploads: readonly Upload[];
 };
 
@@ -63,7 +63,7 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps) => {
 	}
 
 	return (
-		<Box className={customClass} mbs={8}>
+		<Box className={customClass} marginBlockStart={8}>
 			<Bubble role='status'>{`${percentage}% ${t('Uploading__count__file', { count })}`}</Bubble>
 		</Box>
 	);

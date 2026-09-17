@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
 
-type PriorityListProps = {
+export type PriorityListProps = {
 	context: 'edit';
 	priorityId: string;
 	onSave: (data: PriorityFormData) => Promise<void>;

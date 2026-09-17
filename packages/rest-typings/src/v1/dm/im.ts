@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, IUser, IUploadWithUser, ISubscription } from '@rocket.chat/core-typings';
 
+import type { DmBlockUserProps } from './DmBlockUserProps';
 import type { DmCreateProps } from './DmCreateProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
@@ -75,5 +76,8 @@ export type ImEndpoints = {
 		POST: (params: { roomId: string; topic?: string }) => {
 			topic?: string;
 		};
+	};
+	'/v1/im.blockUser': {
+		POST: (params: DmBlockUserProps) => void;
 	};
 };

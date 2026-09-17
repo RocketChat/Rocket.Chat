@@ -9,7 +9,6 @@ test.describe.serial('omnichannel-manager', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelManagers = new OmnichannelManager(page);
-
 		await poOmnichannelManagers.goto();
 	});
 

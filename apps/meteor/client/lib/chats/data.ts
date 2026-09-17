@@ -4,9 +4,9 @@ import { Random } from '@rocket.chat/random';
 import { differenceInMinutes } from 'date-fns';
 
 import type { DataAPI } from './ChatAPI';
-import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
+import { hasAtLeastOnePermission, hasPermission } from '../authorization';
 import { settings } from '../settings';
 import { getUserId } from '../user';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -165,7 +165,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		const fullMessage = { ...message, rid, ...(tmid && { tmid }) } as IMessage;
+		const fullMessage = { ...message, rid, ...(tmid && { tmid }) };
 		Messages.state.store(fullMessage);
 
 		if (tmid) {
@@ -274,7 +274,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.state.find((record) => record.rid === rid);
 
 	const joinRoom = async (): Promise<void> => {
-		await sdk.call('joinRoom', rid);
+		await sdk.rest.post('/v1/rooms.join', { roomId: rid });
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>

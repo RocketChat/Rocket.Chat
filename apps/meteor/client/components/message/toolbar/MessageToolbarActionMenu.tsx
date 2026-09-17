@@ -25,7 +25,7 @@ import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 
 type MessageActionSection = {
 	id: string;
@@ -33,7 +33,7 @@ type MessageActionSection = {
 	items: GenericMenuItemProps[];
 };
 
-type MessageToolbarActionMenuProps = {
+export type MessageToolbarActionMenuProps = {
 	message: IMessage;
 	context: MessageActionContext;
 	room: IRoom;

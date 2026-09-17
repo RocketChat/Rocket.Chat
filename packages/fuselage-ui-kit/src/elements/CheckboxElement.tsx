@@ -4,7 +4,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type CheckboxElementProps = BlockProps<UiKit.CheckboxElement>;
+export type CheckboxElementProps = BlockProps<UiKit.CheckboxElement>;
 
 const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);
@@ -16,9 +16,9 @@ const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementPro
 				const isChecked = value?.includes(option.value);
 
 				return (
-					<Box key={option.value} pb={4}>
+					<Box key={option.value} paddingBlock={4}>
 						<CheckBox disabled={loading} value={option.value} checked={isChecked} onChange={action} />
-						<Box is='label' pis={8}>
+						<Box is='label' paddingInlineStart={8}>
 							{surfaceRenderer.renderTextObject(option.text, 0, UiKit.BlockContext.NONE)}
 						</Box>
 					</Box>

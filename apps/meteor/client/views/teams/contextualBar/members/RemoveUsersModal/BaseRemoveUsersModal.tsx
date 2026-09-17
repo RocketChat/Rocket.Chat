@@ -11,7 +11,7 @@ const STEPS = {
 	CONFIRM_DELETE: 'CONFIRM_DELETE',
 };
 
-type BaseRemoveUsersModalProps = {
+export type BaseRemoveUsersModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;

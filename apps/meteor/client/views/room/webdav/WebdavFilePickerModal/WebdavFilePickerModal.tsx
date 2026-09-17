@@ -15,7 +15,7 @@ import FilterByText from '../../../../components/FilterByText';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
-type WebdavFilePickerModalProps = {
+export type WebdavFilePickerModalProps = {
 	onUpload: (file: File) => Promise<void>;
 	onClose: () => void;
 	account: IWebdavAccountIntegration;

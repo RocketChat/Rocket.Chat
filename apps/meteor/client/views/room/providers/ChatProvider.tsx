@@ -4,7 +4,7 @@ import { ChatContext } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import { useChatMessagesInstance } from './hooks/useChatMessagesInstance';
 
-type ChatProviderProps = {
+export type ChatProviderProps = {
 	children: ReactNode;
 	tmid?: string;
 };

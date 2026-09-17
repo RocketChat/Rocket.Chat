@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type LinearScaleElementProps = BlockProps<UiKit.LinearScaleElement>;
+export type LinearScaleElementProps = BlockProps<UiKit.LinearScaleElement>;
 
 const LinearScaleElement = ({ className, block, context, surfaceRenderer }: LinearScaleElementProps) => {
 	const { minValue = 0, maxValue = 10, initialValue, preLabel, postLabel } = block;

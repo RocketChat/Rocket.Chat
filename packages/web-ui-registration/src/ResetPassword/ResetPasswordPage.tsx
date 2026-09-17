@@ -1,20 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { Form } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle } from '@rocket.chat/layout';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetting,
-	useRouter,
-	useRouteParameter,
-	useUser,
-	useMethod,
-	useTranslation,
-	useLoginWithToken,
-	useEndpoint,
-} from '@rocket.chat/ui-contexts';
+import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useLoginWithToken, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
 
@@ -25,7 +17,7 @@ const getChangePasswordReason = ({
 
 const ResetPasswordPage = () => {
 	const user = useUser();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
@@ -94,11 +86,11 @@ const ResetPasswordPage = () => {
 				aria-describedby='welcomeTitle'
 				onSubmit={handleSubmit(handleResetPassword)}
 			>
-				<Form.Header>
-					<Form.Title id={formLabelId}>{t('Reset_password')}</Form.Title>
-					<Form.Subtitle>{t(changePasswordReason)}</Form.Subtitle>
-				</Form.Header>
-				<Form.Container>
+				<FormHeader>
+					<FormTitle id={formLabelId}>{t('Reset_password')}</FormTitle>
+					<FormSubtitle>{t(changePasswordReason)}</FormSubtitle>
+				</FormHeader>
+				<FormContainer>
 					<FieldGroup>
 						<Field>
 							<FieldLabel required htmlFor={passwordId}>
@@ -154,14 +146,14 @@ const ResetPasswordPage = () => {
 							</Field>
 						)}
 					</FieldGroup>
-				</Form.Container>
-				<Form.Footer>
+				</FormContainer>
+				<FormFooter>
 					<ButtonGroup>
 						<Button primary loading={isSubmitting} type='submit'>
 							{t('Reset')}
 						</Button>
 					</ButtonGroup>
-				</Form.Footer>
+				</FormFooter>
 			</Form>
 		</HorizontalTemplate>
 	);

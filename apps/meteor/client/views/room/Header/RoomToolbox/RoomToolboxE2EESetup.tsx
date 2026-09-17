@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { roomActionHooksForE2EESetup } from '../../../../ui';
 
-type RoomToolboxE2EESetupProps = {
+export type RoomToolboxE2EESetupProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 

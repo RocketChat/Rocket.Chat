@@ -1,0 +1,18 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"baseUrl": ".",
+		"types": ["node"],
+		"lib": ["es2023"],
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"target": "es2023",
+		"declaration": true,
+		"paths": {
+			"@rocket.chat/apps/*": ["../*"]
+		}
+	},
+	"include": ["./src/**/*"]
+}

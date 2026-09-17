@@ -7,7 +7,7 @@ import EndpointActionInput from './EndpointActionInput';
 import MethodActionInput from './MethodActionInput';
 import type { SettingInputProps } from './types';
 
-type ActionSettingInputProps = SettingInputProps & {
+export type ActionSettingInputProps = SettingInputProps & {
 	value: keyof ServerMethods | { method: Method; path: PathPattern };
 	actionText: TranslationKey;
 	sectionChanged: boolean;

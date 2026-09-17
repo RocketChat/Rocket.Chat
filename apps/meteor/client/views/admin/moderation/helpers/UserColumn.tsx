@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 
-type UserColumnProps = {
+export type UserColumnProps = {
 	name?: string;
 	username?: string;
 	isDesktopOrLarger?: boolean;
@@ -19,7 +19,7 @@ const UserColumn = ({ name, username, fontSize, size }: UserColumnProps) => {
 					<UserAvatar size={size} username={username} />
 				</Box>
 			)}
-			<Box display='flex' mi={8} withTruncatedText>
+			<Box display='flex' marginInline={8} withTruncatedText>
 				<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 					<Box fontScale='p2m' color='default' withTruncatedText>
 						{name && username ? (

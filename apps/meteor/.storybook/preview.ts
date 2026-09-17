@@ -1,22 +1,17 @@
-import type { Decorator, Parameters } from '@storybook/react';
+import { parameters, decorators } from '@rocket.chat/storybook-config/preview';
+import type { Preview } from '@storybook/react';
 
-import { rocketChatDecorator } from './decorators';
+import { RocketChatDecorator } from './decorators';
 
-export const decorators: Decorator[] = [rocketChatDecorator];
+import '../app/theme/client/main.css';
+import 'highlight.js/styles/github.css';
 
-export const parameters: Parameters = {
-	backgrounds: {
-		grid: {
-			cellSize: 4,
-			cellAmount: 4,
-			opacity: 0.5,
-		},
+const preview: Preview = {
+	parameters: {
+		...parameters,
 	},
-	options: {
-		storySort: {
-			method: 'alphabetical',
-			order: ['Components', '*', 'Enterprise'],
-		},
-	},
+	decorators: [...decorators, RocketChatDecorator],
+	tags: ['autodocs'],
 };
-export const tags = ['autodocs'];
+
+export default preview;

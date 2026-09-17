@@ -1,14 +1,17 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
+import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
 import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -32,10 +35,13 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
+	const dmUserId = getUidDirectMessage(room, useUserId());
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const icon = (
-		<SidebarV2ItemIcon
+		<SidebarItemIcon
 			highlighted={highlighted}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
 		/>
@@ -44,10 +50,10 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarV2Actions>
-					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarV2Actions>
+				<SidebarActions>
+					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarActions>
 			),
 		[videoConfActions],
 	);
@@ -76,6 +82,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			room={room}
 			actions={actions}
 			{...buttonProps}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };
@@ -89,7 +96,6 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 
 const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;

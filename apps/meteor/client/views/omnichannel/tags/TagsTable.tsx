@@ -70,7 +70,7 @@ const TagsTable = () => {
 			>
 				{t('Description')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60' />
+			<GenericTableHeaderCell key='remove' width='x60' />
 		</>
 	);
 

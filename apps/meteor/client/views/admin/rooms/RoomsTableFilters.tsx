@@ -43,7 +43,9 @@ const initialRoomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }) => {
+export type RoomsTableFiltersProps = { setFilters: Dispatch<SetStateAction<any>> };
+
+const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
@@ -77,23 +79,23 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 		<Box
 			is='form'
 			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
-			mb='x8'
+			marginBlock='x8'
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
+			<Box minWidth='x224' display='flex' margin='x4' flexGrow={2}>
 				<TextInput
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_rooms')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 				/>
 			</Box>
-			<Box minWidth='x224' m='x4'>
+			<Box minWidth='x224' margin='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle='All_rooms'

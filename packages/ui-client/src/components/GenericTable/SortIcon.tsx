@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 
-type SortIconProps = {
+export type SortIconProps = {
 	direction?: 'asc' | 'desc';
 };
 

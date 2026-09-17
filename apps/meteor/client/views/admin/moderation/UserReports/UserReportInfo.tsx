@@ -25,7 +25,9 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
 
-const UserReportInfo = ({ userId }: { userId: string }) => {
+export type UserReportInfoProps = { userId: string };
+
+const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 	const { t } = useTranslation();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();
@@ -61,7 +63,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	if (isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 				<StatesIcon name='warning' variation='danger' />
 				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 				<StatesActions>
@@ -101,7 +103,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

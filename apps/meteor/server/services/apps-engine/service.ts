@@ -6,6 +6,7 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppStatusReport, IAppsEngineService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
@@ -66,11 +67,20 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			await Apps.self?.getManager()?.removeLocal(appId);
 		});
 
-		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
+		this.onEvent('apps.updated', async (appId: string, originInstanceId?: string): Promise<void> => {
 			Apps.self?.getRocketChatLogger().debug({
 				msg: '"apps.updated" event received for app',
 				appId,
 			});
+
+			if (originInstanceId && originInstanceId === InstanceStatus.id()) {
+				Apps.self?.getRocketChatLogger().debug({
+					msg: '"apps.updated" event ignored: originated from this instance',
+					appId,
+				});
+				return;
+			}
+
 			const storageItem = await Apps.self?.getStorage()?.retrieveOne(appId);
 			if (!storageItem) {
 				Apps.self?.getRocketChatLogger().info({

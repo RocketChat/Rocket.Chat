@@ -22,7 +22,7 @@ import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid, isRepliesStepValid } from '../../utils/outbound-message';
 
-type OutboundMessageWizardProps = {
+export type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
 	onSuccess?(): void;
 	onError?(): void;
@@ -171,7 +171,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			<Wizard api={wizardApi} display='flex' flexDirection='column' height='100%'>
 				<WizardTabs />
 
-				<Box mbs={16} minHeight={0} flexGrow={1}>
+				<Box marginBlockStart={16} minHeight={0} flexGrow={1}>
 					<WizardContent id='recipient'>
 						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>

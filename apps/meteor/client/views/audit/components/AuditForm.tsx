@@ -13,7 +13,7 @@ import OmnichannelTab from './tabs/OmnichannelTab';
 import RoomsTab from './tabs/RoomsTab';
 import UsersTab from './tabs/UsersTab';
 
-type AuditFormProps = {
+export type AuditFormProps = {
 	type: IAuditLog['fields']['type'];
 	onSubmit?: (payload: { type: IAuditLog['fields']['type'] } & AuditFields) => void;
 	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;
@@ -60,7 +60,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<Box flexShrink={0} mbs={28} mis={8}>
+				<Box flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
 					<ButtonGroup align='end'>
 						<Button secondary onClick={() => window.print()}>
 							{t('Export')} {t('PDF')}

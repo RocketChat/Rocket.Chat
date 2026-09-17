@@ -2,7 +2,7 @@ import { memo, type ReactNode } from 'react';
 
 import { useWizardContext } from './useWizardContext';
 
-type WizardContentProps = {
+export type WizardContentProps = {
 	id: string;
 	children: ReactNode;
 };

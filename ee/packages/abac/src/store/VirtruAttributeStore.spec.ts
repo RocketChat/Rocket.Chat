@@ -20,7 +20,9 @@ const mkClient = (over: Partial<Record<'isAvailable' | 'apiCall' | 'getConfig', 
 		getConfig: over.getConfig ?? jest.fn().mockReturnValue(cfg),
 	}) as any;
 
-beforeEach(() => usersFindOneById.mockReset().mockResolvedValue({ _id: 'u1', emails: [{ address: 'bob@x.com' }], username: 'bob' }));
+beforeEach(() =>
+	usersFindOneById.mockReset().mockResolvedValue({ _id: 'u1', emails: [{ address: 'bob@x.com', verified: true }], username: 'bob' }),
+);
 
 describe('VirtruAttributeStore.entitlementsOf / list', () => {
 	it('parses FQN map keys into grouped {key,values}', async () => {
@@ -87,7 +89,7 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		const apiCall = jest.fn().mockResolvedValue({ entitlements: [{ actionsPerAttributeValueFqn: {} }] });
 		const store = new VirtruAttributeStore(mkClient({ apiCall }));
 		await store.entitlementsOf(actor);
-		usersFindOneById.mockResolvedValue({ _id: 'u2', emails: [{ address: 'alice@x.com' }], username: 'alice' });
+		usersFindOneById.mockResolvedValue({ _id: 'u2', emails: [{ address: 'alice@x.com', verified: true }], username: 'alice' });
 		await store.entitlementsOf({ _id: 'u2', username: 'alice', name: 'A' });
 		expect(apiCall).toHaveBeenCalledTimes(2);
 	});
@@ -172,11 +174,11 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(apiCall).toHaveBeenCalledTimes(1);
 
 		apiCall.mockRejectedValueOnce(new Error('pdp blip'));
-		usersFindOneById.mockResolvedValue({ _id: 'u2', emails: [{ address: 'alice@x.com' }], username: 'alice' });
+		usersFindOneById.mockResolvedValue({ _id: 'u2', emails: [{ address: 'alice@x.com', verified: true }], username: 'alice' });
 		await expect(store.entitlementsOf({ _id: 'u2', username: 'alice', name: 'A' })).rejects.toThrow('pdp blip');
 		expect(apiCall).toHaveBeenCalledTimes(2);
 
-		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [{ address: 'bob@x.com' }], username: 'bob' });
+		usersFindOneById.mockResolvedValue({ _id: 'u1', emails: [{ address: 'bob@x.com', verified: true }], username: 'bob' });
 		const result = await store.entitlementsOf(actor);
 		expect(result.get('clearance')).toEqual(new Set(['secret']));
 		expect(apiCall).toHaveBeenCalledTimes(2);

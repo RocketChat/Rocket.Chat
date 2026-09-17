@@ -157,10 +157,17 @@ export type EventSignatures = {
 			rid: IRoom['_id'];
 		};
 	}): void;
+	'presence.invalidateVisibility'(data: { targets?: IUser['_id'][]; viewers?: IUser['_id'][] }): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	/**
+	 * Something about the conference changed: its chat's room, who can read it, or its membership.
+	 *
+	 * One event for all of it, because there is one answer to all of it: read the conference again.
+	 */
+	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
@@ -254,7 +261,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),
@@ -296,7 +303,7 @@ export type EventSignatures = {
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
-	'apps.updated'(appId: string): void;
+	'apps.updated'(appId: string, originInstanceId?: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
 	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;

@@ -41,7 +41,7 @@ const AddAgent = () => {
 				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
 					<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
-					<Button disabled={!username} onClick={handleSave} mis={8} primary>
+					<Button disabled={!username} onClick={handleSave} marginInlineStart={8} primary>
 						{t('Add_agent')}
 					</Button>
 				</FieldRow>

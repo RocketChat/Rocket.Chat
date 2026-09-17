@@ -1,10 +1,9 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
-import type { FindOptions, DeleteResult, FindCursor } from 'mongodb';
+import type { DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatTagModel extends IBaseModel<ILivechatTag> {
-	findInIds(ids: string[], options?: FindOptions<ILivechatTag>): FindCursor<ILivechatTag>;
 	createOrUpdateTag(
 		_id: string | undefined,
 		{ name, description }: { name: string; description?: string },

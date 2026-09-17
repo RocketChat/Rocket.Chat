@@ -6,7 +6,7 @@ import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import StrikeSpan from './StrikeSpan';
 
-type LinkSpanProps = {
+export type LinkSpanProps = {
 	label: MessageParser.Markup | MessageParser.Markup[];
 };
 

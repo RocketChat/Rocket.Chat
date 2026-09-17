@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import 'katex/dist/katex.css';
 
-type KatexElementProps = {
+export type KatexElementProps = {
 	code: string;
 };
 

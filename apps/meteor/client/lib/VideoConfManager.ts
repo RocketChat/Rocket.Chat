@@ -1,8 +1,8 @@
 import type { CallPreferences, DirectCallData, DirectCallParams, IRoom, IUser, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
+import { sdk } from './SDKClient';
 import { getConfig } from './utils/getConfig';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
 
@@ -301,6 +301,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public updateUser(userId: string | null, isLoggingIn: boolean, isConnected: boolean): void {
+		if (userId === this.userId && !isLoggingIn && !isConnected) {
+			return;
+		}
+
 		this.debugLog(`[VideoConf] Logged user or connection status has changed.`);
 
 		if (this.userId) {

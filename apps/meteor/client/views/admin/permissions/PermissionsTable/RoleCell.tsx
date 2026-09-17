@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AuthorizationUtils, confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
 
-type RoleCellProps = {
+export type RoleCellProps = {
 	_id: IRole['_id'];
 	name: IRole['name'];
 	description: IRole['description'];

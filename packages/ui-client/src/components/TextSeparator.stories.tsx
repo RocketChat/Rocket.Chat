@@ -1,9 +1,8 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import TextSeparator from './TextSeparator';
 
 export default {
-	title: 'Components/TextSeparator',
 	component: TextSeparator,
 	parameters: {
 		layout: 'centered',
@@ -11,11 +10,10 @@ export default {
 	decorators: [(fn) => <div style={{ minWidth: 400 }}>{fn()}</div>],
 } satisfies Meta<typeof TextSeparator>;
 
-const Template: StoryFn<typeof TextSeparator> = (args) => <TextSeparator {...args} />;
-
-export const Default = Template.bind({});
-Default.storyName = 'TextSeparator';
-Default.args = {
-	label: 'Example label',
-	value: 'Example value',
+export const Default: StoryObj<typeof TextSeparator> = {
+	name: 'TextSeparator',
+	args: {
+		label: 'Example label',
+		value: 'Example value',
+	},
 };

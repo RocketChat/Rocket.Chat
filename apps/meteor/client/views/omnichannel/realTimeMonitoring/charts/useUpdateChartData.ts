@@ -3,7 +3,7 @@ import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { MutableRefObject } from 'react';
 
-import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { updateChart } from '../../chartHandler';
 
 type UseUpdateChartDataOptions<TChart> = {
 	context: TChart | undefined;

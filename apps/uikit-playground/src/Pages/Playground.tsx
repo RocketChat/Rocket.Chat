@@ -21,7 +21,14 @@ const Playground = () => {
 			<Box position='relative' width='100%' flexGrow={1}>
 				<CreateNewScreenContainer />
 				<Templates />
-				<Box display='flex' width='100%' height='100%' flexDirection='column' overflow='hidden' bg='var(--primaryBackgroundColor)'>
+				<Box
+					display='flex'
+					width='100%'
+					height='100%'
+					flexDirection='column'
+					overflow='hidden'
+					backgroundColor='var(--primaryBackgroundColor)'
+				>
 					<Box width='100%' flexGrow={1} position='relative' zIndex={0}>
 						<ComponentSideBar />
 						<Preview />

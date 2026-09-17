@@ -30,7 +30,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
-type EditBusinessHoursProps = {
+export type EditBusinessHoursProps = {
 	businessHourData?: Serialized<ILivechatBusinessHour>;
 	type: LivechatBusinessHourTypes;
 };
@@ -93,7 +93,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' w='full' alignSelf='center'>
+				<Box maxWidth='600px' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<BusinessHoursForm type={type} />

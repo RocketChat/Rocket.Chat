@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type AccountTokensRowProps = {
+export type AccountTokensRowProps = {
 	isMedium: boolean;
 	onRegenerate: (name: string) => void;
 	onRemove: (name: string) => void;

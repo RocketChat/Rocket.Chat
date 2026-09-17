@@ -3,7 +3,7 @@ import CallHistoryInternalUser from './CallHistoryInternalUser';
 import CallHistoryUnknownUser from './CallHistoryUnknownUser';
 import { isCallHistoryExternalContact, isCallHistoryInternalContact, type CallHistoryContact } from '../definitions';
 
-type CallHistoryUserProps = {
+export type CallHistoryUserProps = {
 	contact: CallHistoryContact;
 };
 

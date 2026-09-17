@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
-type PruneMessagesProps = {
+export type PruneMessagesProps = {
 	callOutText?: string;
 	validateText?: string;
 	users: string[];

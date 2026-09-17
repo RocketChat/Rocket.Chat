@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import type { AppsRestApi } from '../rest';
 
 export const registerActionButtonsHandler = ({ api, _manager }: AppsRestApi) =>

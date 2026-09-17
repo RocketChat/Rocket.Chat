@@ -19,7 +19,7 @@ type OptionProps = {
 	onMouseDown(event: SyntheticEvent): void;
 };
 
-type AutoCompleteContactProps = Omit<
+export type AutoCompleteContactProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value' | 'onChange'
 > & {

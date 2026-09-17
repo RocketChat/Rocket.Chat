@@ -6,7 +6,7 @@ import UnreadBadge from '../../sidebar/badges/UnreadBadge';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 import SidePanelOmnichannelBadges from '../omnichannel/SidePanelOmnichannelBadges';
 
-type RoomSidePanelItemBadgesProps = {
+export type RoomSidePanelItemBadgesProps = {
 	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };

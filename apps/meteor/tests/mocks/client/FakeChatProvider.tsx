@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { ChatContext } from '../../../client/views/room/contexts/ChatContext';
 import { createFakeSubscription } from '../data';
 
-type FakeChatProviderProps = {
+export type FakeChatProviderProps = {
 	children?: ReactNode;
 };
 

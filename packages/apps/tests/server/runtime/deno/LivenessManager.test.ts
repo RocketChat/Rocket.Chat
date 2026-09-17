@@ -5,9 +5,9 @@ import { describe, it, beforeEach, afterEach, mock, type Mock } from 'node:test'
 
 import debugFactory from 'debug';
 
-import type { DenoRuntimeSubprocessController } from '../../../../src/server/runtime/deno/AppsEngineDenoRuntime';
-import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/deno/LivenessManager';
-import { ProcessMessenger } from '../../../../src/server/runtime/deno/ProcessMessenger';
+import type { BaseRuntimeSubprocessController } from '../../../../src/server/runtime/base/BaseRuntimeSubprocessController';
+import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/base/LivenessManager';
+import { ProcessMessenger } from '../../../../src/server/runtime/base/ProcessMessenger';
 
 describe('LivenessManager ping mechanism', () => {
 	const PING_INTERVAL_MS = 100;
@@ -16,7 +16,7 @@ describe('LivenessManager ping mechanism', () => {
 	const MAX_RESTARTS = Infinity;
 	const RESTART_ATTEMPT_DELAY_MS = 10;
 
-	let mockController: DenoRuntimeSubprocessController;
+	let mockController: BaseRuntimeSubprocessController;
 	let mockMessenger: ProcessMessenger;
 	let mockSubprocess: ChildProcess;
 	let debug: debug.Debugger;
@@ -65,7 +65,7 @@ describe('LivenessManager ping mechanism', () => {
 			prependListener: () => mockController,
 			prependOnceListener: () => mockController,
 			eventNames: (): string[] => [],
-		} as unknown as DenoRuntimeSubprocessController;
+		} as unknown as BaseRuntimeSubprocessController;
 
 		// Mock subprocess
 		mockSubprocess = {

@@ -24,7 +24,7 @@ import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
-type GenericModalProps = RequiredModalProps & {
+export type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
 	cancelText?: ReactNode;

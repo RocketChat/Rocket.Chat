@@ -4,7 +4,7 @@ import { CallHistoryTableRow, usePeekMediaSessionState, useWidgetExternalControl
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryExternalContact>, 'onClick' | 'menu'> & {
+export type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryExternalContact>, 'onClick' | 'menu'> & {
 	onClick: (historyId: string) => void;
 };
 

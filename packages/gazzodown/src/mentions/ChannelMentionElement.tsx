@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type ChannelMentionElementProps = {
+export type ChannelMentionElementProps = {
 	mention: string;
 };
 

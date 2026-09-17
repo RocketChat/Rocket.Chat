@@ -24,14 +24,14 @@ const PreferencesSoundSection = () => {
 			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('Master_volume')}</FieldLabel>
-					<FieldHint mbe={4}>{t('Master_volume_hint')}</FieldHint>
+					<FieldHint marginBlockEnd={4}>{t('Master_volume_hint')}</FieldHint>
 					<FieldRow>
 						<Controller name='masterVolume' control={control} render={({ field }) => <Slider {...field} minValue={0} maxValue={100} />} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Notification_volume')}</FieldLabel>
-					<FieldHint mbe={4}>{t('Notification_volume_hint')}</FieldHint>
+					<FieldHint marginBlockEnd={4}>{t('Notification_volume_hint')}</FieldHint>
 					<FieldRow>
 						<Controller
 							name='notificationsSoundVolume'
@@ -53,7 +53,7 @@ const PreferencesSoundSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel>{t('Call_ringer_volume')}</FieldLabel>
-					<FieldHint mbe={4}>{t('Call_ringer_volume_hint')}</FieldHint>
+					<FieldHint marginBlockEnd={4}>{t('Call_ringer_volume_hint')}</FieldHint>
 					<FieldRow>
 						<Controller
 							name='voipRingerVolume'

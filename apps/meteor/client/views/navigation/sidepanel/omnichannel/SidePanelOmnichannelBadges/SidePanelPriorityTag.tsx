@@ -3,7 +3,9 @@ import { Icon, Tag } from '@rocket.chat/fuselage';
 
 import { useOmnichannelPrioritiesConfig } from '../../../../omnichannel/hooks/useOmnichannelPrioritiesConfig';
 
-const SidePanelPriorityTag = ({ priorityWeight }: { priorityWeight: LivechatPriorityWeight }) => {
+export type SidePanelPriorityTagProps = { priorityWeight: LivechatPriorityWeight };
+
+const SidePanelPriorityTag = ({ priorityWeight }: SidePanelPriorityTagProps) => {
 	const prioritiesConfig = useOmnichannelPrioritiesConfig(priorityWeight, false);
 
 	if (!prioritiesConfig?.iconName) {
@@ -11,7 +13,7 @@ const SidePanelPriorityTag = ({ priorityWeight }: { priorityWeight: LivechatPrio
 	}
 
 	return (
-		<Tag icon={<Icon mie={4} size='x12' name={prioritiesConfig?.iconName} />} variant={prioritiesConfig?.variant}>
+		<Tag icon={<Icon marginInlineEnd={4} size='x12' name={prioritiesConfig?.iconName} />} variant={prioritiesConfig?.variant}>
 			{prioritiesConfig?.name}
 		</Tag>
 	);

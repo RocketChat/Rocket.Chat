@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
-type IncomingPopupProps = {
+export type IncomingPopupProps = {
 	id: string;
 	room: IRoom;
 	position: number;

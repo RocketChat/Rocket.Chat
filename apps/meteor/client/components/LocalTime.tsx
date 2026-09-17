@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUTCClock } from '../hooks/useUTCClock';
 
-type LocalTimeProps = {
+export type LocalTimeProps = {
 	utcOffset: number;
 };
 

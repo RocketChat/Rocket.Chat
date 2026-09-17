@@ -7,7 +7,7 @@ import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 
-type MarkupProps = {
+export type MarkupProps = {
 	tokens: MessageParser.Root;
 };
 

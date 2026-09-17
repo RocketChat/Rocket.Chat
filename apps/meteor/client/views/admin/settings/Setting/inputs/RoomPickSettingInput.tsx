@@ -5,7 +5,7 @@ import RoomAutoCompleteMultiple from '../../../../../components/RoomAutoComplete
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
+export type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
 
 function RoomPickSettingInput({
 	_id,

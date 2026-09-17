@@ -5,7 +5,9 @@ import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }) => {
+export type SendTestButtonProps = { id: IEmailInboxPayload['_id'] };
+
+const SendTestButton = ({ id }: SendTestButtonProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const sendTest = useEndpoint('POST', '/v1/email-inbox.send-test/:_id', { _id: id });

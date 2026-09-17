@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
@@ -10,19 +10,21 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x600' alignSelf='center' w='full' m={24}>
+			<Box maxWidth='x600' alignSelf='center' width='full' margin={24}>
 				{fn()}
 			</Box>
 		),
 	],
 } satisfies Meta<typeof BusinessHoursMultiple>;
 
-export const Default: StoryFn<typeof BusinessHoursMultiple> = (args) => <BusinessHoursMultiple {...args} />;
-Default.storyName = 'BusinessHoursMultiple';
-Default.args = {
-	departmentList: [
-		[1, 'Support'],
-		[2, 'Marketing'],
-		[3, <Skeleton width='x100' key={3} />],
-	],
-} as any;
+export const Default: StoryObj<typeof BusinessHoursMultiple> = {
+	name: 'BusinessHoursMultiple',
+
+	args: {
+		departmentList: [
+			[1, 'Support'],
+			[2, 'Marketing'],
+			[3, <Skeleton width='x100' key={3} />],
+		],
+	} as any,
+};

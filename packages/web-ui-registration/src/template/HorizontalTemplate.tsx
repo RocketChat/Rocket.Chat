@@ -14,7 +14,9 @@ import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
 
-const HorizontalTemplate = ({ children }: { children: ReactNode }) => {
+export type HorizontalTemplateProps = { children: ReactNode };
+
+const HorizontalTemplate = ({ children }: HorizontalTemplateProps) => {
 	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
@@ -22,7 +24,7 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }) => {
 	return (
 		<HorizontalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
 			<HorizontalWizardLayoutAside>
 				<HorizontalWizardLayoutTitle>

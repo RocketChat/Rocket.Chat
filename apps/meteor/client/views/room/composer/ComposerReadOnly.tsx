@@ -10,7 +10,7 @@ const ComposerReadOnly = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
-	const joinChannel = useEndpoint('POST', '/v1/channels.join');
+	const joinChannel = useEndpoint('POST', '/v1/rooms.join');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

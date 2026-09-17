@@ -117,11 +117,49 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
 	});
 
 /**
- * Adds users to a room using the addUsersToRoom method.
+ * Adds users to a room using the REST invite endpoints (channels.invite / groups.invite).
  *
- * Invites one or more users to join a room using the DDP method call.
- * Supports both local and federated users, with proper error handling
- * for federation restrictions.
+ * This is the entrypoint the "Add users" UI uses. Supports both local and federated users.
+ * The REST endpoints accept a single invitee per call, so this issues one request per
+ * username (mirroring how the UI fans out the invites) and resolves to the array of responses.
+ *
+ * @param usernames - Array of usernames to add to the room
+ * @param rid - The unique identifier of the room
+ * @param type - Room type, selects the endpoint: 'c' -> channels.invite, 'p' -> groups.invite
+ * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the array of REST invite responses (one per username)
+ */
+export const addUserToRoom = ({
+	usernames,
+	rid,
+	type = 'c',
+	userCredentials,
+	config,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	type?: 'c' | 'p';
+	userCredentials?: Credentials;
+	config?: IRequestConfig;
+}) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || userCredentials || credentials;
+	const endpoint = type === 'p' ? 'groups.invite' : 'channels.invite';
+
+	// The REST invite endpoints accept a single invitee per call, so we issue one
+	// request per username (mirroring how the UI fans out the invites).
+	return Promise.all(
+		usernames.map((username) => requestInstance.post(api(endpoint)).set(credentialsInstance).send({ roomId: rid, username })),
+	);
+};
+
+/**
+ * Adds users to a room using the deprecated `addUsersToRoom` DDP method.
+ *
+ * The method is deprecated in favour of the REST invite endpoints (see {@link addUserToRoom}),
+ * but it is still a supported entrypoint. Prefer the REST helper for general test setup — this
+ * helper exists to keep dedicated coverage of the DDP-method entrypoint (e.g. federation invites).
  *
  * @param usernames - Array of usernames to add to the room
  * @param rid - The unique identifier of the room
@@ -129,12 +167,7 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
  * @param config - Optional request configuration for custom domains
  * @returns Promise resolving to the method call response
  */
-// TODO(ddp-removal): swap /api/v1/method.call/addUsersToRoom for the per-type
-// REST endpoints (/v1/channels.invite or /v1/groups.invite). The federation
-// suite still asserts the legacy DDP error shape (`message` field with a
-// stringified `{ error: { error } }`); migrating requires updating those
-// expectations to the REST envelope (`{ success: false, error }`).
-export const addUserToRoom = ({
+export const addUserToRoomViaMethod = ({
 	usernames,
 	rid,
 	userCredentials,

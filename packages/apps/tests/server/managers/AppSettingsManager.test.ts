@@ -14,7 +14,7 @@ import type {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from '../../../src/server/managers';
-import { AppAccessorManager, AppSettingsManager } from '../../../src/server/managers';
+import { AppSettingsManager } from '../../../src/server/managers';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import type { AppMetadataStorage, IAppStorageItem } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
@@ -24,7 +24,6 @@ describe('AppSettingsManager', () => {
 	let mockStorageItem: IAppStorageItem;
 	let mockApp: ProxiedApp;
 	let mockBridges: AppBridges;
-	let mockAccessors: AppAccessorManager;
 	let mockStorage: AppMetadataStorage;
 	let mockManager: AppManager;
 
@@ -90,12 +89,6 @@ describe('AppSettingsManager', () => {
 				return {} as AppVideoConfProviderManager;
 			},
 		} as AppManager;
-
-		mockAccessors = new AppAccessorManager(mockManager);
-		const ac = mockAccessors;
-		mockManager.getAccessorManager = function _getAccessorManager(): AppAccessorManager {
-			return ac;
-		};
 	});
 
 	afterEach(() => {

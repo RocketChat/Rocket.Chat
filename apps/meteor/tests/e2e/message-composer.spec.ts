@@ -12,7 +12,7 @@ test.describe.serial('message-composer', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['rocket.cat'] });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -57,6 +57,8 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
 		await poHomeChannel.composer.btnLinkFormatter.click();
+		// It takes a while for the modal to be visible and ready to receive input, so we need to wait for it before typing the url
+		await poHomeChannel.composer.addLinkModal.waitFor();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
 
@@ -81,7 +83,7 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer :flag_br: ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer 🇧🇷 ');
 
 			await poHomeChannel.composer.inputMessage.fill('');
 		});
@@ -108,13 +110,13 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer');
+		await poHomeChannel.content.sendMessage('hello composer @rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer @rocket.cat');
 		});
 
 		await test.step('expect to open popup on mention', async () => {
@@ -124,7 +126,7 @@ test.describe.serial('message-composer', () => {
 
 		await test.step('expect popup to close after the first edit is cancelled', async () => {
 			await poHomeChannel.composer.btnCancel.click();
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer @rocket.cat');
 			await expect(poHomeChannel.composer.boxPopup).not.toBeVisible();
 		});
 
@@ -135,13 +137,13 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should close mention popup when canceling a message edit via keyboard', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer');
+		await poHomeChannel.content.sendMessage('hello composer @rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer @rocket.cat');
 		});
 
 		await test.step('expect to open popup on mention', async () => {
@@ -151,7 +153,7 @@ test.describe.serial('message-composer', () => {
 
 		await test.step('expect popup to close after the first edit is cancelled', async () => {
 			await page.keyboard.press('Escape');
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer @rocket.cat');
 			await expect(poHomeChannel.composer.boxPopup).not.toBeVisible();
 		});
 
@@ -159,6 +161,44 @@ test.describe.serial('message-composer', () => {
 			await page.keyboard.press('Escape');
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 		});
+	});
+
+	test('should close mention popup after sending a message ending with a mention', async ({ page }) => {
+		await poHomeChannel.composer.inputMessage.click();
+
+		await test.step('expect to open popup on mention', async () => {
+			await page.keyboard.type('hello composer @rocket.cat');
+			await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+		});
+
+		await test.step('expect popup to close after sending the message', async () => {
+			await poHomeChannel.composer.btnSend.click();
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+			await expect(poHomeChannel.composer.boxPopup).not.toBeVisible();
+		});
+	});
+
+	test('should open mention popup on text inserted without keyboard events', async ({ page }) => {
+		await poHomeChannel.composer.inputMessage.click();
+
+		await page.keyboard.insertText('hello composer @rocket.cat');
+		await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+
+		await poHomeChannel.composer.inputMessage.fill('');
+	});
+
+	test('should clear the composer after running a client-only slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/shrug');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('(ツ)');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+	});
+
+	test('should clear the composer after an unrecognized slash command', async () => {
+		await poHomeChannel.content.dispatchSlashCommand('/notaslashcommand');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('No such command');
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 	});
 
 	test.describe('audio recorder', () => {

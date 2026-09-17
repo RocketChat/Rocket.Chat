@@ -9,7 +9,7 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 
 const appRoot = mockAppRoot().build();
 
-jest.mock('../../../../app/utils/client', () => ({
+jest.mock('../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 

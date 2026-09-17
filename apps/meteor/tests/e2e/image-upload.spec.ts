@@ -19,8 +19,7 @@ test.describe('image-upload', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {

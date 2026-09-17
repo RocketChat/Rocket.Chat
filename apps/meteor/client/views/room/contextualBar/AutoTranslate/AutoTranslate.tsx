@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../contexts/RoomContext';
 
-type AutoTranslateProps = {
+export type AutoTranslateProps = {
 	language: string;
 	languages: SelectOption[];
 	handleSwitch: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -33,7 +33,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent pbs={24}>
+			<ContextualbarContent paddingBlockStart={24}>
 				<FieldGroup>
 					{room.encrypted && (
 						<Callout title={t('Automatic_translation_not_available')} type='warning'>

@@ -1,7 +1,7 @@
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { action } from 'storybook/actions';
 
 import DiscussionsList from './DiscussionsList';
 
@@ -24,8 +24,6 @@ export default {
 	},
 } satisfies Meta<typeof DiscussionsList>;
 
-const Template: StoryFn<typeof DiscussionsList> = (args) => <DiscussionsList {...args} />;
-
 const fakeDiscussions = Array.from({ length: 10 }, (_, i) => ({
 	_id: String(i),
 	msg: `Discussion ${i}`,
@@ -42,21 +40,24 @@ const fakeDiscussions = Array.from({ length: 10 }, (_, i) => ({
 	},
 }));
 
-export const Default = Template.bind({});
-Default.args = {
-	isSuccess: true,
-	discussions: fakeDiscussions,
-	itemCount: fakeDiscussions.length,
+export const Default = {
+	args: {
+		isSuccess: true,
+		discussions: fakeDiscussions,
+		itemCount: fakeDiscussions.length,
+	},
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-	isPending: true,
+export const Loading = {
+	args: {
+		isPending: true,
+	},
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
-	isSuccess: true,
-	discussions: [],
-	itemCount: 0,
+export const Empty = {
+	args: {
+		isSuccess: true,
+		discussions: [],
+		itemCount: 0,
+	},
 };

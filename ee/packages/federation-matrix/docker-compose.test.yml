@@ -41,7 +41,7 @@ services:
 
   # HomeServer 1 (synapse)
   hs1:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:v1.157.2
     profiles:
       - test
       - element
@@ -82,6 +82,7 @@ services:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
       dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
+      target: release-standard
     image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
     profiles:
       - test

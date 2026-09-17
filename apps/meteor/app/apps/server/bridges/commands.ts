@@ -6,7 +6,7 @@ import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams 
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
-import { slashCommands } from '../../../utils/server/slashCommand';
+import { slashCommands } from '../../../../server/lib/utils/slashCommand';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, (typeof slashCommands.commands)[string]>;
@@ -112,8 +112,7 @@ export class AppCommandsBridge extends CommandBridge {
 			providesPreview: command.providesPreview,
 			previewer: command.providesPreview ? this._appCommandPreviewer.bind(this) : undefined,
 			previewCallback: (command.providesPreview ? this._appCommandPreviewExecutor.bind(this) : undefined) as
-				| (typeof slashCommands.commands)[string]['previewCallback']
-				| undefined,
+				(typeof slashCommands.commands)[string]['previewCallback'] | undefined,
 		} as SlashCommand;
 
 		slashCommands.commands[command.command.toLowerCase()] = item;

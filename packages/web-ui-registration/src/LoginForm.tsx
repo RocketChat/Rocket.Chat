@@ -11,7 +11,7 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -54,7 +54,9 @@ export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | s
 
 export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
-export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type LoginFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -164,12 +166,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit(async (data) => loginMutation.mutate(data))}
 		>
-			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.login')}</Form.Title>
-			</Form.Header>
+			<FormHeader>
+				<FormTitle id={formLabelId}>{t('registration.component.login')}</FormTitle>
+			</FormHeader>
 			{showFormLogin && (
 				<>
-					<Form.Container>
+					<FormContainer>
 						<FieldGroup disabled={loginMutation.isPending}>
 							<Field>
 								<FieldLabel required htmlFor={usernameId}>
@@ -180,6 +182,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										{...register('usernameOrEmail', {
 											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
+										autoCapitalize='none'
+										autoCorrect='off'
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message || (hasAuthError ? errors.password?.message : undefined)}
 										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}
@@ -230,8 +234,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							</Field>
 						</FieldGroup>
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
-					</Form.Container>
-					<Form.Footer>
+					</FormContainer>
+					<FormFooter>
 						<ButtonGroup>
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
@@ -242,7 +246,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								New here? <ActionLink onClick={(): void => setLoginRoute('register')}>Create an account</ActionLink>
 							</Trans>
 						</p>
-					</Form.Footer>
+					</FormFooter>
 				</>
 			)}
 			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />

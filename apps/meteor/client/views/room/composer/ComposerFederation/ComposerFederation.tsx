@@ -6,7 +6,7 @@ import ComposerFederationInvalidVersion from './ComposerFederationInvalidVersion
 import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisabled';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
-type ComposerFederationProps = ComposerMessageProps & {
+export type ComposerFederationProps = ComposerMessageProps & {
 	blocked?: boolean;
 };
 

@@ -764,6 +764,45 @@ const roomsOpenSchema = {
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
 
+export type RoomsJoinProps = { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string };
+
+const roomsJoinSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsJoinProps = ajv.compile<RoomsJoinProps>(roomsJoinSchema);
+
 type MembersOrderedByRoleProps = {
 	roomId?: IRoom['_id'];
 	roomName?: IRoom['name'];
@@ -1000,6 +1039,12 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsOpenProps) => void;
 	};
 
+	'/v1/rooms.join': {
+		POST: (params: RoomsJoinProps) => {
+			room: IRoom;
+		};
+	};
+
 	'/v1/rooms.membersOrderedByRole': {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
 			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
@@ -1014,3 +1059,54 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsInviteProps) => void;
 	};
 };
+
+export type RoomsHistoryProps = {
+	roomId: IRoom['_id'];
+	next?: string;
+	previous?: string;
+	aroundId?: IMessage['_id'];
+	lastSeen?: string;
+	count?: number;
+	showThreadMessages?: boolean;
+};
+
+const RoomsHistorySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		aroundId: {
+			type: 'string',
+			minLength: 1,
+			nullable: true,
+		},
+		lastSeen: {
+			type: 'string',
+			format: 'iso-date-time',
+			nullable: true,
+		},
+		count: {
+			type: 'integer',
+			minimum: 1,
+			nullable: true,
+		},
+		showThreadMessages: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsHistoryProps = ajvQuery.compile<RoomsHistoryProps>(RoomsHistorySchema);

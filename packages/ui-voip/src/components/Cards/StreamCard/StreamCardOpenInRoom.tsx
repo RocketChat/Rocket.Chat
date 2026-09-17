@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import CardSlotContainer from '../CardSlot';
 
-type StreamCardOpenInRoomButtonProps = {
+export type StreamCardOpenInRoomButtonProps = {
 	onClick: () => void;
 	showOnHover?: boolean;
 };

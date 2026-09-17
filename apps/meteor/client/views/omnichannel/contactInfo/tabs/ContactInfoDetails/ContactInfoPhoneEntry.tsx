@@ -8,7 +8,7 @@ import ContactInfoOutboundMessageButton from './ContactInfoOutboundMessageButton
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 
-type ContactInfoPhoneEntryProps = Omit<ComponentProps<typeof ContactInfoDetailsEntry>, 'icon' | 'actions'> & {
+export type ContactInfoPhoneEntryProps = Omit<ComponentProps<typeof ContactInfoDetailsEntry>, 'icon' | 'actions'> & {
 	contact?: Pick<ILivechatContact, '_id' | 'unknown'>;
 };
 

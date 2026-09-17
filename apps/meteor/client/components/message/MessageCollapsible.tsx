@@ -6,7 +6,7 @@ import AttachmentSize from './content/attachments/structure/AttachmentSize';
 import CollapsibleContent from './content/collapsible/CollapsibleContent';
 import { useCollapse } from './hooks/useCollapse';
 
-type MessageCollapsibleProps = {
+export type MessageCollapsibleProps = {
 	children?: ReactNode;
 	title?: string;
 	hasDownload?: boolean;

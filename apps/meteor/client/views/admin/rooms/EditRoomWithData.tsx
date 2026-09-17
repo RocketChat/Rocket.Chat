@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
 
-type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
+export type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
 
 const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => {
 	const { t } = useTranslation();

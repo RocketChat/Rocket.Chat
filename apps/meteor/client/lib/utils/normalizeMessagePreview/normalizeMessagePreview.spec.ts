@@ -36,7 +36,7 @@ describe('normalizeMessagePreview', () => {
 			const message = createFakeMessage({ msg: 'Hello :smile: :heart:' });
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Hello 😄 ❤');
+			expect(result).toBe('Hello 😄 ❤️');
 		});
 
 		it('should return undefined when message is empty', () => {

@@ -7,7 +7,7 @@ import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
 import MapView from '../../../components/message/content/location/MapView';
 
-type ShareLocationModalProps = {
+export type ShareLocationModalProps = {
 	rid: IRoom['_id'];
 	tmid: IMessage['tmid'];
 	onClose: () => void;

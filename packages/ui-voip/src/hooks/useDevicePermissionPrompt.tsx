@@ -27,6 +27,10 @@ type IncomingPromptProps = {
 
 type UseDevicePermissionPromptProps = DeviceChangePromptProps | OutgoingPromptProps | IncomingPromptProps;
 
+const isNoDeviceError = (error: Error) => {
+	return ['NotFoundError', 'DevicesNotFoundError'].includes(error.name);
+};
+
 const getModalType = (
 	actionType: UseDevicePermissionPromptProps['actionType'],
 	state: Exclude<PermissionState, 'granted'>,
@@ -113,20 +117,15 @@ export const useDevicePermissionPrompt2 = () => {
 					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
 				};
 
-				if (state === 'granted') {
-					void requestDevice({
-						onAccept: resolve,
-						onReject: reject,
-						constraints,
-					});
-					return;
-				}
-
 				const onConfirm = () => {
 					void requestDevice?.({
 						onReject: (...args) => {
-							reject(...args);
-							setModal(<PermissionFlowModal type='denied' onCancel={() => setModal(null)} onConfirm={() => setModal(null)} />);
+							const [error] = args;
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							setModal(<PermissionFlowModal type='denied' onCancel={onCancel} onConfirm={onCancel} />);
 						},
 						onAccept: (...args) => {
 							onAccept(...args);
@@ -136,15 +135,29 @@ export const useDevicePermissionPrompt2 = () => {
 					});
 				};
 
-				const modalType = getModalType(actionType, state);
-
 				const onCancel = () => {
-					if (modalType === 'incomingPrompt') {
-						reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
-					}
+					reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
 
 					setModal(null);
 				};
+
+				if (state === 'granted') {
+					void requestDevice({
+						onAccept: resolve,
+						onReject: (error) => {
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							reject(error);
+						},
+						constraints,
+					});
+					return;
+				}
+
+				const modalType = getModalType(actionType, state);
+
 				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},

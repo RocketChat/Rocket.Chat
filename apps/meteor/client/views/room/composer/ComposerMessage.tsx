@@ -4,13 +4,14 @@ import type { ReactNode } from 'react';
 import { memo, useMemo, useSyncExternalStore } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
+	threadExists?: boolean;
 	children?: ReactNode;
 	subscription?: ISubscription;
 	tshow?: boolean;
@@ -87,7 +88,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return <MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);

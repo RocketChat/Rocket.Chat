@@ -22,6 +22,37 @@ export class ConfirmMuteModal extends Modal {
 	}
 }
 
+export class RemoveTeamMemberModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Removing Member' }));
+	}
+
+	get description() {
+		return this.root.getByText('Select the channels you want the user to be removed from');
+	}
+
+	channel(channelName: string) {
+		return this.root.getByText(channelName);
+	}
+
+	channelCheckbox(channelName: string) {
+		return this.root.getByRole('row', { name: channelName }).getByRole('checkbox');
+	}
+
+	async selectChannel(channelName: string) {
+		await this.channel(channelName).click();
+	}
+
+	private get btnContinue() {
+		return this.root.getByRole('button', { name: 'Continue' });
+	}
+
+	async continue() {
+		await this.btnContinue.click();
+		await this.waitForDismissal();
+	}
+}
+
 class AddUsersFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
@@ -47,6 +78,8 @@ export class MembersFlexTab extends FlexTab {
 
 	readonly removeModal: ConfirmRemoveModal;
 
+	readonly removeTeamMemberModal: RemoveTeamMemberModal;
+
 	readonly menu: MenuMore;
 
 	readonly confirmMuteModal: ConfirmMuteModal;
@@ -58,6 +91,7 @@ export class MembersFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Members' }));
 		this.removeModal = new ConfirmRemoveModal(page.getByRole('dialog', { name: 'Confirmation', exact: true }));
+		this.removeTeamMemberModal = new RemoveTeamMemberModal(page);
 		this.listbox = new Listbox(page);
 		this.menu = new MenuMore(page);
 		this.confirmMuteModal = new ConfirmMuteModal(page);

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type DropTargetOverlayProps = {
+export type DropTargetOverlayProps = {
 	enabled: boolean;
 	reason?: ReactNode;
 	onFileDrop?: (files: File[]) => void;
@@ -76,7 +76,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 			fontScale='hero'
 			textAlign='center'
 			backgroundColor='surface-overlay'
-			borderWidth={4}
+			borderWidth='large'
 			borderStyle='dashed'
 			borderColor='currentColor'
 			color={enabled ? 'default' : 'danger'}

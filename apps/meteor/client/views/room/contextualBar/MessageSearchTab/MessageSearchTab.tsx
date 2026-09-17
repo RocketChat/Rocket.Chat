@@ -121,7 +121,7 @@ const MessageSearchTab = () => {
 					</>
 				)}
 				{providerQuery.isError && (
-					<Callout m={24} type='danger'>
+					<Callout margin={24} type='danger'>
 						{t('Search_current_provider_not_active')}
 					</Callout>
 				)}

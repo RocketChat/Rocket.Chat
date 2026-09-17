@@ -23,3 +23,8 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+    groups:
+      # CodeQL steps must all run the same version, so they have to be bumped together
+      codeql-action:
+        patterns:
+          - 'github/codeql-action*'

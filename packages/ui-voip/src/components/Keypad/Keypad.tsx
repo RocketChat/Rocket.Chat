@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 
 import Key from './Key';
 
-type KeypadProps = {
+export type KeypadProps = {
 	onKeyPress(key: string): void;
 };
 

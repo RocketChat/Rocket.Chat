@@ -11,7 +11,7 @@ const iconMap = {
 	other: 'headset',
 } as const;
 
-type OmnichannelCoreSourceRoomIconProps = {
+export type OmnichannelCoreSourceRoomIconProps = {
 	source: IOmnichannelSource;
 	color: ComponentProps<typeof Icon>['color'];
 	size: ComponentProps<typeof Icon>['size'];

@@ -2,7 +2,7 @@ import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typing
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
 import { create } from 'zustand';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 import { Users } from '../stores';
 
 export const useUserDataSyncReady = create(() => false);
@@ -18,6 +18,7 @@ type RawUserData = Serialized<
 		| 'status'
 		| 'statusDefault'
 		| 'statusText'
+		| 'statusExpiresAt'
 		| 'statusConnection'
 		| 'avatarOrigin'
 		| 'utcOffset'
@@ -157,6 +158,9 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			}),
 			...(lastLogin && {
 				lastLogin: new Date(lastLogin),
+			}),
+			...(meFields.statusExpiresAt && {
+				statusExpiresAt: new Date(meFields.statusExpiresAt),
 			}),
 			ldap: Boolean(ldap),
 			createdAt: meFields.createdAt != null ? new Date(meFields.createdAt) : (existingUser?.createdAt ?? new Date()),

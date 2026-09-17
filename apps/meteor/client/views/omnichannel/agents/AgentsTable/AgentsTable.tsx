@@ -66,7 +66,7 @@ const AgentsTable = () => {
 			<GenericTableHeaderCell direction={sortDirection} sort='statusLivechat' active={sortBy === 'statusLivechat'} onClick={onHeaderClick}>
 				{t('Livechat_status')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x60'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -99,7 +99,9 @@ const AgentsTable = () => {
 					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
+							{data?.users.map((user) => (
+								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />
+							))}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

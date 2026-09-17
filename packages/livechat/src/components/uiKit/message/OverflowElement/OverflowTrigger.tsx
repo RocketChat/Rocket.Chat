@@ -6,7 +6,7 @@ import { createClassName } from '../../../../helpers/createClassName';
 import KebabIcon from '../../../../icons/kebab.svg';
 import { Button } from '../../../Button';
 
-type OverflowTriggerProps = {
+export type OverflowTriggerProps = {
 	loading: boolean;
 	onClick: () => void;
 };

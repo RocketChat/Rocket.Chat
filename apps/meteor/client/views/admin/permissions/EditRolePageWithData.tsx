@@ -9,7 +9,9 @@ import GenericError from '../../../components/GenericError';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-const EditRolePageWithData = ({ roleId }: { roleId?: IRole['_id'] }) => {
+export type EditRolePageWithDataProps = { roleId?: IRole['_id'] };
+
+const EditRolePageWithData = ({ roleId }: EditRolePageWithDataProps) => {
 	const { t } = useTranslation();
 	const role = useRole(roleId);
 	const context = useRouteParameter('context');

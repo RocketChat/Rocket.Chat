@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createVConfSettings = () =>
 	settingsRegistry.addGroup('Video_Conference', async function () {

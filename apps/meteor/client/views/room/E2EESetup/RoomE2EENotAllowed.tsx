@@ -17,7 +17,7 @@ import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.e2eeGuide;
 
-type RoomE2EENotAllowedProps = {
+export type RoomE2EENotAllowedProps = {
 	title: string;
 	subTitle: string;
 	action?: () => void;

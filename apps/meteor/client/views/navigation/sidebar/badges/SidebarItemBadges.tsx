@@ -5,7 +5,7 @@ import UnreadBadge from './UnreadBadge';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarItemBadgesProps = {
+export type SidebarItemBadgesProps = {
 	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };
@@ -16,7 +16,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 	return (
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
-			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
+			{isInviteSubscription(room) && <InvitationBadge marginBlockStart={2} invitationDate={room.ts} />}
 		</>
 	);
 };

@@ -1,17 +1,19 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
-import { settings } from '../../app/settings/server';
 import { Info } from '../../app/utils/rocketchat.info';
-import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
+import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { getMongoInfo } from '../lib/utils/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
 // import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { settings } from '../settings';
 
 const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -48,7 +50,10 @@ Meteor.startup(async () => {
 			`     MongoDB Engine: ${mongoStorageEngine}`,
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
-			`           Site URL: ${settings.get('Site_Url')}`,
+			`           Site URL: ${settings.get<string>('Site_Url')}`,
+			`    Hashed Site URL: ${License.getHashedWorkspaceUrl()}`,
+			`    OpenSSL Version: ${process.versions.openssl}`,
+			`      FIPS Provider: ${crypto.getFips() ? 'Enabled' : 'Disabled'}`,
 		];
 
 		if (Info.commit?.hash) {

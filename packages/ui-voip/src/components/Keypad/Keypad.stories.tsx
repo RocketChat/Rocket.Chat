@@ -1,17 +1,20 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import Keypad from './Keypad';
 import { useTonePlayer } from '../../hooks/useTonePlayer';
 
 export default {
-	title: 'V2/Components/Keypad',
 	component: Keypad,
 } satisfies Meta<typeof Keypad>;
 
-export const KeypadStory: StoryFn<typeof Keypad> = () => <Keypad onKeyPress={(key) => console.log(key)} />;
-export const KeypadStoryWithTone: StoryFn<typeof Keypad> = () => {
-	const playTone = useTonePlayer();
-	return <Keypad onKeyPress={(key) => playTone(key as any)} />;
+export const KeypadStory: StoryObj<typeof Keypad> = {
+	render: () => <Keypad onKeyPress={(key) => console.log(key)} />,
 };
 
-KeypadStoryWithTone.tags = ['skip'];
+export const KeypadStoryWithTone: StoryObj<typeof Keypad> = {
+	tags: ['skip'],
+	render: () => {
+		const playTone = useTonePlayer();
+		return <Keypad onKeyPress={(key) => playTone(key as any)} />;
+	},
+};

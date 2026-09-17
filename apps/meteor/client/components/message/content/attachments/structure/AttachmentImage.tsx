@@ -6,7 +6,7 @@ import ImageBox from './image/ImageBox';
 import Load from './image/Load';
 import Retry from './image/Retry';
 
-type AttachmentImageProps = {
+export type AttachmentImageProps = {
 	previewUrl?: string;
 	dataSrc?: string;
 	src: string;
@@ -65,7 +65,7 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 
 	return (
 		<Box width={dimensions.width} maxWidth='full' position='relative'>
-			<Box pbs={`${dimensions.ratio}%`} position='relative'>
+			<Box paddingBlockStart={`${dimensions.ratio}%`} position='relative'>
 				<ImageBox
 					is='picture'
 					position='absolute'

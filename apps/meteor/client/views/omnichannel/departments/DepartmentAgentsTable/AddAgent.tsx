@@ -9,7 +9,7 @@ import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import type { IDepartmentAgent } from '../definitions';
 
-type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+export type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	agentList: IDepartmentAgent[];
 	onAdd: (agent: IDepartmentAgent) => void;
 };
@@ -45,7 +45,7 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 	return (
 		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} mis={8} primary>
+			<Button disabled={!userId} onClick={handleSave} marginInlineStart={8} primary>
 				{t('Add')}
 			</Button>
 		</Box>

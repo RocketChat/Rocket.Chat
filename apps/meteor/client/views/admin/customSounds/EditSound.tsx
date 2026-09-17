@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type EditSoundProps = {
+export type EditSoundProps = {
 	close: () => void;
 	onChange: () => void;
 	data: {
@@ -124,7 +124,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
@@ -139,7 +139,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 							{t('Delete')}

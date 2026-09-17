@@ -5,7 +5,7 @@ import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 
-type ChannelDeletionTableRowProps = {
+export type ChannelDeletionTableRowProps = {
 	room: Serialized<IRoom>;
 	onChange: (room: Serialized<IRoom>) => void;
 	selected: boolean;

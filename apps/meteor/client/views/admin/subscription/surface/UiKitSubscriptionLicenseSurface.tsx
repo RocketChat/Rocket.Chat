@@ -3,7 +3,7 @@ import { createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObje
 import type { CalloutBlock, ContextBlock, DividerBlock, ImageBlock, SectionBlock } from '@rocket.chat/ui-kit';
 import type { ReactNode } from 'react';
 
-type SubscriptionLicenseSurfaceProps = {
+export type SubscriptionLicenseSurfaceProps = {
 	children?: ReactNode;
 };
 

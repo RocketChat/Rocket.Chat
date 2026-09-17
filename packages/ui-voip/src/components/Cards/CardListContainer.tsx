@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import CardList from './CardList';
 import CardListPinned from './CardListPinned';
 
-type CardListContainerProps = {
+export type CardListContainerProps = {
 	children: ReactNode;
 	focusedCard?: ReactNode;
 	shouldWrapCards?: boolean;

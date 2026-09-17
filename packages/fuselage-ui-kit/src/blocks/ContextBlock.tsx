@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import Item from './ContextBlock.Item';
 import type { BlockProps } from '../utils/BlockProps';
 
-type ContextBlockProps = BlockProps<UiKit.ContextBlock>;
+export type ContextBlockProps = BlockProps<UiKit.ContextBlock>;
 
 const ContextBlock = ({ className, block, surfaceRenderer }: ContextBlockProps) => {
 	const itemElements = useMemo(

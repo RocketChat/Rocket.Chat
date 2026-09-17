@@ -5,7 +5,9 @@ import { createClassName } from '../../../../helpers/createClassName';
 import shortnameToUnicode from '../../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../../MarkdownBlock';
 
-const Mrkdwn = ({ text /* , verbatim = false */ }: { text: string }) => {
+export type MrkdwnProps = { text: string };
+
+const Mrkdwn = ({ text /* , verbatim = false */ }: MrkdwnProps) => {
 	return (
 		<div className={createClassName(styles, 'uikit-mrkdwn')} dir='auto'>
 			<MarkdownBlock text={shortnameToUnicode(text)} emoticons={true} />

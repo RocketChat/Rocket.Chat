@@ -16,7 +16,7 @@ import { GET_ADDONS_LINK } from '../../admin/subscription/utils/links';
 
 export type AddonActionType = 'install' | 'enable' | 'update';
 
-type AddonRequiredModalProps = {
+export type AddonRequiredModalProps = {
 	actionType: AddonActionType;
 	onDismiss: () => void;
 	onInstallAnyway: () => void;

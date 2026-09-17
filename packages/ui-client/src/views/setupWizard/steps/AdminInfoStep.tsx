@@ -1,5 +1,5 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { useSetting, useVerifyPassword, usePasswordPolicy, usePasswordPolicyOptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';

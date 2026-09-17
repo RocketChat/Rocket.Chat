@@ -22,10 +22,10 @@ const contactMergerStub = {
 };
 
 const { runMergeContacts } = proxyquire.noCallThru().load('../../../../../../server/patches/mergeContacts', {
-	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/contacts/ContactMerger': { ContactMerger: contactMergerStub },
-	'../../../app/livechat-enterprise/server/lib/logger': { logger: { info: sinon.stub(), debug: sinon.stub() } },
-	'../../../app/lib/server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
+	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
+	'../../../server/lib/omnichannel/contacts/ContactMerger': { ContactMerger: contactMergerStub },
+	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
+	'../../../server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
 	'@rocket.chat/models': modelsMock,
 });
 

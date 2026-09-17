@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type UnreadMessagesIndicatorProps = {
+export type UnreadMessagesIndicatorProps = {
 	count: number;
 	onJumpButtonClick: () => void;
 	onMarkAsReadButtonClick: () => void;
@@ -19,7 +19,7 @@ const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonC
 	const { t } = useTranslation();
 
 	return (
-		<Box className={indicatorStyle} mbs={8}>
+		<Box className={indicatorStyle} marginBlockStart={8}>
 			<Bubble
 				onClick={onJumpButtonClick}
 				onDismiss={onMarkAsReadButtonClick}

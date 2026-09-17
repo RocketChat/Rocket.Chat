@@ -2,7 +2,8 @@ import { Message, FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
-import emojione from 'emojione';
+
+import { unicodeToShortname } from '../utils/emojiConverter';
 
 const logger = new Logger('federation-matrix:reaction');
 
@@ -13,6 +14,11 @@ export function reaction() {
 
 			const reactionTargetEventId = isSetReaction?.event_id;
 			const reactionKey = isSetReaction?.key;
+
+			if (typeof reactionKey !== 'string' || reactionKey.length === 0) {
+				logger.error({ reactionTargetEventId, reactionKey, msg: 'Invalid or missing reaction key in Matrix reaction event' });
+				return;
+			}
 
 			const [userPart, domain] = event.sender.split(':');
 			if (!userPart || !domain) {
@@ -38,7 +44,7 @@ export function reaction() {
 				return;
 			}
 
-			const reactionEmoji = emojione.toShort(reactionKey);
+			const reactionEmoji = unicodeToShortname(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
 		} catch (err) {
@@ -69,6 +75,11 @@ export function reaction() {
 			const targetMessageEventId = reactionContent.event_id;
 			const reactionKey = reactionContent.key;
 
+			if (typeof reactionKey !== 'string' || reactionKey.length === 0) {
+				logger.error({ redactedEventId, reactionKey, msg: 'Invalid or missing reaction key in redacted reaction event' });
+				return;
+			}
+
 			const rcMessage = await Messages.findOneByFederationId(targetMessageEventId);
 			if (!rcMessage) {
 				logger.debug({ msg: 'No RC message found for event', eventId: targetMessageEventId });
@@ -82,7 +93,7 @@ export function reaction() {
 				return;
 			}
 
-			const reactionEmoji = emojione.toShort(reactionKey);
+			const reactionEmoji = unicodeToShortname(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
 		} catch (err) {

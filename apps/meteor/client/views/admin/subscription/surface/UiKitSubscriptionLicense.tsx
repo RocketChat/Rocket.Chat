@@ -13,7 +13,7 @@ import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }) => <MarkdownText variant='inline' content={text} />;
 
-type UiKitSubscriptionLicenseProps = {
+export type UiKitSubscriptionLicenseProps = {
 	key: string;
 	initialView: {
 		viewId: string;

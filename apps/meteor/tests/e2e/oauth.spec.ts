@@ -48,7 +48,7 @@ test.describe('OAuth', () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', true)).status()).toBe(200);
 				await expect.poll(async () => (await getOAuthService(api, googleOAuthService))?.service).toBe(googleOAuthService);
 
-				await page.goto('/home');
+				await poRegistration.goto();
 
 				await expect(poRegistration.btnLoginWithGoogle).toBeVisible();
 			});
@@ -56,7 +56,7 @@ test.describe('OAuth', () => {
 			await test.step('expect Custom OAuth button to be visible', async () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
 				await expect.poll(async () => (await getOAuthService(api, customOAuthService))?.service).toBe(customOAuthService);
-				await page.goto('/home');
+				await poRegistration.goto();
 
 				await expect(poRegistration.btnLoginWithCustomOAuth).toBeVisible();
 			});
@@ -70,7 +70,7 @@ test.describe('OAuth', () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', false)).status()).toBe(200);
 				await expect.poll(() => getOAuthService(api, googleOAuthService)).toBeUndefined();
 
-				await page.goto('/home');
+				await poRegistration.goto();
 				await expect(poRegistration.btnLoginWithGoogle).not.toBeVisible();
 			});
 
@@ -78,7 +78,7 @@ test.describe('OAuth', () => {
 				await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false)).status()).toBe(200);
 				await expect.poll(() => getOAuthService(api, customOAuthService)).toBeUndefined();
 
-				await page.goto('/home');
+				await poRegistration.goto();
 				await expect(poRegistration.btnLoginWithCustomOAuth).not.toBeVisible();
 			});
 		});
@@ -98,7 +98,7 @@ test.describe('OAuth', () => {
 
 		test('open authorize flow in a popup', async ({ page }) => {
 			await test.step('expect Custom OAuth button to be visible', async () => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await expect(poRegistration.btnLoginWithCustomOAuth).toBeVisible();
 			});
 
@@ -117,6 +117,7 @@ test.describe('OAuth', () => {
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', 'test')).status()).toBe(200);
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect')).status()).toBe(200);
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
+			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', false)).status()).toBe(200);
 			await expect.poll(() => getOAuthServiceLoginStyle(api, customOAuthService)).toBe('redirect');
 		});
 
@@ -124,11 +125,12 @@ test.describe('OAuth', () => {
 			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false);
 			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect');
 			await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', '');
+			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', true)).status()).toBe(200);
 		});
 
 		test('redirect login through the proxy', async ({ page }) => {
 			await test.step('expect Custom OAuth button to be visible', async () => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await expect(poRegistration.btnLoginWithCustomOAuth).toBeVisible();
 			});
 

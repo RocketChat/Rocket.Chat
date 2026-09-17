@@ -108,7 +108,7 @@ const CannedResponsesTable = () => {
 			<GenericTableHeaderCell key='tags' direction={sortDirection} active={sortBy === 'tags'} onClick={setSort} sort='tags'>
 				{t('Tags')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>
@@ -148,7 +148,7 @@ const CannedResponsesTable = () => {
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
@@ -158,7 +158,7 @@ const CannedResponsesTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText mi={8}>
+											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{createdBy.username}

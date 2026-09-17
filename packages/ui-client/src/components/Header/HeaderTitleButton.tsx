@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type HeaderTitleButtonProps = Omit<ComponentPropsWithoutRef<typeof Box>, 'className'> & { className?: string };
+export type HeaderTitleButtonProps = Omit<ComponentPropsWithoutRef<typeof Box>, 'className'> & { className?: string };
 
 const HeaderTitleButton = ({ className, ...props }: HeaderTitleButtonProps) => {
 	const customClass = css`
@@ -21,7 +21,7 @@ const HeaderTitleButton = ({ className, ...props }: HeaderTitleButtonProps) => {
 		}
 	`;
 
-	return <Box display='flex' alignItems='center' borderRadius={4} withTruncatedText className={[customClass, className]} {...props} />;
+	return <Box display='flex' alignItems='center' borderRadius='medium' withTruncatedText className={[customClass, className]} {...props} />;
 };
 
 export default HeaderTitleButton;

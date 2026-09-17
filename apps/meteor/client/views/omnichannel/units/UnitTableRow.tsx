@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveUnit } from './useRemoveUnit';
 
-const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; visibility: string }) => {
+export type UnitsTableRowProps = { _id: string; name: string; visibility: string };
+
+const UnitsTableRow = ({ _id, name, visibility }: UnitsTableRowProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 

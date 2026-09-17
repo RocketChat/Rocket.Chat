@@ -123,7 +123,7 @@ const MonitorsTable = () => {
 			<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort}>
 				{t('Email')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='spacer' w={40} />,
+			<GenericTableHeaderCell key='spacer' width={40} />,
 		],
 		[setSort, sortBy, sortDirection, t],
 	);
@@ -135,7 +135,7 @@ const MonitorsTable = () => {
 					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
 						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} mis={8}>
+						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} marginInlineStart={8}>
 							{t('Add_monitor')}
 						</Button>
 					</FieldRow>

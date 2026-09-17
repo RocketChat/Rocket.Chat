@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type InfoTextIconModalProps = {
+export type InfoTextIconModalProps = {
 	title: string;
 	infoText: ReactNode;
 };

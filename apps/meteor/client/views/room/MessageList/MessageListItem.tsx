@@ -10,7 +10,7 @@ import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useDateRef } from '../providers/DateListProvider';
 
-type MessageListItemProps = {
+export type MessageListItemProps = {
 	message: IMessage;
 	previous?: IMessage;
 	showUnreadDivider: boolean;

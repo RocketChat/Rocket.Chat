@@ -80,14 +80,22 @@ function ComposerBoxPopup<
 
 	return (
 		<Box position='relative'>
-			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id} name='ComposerBoxPopup'>
+			<Tile
+				ref={composerBoxPopupRef}
+				padding={0}
+				role='menu'
+				marginBlockEnd={8}
+				overflow='hidden'
+				aria-labelledby={id}
+				name='ComposerBoxPopup'
+			>
 				{title && (
-					<Box bg='tint' pi={16} pb={8} id={id}>
+					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
 						{title}
 					</Box>
 				)}
 				<CustomScrollbars>
-					<Box pb={8} maxHeight='x320'>
+					<Box paddingBlock={8} maxHeight='x320'>
 						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
 						{isLoading && <OptionSkeleton />}
 						{itemsFlat.map((item, index) => {

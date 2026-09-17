@@ -43,7 +43,7 @@ const ChannelsTable = () => {
 					active={sortBy === 'usersCount'}
 					onClick={setSort}
 					sort='usersCount'
-					w='100px'
+					width='100px'
 				>
 					{t('Users')}
 				</GenericTableHeaderCell>,
@@ -54,7 +54,7 @@ const ChannelsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						w='150px'
+						width='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
@@ -66,13 +66,13 @@ const ChannelsTable = () => {
 						active={sortBy === 'lastMessage'}
 						onClick={setSort}
 						sort='lastMessage'
-						w='150px'
+						width='150px'
 					>
 						{t('Last_Message')}
 					</GenericTableHeaderCell>
 				),
 				mediaQuery && (
-					<GenericTableHeaderCell key='belongsTo' w='150px'>
+					<GenericTableHeaderCell key='belongsTo' width='150px'>
 						{t('Belongs_To')}
 					</GenericTableHeaderCell>
 				),

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { UTCOffsets } from '../../../../../../../lib/utils/timestamp/types';
 import type { TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 
-type TimezoneSelectorProps = {
+export type TimezoneSelectorProps = {
 	value: TimezoneKey;
 	onChange: (timezone: TimezoneKey) => void;
 };
@@ -23,7 +23,7 @@ const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	];
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Timezone')}</FieldLabel>
 				<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>

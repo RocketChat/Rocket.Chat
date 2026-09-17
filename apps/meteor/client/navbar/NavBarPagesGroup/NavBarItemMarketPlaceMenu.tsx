@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useMarketPlaceMenu } from './hooks/useMarketPlaceMenu';
 
-type NavBarItemMarketPlaceMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemMarketPlaceMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemMarketPlaceMenu = (props: NavBarItemMarketPlaceMenuProps) => {
 	const { t } = useTranslation();

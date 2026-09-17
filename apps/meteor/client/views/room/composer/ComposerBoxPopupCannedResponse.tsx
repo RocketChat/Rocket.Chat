@@ -1,6 +1,6 @@
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 
-type ComposerBoxPopupCannedResponseProps = {
+export type ComposerBoxPopupCannedResponseProps = {
 	_id: string;
 	text: string;
 	shortcut: string;

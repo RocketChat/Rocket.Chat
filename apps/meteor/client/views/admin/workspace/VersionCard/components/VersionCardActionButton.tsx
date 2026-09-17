@@ -5,7 +5,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type VersionCardActionButtonProps =
+export type VersionCardActionButtonProps =
 	| {
 			path: LocationPathname;
 			label: ReactNode;

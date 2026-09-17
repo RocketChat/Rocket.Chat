@@ -14,7 +14,7 @@ const marketplaceAppsMaxCountFallback = 5;
 const privateAppsMaxCountFallback = 0;
 const defaultWarningThreshold = 80;
 
-type AppsUsageCardProps = {
+export type AppsUsageCardProps = {
 	privateAppsLimit?: { value?: number; max: number };
 	marketplaceAppsLimit?: { value?: number; max: number };
 };

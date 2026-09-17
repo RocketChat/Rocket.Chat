@@ -78,7 +78,7 @@ const AccountFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					{featuresPreview.length === 0 && (
 						<States>
 							<StatesIcon name='magnifier' />
@@ -110,9 +110,11 @@ const AccountFeaturePreviewPage = () => {
 																disabled={feature.disabled}
 															/>
 														</FieldRow>
-														{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
+														{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
 													</Field>
-													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
+													{feature.imageUrl && (
+														<Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />
+													)}
 												</Fragment>
 											))}
 										</FieldGroup>

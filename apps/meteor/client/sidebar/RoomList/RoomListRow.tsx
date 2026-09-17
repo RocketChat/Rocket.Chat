@@ -7,7 +7,7 @@ import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
-type RoomListRowProps = {
+export type RoomListRowProps = {
 	data: {
 		extended: boolean;
 		t: TFunction;
@@ -16,12 +16,13 @@ type RoomListRowProps = {
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
+		userId?: string;
 	};
 	item: SubscriptionWithRoom;
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -47,6 +48,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
+			userId={userId}
 		/>
 	);
 };

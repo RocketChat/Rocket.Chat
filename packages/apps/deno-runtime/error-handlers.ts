@@ -1,29 +1,24 @@
-import * as Messenger from './lib/messenger.ts';
+import * as Messenger from '@rocket.chat/apps/base-runtime/lib/messenger';
 
 export function unhandledRejectionListener(event: PromiseRejectionEvent) {
 	event.preventDefault();
 
-	const { type, reason } = event;
+	const error = event.reason;
 
 	Messenger.sendNotification({
 		method: 'unhandledRejection',
-		params: [
-			{
-				type,
-				reason: reason instanceof Error ? reason.message : reason,
-				timestamp: new Date(),
-			},
-		],
+		params: [error?.stack || error],
 	});
 }
 
 export function unhandledExceptionListener(event: ErrorEvent) {
 	event.preventDefault();
 
-	const { type, message, filename, lineno, colno } = event;
+	const error = event.error;
+
 	Messenger.sendNotification({
 		method: 'uncaughtException',
-		params: [{ type, message, filename, lineno, colno }],
+		params: [error?.stack || error],
 	});
 }
 

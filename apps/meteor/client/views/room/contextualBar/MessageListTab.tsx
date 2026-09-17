@@ -18,16 +18,16 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
 
-type MessageListTabProps = {
+export type MessageListTabProps = {
 	iconName: IconName;
 	title: ReactNode;
 	emptyResultMessage: string;

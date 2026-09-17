@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type JumpToMessageActionProps = {
+export type JumpToMessageActionProps = {
 	id: 'jump-to-message' | 'jump-to-pin-message' | 'jump-to-star-message';
 	message: IMessage;
 };

@@ -15,7 +15,7 @@ import MediaCallHistoryExternal, { isExternalCallHistoryItem } from './MediaCall
 import MediaCallHistoryInternal, { isInternalCallHistoryItem } from './MediaCallHistoryInternal';
 import { callHistoryQueryKeys } from '../../lib/queryKeys';
 
-type MediaCallHistoryContextualbarProps = {
+export type MediaCallHistoryContextualbarProps = {
 	openRoomId?: string;
 	messageRoomId?: string;
 	openUserInfo?: (userId: string, rid: string) => void;

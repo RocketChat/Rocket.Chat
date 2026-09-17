@@ -72,7 +72,7 @@ const CustomFieldsTable = () => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60' />
+			<GenericTableHeaderCell key='remove' width='x60' />
 		</>
 	);
 

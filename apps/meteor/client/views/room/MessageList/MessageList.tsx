@@ -26,7 +26,7 @@ import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
 
-type MessageListProps = {
+export type MessageListProps = {
 	rid: IRoom['_id'];
 	canPreview: boolean;
 	hasMorePreviousMessages: boolean;
@@ -282,12 +282,14 @@ export const MessageList = function MessageList({
 					{canPreview ? (
 						<>
 							{hasMorePreviousMessages ? (
-								<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+								<div className='load-more' role='presentation'>
+									{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}
+								</div>
 							) : (
-								<li>
+								<div role='listitem'>
 									<RoomForeword user={user} room={room} />
 									{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-								</li>
+								</div>
 							)}
 						</>
 					) : null}
@@ -316,7 +318,11 @@ export const MessageList = function MessageList({
 							</Fragment>
 						);
 					})}
-					{hasMoreNextMessages ? <li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li> : null}
+					{hasMoreNextMessages ? (
+						<div className='load-more' role='presentation'>
+							{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}
+						</div>
+					) : null}
 				</VList>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

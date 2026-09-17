@@ -120,7 +120,7 @@ const ChannelsOverview = () => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

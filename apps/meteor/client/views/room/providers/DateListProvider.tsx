@@ -13,7 +13,9 @@ const useDateRef = () => {
 	return useMemo(() => context.dateRef(), [context]);
 };
 
-const DateListProvider = ({ children }: { children: ReactNode }) => {
+export type DateListProviderProps = { children: ReactNode };
+
+const DateListProvider = ({ children }: DateListProviderProps) => {
 	const [list] = useState<Set<HTMLElement>>(new Set<HTMLElement>());
 
 	const addToList = (value: HTMLElement) => {

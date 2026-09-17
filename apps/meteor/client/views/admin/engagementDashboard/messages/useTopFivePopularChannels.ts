@@ -6,7 +6,6 @@ import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseTopFivePopularChannelsOptions = { period: Period['key'] };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsOptions) => {
 	const getTopFivePopularChannels = useEndpoint('GET', '/v1/engagement-dashboard/messages/top-five-popular-channels');
 

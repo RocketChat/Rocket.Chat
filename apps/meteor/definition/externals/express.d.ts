@@ -9,3 +9,9 @@ declare module 'express' {
 		unauthorized?: boolean;
 	}
 }
+declare global {
+	namespace Express {
+		// eslint-disable-next-line @typescript-eslint/no-empty-interface -- merges with Passport's Express.User
+		interface User extends IUser {}
+	}
+}

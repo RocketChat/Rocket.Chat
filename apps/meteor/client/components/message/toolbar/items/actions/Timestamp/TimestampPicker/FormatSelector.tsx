@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/formats';
 import type { TimestampFormat, ITimestampFormatConfig } from '../../../../../../../lib/utils/timestamp/types';
 
-type FormatSelectorProps = {
+export type FormatSelectorProps = {
 	value: TimestampFormat;
 	onChange: (format: TimestampFormat) => void;
 };
@@ -22,7 +22,7 @@ const FormatSelector = ({ value, onChange }: FormatSelectorProps) => {
 	);
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Format')}</FieldLabel>
 				<FieldRow>

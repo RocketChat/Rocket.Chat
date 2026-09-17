@@ -1,6 +1,13 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useMethod, useToastMessageDispatch, useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useEndpoint,
+	useToastMessageDispatch,
+	useUserId,
+	useUserSubscription,
+	useUserRoom,
+} from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
@@ -20,12 +27,12 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 
 	const { roomCanBlock } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
-	const isUserBlocked = currentSubscription?.blocker;
-	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
+	const isUserBlocked = Boolean(currentSubscription?.blocker);
+	const toggleBlockUser = useEndpoint('POST', '/v1/im.blockUser');
 
 	const toggleBlockUserAction = useStableCallback(async () => {
 		try {
-			await toggleBlock({ rid, blocked: uid });
+			await toggleBlockUser({ roomId: rid, block: !isUserBlocked });
 			dispatchToastMessage({
 				type: 'success',
 				message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked'),

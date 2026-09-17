@@ -6,7 +6,7 @@ import AccountSidebar from './AccountSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 
-type AccountRouterProps = {
+export type AccountRouterProps = {
 	children?: ReactNode;
 };
 

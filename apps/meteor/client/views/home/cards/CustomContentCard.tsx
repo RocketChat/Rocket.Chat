@@ -54,7 +54,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 			<Card role='region' aria-label={t('Custom_content', 'Custom content')} {...props}>
 				<CardHeader>
 					<Tag>
-						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
+						<Icon marginInlineEnd={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</CardHeader>
@@ -89,7 +89,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb={8}>
+				<Box marginBlock={8}>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

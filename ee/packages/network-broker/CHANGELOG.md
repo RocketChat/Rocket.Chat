@@ -1,5 +1,59 @@
 # @rocket.chat/network-broker
 
+## 0.2.39
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/core-services@0.16.0
+  </details>
+
+## 0.2.39-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+
+  - @rocket.chat/core-services@0.16.0-rc.0
+  </details>
+
+## 0.2.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
+
+  - @rocket.chat/core-services@0.15.0
+  </details>
+
+## 0.2.38-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
+
+  - @rocket.chat/core-services@0.15.0-rc.0
+  </details>
+
+## 0.2.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b]:</summary>
+
+  - @rocket.chat/core-services@0.14.2
+  </details>
+
+## 0.2.37-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b]:</summary>
+
+  - @rocket.chat/core-services@0.14.2-rc.0
+  </details>
+
 ## 0.2.36
 
 ### Patch Changes

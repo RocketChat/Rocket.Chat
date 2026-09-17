@@ -17,7 +17,7 @@ import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 import { useCoreRoomRoutes } from './hooks/useCoreRoomRoutes';
 
-type RoomToolboxProviderProps = { children: ReactNode };
+export type RoomToolboxProviderProps = { children: ReactNode };
 
 const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const room = useRoom();

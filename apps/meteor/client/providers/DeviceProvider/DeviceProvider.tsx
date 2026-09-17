@@ -7,7 +7,7 @@ import { useEffect, useState, useMemo } from 'react';
 
 import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
 
-type DeviceProviderProps = {
+export type DeviceProviderProps = {
 	children?: ReactNode | undefined;
 };
 

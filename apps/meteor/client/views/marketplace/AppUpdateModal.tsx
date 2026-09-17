@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type AppUpdateModalProps = {
+export type AppUpdateModalProps = {
 	confirm: () => void;
 	cancel: () => void;
 };

@@ -31,6 +31,13 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
+export type SettingValidationRule = {
+	query: Record<string, unknown>;
+	appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
+};
+
+type SettingValidation = SettingValidationRule[] | string;
+
 export interface ISettingBase extends IRocketChatRecord {
 	type:
 		| 'boolean'
@@ -65,6 +72,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	blocked: boolean;
 	enableQuery?: EnableQuery;
 	displayQuery?: EnableQuery;
+	validation?: SettingValidation;
 	sorter: number;
 	properties?: unknown;
 	enterprise?: boolean;
@@ -159,7 +167,11 @@ export const isSetting = (setting: any): setting is ISetting =>
 
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 
-export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
+export function isSettingColor(setting: ISettingBase): setting is ISettingColor;
+export function isSettingColor<T extends Pick<ISettingBase, 'type'>>(setting: T): setting is T & { type: 'color' };
+export function isSettingColor(setting: Pick<ISettingBase, 'type'>): boolean {
+	return setting.type === 'color';
+}
 
 export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
 

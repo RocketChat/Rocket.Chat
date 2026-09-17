@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-type PreviewChannelMentionElementProps = {
+export type PreviewChannelMentionElementProps = {
 	mention: string;
 };
 

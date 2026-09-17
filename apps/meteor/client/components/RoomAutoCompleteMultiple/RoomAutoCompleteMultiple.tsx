@@ -53,7 +53,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
 				<Chip {...props} key={value} value={value} onClick={onRemove}>
 					<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label?.name}
 					</Box>
 				</Chip>

@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
-type OutgoingPopupProps = {
+export type OutgoingPopupProps = {
 	id: string;
 	room: IRoom;
 	onClose: (id: string) => void;

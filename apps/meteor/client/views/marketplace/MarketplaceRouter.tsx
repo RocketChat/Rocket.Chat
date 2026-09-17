@@ -7,7 +7,9 @@ import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
 
-const MarketplaceRouter = ({ children }: { children?: ReactNode }) => {
+export type MarketplaceRouterProps = { children?: ReactNode };
+
+const MarketplaceRouter = ({ children }: MarketplaceRouterProps) => {
 	const currentContext = useRouteParameter('context') || 'all';
 	const marketplaceRoute = useRoute('marketplace');
 	const canAccessMarketplace = useAtLeastOnePermission(['access-marketplace', 'manage-apps']);

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import AttributesContextualBar from './AttributesContextualBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type AttributesContextualBarWithDataProps = {
+export type AttributesContextualBarWithDataProps = {
 	id: string;
 	onClose: () => void;
 };

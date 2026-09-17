@@ -35,7 +35,7 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 					<Box display='flex' alignItems='center'>
 						{actor.type === 'user' && <UserAvatar size='x24' userId={actor._id} />}
 						<Box
-							mi={actor.type === 'user' ? 8 : 0}
+							marginInline={actor.type === 'user' ? 8 : 0}
 							fontScale='p2m'
 							display='flex'
 							flexDirection='column'

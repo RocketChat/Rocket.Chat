@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 
@@ -100,11 +100,14 @@ const userContextValue: ContextType<typeof UserContext> = {
 	onLogout: () => () => undefined,
 };
 
-export const SidebarStory: StoryFn<typeof Sidebar> = () => <Sidebar />;
-SidebarStory.decorators = [
-	(fn) => (
-		<SettingsContext.Provider value={settingContextValue}>
-			<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>
-		</SettingsContext.Provider>
-	),
-];
+export const SidebarStory: StoryObj<typeof Sidebar> = {
+	render: () => <Sidebar />,
+
+	decorators: [
+		(fn) => (
+			<SettingsContext.Provider value={settingContextValue}>
+				<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>
+			</SettingsContext.Provider>
+		),
+	],
+};

@@ -14,7 +14,7 @@ import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
-type ThreadMetricsProps = {
+export type ThreadMetricsProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;

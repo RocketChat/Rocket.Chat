@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
-type RegisteredWorkspaceModalProps = {
+export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };
@@ -67,7 +67,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 						{bulletFeatures.map((item, index) => (
 							<li key={index}>
 								<strong>{item.title}</strong>
-								<Box is='p' mbs={4}>
+								<Box is='p' marginBlockStart={4}>
 									{item.description}
 								</Box>
 							</li>

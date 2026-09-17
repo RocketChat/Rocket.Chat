@@ -4,15 +4,15 @@ import type { AllHTMLAttributes } from 'react';
 import VideoConfMessage from './VideoConfMessage';
 import VideoConfMessageRow from './VideoConfMessageRow';
 
-type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+export type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VideoConfMessageSkeleton = (props: VideoConfMessageSkeletonProps) => (
 	<VideoConfMessage {...props}>
 		<VideoConfMessageRow>
-			<Skeleton width='full' pb={4} />
+			<Skeleton width='full' paddingBlock={4} />
 		</VideoConfMessageRow>
 		<VideoConfMessageRow backgroundColor='tint'>
-			<Skeleton width='full' pb={4} />
+			<Skeleton width='full' paddingBlock={4} />
 		</VideoConfMessageRow>
 	</VideoConfMessage>
 );

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistoryActions';
 
-type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryInternalContact>, 'onClick' | 'menu'> & {
+export type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryInternalContact>, 'onClick' | 'menu'> & {
 	messageId?: string;
 	rid: string;
 	onClickUserInfo?: (userId: string, rid: string) => void;

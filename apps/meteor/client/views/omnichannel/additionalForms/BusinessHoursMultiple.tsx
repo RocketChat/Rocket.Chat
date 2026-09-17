@@ -8,7 +8,9 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import type { BusinessHoursFormData } from '../businessHours/BusinessHoursForm';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
-const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+export type BusinessHoursMultipleProps = { className?: ComponentProps<typeof Field>['className'] };
+
+const BusinessHoursMultiple = ({ className }: BusinessHoursMultipleProps) => {
 	const { t } = useTranslation();
 	const {
 		control,

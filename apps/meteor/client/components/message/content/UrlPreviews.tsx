@@ -104,7 +104,7 @@ const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data
 
 const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is OEmbedPreviewMetadata => type === 'oembed';
 
-type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
+export type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
 
 const UrlPreviews = ({ urls }: UrlPreviewsProps) => {
 	const { maxWidth: oembedMaxWidth } = useOembedLayout();

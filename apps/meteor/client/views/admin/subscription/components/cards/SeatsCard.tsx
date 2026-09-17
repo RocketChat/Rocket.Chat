@@ -7,7 +7,7 @@ import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-type SeatsCardProps = {
+export type SeatsCardProps = {
 	value: number;
 	max: number;
 	hideManageSubscription?: boolean;

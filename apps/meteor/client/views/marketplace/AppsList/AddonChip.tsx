@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type AddonChipProps = {
+export type AddonChipProps = {
 	app: App;
 };
 

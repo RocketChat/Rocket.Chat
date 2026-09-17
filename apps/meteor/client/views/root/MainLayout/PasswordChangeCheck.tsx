@@ -8,7 +8,9 @@ const ResetPasswordPage = lazy(() =>
 	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
 );
 
-const PasswordChangeCheck = ({ children }: { children: ReactNode }) => {
+export type PasswordChangeCheckProps = { children: ReactNode };
+
+const PasswordChangeCheck = ({ children }: PasswordChangeCheckProps) => {
 	const requirePasswordChange = useUser()?.requirePasswordChange === true;
 
 	if (requirePasswordChange) {

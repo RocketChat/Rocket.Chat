@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import DeleteTeamModal from './DeleteTeamModal';
 
-type DeleteTeamModalWithRoomsProps = {
+export type DeleteTeamModalWithRoomsProps = {
 	teamId: string;
 	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onCancel: () => void;

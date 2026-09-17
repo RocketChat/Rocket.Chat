@@ -7,7 +7,6 @@ export default [
 	...rocketChatConfig,
 	{
 		ignores: [
-			'apps/meteor/app/emoji-emojione/generateEmojiIndex.js',
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',
@@ -30,11 +29,11 @@ export default [
 			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscorePlugin,
 		},
 		settings: {
-			'import/ignore': ['meteor/.+'],
+			'import-x/ignore': ['meteor/.+'],
 		},
 		rules: {
-			'import/named': 'error',
-			'import/no-unresolved': [
+			'import-x/named': 'error',
+			'import-x/no-unresolved': [
 				'error',
 				{
 					commonjs: true,
@@ -250,8 +249,8 @@ export default [
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
-			'import/named': 'error',
-			'import/order': [
+			'import-x/named': 'error',
+			'import-x/order': [
 				'error',
 				{
 					'newlines-between': 'always',
@@ -327,7 +326,7 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-empty-function': 'off',
-			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+			'@typescript-eslint/no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
 			'new-cap': 'off',
 		},
 	},
@@ -471,7 +470,14 @@ export default [
 	{
 		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
 		rules: {
-			'import/order': 'warn',
+			'import-x/order': 'warn',
+		},
+	},
+	{
+		files: ['packages/mp3-encoder/src/**/*.ts'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'off',
+			'new-cap': 'off',
 		},
 	},
 ];

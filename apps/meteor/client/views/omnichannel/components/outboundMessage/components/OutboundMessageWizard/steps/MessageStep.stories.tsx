@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box } from '@rocket.chat/fuselage';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import MessageStep from './MessageStep';
 import { createFakeContact } from '../../../../../../../../tests/mocks/data';

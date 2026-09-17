@@ -3,7 +3,7 @@ import type { CSSProperties } from 'preact/compat';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type TypingDotsProps = {
+export type TypingDotsProps = {
 	text: string;
 	className?: string;
 	style?: CSSProperties;

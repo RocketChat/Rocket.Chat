@@ -9,7 +9,7 @@ import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../room/MessageList/lib/isMessageNewDay';
 
-type AuditMessageListProps = {
+export type AuditMessageListProps = {
 	messages: IMessage[];
 };
 

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { Surface } from './Surface';
 
-type ModalSurfaceProps = {
+export type ModalSurfaceProps = {
 	children?: ReactNode;
 };
 

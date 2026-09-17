@@ -9,13 +9,13 @@ import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
-import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
+import { deleteRoom } from '../../../../server/lib/rooms/deleteRoom';
+import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
+import { createDirectMessage } from '../../../../server/meteor-methods/messages/createDirectMessage';
+import { createDiscussion } from '../../../../server/meteor-methods/messages/createDiscussion';
+import { createChannelMethod } from '../../../../server/meteor-methods/rooms/createChannel';
+import { createPrivateGroupMethod } from '../../../../server/meteor-methods/rooms/createPrivateGroup';
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
@@ -37,6 +37,8 @@ const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	prid: 1,
 	teamId: 1,
 	teamMain: 1,
+	federated: 1,
+	federation: 1,
 	livechatData: 1,
 	waitingResponse: 1,
 	open: 1,

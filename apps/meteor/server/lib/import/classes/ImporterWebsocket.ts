@@ -1,0 +1,23 @@
+import type { IImportProgress } from '@rocket.chat/core-typings';
+
+import type { IStreamer } from '../../../modules/streamer/types';
+import notifications from '../../notifications/core/lib/Notifications';
+
+class ImporterWebsocketDef {
+	private streamer: IStreamer<'importers'>;
+
+	constructor() {
+		this.streamer = notifications.streamImporters;
+	}
+
+	/**
+	 * Called when the progress is updated.
+	 *
+	 * @param {Progress} progress The progress of the import.
+	 */
+	progressUpdated(progress: { rate: number } | IImportProgress) {
+		this.streamer.emit('progress', progress);
+	}
+}
+
+export const ImporterWebsocket = new ImporterWebsocketDef();

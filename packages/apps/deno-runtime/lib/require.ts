@@ -2,14 +2,43 @@ import { createRequire } from 'node:module';
 
 const _require = createRequire(import.meta.url);
 
-export const require = (mod: string) => {
-	// When we try to import something from the apps-engine, we resolve the path using import maps from Deno
-	// However, the import maps are configured to look at the source folder for typescript files, but during
-	// runtime those files are not available
-	if (mod.startsWith('@rocket.chat/apps-engine')) {
-		// Only remove "src/" substring when it comes after "apps-engine/"
-		mod = import.meta.resolve(mod).replace('file://', '').replace('apps-engine/src/', 'apps-engine/');
+const ALLOWED_NATIVE_MODULES = [
+	'path',
+	'url',
+	'crypto',
+	'buffer',
+	'stream',
+	'net',
+	'http',
+	'https',
+	'zlib',
+	'util',
+	'punycode',
+	'os',
+	'querystring',
+	'fs',
+];
+
+const ALLOWED_EXTERNAL_MODULES = ['uuid', '@rocket.chat/apps-engine'];
+
+// As the apps are bundled, the only times they will call require are
+// 1. To require native modules
+// 2. To require external npm packages we may provide
+// 3. To require apps-engine files
+export const require = (module: string) => {
+	// Normalize Node built-in specifiers: accept both 'crypto' and 'node:crypto'
+	const normalized = module.replace('node:', '');
+
+
+	// We allow variants like 'fs', 'node:fs' or 'node:fs/promises'
+	if (ALLOWED_NATIVE_MODULES.some((mod) => normalized.startsWith(mod))) {
+		return _require(`node:${normalized}`);
 	}
 
-	return _require(mod);
+	if (ALLOWED_EXTERNAL_MODULES.some((mod) => module.startsWith(mod))) {
+		// External modules cannot be resolved by the require algorithm, we need to pass the full path already resolved by Deno's import map
+		return _require(import.meta.resolve(module).replace('file://', ''));
+	}
+
+	throw new Error(`Module ${module} is not allowed`);
 };

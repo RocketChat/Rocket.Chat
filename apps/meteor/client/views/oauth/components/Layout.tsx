@@ -3,7 +3,7 @@ import { VerticalWizardLayout } from '@rocket.chat/layout';
 import { useAssetWithDarkModePath, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
-type LayoutProps = {
+export type LayoutProps = {
 	children?: ReactNode;
 };
 
@@ -15,7 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight={40} mi={-8} src={customLogo} alt='Logo' /> : undefined}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight={40} marginInline={-8} src={customLogo} alt='Logo' /> : undefined}
 		>
 			{children}
 		</VerticalWizardLayout>

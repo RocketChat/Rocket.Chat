@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useIsRoomOverMacLimit } from '../hooks/useIsRoomOverMacLimit';
 
-type RoomActivityIconProps = {
+export type RoomActivityIconProps = {
 	room: IOmnichannelRoom;
 };
 

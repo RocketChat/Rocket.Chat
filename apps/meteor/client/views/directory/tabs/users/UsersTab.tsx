@@ -3,7 +3,7 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import UsersTable from './UsersTable';
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
-type UsersTabProps = {
+export type UsersTabProps = {
 	workspace?: 'external' | 'local';
 };
 

@@ -3,7 +3,7 @@ import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-type BackButtonProps = { routeName?: string };
+export type BackButtonProps = { routeName?: string };
 
 const BackButton = ({ routeName }: BackButtonProps) => {
 	const router = useRouter();

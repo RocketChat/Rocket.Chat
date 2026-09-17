@@ -4,7 +4,9 @@ import { useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
 import { useChannelsChildrenList } from '../hooks/useChannelsChildrenList';
 
-const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscription: ISubscription }) => {
+export type SidePanelTeamsProps = { parentRid: string; subscription: ISubscription };
+
+const SidePanelTeams = ({ parentRid, subscription }: SidePanelTeamsProps) => {
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 	const rooms = useChannelsChildrenList(parentRid, unreadOnly, subscription?.teamId);
 

@@ -28,7 +28,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
-			...formatModalInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.MODAL_OPEN }),
+			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_OPEN }),
 		};
 	}
 
@@ -37,7 +37,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
-			...formatModalInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.MODAL_UPDATE }),
+			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_UPDATE }),
 		};
 	}
 
@@ -46,7 +46,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
-			...formatContextualBarInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN }),
+			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN }),
 		};
 	}
 
@@ -55,7 +55,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
-			...formatContextualBarInteraction(viewData, { appId, triggerId, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
+			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
 		};
 	}
 
@@ -64,7 +64,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			appId,
-			triggerId,
+			triggerId: triggerId!,
 			success: false,
 			type: UIKitInteractionType.ERRORS,
 			viewId: errorInteraction.viewId,

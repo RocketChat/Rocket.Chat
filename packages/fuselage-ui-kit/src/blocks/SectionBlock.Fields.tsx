@@ -10,7 +10,7 @@ const breakpoints = {
 	xl: 6,
 } as const;
 
-type FieldsProps = {
+export type FieldsProps = {
 	fields: readonly UiKit.TextObject[];
 	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 };

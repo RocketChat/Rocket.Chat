@@ -67,6 +67,7 @@ if (false) {
 	import('@rocket.chat/i18n/dist/resources/sv.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ta-IN.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/th-TH.i18n.json');
+	import('@rocket.chat/i18n/dist/resources/tl.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/tr.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ug.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/uk.i18n.json');
@@ -87,7 +88,7 @@ void i18n.init({
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
-				// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
+				// eslint-disable-next-line import-x/no-dynamic-require
 				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),

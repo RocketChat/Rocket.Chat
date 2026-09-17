@@ -6,7 +6,7 @@ import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type StaticSelectElementProps = BlockProps<UiKit.StaticSelectElement>;
+export type StaticSelectElementProps = BlockProps<UiKit.StaticSelectElement>;
 
 const StaticSelectElement = ({ block, context }: StaticSelectElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);

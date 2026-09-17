@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 import { useUTCClock } from '../hooks/useUTCClock';
 
-type UTCClockProps = {
+export type UTCClockProps = {
 	utcOffset: number;
 };
 

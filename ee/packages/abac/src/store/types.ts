@@ -5,7 +5,12 @@ export type AttributeEntitlements = Map<string, Set<string>>;
 
 export type ListAttributesOptions = { key?: string; values?: string; offset?: number; count?: number };
 
-export type ListAttributesResult = { attributes: IAbacAttribute[]; offset: number; count: number; total: number };
+export type ListAttributesResult = {
+	attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];
+	offset: number;
+	count: number;
+	total: number;
+};
 
 export interface IAttributeStore {
 	list(actor: AbacActor | undefined, opts?: ListAttributesOptions): Promise<ListAttributesResult>;

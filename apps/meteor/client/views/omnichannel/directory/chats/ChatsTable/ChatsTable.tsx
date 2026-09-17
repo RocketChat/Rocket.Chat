@@ -56,14 +56,14 @@ const ChatsTable = () => {
 			)}
 			<GenericTableHeaderCell key='source.type'>{t('Channel')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='servedBy'>{t('Agent')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x100'>{t('Verification')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x100'>{t('Verification')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='department.name'>{t('Department')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 				{t('Started_At')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='lm'>{t('Last_Message')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' w='x60' />}
+			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' width='x60' />}
 		</>
 	);
 
@@ -92,7 +92,11 @@ const ChatsTable = () => {
 				<>
 					<GenericTable aria-label={t('Omnichannel_Contact_Center_Chats')} fixed={false}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.rooms.map((room) => <ChatsTableRow key={room._id} {...room} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.rooms.map((room) => (
+								<ChatsTableRow key={room._id} {...room} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

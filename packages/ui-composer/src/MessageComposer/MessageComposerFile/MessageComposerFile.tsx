@@ -5,7 +5,7 @@ import { FilePreviewIcon } from '@rocket.chat/ui-client';
 import type { ReactNode, KeyboardEvent, MouseEvent, AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-type MessageComposerFileProps = {
+export type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
 	fileFormat: string;
@@ -73,14 +73,14 @@ const MessageComposerFile = ({
 			flexShrink={0}
 			flexGrow={0}
 			padding={4}
-			borderRadius={4}
-			borderWidth={1}
+			borderRadius='medium'
+			borderWidth='default'
 			borderColor={error ? 'error' : 'extra-light'}
 			alignItems='center'
 			position='relative'
 			height='x58'
 			width='x234'
-			mie={8}
+			marginInlineEnd={8}
 			onClick={handleClick}
 			{...props}
 		>
@@ -95,7 +95,7 @@ const MessageComposerFile = ({
 			) : (
 				<FilePreviewIcon format={fileFormat} />
 			)}
-			<Box flexGrow={1} withTruncatedText mis={4} display='flex' flexDirection='column'>
+			<Box flexGrow={1} withTruncatedText marginInlineStart={4} display='flex' flexDirection='column'>
 				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>

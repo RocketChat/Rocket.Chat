@@ -33,13 +33,14 @@ const ActionManagerBusyState = () => {
 				`}
 				position='absolute'
 				insetInlineStart='50%'
-				p={16}
-				bg='tint'
+				padding={16}
+				backgroundColor='tint'
 				color='default'
 				textAlign='center'
 				fontSize='p2'
 				elevation='2'
-				borderRadius='0 0 4px 4px'
+				borderEndStartRadius='medium'
+				borderEndEndRadius='medium'
 				zIndex={99999}
 			>
 				{t('Loading')}

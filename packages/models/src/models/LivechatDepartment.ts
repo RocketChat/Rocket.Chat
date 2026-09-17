@@ -1,19 +1,7 @@
 import type { ILivechatDepartment, LivechatDepartmentDTO, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type {
-	Collection,
-	FindCursor,
-	Db,
-	Filter,
-	FindOptions,
-	UpdateResult,
-	Document,
-	IndexDescription,
-	DeleteResult,
-	UpdateFilter,
-	AggregationCursor,
-} from 'mongodb';
+import type { ILivechatDepartmentModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import { escapeRegExp } from '@rocket.chat/tools';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription, AggregationCursor } from 'mongodb';
 
 import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../index';
 import { BaseRaw } from './BaseRaw';
@@ -21,26 +9,6 @@ import { BaseRaw } from './BaseRaw';
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);
-	}
-
-	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredFindOne(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredUpdate(
-		_query: Filter<ILivechatDepartment>,
-		_update: UpdateFilter<ILivechatDepartment>,
-		_options: FindOptions<ILivechatDepartment>,
-	): Promise<UpdateResult> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredRemove(_query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
-		throw new Error('Method not implemented.');
 	}
 
 	removeParentAndAncestorById(_id: string): Promise<Document | UpdateResult> {
@@ -97,17 +65,23 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.estimatedDocumentCount();
 	}
 
-	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findInIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentsIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { _id: { $in: departmentsIds } };
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByNameRegexWithExceptionsAndConditions(
+	findByNameRegexWithExceptionsAndConditions<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		searchTerm: string,
 		exceptions: string[] = [],
 		conditions: Filter<ILivechatDepartment> = {},
-		options: FindOptions<ILivechatDepartment> = {},
-	): FindCursor<ILivechatDepartment> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -122,12 +96,15 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			...conditions,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findByBusinessHourId<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		businessHourId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { businessHourId };
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
@@ -135,39 +112,31 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.countDocuments(query);
 	}
 
-	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findEnabledByBusinessHourId<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(businessHourId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { businessHourId, enabled: true };
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findActiveDepartmentsWithoutBusinessHour<
+		T extends Document = ILivechatDepartment,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			enabled: true,
 			businessHourId: { $exists: false },
 		};
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
-		businessHourIds: string[],
-		departmentIds: string[],
-		options: FindOptions<ILivechatDepartment>,
-	): FindCursor<ILivechatDepartment> {
-		const query: Filter<ILivechatDepartment> = {
-			enabled: true,
-			businessHourId: {
-				$in: businessHourIds,
-			},
-			_id: {
-				$in: departmentIds,
-			},
-		};
-		return this.find(query, options);
-	}
-
-	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	findEnabledInIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		departmentsIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { _id: { $in: departmentsIds }, enabled: true };
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
@@ -311,7 +280,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.findEnabledWithAgents(projection);
 	}
 
-	findOneByIdOrName(_idOrName: string, options: FindOptions<ILivechatDepartment> = {}): Promise<ILivechatDepartment | null> {
+	findOneByIdOrName<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_idOrName: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			$or: [
 				{
@@ -323,10 +295,13 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			],
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	findByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+	findByUnitIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		unitIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			parentId: {
 				$exists: true,
@@ -334,21 +309,26 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	countDepartmentsInUnit(unitId: string): Promise<number> {
 		return this.countDocuments({ parentId: unitId });
 	}
 
-	findActiveByUnitIds<T extends Document = ILivechatDepartment>(_unitIds: string[], _options: FindOptions<T> = {}): FindCursor<T> {
+	findActiveByUnitIds<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_unitIds: string[],
+		_options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		throw new Error('not-implemented');
 	}
 
-	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+	findNotArchived<T extends Document = ILivechatDepartment, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { archived: { $ne: false } };
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	getBusinessHoursWithDepartmentStatuses(): Promise<
@@ -450,7 +430,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.countDocuments({ archived: true });
 	}
 
-	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		throw new Error('Method not implemented in CE');
 	}
 

@@ -8,17 +8,19 @@ const iconMap: Record<string, IconName> = {
 	'mobile-app': 'mobile',
 };
 
-const DeviceIcon = ({ deviceType }: { deviceType: string }) => (
+export type DeviceIconProps = { deviceType: string };
+
+const DeviceIcon = ({ deviceType }: DeviceIconProps) => (
 	<Box
 		is='span'
 		display='inline-flex'
 		alignItems='center'
 		justifyContent='center'
-		p={4}
-		bg='selected'
+		padding={4}
+		backgroundColor='selected'
 		size='x24'
 		borderRadius='full'
-		mie={8}
+		marginInlineEnd={8}
 	>
 		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='hint' />
 	</Box>

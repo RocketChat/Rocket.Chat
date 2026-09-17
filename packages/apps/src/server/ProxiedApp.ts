@@ -12,7 +12,7 @@ import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import type { IRuntimeController } from './runtime/IRuntimeController';
-import { JSONRPC_METHOD_NOT_FOUND } from './runtime/deno/AppsEngineDenoRuntime';
+import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
@@ -62,7 +62,7 @@ export class ProxiedApp {
 
 	// We'll need to refactor this method to remove the rest parameters so we can pass an options parameter
 	public async call(method: `${AppMethod}`, ...args: Array<any>): Promise<any> {
-		let options;
+		const options = undefined;
 
 		try {
 			return await this.appRuntime.sendRequest({ method: `app:${method}`, params: args }, options);

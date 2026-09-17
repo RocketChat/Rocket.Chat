@@ -1,7 +1,7 @@
 import InviteLink from './InviteLink';
 import InviteUsersWrapper from './InviteUsersWrapper';
 
-type InviteUsersProps = {
+export type InviteUsersProps = {
 	onClickBackMembers?: () => void;
 	onClose: () => void;
 	onClickEdit: () => void;

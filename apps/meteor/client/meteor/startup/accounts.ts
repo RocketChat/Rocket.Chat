@@ -1,6 +1,6 @@
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { sdk } from '../../lib/SDKClient';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
 import { settings } from '../../lib/settings';
@@ -75,9 +75,8 @@ settings.observe(FORGET_SESSION_SETTING_ID, applyForgetSessionOnWindowClose);
 
 getDdpSdk().account.onEmailVerificationLink(async (token: string) => {
 	try {
-		await sdk.call('verifyEmail', token);
+		await sdk.rest.post('/v1/users.verifyEmail', { token });
 		await whenMainReady();
-		void sdk.call('afterVerifyEmail');
 		dispatchToastMessage({ type: 'success', message: t('Email_verified') });
 	} catch (error) {
 		await whenMainReady();

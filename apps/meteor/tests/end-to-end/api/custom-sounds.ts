@@ -31,7 +31,14 @@ async function createCustomSound(fileName: string, filePath: string): Promise<st
 }
 
 async function deleteCustomSound(_id: string) {
-	await request.post(api('custom-sounds.delete')).set(credentials).send({ _id }).expect(200);
+	await request
+		.post(api('custom-sounds.delete'))
+		.set(credentials)
+		.send({ _id })
+		.expect(200)
+		.expect((res) => {
+			expect(res.body).to.have.property('success', true);
+		});
 }
 
 describe('[CustomSounds]', () => {
@@ -409,38 +416,27 @@ describe('[CustomSounds]', () => {
 	});
 
 	describe('[/custom-sounds.list]', () => {
-		it('should return custom sounds', (done) => {
-			void request
-				.get(api('custom-sounds.list'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('sounds').and.to.be.an('array');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return custom sounds', async () => {
+			const res = await request.get(api('custom-sounds.list')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('sounds').and.to.be.an('array');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return custom sounds even requested with count and offset params', (done) => {
-			void request
-				.get(api('custom-sounds.list'))
-				.set(credentials)
-				.expect(200)
-				.query({
-					count: 5,
-					offset: 0,
-				})
-				.expect((res) => {
-					expect(res.body).to.have.property('sounds').and.to.be.an('array');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return custom sounds even requested with count and offset params', async () => {
+			const res = await request.get(api('custom-sounds.list')).set(credentials).expect(200).query({
+				count: 5,
+				offset: 0,
+			});
+
+			expect(res.body).to.have.property('sounds').and.to.be.an('array');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return custom sounds filtering it using the `name` parameter', (done) => {
-			void request
+		it('should return custom sounds filtering it using the `name` parameter', async () => {
+			const res = await request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
 				.expect(200)
@@ -448,15 +444,13 @@ describe('[CustomSounds]', () => {
 					name: `${fileName}-2`,
 					count: 5,
 					offset: 0,
-				})
-				.expect((res) => {
-					expect(res.body).to.have.property('sounds').and.to.be.an('array');
-					expect(res.body).to.have.property('total').to.equal(1);
-					expect(res.body).to.have.property('offset').to.equal(0);
-					expect(res.body).to.have.property('count').to.equal(1);
-					expect(res.body.sounds[0]._id).to.be.equal(fileId2);
-				})
-				.end(done);
+				});
+
+			expect(res.body).to.have.property('sounds').and.to.be.an('array');
+			expect(res.body).to.have.property('total').to.equal(1);
+			expect(res.body).to.have.property('offset').to.equal(0);
+			expect(res.body).to.have.property('count').to.equal(1);
+			expect(res.body.sounds[0]._id).to.be.equal(fileId2);
 		});
 	});
 
@@ -533,58 +527,95 @@ describe('[CustomSounds]', () => {
 	});
 
 	describe('Accessing custom sounds', () => {
-		it('should return forbidden if the there is no fileId on the url', (done) => {
-			void request
-				.get('/custom-sounds/')
-				.set(credentials)
-				.expect(403)
-				.expect((res) => {
-					expect(res.text).to.be.equal('Forbidden');
-				})
-				.end(done);
+		it('should return forbidden if the there is no fileId on the url', async () => {
+			const res = await request.get('/custom-sounds/').set(credentials).expect(403);
+
+			expect(res.text).to.be.equal('Forbidden');
 		});
 
-		it('should return not found if the the requested file does not exists', (done) => {
-			void request
-				.get('/custom-sounds/invalid.mp3')
-				.set(credentials)
-				.expect(404)
-				.expect((res) => {
-					expect(res.text).to.be.equal('Not found');
-				})
-				.end(done);
+		it('should return not found if the the requested file does not exists', async () => {
+			const res = await request.get('/custom-sounds/invalid.mp3').set(credentials).expect(404);
+
+			expect(res.text).to.be.equal('Not found');
 		});
 
-		it('should return success if the the requested exists', (done) => {
-			void request
-				.get(`/custom-sounds/${fileId}.wav`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.headers).to.have.property('last-modified');
-					expect(res.headers).to.have.property('content-type', 'audio/wav');
-					expect(res.headers).to.have.property('cache-control', 'public, max-age=0');
-					expect(res.headers).to.have.property('expires', '-1');
-					uploadDate = res.headers['last-modified'];
-				})
-				.end(done);
+		it('should return success if the the requested exists', async () => {
+			const res = await request.get(`/custom-sounds/${fileId}.wav`).set(credentials).expect(200);
+
+			expect(res.headers).to.have.property('last-modified');
+			expect(res.headers).to.have.property('content-type', 'audio/wav');
+			expect(res.headers).to.have.property('cache-control', 'public, max-age=0');
+			expect(res.headers).to.have.property('expires', '-1');
+			uploadDate = res.headers['last-modified'];
 		});
 
-		it('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
-			void request
+		it('should return not modified if the the requested file contains a valid-since equal to the upload date', async () => {
+			const res = await request
 				.get(`/custom-sounds/${fileId}.wav`)
 				.set(credentials)
 				.set({
 					'if-modified-since': uploadDate,
 				})
-				.expect(304)
+				.expect(304);
+
+			expect(res.headers).to.have.property('last-modified', uploadDate);
+			expect(res.headers).not.to.have.property('content-type');
+			expect(res.headers).not.to.have.property('cache-control');
+			expect(res.headers).not.to.have.property('expires');
+		});
+	});
+
+	describe('[/custom-sounds.delete]', () => {
+		let toDeleteFileId: string;
+
+		before(async () => {
+			toDeleteFileId = await createCustomSound(`${fileName}-delete-${randomUUID()}`, mockWavAudioPath);
+		});
+
+		it('should return unauthorized if not authenticated', async () => {
+			await request.post(api('custom-sounds.delete')).send({ _id: toDeleteFileId }).expect(401);
+		});
+
+		it('should return bad request when _id is missing', async () => {
+			await request.post(api('custom-sounds.delete')).set(credentials).send({}).expect(400);
+		});
+
+		it('should return bad request when _id is an empty string', async () => {
+			await request.post(api('custom-sounds.delete')).set(credentials).send({ _id: '' }).expect(400);
+		});
+
+		it('should fail when the user does not have manage-sounds permission', async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+			try {
+				await request.post(api('custom-sounds.delete')).set(testUserCredentials).send({ _id: toDeleteFileId }).expect(403);
+			} finally {
+				await deleteUser(testUser);
+			}
+		});
+
+		it('should delete the sound successfully and remove it from the list', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: toDeleteFileId })
+				.expect(200)
 				.expect((res) => {
-					expect(res.headers).to.have.property('last-modified', uploadDate);
-					expect(res.headers).not.to.have.property('content-type');
-					expect(res.headers).not.to.have.property('cache-control');
-					expect(res.headers).not.to.have.property('expires');
-				})
-				.end(done);
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: toDeleteFileId }).expect(404);
+		});
+
+		it('should fail when the sound id does not exist', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: 'non-existent-sound-id' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

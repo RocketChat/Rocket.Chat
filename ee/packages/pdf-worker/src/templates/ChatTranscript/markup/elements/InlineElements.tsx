@@ -8,7 +8,7 @@ import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
 
-type InlineElementsProps = {
+export type InlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 

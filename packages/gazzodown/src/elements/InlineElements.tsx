@@ -18,7 +18,7 @@ import UserMentionElement from '../mentions/UserMentionElement';
 
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
-type InlineElementsProps = {
+export type InlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
 };
 

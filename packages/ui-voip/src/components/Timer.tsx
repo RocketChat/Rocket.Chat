@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 
-type VoipTimerProps = { startAt?: Date };
+export type VoipTimerProps = { startAt?: Date };
 
 const VoipTimer = ({ startAt }: VoipTimerProps) => {
 	const [start] = useState(() => {

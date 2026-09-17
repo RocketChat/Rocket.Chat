@@ -4,7 +4,7 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type EditInviteLinkProps = {
+export type EditInviteLinkProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 };
@@ -72,7 +72,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					/>
 				</FieldRow>
 			</Field>
-			<Box mbs={8}>
+			<Box marginBlockStart={8}>
 				<Button loading={isSubmitting} disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>

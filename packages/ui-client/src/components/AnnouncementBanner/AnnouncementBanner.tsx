@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
 
-type AnnouncementBannerProps = {
+export type AnnouncementBannerProps = {
 	children: ReactNode;
 	onClick?: (e: MouseEvent) => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
@@ -29,19 +29,19 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 		<Box
 			focusable
 			height='x40'
-			pi={24}
+			paddingInline={24}
 			alignItems='center'
 			display='flex'
 			fontScale='p2m'
 			textAlign='center'
-			borderRadius={0}
+			borderRadius='none'
 			className={[announcementBar, className]}
 			tabIndex={onClick ? 0 : -1}
 			role={onClick ? 'button' : 'banner'}
 			onClick={onClick}
 			{...props}
 		>
-			<Box withTruncatedText w='none'>
+			<Box withTruncatedText width='none'>
 				{children}
 			</Box>
 		</Box>

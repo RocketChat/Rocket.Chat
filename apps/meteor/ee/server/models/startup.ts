@@ -17,5 +17,4 @@ void License.onLicense('livechat-enterprise', () => {
 	import('./LivechatInquiry');
 	import('./LivechatDepartment');
 	import('./Users');
-	import('./LivechatDepartmentAgents');
 });

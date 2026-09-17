@@ -1,28 +1,27 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import AnnouncementBanner from './AnnouncementBanner';
 
 export default {
-	title: 'Components/AnnouncementBanner',
 	component: AnnouncementBanner,
 	args: {
 		onClick: action('clicked'),
 	},
 } satisfies Meta<typeof AnnouncementBanner>;
 
-const Template: StoryFn<typeof AnnouncementBanner> = (args) => <AnnouncementBanner {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-	children: 'Announcement',
+export const Default: StoryObj<typeof AnnouncementBanner> = {
+	args: {
+		children: 'Announcement',
+	},
 };
 
-export const WithLink = Template.bind({});
-WithLink.args = {
-	children: (
-		<a target='_blank' href='https://rocket.chat'>
-			Announcement
-		</a>
-	),
+export const WithLink: StoryObj<typeof AnnouncementBanner> = {
+	args: {
+		children: (
+			<a target='_blank' href='https://rocket.chat' rel='noreferrer'>
+				Announcement
+			</a>
+		),
+	},
 };

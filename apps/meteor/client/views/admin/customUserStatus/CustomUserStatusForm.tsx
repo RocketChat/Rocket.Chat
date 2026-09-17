@@ -11,7 +11,7 @@ type CustomUserStatusFormFormData = {
 	statusType: string;
 };
 
-type CustomUserStatusFormProps = {
+export type CustomUserStatusFormProps = {
 	onClose: () => void;
 	onReload: () => void;
 	status?: IUserStatus;
@@ -127,7 +127,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={handleDeleteStatus}>
 								{t('Delete')}

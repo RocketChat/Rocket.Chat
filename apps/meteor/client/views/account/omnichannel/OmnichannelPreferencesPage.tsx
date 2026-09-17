@@ -50,7 +50,7 @@ const OmnichannelPreferencesPage = () => {
 		<Page>
 			<PageHeader title={t('Omnichannel')} />
 			<PageScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<Accordion>
 						<FormProvider {...methods}>
 							<PreferencesGeneral />

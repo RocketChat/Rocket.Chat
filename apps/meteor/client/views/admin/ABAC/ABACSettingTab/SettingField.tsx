@@ -11,7 +11,7 @@ import { useEditableSetting, useEditableSettingVisibilityQuery } from '../../Edi
 import MemoizedSetting from '../../settings/Setting/MemoizedSetting';
 import { useHasSettingModule } from '../../settings/hooks/useHasSettingModule';
 
-type SettingFieldProps = {
+export type SettingFieldProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;

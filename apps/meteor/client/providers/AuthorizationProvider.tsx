@@ -13,7 +13,7 @@ import { Permissions, Roles, Subscriptions, Users } from '../stores';
 // avatar etag changes, etc. — none of which affect any permission answer.
 type AuthorizableUser = Pick<IUser, '_id' | 'roles'>;
 
-type AuthorizationProviderProps = {
+export type AuthorizationProviderProps = {
 	children?: ReactNode;
 };
 

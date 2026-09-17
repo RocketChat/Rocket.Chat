@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type InputBlockProps = BlockProps<UiKit.InputBlock>;
+export type InputBlockProps = BlockProps<UiKit.InputBlock>;
 
 const InputBlock = ({ className, block, surfaceRenderer, context }: InputBlockProps) => {
 	const inputElement = useMemo(

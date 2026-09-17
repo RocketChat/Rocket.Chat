@@ -1,6 +1,8 @@
+import { License } from '@rocket.chat/license';
 import { type ExtendedFetchOptions, Response, serverFetch } from '@rocket.chat/server-fetch';
 
 import { isTesting } from './isTesting';
+import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
 
 export class MarketplaceAPIClient {
 	#fetchStrategy: (input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean) => Promise<Response>;
@@ -41,6 +43,12 @@ export class MarketplaceAPIClient {
 	}
 
 	public fetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): ReturnType<typeof serverFetch> {
+		if (License.hasOfflineLicense()) {
+			return Promise.reject(
+				new CloudOfflineLicenseError('Marketplace connectivity is disabled by the offline license applied to this workspace'),
+			);
+		}
+
 		if (!input.startsWith('http://') && !input.startsWith('https://')) {
 			input = this.getMarketplaceUrl().concat(!input.startsWith('/') ? '/' : '', input);
 		}

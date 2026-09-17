@@ -4,7 +4,7 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import { UserCardUsername } from '../UserCard';
 
-type UserInfoUsernameProps = {
+export type UserInfoUsernameProps = {
 	username: IUser['username'];
 	status: ReactNode;
 } & ComponentProps<typeof Box>;

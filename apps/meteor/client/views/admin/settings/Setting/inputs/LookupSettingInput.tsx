@@ -7,7 +7,7 @@ import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 import { miscQueryKeys } from '../../../../../lib/queryKeys';
 
-type LookupSettingInputProps = SettingInputProps & {
+export type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 };
 

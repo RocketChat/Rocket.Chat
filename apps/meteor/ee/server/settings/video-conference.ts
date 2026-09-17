@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('Video_Conference', async function () {

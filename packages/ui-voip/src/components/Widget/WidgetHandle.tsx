@@ -20,7 +20,11 @@ const dragHandle = css`
 `;
 
 const WidgetHandle = (props: ComponentProps<typeof Box>) => {
-	const { handleRef } = useDraggableWidget();
+	const draggableContext = useDraggableWidget();
+	if (!draggableContext) {
+		return null;
+	}
+	const { handleRef } = draggableContext;
 	return (
 		<Box height={20} display='flex' flexDirection='row' justifyContent='center' className={dragHandle} ref={handleRef} {...props}>
 			<Icon name='stacked-meatballs' size='x20' />

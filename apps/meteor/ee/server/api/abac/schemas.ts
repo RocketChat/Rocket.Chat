@@ -108,7 +108,7 @@ const GetAbacAttributesResponse = {
 };
 
 export const GETAbacAttributesResponseSchema = ajv.compile<{
-	attributes: IAbacAttribute[];
+	attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];
 	offset: number;
 	count: number;
 	total: number;

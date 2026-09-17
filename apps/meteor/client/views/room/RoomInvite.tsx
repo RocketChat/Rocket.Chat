@@ -14,7 +14,7 @@ import RoomLayout from './layout/RoomLayout';
 import { links } from '../../lib/links';
 import { roomsQueryKeys, subscriptionsQueryKeys } from '../../lib/queryKeys';
 
-type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
+export type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
 	userId?: IUser['_id'];
 	room: IRoomWithFederationOriginalName;
 	subscription: IInviteSubscription;

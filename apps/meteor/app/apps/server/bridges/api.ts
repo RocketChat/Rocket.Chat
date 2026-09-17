@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { apiServer } from './router';
-import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 
 WebApp.rawConnectHandlers.use(apiServer);
 

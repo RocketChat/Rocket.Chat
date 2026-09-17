@@ -7,7 +7,7 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type MessagesRoomsCardProps = {
+export type MessagesRoomsCardProps = {
 	statistics: IStats;
 };
 

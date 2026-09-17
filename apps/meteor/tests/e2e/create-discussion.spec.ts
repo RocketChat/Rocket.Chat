@@ -12,7 +12,7 @@ test.describe.serial('create-discussion', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeDiscussion = new HomeDiscussion(page);
 
-		await page.goto('/home');
+		await poHomeDiscussion.goto();
 	});
 
 	test('expect create discussion', async ({ page }) => {

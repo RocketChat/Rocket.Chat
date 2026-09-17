@@ -34,7 +34,9 @@ const defaultPermissions = [
 	'api',
 ];
 
-const AppPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[] | undefined }) => {
+export type AppPermissionsListProps = { appPermissions: AppPermission[] | undefined };
+
+const AppPermissionsList = ({ appPermissions }: AppPermissionsListProps) => {
 	const { t } = useTranslation();
 	const handleAppPermissions = (permission: string): string => t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
 

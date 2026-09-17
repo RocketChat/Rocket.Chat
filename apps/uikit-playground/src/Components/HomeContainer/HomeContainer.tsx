@@ -9,7 +9,7 @@ import CreateNewScreenButton from '../ScreenThumbnail/CreateNewScreenButton';
 const HomeContainer = () => {
 	const { dispatch } = useContext(context);
 	return (
-		<Box minWidth='100%' display='flex' justifyContent='center' h='var(--content-height)' pbs='30px'>
+		<Box minWidth='100%' display='flex' justifyContent='center' height='var(--content-height)' paddingBlockStart='30px'>
 			<Box
 				width='max-content'
 				minWidth='70%'

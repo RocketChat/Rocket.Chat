@@ -12,7 +12,7 @@ import {
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type OutboundMessageCloseConfirmationModalProps = {
+export type OutboundMessageCloseConfirmationModalProps = {
 	onConfirm(): void;
 	onCancel(): void;
 };

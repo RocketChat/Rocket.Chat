@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 
 import type { AppImplements } from '../../../../src/server/compiler/AppImplements';
 import type { IParseAppPackageResult } from '../../../../src/server/compiler/IParseAppPackageResult';
-import { bundleLegacyApp } from '../../../../src/server/runtime/deno/bundler';
+import { bundleLegacyApp } from '../../../../src/server/runtime/base/bundler';
 
 function makeAppPackage(classFile: string, files: { [key: string]: string }): IParseAppPackageResult {
 	return {

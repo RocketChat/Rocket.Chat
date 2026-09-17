@@ -8,7 +8,7 @@ import RoomInfo from './RoomInfo';
 import { useCanEditRoom } from './hooks/useCanEditRoom';
 import { useRoom } from '../../contexts/RoomContext';
 
-type RoomInfoRouterProps = {
+export type RoomInfoRouterProps = {
 	onClickBack?: () => void;
 	onEnterRoom?: (room: IRoom) => void;
 	resetState?: () => void;

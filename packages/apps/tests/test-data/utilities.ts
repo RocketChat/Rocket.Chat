@@ -44,6 +44,7 @@ import type { AppOutboundCommunicationProviderManager } from '../../server/manag
 import type { AppManager } from '../../src/server/AppManager';
 import { ProxiedApp } from '../../src/server/ProxiedApp';
 import type { AppBridges } from '../../src/server/bridges';
+import { AppResourceBridge } from '../../src/server/bridges/AppResourceBridge';
 import { AppPackageParser } from '../../src/server/compiler';
 import type {
 	AppExternalComponentManager,
@@ -76,7 +77,7 @@ export class TestInfastructureSetup {
 	private runtimeManager: AppRuntimeManager;
 
 	constructor() {
-		this.appStorage = TestsAppStorage.getInstance();
+		this.appStorage = new TestsAppStorage();
 		this.logStorage = new TestsAppLogStorage();
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();
@@ -129,6 +130,9 @@ export class TestInfastructureSetup {
 			},
 			getSettingsManager() {
 				return {} as AppSettingsManager;
+			},
+			getAppResourceBridge() {
+				return new AppResourceBridge(this as unknown as AppManager);
 			},
 			getRuntime: () => {
 				return this.runtimeManager;

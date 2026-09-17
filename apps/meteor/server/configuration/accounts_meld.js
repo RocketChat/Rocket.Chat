@@ -18,10 +18,6 @@ export async function configureAccounts() {
 			}
 		}
 
-		if (serviceName === 'linkedin') {
-			serviceData.email = serviceData.emailAddress;
-		}
-
 		if (serviceData.email) {
 			const user = await Users.findOneByEmailAddress(serviceData.email);
 			if (user != null && user.services?.[serviceName]?.id !== serviceData.id) {

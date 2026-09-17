@@ -6,7 +6,6 @@ import type {
 	IOutboundMessage,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication';
 
-import type { AppAccessorManager } from '.';
 import type { AppManager } from '../AppManager';
 import type { OutboundMessageBridge } from '../bridges';
 import { OutboundMessageProvider } from './AppOutboundCommunicationProvider';
@@ -15,15 +14,12 @@ import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissions } from '../permissions/AppPermissions';
 
 export class AppOutboundCommunicationProviderManager {
-	private readonly accessors: AppAccessorManager;
-
 	private readonly bridge: OutboundMessageBridge;
 
 	private outboundMessageProviders: Map<string, Map<ValidOutboundProvider, OutboundMessageProvider>>;
 
 	constructor(private readonly manager: AppManager) {
 		this.bridge = this.manager.getBridges().getOutboundMessageBridge();
-		this.accessors = this.manager.getAccessorManager();
 
 		this.outboundMessageProviders = new Map<string, Map<ValidOutboundProvider, OutboundMessageProvider>>();
 	}
@@ -125,7 +121,7 @@ export class AppOutboundCommunicationProviderManager {
 			throw new Error('provider-not-registered');
 		}
 
-		return providerInfo.runGetProviderMetadata(this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runGetProviderMetadata(this.manager.getLogStorage());
 	}
 
 	public sendOutboundMessage(appId: string, providerType: ValidOutboundProvider, body: IOutboundMessage) {
@@ -134,6 +130,6 @@ export class AppOutboundCommunicationProviderManager {
 			throw new Error('provider-not-registered');
 		}
 
-		return providerInfo.runSendOutboundMessage(this.manager.getLogStorage(), this.accessors, body);
+		return providerInfo.runSendOutboundMessage(this.manager.getLogStorage(), body);
 	}
 }

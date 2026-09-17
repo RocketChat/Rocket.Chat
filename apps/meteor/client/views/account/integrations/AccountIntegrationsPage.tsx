@@ -45,7 +45,7 @@ const AccountIntegrationsPage = () => {
 		<Page>
 			<PageHeader title={t('Integrations')} />
 			<PageScrollableContentWithShadow>
-				<Box is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSubmitForm)}>
+				<Box is='form' maxWidth='x600' width='full' alignSelf='center' onSubmit={handleSubmit(handleSubmitForm)}>
 					<Field>
 						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
 						<FieldRow>

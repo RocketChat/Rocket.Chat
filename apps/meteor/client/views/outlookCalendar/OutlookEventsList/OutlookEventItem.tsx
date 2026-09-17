@@ -9,7 +9,7 @@ import { usePreventPropagation } from '../../../hooks/usePreventPropagation';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
-type OutlookEventItemProps = Serialized<ICalendarEvent>;
+export type OutlookEventItemProps = Serialized<ICalendarEvent>;
 
 const hovered = css`
 	&:hover {
@@ -44,11 +44,11 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 	return (
 		<Box
 			className={hovered}
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
-			pi={24}
-			pb={16}
+			paddingInline={24}
+			paddingBlock={16}
 			display='flex'
 			justifyContent='space-between'
 			onClick={handleOpenEvent}

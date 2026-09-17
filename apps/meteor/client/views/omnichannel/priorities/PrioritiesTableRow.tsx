@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PriorityIcon } from './PriorityIcon';
 
-type PrioritiesTableRowProps = {
+export type PrioritiesTableRowProps = {
 	id: string;
 	name?: string;
 	i18n: string;

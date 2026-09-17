@@ -15,7 +15,7 @@ import { memo } from 'react';
 import ContextBlock from './ContextBlock';
 import type { BlockProps } from '../utils/BlockProps';
 
-type PreviewBlockProps = BlockProps<UiKit.PreviewBlock>;
+export type PreviewBlockProps = BlockProps<UiKit.PreviewBlock>;
 
 const PreviewBlock = ({ block, surfaceRenderer }: PreviewBlockProps) => (
 	<Box>

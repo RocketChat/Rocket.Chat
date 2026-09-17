@@ -20,7 +20,7 @@ import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
-type UsersTableProps = {
+export type UsersTableProps = {
 	workspace?: 'external' | 'local';
 };
 

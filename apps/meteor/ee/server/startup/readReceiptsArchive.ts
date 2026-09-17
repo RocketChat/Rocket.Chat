@@ -1,4 +1,4 @@
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../../server/settings';
 import { readReceiptsArchiveCron } from '../cron/readReceiptsArchive';
 
 // Watch for settings changes and update the cron schedule

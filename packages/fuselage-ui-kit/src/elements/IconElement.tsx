@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 
-type IconElementProps = BlockProps<UiKit.FrameableIconElement>;
+export type IconElementProps = BlockProps<UiKit.FrameableIconElement>;
 
 const getVariantColor = (variant: UiKit.FrameableIconElement['variant']): string => {
 	switch (variant) {

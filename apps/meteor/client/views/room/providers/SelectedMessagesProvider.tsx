@@ -82,7 +82,7 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 })();
 
-type SelectedMessagesProviderProps = {
+export type SelectedMessagesProviderProps = {
 	children?: ReactNode;
 };
 

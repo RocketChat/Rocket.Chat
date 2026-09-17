@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createEmojiSettings = () =>
 	settingsRegistry.addGroup('EmojiCustomFilesystem', async function () {

@@ -19,7 +19,7 @@ const contextValue = {
 	},
 };
 
-type SessionProviderProps = {
+export type SessionProviderProps = {
 	children?: ReactNode;
 };
 

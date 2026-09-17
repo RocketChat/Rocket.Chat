@@ -2,8 +2,8 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { ContactBridge } from '@rocket.chat/apps/dist/server/bridges/ContactBridge';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 
-import { addContactEmail } from '../../../livechat/server/lib/contacts/addContactEmail';
-import { verifyContactChannel } from '../../../livechat/server/lib/contacts/verifyContactChannel';
+import { addContactEmail } from '../../../../server/lib/omnichannel/contacts/addContactEmail';
+import { verifyContactChannel } from '../../../../server/lib/omnichannel/contacts/verifyContactChannel';
 
 export class AppContactBridge extends ContactBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

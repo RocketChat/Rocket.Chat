@@ -7,7 +7,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-type CustomUserStatusRowProps = {
+export type CustomUserStatusRowProps = {
 	status: IUserStatus;
 	onClick: (id: string) => void;
 };

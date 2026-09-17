@@ -5,7 +5,7 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CustomSoundRowProps = {
+export type CustomSoundRowProps = {
 	onClick: (soundId: ICustomSound['_id']) => () => void;
 	sound: {
 		name: string;

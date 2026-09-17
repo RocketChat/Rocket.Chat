@@ -1,4 +1,4 @@
-import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {

@@ -35,7 +35,7 @@ const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire
 				t: stubs.translateKey,
 			},
 		},
-		'../../../app/settings/server': {
+		'../../settings': {
 			settings: stubs.settings,
 		},
 	});

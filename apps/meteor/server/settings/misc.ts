@@ -3,9 +3,9 @@ import crypto from 'node:crypto';
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 
+import { settingsRegistry, settings } from '.';
 import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
-import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
-import { settingsRegistry, settings } from '../../app/settings/server';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 const logger = new Logger('FingerPrint');
 

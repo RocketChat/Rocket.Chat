@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-type ItemProps = {
+export type ItemProps = {
 	block: UiKit.ContextBlock['elements'][number];
 	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 	index: number;

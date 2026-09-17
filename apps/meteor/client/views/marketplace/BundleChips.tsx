@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { App } from './types';
 
-type BundleChipsProps = {
+export type BundleChipsProps = {
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;

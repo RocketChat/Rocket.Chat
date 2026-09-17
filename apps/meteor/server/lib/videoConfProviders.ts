@@ -1,6 +1,6 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 
 const providers = new Map<string, { capabilities: VideoConferenceCapabilities; label: string; appId: string }>();
 

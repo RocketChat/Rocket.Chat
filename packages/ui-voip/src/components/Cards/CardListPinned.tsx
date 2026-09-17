@@ -6,7 +6,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { CARD_MARGIN, CARD_MIN_WIDTH } from './Card';
 import CardListContainer from './CardList';
 
-type CardListPinnedProps = {
+export type CardListPinnedProps = {
 	children: ReactNode;
 	focusedCard: ReactNode;
 	flexDirection?: CSSProperties['flexDirection'];

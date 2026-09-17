@@ -13,7 +13,7 @@ import { useLdapSync } from '../../../../hooks/useLdapSync';
 import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
-type LDAPGroupPageProps = ISetting & {
+export type LDAPGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 

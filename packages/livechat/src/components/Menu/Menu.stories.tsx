@@ -1,12 +1,11 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
+import { action } from 'storybook/actions';
 
 import { Menu, MenuGroup, MenuItem } from '.';
 import { Button } from '../Button';
 
 export default {
-	title: 'Components/Menu',
 	component: Menu,
 	args: {
 		hidden: false,
@@ -24,39 +23,46 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Menu>>;
 
-export const Empty: StoryFn<ComponentProps<typeof Menu>> = (args) => <Menu {...args} />;
-Empty.storyName = 'empty';
+type Story = StoryObj<ComponentProps<typeof Menu>>;
 
-export const Simple: StoryFn<ComponentProps<typeof Menu>> = (args) => (
-	<Menu {...args}>
-		<MenuGroup>
-			<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
-			<MenuItem>Another menu item</MenuItem>
-		</MenuGroup>
-	</Menu>
-);
-Simple.storyName = 'simple';
-Simple.args = {
-	children: (
-		<MenuGroup>
-			<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
-			<MenuItem>Another menu item</MenuItem>
-		</MenuGroup>
-	),
+export const Empty: Story = {
+	name: 'empty',
 };
 
-export const Placement: StoryFn<ComponentProps<typeof Menu>> = (args) => (
-	<div style={{ position: 'relative' }}>
-		<Button>Button</Button>
+export const Simple: Story = {
+	name: 'simple',
+	args: {
+		children: (
+			<MenuGroup>
+				<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
+				<MenuItem>Another menu item</MenuItem>
+			</MenuGroup>
+		),
+	},
+	render: (args) => (
 		<Menu {...args}>
 			<MenuGroup>
 				<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
 				<MenuItem>Another menu item</MenuItem>
 			</MenuGroup>
 		</Menu>
-	</div>
-);
-Placement.storyName = 'placement';
-Placement.args = {
-	placement: 'right-bottom',
+	),
+};
+
+export const Placement: Story = {
+	name: 'placement',
+	args: {
+		placement: 'right-bottom',
+	},
+	render: (args) => (
+		<div style={{ position: 'relative' }}>
+			<Button>Button</Button>
+			<Menu {...args}>
+				<MenuGroup>
+					<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
+					<MenuItem>Another menu item</MenuItem>
+				</MenuGroup>
+			</Menu>
+		</div>
+	),
 };

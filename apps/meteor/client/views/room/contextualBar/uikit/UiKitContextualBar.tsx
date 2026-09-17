@@ -19,7 +19,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
-import { getURL } from '../../../../../app/utils/client';
+import { getURL } from '../../../../lib/getURL';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
@@ -27,7 +27,7 @@ import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useRoom } from '../../contexts/RoomContext';
 
-type UiKitContextualBarProps = {
+export type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ContextualBarView;
 };

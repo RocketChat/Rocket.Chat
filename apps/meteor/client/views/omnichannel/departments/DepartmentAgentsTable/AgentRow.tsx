@@ -8,7 +8,7 @@ import type { EditDepartmentFormData, IDepartmentAgent } from '../definitions';
 import AgentAvatar from './AgentAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
-type AgentRowProps = {
+export type AgentRowProps = {
 	agent: IDepartmentAgent;
 	index: number;
 	register: UseFormRegister<EditDepartmentFormData>;

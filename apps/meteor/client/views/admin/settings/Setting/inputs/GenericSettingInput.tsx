@@ -4,7 +4,7 @@ import type { ChangeEventHandler } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type GenericSettingInputProps = SettingInputProps & {
+export type GenericSettingInputProps = SettingInputProps & {
 	value: string;
 };
 

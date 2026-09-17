@@ -12,7 +12,7 @@ import TemplateSelect from '../../../../TemplateSelect';
 import { cxp } from '../../../utils/cx';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplateFieldProps = ComponentProps<typeof Field> & {
+export type TemplateFieldProps = ComponentProps<typeof Field> & {
 	control: Control<MessageFormData>;
 	templates: Serialized<IOutboundProviderTemplate>[] | undefined;
 	onChange?: (templateId: string) => void;

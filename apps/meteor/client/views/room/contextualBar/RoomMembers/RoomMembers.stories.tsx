@@ -1,7 +1,7 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import RoomMembers from './RoomMembers';
 
@@ -25,71 +25,74 @@ export default {
 	},
 } satisfies Meta<typeof RoomMembers>;
 
-const Template: StoryFn<typeof RoomMembers> = (args) => <RoomMembers {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-	isSuccess: true,
-	members: [
-		{
-			_id: 'rocket.cat',
-			username: 'rocket.cat',
-			status: UserStatus.ONLINE,
-			name: 'Rocket.Cat',
-			roles: ['user'],
-			subscription: {
-				_id: 'sub-rocket.cat',
-				ts: '2025-01-01T00:00:00Z',
+export const Default = {
+	args: {
+		isSuccess: true,
+		members: [
+			{
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				status: UserStatus.ONLINE,
+				name: 'Rocket.Cat',
+				roles: ['user'],
+				subscription: {
+					_id: 'sub-rocket.cat',
+					ts: '2025-01-01T00:00:00Z',
+				},
 			},
-		},
-	],
+		],
+	},
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-	isPending: true,
+export const Loading = {
+	args: {
+		isPending: true,
+	},
 };
 
-export const WithABACRoom = Template.bind({});
-WithABACRoom.args = {
-	isSuccess: true,
-	members: [
-		{
-			_id: 'rocket.cat',
-			username: 'rocket.cat',
-			status: UserStatus.ONLINE,
-			name: 'Rocket.Cat',
-			roles: ['user'],
-			subscription: {
-				_id: 'sub-rocket.cat',
-				ts: '2025-01-01T00:00:00Z',
+export const WithABACRoom = {
+	args: {
+		isSuccess: true,
+		members: [
+			{
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				status: UserStatus.ONLINE,
+				name: 'Rocket.Cat',
+				roles: ['user'],
+				subscription: {
+					_id: 'sub-rocket.cat',
+					ts: '2025-01-01T00:00:00Z',
+				},
 			},
-		},
-	],
-	isABACRoom: true,
+		],
+		isABACRoom: true,
+	},
 };
 
-export const WithInvitedMember = Template.bind({});
-WithInvitedMember.args = {
-	isSuccess: true,
-	members: [
-		{
-			_id: 'rocket.cat',
-			username: 'rocket.cat',
-			roles: ['user'],
-			subscription: {
-				_id: 'sub-rocket.cat',
-				status: 'INVITED',
-				ts: '2025-01-01T00:00:00Z',
+export const WithInvitedMember = {
+	args: {
+		isSuccess: true,
+		members: [
+			{
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				roles: ['user'],
+				subscription: {
+					_id: 'sub-rocket.cat',
+					status: 'INVITED',
+					ts: '2025-01-01T00:00:00Z',
+				},
+				name: 'Rocket.Cat',
 			},
-			name: 'Rocket.Cat',
-		},
-	],
+		],
+	},
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
-	isSuccess: true,
-	members: [],
-	total: 0,
+export const Empty = {
+	args: {
+		isSuccess: true,
+		members: [],
+		total: 0,
+	},
 };

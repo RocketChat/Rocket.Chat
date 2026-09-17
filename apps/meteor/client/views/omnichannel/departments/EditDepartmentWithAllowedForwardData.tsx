@@ -29,7 +29,7 @@ const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepar
 	}
 
 	if (isError) {
-		return <Box mbs={16}>{t('Not_Available')}</Box>;
+		return <Box marginBlockStart={16}>{t('Not_Available')}</Box>;
 	}
 
 	return <EditDepartment data={data} allowedToForwardData={allowedToForwardData} {...props} />;

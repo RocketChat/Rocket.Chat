@@ -86,7 +86,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 
@@ -123,7 +123,11 @@ function ContactTable() {
 				<>
 					<GenericTable aria-label={t('Omnichannel_Contact_Center_Contacts')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.contacts.map((contact) => (
+								<ContactTableRow key={contact._id} {...contact} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider
@@ -137,7 +141,7 @@ function ContactTable() {
 				</>
 			)}
 			{isError && (
-				<Box mbs={20}>
+				<Box marginBlockStart={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>

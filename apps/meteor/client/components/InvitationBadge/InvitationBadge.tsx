@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 
-type InvitationBadgeProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color' | 'role'> & {
+export type InvitationBadgeProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color' | 'role'> & {
 	invitationDate: string | Date;
 };
 

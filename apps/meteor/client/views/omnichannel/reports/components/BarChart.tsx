@@ -20,7 +20,7 @@ type axisItem = {
 	ariaHidden?: boolean;
 };
 
-type BarChartProps = {
+export type BarChartProps = {
 	data: {
 		label: string;
 		value: number;

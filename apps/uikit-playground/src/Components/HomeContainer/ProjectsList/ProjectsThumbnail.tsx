@@ -15,7 +15,9 @@ import EditableLabel from '../../ScreenThumbnail/EditableLabel/EditableLabel';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
 
-const ProjectsThumbnail = ({ id, name: _name, date, blocks }: { id: string; name: string; date: string; blocks: ILayoutBlock[] }) => {
+export type ProjectsThumbnailProps = { id: string; name: string; date: string; blocks: ILayoutBlock[] };
+
+const ProjectsThumbnail = ({ id, name: _name, date, blocks }: ProjectsThumbnailProps) => {
 	const [name, setName] = useState<string>(_name);
 	const navigate = useNavigate();
 	const { dispatch } = useContext(context);

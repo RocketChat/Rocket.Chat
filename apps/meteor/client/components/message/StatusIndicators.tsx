@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
 
-type StatusIndicatorsProps = {
+export type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 };
 

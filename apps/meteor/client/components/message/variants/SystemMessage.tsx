@@ -38,7 +38,7 @@ import {
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
 
-type SystemMessageProps = {
+export type SystemMessageProps = {
 	message: IMessage;
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;

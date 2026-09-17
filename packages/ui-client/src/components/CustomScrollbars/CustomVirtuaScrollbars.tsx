@@ -4,7 +4,7 @@ import { useEffect, memo, forwardRef, useRef } from 'react';
 
 import BaseScrollbars from './BaseScrollbars';
 
-type CustomScrollbarsProps = {
+export type CustomScrollbarsProps = {
 	children: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'>;
 

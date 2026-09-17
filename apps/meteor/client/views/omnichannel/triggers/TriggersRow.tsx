@@ -6,7 +6,7 @@ import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndp
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 
-type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
+export type TriggersRowProps = Pick<ILivechatTrigger, '_id' | 'name' | 'description' | 'enabled'> & { reload: () => void };
 
 const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowProps) => {
 	const t = useTranslation();

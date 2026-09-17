@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 
 import { useOmnichannelPrioritiesConfig } from '../hooks/useOmnichannelPrioritiesConfig';
 
-type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
+export type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 	level: LivechatPriorityWeight;
 	showUnprioritized?: boolean;
 };

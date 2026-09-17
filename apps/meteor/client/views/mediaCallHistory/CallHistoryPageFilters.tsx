@@ -2,10 +2,10 @@ import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
-import type { ChangeEvent, Key, FormEvent } from 'react';
+import type { ChangeEvent, Key, SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type StatesFilter = Array<'ended' | 'transferred' | 'not-answered' | 'failed'>;
+type StatesFilter = Array<'ended' | 'transferred' | 'not-answered' | 'failed' | 'prevented'>;
 type TypeFilter = 'inbound' | 'outbound' | 'all';
 
 export type CallHistoryPageFiltersProps = {
@@ -29,12 +29,13 @@ const statesOptions = [
 	{ id: 'transferred', text: 'Transferred', icon: { name: 'arrow-forward', color: 'default' } },
 	{ id: 'not-answered', text: 'Not_answered', icon: { name: 'phone-question-mark', color: 'warning' } },
 	{ id: 'failed', text: 'Failed', icon: { name: 'phone-issue', color: 'danger' } },
+	{ id: 'prevented', text: 'Prevented', icon: { name: 'phone-issue', color: 'danger' } },
 ] as const;
 
 export const useCallHistoryPageFilters = () => {
 	const [searchText, setSearchText] = useState('');
 	const [type, setType] = useState<TypeFilter>('all');
-	const [states, setStates] = useState<StatesFilter>(['ended', 'transferred', 'not-answered', 'failed']);
+	const [states, setStates] = useState<StatesFilter>(['ended', 'transferred', 'not-answered', 'failed', 'prevented']);
 
 	const onChangeText = useCallback((text: string) => {
 		setSearchText(text);
@@ -79,28 +80,28 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e: FormEvent<HTMLFormElement>) => e.preventDefault(), [])}
-			mb='x8'
+			onSubmit={useCallback((e: SubmitEvent<HTMLFormElement>) => e.preventDefault(), [])}
+			marginBlock='x8'
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box minWidth='x224' flexBasis='45%' display='flex' m='x4' flexGrow={2} flexShrink={0}>
+			<Box minWidth='x224' flexBasis='45%' display='flex' margin='x4' flexGrow={2} flexShrink={0}>
 				<TextInput
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_calls')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeText(e.currentTarget.value)}
 					value={searchText}
 				/>
 			</Box>
 			<Box display='flex' flexGrow={1} flexShrink={2} flexWrap='wrap'>
-				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
+				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
 					<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
 				</Box>
-				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1}>
+				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1}>
 					<MultiSelectCustom
 						dropdownOptions={dropdownStatesOptions}
 						defaultTitle='All_statuses'
