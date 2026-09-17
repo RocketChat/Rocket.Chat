@@ -1095,6 +1095,7 @@ describe('Apps - Video Conferences', () => {
 			let readOnlyRoomId: string;
 			let regularUser: Awaited<ReturnType<typeof createUser>>;
 			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+			let inaccessibleCallId: string;
 
 			before(async () => {
 				// Create a regular user
@@ -1113,6 +1114,10 @@ describe('Apps - Video Conferences', () => {
 
 				// Set up video conference provider
 				await updateSetting('VideoConf_Default_Provider', 'test');
+				const callRes = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+				inaccessibleCallId = callRes.body.data.callId;
 			});
 
 			before(async () => {
@@ -1166,6 +1171,22 @@ describe('Apps - Video Conferences', () => {
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 					});
+			});
+
+			it('should reject joining an existing inaccessible conference', async () => {
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId: inaccessibleCallId })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
+			});
+
+			it('should reject cancelling an existing inaccessible conference', async () => {
+				await request
+					.post(api('video-conference.cancel'))
+					.set(regularUserCredentials)
+					.send({ callId: inaccessibleCallId })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 	});
