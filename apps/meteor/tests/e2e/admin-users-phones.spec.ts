@@ -19,7 +19,7 @@ test.describe('Admin users phones', () => {
 	});
 
 	test.afterEach(async () => {
-		await phoneTestUser.delete();
+		await phoneTestUser?.delete();
 	});
 
 	test.beforeEach(async ({ page }) => {

@@ -27,10 +27,6 @@ export class PhoneNumberFieldList {
 		return this.root.getByRole('textbox', { name: /Label for phone.*\d+/, exact: true });
 	}
 
-	get removePhoneButtons(): Locator {
-		return this.root.getByRole('button', { name: /remove number/i });
-	}
-
 	async removePhone(index: number): Promise<void> {
 		await this.getRemovePhoneButton(index).click();
 	}
