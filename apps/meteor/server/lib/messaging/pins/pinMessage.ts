@@ -100,6 +100,9 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	});
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		// Same asymmetry as the message broadcast above: unpinning tells the room its stored last
+		// message changed, pinning did not, so a sidebar preview kept the pre-pin copy.
+		void notifyOnRoomChangedById(room._id);
 	}
 
 	const attachments: MessageAttachment[] = [];
