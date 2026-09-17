@@ -2,6 +2,7 @@ import type { SlashCommand } from '@rocket.chat/core-typings';
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
 import { appsQueryKeys } from '../lib/queryKeys';
@@ -309,6 +310,30 @@ describe('useAppSlashCommands', () => {
 
 		await waitFor(() => {
 			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 100 });
+		});
+	});
+
+	it('should refetch with new batch size when API_Upper_Count_Limit setting changes', async () => {
+		const { rerender } = renderHook(() => useAppSlashCommands(), {
+			wrapper: ({ children, limit = 100 }: { children: ReactNode; limit?: number }) => {
+				const AppRoot = mockAppRoot()
+					.withJohnDoe()
+					.withSetting('API_Upper_Count_Limit', limit)
+					.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+					.build();
+				return <AppRoot>{children}</AppRoot>;
+			},
+			initialProps: { limit: 100 },
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 100 });
+		});
+
+		rerender({ limit: 25 });
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 25 });
 		});
 	});
 

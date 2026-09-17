@@ -47,7 +47,7 @@ export const useAppSlashCommands = () => {
 	const count = typeof upperCountLimit === 'number' && upperCountLimit > 0 ? upperCountLimit : 100;
 
 	const { data } = useQuery({
-		queryKey: appsQueryKeys.slashCommands(),
+		queryKey: appsQueryKeys.slashCommands(count),
 		enabled: !!uid,
 		structuralSharing: false,
 		retry: true,
