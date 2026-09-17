@@ -13,7 +13,6 @@ export type PhoneFieldType = {
 	id: string;
 	number: string;
 	label?: string;
-	primary?: boolean;
 };
 
 type PhoneNumberFieldListProps<T extends FieldValues> = {
@@ -90,11 +89,7 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 					</Box>
 				))}
 			</Box>
-			<Button
-				aria-controls={`${name}-phones-list`}
-				onClick={() => onAddPhone({ number: '', label: '', primary: false })}
-				marginBlockStart={8}
-			>
+			<Button aria-controls={`${name}-phones-list`} onClick={() => onAddPhone({ number: '', label: '' })} marginBlockStart={8}>
 				{t('Add_number')}
 			</Button>
 		</Box>
