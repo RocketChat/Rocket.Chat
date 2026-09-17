@@ -13,7 +13,7 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		statusType?: string;
 		currentPassword?: string;
 		newPassword?: string;
-		phones?: Omit<IUserPhoneNumber, 'verified'>[];
+		phones?: IUserPhoneNumber[];
 	};
 	customFields?: Record<string, unknown>;
 };
@@ -66,9 +66,8 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							number: { type: 'string', transformTrimWhitespaces: true, format: 'basic_phone_number' },
+							number: { type: 'string', transformStripWhitespaces: true, format: 'basic_phone_number' },
 							label: { type: 'string', maxLength: 50 },
-							primary: { type: 'boolean' },
 						},
 						required: ['number'],
 						additionalProperties: false,
