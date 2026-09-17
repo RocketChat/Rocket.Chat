@@ -206,7 +206,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 										{...register('password', {
 											required: t('Required_field', { field: t('registration.component.form.password') }),
 										})}
-										placeholder={passwordPlaceholder || t('Create_a_password')}
+placeholder={passwordPlaceholder || t('Type_your_password')}
 										error={errors.password?.message}
 										aria-invalid={errors.password || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${passwordId}-error`}
