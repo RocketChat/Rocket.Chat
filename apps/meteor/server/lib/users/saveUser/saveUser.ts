@@ -319,6 +319,12 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+
+			const phonesUnset = Array.isArray(userData.phones) && userData.phones.length === 0;
+			if (phonesUnset) {
+				delete userData.phones;
+			}
+
 			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
 
 			void notifyOnUserChange({
@@ -328,6 +334,7 @@ const _saveUser = (session?: ClientSession) =>
 					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
+				...(phonesUnset && { unset: { phones: 1 } }),
 			});
 		}, session);
 
