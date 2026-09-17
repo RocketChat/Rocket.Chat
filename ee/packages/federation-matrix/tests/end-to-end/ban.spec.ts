@@ -53,7 +53,9 @@ import { SynapseClient } from '../helper/synapse-client';
 			await hs1AdminApp.close();
 		}
 
-		await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		}
 	});
 
 	describe('Ban from RC side', () => {
