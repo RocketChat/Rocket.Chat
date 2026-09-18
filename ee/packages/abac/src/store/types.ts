@@ -15,6 +15,9 @@ export type ListAttributesResult = {
 export interface IAttributeStore {
 	list(actor: AbacActor | undefined, opts?: ListAttributesOptions): Promise<ListAttributesResult>;
 
+	/** Every key, never a page. */
+	listAttributeKeys(actor: AbacActor | undefined): Promise<string[]>;
+
 	validateAssignable(attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void>;
 
 	entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements>;

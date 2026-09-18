@@ -3,13 +3,20 @@ import { LocalAttributeStore } from './LocalAttributeStore';
 const ensureMock = jest.fn();
 jest.mock('../helper', () => ({ ensureAttributeDefinitionsExist: (...a: unknown[]) => ensureMock(...a) }));
 const findPaginated = jest.fn();
-jest.mock('@rocket.chat/models', () => ({ AbacAttributes: { findPaginated: (...a: unknown[]) => findPaginated(...a) } }));
+const findAllKeys = jest.fn();
+jest.mock('@rocket.chat/models', () => ({
+	AbacAttributes: {
+		findPaginated: (...a: unknown[]) => findPaginated(...a),
+		findAllKeys: (...a: unknown[]) => findAllKeys(...a),
+	},
+}));
 
 const actor = { _id: 'u', username: 'bob', name: 'Bob' };
 
 beforeEach(() => {
 	ensureMock.mockReset();
 	findPaginated.mockReset();
+	findAllKeys.mockReset();
 });
 
 describe('LocalAttributeStore', () => {
@@ -41,6 +48,12 @@ describe('LocalAttributeStore', () => {
 		const r = await new LocalAttributeStore().list(actor, { offset: 0, count: 25 });
 		expect(findPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
 		expect(r).toEqual({ attributes: docs, offset: 0, count: 1, total: 1 });
+	});
+
+	it('listAttributeKeys returns every key, unpaginated', async () => {
+		findAllKeys.mockResolvedValue(['clearance', 'team']);
+		await expect(new LocalAttributeStore().listAttributeKeys(actor)).resolves.toEqual(['clearance', 'team']);
+		expect(findPaginated).not.toHaveBeenCalled();
 	});
 
 	it('list builds $or query when key and values filters provided', async () => {
