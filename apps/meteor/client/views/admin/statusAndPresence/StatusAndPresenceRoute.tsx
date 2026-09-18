@@ -11,8 +11,6 @@ import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
@@ -30,8 +28,8 @@ const StatusAndPresenceRoute = () => {
 	const canManageCustomStatus = usePermission('manage-user-status');
 	const hasPrivateSettings = useIsPrivilegedSettingsContext();
 	const statusSettings = useSettings(statusSettingsQuery);
-	const { data: hasUnlimitedPresence, isPending: isLicensePending } = useHasLicenseModule('unlimited-presence');
-	const canManageUserPresence = usePermission('edit-other-user-info') && !!hasUnlimitedPresence;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const canManageUserPresence = usePermission('edit-other-user-info') && adminStatusHidingEnabled;
 
 	const settingIds = useMemo(
 		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),
@@ -48,14 +46,10 @@ const StatusAndPresenceRoute = () => {
 	const currentTab = TAB_ORDER.find((name) => name === tab && allowed[name]);
 
 	useLayoutEffect(() => {
-		if (isLicensePending) {
-			return;
-		}
-
 		if (firstAllowedTab && !currentTab) {
 			router.navigate({ name: 'user-status', params: { tab: firstAllowedTab } }, { replace: true });
 		}
-	}, [router, firstAllowedTab, currentTab, isLicensePending]);
+	}, [router, firstAllowedTab, currentTab]);
 
 	useEffect(() => {
 		if (!presenceDisabled) {
@@ -73,10 +67,6 @@ const StatusAndPresenceRoute = () => {
 			router.navigate({ name: 'user-status', params: { tab: currentTab, context: 'presence-service' } }, { replace: true });
 		}
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
-
-	if (isLicensePending) {
-		return <PageSkeleton />;
-	}
 
 	if (!firstAllowedTab) {
 		return <NotAuthorizedPage />;

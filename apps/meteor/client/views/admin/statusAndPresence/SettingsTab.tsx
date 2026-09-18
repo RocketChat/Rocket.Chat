@@ -9,6 +9,7 @@ export const STATUS_SETTING_IDS = [
 	'Accounts_UserStatus_Enabled',
 	'Accounts_AllowUserStatusMessageChange',
 	'Accounts_AllowInvisibleStatusOption',
+	'Accounts_StatusVisibility_Admin_Enabled',
 	'Accounts_StatusVisibility_Enabled',
 ];
 
