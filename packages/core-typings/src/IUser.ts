@@ -358,3 +358,31 @@ export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarService
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
+
+/**
+ * Strips a leading '@' from a username if present.
+ *
+ * Federated usernames (e.g. @john.doe:matrix.org) are stored with a leading '@', while local usernames are not.
+ * This normalises both forms so callers that render `@{username}` don't accidentally produce `@@john.doe:matrix.org`.
+ */
+export const normalizeUsername = (username: string): string => (username.startsWith('@') ? username.slice(1) : username);
+
+/**
+ * Name and username in the order they are meant to be shown, rather than the one name `getUserDisplayName` picks.
+ *
+ * For callers that show both — a row with the name leading and the username beside it — which is a different
+ * question from "what is this person called".
+ */
+export const getUserDisplayNames = (
+	name: IUser['name'],
+	username: IUser['username'],
+	useRealName: boolean,
+): [nameOrUsername: string, username?: string] => {
+	if (!username) {
+		throw new Error('Username is required');
+	}
+
+	const normalizedUsername = normalizeUsername(username);
+
+	return useRealName && name ? [name, normalizedUsername] : [normalizedUsername];
+};
