@@ -16,7 +16,10 @@ const ConferenceIframe = ({ url, ref }: ConferenceIframeProps) => {
 		// eslint-disable-next-line jsx-a11y/iframe-has-title
 		<iframe
 			ref={ref}
-			style={{ width: '100%', height: '100%', flexGrow: 1 }}
+			// `border: none` is not cosmetic tidying: an iframe's UA default is `2px inset`, which over the call's
+			// black draws a pale line around the whole picture — the one thing this frame is meant to be invisible
+			// around.
+			style={{ width: '100%', height: '100%', flexGrow: 1, border: 'none', display: 'block' }}
 			aria-label={t('Video_Conference')}
 			src={url}
 			allow='camera; microphone; display-capture; fullscreen; autoplay; speaker-selection; clipboard-write; clipboard-read; compute-pressure'

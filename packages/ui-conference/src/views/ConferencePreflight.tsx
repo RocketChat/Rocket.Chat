@@ -119,13 +119,16 @@ const ConferencePreflight = ({
 		// nothing at all before. The device toggles are `IconButton`s, which Fuselage types as `button`, so they
 		// stay toggles rather than becoming submits.
 		<Box is='form' onSubmit={handleSubmit} display='flex' flexDirection='column' flexGrow={1} minHeight={0} overflowY='auto'>
+			{/* No `minHeight={0}` here, deliberately. Shrinking this below its content let `justify-content: center`
+			    push the overflow out of *both* ends: the top of the tile went above the scroll origin, where nothing
+			    can reach it, and Cancel fell off the bottom. Left at `auto`, the content sets the floor — the form
+			    above simply scrolls past it — and the centring still applies whenever there is room to spare. */}
 			<Box
 				display='flex'
 				flexDirection={columns ? 'row' : 'column'}
 				alignItems='center'
 				justifyContent='center'
 				flexGrow={1}
-				minHeight={0}
 				paddingInline={24}
 				paddingBlock={24}
 				style={{ gap: columns ? 48 : 32 }}
@@ -240,7 +243,7 @@ const ConferencePreflight = ({
 					    meaning and where this caller's ringing would be dropped, and promising a notification in
 					    either case is promising something that will not happen. */}
 					{action === 'start' && isDirect && canChooseRinging && ring && (
-						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center' withTruncatedText>
+						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center'>
 							{t('__name__will_be_notified_when_you_start_the_call', { name })}
 						</Box>
 					)}

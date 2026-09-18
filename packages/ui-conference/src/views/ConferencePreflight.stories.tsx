@@ -117,6 +117,21 @@ export const MobilePortrait: Story = {
 };
 
 /**
+ * A phone upright with the most this screen ever has to say: a direct call, so the heading carries a name and
+ * wraps, and ringing is on, so the notice underneath is a whole sentence.
+ *
+ * Both of the things that were wrong here are visible in this one story. The sentence was marked as truncated
+ * text, which is for a label in a row and not for a sentence — it lost its ends to an ellipsis instead of
+ * wrapping. And the column was allowed to shrink below its content, so what did not fit was centred out of
+ * both ends at once: the top of the preview went above the scroll origin, where scrolling cannot reach, and
+ * Cancel fell off the bottom. It should now wrap, and scroll to Cancel.
+ */
+export const MobilePortraitDirectRinging: Story = {
+	...onPhone('phonePortrait'),
+	args: { canChooseRinging: true },
+};
+
+/**
  * The same phone turned sideways — the shape that was broken.
  *
  * 852px wide is past `md`, so width alone said "desktop" while 393px of height said otherwise: the screen
