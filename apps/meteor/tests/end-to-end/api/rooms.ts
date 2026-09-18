@@ -1643,11 +1643,11 @@ describe('[Rooms]', () => {
 				ownerTeamChannel = (await createRoom({ type: 'c', name: `rooms.info.admin.channel.${Date.now()}`, credentials: ownerCredentials }))
 					.body.channel;
 
-				// The join code has to be set while the channel is still standalone: once it
-				// belongs to the team, its owner no longer passes the edit-room check.
+				// Set as the admin: earlier specs in this run leave `edit-room` granted to the
+				// admin role alone, so the room owner cannot save its settings here.
 				await request
 					.post(api('channels.setJoinCode'))
-					.set(ownerCredentials)
+					.set(credentials)
 					.send({ roomId: ownerTeamChannel._id, joinCode: 'super-secret-password' })
 					.expect(200);
 				await request
