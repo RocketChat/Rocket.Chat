@@ -1,8 +1,7 @@
+import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-
-import { AuthorizationUtils } from '../../../../../app/authorization/lib';
 
 export const useRestrictedRoles = (): void => {
 	const getLicenseInfo = useEndpoint('GET', '/v1/licenses.info');
