@@ -561,11 +561,11 @@ export const createAccountSettings = () =>
 				values: [
 					{
 						key: 'extended',
-						i18nLabel: 'Extended',
+						i18nLabel: 'Detailed',
 					},
 					{
 						key: 'condensed',
-						i18nLabel: 'Condensed',
+						i18nLabel: 'Compact',
 					},
 				],
 				public: true,
