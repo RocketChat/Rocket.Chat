@@ -1,0 +1,11 @@
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  ai_agent 40,57,80,88,90,102
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  ai_agent 24,57,210-211,215-216,223-229,248,274-275,280
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fdd1da90d2c41b2ba10657d89627aaf357773371",
+  "prompts": {}
+}

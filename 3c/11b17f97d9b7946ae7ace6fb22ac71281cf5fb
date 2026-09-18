@@ -1,0 +1,11 @@
+apps/meteor/server/lib/statusVisibility/effectiveStatus.ts
+  ai_agent 29,31-34,37,39,41-44,47
+apps/meteor/server/api/v1/users.ts
+  ai_agent 852-853,855
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3c11b17f97d9b7946ae7ace6fb22ac71281cf5fb",
+  "prompts": {}
+}

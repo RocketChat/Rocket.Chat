@@ -1,0 +1,39 @@
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  ai_agent 40,57,80,88,90,100
+apps/meteor/app/apps/server/bridges/users.ts
+  ai_agent 57
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.spec.ts
+  ai_agent 13-14,16,29-50,53
+apps/meteor/server/lib/users/saveUser/validateUserEditing.ts
+  ai_agent 4,45,48
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 95,108
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  ai_agent 24,57,210-211,215-216,218-224,243,269-270,275
+apps/meteor/server/lib/users/saveUser/validateUserData.ts
+  ai_agent 40-42,44-50
+apps/meteor/server/services/statusVisibility/service.spec.ts
+  ai_agent 91,95,100,339-384
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 174-184,187,195,201,206,210-212
+packages/i18n/src/locales/en.i18n.json
+  s_453d8d6e1aa7b9::t_24c5630b384bc3 234,242
+apps/meteor/server/lib/users/saveUser/saveNewUser.ts
+  ai_agent 70-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "91d560d99c014cf02efda024ec9b18fc517d570e",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

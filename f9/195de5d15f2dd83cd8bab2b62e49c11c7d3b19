@@ -1,0 +1,31 @@
+apps/meteor/server/lib/statusVisibility/StatusVisibilityGate.ts
+  ai_agent 93
+apps/meteor/server/lib/statusVisibility/effectiveStatus.ts
+  ai_agent 29,31-34,37
+apps/meteor/server/api/v1/users.ts
+  ai_agent 857-858,860
+apps/meteor/tests/end-to-end/api/status-visibility.ts
+  ai_agent 514,516,519,521,524,544-545
+packages/models/src/models/Users.ts
+  s_453d8d6e1aa7b9::t_bd72dcd5f69b6a 2457
+apps/meteor/server/services/statusVisibility/service.ts
+  ai_agent 168
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  ai_agent 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f9195de5d15f2dd83cd8bab2b62e49c11c7d3b19",
+  "prompts": {},
+  "sessions": {
+    "s_453d8d6e1aa7b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06c4e256-cb1c-4f71-99a4-110f41cbfbd6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
