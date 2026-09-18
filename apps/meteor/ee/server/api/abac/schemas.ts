@@ -114,6 +114,29 @@ export const GETAbacAttributesResponseSchema = ajv.compile<{
 	total: number;
 }>(GetAbacAttributesResponse);
 
+const GetAbacAttributeKeysResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		data: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: { type: 'string', minLength: 1 },
+					label: { type: 'string', minLength: 1 },
+				},
+				required: ['key', 'label'],
+				additionalProperties: false,
+			},
+		},
+	},
+	required: ['data'],
+	additionalProperties: false,
+};
+
+export const GETAbacAttributeKeysResponseSchema = ajv.compile<{ data: { key: string; label: string }[] }>(GetAbacAttributeKeysResponse);
+
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {

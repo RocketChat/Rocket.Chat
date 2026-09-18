@@ -10,4 +10,5 @@ export interface IAbacAttributesModel extends IBaseModel<IAbacAttribute> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countTotalValues(): Promise<number>;
+	findAllKeys(): Promise<string[]>;
 }
