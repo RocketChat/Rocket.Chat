@@ -38,20 +38,13 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 
 	const { users } = watch();
 
-	// The endpoint takes at most `RING_RECIPIENTS_LIMIT` at a time and refuses the whole body past that, so a
-	// picker that went on accepting names was collecting a selection it could only fail to send.
+	// The endpoint refuses the whole body past `RING_RECIPIENTS_LIMIT`.
 	const tooMany = users.length > RING_RECIPIENTS_LIMIT;
 
-	// The same habit the preflight remembers, asked here for the same reason: a ring is an interruption, and
-	// someone added so they can join later is not someone to interrupt now.
-	//
-	// Deliberately not a form field: it is remembered across calls and shared with the preflight, so the stored
-	// preference is the value. A copy of it in the form would have to be written back on every change, and the
-	// two could then disagree about what this user's habit is.
+	// Not a form field: the stored preference is the value, shared with the preflight, so the two cannot disagree.
 	const { ring, toggleRing } = useCallRingPreference();
 
-	// The same permission the server checks before it honours `ring`: without it the request is accepted and the
-	// ringing quietly dropped, so offering the choice would promise a call nobody's phone is going to make.
+	// The permission the server checks before honouring `ring`: without it the request is accepted and dropped.
 	const { canRingUsers } = useConferenceViewer();
 
 	const [adding, setAdding] = useState(false);
@@ -61,8 +54,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 
 		void addParticipants(users, canRingUsers && ring)
 			.then(({ added }) => {
-				// Anyone already associated with the call is skipped, so a selection can come back empty. Reporting
-				// that as success would claim people were called who never were.
+				// Anyone already associated is skipped, so a selection can come back empty.
 				dispatchToastMessage(
 					added ? { type: 'success', message: t('Users_added') } : { type: 'info', message: t('Selected_users_are_already_in_the_call') },
 				);

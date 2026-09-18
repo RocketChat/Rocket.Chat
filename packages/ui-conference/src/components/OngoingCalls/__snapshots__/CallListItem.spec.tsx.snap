@@ -20,7 +20,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/refused"
           >
             Design review
@@ -83,7 +83,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/standup"
           >
             Daily standup
@@ -152,7 +152,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/joined"
           >
             Pairing session
@@ -203,7 +203,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/ringing"
           >
             Ada Lovelace
@@ -290,7 +290,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/refused"
           >
             Design review
@@ -353,7 +353,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/answered"
           >
             Standup
@@ -404,7 +404,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/ringing"
           >
             Ada Lovelace
@@ -478,7 +478,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/ringing"
           >
             Ada Lovelace
@@ -559,7 +559,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
             href="/conference/alone"
           >
             Ada Lovelace

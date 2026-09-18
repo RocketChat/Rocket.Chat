@@ -13,22 +13,14 @@ import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
 
 /**
- * How much of the tile's bottom edge the mic and camera toggles float over: their own inset plus their height,
- * and a little clear air. The placeholder inside the tile centres in what is left above this rather than in the
- * whole tile — otherwise the icon and its line of text land underneath the buttons, which is what a short tile
- * (a phone in landscape, a small window) leaves room for.
+ * How much of the tile's bottom edge the toggles float over. The placeholder centres in what is left above it,
+ * or on a short tile the icon and its line of text land underneath the buttons.
  */
 const TOGGLES_ZONE = 60;
 
 /**
- * The camera tile: 16:9, and black rather than a themed surface, since this is where a camera goes and a camera
- * with nothing to show is black. It stays black with the camera off too, so toggling it doesn't repaint the tile.
- *
- * Width leads while there is height to spare. On a short viewport — a phone in landscape, a small window — a
- * full-width 16:9 tile is taller than the whole screen, and it was pushing the field and the button that starts
- * the call below the fold: the tile says what the camera *will* do, while the button is what the screen is for.
- * So there, height leads and the aspect ratio derives the width, which keeps the tile 16:9 and centred instead
- * of crowding out the actions.
+ * The camera tile: 16:9, and black, because that is what a camera with nothing to show looks like. Width leads
+ * while there is height to spare; on a short viewport height leads instead, or the tile crowds out the actions.
  */
 const previewTileStyle = css`
 	width: 100%;
@@ -79,14 +71,11 @@ const ConferencePreflight = ({
 	// this screen's state, leaving two sources of truth for one answer.
 	const { preferences, ring, toggle, toggleRing } = useCallDevicesInitialState(capabilities);
 
-	// Side by side once there is room for both; stacked below that, with the preview still first.
-	//
-	// Width alone was the wrong question. A phone in landscape is wide but short, and stacking there spent the
-	// little height it has on the preview, leaving the name and the call button off the bottom of the screen —
-	// so the columns come back on the viewport's shape as well as its width.
+	// Side by side once there is room for both; stacked below that, with the preview still first. Height as well
+	// as width, because stacking on a landscape phone spends what little height it has on the preview.
 	const wideEnough = useBreakpoints().includes('md');
-	// 700px, not 480: the details column is a fixed 320 and the gap and padding take another 96, so below that
-	// the preview is a slot too narrow to see a camera in — which is the thing the columns exist to show.
+	// 700px: the details column is a fixed 320 and the gap and padding take another 96, so below that the preview
+	// is too narrow to see a camera in.
 	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 700px)');
 	const columns = wideEnough || shortAndWide;
 
@@ -115,9 +104,8 @@ const ConferencePreflight = ({
 	})();
 
 	return (
-		// A form, so the screen has one submit and Enter in the name field does what the button does — it did
-		// nothing at all before. The device toggles are `IconButton`s, which Fuselage types as `button`, so they
-		// stay toggles rather than becoming submits.
+		// A form, so Enter in the name field does what the button does. The device toggles are `IconButton`s,
+		// which Fuselage types as `button`, so they stay toggles rather than becoming submits.
 		<Box is='form' onSubmit={handleSubmit} display='flex' flexDirection='column' flexGrow={1} minHeight={0} overflowY='auto'>
 			{/* No `minHeight={0}` here, deliberately. Shrinking this below its content let `justify-content: center`
 			    push the overflow out of *both* ends: the top of the tile went above the scroll origin, where nothing
@@ -155,9 +143,7 @@ const ConferencePreflight = ({
 							style={{ paddingBlockEnd: TOGGLES_ZONE }}
 						>
 							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-							{/* Both in the future, because neither is something this screen can show: the call is handed to a
-							    provider with a page of its own, so there is no camera here to be on or off yet — only what
-							    will be true once the call opens. */}
+							{/* In the future tense: the call is handed to a provider, so there is no camera here yet. */}
 							<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
 								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
 							</Box>
@@ -191,17 +177,13 @@ const ConferencePreflight = ({
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
-					{/* An `h2` rather than a `div` at heading size: it is the screen's heading, and this is the only thing
-		    that lets anyone — or anything — find it as one. */}
+					{/* An `h2`, not a `div` at heading size: it is the screen's heading and has to be findable as one. */}
 					<Box is='h2' fontScale='h2' color='default' textAlign='center'>
 						{heading}
 					</Box>
 
 					{canName && (
 						<Box width='100%' marginBlockStart={16}>
-							{/* `Field` wires the label to the input itself, which is what the package is for — the id this
-				    carried was referenced by nothing, and the name was announced from an `aria-label` that
-				    nobody could see. */}
 							<Field>
 								<FieldLabel>{t('Call_name')}</FieldLabel>
 								<FieldRow>
@@ -239,9 +221,7 @@ const ConferencePreflight = ({
 						</Box>
 					)}
 
-					{/* Only where a ring is actually going out: `canChooseRinging` is false both where ringing has no
-					    meaning and where this caller's ringing would be dropped, and promising a notification in
-					    either case is promising something that will not happen. */}
+					{/* Only where a ring is actually going out, or this promises a notification nobody will get. */}
 					{action === 'start' && isDirect && canChooseRinging && ring && (
 						<Box fontScale='p2' color='hint' marginBlockStart={16} textAlign='center'>
 							{t('__name__will_be_notified_when_you_start_the_call', { name })}
@@ -253,8 +233,7 @@ const ConferencePreflight = ({
 							<Button type='submit' variant='primary' loading={confirming}>
 								{confirmLabel}
 							</Button>
-							{/* Not while the call is being created: cancelling between the start and the join would close
-						    this window over a conference that exists and that nobody has entered. */}
+							{/* Not while the call is being created: that would leave a conference nobody has entered. */}
 							<Button type='button' disabled={confirming} onClick={onCancel}>
 								{t('Cancel')}
 							</Button>

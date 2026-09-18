@@ -26,10 +26,7 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 
 const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, onRing }: CallMemberItemProps) => {
 	const { t } = useTranslation();
-	// Both come with the conference rather than being read here: a setting and a permission belong to the
-	// workspace, and a row that asked for them itself could not be drawn without one.
-	// Ringing is a workspace-level permission, and `video-conference.ring` refuses without it — so a caller who
-	// does not have it is offered nothing to press rather than a button that can only fail.
+	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
 	const { useRealName, canRingUsers } = useConferenceViewer();
 	const { renderMemberStatus } = useConferenceSlots();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
@@ -37,8 +34,6 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 
 	const ringing = useIsRinging(member);
 
-	// Asked of what this row already knows rather than of the member again: a ring is on offer for anyone who is
-	// neither in the call nor currently being rung, and both of those are answered above.
 	const canRing = status !== 'joined' && !ringing;
 
 	return (
@@ -56,9 +51,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 						</Box>
 					)}
 					{!hasChatAccess && (
-						// The icon is decorative — `Icon` renders `aria-hidden`, so the label it carried was read by
-						// nothing. What this row is announced as is its own content, so the fact goes in as text: seen
-						// as a struck-through balloon, heard as the sentence, hovered as the tooltip.
+						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.
 						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
 							<Icon name='balloon-off' size='x16' />
 							<VisuallyHidden>{t('No_chat_access')}</VisuallyHidden>

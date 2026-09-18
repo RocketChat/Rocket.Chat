@@ -97,8 +97,7 @@ describe('OngoingCallsDropdown', () => {
 		await waitFor(() => expect(list).toHaveTextContent('Daily standup'));
 	});
 
-	// Opening it from the keyboard used to leave the reader behind: the list is portalled away from the button,
-	// so nothing followed it there and nothing said it had opened.
+	// The list is portalled away from the button, so nothing follows a keyboard reader there on its own.
 	it('says whether the list is open, and takes focus into it', async () => {
 		render(<OneOngoing />);
 

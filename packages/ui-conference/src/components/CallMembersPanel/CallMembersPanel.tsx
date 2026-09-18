@@ -29,9 +29,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 		[members],
 	);
 
-	// Who has been rung and not yet answered for. A set of ids rather than one pending request, because ringing a
-	// second member while the first was still out put that one back in reach — which is the double ring this
-	// prevents.
+	// A set rather than one pending request: ringing a second member put the first back in reach.
 	const [ringingMembers, setRingingMembers] = useState<string[]>([]);
 
 	const ringMember = (memberId: string) => {
@@ -48,8 +46,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 			key={member._id}
 			member={member}
 			hasChatAccess={hasConferenceChatAccess(chatAccess, member._id)}
-			// The row stops offering to ring once the member is ringing, but that is the server's answer coming
-			// back — until it does, this is what says the ask is already on its way.
+			// Until the server's answer comes back, this is what says the ask is already on its way.
 			ringing={ringingMembers.includes(member._id)}
 			onRing={ringMember}
 		/>

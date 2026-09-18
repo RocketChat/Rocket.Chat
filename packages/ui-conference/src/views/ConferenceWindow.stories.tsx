@@ -161,11 +161,8 @@ export const MobilePortraitPanelSheet: Story = {
 };
 
 /**
- * The same sheet on a phone turned sideways.
- *
- * This is the shape that used to dock: 852px is past `md`, so the panel took its 400px and left the call a third
- * of a short screen with the chat's message list two lines tall above its own composer. The sheet is chosen on
- * the window being too small to split in *either* direction, so it appears here too.
+ * The same sheet on a phone turned sideways. 852px is past `md`, but the sheet is chosen on the window being
+ * too small to split in *either* direction, so it appears here too.
  */
 export const MobileLandscapePanelSheet: Story = {
 	...onPhone('phoneLandscape'),

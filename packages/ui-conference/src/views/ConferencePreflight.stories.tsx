@@ -23,9 +23,7 @@ const meta = {
 		onCancel: action('onCancel'),
 	},
 	decorators: [
-		// `100dvh` and no minimum: a floor here would have propped the screen up to a height the phone stories
-		// don't have, which is exactly the case they exist to show. Desktop stories are unaffected — their
-		// viewport is taller than the floor ever was.
+		// `100dvh` and no minimum: a floor would prop the phone stories up to a height they do not have.
 		(Story) => (
 			<div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
 				<Story />
@@ -100,8 +98,7 @@ export const JoiningACall: Story = {
  * The moment after the primary button is pressed: it goes to a spinner and stays there, because the window is
  * about to be replaced by the call and offering the button again would start a second one.
  *
- * Set rather than acted out. It used to click the button and let the screen's own state answer, but confirming
- * is the caller's mutation now — so a click here starts nothing and there is no spinner to wait for.
+ * Set rather than acted out: confirming is the caller's mutation, so a click here starts nothing.
  */
 export const Confirming: Story = {
 	args: { canChooseRinging: true, confirming: true },
@@ -118,13 +115,7 @@ export const MobilePortrait: Story = {
 
 /**
  * A phone upright with the most this screen ever has to say: a direct call, so the heading carries a name and
- * wraps, and ringing is on, so the notice underneath is a whole sentence.
- *
- * Both of the things that were wrong here are visible in this one story. The sentence was marked as truncated
- * text, which is for a label in a row and not for a sentence — it lost its ends to an ellipsis instead of
- * wrapping. And the column was allowed to shrink below its content, so what did not fit was centred out of
- * both ends at once: the top of the preview went above the scroll origin, where scrolling cannot reach, and
- * Cancel fell off the bottom. It should now wrap, and scroll to Cancel.
+ * wraps, and ringing is on, so the notice underneath is a whole sentence. It wraps, and scrolls to Cancel.
  */
 export const MobilePortraitDirectRinging: Story = {
 	...onPhone('phonePortrait'),
@@ -132,12 +123,8 @@ export const MobilePortraitDirectRinging: Story = {
 };
 
 /**
- * The same phone turned sideways — the shape that was broken.
- *
- * 852px wide is past `md`, so width alone said "desktop" while 393px of height said otherwise: the screen
- * stacked, a full-width 16:9 preview took more height than the whole viewport, and the name field and the call
- * button sat below the fold with the preview clipped at the top. It should now be two columns with the preview
- * capped, and the primary button on screen.
+ * The same phone turned sideways: 852px wide is past `md` while 393px of height is not. Two columns with the
+ * preview capped, and the primary button on screen.
  */
 export const MobileLandscape: Story = {
 	...onPhone('phoneLandscape'),

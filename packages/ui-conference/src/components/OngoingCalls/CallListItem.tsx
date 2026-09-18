@@ -12,26 +12,17 @@ type CallListItemProps = {
 };
 
 /**
- * One call in the list, whatever state it is in: ringing, merely running, already joined, or turned down.
- *
- * The state is read off the call rather than chosen by the caller, because it is the same row either way — and
- * only the two slots at its edges differ. A list that had to pick a component per state ended up re-deriving
- * that state to do the picking.
+ * One call in the list, whatever state it is in: ringing, merely running, already joined, or turned down. The
+ * state is read off the call rather than chosen by the caller — it is the same row either way.
  */
 const CallListItem = ({ call }: CallListItemProps) => {
 	const { t } = useTranslation();
 	const { joinCall, declineCall, callRing, callHref, formatTime } = useOngoingCalls();
 
-	// Whether this client is the one making the noise is not a fact about the call — a ring can be sounding on
-	// another of this user's sessions — so the row asks about its own call rather than searching a list.
 	const { audible, silenced, silence } = callRing(call.callId);
 
-	// Answering ends the ringing presentation, whichever way it was answered — the same rule the list buckets
-	// by, and the reason a declined call keeps its place saying so rather than appearing to ring on.
-	//
-	// The window alone can't tell: `isRingingVideoConferenceMember` suppresses a ring the member declined by
-	// comparing `declinedAt` against `ringingAt`, and the joinable payload carries no `declinedAt` — so a call
-	// declined a second into its ring would otherwise still read as ringing here for the rest of the window.
+	// `declined` and `joined` are checked here because the joinable payload carries no `declinedAt` for
+	// `isRingingVideoConferenceMember` to compare against, so a call declined mid-ring would still read as ringing.
 	const ringing = !call.declined && !call.joined && isRingingVideoConferenceMember({ ringingAt: call.ringingAt });
 
 	const decline = (
@@ -53,8 +44,7 @@ const CallListItem = ({ call }: CallListItemProps) => {
 			return decline;
 		}
 
-		// Turned down, and keeping its place in the list as the way back in: there is nothing left to decline,
-		// so the button's place says what happened instead.
+		// Kept in the list as the way back in, with nothing left to decline.
 		if (call.declined) {
 			return (
 				<Box fontScale='micro' color='hint'>

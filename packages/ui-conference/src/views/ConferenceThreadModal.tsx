@@ -24,9 +24,7 @@ const ConferenceThreadModal = ({ children, onClose }: ConferenceThreadModalProps
 	const titleId = useId();
 
 	return (
-		/* A thread is the chat panel's content one step further out, so it is read in the same theme the panel is —
-		   not in the window's dark, which is what the modal portal, landing outside this tree, would otherwise
-		   take. */
+		/* Read in the panel's theme, not the window's dark: the modal portal lands outside this tree. */
 		<Modal className={CONFERENCE_THEMED_CLASS} aria-labelledby={titleId} width='x480'>
 			<ModalHeader>
 				<ModalHeaderText>

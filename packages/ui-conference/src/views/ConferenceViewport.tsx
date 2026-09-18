@@ -5,26 +5,9 @@ import type { ReactNode } from 'react';
 import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
 
 /**
- * The conference is a window of its own rather than a page inside the workspace, so it cannot rely on an
- * ancestor for its height — this establishes the viewport box it fills.
- *
- * It also carries the window's palette, which is two style tags and no change to anything outside this file.
- *
- * The first pins the document dark while the conference is mounted, the way `ImageGallery` pins itself: a call
- * surface is dark in every product that has one, and light controls over a black video tile read as a bug
- * rather than as a light theme. It paints the document rather than this subtree because half of the window's
- * controls aren't in this subtree — every menu, popover and modal portals to `document.body`, and a scoped
- * palette would leave them in the reader's theme, over a dark call. High contrast outranks the pin: unlike
- * light and dark it answers a legibility need rather than a taste.
- *
- * The second hands the reader's preference back to the subtrees that ask for it by class, so a chat beside the
- * call is read in the theme its room is read in everywhere else. It wins over the first by specificity, being a
- * class rather than `:root`.
- *
- * And it carries the conference's own modal region. `useSetModal` renders into the nearest region, and the
- * app's is mounted at the app root — outside this tree, where a modal of ours would be cut off from the
- * providers it was written under. A region here keeps a modal inside the conference's React tree while the DOM
- * still goes through the modal portal, the same arrangement the voip popout window uses.
+ * The box the conference window fills, since it is a window of its own and has no ancestor to take a height
+ * from. It also carries the window's palette and its own modal region — see
+ * [docs/features/video-conference.md](../../../../docs/features/video-conference.md).
  */
 const ConferenceViewport = ({ children }: { children: ReactNode }) => {
 	const theme = useThemeMode();

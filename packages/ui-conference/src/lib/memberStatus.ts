@@ -6,10 +6,8 @@ export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'invited';
 type MemberState = Pick<IVideoConferenceUser, 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'>;
 
 /**
- * Reduces a membership entry to the one status worth showing.
- *
- * A membership entry accumulates rather than replaces — `joined` never returns to false, a decline stays
- * recorded — so the fields are read in the order of what happened last.
+ * Reduces a membership entry to the one status worth showing. An entry accumulates rather than replaces, so the
+ * fields are read in the order of what happened last.
  */
 export const getConferenceMemberStatus = (member: MemberState): ConferenceMemberStatus => {
 	if (isInVideoConference(member)) {

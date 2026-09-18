@@ -42,13 +42,9 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
-	// Read once for the whole list rather than per member: naming someone is a setting and a pure function, not
-	// a reason for each row to be a component of its own.
 	const { useRealName } = useConferenceViewer();
 	const { shareChat } = useConferenceActions();
 
-	// Which remedy is on its way, rather than merely that one is: it is what puts the spinner on the button that
-	// was pressed instead of on both.
 	const [applying, setApplying] = useState<VideoConferenceChatAccessMode>();
 	const isPending = applying !== undefined;
 
@@ -66,10 +62,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 	const roomName = access.name;
 	const discussionLeads = chatAccessLeadsWithDiscussion(access);
 
-	// Both are disabled while either is in flight, not just the one that was clicked. They are alternatives —
-	// one opens the room's history to the members who can't see the chat, the other moves the conversation out of
-	// it — and each is applied on its own, so a second click while the first was pending applied *both*: the
-	// tradeoff the user picked and the one they turned down.
+	// Both disabled while either is in flight: they are alternatives, and a second click applied both.
 	const inviteButton = access.canInvite && (
 		<Button
 			variant={discussionLeads ? undefined : 'primary'}

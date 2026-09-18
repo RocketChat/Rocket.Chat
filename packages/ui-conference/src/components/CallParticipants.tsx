@@ -8,46 +8,26 @@ type CallParticipantsProps = {
 	people: (Pick<IUser, '_id'> & Partial<Pick<IUser, 'username'>>)[];
 	/** How many are in the call altogether, which is what the count after the faces is worked out from. */
 	total: number;
-	/**
-	 * How big the faces are. Named rather than measured, because there are two places this appears and neither
-	 * chooses a number: a row in a list, and a screen with room to spare.
-	 */
+	/** How big the faces are: a row in a list, or a screen with room to spare. */
 	size?: 'small' | 'large';
-	/**
-	 * Whether this reader wants faces at all. A prop rather than a context read, because this is the one piece of
-	 * the window that also renders from the start screen, which mounts no conference — and a preference is the
-	 * caller's to know either way.
-	 */
+	/** Whether this reader wants faces at all. A prop: this also renders from the start screen, which has no conference. */
 	displayAvatars?: boolean;
 };
 
-/**
- * The avatar sizes those names mean. Still Fuselage's `x` scale, which is what `UserAvatar` accepts — its
- * container types `size` as that union and takes no numbers.
- */
+/** Fuselage's `x` scale, which is the union `UserAvatar` accepts; it takes no numbers. */
 const AVATAR_SIZES = { small: 'x18', large: 'x24' } as const;
 
 /**
- * Who is already in a call: their faces, then how many more there are.
- *
- * Says it the way the call's own message block says it — the faces, then `+ 3 joined`, or just `joined` when they
- * are all shown. Same arrangement and the same phrases (`plus__usersCount__joined`, `joined`), because a call the
- * user meets in the sidebar and again in its room should read the same both times.
- *
- * Faces answer *who* is in there, which is usually what decides whether to walk in. With avatars turned off there
- * is nobody to show, so it falls back to the count in words, as the message block does.
+ * Who is already in a call: their faces, then how many more there are — said the way the call's own message
+ * block says it, so a call met in the sidebar and again in its room reads the same both times.
  */
 const CallParticipants = ({ people, total, size = 'small', displayAvatars = true }: CallParticipantsProps) => {
 	const { t } = useTranslation();
-	// The whole count, as the group's label: it is what a screen reader gets instead of the faces, and "+ 3" only
-	// means something next to a total.
 	const label = t('__count__people_in_the_call', { count: total });
 
-	// `UserAvatar` renders nothing without a username, so someone who arrived without one would take a place in
-	// the row and leave a gap in it. They are counted, not drawn.
+	// `UserAvatar` renders nothing without a username, which would leave a gap in the row. Counted, not drawn.
 	const faces = people.filter(({ username }) => !!username);
 
-	// Faces switched off, or a call whose members didn't travel with it — an older server, say.
 	if (!displayAvatars || !faces.length) {
 		return (
 			<Box fontScale='micro' color='hint'>
@@ -59,11 +39,8 @@ const CallParticipants = ({ people, total, size = 'small', displayAvatars = true
 	const remaining = total - faces.length;
 
 	return (
-		// `role='img'`, because a generic container's `aria-label` is not announced — and these faces are one
-		// picture of who is in the call, whose alternative text is the count.
+		// `role='img'`: a generic container's `aria-label` is not announced, and the count is these faces' alt text.
 		<Box role='img' display='flex' alignItems='center' aria-label={label} title={label} style={{ gap: 6 }}>
-			{/* Side by side with a little air between them, rather than overlapped: there are only ever a few, and
-			    a face half behind another face is a worse picture of who is in the call. */}
 			<Box display='flex' alignItems='center' style={{ gap: 4 }}>
 				{faces.map(({ _id, username }) => (
 					<UserAvatar key={_id} username={username as string} size={AVATAR_SIZES[size]} />

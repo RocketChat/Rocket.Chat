@@ -12,18 +12,10 @@ type SwitchCallModalProps = {
 };
 
 /**
- * Asks before swapping the call someone is in the middle of.
+ * Asks before swapping the call someone is in the middle of, naming the one being left.
  *
- * A user is in one call at a time. The call window is shared, so joining a second call already replaces the
- * first one's page — but that is not the same as leaving it: without an explicit leave its participant stays
- * counted as present, which keeps the abandoned call listed as occupied and stops it ever emptying out. And
- * doing that because someone clicked a name in a list is not something to do quietly, so the question names the
- * call being left.
- *
- * The answer takes a round trip, so the modal stays until it comes back: the button carries the wait, and a
- * failure is said *here*, next to the button that caused it, rather than in a toast on a screen this modal has
- * already left. Closing on click would have read as success — and a reader who cannot see a corner of the screen
- * light up would have been told nothing at all.
+ * Leaving takes a round trip, so the modal stays until it comes back and says a failure here, beside the button
+ * that caused it — closing on click would have read as success.
  */
 const SwitchCallModal = ({ leaving, onConfirm, onCancel }: SwitchCallModalProps) => {
 	const { t } = useTranslation();

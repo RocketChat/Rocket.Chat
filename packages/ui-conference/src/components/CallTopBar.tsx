@@ -25,14 +25,8 @@ type CallTopBarProps = {
 };
 
 /**
- * The conference window's top bar, spanning the whole window above the call and its side panels.
- *
- * It sits up here rather than inside the call area because what it says is about the call, not about the slice
- * of the window the call happens to occupy: put in the call area it stopped at the panel's edge and shifted
- * every time a panel opened. Fixed above them, the panels hang beneath it.
- *
- * What it says about the call, it builds. It used to take that as a `host` node, which meant the one page that
- * renders it also had to know how a call header is laid out — and that page has enough to do.
+ * The conference window's top bar, spanning the whole window above the call and its side panels — what it says
+ * is about the call, not about the slice of the window the call happens to occupy.
  */
 const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
 	const { t } = useTranslation();
@@ -40,9 +34,7 @@ const CallTopBar = ({ startAt, name, children }: CallTopBarProps) => {
 	return (
 		<Box
 			is='header'
-			// Named, because a header is a landmark and this window can hold a second one: a modal brings a header
-			// of its own, and two unnamed banners in a page are two things neither a person nor a test can tell
-			// apart.
+			// Named: a header is a landmark, and a modal in this window brings a second one.
 			aria-label={t('Call')}
 			display='flex'
 			alignItems='center'

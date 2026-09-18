@@ -155,7 +155,7 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
                         ❲
                       </i>
                       <a
-                        class="rcx-box rcx-box--full rcx-css-wli0b4 rcx-css-149yika"
+                        class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
                         href="/conference/ringing"
                       >
                         Ada Lovelace

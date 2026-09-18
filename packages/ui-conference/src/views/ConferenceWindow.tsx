@@ -20,13 +20,8 @@ import { PREFLIGHT_FACES_SHOWN } from '../lib/constants';
 type ConferencePanel = 'members' | 'chat';
 
 /**
- * `aria-label` overrides a button's contents, so a badge rendered inside one is never announced. The count is
- * folded into the name instead — as the members action does — and the badge is hidden from assistive technology
- * so it is said once rather than twice.
- */
-/**
- * The badges are `aria-hidden`, so whatever they say has to reach the button's own name — the dot included: it
- * is drawn for activity with no count behind it, and a reader who cannot see it would otherwise be told nothing.
+ * Folds a badge into its button's name. The badges are `aria-hidden` and `aria-label` overrides a button's
+ * contents, so whatever a badge says has to reach the name — the dot included, which carries no count.
  */
 const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasUnseenActivity = false): string =>
 	(unread > 0 || hasUnseenActivity) && unreadTitle ? `${label}, ${unreadTitle}` : label;
@@ -46,10 +41,8 @@ const ConferenceWindow = () => {
 
 	const togglePanel = useCallback(
 		(panel: ConferencePanel) => {
-			// A thread belongs to the chat it was opened from, and that panel is where it is shown — so any click
-			// that leaves the chat closed takes the thread with it, rather than leaving one waiting to reappear.
-			// Asked as "does the chat survive this click", not "was this click about the chat": switching straight
-			// to the members panel closes the chat just as surely as clicking the chat button again does.
+			// A thread is shown in the chat panel, so any click that leaves the chat closed takes the thread with
+			// it — including switching straight to the members panel.
 			const chatStaysOpen = panel === 'chat' && activePanel !== 'chat';
 
 			setActivePanel((current) => (current === panel ? undefined : panel));
@@ -61,23 +54,18 @@ const ConferenceWindow = () => {
 		[activePanel, thread],
 	);
 
-	// Stable, because it is the value of a context the chat panel's contents read: rebuilt each render, it would
-	// re-render the product's whole room every time anything in this window moved.
+	// Stable: it is a context value the chat panel reads, and rebuilding it re-renders the product's whole room.
 	const closeChat = useMemo(() => ({ close: () => togglePanel('chat') }), [togglePanel]);
 
 	const breakpoints = useBreakpoints();
 	const tooShortToSplit = useMediaQuery('(max-height: 520px)');
 
-	// Too small to split, in either direction: below `md` there is no width for a panel beside the call, and a
-	// phone in landscape has the width but not the height — docking there left the call a third of a short screen
-	// and the chat a message list two lines tall above its own composer. Both get the sheet instead.
-	//
-	// Width alone was the first answer and the wrong one: a phone in landscape is 852pt wide, which is `md`.
+	// Too small to split in either direction. Height as well as width, because a phone in landscape is 852pt
+	// wide — past `md` — and far too short to dock a panel beside the call.
 	const sheetPanel = !breakpoints.includes('md') || tooShortToSplit;
 
 	const { count: unreadCount, hasUnseenActivity, variant: unreadVariant, title: unreadTitle = '' } = room.unread;
-	// Nothing is unread about a chat the reader is looking at, so the open panel is its own answer — and the dot
-	// is for activity with no count behind it, which is why a count takes its place rather than joining it.
+	// Nothing is unread about a chat the reader is looking at.
 	const unread = chatVisible ? 0 : unreadCount;
 	const unseenActivity = !chatVisible && !unread && hasUnseenActivity;
 
@@ -98,8 +86,7 @@ const ConferenceWindow = () => {
 
 	const { callSounds } = useCustomSound();
 	const otherMembers = call.canRing && session.joined ? call.members.filter((m) => m._id !== viewer.uid && !isInVideoConference(m)) : [];
-	// Only the ones actually ringing — a member who declined stopped ringing when they declined — and kept true
-	// as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
+	// Kept true as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
 	const ringingMembers = useRinging(otherMembers);
 	const someoneRinging = ringingMembers.length > 0;
 	useEffect(() => {
@@ -113,9 +100,8 @@ const ConferenceWindow = () => {
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
-	// A refusal is an answer about this call — it is gone, or was never this reader's — and the screens below say
-	// so, finally. Anything else is the server not having been reached, which says nothing about the call: telling
-	// someone their call does not exist because a request dropped sends them away from one that is still running.
+	// Only a refusal is an answer about the call. Anything else is the server not having been reached, which says
+	// nothing about it — and sending someone away from a call that is still running is the worse mistake.
 	if (room.error) {
 		return room.error.kind === 'refused' ? (
 			<>{slots.unauthorized}</>
@@ -132,8 +118,7 @@ const ConferenceWindow = () => {
 		return session.error.kind === 'refused' ? (
 			<>{slots.joinRefused}</>
 		) : (
-			// Back to the preflight rather than straight into another attempt: the devices they chose are still
-			// there, and a join that failed is a thing to decide about rather than to repeat behind their back.
+			// Back to the preflight rather than straight into another attempt, with the devices they chose intact.
 			<ConferenceStatePage icon='warning' title={t('Something_went_wrong')} action={{ label: t('Retry'), onClick: session.retry }} />
 		);
 	}
