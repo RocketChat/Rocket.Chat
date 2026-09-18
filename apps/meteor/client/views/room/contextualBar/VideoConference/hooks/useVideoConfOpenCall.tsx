@@ -16,13 +16,11 @@ const POPOUT_WIDTH = 1280;
 const POPOUT_HEIGHT = 800;
 
 /**
- * A call belongs in its own window rather than a tab in the user's strip — it mirrors what the desktop app
- * does with its dedicated video window, and keeps the call visible while the user works in the main app.
+ * A call belongs in its own window rather than a tab in the user's strip.
  *
- * `noopener` is deliberately absent from the features: the conference page posts navigation requests back to
- * its opener (see `useConfinedNavigation`), and `noopener` would both sever that link and make `window.open`
- * return null — and the returned handle is what watches the window for closing, which is how leaving a call is
- * reported. An external provider gets cut loose a different way; see `openExternalCallWindow`.
+ * `noopener` is deliberately absent: it would make `window.open` return null, which is indistinguishable from a
+ * blocked popup, and sever the link the conference page posts navigation requests back over. See [the feature
+ * doc](../../../../../../../../docs/features/video-conference-persistent-chat/README.md#how-the-call-window-is-opened).
  */
 const popoutFeatures = (): string => {
 	const width = Math.min(POPOUT_WIDTH, window.screen.availWidth);
@@ -38,14 +36,10 @@ const isBlocked = (target: Window | null): boolean => !target || target.closed;
 /**
  * The call's address, if it is one we are willing to send a window to: an absolute `http:` or `https:` URL.
  *
- * Absolute, because a relative one has no origin of its own and would take ours — so a provider's `/room/42`,
- * or the empty string a call with no URL yet arrives as, would be read as an in-product conference and open the
- * workspace at some arbitrary route in the call window. Resolving it against this page is what made those look
- * like ours; refusing them is the only honest reading, since handing one to a blank window resolves it against
- * this origin too. Our own conference URLs are built with `absoluteUrl`, so none of them is turned away.
- *
- * `http:`/`https:` only, because a `javascript:` or `data:` "URL" is not somewhere to go but something to run,
- * and it would run in whatever window we opened for it — which, until it navigates, is our own blank one.
+ * Absolute, because a relative address — a provider's `/room/42`, or the empty string a call with no URL yet
+ * arrives as — would take our origin and open the workspace at some arbitrary route in the call window. Our own
+ * conference URLs are built with `absoluteUrl`, so none of them is turned away. `http:`/`https:` only, because a
+ * `javascript:` or `data:` "URL" is not somewhere to go but something to run, in a window we opened for it.
  */
 const asCallUrl = (candidate: string): URL | undefined => {
 	try {
@@ -75,13 +69,10 @@ const openCallWindow = (url: string, name: string): Window | null => {
 /**
  * Opens an external provider's call — Jitsi, Meet, whatever the workspace is configured with.
  *
- * Severed from this window, because a provider page has no business reaching back into the workspace: with a
- * live `window.opener` it could navigate the tab the user came from to a page of its choosing, and a login
- * screen is the obvious one to imitate.
- *
- * Not `noopener` in the features, which would be the ordinary way to say this: that makes `window.open` return
- * null, and the handle is what `useLeaveCallOnWindowClose` watches to report the user leaving. So the window is
- * opened blank — still same-origin, so `opener` can be cleared — cut loose, and only then sent to the provider.
+ * Severed from this window, because with a live `window.opener` a provider page could navigate the tab the user
+ * came from — a login screen being the obvious thing to imitate. Opened blank, so it is still same-origin and
+ * `opener` can be cleared, and only then sent to the provider: `noopener` would return null instead of the
+ * handle `useLeaveCallOnWindowClose` watches.
  */
 const openExternalCallWindow = (url: string): Window | null => {
 	const target = openCallWindow('', '_blank');

@@ -642,13 +642,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Whether this call happens inside a window of ours, rather than being handed off to a page we don't run.
 	 *
 	 * True for a provider that renders inside Rocket.Chat, and true for *any* provider once the conference window
-	 * is enabled — the window is ours whoever runs the media, and an iframed provider renders inside our page, so
-	 * our code is alive there either way.
-	 *
-	 * Two things follow, and both were gated on the capability alone until the window shipped for every provider.
-	 * The callee becomes a member when called and the ring waits for the caller to walk in, because the caller is
-	 * sitting on our preflight rather than already in the call. And presence is held by leases, because that
-	 * window renews them — so a call whose window vanished can be noticed, instead of waiting a day for the TTL.
+	 * is enabled — an iframed provider renders inside our page, so our code is alive there either way.
 	 */
 	private runsInOurCallWindow(providerName: string): boolean {
 		return (
@@ -1031,14 +1025,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
 		// Someone arriving changes which calls are worth offering — a call nobody has joined is not offered at
-		// all, and the list of calls to join is what the window's own flow is reached through. So the arrival is
-		// announced wherever that list exists, whatever runs the media: to the room, whose members may now have
-		// a call to join, and to the arriver's own other sessions, which is how the window they just joined in
-		// stops the app behind it thinking they are free to join something else.
-		//
-		// Deliberately not limited to embedded providers, which is what it was: a call handed to a provider's own
-		// page is still held in a window of ours, and the list still had to wait out its 20-second poll to notice
-		// anyone had arrived — long enough for the same user to be walked into a second call without being asked.
+		// all — so it is announced wherever that list is read: to the room, whose members may now have a call to
+		// join, and to the arriver's own other sessions, which is what stops the app behind the window they just
+		// joined in from thinking they are free to join something else.
 		if (user && this.runsInOurCallWindow(call.providerName)) {
 			await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
 				callId: call._id,
@@ -1278,8 +1267,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
-		// And the room, which every other change to the roster tells — declining, adding, ending. Arriving was
-		// the one that didn't, so the call's own block in the room went on showing the count from before.
+		// And the room, which every other change to the roster tells — declining, adding, ending — so the call's
+		// own message block keeps a current count.
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
@@ -1665,20 +1654,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async expirePresenceLeases(now = new Date()): Promise<void> {
 		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
 			try {
-				// Presence leases only apply to a call held in a window of ours, which is what renews them. A call
-				// handed off to the provider's own page sends no heartbeat, so every lease would look expired and
-				// the sweep would end the call after three minutes; those are cleaned up by the 24-hour TTL cron
-				// instead, exactly as they were before leases existed.
-				//
-				// The provider's capability, deliberately, and not `runsInOurCallWindow`. The setting says what a
-				// call opened *now* would do, and the sweep meets calls opened before it: one created while the
-				// window was off was handed to the provider's own page and never heartbeats, yet joining stamps
-				// `lastSeenAt` for every provider — so reading the setting here would expire that call's members
-				// three minutes after the toggle and end a call still running in Jitsi.
-				//
-				// The cost is that a call held in our window by a URL provider stays outside the sweep, waiting on
-				// the 24-hour TTL. Closing that needs the call to carry how it was opened, rather than the sweep
-				// guessing from a setting that can have changed since.
+				// The provider's capability, deliberately, and not `runsInOurCallWindow`: the setting says what a
+				// call opened *now* would do, and the sweep meets calls opened before it — one created while the
+				// window was off never heartbeats, so reading the setting here would end a call still running in
+				// Jitsi three minutes after an admin toggled it. See [the feature
+				// doc](../../../../../docs/features/video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call).
 				if (!videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 					continue;
 				}
@@ -1928,9 +1908,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * Where a call's persistent chat lives.
 	 *
 	 * Only the call window gives a mode other than `main_room` anything to mean — a thread off the call message
-	 * is what its chat panel is built around. With the window off, the answer is the discussion persistent chat
-	 * has always created, whatever the setting was left at: turning the window off has to put a workspace back
-	 * exactly where it was, not leave it on a mode it can no longer see.
+	 * is what its chat panel is built around — so with the window off this answers `main_room` whatever the
+	 * setting was left at.
 	 */
 	private getPersistentChatMode(): 'thread' | 'main_room' {
 		if (!settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {

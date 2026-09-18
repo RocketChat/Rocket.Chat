@@ -35,24 +35,11 @@ type ControlRequirement = {
 };
 
 /**
- * What has to be true before a control is worth offering.
+ * What each control needs before it is worth offering.
  *
- * Three questions, and keeping them apart is the whole of this table, because conflating the first two was wrong
- * twice already.
- *
- * **What the provider supports.** A feature it never announced has nothing listening for the request.
- *
- * **What the viewer may do.** Muting, disconnecting, spotlighting, promoting and admitting are a host's, and
- * `can.*` does not answer this: those flags describe the subject, not your authority over them. `canControl` in
- * particular means *they* control the conference — reading it as "you may control this person" put Make host on
- * hosts only and Admit on nobody at all. A guest reading this panel must not be offered any of them.
- *
- * **What may be done to the subject.** This is what `can.*` is for, and the provider is the only honest source:
- * it says per participant who may be muted, spotlit or hung up on, whatever the viewer's rights.
- *
- * `ownable` is the narrow exception: leaving and raising a hand are yours to do to yourself with no standing at
- * all. They are still host-only against anybody else — taking someone else's hand down is a host's act, and so
- * is hanging up on them.
+ * `flag` is the subject's own permission and `hostOnly` the viewer's — separate questions, because `can.*`
+ * describes the participant rather than anyone's authority over them. See
+ * [the feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md).
  */
 const CONTROL_REQUIREMENTS: Record<CallParticipantControl, ControlRequirement> = {
 	'mute': { feature: 'mute', flag: 'mute', hostOnly: true },
@@ -67,9 +54,8 @@ const CONTROL_REQUIREMENTS: Record<CallParticipantControl, ControlRequirement> =
 /**
  * Whether a control is worth offering at all.
  *
- * Every half has to allow it, because nothing answers a request: a refusal is a 403 in a console this window
- * cannot read, and the only sign of one would be the next roster looking exactly like the last. A control
- * offered against any of the three is a button that silently does nothing, every time.
+ * Nothing answers a request, so a control offered where any of the three requirements fails is a button that
+ * silently does nothing, every time it is pressed.
  */
 export const canOfferControl = (
 	control: CallParticipantControl,
@@ -122,12 +108,8 @@ export const matchesConferenceMember = (displayName: string, member: Pick<Confer
 
 /**
  * A member as the matching reads them: the two names to compare against, and the provider participant this
- * member's own window reported joining as.
- *
- * That id is self-reported and unverifiable — nothing here or on the server can ask the provider whose uuid
- * that really is — which is why the name still has to agree with it. The check is corroboration, not proof: two
- * people the workspace already shows as indistinguishable can still be confused for each other, and that was
- * accepted rather than overlooked.
+ * member's own window reported joining as — self-reported and unverifiable, which is why the name still has to
+ * agree with it.
  */
 type ResolvableMember = Pick<ConferenceMember, 'username' | 'name'> & { providerParticipantId?: string };
 
@@ -137,15 +119,9 @@ const claims = (member: ResolvableMember, participant: PluginParticipant): boole
 /**
  * Which of these members the provider is describing, or none of them.
  *
- * A member who claims the participant's uuid is the answer, provided the name agrees with the claim. A claim
- * the name contradicts is nobody at all rather than an invitation to go looking: falling through to whoever the
- * name happens to fit would turn a stale or wrong id into a confident misattribution.
- *
- * With no claim, a name on its own will do — but only when exactly one member wears it. Two who do is not a
- * weak match, it is a coin toss, and losing it puts someone's microphone under another person's face. A
- * participant nobody claims and no single name fits belongs to no member here, which is the ordinary answer for
- * a SIP dial-in or a guest who opened the provider's own address: they never passed through Rocket.Chat, and
- * no identity of ours will ever cover them.
+ * A claim the name contradicts is nobody rather than an invitation to go looking, and a name two members wear
+ * is a coin toss rather than a weak match — losing either puts someone's microphone under another person's
+ * face. See [the feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#who-is-in-the-call-and-what-may-be-done-to-them).
  */
 export const resolveParticipant = <TMember extends ResolvableMember>(
 	participant: PluginParticipant,
@@ -163,32 +139,11 @@ export const resolveParticipant = <TMember extends ResolvableMember>(
 };
 
 /**
- * Puts the conference's own members and the provider's call participants into the groups the people panel
- * shows, pairing the two with {@link resolveParticipant}.
+ * Puts the conference's own members and the provider's call participants into the groups the people panel shows,
+ * pairing the two with {@link resolveParticipant}.
  *
- * They are different lists and neither contains the other. Ours is the record of who was asked: it carries the
- * avatars, the usernames and the standing — invited, ringing, declined, left — and it holds people who are not
- * in the call at all. The provider's is who is connected to the media right now, which is the only list whose
- * entries can be muted, spotlit or hung up on, and it holds people we have never heard of: guests with a link,
- * dial-ins, anyone who arrived by an address rather than an invitation.
- *
- * So each decides what it is the authority on, and neither is allowed to overrule the other:
- *
- * - **our membership decides which group a member is in.** The rest of the window already counts on it — the
- *   top bar's count, the ring button, who is offered the chat — and a window whose plugin is quiet, or whose
- *   provider never announced a roster, would otherwise show a call with nobody in it.
- * - **the provider decides what a row can do.** A member matched to a participant carries that participant's
- *   controls; one the provider does not have carries none, because there is nothing for a request to name.
- * - **a participant matching nobody is a row of their own**, by the name the provider gave, alongside the
- *   members in the call.
- *
- * The lobby is the one place presence is read from the provider instead, because being let in is the only thing
- * anyone can do about someone waiting there, and a member sitting in a group headed "in the call" would be
- * offered a ring instead of the admit they need.
- *
- * When the two disagree elsewhere, both are simply shown: someone our server still records as present who has
- * gone from the call keeps their row, with nothing to press on it; someone in the call whose join we have not
- * heard about yet is listed as not in it, with the controls that do work.
+ * Neither list overrules the other: ours decides which group a member is in, the provider's decides what a row
+ * can do, and anyone waiting in the lobby is lifted ahead of both.
  */
 export const composeCallParticipants = (members: ConferenceMember[], participants: PluginParticipant[]): CallParticipantGroups => {
 	// Whoever is still to be spoken for. A member answers for one participant, so settling one of two people

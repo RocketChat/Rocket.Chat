@@ -1,46 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
- * The message contract between this call window and a plugin running in the provider's own page.
+ * The namespace every message of this protocol carries, in both directions.
  *
- * A provider reached by URL renders in this window's iframe, and its page can carry controls of its own — a
- * chat button in its in-meeting toolbar, a Leave button, a participant list with a host's controls on it. Those
- * controls know nothing about the panels beside the frame unless something tells them, which is what this
- * protocol is for: the provider's button becomes a remote control for the chat panel this page owns, this page
- * hears about a call the user left from inside the frame, and the people panel becomes a list of who is
- * actually in the call with the host's controls on each of them.
- *
- * Every message, in both directions, is `{ action: 'rocketchat:videoconf/<name>', ...payload }`. The namespace
- * is Rocket.Chat's rather than any provider's: the protocol is this window's, and any provider plugin that
- * speaks it gets the same behaviour. Pexip's `external-chat` plugin is the first to implement it.
- *
- * Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
- *
- * | Direction | Action | Payload |
- * | --- | --- | --- |
- * | plugin → window | `ready` | `{ features: PluginFeature[] }` |
- * | plugin → window | `toggle-chat` | `{ active: boolean }` |
- * | plugin → window | `toggle-participants` | `{ active: boolean }` |
- * | plugin → window | `connected` | — |
- * | plugin → window | `disconnected` | `{ userInitiated: boolean }` |
- * | plugin → window | `self` | `PluginSelf` |
- * | plugin → window | `roster` | `{ participants: PluginParticipant[] }` |
- * | window → plugin | `chat-state` | `{ active: boolean }` |
- * | window → plugin | `participants-state` | `{ active: boolean }` |
- * | window → plugin | `chat-unread` | `{ unread: boolean }` |
- * | window → plugin | `mute` / `mute-video` | `{ participantUuid, muted: boolean }` |
- * | window → plugin | `admit` / `disconnect` | `{ participantUuid }` |
- * | window → plugin | `spotlight` | `{ participantUuid, active: boolean }` |
- * | window → plugin | `raise-hand` | `{ participantUuid, raised: boolean }` |
- * | window → plugin | `set-role` | `{ participantUuid, role: 'host' \| 'guest' }` |
- *
- * `transfer`, `dtmf` and `mute-all-guests` are part of the protocol and the provider's plugin answers them, but
- * this window sends none of the three: they are not features we support yet. The names stay in the vocabulary
- * so a plugin announcing them is understood rather than discarded, and so turning one on is a control and a
- * caller rather than a protocol change.
- *
- * `ready` is the capability announcement: nothing above is asked for unless the plugin named it, because a
- * provider that cannot carry out a request answers it with a refusal the user never asked for.
+ * The contract itself — who sends what, and what each message means — is in
+ * [the feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md).
  */
 const PLUGIN_NS = 'rocketchat:videoconf';
 

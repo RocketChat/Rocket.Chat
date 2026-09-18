@@ -11,10 +11,8 @@ import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
  * The calls running now that this user may join, freshest first.
  *
  * Kept whole here — declined calls included — because who filters what is the reader's business: the sidebar
- * leaves out the ones turned down, and anything showing a way *back* to a declined call needs them.
- *
- * Empty, and entirely inert, without the call window: nothing reaches a call through this list then, so nothing
- * asks the server for one — no query and no stream subscription.
+ * leaves out the ones turned down, and anything showing a way *back* to a declined call needs them. Empty and
+ * entirely inert without the call window, down to the query and the subscription.
  */
 export const useJoinableCalls = () => {
 	const getJoinable = useEndpoint('GET', '/v1/video-conference.joinable');

@@ -493,6 +493,14 @@ Three details carry most of the weight:
   leaving is never revived this way — the guard is in `renewUserPresenceById`'s query, so a heartbeat still in
   flight behind someone who left matches nothing.
 
+The sweep itself runs only for a provider whose **capability** says `embedded`, never for the window setting.
+The setting says what a call opened *now* would do, and the sweep meets calls opened before it: one created
+while the window was off was handed to the provider's own page and never heartbeats, yet joining stamps
+`lastSeenAt` for every provider — so reading the setting there would expire that call's members three minutes
+after an admin toggled it and end a call still running in Jitsi. The cost is that a call held in our window by a
+URL provider stays outside the sweep, waiting on the 24-hour TTL cron; closing that needs the call to carry how
+it was opened rather than the sweep guessing from a setting that can have changed since.
+
 This is deliberately **provider-agnostic**: the renewing window is ours whether the call renders inside it or is
 handed to an iframe, so it needs no cooperation from Pexip, Jitsi or anyone else. Where a provider *can* be asked
 who is in a room it may register a **presence probe** (`videoConfPresence`), whose answer renews the same leases
@@ -586,6 +594,12 @@ from happening:
 - it subscribes **per connection**, and re-reads the conference whenever a connection is (re-)established —
   a subscription that was refused or lost with the socket is not permanent, and whatever moved while this window
   was away was announced to nobody here.
+
+Each subscription is also followed by a catch-up read. The read that filled the window happened *before* the
+subscription existed, and subscribing is a round trip: whatever changed while it was in flight was announced
+once, to nobody here, and nothing brings it back — the window waits for a *next* event that may never come while
+showing the call as it was. The catch-up waits for the first read to settle, since invalidating one still in
+flight achieves nothing; the fetch already running is the one that returns, stale answer and all.
 
 ## Access Control
 
@@ -777,8 +791,10 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 |---|---|---|---|
 | plugin → window | `ready` | `{ features }` | The capability announcement, and the one message that *must* be answered — with the panel's state and its unread. A control is offered only for a feature named here |
 | plugin → window | `toggle-chat` | `{ active }` | The control was used; the chat panel opens or closes |
+| plugin → window | `toggle-participants` | `{ active }` | The same for the people panel, which the provider's own participant list is hidden in favour of |
 | plugin → window | `connected` | — | Past the provider's own prejoin screen and into the call |
 | plugin → window | `disconnected` | `{ userInitiated }` | Left the call from inside the provider's page. A deliberate leave reports the departure and closes the window, exactly as hanging up does; an involuntary drop is left to the provider's page to recover from |
+| window → plugin | `participants-state` | `{ active }` | The same for the people panel, so its control follows the panel however it was opened |
 | window → plugin | `chat-state` | `{ active }` | Pushed whenever the panel changes, so all three ways of opening it — the top bar, the panel's close button, the plugin's own control — keep that control honest |
 | plugin → window | `self` | `{ participantUuid, micMuted, camMuted, clientMuted, isHost, canControl }` | Where the viewer stands in the call; `canControl` is what offers the call-wide controls |
 | plugin → window | `roster` | `{ participants }` | Who the provider has in the call, the whole list on every change |
@@ -786,10 +802,16 @@ both. A Jitsi plugin sending the same actions needs nothing new on this side.
 | window → plugin | `mute` / `mute-video` | `{ participantUuid, muted }` | The conference's own mute, which is the one a host can undo |
 | window → plugin | `admit` / `disconnect` | `{ participantUuid }` | Let somebody in, or hang up on them — turning someone away at the door is the same request as the latter |
 | window → plugin | `spotlight` | `{ participantUuid, active }` | |
+| window → plugin | `raise-hand` | `{ participantUuid, raised }` | Yours to put up on your own row; taking somebody else's down is a host's |
 | window → plugin | `set-role` | `{ participantUuid, role: 'host' \| 'guest' }` | The provider's own vocabulary may differ; translating it is the plugin's |
 | window → plugin | `transfer` | `{ participantUuid, alias, role?, pin? }` | Move somebody to another conference. The role is deliberately never sent, so a transfer cannot quietly promote anyone |
 | window → plugin | `dtmf` | `{ participantUuid, digits }` | Keypad tones for whoever joined over a telephone line |
-| window → plugin | `mute-all-guests` | `{ muted }` | Silences the call at once, offered to whoever `self.canControl` says may |
+| window → plugin | `mute-all-guests` | `{ muted }` | Silences the call at once |
+
+`transfer`, `dtmf` and `mute-all-guests` are in the vocabulary and Pexip's plugin answers all three, but this
+window sends none of them — they are not features we support yet. They stay named so a plugin announcing one is
+understood rather than discarded, and so turning one on later is a control and a caller rather than a change to
+the protocol.
 
 Unknown actions are ignored on both sides, so either half can learn a new message without breaking the other.
 
@@ -832,11 +854,16 @@ The lobby is the exception: anyone the provider has waiting is lifted into a gro
 rest, because being let in is the only thing anyone can do about them, and a member sitting under "in the call"
 would be offered a ring instead of the admit they need.
 
-**A control is offered only when the provider announced the feature in `ready` *and* that participant's own
-`can.*` flag allows it.** That rule is not a nicety: the protocol carries no replies, so a request the provider
-refuses is a 403 logged in a console this window cannot read, and the only sign of it is the next roster looking
-exactly like the last one. A control offered against either half is a button that silently does nothing, every
-time it is pressed.
+**A control is offered only when three things agree**: the provider announced the feature in `ready`, the viewer
+has the standing to use it, and that participant's own `can.*` flag allows it. The three are genuinely separate,
+and conflating the first two is easy, because `can.*` describes the *subject* rather than the viewer's authority
+over them — `canControl` means that participant controls the conference, not that you may control them. Muting,
+disconnecting, spotlighting, promoting and admitting are a host's; leaving and raising your own hand are yours
+whatever your standing, and are the only two a guest is offered.
+
+That rule is not a nicety: the protocol carries no replies, so a request the provider refuses is a 403 logged in
+a console this window cannot read, and the only sign of it is the next roster looking exactly like the last one.
+A control offered against any of the three is a button that silently does nothing, every time it is pressed.
 
 Identity is `client/views/conference/lib/callParticipants.ts`. Every control is addressed by the participant's
 `uuid` and never by a name; whether that participant *is* a known user is a separate question, answered by a

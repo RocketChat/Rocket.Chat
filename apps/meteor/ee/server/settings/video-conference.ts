@@ -52,16 +52,10 @@ export function addSettings(): Promise<void> {
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 
-				// The switch for the whole call-window experience: the in-product conference page, the preflight
-				// that is where a call is actually created, the ongoing-calls list that replaces the incoming-call
-				// popup, and the membership-based flow around them. Off means the client behaves exactly as it did
-				// before any of it existed.
-				//
-				// Deliberately *not* gated on `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it
-				// has always meant — a discussion or thread per call. The conference window needs none of that: with
-				// persistent chat off its chat panel simply shows the room the call was started in. Tying the two
-				// together would also change what workspaces already running persistent chat see, which is the one
-				// thing this must not do.
+				// The switch for the whole call-window experience; off means the client behaves as it did before
+				// any of it existed. Deliberately not gated on `VideoConf_Enable_Persistent_Chat`, so a workspace
+				// already running persistent chat sees no change until this is turned on. See [the feature
+				// doc](../../../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
 				await this.add('VideoConf_Conference_Window_Enabled', false, {
 					type: 'boolean',
 					public: true,

@@ -19,12 +19,8 @@ export type CallParticipantControlsProps = {
 };
 
 /**
- * What can be done to one participant of the call, and nothing that can't.
- *
- * Every control here goes out over the plugin protocol, which carries no answers back: a request the provider
- * refuses is a 403 in a console this window cannot read, and the only sign of it would be the next roster
- * looking exactly like the last one. So a control is either offered and honoured or not offered at all —
- * `canOfferControl` is what draws that line, and nothing here is rendered without asking it.
+ * What can be done to one participant of the call, and nothing that can't — `canOfferControl` draws that line
+ * and nothing here is rendered without asking it.
  *
  * The lobby gets buttons rather than a menu: being let in is the one thing anyone wants to do about someone
  * waiting there, and it is worth a click rather than two.

@@ -4,18 +4,17 @@ import { useTranslation } from 'react-i18next';
 
 import type { PluginParticipant } from '../../hooks/useProviderPlugin';
 
+export type CallParticipantStatusProps = {
+	participant: PluginParticipant;
+};
+
 /**
  * What the provider says about someone, beside their name.
  *
- * Only what the roster can answer, which for a call running in the provider's own frame is less than the window
- * would like: there is no audio here to meter, so a microphone is either off or unremarked. Both mutes count as
- * off — being silenced by the conference and having silenced yourself sound identical to everyone listening,
- * and which of the two it was only matters to whoever is deciding to undo it, in the menu.
- *
- * Each marker is drawn `aria-hidden` and said in text beside it: an icon carries nothing to a reader who cannot
- * see it, and a hand that is only an emoji is announced as the emoji's own name or as nothing at all.
+ * Both mutes read the same: being silenced by the conference and having silenced yourself sound identical to
+ * everyone listening, and which it was only matters to whoever is deciding to undo it.
  */
-const CallParticipantStatus = ({ participant }: { participant: PluginParticipant }) => {
+const CallParticipantStatus = ({ participant }: CallParticipantStatusProps) => {
 	const { t } = useTranslation();
 
 	const muted = participant.isMuted || participant.isClientMuted;

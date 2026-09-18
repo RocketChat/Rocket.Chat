@@ -66,18 +66,9 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
 /**
  * Whether the call's chat lives in a thread off the call message, rather than in the room itself.
  *
- * The mode alone doesn't say. Its registered default is `thread`, so reading it on its own put the chat in a
- * thread on every workspace — including those where the server would never open one. This has to give the same
- * answer as the server's own `chatLivesInAThread`, or the panel is titled "Thread in …" over a thread nobody is
- * subscribed to, in a call whose chat is really the room's.
- *
- * That answer is persistent chat being on and the mode saying thread. The window is the third question here
- * only because this reads the raw mode setting, where the server reads it through `getPersistentChatMode` —
- * which answers `main_room` without the window, whatever the setting was left at.
- *
- * Deliberately not the provider's `persistentChat` capability, which is what this asked and what kept a Jitsi
- * call's chat in the room with thread mode on: the thread hangs off the call's message and is read in this
- * panel, so it is ours whoever runs the media.
+ * Mirrors `VideoConfService.chatLivesInAThread` from the two public settings, and has to keep giving the same
+ * answer as it: disagree and the panel is titled "Thread in …" over a thread nobody is subscribed to. See [the
+ * feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
  */
 const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: PersistentChatMode): boolean =>
 	isPersistentChatEnabled && isCallWindowEnabled && chatMode === 'thread';
@@ -118,24 +109,10 @@ export const useConferenceEmbedded = (callId: string) => {
 		refetchOnReconnect: 'always',
 	});
 
-	// The conference can change under a participant in several ways — the chat moves to another room, the same room
-	// becomes readable by members who couldn't read it, someone joins, declines or leaves — and every one of them
-	// has the same answer: read the conference again. It carries the room, who can see it, and who is in it.
-	//
-	// Two things this has to get right, because the stream is the window's only word on what the call is doing and
-	// the server refuses a subscription rather than queueing it — and a refused subscription is never retried:
-	//
-	// - **Never ask about a call that cannot exist.** The window opens on `/conference/new` before the conference
-	//   is created, so `new` is a call id this page can be handed; `streamVideoConference.allowRead` looks the call
-	//   up by that id, finds nothing and refuses. Waiting for a real id costs nothing: the id changing re-runs this.
-	// - **Never ask before the server knows who is asking.** `allowRead` resolves the user from the connection and
-	//   refuses when there is none, so a window that subscribes while its session is still being restored is
-	//   refused for good — the very shape of a call window, which opens fresh and authenticates as it loads.
-	//   Waiting for the user id costs nothing and is what makes the subscription survive that race.
-	// - **A subscription is only good while the connection under it is.** One that was refused, or lost with the
-	//   socket, leaves the window watching nothing — silently, since a stream reports neither. So this re-subscribes
-	//   on every connection, and re-reads the conference when it does, because whatever moved while this window was
-	//   away was announced to nobody here.
+	// Subscribing too early is permanent: `allowRead` refuses a call id that does not exist yet, and a connection
+	// with no user on it, and nothing reports the refusal or asks again. So this waits for a real id and a user,
+	// and subscribes per connection — one lost with the socket leaves the window watching nothing. See [the
+	// feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#realtime-updates).
 	useEffect(() => {
 		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
 			return;
@@ -150,16 +127,10 @@ export const useConferenceEmbedded = (callId: string) => {
 		return stop;
 	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
 
-	// And read the call again once something is listening, once per subscription.
-	//
-	// The read that filled this window happened *before* the subscription existed, and the gap between the two
-	// is not empty: subscribing is a round trip. Whatever changed while it was in flight was announced once, to
-	// nobody here — so nothing brings it back, and the window waits for a *next* event that may never come while
-	// showing the call as it was. Seen in CI: the `sub` went out two seconds after the call was read, the callee
-	// declined in between, and the window kept the pre-decline roster for the rest of the test.
-	//
-	// After the first read has settled, because invalidating one still in flight achieves nothing — the fetch
-	// already running is the one that returns, stale answer and all.
+	// And read the call again once something is listening: subscribing is a round trip, and whatever moved while
+	// it was in flight was announced once, to nobody here. After the first read has settled, because invalidating
+	// one still in flight achieves nothing — the fetch already running is the one that returns, stale answer and
+	// all.
 	const caughtUpAt = useRef(0);
 	useEffect(() => {
 		if (!watchingSince || isInfoPending || caughtUpAt.current === watchingSince) {

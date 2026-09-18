@@ -9,14 +9,10 @@ import PageLoading from '../root/PageLoading';
 /**
  * Whether this is a call to open: an absolute `http(s)` address, and nothing else.
  *
- * The address arrives in a query parameter, so it is whatever the link that opened this page said — and this
- * page hands it to `window.open`. Two things have to be turned away. A `javascript:` or `data:` "URL" is not a
- * location at all: it executes, in a window we opened. And a *relative* one is not a call either — it resolves
- * against this origin, so `?callUrl=/admin/settings` would open the workspace in a call window.
- *
- * Parsed with no base, which is what makes the second one fail. Our own conference URLs are built with
- * `absoluteUrl`, so none of them is turned away; a provider that answers with a relative address reaches
- * `handleOpenCall` from the room, not from a link into this page.
+ * The address arrives in a query parameter and is handed to `window.open`, so it is only as trustworthy as the
+ * link that opened this page. Parsed with no base, which turns away a relative address — it would resolve
+ * against this origin — as well as a `javascript:` or `data:` one, which is not a location but something to run
+ * in a window we opened.
  */
 const isCallUrl = (candidate: string): boolean => {
 	try {

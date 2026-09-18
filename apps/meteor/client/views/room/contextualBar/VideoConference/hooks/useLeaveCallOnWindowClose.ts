@@ -9,19 +9,9 @@ const POLL_INTERVAL = 1_000;
 /**
  * Reports leaving a call when its window disappears without saying so itself.
  *
- * The conference page reports its own departure on `pagehide`, but it can only do that once it is running. The
- * server counts the user as being in the call from the moment `video-conference.join` is posted — and that is
- * posted *here*, in the main app, before the call window is even opened. Close the window while it is still
- * loading and nothing ever reported the leave: the user stays listed as present in a call they never saw.
- *
- * So the window that opened the call watches it. Only one call is watched at a time, because a user is in one
- * call at a time and the window is shared: opening the next call replaces the watch on the last one.
- *
- * Leaving twice is harmless — the server treats a leave as a statement about the member, not an event — so this
- * doesn't try to work out whether the page managed to report it first.
- *
- * There is nothing to watch without the call window — a provider's own page was never ours to poll, and the
- * join it opens was already posted — so watching is a no-op then: no interval starts and no leave is reported.
+ * Returns a watch over one call at a time: starting the next drops the last, and there is nothing to watch
+ * without a call window of ours. See [the feature
+ * doc](../../../../../../../../docs/features/video-conference-persistent-chat/README.md#the-window-that-opened-the-call-watches-it).
  */
 export const useLeaveCallOnWindowClose = () => {
 	const leaveCall = useEndpoint('POST', '/v1/video-conference.leave');
