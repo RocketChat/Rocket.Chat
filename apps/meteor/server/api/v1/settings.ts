@@ -152,13 +152,12 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
 		const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			...parsedQueryId,
 			hidden: { $ne: true },
 			public: true,
@@ -332,17 +331,15 @@ API.v1.get(
 	async function action() {
 		const { includeDefaults } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
-		let ourQuery: Parameters<typeof Settings.find>[0] = {
+		const ourQuery: Parameters<typeof Settings.find>[0] = {
 			hidden: { $ne: true },
 		};
 
 		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
-
-		ourQuery = Object.assign({}, query, ourQuery);
 
 		if (includeDefaults) {
 			fields.packageValue = 1;

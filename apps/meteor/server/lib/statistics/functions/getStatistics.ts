@@ -6,7 +6,6 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 
 type GetStatisticsParams = {
 	userId: string;
-	query?: Record<string, any>;
 	pagination: {
 		offset: number;
 		count?: number;
@@ -19,19 +18,21 @@ type GetStatisticsReturn = { statistics: IStats[]; count: number; offset: number
 
 export async function getStatistics({
 	userId,
-	query = {},
 	pagination: { offset, count, sort, fields },
 }: GetStatisticsParams): Promise<GetStatisticsReturn> {
 	if (!(await hasPermissionAsync(userId, 'view-statistics'))) {
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = Statistics.findPaginated(query, {
-		sort: sort || { name: 1 },
-		skip: offset,
-		limit: count,
-		projection: fields,
-	});
+	const { cursor, totalCount } = Statistics.findPaginated(
+		{},
+		{
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		},
+	);
 
 	const [statistics, total] = await Promise.all([cursor.toArray(), totalCount]);
 

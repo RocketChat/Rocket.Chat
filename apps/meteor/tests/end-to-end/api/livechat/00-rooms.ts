@@ -346,7 +346,6 @@ describe('LIVECHAT - rooms', () => {
 					'count': 3,
 					'offset': 1,
 					'sort': '{ "_updatedAt": 1 }',
-					'fields': '{ "msgs": 0 }',
 					'roomName': 'test',
 				})
 				.expect('Content-Type', 'application/json')
