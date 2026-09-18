@@ -227,7 +227,10 @@ export const buildOngoingCallsContext = ({
 		silenced: silencedCalls.includes(callId),
 		silence: () => silenceCall(callId),
 	}),
-	formatTime: (date) => date.toLocaleTimeString('en', { hour: 'numeric', minute: '2-digit' }),
+	// Pinned to UTC, because this fixture is read by snapshots as well as by stories: left to the host's zone it
+	// renders one time for whoever recorded a snapshot and another for everyone else, and a story documented as
+	// starting at ten shows a different hour to each developer looking at it.
+	formatTime: (date) => date.toLocaleTimeString('en', { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' }),
 	...value,
 });
 
