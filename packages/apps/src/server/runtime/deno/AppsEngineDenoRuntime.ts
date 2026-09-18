@@ -91,10 +91,18 @@ function getAppsEngineDir(): string {
 }
 
 /**
- * Generates a runtime deno.jsonc at `<tempDir>/deno_runtime.jsonc` by reading
- * the static config and injecting the resolved absolute path for
- * `@rocket.chat/apps-engine/`. This makes deno-runtime location-independent:
- * the path is always correct regardless of where this package is installed.
+ * Generates a runtime deno.jsonc at `<tempDir>/deno.runtime.jsonc` by reading
+ * the static config and injecting the resolved absolute paths for
+ * `@rocket.chat/apps-engine/` and `@rocket.chat/apps/`. This makes deno-runtime
+ * location-independent: the paths are always correct regardless of where this
+ * package is installed.
+ *
+ * The generated config also points Deno at the static config's deno.lock. Deno only
+ * discovers a lockfile next to the config file it is given, and this one no longer sits
+ * there. Without the lockfile, ranged specifiers such as `jsr:@std/streams@^1.0.16`
+ * resolve to whatever is latest on the registry instead of the version the build cached,
+ * and `--cached-only` then kills the subprocess. `frozen` stops Deno from writing to the
+ * package directory, which is what this whole mechanism exists to avoid.
  *
  * Returns the path to the generated config file.
  */
@@ -112,9 +120,9 @@ function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string,
 		imports: {
 			...staticConfig.imports,
 			'@rocket.chat/apps-engine/': `${appsEnginePath}/`,
-			'@rocket.chat/apps/base-runtime/': `${path.join(packagePath, 'base-runtime', 'src')}/`,
 			'@rocket.chat/apps/': `${packagePath}/`,
 		},
+		lock: { path: path.join(path.dirname(denoConfigPath), 'deno.lock'), frozen: true },
 	};
 
 	fs.writeFileSync(targetPath, JSON.stringify(runtimeConfig, null, '\t'));
@@ -222,7 +230,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		 */
 		ensureSymlink(path.dirname(this.denoRuntimePath), path.dirname(this.denoConfigPath));
 
-		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/ and @rocket.chat/apps/ paths
+		// Generate a runtime config with resolved absolute paths for @rocket.chat/apps-engine/ and @rocket.chat/apps/, and an explicit lockfile
 		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath, this.packagePath);
 
 		this.debug = baseDebug.extend(appPackage.info.id);
