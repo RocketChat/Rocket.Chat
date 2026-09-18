@@ -19,7 +19,10 @@ describe('My tests', () => {
 });
 ```
 
-Playwright tests use the equivalent helpers from `tests/e2e/utils/apps.ts` (`installLocalTestPackage`, `uninstallApp`, `getAppLogs`, `findAppLogItem`) instead.
+The same helper reads back what an app logged - `getAppLogs`, `findAppLogItem`, `entryValue`, `getNewestAppLog`,
+`waitForNewAppLog` - which is how a test asserts an event reached the app at all.
+
+Playwright tests use the equivalent helpers from `tests/e2e/utils/apps.ts` instead.
 
 ## How to rebuild a package
 
@@ -701,8 +704,19 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 File name: `media-call-events-test_0.0.1.zip`
 
 An app implementing every method of `IMediaCallHandler`. It records what each handler received in the app
-logs, which is how `tests/e2e/apps/media-call-events.spec.ts` asserts the events actually arrived, and it
-answers the pre-create event according to a mode the test sets beforehand.
+logs, which is how the two specs below assert the events actually arrived, and it answers the pre-create
+event according to a mode the test sets beforehand.
+
+Two specs drive this app, and they cover the same events from opposite ends:
+
+| Spec | Drives calls through | Covers |
+| --- | --- | --- |
+| `tests/e2e/apps/media-call-events.spec.ts` | the browser, with real WebRTC | what a user sees: the widget, the controls each side is offered, the card posted to the DM |
+| `tests/end-to-end/apps/media-call-events.ts` | the signaling protocol, with no browser | what the workspace records: the signals the server sends back, the call document, the history item |
+
+The integration spec stands in for a browser tab with `tests/data/media-calls.helper.ts`, which holds a
+signaling session per participant. Reach for it over the e2e spec when the behaviour under test is the
+server's - it runs in the API suite, needs no browser, and can read a call the UI never renders.
 
 **Mode endpoint:**
 

@@ -38,3 +38,37 @@ export const pagination = <TPath extends PathWithoutPrefix<Path>>(
 			expect(res.body).to.have.property('total').that.is.a('number');
 		});
 };
+
+type WaitUntilOptions = {
+	/** Named in the error a timeout throws, as "Timed out waiting for <description>". */
+	description: string;
+	timeout?: number;
+	interval?: number;
+};
+
+/**
+ * Reads the workspace until `read` answers with something, and returns it.
+ *
+ * For results nothing in the request/response cycle waits on - an app event, a history item
+ * written after the response was sent - where the only way to know is to look again.
+ */
+export async function waitUntil<T>(
+	read: () => Promise<T | undefined | null>,
+	{ description, timeout = 20_000, interval = 250 }: WaitUntilOptions,
+): Promise<T> {
+	const deadline = Date.now() + timeout;
+
+	for (;;) {
+		const found = await read();
+
+		if (found !== undefined && found !== null) {
+			return found;
+		}
+
+		if (Date.now() >= deadline) {
+			throw new Error(`Timed out waiting for ${description}`);
+		}
+
+		await new Promise((resolve) => setTimeout(resolve, interval));
+	}
+}
