@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -21,7 +21,7 @@ const RoomList = () => {
 	const isAnonymous = !useUserId();
 
 	const { roomListGroups, groupCounts, collapsedGroups, handleClick, handleKeyDown, totalCount } = useSideBarRoomsList();
-	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
+	const { ref: resizeObserverRef } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
 
 	const itemData = useMemo(
@@ -33,8 +33,9 @@ const RoomList = () => {
 		[isAnonymous, openedRoom, t],
 	);
 
-	usePreventDefault(ref);
-	useShortcutOpenMenu(ref);
+	const preventDefaultRef = usePreventDefault();
+	const shortcutOpenMenuRef = useShortcutOpenMenu();
+	const ref = useMergedRefs(resizeObserverRef, preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
