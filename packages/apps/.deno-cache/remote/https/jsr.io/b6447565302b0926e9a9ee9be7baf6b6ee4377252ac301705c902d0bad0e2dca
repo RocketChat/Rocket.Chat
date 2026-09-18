@@ -1,0 +1,39 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import type { Uint8Array_ } from "./_types.ts";
+export type { Uint8Array_ };
+
+/**
+ * Concatenate an array of byte slices into a single slice.
+ *
+ * @param buffers Array of byte slices to concatenate.
+ * @returns A new byte slice containing all the input slices concatenated.
+ *
+ * @example Basic usage
+ * ```ts
+ * import { concat } from "@std/bytes/concat";
+ * import { assertEquals } from "@std/assert";
+ *
+ * const a = new Uint8Array([0, 1, 2]);
+ * const b = new Uint8Array([3, 4, 5]);
+ *
+ * assertEquals(concat([a, b]), new Uint8Array([0, 1, 2, 3, 4, 5]));
+ * ```
+ */
+export function concat(buffers: readonly Uint8Array[]): Uint8Array_ {
+  let length = 0;
+  for (const buffer of buffers) {
+    length += buffer.length;
+  }
+  const output = new Uint8Array(length);
+  let index = 0;
+  for (const buffer of buffers) {
+    output.set(buffer, index);
+    index += buffer.length;
+  }
+
+  return output;
+}
+
+// denoCacheMetadata={"headers":{"alt-svc":"h3=\":443\"; ma=86400","x-robots-tag":"noindex","content-type":"text/typescript","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","cache-control":"public, max-age=31536000, immutable","set-cookie":"__cf_bm=G94TW3LBCydfweAyXDgC6baf.96VxK_mboJjO_w5VoQ-1789585496.4735575-1.0.1.1-DwbLo4cidJ_Dy6iG5zByKkBhbY0cmcOBBmeGUMNEg0cJfiKj93utsLC0MeVtWbFFka4L834PPu_Y_gHfs_CadMzTnrIhiw4vylEyErdrCd5EMtwDhbmKBmJknMmvRYPq; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","content-length":"994","server":"cloudflare","etag":"\"a7e3ac5308ba030f83d2918e550650e3\"","age":"1738415","vary":"Origin","access-control-allow-origin":"*","cf-ray":"a3c223c8eecdf254-GRU","cf-cache-status":"HIT","access-control-expose-headers":"*","x-content-type-options":"nosniff","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=kBvXVnbESXXA%2BoI6%2FcKOMdB4ZjRXNOyRpyIuiHE3tFXpjsx7lkuC0lpYwcFdyC5WkY70seLPuFy7BDH3kmWtKgc%2BWeRBfs%2BLB4kxOikNhhfuBqnIkMSmAoA%3D\"}]}","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","accept-ranges":"bytes","date":"Wed, 16 Sep 2026 19:04:56 GMT","cross-origin-resource-policy":"cross-origin","x-jsr-backend":"modules"},"url":"https://jsr.io/@std/bytes/1.0.6/concat.ts","time":1789585496}

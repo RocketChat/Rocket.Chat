@@ -1,0 +1,46 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import { DEFAULT_BUFFER_SIZE } from "./_constants.ts";
+import { writeAll } from "./write_all.ts";
+import type { Reader, Writer } from "./types.ts";
+
+/**
+ * Copies from `src` to `dst` until either EOF (`null`) is read from `src` or
+ * an error occurs. It resolves to the number of bytes copied or rejects with
+ * the first error encountered while copying.
+ *
+ * @example Usage
+ * ```ts ignore
+ * import { copy } from "@std/io/copy";
+ *
+ * const source = await Deno.open("my_file.txt");
+ * const bytesCopied1 = await copy(source, Deno.stdout);
+ * const destination = await Deno.create("my_file_2.txt");
+ * const bytesCopied2 = await copy(source, destination);
+ * ```
+ *
+ * @param src The source to copy from
+ * @param dst The destination to copy to
+ * @param options Can be used to tune size of the buffer. Default size is 32kB
+ * @returns Number of bytes copied
+ */
+export async function copy(
+  src: Reader,
+  dst: Writer,
+  options?: {
+    bufSize?: number;
+  },
+): Promise<number> {
+  let n = 0;
+  const b = new Uint8Array(options?.bufSize ?? DEFAULT_BUFFER_SIZE);
+  while (true) {
+    const result = await src.read(b);
+    if (result === null) break;
+    await writeAll(dst, b.subarray(0, result));
+    n += result;
+  }
+  return n;
+}
+
+// denoCacheMetadata={"headers":{"access-control-expose-headers":"*","age":"1736855","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=6N0qit0tR2oTAlmF%2BoTcO2bA%2FhzERqWYhH%2BgYz1kTvDWeQ22yCC%2BO2suGlx%2BHBHje4owFKW04tjBH%2BXDu3NrHCvwSxvicTefFZoPhlywKvA%2Bd9zOllpxyVc%3D\"}]}","cf-cache-status":"HIT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","cf-ray":"a3c223c8eeb1f254-GRU","server":"cloudflare","x-robots-tag":"noindex","alt-svc":"h3=\":443\"; ma=86400","date":"Wed, 16 Sep 2026 19:04:56 GMT","x-content-type-options":"nosniff","etag":"\"1caf096eadc0e6cc0e6143b70c7a7bcc\"","x-jsr-backend":"modules","access-control-allow-origin":"*","cache-control":"public, max-age=31536000, immutable","content-length":"1330","content-type":"text/typescript","accept-ranges":"bytes","vary":"Origin","set-cookie":"__cf_bm=GF6.htnqAO9Enxmsp5c.VKEaIX6oMUmMA7b8yb9NyoM-1789585496.470224-1.0.1.1-0rfjDeriEBGHrtl.BJaD0RcAg3lmi3X2ch8RV89.vqm.O6MJaqAqA8qNE7j7zrZ_z7WMSF_RoS5iCzVZbnJLc5mNA8SIcGq0_m6Dxbaxzfm8_549j5qIXxtTueYniq_h; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","cross-origin-resource-policy":"cross-origin"},"url":"https://jsr.io/@std/io/0.225.3/copy.ts","time":1789585496}

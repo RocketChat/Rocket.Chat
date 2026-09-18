@@ -1,0 +1,64 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import { writeAll } from "./write_all.ts";
+import type { Writer } from "./types.ts";
+import { isCloser } from "./_common.ts";
+
+/** Options for {@linkcode toWritableStream}. */
+// deno-lint-ignore deno-style-guide/naming-convention
+export interface toWritableStreamOptions {
+  /**
+   * If the `writer` is also a `Closer`, automatically close the `writer`
+   * when the stream is closed, aborted, or a write error occurs.
+   *
+   * @default {true}
+   */
+  autoClose?: boolean;
+}
+
+/**
+ * Create a {@linkcode WritableStream} from a {@linkcode Writer}.
+ *
+ * @example Usage
+ * ```ts no-assert
+ * import { toWritableStream } from "@std/io/to-writable-stream";
+ *
+ * const a = toWritableStream(Deno.stdout); // Same as `Deno.stdout.writable`
+ * ```
+ *
+ * @param writer The writer to write to
+ * @param options The options
+ * @returns The writable stream
+ */
+export function toWritableStream(
+  writer: Writer,
+  options?: toWritableStreamOptions,
+): WritableStream<Uint8Array> {
+  const { autoClose = true } = options ?? {};
+
+  return new WritableStream({
+    async write(chunk, controller) {
+      try {
+        await writeAll(writer, chunk);
+      } catch (e) {
+        controller.error(e);
+        if (isCloser(writer) && autoClose) {
+          writer.close();
+        }
+      }
+    },
+    close() {
+      if (isCloser(writer) && autoClose) {
+        writer.close();
+      }
+    },
+    abort() {
+      if (isCloser(writer) && autoClose) {
+        writer.close();
+      }
+    },
+  });
+}
+
+// denoCacheMetadata={"headers":{"alt-svc":"h3=\":443\"; ma=86400","cf-ray":"a3c223c8eebef254-GRU","etag":"\"5789e743eb77fdcae9714cf7732ffe5c\"","date":"Wed, 16 Sep 2026 19:04:56 GMT","x-jsr-backend":"modules","access-control-allow-origin":"*","x-content-type-options":"nosniff","age":"1736855","x-robots-tag":"noindex","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=%2BhQXJqds1DMzM9hDVenaGpIu6JzsA3sO8gnM%2F3F6snvxiGntbp3V%2FZoHgeaUf92tjO2CYhsAWzVIjtmbKLsKUHRLI9mbPAa0pvFiTHn8Df8dcnFmRL5ontQ%3D\"}]}","server":"cloudflare","cf-cache-status":"HIT","cache-control":"public, max-age=31536000, immutable","vary":"Origin","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","content-length":"1575","access-control-expose-headers":"*","cross-origin-resource-policy":"cross-origin","content-type":"text/typescript","accept-ranges":"bytes","set-cookie":"__cf_bm=yz3u.cVQuW6amyDgksLJECFU774RrfALOPjTtyZItNE-1789585496.471609-1.0.1.1-ieRN6lUYoHMbYA8tW4wuIK3sbhwUVigeqe_sQa2Kj8g100R8eW3tmB53H9RIKOKYpXY0tiCrprY5H6_7cTN_BU08CFOB7r76mw5Ui5I6P40Ajx7_LkB6N5fJNY5RHSzU; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"},"url":"https://jsr.io/@std/io/0.225.3/to_writable_stream.ts","time":1789585496}

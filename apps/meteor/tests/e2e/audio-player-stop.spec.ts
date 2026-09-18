@@ -5,8 +5,16 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-// A local dev server serves an unminified bundle and needs longer to hydrate a room.
-test.describe.configure({ timeout: 180 * 1000 });
+// A local dev server serves an unminified bundle, which takes longer to hydrate than a production one.
+const DEV_BUNDLE_HYDRATION_TIMEOUT_MS = 180 * 1000;
+
+// The client refetches the room history after a prune, so waiting on one is a round trip.
+const HISTORY_REFETCH_TIMEOUT_MS = 15_000;
+
+// Wide enough that the prune covers every message in the room.
+const PRUNE_WINDOW_MS = 30 * 24 * 3600 * 1000;
+
+test.describe.configure({ timeout: DEV_BUNDLE_HYDRATION_TIMEOUT_MS });
 
 const AUDIO_FILE = 'sample-audio.mp3';
 
@@ -70,6 +78,7 @@ test.describe('audio player stops when the audio is no longer available', () => 
 			expect((await api.post('/chat.postMessage', { roomId: quotingRoom._id, text: permalink })).status()).toBe(200);
 			await poHomeChannel.navbar.openChat(quotingRoom.name!);
 
+			// The quote is built server-side, so this also proves the permalink resolved.
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Play', exact: true })).toBeVisible();
 		});
 
@@ -105,6 +114,7 @@ test.describe('audio player stops when the audio is no longer available', () => 
 			await poHomeChannel.content.btnOptionPinMessage.click();
 			await page.getByRole('button', { name: 'Yes, pin message' }).click();
 
+			// Separates a server-side pin failure from a player bug if this ever regresses.
 			await expect.poll(async () => (await (await api.get(`/chat.getMessage?msgId=${audioMessageId}`)).json()).message?.pinned).toBe(true);
 
 			await expect(page.getByTitle(PINNED_INDICATOR_TITLE)).toBeVisible();
@@ -119,15 +129,17 @@ test.describe('audio player stops when the audio is no longer available', () => 
 					await api.post('/rooms.cleanHistory', {
 						roomId: targetChannel._id,
 						excludePinned: true,
-						latest: new Date(Date.now() + 30 * 24 * 3600 * 1000),
-						oldest: new Date(Date.now() - 30 * 24 * 3600 * 1000),
+						latest: new Date(Date.now() + PRUNE_WINDOW_MS),
+						oldest: new Date(Date.now() - PRUNE_WINDOW_MS),
 					})
 				).status(),
 			).toBe(200);
 
-			// The client refetches history after a prune, so this waits on a round trip.
-			await expect(poHomeChannel.content.getSystemMessageByText(PINNED_SYSTEM_MESSAGE)).not.toBeVisible({ timeout: 15_000 });
+			await expect(poHomeChannel.content.getSystemMessageByText(PINNED_SYSTEM_MESSAGE)).not.toBeVisible({
+				timeout: HISTORY_REFETCH_TIMEOUT_MS,
+			});
 
+			// The server kept the pinned message, so the player must keep it too.
 			await expect(nowPlayingCard(page)).toBeVisible();
 		});
 	});

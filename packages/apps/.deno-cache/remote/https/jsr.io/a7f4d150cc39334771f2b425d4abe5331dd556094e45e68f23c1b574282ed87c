@@ -1,0 +1,86 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+import { DEFAULT_CHUNK_SIZE } from "./_constants.ts";
+import { isCloser } from "./_common.ts";
+import type { Closer, Reader } from "./types.ts";
+
+/** Options for {@linkcode toReadableStream}. */
+export interface ToReadableStreamOptions {
+  /** If the `reader` is also a `Closer`, automatically close the `reader`
+   * when `EOF` is encountered, or a read error occurs.
+   *
+   * @default {true}
+   */
+  autoClose?: boolean;
+
+  /**
+   * The size of chunks to allocate to read.
+   *
+   * @default {16640}
+   */
+  chunkSize?: number;
+
+  /** The queuing strategy to create the {@linkcode ReadableStream} with. */
+  strategy?: QueuingStrategy<Uint8Array>;
+}
+
+/**
+ * Create a {@linkcode ReadableStream} of {@linkcode Uint8Array}s from a
+ * {@linkcode Reader}.
+ *
+ * When the pull algorithm is called on the stream, a chunk from the reader
+ * will be read.  When `null` is returned from the reader, the stream will be
+ * closed along with the reader (if it is also a `Closer`).
+ *
+ * @example Usage
+ * ```ts no-assert
+ * import { toReadableStream } from "@std/io/to-readable-stream";
+ *
+ * using file = await Deno.open("./README.md", { read: true });
+ * const fileStream = toReadableStream(file);
+ * ```
+ *
+ * @param reader The reader to read from
+ * @param options The options
+ * @returns The readable stream
+ */
+export function toReadableStream(
+  reader: Reader | (Reader & Closer),
+  options?: ToReadableStreamOptions,
+): ReadableStream<Uint8Array> {
+  const {
+    autoClose = true,
+    chunkSize = DEFAULT_CHUNK_SIZE,
+    strategy,
+  } = options ?? {};
+
+  return new ReadableStream({
+    async pull(controller) {
+      const chunk = new Uint8Array(chunkSize);
+      try {
+        const read = await reader.read(chunk);
+        if (read === null) {
+          if (isCloser(reader) && autoClose) {
+            reader.close();
+          }
+          controller.close();
+          return;
+        }
+        controller.enqueue(chunk.subarray(0, read));
+      } catch (e) {
+        controller.error(e);
+        if (isCloser(reader)) {
+          reader.close();
+        }
+      }
+    },
+    cancel() {
+      if (isCloser(reader) && autoClose) {
+        reader.close();
+      }
+    },
+  }, strategy);
+}
+
+// denoCacheMetadata={"headers":{"x-content-type-options":"nosniff","cache-control":"public, max-age=31536000, immutable","cf-cache-status":"HIT","cf-ray":"a3c223c8eebbf254-GRU","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","access-control-allow-origin":"*","set-cookie":"__cf_bm=YhOqyZ_UNubefpJfFAnakIbuAIC4wcKq37lp9chOlFA-1789585496.4715202-1.0.1.1-9pmCmquf3WstzO0YxLYtZj9W5otm6hQZb04suQMqOMOAdOp8WC.ZIY_aYzcXx2dVvznpnuTm.D6oaQSX5DLmKjH4G49Qem.aSMFQAX6MFYgfFnbmvDLrpiRpiS1ExtBZ; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","x-jsr-backend":"modules","content-type":"text/typescript","age":"1314170","etag":"\"b15204ecfc26fbfaf85156a12162f790\"","cross-origin-resource-policy":"cross-origin","server":"cloudflare","x-robots-tag":"noindex","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=al1AYivVkBwHSYmOMJobF2V9b6%2F5hG7YqWMO13hrB9V1PaFsOpfo6Yg3hPdygSru76xtqppWuaEkriTnrA24L%2FIFQnyaSkB5qRh%2BwoiLbpz7lzELneos5%2F8%3D\"}]}","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","alt-svc":"h3=\":443\"; ma=86400","date":"Wed, 16 Sep 2026 19:04:56 GMT","content-length":"2284","access-control-expose-headers":"*","vary":"Origin","accept-ranges":"bytes"},"url":"https://jsr.io/@std/io/0.225.3/to_readable_stream.ts","time":1789585496}
