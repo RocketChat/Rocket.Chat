@@ -5,3 +5,4 @@ export * from './getPermissionRoles';
 export * from './updatePermissions';
 export * from './setUserPreferences';
 export * from './updateOwnUserInfo';
+export * from './sendMessage';

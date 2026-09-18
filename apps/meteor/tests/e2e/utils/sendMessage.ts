@@ -25,3 +25,14 @@ export const sendFillerMessages = async (api: BaseTest['api'], rid: string, coun
 		await Promise.all(messages.slice(i, i + batchSize).map((text) => api.post('/chat.postMessage', { roomId: rid, text })));
 	}
 };
+
+export const sendAttachmentMessage = async (
+	api: BaseTest['api'],
+	channel: string,
+	attachment: { title?: string; image_url?: string; [key: string]: unknown },
+) => {
+	return api.post('/chat.postMessage', {
+		channel,
+		attachments: [attachment],
+	});
+};

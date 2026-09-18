@@ -1,7 +1,7 @@
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannel, deleteChannel, sendAttachmentMessage } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe.serial('Image Gallery', async () => {
@@ -142,10 +142,11 @@ test.describe.serial('Image Gallery', async () => {
 			'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png';
 
 		test.beforeAll(async ({ api }) => {
+			await (await poHomeChannel.content.getGalleryButtonByName('close')).click();
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await api.post('/chat.postMessage', {
-				channel: targetChannel,
-				attachments: [{ title: 'Attachment Image', image_url: attachmentImageUrl }],
+			await sendAttachmentMessage(api, targetChannel, {
+				title: 'Attachment Image',
+				image_url: attachmentImageUrl,
 			});
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('Attachment Image');
