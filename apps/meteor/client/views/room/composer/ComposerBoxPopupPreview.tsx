@@ -132,7 +132,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 									aria-selected={item === focused}
 									margin={2}
 									borderWidth='default'
-									borderRadius='x4'
+									borderRadius='medium'
 								>
 									{item.type === 'image' && <img src={item.value} alt={item._id} />}
 									{item.type === 'audio' && (

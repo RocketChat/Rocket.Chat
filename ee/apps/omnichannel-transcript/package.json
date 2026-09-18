@@ -35,7 +35,7 @@
 		"@types/node": "~24.13.2",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
-		"i18next": "~23.4.9",
+		"i18next": "~26.4.2",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
