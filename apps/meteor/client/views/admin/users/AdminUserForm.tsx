@@ -574,12 +574,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											value={value}
 											onChange={onChange}
 											disabled={statusFieldsDisabled}
+											exceptions={userData?.username ? [userData.username] : undefined}
+											aria-describedby={`${hiddenFromId}-hint`}
 											placeholder={t('Select_users')}
 										/>
 									)}
 								/>
 							</FieldRow>
-							<FieldHint>{t('Hide_presence_from_hint')}</FieldHint>
+							<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_presence_from_hint')}</FieldHint>
 						</Field>
 					)}
 					<Field>
