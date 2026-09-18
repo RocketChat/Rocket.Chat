@@ -1,15 +1,20 @@
-import { VideoConf } from '@rocket.chat/core-services';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
-	isVideoConfCancelProps,
+	isVideoConfRingProps,
+	isVideoConfCallIdProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
+	isVideoConfAddParticipantsProps,
+	isVideoConfRenameProps,
+	isVideoConfShareChatProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { availabilityErrors } from '../../../lib/videoConference/constants';
@@ -41,11 +46,13 @@ const startResponseSchema = ajv.compile<{ data: VideoConferenceInstructions & { 
 	additionalProperties: false,
 });
 
-const joinResponseSchema = ajv.compile<{ url: string; providerName: string }>({
+const joinResponseSchema = ajv.compile<{ url: string; providerName: string; callId?: string; rid?: string }>({
 	type: 'object',
 	properties: {
 		url: { type: 'string' },
 		providerName: { type: 'string' },
+		callId: { type: 'string' },
+		rid: { type: 'string' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['url', 'providerName', 'success'],
@@ -57,6 +64,58 @@ const cancelResponseSchema = ajv.compile<void>({
 	properties: { success: { type: 'boolean', enum: [true] } },
 	required: ['success'],
 	additionalProperties: false,
+});
+
+/**
+ * How every conference endpoint below starts: the call has to exist, and the caller has to be allowed near it.
+ *
+ * Both failures answer a bare 404, vague about which it was, so a stranger cannot learn that a call id is
+ * real.
+ */
+const loadAccessibleConference = async (
+	callId: VideoConference['_id'],
+	userId: string,
+): Promise<Omit<VideoConference, 'providerData'> | undefined> => {
+	const call = await VideoConf.get(callId);
+	if (!call || !(await Authorization.canAccessConference(call, userId))) {
+		return undefined;
+	}
+
+	return call;
+};
+
+/**
+ * The conference endpoints answer with one value beside `success`, so their schemas differ in a single property.
+ */
+const oneValueResponseSchema = <T>(name: string, value: Record<string, unknown>) =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: { [name]: value, success: { type: 'boolean', enum: [true] } },
+		required: [name, 'success'],
+		additionalProperties: false,
+	});
+
+const addParticipantsResponseSchema = oneValueResponseSchema<{ added: string[] }>('added', {
+	type: 'array',
+	items: { type: 'string' },
+	description: 'Ids of the users newly added as members.',
+});
+
+const joinableResponseSchema = oneValueResponseSchema<{ calls: unknown[] }>('calls', {
+	type: 'array',
+	items: { type: 'object' },
+	description: 'Calls running now that the caller may join.',
+});
+
+const ringResponseSchema = oneValueResponseSchema<{ rang: boolean }>('rang', {
+	type: 'boolean',
+	description:
+		'Whether the member was rung. False when there was nothing to do — they are in the call, their phone is already ringing, or the call has ended.',
+});
+
+const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
+	type: 'string',
+	description: 'The room the conference chat now lives in.',
 });
 
 const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities }>({
@@ -133,7 +192,7 @@ API.v1.post(
 		const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 		const { userId } = this;
 
-		if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
 			return API.v1.forbidden('Not allowed');
 		}
 
@@ -154,7 +213,7 @@ API.v1.post(
 				throw new Error(availabilityErrors.NOT_ACTIVE);
 			}
 
-			const allowRinging = Boolean(requestRinging) && (await hasPermissionAsync(userId, 'videoconf-ring-users'));
+			const allowRinging = Boolean(requestRinging) && (await hasPermissionAsync(this.user, 'videoconf-ring-users'));
 
 			return API.v1.success({
 				data: {
@@ -185,11 +244,16 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
+		if (!(await Authorization.canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
@@ -206,13 +270,17 @@ API.v1.post(
 			}
 		}
 
-		if (!url) {
+		// An embedded call renders inline and has no URL to hand back. For every other provider the URL is the
+		// whole point of joining, so coming back without one is a failure.
+		if (!url && !videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 			return API.v1.failure('failed-to-get-url');
 		}
 
 		return API.v1.success({
-			url,
+			url: url ?? '',
 			providerName: call.providerName,
+			callId: call._id,
+			rid: call.rid,
 		});
 	},
 );
@@ -221,7 +289,7 @@ API.v1.post(
 	'video-conference.cancel',
 	{
 		authRequired: true,
-		body: isVideoConfCancelProps,
+		body: isVideoConfCallIdProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
 		response: {
 			200: cancelResponseSchema,
@@ -234,16 +302,233 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
 		await VideoConf.cancel(userId, callId);
 		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.decline',
+	{
+		authRequired: true,
+		body: isVideoConfCallIdProps,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		// Records the decline against the caller's own membership only. Declining is deliberately not a way to
+		// end someone else's conference, so this takes no target user and never touches the call's status.
+		await VideoConf.declineCall(this.userId, callId);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.leave',
+	{
+		authRequired: true,
+		body: isVideoConfCallIdProps,
+		// Sent when the call window closes, which a user can do repeatedly across rejoins.
+		rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		// Only ever marks the caller as gone. The conference ends as a consequence of nobody being left in it,
+		// not because one participant asked for it — the same rule declining follows.
+		await VideoConf.leaveCall(this.userId, callId);
+
+		return API.v1.success();
+	},
+);
+
+/**
+ * Renews the caller's presence lease on a call.
+ *
+ * The counterpart of `video-conference.leave`, and what makes a lost leave survivable.
+ */
+API.v1.post(
+	'video-conference.heartbeat',
+	{
+		authRequired: true,
+		body: isVideoConfCallIdProps,
+		// Renewals are every `PRESENCE_HEARTBEAT_MS`, so twice a minute, plus one whenever the window is brought
+		// back to the front. The allowance is for that: bursts of attention, not a higher steady rate.
+		rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		await VideoConf.renewPresence(this.userId, callId);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.ring',
+	{
+		authRequired: true,
+		body: isVideoConfRingProps,
+		// The same permission `video-conference.start` demands before ringing anyone — having access to a
+		// conference must not be a way around it.
+		permissionsRequired: ['videoconf-ring-users'],
+		// Ringing again is a deliberate, repeatable act, but not one worth hammering someone with.
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: ringResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, userId } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		const rang = await VideoConf.ringMember(this.userId, callId, userId);
+
+		return API.v1.success({ rang });
+	},
+);
+
+API.v1.post(
+	'video-conference.add-participants',
+	{
+		authRequired: true,
+		body: isVideoConfAddParticipantsProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: addParticipantsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, users, ring } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		// Membership authorizes joining the call and nothing else — it puts nobody in a room.
+		const added = await VideoConf.addMembers(this.userId, callId, users, {
+			// Not ringing unless asked: adding someone to a call in progress is often to have them join when
+			// they can, and an unrequested ring is an interruption nobody chose.
+			ring: (ring ?? false) && (await hasPermissionAsync(this.user, 'videoconf-ring-users')),
+		});
+
+		return API.v1.success({ added });
+	},
+);
+
+API.v1.post(
+	'video-conference.rename',
+	{
+		authRequired: true,
+		body: isVideoConfRenameProps,
+		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, title } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		// Whether this particular user may *name* the call is the service's to decide — access only settles
+		// whether they may be here at all. Its refusal travels as `error-not-allowed`, the same way every other
+		// endpoint in the API lets one travel, so there is nothing here to translate.
+		await VideoConf.renameCall(this.userId, callId, title);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.share-chat',
+	{
+		authRequired: true,
+		body: isVideoConfShareChatProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: shareChatResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, mode } = this.bodyParams;
+
+		const call = await loadAccessibleConference(callId, this.userId);
+		if (!call) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({ rid: await VideoConf.shareChatWithMembers(this.userId, callId, mode) });
 	},
 );
 
@@ -261,23 +546,49 @@ API.v1.get(
 	},
 	async function action() {
 		const { callId } = this.queryParams;
-		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
+		const call = await loadAccessibleConference(callId, this.userId);
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
-			return API.v1.failure('invalid-params');
-		}
-
-		const capabilities = await VideoConf.listProviderCapabilities(call.providerName);
+		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
+		// surfaces them and offers the remedy, which is why this ships with the conference rather than needing
+		// its own round trip.
+		const [capabilities, chatAccess] = await Promise.all([
+			VideoConf.listProviderCapabilities(call.providerName),
+			VideoConf.getChatAccess(this.userId, callId),
+		]);
 
 		return API.v1.success({
 			...(call as VideoConference),
 			capabilities,
+			chatAccess,
 		});
+	},
+);
+
+API.v1.get(
+	'video-conference.joinable',
+	{
+		authRequired: true,
+		// Discovery is event-driven: a per-user `video-conference` event — a ring, an arrival, a call ending —
+		// is what sends a client back here. The poll behind it is a fallback for what an event cannot cover,
+		// a missed message or a reconnection, so this has to tolerate a steady trickle as well as bursts.
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
+		response: {
+			200: joinableResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		return API.v1.success({ calls: await VideoConf.listJoinableCalls(this.userId) });
 	},
 );
 
@@ -299,7 +610,12 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
+		// TODO: answer 404 when a conference is missing or is not the caller's
+		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
+		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
+		// published and clients depend on the status, so moving it belongs to the next major, with
+		// `applyBreakingChanges`.
+		if (!(await canAccessRoomIdAsync(roomId, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 

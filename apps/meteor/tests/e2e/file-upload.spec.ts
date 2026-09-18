@@ -172,8 +172,7 @@ test.describe.serial('file-upload', () => {
 		test('should open warning modal when all file uploads fail', async ({ page }) => {
 			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Warning' }));
 
-			await poHomeChannel.content.sendFileMessage(TEST_EMPTY_FILE, { waitForResponse: false });
-			await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO, { waitForResponse: false });
+			await poHomeChannel.content.sendMultipleFilesMessage([TEST_EMPTY_FILE, TEST_FILE_DRAWIO], { waitForResponse: false });
 
 			await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).toHaveAttribute('readonly');
 			await expect(poHomeChannel.composer.getFileByName(TEST_FILE_DRAWIO)).toHaveAttribute('readonly');
@@ -190,11 +189,12 @@ test.describe.serial('file-upload', () => {
 			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Are you sure' }));
 
 			await test.step('should only mark as "Upload failed" the specific file that failed to upload', async () => {
-				await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT, { waitForResponse: false });
-				await poHomeChannel.content.sendFileMessage(TEST_EMPTY_FILE, { waitForResponse: false });
+				await poHomeChannel.content.sendMultipleFilesMessage([TEST_FILE_TXT, TEST_EMPTY_FILE], { waitForResponse: false });
 
-				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toHaveAttribute('readonly');
 				await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).toHaveAttribute('readonly');
+
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toHaveAttribute('readonly');
 			});
 
 			await test.step('should open warning modal', async () => {

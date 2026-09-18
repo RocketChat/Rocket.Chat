@@ -11,7 +11,7 @@ exports[`renders KeypadStory without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-wwb6hw"
     >
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -29,7 +29,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -49,7 +49,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -69,7 +69,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -89,7 +89,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -109,7 +109,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -129,7 +129,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -149,7 +149,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -169,7 +169,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -189,7 +189,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -208,7 +208,7 @@ exports[`renders KeypadStory without crashing 1`] = `
       </button>
       <button
         aria-describedby="react-aria-description-0"
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
@@ -228,7 +228,7 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span

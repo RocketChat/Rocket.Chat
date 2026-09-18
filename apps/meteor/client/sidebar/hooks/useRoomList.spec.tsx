@@ -7,9 +7,15 @@ import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 
+let mockOpenedRoom: string | undefined;
+
 jest.mock('../../lib/RoomManager', () => ({
-	useOpenedRoom: () => undefined,
+	useOpenedRoom: () => mockOpenedRoom,
 }));
+
+afterEach(() => {
+	mockOpenedRoom = undefined;
+});
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
 const groupsListOf = (groups: SidebarRoomListGroup[]) => groups.map((group) => group.key);
@@ -256,6 +262,55 @@ it('should hide all rooms and show a badge when a group is collapsed in CE ("Sho
 	expect(result.current.groupsCount[channelsIndex]).toEqual(0);
 	// The header badge accumulates unread data from the hidden rooms.
 	expect(result.current.groups[channelsIndex].unreadInfo.tunread.length).toBeGreaterThan(0);
+});
+
+it('should keep the opened room visible when its group is collapsed', async () => {
+	// Every seeded DM is read, so without this behaviour collapsing "Direct_Messages" would hide all of them.
+	mockOpenedRoom = directRooms[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Direct_Messages'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	const directIndex = groupsList.indexOf('Direct_Messages');
+	expect(result.current.groupsCount[directIndex]).toEqual(1);
+	expect(result.current.groups[directIndex].rooms).toEqual([directRooms[0]]);
+});
+
+it('should not count the opened room in the header badge of its collapsed group', async () => {
+	// The opened room stays visible with its own counters, so the collapsed header must not count it again.
+	mockOpenedRoom = unreadChannels[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+
+	const groupsList = groupsListOf(result.current.groups);
+	const channelsIndex = groupsList.indexOf('Channels');
+	const hiddenChannels = unreadChannels.slice(1);
+	const { unreadInfo } = result.current.groups[channelsIndex];
+
+	expect(result.current.groups[channelsIndex].rooms).toEqual([unreadChannels[0]]);
+	expect(unreadInfo.tunread).toEqual(hiddenChannels.flatMap((room) => room.tunread || []));
+	expect(unreadInfo.tunreadUser).toEqual(hiddenChannels.flatMap((room) => room.tunreadUser || []));
+	expect(unreadInfo.unread).toEqual(hiddenChannels.reduce((acc, room) => acc + room.unread, 0));
+});
+
+it('should not duplicate the opened room when a collapsed group already shows it as unread', async () => {
+	mockOpenedRoom = unreadChannels[0].rid;
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			isEnterprise: true,
+			sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true }],
+		}).build(),
+	});
+
+	// hasLicenseModule resolves asynchronously from the mock endpoint.
+	await waitFor(() => {
+		const groupsList = groupsListOf(result.current.groups);
+		const channelsIndex = groupsList.indexOf('Channels');
+		expect(result.current.groupsCount[channelsIndex]).toEqual(unreadChannels.length);
+	});
 });
 
 it('should keep unread rooms visible (and show no header badge) when a group is collapsed and "Show unreads" is on in EE', async () => {

@@ -6,6 +6,7 @@ import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
+import { CallRejectedError } from '../../definition/common';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -81,14 +82,25 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
-		const call = await mediaCallDirector.createCall({
-			caller,
-			callee,
-			callerAgent,
-			calleeAgent,
-			features: SIP_CALL_FEATURES,
-			...(divertedBy && { divertedBy }),
-		});
+		const call = await mediaCallDirector
+			.createCall({
+				caller,
+				callee,
+				callerAgent,
+				calleeAgent,
+				features: SIP_CALL_FEATURES,
+				...(divertedBy && { divertedBy }),
+				sipCallId: req.get('Call-ID'),
+			})
+			.catch((err) => {
+				// An incoming invite needs an answer, and only SipErrors are forwarded to it
+				if (err instanceof CallRejectedError) {
+					logger.debug({ msg: 'incoming sip call was rejected', reason: err.callRejectedReason });
+					throw new SipError(SipErrorCodes.FORBIDDEN, err.message);
+				}
+
+				throw err;
+			});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
@@ -302,23 +314,6 @@ export class IncomingSipCall extends BaseSipCall {
 		throw new SipError(SipErrorCodes.NOT_FOUND);
 	}
 
-	private static async getRocketChatCallerFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
-		logger.debug({
-			msg: 'IncomingSipCall.getRocketChatCallerFromInvite',
-			callingNumber: req.callingNumber,
-			calledNumber: req.calledNumber,
-		});
-
-		if (req.callingNumber && typeof req.callingNumber === 'string') {
-			const userContact = await mediaCallDirector.cast.getContactForExtensionNumber(req.callingNumber, { preferredType: 'sip' });
-			if (userContact) {
-				return userContact;
-			}
-		}
-
-		return null;
-	}
-
 	private static async getDiversionContactFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
 		if (!req.has('diversion')) {
 			return null;
@@ -351,18 +346,11 @@ export class IncomingSipCall extends BaseSipCall {
 
 	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {
 		logger.debug({ msg: 'IncomingSipCall.getCallerContactFromInvite' });
-		const callerBase = await this.getRocketChatCallerFromInvite(req);
 
-		const displayNameFromHeader = req.has('X-RocketChat-Caller-Name') && req.get('X-RocketChat-Caller-Name');
-		const usernameFromHeader = req.has('X-RocketChat-Caller-Username') && req.get('X-RocketChat-Caller-Username');
-
-		const displayName = displayNameFromHeader || callerBase?.displayName || req.from;
-		const username = usernameFromHeader || callerBase?.username || req.callingNumber;
-
+		const displayName = req.callingName || undefined;
 		const sipExtension = req.callingNumber;
 
 		const defaultContactInfo: MediaCallContactInformation = {
-			username,
 			sipExtension,
 			displayName: displayName || sipExtension,
 		};

@@ -29,8 +29,12 @@ import { SynapseClient } from '../helper/synapse-client';
 (IS_EE ? describe : describe.skip)('Federation', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1User1RequestConfig: IRequestConfig;
+	let rc1User1: IUser;
 	let hs1AdminApp: SynapseClient;
 	let hs1User1App: SynapseClient;
+
+	const rc1User1Name = `fed-room-user-${Date.now()}`;
+	const rc1User1MatrixId = `@${rc1User1Name}:${federationConfig.rc1.domain}`;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -40,23 +44,18 @@ import { SynapseClient } from '../helper/synapse-client';
 			federationConfig.rc1.adminPassword,
 		);
 
-		// Create user1 in RC1 using federation config values
-		await createUser(
+		// Create user1 in RC1 and its request config
+		rc1User1 = await createUser(
 			{
-				username: federationConfig.rc1.additionalUser1.username,
-				password: federationConfig.rc1.additionalUser1.password,
-				email: `${federationConfig.rc1.additionalUser1.username}@rocket.chat`,
-				name: federationConfig.rc1.additionalUser1.username,
+				username: rc1User1Name,
+				password: 'random',
+				email: `${rc1User1Name}@rocket.chat`,
+				name: rc1User1Name,
 			},
 			rc1AdminRequestConfig,
 		);
 
-		// Create user1 request config for RC1
-		rc1User1RequestConfig = await getRequestConfig(
-			federationConfig.rc1.url,
-			federationConfig.rc1.additionalUser1.username,
-			federationConfig.rc1.additionalUser1.password,
-		);
+		rc1User1RequestConfig = await getRequestConfig(federationConfig.rc1.url, rc1User1Name, 'random');
 
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
@@ -77,6 +76,10 @@ import { SynapseClient } from '../helper/synapse-client';
 		}
 		if (hs1User1App) {
 			await hs1User1App.close();
+		}
+
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
 		}
 	});
 
@@ -116,7 +119,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			it('should create a non-federated room when only local members are added', async () => {
 				const response = await createRoom({
 					type: 'd',
-					username: federationConfig.rc1.additionalUser1.username,
+					username: rc1User1Name,
 					config: userRequestConfig,
 				});
 
@@ -184,7 +187,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const response = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+						members: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
 						extraData: {
 							federated: false,
 						},
@@ -571,7 +574,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						name: channelName,
 						members: [
 							federationConfig.hs1.adminMatrixUserId, // federated user
-							federationConfig.rc1.additionalUser1.username, // local user
+							rc1User1Name, // local user
 						],
 						extraData: {
 							federated: true,
@@ -609,20 +612,21 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 					// Synapse view: Check in Synapse (Matrix) for federated user
-					const room = hs1AdminApp.getRoom(channelName);
-					expect(room).toHaveProperty('name', channelName);
-					expect(room.getMyMembership()).toBe('join');
+					await retry(
+						'wait for the join to be processed',
+						() => {
+							const room = hs1AdminApp.getRoom(channelName);
+							expect(room).toHaveProperty('name', channelName);
+							expect(room.getMyMembership()).toBe('join');
+						},
+						{ retries: 5, delayMs: 1000 },
+					);
 				});
 
 				it('should show the 2 new users in the members list', async () => {
 					// RC view: Check in RC (admin view) that both users are in the members list
 					const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
-					const rc1User1InRC = await findRoomMember(
-						federatedChannel._id,
-						federationConfig.rc1.additionalUser1.username,
-						{},
-						rc1AdminRequestConfig,
-					);
+					const rc1User1InRC = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1AdminRequestConfig);
 					const hs1AdminUserInRC = await findRoomMember(
 						federatedChannel._id,
 						federationConfig.hs1.adminMatrixUserId,
@@ -642,12 +646,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						{},
 						rc1User1RequestConfig,
 					);
-					const rc1User1InRCUser1 = await findRoomMember(
-						federatedChannel._id,
-						federationConfig.rc1.additionalUser1.username,
-						{},
-						rc1User1RequestConfig,
-					);
+					const rc1User1InRCUser1 = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1User1RequestConfig);
 					const hs1AdminUserInRCUser1 = await findRoomMember(
 						federatedChannel._id,
 						federationConfig.hs1.adminMatrixUserId,
@@ -664,7 +663,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const rc1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId, {
 						initialDelay: 2000,
 					});
-					const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId, {
+					const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId, {
 						initialDelay: 2000,
 					});
 					const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
@@ -684,7 +683,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// Look for system messages about both users being invited
 					// Members added during room creation are invited (status: 'INVITED'), not auto-joined
 					const localUserInviteMessage = historyResponse.messages.find(
-						(message: IMessage) => message.t === 'ui' && message.msg && message.msg === federationConfig.rc1.additionalUser1.username,
+						(message: IMessage) => message.t === 'ui' && message.msg && message.msg === rc1User1Name,
 					);
 
 					const federatedUserInviteMessage = historyResponse.messages.find(
@@ -692,7 +691,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					);
 
 					expect(localUserInviteMessage).toBeDefined();
-					expect(localUserInviteMessage?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+					expect(localUserInviteMessage?.msg).toContain(rc1User1Name);
 					expect(localUserInviteMessage?.u?.username).toBe(federationConfig.rc1.adminUser);
 
 					expect(federatedUserInviteMessage).toBeDefined();
@@ -704,7 +703,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(Array.isArray(historyResponseUser1.messages)).toBe(true);
 
 					const localUserInviteMessageUser1 = historyResponseUser1.messages.find(
-						(message: IMessage) => message.t === 'ui' && message.msg && message.msg === federationConfig.rc1.additionalUser1.username,
+						(message: IMessage) => message.t === 'ui' && message.msg && message.msg === rc1User1Name,
 					);
 
 					const federatedUserInviteMessageUser1 = historyResponseUser1.messages.find(
@@ -1089,7 +1088,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Add 1 federated user and 1 local user to the room via the REST invite endpoint
 						const addUserResponse = await addUserToRoom({
-							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+							usernames: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
@@ -1117,20 +1116,21 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 						// Synapse view: Check in Synapse (Matrix) for federated user
-						const room = hs1AdminApp.getRoom(channelName);
-						expect(room).toHaveProperty('name', channelName);
-						expect(room.getMyMembership()).toBe('join');
+						await retry(
+							'wait for the join to be processed',
+							() => {
+								const room = hs1AdminApp.getRoom(channelName);
+								expect(room).toHaveProperty('name', channelName);
+								expect(room.getMyMembership()).toBe('join');
+							},
+							{ retries: 5, delayMs: 1000 },
+						);
 					});
 
 					it('should show the 2 new users in the members list', async () => {
 						// RC view: Check in RC (admin view) that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
-						const rc1User1InRC = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.rc1.additionalUser1.username,
-							{},
-							rc1AdminRequestConfig,
-						);
+						const rc1User1InRC = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1AdminRequestConfig);
 						const hs1AdminUserInRC = await findRoomMember(
 							federatedChannel._id,
 							federationConfig.hs1.adminMatrixUserId,
@@ -1150,12 +1150,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							{},
 							rc1User1RequestConfig,
 						);
-						const rc1User1InRCUser1 = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.rc1.additionalUser1.username,
-							{},
-							rc1User1RequestConfig,
-						);
+						const rc1User1InRCUser1 = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1User1RequestConfig);
 						const hs1AdminUserInRCUser1 = await findRoomMember(
 							federatedChannel._id,
 							federationConfig.hs1.adminMatrixUserId,
@@ -1172,7 +1167,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const rc1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId, {
 							initialDelay: 2000,
 						});
-						const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId, {
+						const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId, {
 							initialDelay: 2000,
 						});
 						const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
@@ -1191,12 +1186,11 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// 'uj' (user joined) message types
 						const localUserJoinedMessage = historyResponse.messages.find(
-							(message: IMessage) =>
-								message.t === 'uj' && message.msg && message.msg.includes(federationConfig.rc1.additionalUser1.username),
+							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(rc1User1Name),
 						);
 
 						expect(localUserJoinedMessage).toBeDefined();
-						expect(localUserJoinedMessage?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+						expect(localUserJoinedMessage?.msg).toContain(rc1User1Name);
 
 						const federatedUserJoinedMessage = historyResponse.messages.find(
 							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
@@ -1211,12 +1205,11 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Look for 'uj' (user joined) message types
 						const localUserJoinedMessageUser1 = historyResponseUser1.messages.find(
-							(message: IMessage) =>
-								message.t === 'uj' && message.msg && message.msg.includes(federationConfig.rc1.additionalUser1.username),
+							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(rc1User1Name),
 						);
 
 						expect(localUserJoinedMessageUser1).toBeDefined();
-						expect(localUserJoinedMessageUser1?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+						expect(localUserJoinedMessageUser1?.msg).toContain(rc1User1Name);
 
 						const federatedUserJoinedMessageUser1 = historyResponseUser1.messages.find(
 							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
@@ -1500,7 +1493,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Add 1 federated user and 1 local user to the room via the /invite slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
-							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+							usernames: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
 							rid: federatedChannel._id,
 							config: rc1AdminRequestConfig,
 						});
@@ -1527,20 +1520,21 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(roomInfoUser1.room).toHaveProperty('federated', true);
 
 						// Synapse view: Check in Synapse (Matrix) for federated user
-						const room = hs1AdminApp.getRoom(channelName);
-						expect(room).toHaveProperty('name', channelName);
-						expect(room.getMyMembership()).toBe('join');
+						await retry(
+							'wait for the join to be processed',
+							() => {
+								const room = hs1AdminApp.getRoom(channelName);
+								expect(room).toHaveProperty('name', channelName);
+								expect(room.getMyMembership()).toBe('join');
+							},
+							{ retries: 5, delayMs: 1000 },
+						);
 					});
 
 					it('should show the 2 new users in the members list', async () => {
 						// RC view: Check in RC (admin view) that all users are in the members list
 						const rc1AdminUserInRC = await findRoomMember(federatedChannel._id, federationConfig.rc1.adminUser, {}, rc1AdminRequestConfig);
-						const rc1User1InRC = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.rc1.additionalUser1.username,
-							{},
-							rc1AdminRequestConfig,
-						);
+						const rc1User1InRC = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1AdminRequestConfig);
 						const hs1AdminUserInRC = await findRoomMember(
 							federatedChannel._id,
 							federationConfig.hs1.adminMatrixUserId,
@@ -1560,12 +1554,7 @@ import { SynapseClient } from '../helper/synapse-client';
 							{},
 							rc1User1RequestConfig,
 						);
-						const rc1User1InRCUser1 = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.rc1.additionalUser1.username,
-							{},
-							rc1User1RequestConfig,
-						);
+						const rc1User1InRCUser1 = await findRoomMember(federatedChannel._id, rc1User1Name, {}, rc1User1RequestConfig);
 						const hs1AdminUserInRCUser1 = await findRoomMember(
 							federatedChannel._id,
 							federationConfig.hs1.adminMatrixUserId,
@@ -1582,7 +1571,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const rc1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId, {
 							initialDelay: 2000,
 						});
-						const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId, {
+						const rc1User1InSynapse = await hs1AdminApp.findRoomMember(channelName, rc1User1MatrixId, {
 							initialDelay: 2000,
 						});
 						const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
@@ -1602,12 +1591,11 @@ import { SynapseClient } from '../helper/synapse-client';
 						// Look for system messages about both users joining after accepting invites
 						// 'uj' (user joined) message types
 						const localUserJoinedMessage = historyResponse.messages.find(
-							(message: IMessage) =>
-								message.t === 'uj' && message.msg && message.msg.includes(federationConfig.rc1.additionalUser1.username),
+							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(rc1User1Name),
 						);
 
 						expect(localUserJoinedMessage).toBeDefined();
-						expect(localUserJoinedMessage?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+						expect(localUserJoinedMessage?.msg).toContain(rc1User1Name);
 
 						const federatedUserJoinedMessage = historyResponse.messages.find(
 							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
@@ -1622,8 +1610,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Look for 'uj' (user joined) message types
 						const localUserJoinedMessageUser1 = historyResponseUser1.messages.find(
-							(message: IMessage) =>
-								message.t === 'uj' && message.msg && message.msg.includes(federationConfig.rc1.additionalUser1.username),
+							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(rc1User1Name),
 						);
 
 						const federatedUserJoinedMessageUser1 = historyResponseUser1.messages.find(
@@ -1631,7 +1618,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						);
 
 						expect(localUserJoinedMessageUser1).toBeDefined();
-						expect(localUserJoinedMessageUser1?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+						expect(localUserJoinedMessageUser1?.msg).toContain(rc1User1Name);
 
 						expect(federatedUserJoinedMessageUser1).toBeDefined();
 						expect(federatedUserJoinedMessageUser1?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
@@ -1738,7 +1725,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const createResponse = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.rc1.additionalUser1.username],
+						members: [rc1User1Name],
 						extraData: {
 							federated: true,
 						},
@@ -1811,9 +1798,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 								expect(members.members.length).toBe(3);
 								expect(members.members.find((member: IUser) => member.username === federationConfig.rc1.adminUser)).not.toBeNull();
-								expect(
-									members.members.find((member: IUser) => member.username === federationConfig.rc1.additionalUser1.username),
-								).not.toBeNull();
+								expect(members.members.find((member: IUser) => member.username === rc1User1Name)).not.toBeNull();
 								expect(members.members.find((member: IUser) => member.username === federationConfig.hs1.adminMatrixUserId)).not.toBeNull();
 							},
 							{ delayMs: 200 },

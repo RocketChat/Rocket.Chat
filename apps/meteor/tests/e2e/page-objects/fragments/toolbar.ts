@@ -83,6 +83,10 @@ export class RoomToolbar extends Toolbar {
 		return this.menu.getMenuItem('Prune Messages');
 	}
 
+	get menuItemAutoTranslate(): Locator {
+		return this.menu.getMenuItem('Auto-Translate');
+	}
+
 	get menuItemNotificationsPreferences(): Locator {
 		return this.menu.getMenuItem('Notifications Preferences');
 	}

@@ -57,11 +57,11 @@ test.describe('Preview public channel', () => {
 			);
 		});
 
-		test('should let user view direct rooms', async ({ api, page }) => {
+		test('should let user view direct rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 			await createDirectMessage(api);
 
-			await page.goto('/home');
+			await poHomeChannel.goto();
 
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 
