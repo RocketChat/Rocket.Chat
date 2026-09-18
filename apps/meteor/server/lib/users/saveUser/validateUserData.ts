@@ -1,6 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import escape from 'lodash.escape';
 
@@ -12,6 +11,7 @@ import { getRoleIds } from '../../authorization/getRoles';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { checkEmailAvailability } from '../checkEmailAvailability';
 import { checkUsernameAvailability } from '../checkUsernameAvailability';
+import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 
 export const validateUserData = makeFunction(async (userId: IUser['_id'], userData: SaveUserData): Promise<void> => {
 	const existingRoles = await getRoleIds();
@@ -40,7 +40,7 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 	if (
 		!isUpdateUserData(userData) &&
 		userData.presenceDisabledByAdmin !== undefined &&
-		(!(await hasPermissionAsync(userId, 'edit-other-user-info')) || !License.hasModule('unlimited-presence'))
+		(!(await hasPermissionAsync(userId, 'edit-other-user-info')) || !isAdminHidingAllowed())
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',

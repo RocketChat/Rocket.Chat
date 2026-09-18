@@ -44,6 +44,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', true);
 		await updateEESetting('Accounts_StatusVisibility_Enabled', true);
 
 		[hider, viewer, bystander] = (await Promise.all([
@@ -78,6 +79,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		await deleteTeam(credentials, team.name);
 		await Promise.all([deleteUser(hider), deleteUser(viewer), deleteUser(bystander)]);
 		await updateEESetting('Accounts_StatusVisibility_Enabled', false);
+		await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', false);
 	});
 
 	describe('[/rooms.membersOrderedByRole]', () => {
@@ -648,6 +650,55 @@ import { IS_EE } from '../../e2e/config/constants';
 			await assertDenied({ 'settings.preferences.statusVisibilityDenied': 1, 'username': 1 });
 
 			await setAdminDenied(hider._id, []).expect(200);
+		});
+	});
+
+	describe('[Accounts_StatusVisibility_Admin_Enabled]', () => {
+		before(async () => {
+			await setUserStatus(hiderCredentials, UserStatus.ONLINE);
+			await setAdminDenied(hider._id, [viewer.username]).expect(200);
+			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', false);
+		});
+
+		after(async () => {
+			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', true);
+			await setAdminDenied(hider._id, []).expect(200);
+		});
+
+		it('should ignore a stored admin rule while the feature is off', async () => {
+			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
+		});
+
+		it('should refuse writing the admin fields while the feature is off', async () => {
+			await setAdminDenied(hider._id, [viewer.username]).expect(400);
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({ userId: hider._id, data: { presenceDisabledByAdmin: true } })
+				.expect(400);
+		});
+
+		it('should not persist a user block list written while the feature is off', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(hiderCredentials)
+				.send({ data: { statusVisibilityDenied: [viewer.username] } })
+				.expect(200);
+
+			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', true);
+
+			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
+
+			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', false);
+		});
+
+		it('should still hide everyone when the workspace turned the user status off', async () => {
+			await updateEESetting('Accounts_UserStatus_Enabled', false);
+
+			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.OFFLINE);
+
+			await updateEESetting('Accounts_UserStatus_Enabled', true);
 		});
 	});
 });

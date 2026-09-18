@@ -7,7 +7,6 @@ const findPresenceUsersByIds = jest.fn();
 const findWithStatusVisibilityConfig = jest.fn();
 const findPresenceDisabledByAdmin = jest.fn();
 const findUsersNotOffline = jest.fn();
-const hasModule = jest.fn();
 
 jest.mock('@rocket.chat/core-services', () => ({
 	api: { broadcast: (...args: unknown[]) => broadcast(...args) },
@@ -30,9 +29,6 @@ jest.mock('@rocket.chat/models', () => ({
 		findUsersNotOffline: (...args: unknown[]) => findUsersNotOffline(...args),
 	},
 }));
-jest.mock('@rocket.chat/license', () => ({
-	License: { hasModule: (...args: unknown[]) => hasModule(...args) },
-}));
 
 const cursor = (users: object[]) => ({ toArray: async () => users });
 const flush = () => new Promise((resolve) => setImmediate(resolve));
@@ -48,13 +44,13 @@ describe('status visibility service', () => {
 	beforeEach(async () => {
 		jest.resetAllMocks();
 		settingValues.Accounts_StatusVisibility_Enabled = true;
+		settingValues.Accounts_StatusVisibility_Admin_Enabled = true;
 		settingValues.Accounts_UserStatus_Enabled = true;
 		broadcast.mockResolvedValue(undefined);
 		findPresenceUsersByIds.mockReturnValue(cursor([]));
 		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
 		findPresenceDisabledByAdmin.mockReturnValue(cursor([]));
 		findUsersNotOffline.mockReturnValue(cursor([]));
-		hasModule.mockReturnValue(true);
 		service = new StatusVisibilityService();
 		await service.refresh();
 	});
@@ -197,15 +193,6 @@ describe('status visibility service', () => {
 		await service.refresh();
 
 		expect(await hiddenFrom(service, null)).toEqual(['ana']);
-	});
-
-	it('does not hide anyone through the admin axis without the license', async () => {
-		hasModule.mockReturnValue(false);
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
-		await service.refresh();
-
-		expect(await hiddenFrom(service, 'bruno')).toEqual([]);
-		expect(await service.isPresenceDisabledFor('ana')).toBe(false);
 	});
 
 	it('unions both axes without repeating a target hidden by each', async () => {
@@ -369,18 +356,67 @@ describe('status visibility service', () => {
 			expect(await hiddenFrom(service, 'chosen')).toEqual([]);
 		});
 
-		it('does not hide a target through an admin exception without the license', async () => {
-			hasModule.mockReturnValue(false);
-
-			await service.refresh();
-
-			expect(await hiddenFrom(service, 'imposed')).toEqual([]);
-		});
-
 		it('flags a target hidden only by an admin exception as restricted for the sync broadcast gate', async () => {
 			await service.refresh();
 
 			expect((await service.getRestrictedUsers()).sort()).toEqual(['target']);
+		});
+	});
+
+	describe('with the admin status hiding disabled, by setting or by a license that forces it off', () => {
+		beforeEach(() => {
+			settingValues.Accounts_StatusVisibility_Admin_Enabled = false;
+		});
+
+		it('reads no user at all, so a disabled feature costs no query', async () => {
+			findWithStatusVisibilityConfig.mockClear();
+			findPresenceDisabledByAdmin.mockClear();
+
+			await service.refresh();
+
+			expect(findWithStatusVisibilityConfig).not.toHaveBeenCalled();
+			expect(findPresenceDisabledByAdmin).not.toHaveBeenCalled();
+		});
+
+		it('hides nobody, whatever rules the users and the admin had stored', async () => {
+			findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+			findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'target' }]));
+
+			await service.refresh();
+
+			expect(await hiddenFrom(service, 'bruno')).toEqual([]);
+			expect(await service.isPresenceDisabledFor('target')).toBe(false);
+			expect(await service.getRestrictedUsers()).toEqual([]);
+		});
+
+		it('still hides everyone when the workspace turned the user status off', async () => {
+			settingValues.Accounts_UserStatus_Enabled = false;
+
+			await service.refresh();
+
+			expect(await hiddenFrom(service, 'bruno')).toEqual('ALL');
+		});
+
+		it('reports every presence when the workspace turns the user status back on', async () => {
+			settingValues.Accounts_UserStatus_Enabled = false;
+			await service.refresh();
+
+			settingValues.Accounts_UserStatus_Enabled = true;
+			findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }]));
+
+			expect(await service.refresh()).toEqual([{ _id: 'ana' }]);
+		});
+
+		it('reports the users it stops hiding so their real presence is broadcast again', async () => {
+			settingValues.Accounts_StatusVisibility_Admin_Enabled = true;
+			findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'target' }]));
+			await service.refresh();
+
+			settingValues.Accounts_StatusVisibility_Admin_Enabled = false;
+			findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'target' }]));
+
+			expect(await service.refresh()).toEqual([{ _id: 'target' }]);
+			expect(findPresenceUsersByIds).toHaveBeenCalledWith(['target'], expect.anything());
 		});
 	});
 });

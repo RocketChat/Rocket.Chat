@@ -1,7 +1,6 @@
 import type { IStatusVisibilityService, PresenceScope } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
@@ -14,7 +13,9 @@ const PRESENCE_MODULE = 'unlimited-presence';
 export class StatusVisibilityService extends ServiceClassInternal implements IStatusVisibilityService {
 	protected name = 'status-visibility';
 
-	private hidingEnabled = false;
+	private adminHidingEnabled = false;
+
+	private userHidingEnabled = false;
 
 	private everyoneHidden = false;
 
@@ -37,6 +38,10 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 			await this.invalidate();
 		});
 
+		this.onSettingChanged('Accounts_StatusVisibility_Admin_Enabled', async () => {
+			await this.invalidate();
+		});
+
 		this.onEvent('license.module', async ({ module }) => {
 			if (module === PRESENCE_MODULE) {
 				await this.invalidate();
@@ -53,12 +58,14 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 			return { hideAll: true };
 		}
 
+		if (!this.adminHidingEnabled) {
+			return { hideAll: false };
+		}
+
 		const perViewer: IUser['_id'][] = [];
 
 		if (viewerId) {
-			const maps = this.hidingEnabled ? [this.hiddenFromByUser, this.adminHiddenFromByUser] : [this.adminHiddenFromByUser];
-
-			for (const map of maps) {
+			for (const map of [this.hiddenFromByUser, this.adminHiddenFromByUser]) {
 				for (const [targetId, viewers] of map) {
 					if (targetId !== viewerId && viewers.has(viewerId) && !this.adminDisabledUsers.has(targetId)) {
 						perViewer.push(targetId);
@@ -83,11 +90,11 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 	}
 
 	async isPresenceDisabledFor(targetId: IUser['_id']): Promise<boolean> {
-		return this.everyoneHidden || this.adminDisabledUsers.has(targetId);
+		return this.everyoneHidden || (this.adminHidingEnabled && this.adminDisabledUsers.has(targetId));
 	}
 
 	async getRestrictedUsers(): Promise<IUser['_id'][]> {
-		return [...new Set([...this.hiddenFromByUser.keys(), ...this.adminHiddenFromByUser.keys(), ...this.adminDisabledUsers])];
+		return this.restrictedIds();
 	}
 
 	async refresh(targets?: IUser['_id'][]): Promise<UserPresence[]> {
@@ -96,16 +103,25 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		return result;
 	}
 
+	private hasRules(): boolean {
+		return Boolean(this.hiddenFromByUser.size || this.adminHiddenFromByUser.size || this.adminDisabledUsers.size);
+	}
+
+	private restrictedIds(): IUser['_id'][] {
+		return [...new Set([...this.hiddenFromByUser.keys(), ...this.adminHiddenFromByUser.keys(), ...this.adminDisabledUsers])];
+	}
+
+	private forgetRules(): void {
+		this.hiddenFromByUser.clear();
+		this.adminHiddenFromByUser.clear();
+		this.adminDisabledUsers = new Set();
+	}
+
 	private allPresences(): Promise<UserPresence[]> {
 		return Users.findUsersNotOffline<UserPresence>({ projection: PRESENCE_FIELDS }).toArray();
 	}
 
 	private async rebuildAdminDisabled(targets?: IUser['_id'][]): Promise<UserPresence[]> {
-		if (!License.hasModule(PRESENCE_MODULE)) {
-			this.adminDisabledUsers = new Set();
-			return [];
-		}
-
 		const users = await Users.findPresenceDisabledByAdmin<UserPresence>(targets, { projection: PRESENCE_FIELDS }).toArray();
 		const disabled = new Set(users.map(({ _id }) => _id));
 
@@ -123,20 +139,35 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 
 	private async rebuildHiddenUsers(targets?: IUser['_id'][]): Promise<UserPresence[]> {
 		const wasHidingEveryone = this.everyoneHidden;
-		this.everyoneHidden = (await Settings.get<boolean>('Accounts_UserStatus_Enabled')) === false;
-		this.hidingEnabled = (await Settings.get<boolean>('Accounts_StatusVisibility_Enabled')) === true;
+		const wasApplyingRules = this.adminHidingEnabled && this.hasRules();
+		const [userStatus, adminHiding, userHiding] = await Promise.all([
+			Settings.get<boolean>('Accounts_UserStatus_Enabled'),
+			Settings.get<boolean>('Accounts_StatusVisibility_Admin_Enabled'),
+			Settings.get<boolean>('Accounts_StatusVisibility_Enabled'),
+		]);
+
+		this.everyoneHidden = userStatus === false;
+		this.adminHidingEnabled = adminHiding === true;
+		this.userHidingEnabled = userHiding === true;
 
 		if (this.everyoneHidden) {
-			this.hiddenFromByUser.clear();
-			this.adminHiddenFromByUser.clear();
-			this.adminDisabledUsers = new Set();
+			this.forgetRules();
 
 			return this.allPresences();
 		}
 
-		const previous = targets ?? [
-			...new Set([...this.hiddenFromByUser.keys(), ...this.adminHiddenFromByUser.keys(), ...this.adminDisabledUsers]),
-		];
+		if (!this.adminHidingEnabled) {
+			const restore = wasApplyingRules ? this.restrictedIds() : [];
+			this.forgetRules();
+
+			if (wasHidingEveryone) {
+				return this.allPresences();
+			}
+
+			return restore.length ? Users.findPresenceUsersByIds(restore, { projection: PRESENCE_FIELDS }).toArray() : [];
+		}
+
+		const previous = targets ?? this.restrictedIds();
 
 		const disabled = await this.rebuildAdminDisabled(targets);
 
@@ -152,16 +183,14 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 			this.adminHiddenFromByUser.clear();
 		}
 
-		const adminRulesAllowed = License.hasModule(PRESENCE_MODULE);
-
 		for (const { _id, settings: userSettings, statusVisibilityDeniedByAdmin } of users) {
-			const chosen = this.hidingEnabled ? userSettings?.preferences?.statusVisibilityDenied : undefined;
+			const chosen = this.userHidingEnabled ? userSettings?.preferences?.statusVisibilityDenied : undefined;
 
 			if (chosen?.length) {
 				this.hiddenFromByUser.set(_id, new Set(chosen));
 			}
 
-			if (statusVisibilityDeniedByAdmin?.length && adminRulesAllowed) {
+			if (statusVisibilityDeniedByAdmin?.length) {
 				this.adminHiddenFromByUser.set(_id, new Set(statusVisibilityDeniedByAdmin));
 			}
 		}

@@ -8,11 +8,7 @@ import { redactStatus } from './redactStatus';
 import { settings } from '../../settings';
 
 export const getUsersHiddenFrom = async (viewerId: IUser['_id'] | null | undefined): Promise<PresenceScope> => {
-	if (
-		settings.get<boolean>('Accounts_UserStatus_Enabled') &&
-		!settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
-		!statusVisibilityGate.isActive()
-	) {
+	if (settings.get<boolean>('Accounts_UserStatus_Enabled') && !statusVisibilityGate.isActive()) {
 		return NOTHING_HIDDEN;
 	}
 

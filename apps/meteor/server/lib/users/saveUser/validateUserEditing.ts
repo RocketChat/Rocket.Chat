@@ -1,12 +1,12 @@
 /* eslint-disable complexity */
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
 import type { UpdateUserData } from './saveUser';
 import { settings } from '../../../settings';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 
 const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
 	newRoles !== undefined &&
@@ -44,7 +44,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 
 	if (
 		(userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) &&
-		(!canEditOtherUserInfo || !License.hasModule('unlimited-presence'))
+		(!canEditOtherUserInfo || !isAdminHidingAllowed())
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
 			method: 'insertOrUpdateUser',

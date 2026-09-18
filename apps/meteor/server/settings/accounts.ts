@@ -785,6 +785,16 @@ export const createAccountSettings = () =>
 				i18nDescription: 'Accounts_UserStatus_Enabled_Description',
 			});
 
+			await this.add('Accounts_StatusVisibility_Admin_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Admin_Enabled_Description',
+				enableQuery: { _id: 'Accounts_UserStatus_Enabled', value: true },
+			});
+
 			await this.add('Accounts_StatusVisibility_Enabled', false, {
 				type: 'boolean',
 				public: true,
@@ -792,7 +802,10 @@ export const createAccountSettings = () =>
 				modules: ['unlimited-presence'],
 				invalidValue: false,
 				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
-				enableQuery: { _id: 'Accounts_UserStatus_Enabled', value: true },
+				enableQuery: [
+					{ _id: 'Accounts_UserStatus_Enabled', value: true },
+					{ _id: 'Accounts_StatusVisibility_Admin_Enabled', value: true },
+				],
 			});
 		});
 
