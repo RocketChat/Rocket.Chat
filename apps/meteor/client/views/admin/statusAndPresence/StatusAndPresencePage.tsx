@@ -99,7 +99,7 @@ const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresen
 				) : (
 					<>
 						<PageHeader title={t('Status_and_presence')}>
-							{canManageCustomStatus && !license?.isEnterprise && <CustomUserActiveConnections />}
+							{canManageCustomStatus && license?.isEnterprise === false && <CustomUserActiveConnections />}
 							<ButtonGroup>{headerButtons}</ButtonGroup>
 						</PageHeader>
 						{tabs}
