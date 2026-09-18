@@ -1,5 +1,4 @@
 {
 	"extends": "./tsconfig.json",
-	// `outDir` is the package root, so emitted specs would land next to the published files.
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }

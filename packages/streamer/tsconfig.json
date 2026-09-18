@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "."
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"],
 	// a child `exclude` replaces the parent's rather than adding to it; keeping only `node_modules`

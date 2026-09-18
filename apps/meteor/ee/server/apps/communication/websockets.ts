@@ -3,7 +3,7 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import type { IStreamer } from '@rocket.chat/streamer/types';
+import type { IStreamer } from '@rocket.chat/streamer';
 
 import { AppEvents } from './events';
 import { SystemLogger } from '../../../../server/lib/logger/system';

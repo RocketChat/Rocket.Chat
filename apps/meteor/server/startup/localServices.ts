@@ -1,5 +1,5 @@
 import { api, LocalBroker } from '@rocket.chat/core-services';
-import { StreamerCentral } from '@rocket.chat/streamer/streamer.module';
+import { StreamerCentral } from '@rocket.chat/streamer';
 
 const broker = new LocalBroker();
 

@@ -5,7 +5,7 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { StreamerCentral } from '@rocket.chat/streamer/streamer.module';
+import { StreamerCentral } from '@rocket.chat/streamer';
 
 import { i18n } from '../../../server/lib/i18n';
 import { slashCommands } from '../../../server/lib/utils/slashCommand';

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { IPublication } from '@rocket.chat/streamer/types';
+import type { IPublication } from '@rocket.chat/streamer';
 
 import type { Client } from './Client';
 import type { Server } from './Server';

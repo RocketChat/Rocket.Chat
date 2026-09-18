@@ -3,8 +3,7 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
-import { ListenersModule } from '@rocket.chat/streamer/listeners.module';
-import { invalidate as invalidatePublicationUserCache } from '@rocket.chat/streamer/publication-user-cache';
+import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 

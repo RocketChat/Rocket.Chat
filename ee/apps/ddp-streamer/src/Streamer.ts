@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { StreamNames } from '@rocket.chat/ddp-client';
-import { Streamer, StreamerCentral } from '@rocket.chat/streamer/streamer.module';
-import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer/types';
+import { Streamer, StreamerCentral } from '@rocket.chat/streamer';
+import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
 import { server } from './configureServer';

@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { NotificationsModule } from '@rocket.chat/streamer/notifications.module';
-import { Streamer } from '@rocket.chat/streamer/streamer.module';
+import { NotificationsModule, Streamer } from '@rocket.chat/streamer';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 

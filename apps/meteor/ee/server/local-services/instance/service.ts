@@ -5,7 +5,7 @@ import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
-import { StreamerCentral } from '@rocket.chat/streamer/streamer.module';
+import { StreamerCentral } from '@rocket.chat/streamer';
 import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';

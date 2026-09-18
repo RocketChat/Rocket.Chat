@@ -1,5 +1,5 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
-import type { IStreamer } from '@rocket.chat/streamer/types';
+import type { IStreamer } from '@rocket.chat/streamer';
 
 import notifications from '../../notifications/core/lib/Notifications';
 

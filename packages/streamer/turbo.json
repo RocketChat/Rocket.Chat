@@ -1,9 +1,0 @@
-{
-	"extends": ["//"],
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["*.js", "*.js.map", "*.d.ts"]
-		}
-	}
-}

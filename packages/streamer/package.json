@@ -7,9 +7,10 @@
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
-		"/*.js",
-		"/*.d.ts"
+		"/dist"
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
