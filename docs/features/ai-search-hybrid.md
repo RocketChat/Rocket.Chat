@@ -1,5 +1,99 @@
 # AI Search: hybrid retrieval and temporal reranking
 
+## What the feature does
+
+Workspace search traditionally matches the words you typed. That works when you remember the exact
+phrase, and fails when you don't. AI Search adds the other half: finding messages by *meaning*, so
+"pods dying from insufficient RAM" can surface "the cluster ran out of memory again and the scheduler
+evicted half the workloads" even though the two share almost no words.
+
+Meaning-based search has the opposite weakness. Embeddings deliberately discard surface form, so they
+are weakest exactly where the surface form *is* the question: an error code, a ticket id, a CVE, a
+function name. Someone pasting `E11000 duplicate key error` into search is being as specific as a person
+can be, and meaning-based search is the worst-equipped mode to honour it.
+
+**Hybrid search runs both and merges the results.** One retriever looks for meaning, the other for exact
+terms, and an admin decides how much say each one gets. Optionally, newer messages can be nudged up the
+list.
+
+## What a user sees
+
+1. **Turn it on for the search.** The workspace search box in the top bar has an AI toggle. It only
+   appears when the workspace has an AI license and an admin has enabled AI Search.
+2. **Type a question, not keywords.** A phrase describing what you half-remember works as well as exact
+   wording.
+3. **Narrow it down, optionally.** Typing `in:`, `from:`, `after:` or `before:` turns into removable
+   filter chips, so you can scope to a channel, a person or a date range. These are applied by the
+   search backend, not as an afterthought on the results.
+4. **See the best few inline.** The dropdown shows an *Intelligent Search* section with the strongest
+   matching messages alongside the usual channel and people results. Selecting one jumps to that message
+   in its room.
+5. **Open the full page.** *View all results* opens the Intelligent Search page, which lists sources
+   with room, author and timestamp, loads more on demand, and — when an LLM provider is configured —
+   generates a written answer from the messages it found, with those messages cited as sources below it.
+
+Two things are deliberately invisible: nobody chooses a "search mode", and results never mix in messages
+from rooms the person is not in — every result is re-checked against their own room access before it is
+shown.
+
+You may notice a match percentage on some results and not others. That is intentional; see
+[Score conventions](#score-conventions).
+
+## How the ranking works
+
+End to end, a single search looks like this:
+
+```
+                         QUERY
+                           │
+                 Apply hard filters
+          room access / channel / person / date range
+                           │
+               ┌───────────┴───────────┐
+               ▼                       ▼
+        Exact-term search       Meaning-based search
+               │                       │
+               └──────────┬────────────┘
+                          ▼
+                Merge the two rankings
+                          ▼
+                Optionally favor newer
+                          ▼
+              Re-check the reader's access
+                          ▼
+                      Results
+```
+
+The interesting step is the merge, because the two retrievers cannot be compared directly. They report
+confidence on scales that mean opposite things — one where lower is better, one where higher is better —
+so treating the numbers as interchangeable produces nonsense.
+
+The trick is to **ignore the scores and use the positions**. If a message came 1st for meaning and 4th
+for exact terms, all we use is "1st" and "4th". Each position earns points on a sliding scale — 1st is
+worth more than 2nd, and so on — the two are added up according to the admin's balance, and the totals
+decide the final order. This is a standard technique called Reciprocal Rank Fusion, and its useful
+property is that a message both retrievers liked beats one that only a single retriever liked.
+
+Two consequences worth knowing:
+
+- **The balance is not a quota.** Setting it to 70 does not mean 70% of results come from meaning-based
+  search. It means meaning-based positions count for more when the two retrievers disagree.
+- **At the extremes only one search runs.** At 0 or 100 the other retriever is never called, so there is
+  no wasted work.
+
+After merging, the optional recency boost multiplies each result's score by a little extra for being
+recent — most for something posted today, tapering off as messages age. Because it is a multiplier on
+relevance rather than a sort by date, it reshuffles results that were already close together and cannot
+drag an unrelated-but-recent message to the top.
+
+Finally, every surviving message is looked up in the database and checked against the reader's room
+subscriptions, and the requested page is taken from what is left.
+
+---
+
+The remainder of this document is the implementation reference: exact request shapes, formulas, settings
+and bounds.
+
 ## Retrieval
 
 Both retrievers are the *same* pipeline endpoint (`POST /pipelines/{id}/search`), distinguished only by
