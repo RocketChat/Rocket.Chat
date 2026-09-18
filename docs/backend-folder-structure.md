@@ -81,7 +81,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 
 ## The EE tree (`ee/server/`) and the license boundary
 
-`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services — note: `ee/server/services/` is docker/build scaffolding for the microservices images, **not** a code folder).
+`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
 
 **The directory boundary is the license boundary.** Code under an `ee/` path is governed by the Enterprise license (`apps/meteor/ee/LICENSE`); everything else is community-licensed:
 

@@ -93,7 +93,6 @@ void i18n.init({
 			),
 		]),
 	),
-	initImmediate: false,
 });
 
 export { i18n };
