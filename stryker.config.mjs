@@ -1,14 +1,23 @@
 import { fileURLToPath } from 'node:url';
 
-import { loadMutationJestConfig } from './scripts/mutation-jest-config.mjs';
-
 export default {
 	testRunner: 'jest',
-	plugins: ['@stryker-mutator/jest-runner', fileURLToPath(new URL('./scripts/mutation-target-reporter.mjs', import.meta.url))],
-	jest: await loadMutationJestConfig(),
+	plugins: [
+		'@stryker-mutator/jest-runner',
+		'@stryker-mutator/mocha-runner',
+		fileURLToPath(new URL('./scripts/mutation-target-reporter.mjs', import.meta.url)),
+	],
 	coverageAnalysis: 'perTest',
 	concurrency: 2,
-	ignorePatterns: ['reports/**'],
+	// Meteor build output and asset directory symlinks are not needed by unit tests.
+	ignorePatterns: [
+		'reports/**',
+		'coverage/**',
+		'.meteor/local/**',
+		'private/i18n',
+		'private/moment-locales',
+		'packages/rocketchat-i18n/i18n',
+	],
 	reporters: ['mutation-targets', 'clear-text', 'progress', 'html', 'json'],
 	thresholds: { break: 0 },
 };

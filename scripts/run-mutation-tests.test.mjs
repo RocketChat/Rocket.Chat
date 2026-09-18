@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
 import { copyFile, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { dirname, relative, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -58,8 +59,8 @@ function run(directory, ...args) {
 test('preserves preset jsdom and external aliases while local aliases exercise mutants', async (t) => {
 	const directory = await fixture(t);
 	await run(directory, '--mutate', 'src/isPositive.ts');
-	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mutation.json'), 'utf8'));
-	const summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/summary.json'), 'utf8'));
+	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/mutation.json'), 'utf8'));
+	const summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
 	assert.equal(summary.status, 'complete');
 	assert.equal(summary.score, 100);
 	assert.equal(summary.gate, 'disabled');
@@ -105,19 +106,19 @@ test('only checks an ordinary positive input', () => expect(isPositive(1)).toBe(
 `,
 	);
 	await run(directory, '--mutate', 'src/isPositive.ts', '--reporters', 'clear-text');
-	let summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/summary.json'), 'utf8'));
+	let summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
 	assert.equal(summary.status, 'complete');
 	assert.ok(summary.survivors.length > 0);
 	assert.ok(summary.survivors.some(({ coveringTests }) => coveringTests.some(({ name }) => name.includes('ordinary positive'))));
 	await assert.rejects(run(directory, '--mutate', 'src/isPositive.ts', '--min-score', '100'), { code: 1 });
-	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/summary.json'), 'utf8'));
+	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
 	assert.equal(summary.status, 'complete');
 	assert.equal(summary.gate, 'failed');
 });
 
 test('dry and failed runs replace stale successful reports without claiming a score', async (t) => {
 	const directory = await fixture(t);
-	const reports = resolve(directory, 'reports/mutation');
+	const reports = resolve(directory, 'reports/mutation/jest');
 	const seedOldReport = async () => {
 		await mkdir(reports, { recursive: true });
 		await writeFile(resolve(reports, 'mutation.json'), JSON.stringify({ files: { stale: { mutants: [] } } }));
@@ -146,21 +147,89 @@ test('batched line ranges mutate the selected lines and leave other lines and so
 		'export const isPositive = (value: number) => value > 0;\nexport const untouched = () => false;\nexport const alsoChanged = () => true;\n';
 	await writeFile(resolve(directory, 'src/isPositive.ts'), source);
 	await run(directory, '--mutate', 'src/isPositive.ts:1-1,src/isPositive.ts:3-3');
-	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mutation.json'), 'utf8'));
+	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/mutation.json'), 'utf8'));
 	const lines = new Set(report.files['src/isPositive.ts'].mutants.map(({ location }) => location.start.line));
 	assert.deepEqual([...lines].sort(), [1, 3]);
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
-test('invalid wrapper arguments fail before creating mutation reports', async (t) => {
-	const directory = await fixture(t);
-	for (const args of [['--min-score', '101'], ['--min-score', 'NaN'], ['--min-score', '80', '--dryRunOnly'], ['--diff'], ['--inPlace']]) {
-		await assert.rejects(run(directory, ...args), { code: 2 });
-	}
-	await assert.rejects(readFile(resolve(directory, 'reports/mutation/summary.json')), { code: 'ENOENT' });
+test('Mocha preserves TypeScript setup, scopes tests, and continues after unsupported Jest configurations', async (t) => {
+	const directory = await fixture(t, "export default { projects: [{ displayName: 'one' }, { displayName: 'two' }] };");
+	const requireMeteor = createRequire(resolve(root, 'apps/meteor/package.json'));
+	await writeFile(
+		resolve(directory, '.mocharc.base.json'),
+		JSON.stringify({ extension: ['ts'], require: [requireMeteor.resolve('tsx'), './setup.cjs'] }),
+	);
+	await writeFile(resolve(directory, '.mocharc.js'), "module.exports = { ...require('./.mocharc.base.json'), spec: ['src/*.spec.ts'] };");
+	await writeFile(resolve(directory, 'setup.cjs'), 'globalThis.mutationSetupLoaded = true;');
+	const source = await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8');
+	const writeTests = (values) =>
+		writeFile(
+			resolve(directory, 'src/mocha.tests.ts'),
+			`
+import assert from 'node:assert/strict';
+import { it } from 'mocha';
+import { isPositive } from './isPositive';
+for (const value of ${JSON.stringify(values)}) {
+  it('checks the boundary for ' + value, () => {
+    assert.equal(globalThis.mutationSetupLoaded, true);
+    assert.equal(isPositive(value), value > 0);
+  });
+}
+`,
+		);
+	// The configured spec is a Jest test: --testFiles must replace it, not append to it.
+	const args = ['--testRunner', 'mocha', '--testFiles', 'src/mocha.tests.ts', '--mutate', 'src/isPositive.ts'];
+	await writeTests([-1, 0, 1]);
+	await run(directory, ...args, '--min-score', '100').catch((error) => assert.fail(error.stdout + error.stderr));
+	let summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mocha/summary.json'), 'utf8'));
+	assert.equal(summary.testRunner, 'mocha');
+	assert.equal(summary.status, 'complete');
+	assert.equal(summary.score, 100);
+	assert.ok(summary.counts.Killed > 0);
+	assert.equal(summary.gate, 'passed');
+	await writeTests([1]);
+	await assert.rejects(run(directory, ...args, '--min-score', '100'), { code: 1 });
+	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mocha/summary.json'), 'utf8'));
+	assert.equal(summary.status, 'complete');
+	assert.equal(summary.gate, 'failed');
+	assert.ok(summary.survivors.some(({ coveringTests }) => coveringTests.some(({ name }) => name.includes('checks the boundary'))));
+	await assert.rejects(run(directory, ...args, '--testFiles', 'src/missing.tests.ts'), { code: 3 });
+	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mocha/summary.json'), 'utf8'));
+	assert.equal(summary.status, 'failed');
+	assert.equal(summary.score, null);
+	// Automatic discovery must still run Mocha when the same package's Jest config is unsupported.
+	await assert.rejects(run(directory, ...args.slice(2)), (error) => {
+		assert.equal(error.code, 3);
+		assert.match(error.stdout + error.stderr, /Multi-project configurations need a dedicated setup/);
+		return true;
+	});
+	const jestSummary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
+	assert.equal(jestSummary.status, 'failed');
+	assert.equal(jestSummary.testRunner, 'jest');
+	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mocha/summary.json'), 'utf8'));
+	assert.equal(summary.status, 'complete');
+	assert.equal(summary.testRunner, 'mocha');
+	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
-test('diff CLI runs separate workspace packages with real Stryker and preserves working changes', async (t) => {
+test('invalid wrapper arguments fail before creating mutation reports', async (t) => {
+	const directory = await fixture(t);
+	for (const args of [
+		['--min-score', '101'],
+		['--min-score', 'NaN'],
+		['--min-score', '80', '--dryRunOnly'],
+		['--diff'],
+		['--inPlace'],
+		['--testRunner', 'unknown'],
+		['--testRunner', 'mocha'],
+	]) {
+		await assert.rejects(run(directory, ...args), { code: 2 });
+	}
+	await assert.rejects(readFile(resolve(directory, 'reports/mutation/jest/summary.json')), { code: 'ENOENT' });
+});
+
+test('diff CLI discovers Jest, Mocha, and mixed workspaces and preserves separate reports', async (t) => {
 	const directory = await mkdtemp(resolve(root, '.stryker-tmp/diff-tooling-'));
 	t.after(() => rm(directory, { recursive: true, force: true }));
 	const write = async (file, text) => {
@@ -186,23 +255,51 @@ test('diff CLI runs separate workspace packages with real Stryker and preserves 
 		'export const positive = (n: number) => n > 0;\nexport const untouched = () => false;\nexport const negative = (n: number) => n < 0;\n';
 	const afterSource =
 		'export const positive = (n: number) => 0 < n;\nexport const untouched = () => false;\nexport const negative = (n: number) => 0 > n;\n';
-	for (const pkg of ['first', 'second']) {
+	const packages = ['first', 'second', 'mocha-only'];
+	const requireMeteor = createRequire(resolve(root, 'apps/meteor/package.json'));
+	for (const pkg of packages) {
 		await write(`packages/${pkg}/package.json`, '{}');
-		await write(
-			`packages/${pkg}/jest.config.ts`,
-			`import server from '@rocket.chat/jest-presets/server'; export default { preset: server.preset };`,
-		);
 		await write(`packages/${pkg}/src/example.ts`, beforeSource);
-		await write(
-			`packages/${pkg}/src/example.spec.ts`,
-			`
+		if (pkg !== 'mocha-only') {
+			await write(
+				`packages/${pkg}/jest.config.ts`,
+				`import server from '@rocket.chat/jest-presets/server'; export default { preset: server.preset, testMatch: ['<rootDir>/src/*.spec.ts'] };`,
+			);
+			await write(
+				`packages/${pkg}/src/example.spec.ts`,
+				`
 import { positive, negative } from './example';
 test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
   expect(positive(n)).toBe(n === 1);
   expect(negative(n)).toBe(n === -1);
 });
 `,
-		);
+			);
+		}
+		if (pkg !== 'first') {
+			await write(
+				`packages/${pkg}/.mocharc.js`,
+				`module.exports = ${JSON.stringify({
+					require: [requireMeteor.resolve('tsx')],
+					extension: ['ts'],
+					spec: ['src/*.tests.ts'],
+				})};`,
+			);
+			await write(
+				`packages/${pkg}/src/example.tests.ts`,
+				`
+import assert from 'node:assert/strict';
+import { it } from 'mocha';
+import { positive, negative } from './example';
+for (const n of [-1, 0, 1]) {
+  it('checks boundaries for ' + n, () => {
+    assert.equal(positive(n), n === 1);
+    assert.equal(negative(n), n === -1);
+  });
+}
+`,
+			);
+		}
 	}
 	await git('init', '-q');
 	await git('config', 'user.email', 'mutation-fixture@example.invalid');
@@ -212,21 +309,35 @@ test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
 	await git('add', '.');
 	await git('commit', '-qm', 'Fixture baseline');
 	await git('branch', 'base');
-	for (const pkg of ['first', 'second']) await write(`packages/${pkg}/src/example.ts`, afterSource);
+	for (const pkg of packages) await write(`packages/${pkg}/src/example.ts`, afterSource);
 	const statusBefore = await git('status', '--porcelain');
+	const { stdout: preview } = await exec(process.execPath, ['scripts/run-mutation-tests.mjs', '--diff', '--base', 'base', '--plan'], {
+		cwd: directory,
+	});
+	const jobs = [
+		{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
+		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
+		{ packagePath: 'packages/second', testRunner: 'jest', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
+		{ packagePath: 'packages/second', testRunner: 'mocha', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
+	];
+	assert.deepEqual(JSON.parse(preview).jobs, jobs);
+	for (const { packagePath, testRunner } of jobs) {
+		await assert.rejects(readFile(resolve(directory, packagePath, `reports/mutation/${testRunner}/summary.json`)), { code: 'ENOENT' });
+	}
 	await exec(process.execPath, ['scripts/run-mutation-tests.mjs', '--diff', '--base', 'base', '--reporters', 'clear-text,html'], {
 		cwd: directory,
 		timeout: 60_000,
 	});
-	for (const pkg of ['first', 'second']) {
-		const summary = JSON.parse(await readFile(resolve(directory, `packages/${pkg}/reports/mutation/summary.json`), 'utf8'));
+	for (const { packagePath, testRunner } of jobs) {
+		const summary = JSON.parse(await readFile(resolve(directory, packagePath, `reports/mutation/${testRunner}/summary.json`), 'utf8'));
 		assert.equal(summary.status, 'complete');
+		assert.equal(summary.testRunner, testRunner);
 		assert.equal(summary.score, 100);
 		assert.deepEqual(summary.targets, ['src/example.ts:1-1', 'src/example.ts:3-3']);
-		assert.equal(await readFile(resolve(directory, `packages/${pkg}/src/example.ts`), 'utf8'), afterSource);
+		assert.equal(await readFile(resolve(directory, packagePath, 'src/example.ts'), 'utf8'), afterSource);
 	}
-	const reports = ['first', 'second'].flatMap((pkg) =>
-		['mutation.json', 'mutation.html', 'summary.json'].map((file) => resolve(directory, `packages/${pkg}/reports/mutation/${file}`)),
+	const reports = jobs.flatMap(({ packagePath, testRunner }) =>
+		['mutation.json', 'mutation.html', 'summary.json'].map((file) => resolve(directory, packagePath, 'reports/mutation', testRunner, file)),
 	);
 	const reportContents = await Promise.all(reports.map((file) => readFile(file)));
 	for (const args of [
@@ -242,6 +353,17 @@ test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
 		assert.match(stdout.trim(), /^\d+\.\d+\.\d+[^\s]*$/);
 		assert.deepEqual(await Promise.all(reports.map((file) => readFile(file))), reportContents);
 	}
+	const jestReports = reports.filter((file) => file.includes('/jest/'));
+	const jestContents = await Promise.all(jestReports.map((file) => readFile(file)));
+	await exec(
+		process.execPath,
+		['scripts/run-mutation-tests.mjs', '--diff', '--base', 'base', '--testRunner', 'mocha', '--min-score', '100'],
+		{
+			cwd: directory,
+			timeout: 60_000,
+		},
+	);
+	assert.deepEqual(await Promise.all(jestReports.map((file) => readFile(file))), jestContents);
 	assert.equal(await git('status', '--porcelain'), statusBefore);
 });
 
@@ -283,7 +405,7 @@ test('slow baseline', async () => {
 	});
 	assert.equal(cancelled, true, output);
 	assert.equal(code, 143, output);
-	const summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/summary.json'), 'utf8'));
+	const summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
 	assert.equal(summary.status, 'failed');
 	assert.equal(summary.signal, 'SIGTERM');
 	assert.equal(summary.score, null);

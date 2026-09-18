@@ -19,7 +19,10 @@ function runStatus({ completion, exitCode, signal, counts, report, valid }) {
 	return valid ? 'complete' : 'no-mutants';
 }
 
-export function buildSummary(report, { packagePath, completion, exitCode, signal = null, minScore = null, targets = null, error = null }) {
+export function buildSummary(
+	report,
+	{ packagePath, completion, exitCode, signal = null, minScore = null, targets = null, error = null, testRunner = 'jest' },
+) {
 	const counts = Object.fromEntries(statuses.map((status) => [status, 0]));
 	const tests = new Map();
 	for (const [file, info] of Object.entries(report?.testFiles ?? {})) {
@@ -53,6 +56,7 @@ export function buildSummary(report, { packagePath, completion, exitCode, signal
 	if (minScore !== null) gate = status === 'complete' && score >= minScore ? 'passed' : 'failed';
 	return {
 		package: packagePath,
+		testRunner,
 		generatedAt: new Date().toISOString(),
 		targets,
 		status,

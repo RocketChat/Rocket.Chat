@@ -4,8 +4,15 @@ import { dirname, isAbsolute, matchesGlob, relative, resolve, sep } from 'node:p
 
 export class UsageError extends Error {}
 const slash = (path) => path.split(sep).join('/');
+const runnerConfigs = { jest: 'jest.config.ts', mocha: '.mocharc.js' };
 
-export function packageDirectory(root, target) {
+export function packageRunners(directory, testRunner) {
+	return Object.entries(runnerConfigs)
+		.filter(([runner, config]) => (!testRunner || runner === testRunner) && existsSync(resolve(directory, config)))
+		.map(([runner]) => runner);
+}
+
+export function packageDirectory(root, target, testRunner) {
 	const directory = resolve(root, target);
 	const path = relative(root, directory);
 	if (!path || path === '..' || path.startsWith(`..${sep}`) || isAbsolute(path) || !existsSync(resolve(directory, 'package.json'))) {
@@ -14,8 +21,8 @@ export function packageDirectory(root, target) {
 	const real = relative(realpathSync(root), realpathSync(directory));
 	if (real === '..' || real.startsWith(`..${sep}`) || isAbsolute(real))
 		throw new UsageError(`Package resolves outside this repository: ${target}`);
-	if (!existsSync(resolve(directory, 'jest.config.ts')))
-		throw new UsageError(`No jest.config.ts found in ${target}. A single-project Jest TypeScript configuration is required.`);
+	if (!packageRunners(directory, testRunner).length)
+		throw new UsageError(`No ${testRunner ? runnerConfigs[testRunner] : 'jest.config.ts or .mocharc.js'} found in ${target}.`);
 	return directory;
 }
 
@@ -28,10 +35,11 @@ export function changedRanges(diff) {
 
 const NON_SOURCE = [
 	/\.d\.[cm]?ts$/,
-	/\.(test|spec)\.[cm]?[jt]sx?$/,
+	/\.(tests?|spec)\.[cm]?[jt]sx?$/,
 	/(^|\/)__(tests|mocks)__\//,
 	/\.stories\.[cm]?[jt]sx?$/,
 	/\.config\.[cm]?[jt]s$/,
+	/(^|\/)\.mocharc\./,
 	/(^|\/)(dist|node_modules|coverage)\//,
 	/(^|\/)tests?\//,
 	/(^|\/)migrations\//,
@@ -42,7 +50,7 @@ function exclusion(file) {
 	return NON_SOURCE.some((pattern) => pattern.test(file)) ? 'test, declaration, config, or excluded directory' : null;
 }
 
-export function planDiff(root, base = 'origin/develop') {
+export function planDiff(root, base = 'origin/develop', testRunner) {
 	root = realpathSync(root);
 	const git = (...args) =>
 		execFileSync('git', args, {
@@ -90,8 +98,9 @@ export function planDiff(root, base = 'origin/develop') {
 			skip('outside a root workspace package');
 			continue;
 		}
-		if (!existsSync(resolve(directory, 'jest.config.ts'))) {
-			skip('package has no jest.config.ts');
+		const runners = packageRunners(directory, testRunner);
+		if (!runners.length) {
+			skip(`package has no ${testRunner ? runnerConfigs[testRunner] : 'jest.config.ts or .mocharc.js'}`);
 			continue;
 		}
 		const target = slash(relative(directory, absolute));
@@ -117,8 +126,11 @@ export function planDiff(root, base = 'origin/develop') {
 			skip('no added or modified lines (deletion-only or mode change)');
 			continue;
 		}
-		if (!jobs.has(packagePath)) jobs.set(packagePath, { packagePath, targets: [] });
-		jobs.get(packagePath).targets.push(...ranges.map((range) => (range ? `${target}:${range}` : target)));
+		for (const runner of runners) {
+			const key = `${packagePath}:${runner}`;
+			if (!jobs.has(key)) jobs.set(key, { packagePath, testRunner: runner, targets: [] });
+			jobs.get(key).targets.push(...ranges.map((range) => (range ? `${target}:${range}` : target)));
+		}
 	}
 	return { base, mergeBase, jobs: [...jobs.values()], skipped };
 }

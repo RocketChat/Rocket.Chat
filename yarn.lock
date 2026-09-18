@@ -13977,6 +13977,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stryker-mutator/mocha-runner@npm:10.0.0":
+  version: 10.0.0
+  resolution: "@stryker-mutator/mocha-runner@npm:10.0.0"
+  dependencies:
+    "@stryker-mutator/api": "npm:10.0.0"
+    "@stryker-mutator/util": "npm:10.0.0"
+    tslib: "npm:~2.8.0"
+  peerDependencies:
+    "@stryker-mutator/core": 10.0.0
+    mocha: ">= 7.2 < 13"
+  checksum: 10/fa72f488c0bff1174a33f2f5dd03809445f229915abe0d2da3195ba0cffc84a65f91998a2da8c2d9c063fa73ffef5b88bd727dcfe889a60a06d8fe1838ded101
+  languageName: node
+  linkType: hard
+
 "@stryker-mutator/util@npm:10.0.0":
   version: 10.0.0
   resolution: "@stryker-mutator/util@npm:10.0.0"
@@ -30109,7 +30123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:^10.3.0":
+"mocha@npm:10.8.2, mocha@npm:^10.3.0":
   version: 10.8.2
   resolution: "mocha@npm:10.8.2"
   dependencies:
@@ -34810,11 +34824,13 @@ __metadata:
     "@stryker-mutator/api": "npm:10.0.0"
     "@stryker-mutator/core": "npm:10.0.0"
     "@stryker-mutator/jest-runner": "npm:10.0.0"
+    "@stryker-mutator/mocha-runner": "npm:10.0.0"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~24.13.2"
     "@types/stream-buffers": "npm:^3.0.8"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
+    mocha: "npm:10.8.2"
     node-gyp: "npm:^11.0.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.9.14"

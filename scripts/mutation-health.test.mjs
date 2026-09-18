@@ -52,8 +52,8 @@ test('diff plans committed, staged, unstaged and untracked changes against the m
 	git('config', 'diff.interHunkContext', '100');
 	const plan = planDiff(root, 'base');
 	assert.deepEqual(plan.jobs, [
-		{ packagePath: 'ee/packages/second', targets: ['src/staged.ts:1-1'] },
-		{ packagePath: 'packages/first', targets: ['src/new file.ts', 'src/value.ts:1-1', 'src/value.ts:6-6'] },
+		{ packagePath: 'ee/packages/second', testRunner: 'jest', targets: ['src/staged.ts:1-1'] },
+		{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/new file.ts', 'src/value.ts:1-1', 'src/value.ts:6-6'] },
 	]);
 	assert.equal(git('status', '--porcelain'), before);
 	assert.equal(readFileSync(resolve(root, 'packages/first/src/value.ts'), 'utf8').includes('last = 20'), true);
@@ -72,7 +72,7 @@ test('diff checks renamed files and reports deletions, excluded files, and unsup
 	write('scripts/a.ts', 'export const a = 1;');
 	symlinkSync(resolve(root, 'packages/first/src/value.ts'), resolve(root, 'packages/first/src/link.ts'));
 	const { jobs, skipped } = planDiff(root, 'base');
-	assert.deepEqual(jobs, [{ packagePath: 'ee/packages/second', targets: ['moved.ts'] }]);
+	assert.deepEqual(jobs, [{ packagePath: 'ee/packages/second', testRunner: 'jest', targets: ['moved.ts'] }]);
 	assert.equal(skipped.length, 10);
 	assert.match(skipped.find(({ file }) => file.endsWith('deletionOnly.ts')).reason, /deletion-only/);
 	assert.match(skipped.find(({ file }) => file.endsWith('deleted.ts')).reason, /deleted/);
@@ -84,6 +84,7 @@ test('source filtering preserves production names while excluding explicit test 
 	const sources = ['src/setup.ts', 'src/config.ts', 'src/reports/utils/round.ts', 'src/build/index.ts', 'src/generated/index.ts'];
 	const excluded = [
 		'src/value.test.js',
+		'src/value.tests.ts',
 		'src/value.spec.ts',
 		'src/value.stories.tsx',
 		'src/types.d.ts',
@@ -97,8 +98,34 @@ test('source filtering preserves production names while excluding explicit test 
 	];
 	for (const file of [...sources, ...excluded]) write(`packages/first/${file}`, 'export const value = 1;');
 	const { jobs, skipped } = planDiff(root, 'base');
-	assert.deepEqual(jobs, [{ packagePath: 'packages/first', targets: [...sources].sort() }]);
+	assert.deepEqual(jobs, [{ packagePath: 'packages/first', testRunner: 'jest', targets: [...sources].sort() }]);
 	assert.deepEqual(skipped.map(({ file }) => file).sort(), excluded.map((file) => `packages/first/${file}`).sort());
+});
+
+test('diff discovers both runners and allows filtering to either one', (t) => {
+	const { root, write } = repository(t);
+	write('ee/packages/second/.mocharc.js', 'module.exports = {};');
+	write('packages/mocha-only/package.json', '{}');
+	write('packages/mocha-only/.mocharc.js', 'module.exports = {};');
+	for (const pkg of ['packages/first', 'ee/packages/second', 'packages/mocha-only']) {
+		write(`${pkg}/src/new.ts`, 'export const value = 1;');
+	}
+	assert.deepEqual(planDiff(root, 'base').jobs, [
+		{ packagePath: 'ee/packages/second', testRunner: 'jest', targets: ['src/new.ts'] },
+		{ packagePath: 'ee/packages/second', testRunner: 'mocha', targets: ['src/new.ts'] },
+		{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/new.ts'] },
+		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/new.ts'] },
+	]);
+	assert.deepEqual(planDiff(root, 'base', 'mocha').jobs, [
+		{ packagePath: 'ee/packages/second', testRunner: 'mocha', targets: ['src/new.ts'] },
+		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/new.ts'] },
+	]);
+	assert.deepEqual(
+		planDiff(root, 'base', 'jest').jobs.map(({ packagePath }) => packagePath),
+		['ee/packages/second', 'packages/first'],
+	);
+	assert.equal(packageDirectory(root, 'packages/mocha-only', 'mocha'), resolve(root, 'packages/mocha-only'));
+	assert.throws(() => packageDirectory(root, 'packages/first', 'mocha'), /No .mocharc.js/);
 });
 
 test('comparison excludes independent base-branch changes', (t) => {
@@ -112,7 +139,7 @@ test('comparison excludes independent base-branch changes', (t) => {
 	git('add', '.');
 	git('commit', '-qm', 'Fixture base advance');
 	git('checkout', '-q', 'feature');
-	assert.deepEqual(planDiff(root, 'base').jobs, [{ packagePath: 'packages/first', targets: ['src/feature.ts:1-1'] }]);
+	assert.deepEqual(planDiff(root, 'base').jobs, [{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/feature.ts:1-1'] }]);
 });
 
 test('invalid bases and filenames fail explicitly; empty changes produce no jobs', (t) => {

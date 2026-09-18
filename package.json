@@ -217,10 +217,12 @@
 		"@stryker-mutator/api": "10.0.0",
 		"@stryker-mutator/core": "10.0.0",
 		"@stryker-mutator/jest-runner": "10.0.0",
+		"@stryker-mutator/mocha-runner": "10.0.0",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~24.13.2",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
+		"mocha": "10.8.2",
 		"ts-node": "^10.9.2",
 		"turbo": "2.9.14",
 		"typescript": "~5.9.3"
