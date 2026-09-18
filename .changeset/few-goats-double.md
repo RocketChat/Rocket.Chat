@@ -1,12 +1,12 @@
 ---
-'@rocket.chat/core-services': major
-'@rocket.chat/core-typings': major
-'@rocket.chat/i18n': major
-'@rocket.chat/meteor': major
-'@rocket.chat/model-typings': major
-'@rocket.chat/models': major
-'@rocket.chat/presence': major
-'@rocket.chat/rest-typings': major
+'@rocket.chat/core-services': minor
+'@rocket.chat/core-typings': minor
+'@rocket.chat/i18n': minor
+'@rocket.chat/meteor': minor
+'@rocket.chat/model-typings': minor
+'@rocket.chat/models': minor
+'@rocket.chat/presence': minor
+'@rocket.chat/rest-typings': minor
 ---
 
 Adds admin control over user status (Enterprise only).
