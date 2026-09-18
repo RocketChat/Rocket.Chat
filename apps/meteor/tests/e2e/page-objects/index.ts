@@ -19,6 +19,7 @@ export * from './admin-mailer';
 export * from './admin-moderation';
 export * from './admin';
 export * from './auth';
+export * from './conference-window';
 export * from './home-channel';
 export * from './home-discussion';
 export * from './home-team';

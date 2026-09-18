@@ -13,6 +13,7 @@ import {
 	NotificationPreferencesFlexTab,
 	AutoTranslateFlexTab,
 	ExportMessagesFlexTab,
+	OngoingCalls,
 	PruneMessagesFlexTab,
 	SearchMessagesFlexTab,
 	RoomInfoFlexTab,
@@ -38,6 +39,8 @@ export class HomeChannel extends RoutedPage {
 	readonly navbar: Navbar;
 
 	readonly userCard: UserCard;
+
+	readonly ongoingCalls: OngoingCalls;
 
 	private _tabs: {
 		members: MembersFlexTab;
@@ -71,6 +74,7 @@ export class HomeChannel extends RoutedPage {
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.userCard = new UserCard(page);
+		this.ongoingCalls = new OngoingCalls(page);
 		this._tabs = {
 			members: new MembersFlexTab(page),
 			userInfo: new UserInfoFlexTab(page),

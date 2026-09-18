@@ -41,8 +41,13 @@ describe('VideoConfService: the call message that names a thread', () => {
 		service = new VideoConfService();
 		// Persistent chat on and in thread mode, which is what makes the call's message a thread parent. Each case
 		// below takes one of these answers away.
+		//
+		// The window is part of "thread mode" rather than incidental to it: without it the mode answers
+		// `main_room` whatever the setting says, because a thread off the call message is what the call window's
+		// chat panel is built around and nothing else reads one.
 		settingsValues = {
 			VideoConf_Enable_Persistent_Chat: true,
+			VideoConf_Conference_Window_Enabled: true,
 			VideoConf_Persistent_Chat_Mode: 'thread',
 			Discussion_enabled: true,
 		};
@@ -75,8 +80,19 @@ describe('VideoConfService: the call message that names a thread', () => {
 		expect(sentRecord().msg).to.equal('Sprint planning');
 	});
 
-	// The cases below have no title to lend the thread, and fall back to the generic name rather than to an empty
-	// `msg` — which is what made a new conference arrive as an empty notification (#41156).
+	// The cases below have no thread for the title to name, and fall back to the generic name rather than to an
+	// empty `msg` — which is what made a new conference arrive as an empty notification (#41156).
+
+	// With the window off, `getPersistentChatMode` answers `main_room` whatever the mode is set to, so there is no
+	// thread and nothing for the call's own name to be the name of — the same path as the case below it, reached
+	// by turning the feature off rather than by choosing a mode.
+	it('falls back to the generic name while the call window is off', async () => {
+		settingsValues.VideoConf_Conference_Window_Enabled = false;
+
+		await service.createMessage(buildGroupCall([buildMember({ _id: 'creator' })], { title: 'Sprint planning' }));
+
+		expect(sentRecord().msg).to.equal('Video_Conference');
+	});
 
 	// In main-room mode the chat is the room itself and no thread is opened, so there is nothing to name.
 	it('falls back to the generic name when the chat is not a thread', async () => {

@@ -19,6 +19,7 @@ import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
+import { useConferenceWindowEnabled } from '../../../../../conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type StartCallPopupProps = {
@@ -43,8 +44,12 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	const dialogLabel =
 		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
-	const showCam = !!capabilities.cam;
-	const showMic = !!capabilities.mic;
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there. Without that window
+	// this popup is still where mic and camera are chosen.
+	const preflight = useConferenceWindowEnabled();
+	const showCam = !preflight && !!capabilities.cam;
+	const showMic = !preflight && !!capabilities.mic;
 
 	const handleStartCall = useStableCallback(() => {
 		setPreferences(controllersConfig);

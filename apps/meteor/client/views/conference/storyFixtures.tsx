@@ -19,6 +19,8 @@ import { action } from 'storybook/actions';
 import ConferenceViewport from './ConferenceViewport';
 import { callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
 import type { ConferenceMember } from './hooks/useConferenceEmbedded';
+import type { PluginFeature, PluginParticipant, ProviderPluginControls } from './hooks/useProviderPlugin';
+import { PLUGIN_FEATURES } from './hooks/useProviderPlugin';
 import { buildConferenceMember } from './testFixtures';
 import { storybookI18n } from '../../stories/i18n';
 
@@ -31,7 +33,13 @@ import { storybookI18n } from '../../stories/i18n';
  */
 
 /** A builder with the viewer every conference component expects. */
-export const conferenceAppRoot = () => mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', true);
+/**
+ * The app a conference story renders in: signed in, avatars on, and the call window turned on — everything the
+ * feature does is gated on that setting, so without it the stories of the joinable-calls list render nothing at
+ * all.
+ */
+export const conferenceAppRoot = () =>
+	mockAppRoot().withJohnDoe().withUserPreference('displayAvatars', true).withSetting('VideoConf_Conference_Window_Enabled', true);
 
 type Builder = ReturnType<typeof mockAppRoot>;
 
@@ -193,10 +201,9 @@ const RingRenewal = ({ queryKey, children }: { queryKey: QueryKey; children: Rea
  * Asks for a fetched fixture again, for the stories whose ring is stamped by a mocked endpoint rather than
  * passed as an arg.
  *
- * Re-stamping per request is only half of it: what asks again decides how long the ring is stale for. The
- * joinable list polls every twenty seconds against a fifteen-second window, and the conference itself is only
- * re-read when the stream says so — which in Storybook is never. So the story asks, on its own account, often
- * enough that the ring it is documented to show never lapses.
+ * Re-stamping per request is only half of it: what asks again decides how long the ring is stale for. Both lists
+ * are re-read only when the stream says so, which in Storybook is never, against a fifteen-second window. So the
+ * story asks on its own account, often enough that the ring it is documented to show never lapses.
  *
  * Must sit *inside* the providers: it needs their query client. In a story's `decorators` that means first.
  */
@@ -238,6 +245,59 @@ export const members: Record<'joined' | 'ringing' | 'declined' | 'left', Confere
 	// Left, so they *did* join — `joined` records that they were there and never goes back.
 	left: buildConferenceMember({ _id: 'left', name: 'Katherine Johnson', username: 'katherine', leftAt: new Date() }),
 };
+
+/**
+ * Someone the provider has in the call, allowed everything by default — the stories that are about a control
+ * being withheld say which flag they took away.
+ */
+export const buildCallParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({
+	displayName: overrides.uuid,
+	isWaiting: false,
+	isHost: false,
+	isMuted: false,
+	isClientMuted: false,
+	isCameraMuted: false,
+	isPresenting: false,
+	isSpotlight: false,
+	raisedHand: false,
+	...overrides,
+	can: {
+		control: true,
+		mute: true,
+		disconnect: true,
+		transfer: true,
+		spotlight: true,
+		fecc: true,
+		raiseHand: true,
+		changeLayout: true,
+		...overrides.can,
+	},
+});
+
+/**
+ * A provider plugin that announces everything and logs what it is asked to do.
+ *
+ * The features are the whole vocabulary because a story showing a control is a story about the control, not
+ * about the announcement — the stories of a provider that announces less pass their own set.
+ */
+export const speakingProvider = ({
+	participants = [],
+	features = [...PLUGIN_FEATURES],
+	self,
+}: Partial<Pick<ProviderPluginControls, 'participants' | 'self'>> & { features?: PluginFeature[] } = {}): ProviderPluginControls => ({
+	features: new Set(features),
+	participants,
+	self,
+	actions: {
+		mute: action('mute'),
+		muteVideo: action('muteVideo'),
+		admit: action('admit'),
+		disconnect: action('disconnect'),
+		spotlight: action('spotlight'),
+		setRole: action('setRole'),
+		raiseHand: action('raiseHand'),
+	},
+});
 
 /**
  * The two shapes a phone gives a call: a tall, narrow window and a short, wide one.

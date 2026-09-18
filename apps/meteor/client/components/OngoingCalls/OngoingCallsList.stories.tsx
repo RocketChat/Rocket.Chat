@@ -62,7 +62,7 @@ type Story = StoryObj<typeof meta>;
 
 /** A call ringing this user right now: "Ringing…" where the time would be, and both Silence and Decline. */
 export const Ringing: Story = {
-	// Re-stamping per request is only half of it — the poll is twenty seconds against a fifteen-second window.
+	// Re-stamping per request is only half of it — nothing asks again in a story, and the window is fifteen seconds.
 	decorators: [withRingRenewal(videoConferenceQueryKeys.joinable()), withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
 };
 
@@ -73,7 +73,7 @@ export const Ringing: Story = {
  * quietened for the session, not answered.
  */
 export const RingingSilenced: Story = {
-	// Re-stamping per request is only half of it — the poll is twenty seconds against a fifteen-second window.
+	// Re-stamping per request is only half of it — nothing asks again in a story, and the window is fifteen seconds.
 	decorators: [withRingRenewal(videoConferenceQueryKeys.joinable()), withCalls([ringing], [{ callId: 'ringing', dismissed: false }])],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
