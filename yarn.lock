@@ -2927,15 +2927,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bugsnag/plugin-react@npm:~7.19.0":
-  version: 7.19.0
-  resolution: "@bugsnag/plugin-react@npm:7.19.0"
+"@bugsnag/plugin-react@npm:~8.9.0":
+  version: 8.9.0
+  resolution: "@bugsnag/plugin-react@npm:8.9.0"
   peerDependencies:
-    "@bugsnag/core": ^7.0.0
+    "@bugsnag/core": ^8.0.0
   peerDependenciesMeta:
     "@bugsnag/core":
       optional: true
-  checksum: 10/5771221af57dfbe42c4e111af1effadce7b0551d94ac1c4063e15d8623c3c237a37e5de5316969799d8122d5a38f8c7595a49f2bafeec51a59ceabd80b1dd3aa
+  checksum: 10/0e3325d060f5ae6b49ebbd2cfcb90191df468a39f6b116a7a8b71ae8357d217f6c81b8c49272271c673559ef071768c3f64fcd7123363562b3b520518fb22706
   languageName: node
   linkType: hard
 
@@ -10103,7 +10103,7 @@ __metadata:
     "@babel/register": "npm:~7.28.6"
     "@babel/runtime": "npm:~7.29.7"
     "@bugsnag/js": "npm:~7.20.2"
-    "@bugsnag/plugin-react": "npm:~7.19.0"
+    "@bugsnag/plugin-react": "npm:~8.9.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/hash": "npm:^0.9.2"
