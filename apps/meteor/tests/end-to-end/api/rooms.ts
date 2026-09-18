@@ -1625,13 +1625,34 @@ describe('[Rooms]', () => {
 			let outsiderCredentials: Credentials;
 			let ownerGroup: IRoom;
 			let ownerDM: IRoom;
+			let ownerTeam: ITeam;
+			let ownerTeamChannel: IRoom;
 
 			before(async () => {
+				await restorePermissionToRoles('view-room-administration');
+
 				[owner, outsider] = await Promise.all([createUser(), createUser()]);
 				[ownerCredentials, outsiderCredentials] = await Promise.all([login(owner.username, password), login(outsider.username, password)]);
 
 				ownerGroup = (await createRoom({ type: 'p', name: `rooms.info.admin.${Date.now()}`, credentials: ownerCredentials })).body.group;
 				ownerDM = (await createRoom({ type: 'd', username: outsider.username, credentials: ownerCredentials })).body.room;
+
+				// A public channel inside a private team is the only public room canAccessRoom
+				// already denies to a non-member, so it is what exercises the isPublicRoom branch.
+				ownerTeam = await createTeam(ownerCredentials, `rooms.info.admin.team.${Date.now()}`, TeamType.PRIVATE);
+				ownerTeamChannel = (await createRoom({ type: 'c', name: `rooms.info.admin.channel.${Date.now()}`, credentials: ownerCredentials }))
+					.body.channel;
+
+				await request
+					.post(api('teams.addRooms'))
+					.set(ownerCredentials)
+					.send({ rooms: [ownerTeamChannel._id], teamId: ownerTeam._id })
+					.expect(200);
+				await request
+					.post(api('channels.setJoinCode'))
+					.set(ownerCredentials)
+					.send({ roomId: ownerTeamChannel._id, joinCode: 'super-secret-password' })
+					.expect(200);
 
 				await request
 					.post(api('rooms.saveRoomSettings'))
@@ -1643,7 +1664,12 @@ describe('[Rooms]', () => {
 
 			after(async () => {
 				await restorePermissionToRoles('view-room-administration');
-				await Promise.all([deleteRoom({ type: 'p', roomId: ownerGroup._id }), deleteRoom({ type: 'd', roomId: ownerDM._id })]);
+				await Promise.all([
+					deleteRoom({ type: 'p', roomId: ownerGroup._id }),
+					deleteRoom({ type: 'd', roomId: ownerDM._id }),
+					deleteRoom({ type: 'c', roomId: ownerTeamChannel._id }),
+				]);
+				await deleteTeam(ownerCredentials, ownerTeam.name);
 				await Promise.all([deleteUser(owner), deleteUser(outsider)]);
 			});
 
@@ -1672,6 +1698,18 @@ describe('[Rooms]', () => {
 					.expect(200);
 
 				expect(res.body.room).to.have.property('_id', ownerGroup._id);
+			});
+
+			it('should return a public channel of a private team to an admin without leaking its join code', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerTeamChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('_id', ownerTeamChannel._id);
+				expect(res.body.room).to.not.have.property('joinCode');
 			});
 
 			it('should keep returning the whole room to members', async () => {
