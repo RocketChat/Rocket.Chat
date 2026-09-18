@@ -245,7 +245,7 @@ const _saveUser = (session?: ClientSession) =>
 			}
 
 			if (presenceChanged || deniedByAdminChanged) {
-				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged });
+				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
 			}
 
 			// App IPostUserUpdated event hook
