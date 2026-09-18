@@ -92,16 +92,11 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-	// Unpinning already broadcasts the changed message; pinning did not, so a client that was not
-	// rendering the message never learned it became pinned. Anything deciding on `pinned` from the
-	// stream — the audio player, for one — would keep evaluating a stale value.
 	void notifyOnMessageChange({
 		id: originalMessage._id,
 	});
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
-		// Same asymmetry as the message broadcast above: unpinning tells the room its stored last
-		// message changed, pinning did not, so a sidebar preview kept the pre-pin copy.
 		void notifyOnRoomChangedById(room._id);
 	}
 
@@ -128,10 +123,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				author_icon: getUserAvatarURL(originalMessage.u.username),
 				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
-				// Passing `recursiveRemove` straight to `map` would hand it the array index as its
-				// depth, and it returns nothing for an attachment that is not a quote — which used
-				// to leave `[undefined]` here, serialize as `[null]`, and fail response validation
-				// for every pinned message carrying a file.
+				// `map` would pass the array index as `recursiveRemove`'s depth argument.
 				attachments: attachments.map((attachment) => recursiveRemove(attachment)).filter(isTruthy),
 			},
 		],

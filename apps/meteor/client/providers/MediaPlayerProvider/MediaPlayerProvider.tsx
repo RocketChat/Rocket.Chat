@@ -59,18 +59,12 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		audio.play().catch((err) => console.warn('Failed to start audio playback:', err));
 	});
 
-	// `play` only swaps the track when its id changes, so a message that is re-rendered with new
-	// mutable state (pinning, for instance) would otherwise leave the player matching delete
-	// criteria against the values captured when playback started.
 	const updateTrack = useStableCallback((next: PersistentAudioTrack) => {
 		setTrack((current) => {
 			if (!current || current.id !== next.id) {
 				return current;
 			}
 
-			// A descriptor that omits a field says nothing about it, so keep what was last known
-			// rather than letting a partial snapshot clear state a fuller one had refreshed.
-			// Unpinning sends `false`, not `undefined`, so it still comes through.
 			const pinned = next.pinned ?? current.pinned;
 			const drid = next.drid ?? current.drid;
 

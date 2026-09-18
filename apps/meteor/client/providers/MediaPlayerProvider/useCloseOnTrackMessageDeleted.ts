@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { createDeleteCriteria } from '../../lib/utils/threadMessageUtils';
 
-/** A message the player watches, and the room whose deletion events can remove it. */
 type RoomWatch = {
 	ids: string[];
 	criteria: { message: IMessage; isOrigin: boolean }[];
@@ -31,8 +30,6 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 		}
 
 		const hasOrigin = Boolean(originMid && originMid !== mid);
-		// Quotes stored before `rid` was added carry no origin room, so they keep watching the
-		// quoting room — the behaviour they already had.
 		const originRoom = hasOrigin ? (originRid ?? rid) : undefined;
 
 		const watches = new Map<string, RoomWatch>();
@@ -78,9 +75,6 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 				const matchesCriteria = createDeleteCriteria(params);
 
-				// A stored quote carries the original's room but never its author or pinned state, so
-				// prunes filtering on those cannot be evaluated for it. The playing message can, since
-				// `drid` is immutable and `pinned` is kept current from the room stream.
 				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean =>
 					!isOrigin || (!params.users?.length && !params.excludePinned && !params.ignoreDiscussion);
 

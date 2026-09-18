@@ -21,9 +21,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			setModal();
 		},
 		onSuccess: async () => {
-			// Moderation only requires `view-moderation-console`, but the `notify-room` and
-			// `room-messages` deletion streams are authorized against room access, so a moderator
-			// acting on a room they have not joined never receives the event that closes the track.
+			// Deletion streams are authorized by room access, which a moderator may not have.
 			if (track?.mid === mid) {
 				closeMediaPlayer();
 			}

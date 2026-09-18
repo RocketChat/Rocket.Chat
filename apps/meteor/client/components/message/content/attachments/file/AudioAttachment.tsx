@@ -16,15 +16,10 @@ export type AudioAttachmentSource = {
 	username?: string;
 	name?: string;
 	ts?: Date;
-	/** Discussion room id the owning message links to. Immutable once set, so it is safe to snapshot. */
 	drid?: string;
-	/** Whether the owning message is pinned. Mutable, so the player is refreshed while this is rendered. */
 	pinned?: boolean;
-	/** When the audio is rendered inside a quote, the id of the original message that holds the attachment. */
 	originMid?: string;
-	/** Timestamp of the original quoted message. */
 	originTs?: Date;
-	/** Room of the original quoted message, which may differ from the room the quote is rendered in. */
 	originRid?: string;
 };
 
@@ -88,8 +83,6 @@ const AudioAttachment = ({
 
 	const active = isActive(track.id);
 
-	// The shared player keeps the descriptor it was handed, so hand it a fresh one whenever this
-	// message re-renders with different mutable state while it owns playback.
 	useEffect(() => {
 		if (active) {
 			updateTrack(track);

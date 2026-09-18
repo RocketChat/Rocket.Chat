@@ -25,33 +25,11 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
-	/**
-	 * Timestamp of the message the audio belongs to (used to match bulk-delete criteria).
-	 * Only immutable message state is kept here: a track is replaced on the shared element
-	 * only when its id changes, so anything that can change mid-playback would go stale.
-	 */
 	ts?: Date;
-	/**
-	 * Discussion room id the owning message links to (used to match bulk-delete criteria).
-	 * A message is created with its `drid` and never gains or loses one, so this snapshot
-	 * stays accurate for as long as the track lives.
-	 */
 	drid?: string;
-	/**
-	 * Whether the owning message is pinned (used to match bulk-delete criteria). Unlike `drid`
-	 * this can change while the track is active, so it is refreshed both from the rendered message
-	 * and from the room stream — the latter keeps it accurate while the message is unmounted.
-	 */
 	pinned?: boolean;
-	/** When played from a quote, the id of the original message that holds the attachment (its deletion also closes the player). */
 	originMid?: string;
-	/** Timestamp of the original quoted message (used to match bulk-delete criteria). */
 	originTs?: Date;
-	/**
-	 * Room of the original quoted message. A quote may point at another room, in which case the
-	 * player also watches that room for deletions. Absent on quotes stored before the origin room
-	 * was persisted, which fall back to assuming the quoting room.
-	 */
 	originRid?: string;
 };
 
@@ -71,11 +49,6 @@ export type MediaPlayerContextValue = {
 	cyclePlaybackRate: () => void;
 	/** Stops playback and clears the active track. */
 	close: () => void;
-	/**
-	 * Refreshes the mutable metadata of the active track when `next` describes it. Ignored when no
-	 * track is active or `next` is a different one, so a re-rendering message can keep the player's
-	 * copy of its own state current without disturbing playback.
-	 */
 	updateTrack: (next: PersistentAudioTrack) => void;
 	/** Whether the given track id is the one currently owned by the shared element. */
 	isActive: (id: string) => boolean;

@@ -104,7 +104,6 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		const notifyRef: StreamControllerRef<'notify-room'> = {};
 		const roomMessagesRef: StreamControllerRef<'room-messages'> = {};
 		const close = jest.fn();
-		// Pinned and in a discussion, so the criteria genuinely exclude it: only the explicit id can close.
 		const track = buildTrack({ pinned: true, drid: 'disc1' });
 
 		renderHook(() => useCloseOnTrackMessageDeleted(track, close), {
@@ -251,8 +250,6 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(closeNonDiscussion).toHaveBeenCalledTimes(1);
 	});
 
-	// No `originRid`, as on quotes stored before the attachment carried one: the original is
-	// watched in the quoting room.
 	describe('when the audio was played from a quote that does not name its origin room', () => {
 		const originTs = new Date('2023-12-31T00:00:00.000Z');
 		const buildQuotedTrack = (overrides: Partial<PersistentAudioTrack> = {}) =>
