@@ -24,11 +24,10 @@ const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' 
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
 };
 
-type SidebarViewMode = 'extended' | 'medium' | 'condensed';
+type SidebarViewMode = 'extended' | 'condensed';
 
 const sidebarRowHeight: Record<SidebarViewMode, number> = {
 	condensed: 28,
-	medium: 36,
 	extended: 48,
 };
 
@@ -46,7 +45,7 @@ const RoomList = () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const ref = useRef<HTMLElement | null>(null);
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
+	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'condensed';
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
 	const extended = sidebarViewMode === 'extended';
