@@ -129,8 +129,15 @@ describe('UserPresence', () => {
 		restoreConnection(rerender);
 		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
 
-		// the reconnected session is already online on the server, so nothing else has to be asserted
 		expect(goAway).toHaveBeenCalledTimes(1);
+		expect(goOnline).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not announce the user online when the page loads', async () => {
+		render();
+		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+		expect(goOnline).not.toHaveBeenCalled();
 	});
 
 	it('should not restart the idle countdown from scratch on a reconnection', async () => {
@@ -207,6 +214,67 @@ describe('UserPresence', () => {
 		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
 
 		expect(goAway).not.toHaveBeenCalled();
+	});
+
+	it('should go online when a desktop user returns while going away is still in progress', async () => {
+		let setUserOnline: ((online: boolean) => void) | undefined;
+		let resolveGoAway: ((value: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
+		goAway.mockReturnValueOnce(
+			new Promise((resolve) => {
+				resolveGoAway = resolve;
+			}),
+		);
+
+		try {
+			render();
+
+			setUserOnline?.(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+			expect(goAway).toHaveBeenCalledTimes(1);
+
+			setUserOnline?.(true);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+			resolveGoAway?.(true);
+			await jest.advanceTimersByTimeAsync(0);
+
+			expect(goOnline).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
+	});
+
+	it('should report the latest desktop transition when the user returns within the debounce window', async () => {
+		let setUserOnline: ((online: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
+
+		try {
+			render();
+
+			setUserOnline?.(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT / 2);
+			setUserOnline?.(true);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+			expect(goAway).not.toHaveBeenCalled();
+			expect(goOnline).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
 	});
 
 	it('should go online again after interacting with the UI', async () => {

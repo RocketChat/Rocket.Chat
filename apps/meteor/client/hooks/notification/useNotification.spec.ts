@@ -1,6 +1,6 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 import { useNotification } from './useNotification';
 import { useNotificationAllowed } from './useNotificationAllowed';
@@ -34,6 +34,8 @@ class MockNotification {
 
 	static listenersByInstance: NotificationEventListener[] = [];
 
+	static instances: MockNotification[] = [];
+
 	title: string;
 
 	options: NotificationOptions | undefined;
@@ -43,22 +45,22 @@ class MockNotification {
 	constructor(title: string, options?: NotificationOptions) {
 		this.title = title;
 		this.options = options;
+		MockNotification.instances.push(this);
 	}
+
+	close = jest.fn();
 
 	addEventListener(type: 'reply', listener: NotificationEventListener): void {
 		if (type === 'reply') {
 			MockNotification.listenersByInstance.push(listener);
 		}
 	}
-
-	close(): void {
-		// no-op
-	}
 }
 
-const buildPayload = (tmid?: string): INotificationDesktop => ({
+const buildPayload = (tmid?: string, duration?: number): INotificationDesktop => ({
 	title: 'title',
 	text: 'text',
+	...(duration !== undefined && { duration }),
 	payload: {
 		_id: 'msgId',
 		rid: 'roomId',
@@ -75,10 +77,9 @@ describe('useNotification', () => {
 	const originalNotification = window.Notification;
 
 	beforeEach(() => {
-		// the hook schedules a 10s auto-close timer for every notification it shows
-		jest.useFakeTimers();
 		jest.clearAllMocks();
 		MockNotification.listenersByInstance = [];
+		MockNotification.instances = [];
 		(window as any).Notification = MockNotification;
 		(useNotificationAllowed as jest.MockedFunction<typeof useNotificationAllowed>).mockReturnValue(true);
 		(onClientMessageReceived as jest.MockedFunction<typeof onClientMessageReceived>).mockImplementation((message: any) =>
@@ -86,55 +87,139 @@ describe('useNotification', () => {
 		);
 	});
 
-	afterEach(() => {
-		jest.useRealTimers();
-	});
-
 	afterAll(() => {
 		(window as any).Notification = originalNotification;
 	});
 
-	it('includes tmid in the sendMessage payload when the notification is for a thread message', async () => {
-		const { result } = renderHook(() => useNotification(), {
-			wrapper: mockAppRoot().build(),
+	describe('auto-close timer', () => {
+		beforeEach(() => {
+			jest.useFakeTimers();
 		});
 
-		await result.current(buildPayload('threadId'));
+		afterEach(() => {
+			jest.useRealTimers();
+		});
 
-		await waitFor(() => expect(MockNotification.listenersByInstance).toHaveLength(1));
+		it('does not schedule an auto-close timer when the server does not provide a duration', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
 
-		MockNotification.listenersByInstance[0]({ response: 'reply text' });
+			await result.current(buildPayload());
 
-		expect(sdk.rest.post).toHaveBeenCalledWith(
-			'/v1/chat.sendMessage',
-			expect.objectContaining({
-				message: expect.objectContaining({
-					rid: 'roomId',
-					msg: 'reply text',
-					tmid: 'threadId',
-				}),
-			}),
-		);
+			const [instance] = MockNotification.instances;
+			jest.advanceTimersByTime(60_000);
+
+			expect(instance.close).not.toHaveBeenCalled();
+		});
+
+		it('honours a server-provided duration and closes the notification after it elapses', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload(undefined, 5));
+
+			const [instance] = MockNotification.instances;
+
+			jest.advanceTimersByTime(4_999);
+			expect(instance.close).not.toHaveBeenCalled();
+
+			jest.advanceTimersByTime(1);
+			expect(instance.close).toHaveBeenCalledTimes(1);
+		});
+
+		it('leaves a notification without a duration open indefinitely, so a late quick reply can still reach it', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			const [instance] = MockNotification.instances;
+
+			// Desktop clients keep such a notification actionable (a Windows Action
+			// Center card stays repliable), so the client must not declare it over.
+			jest.advanceTimersByTime(10 * 60_000);
+
+			expect(instance.close).not.toHaveBeenCalled();
+			expect(jest.getTimerCount()).toBe(0);
+
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'late reply' });
+
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: expect.objectContaining({ rid: 'roomId', msg: 'late reply' }),
+			});
+		});
+
+		it('honours a notification that requires interaction even when the preference is disabled', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().withUserPreference('desktopNotificationRequireInteraction', false).build(),
+			});
+
+			await result.current({ ...buildPayload(undefined, 5), requireInteraction: true });
+
+			const [instance] = MockNotification.instances;
+			expect(instance.options?.requireInteraction).toBe(true);
+
+			jest.advanceTimersByTime(60_000);
+
+			expect(instance.close).not.toHaveBeenCalled();
+		});
+
+		it('does not schedule an auto-close timer when requireInteraction is set, even with a duration', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().withUserPreference('desktopNotificationRequireInteraction', true).build(),
+			});
+
+			await result.current(buildPayload(undefined, 5));
+
+			const [instance] = MockNotification.instances;
+			jest.advanceTimersByTime(60_000);
+
+			expect(instance.close).not.toHaveBeenCalled();
+		});
 	});
 
-	it('does not include tmid in the sendMessage payload when the notification is for a room message', async () => {
-		const { result } = renderHook(() => useNotification(), {
-			wrapper: mockAppRoot().build(),
+	describe('quick reply', () => {
+		it('includes tmid in the sendMessage payload when the notification is for a thread message', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload('threadId'));
+
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'reply text' });
+
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith(
+				'/v1/chat.sendMessage',
+				expect.objectContaining({
+					message: expect.objectContaining({ rid: 'roomId', msg: 'reply text', tmid: 'threadId' }),
+				}),
+			);
 		});
 
-		await result.current(buildPayload());
+		it('does not include tmid in the sendMessage payload when the notification is for a room message', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
 
-		await waitFor(() => expect(MockNotification.listenersByInstance).toHaveLength(1));
+			await result.current(buildPayload());
 
-		MockNotification.listenersByInstance[0]({ response: 'reply text' });
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'reply text' });
 
-		expect(sdk.rest.post).toHaveBeenCalledWith(
-			'/v1/chat.sendMessage',
-			expect.objectContaining({
-				message: expect.objectContaining({ rid: 'roomId', msg: 'reply text' }),
-			}),
-		);
-		const [, body] = (sdk.rest.post as jest.Mock).mock.calls[0];
-		expect('tmid' in body.message).toBe(false);
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith(
+				'/v1/chat.sendMessage',
+				expect.objectContaining({
+					message: expect.objectContaining({ rid: 'roomId', msg: 'reply text' }),
+				}),
+			);
+
+			const [, body] = (sdk.rest.post as jest.Mock).mock.calls[0];
+			expect('tmid' in body.message).toBe(false);
+		});
 	});
 });
