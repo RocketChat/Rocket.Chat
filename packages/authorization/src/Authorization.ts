@@ -4,9 +4,9 @@ import type { IUser, IRole, IRoom, ISubscription, VideoConference } from '@rocke
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { AuthorizationUtils } from './AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
 import { canReadRoom } from './canReadRoom';
-import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
 
@@ -140,7 +140,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	 * Whether someone may be near a conference at all: the one rule every endpoint that answers about one applies.
 	 *
 	 * Membership of the call counts on its own, because someone added from outside the room has no subscription to
-	 * check. See [video conferences](../../../../../docs/features/video-conference.md).
+	 * check. See [video conferences](../../../docs/features/video-conference.md).
 	 */
 	async canAccessConference(call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>, userId?: IUser['_id']): Promise<boolean> {
 		if (!userId) {
