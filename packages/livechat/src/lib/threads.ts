@@ -40,9 +40,8 @@ const findParentMessage = async (tmid: string) => {
 			parentMessage = await Livechat.message(tmid, { rid } as Parameters<typeof Livechat.message>[1]);
 			await addParentMessage(parentMessage);
 		} catch (error: any) {
-			const {
-				data: { error: reason },
-			} = error;
+			// Network/transport errors carry no `data` payload; fall back to the error message.
+			const reason = error?.data?.error ?? error?.message ?? 'Could not load the parent message';
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
@@ -58,6 +57,10 @@ const normalizeThreadMessage = async (message: any) => {
 	let parentMessage = messages.find((msg) => msg._id === message.tmid);
 	if (!parentMessage) {
 		parentMessage = await findParentMessage(message.tmid);
+	}
+	if (!parentMessage) {
+		// Parent couldn't be loaded; render the reply without its quoted context.
+		return message;
 	}
 	const { msg, attachments = [] } = parentMessage;
 	return Object.assign(message, { threadMsg: parentMessage, attachments: [{ attachments, text: msg, tmid: message.tmid }] });
