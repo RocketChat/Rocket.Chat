@@ -32,6 +32,7 @@ jest.mock('../../lib/authorization/canAccessRoom', () => ({ canAccessRoomIdAsync
 jest.mock('../../lib/authorization/canDeleteMessage', () => ({ canDeleteMessageAsync: jest.fn() }));
 jest.mock('../../lib/messages/updateMessage', () => ({ updateMessage: jest.fn() }));
 jest.mock('../../lib/users/setUserAvatar', () => ({ setUserAvatar: jest.fn() }));
+jest.mock('../../lib/i18n', () => ({ i18n: { t: (key: string) => key } }));
 jest.mock('../../meteor-methods/messages/sendFileMessage', () => ({
 	sendFileMessage: jest.fn(),
 	parseFileIntoMessageAttachments: jest.fn(),
@@ -169,7 +170,7 @@ describe('UploadService', () => {
 	});
 
 	describe('deleteFile message consistency', () => {
-		const removedMarker = { type: 'removed-file', color: '#FD745E', text: '_File removed_' };
+		const removedMarker = { type: 'removed-file', color: '#FD745E', text: '_File_removed_' };
 
 		it('drops the removed files and replaces only their attachments', async () => {
 			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1']) as any);
