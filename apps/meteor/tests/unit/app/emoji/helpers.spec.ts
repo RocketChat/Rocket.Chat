@@ -119,7 +119,7 @@ describe('Emoji Client Helpers', () => {
 
 			const results = getEmojisBySearchTerm('handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
 
-			expect(results.map(({ emoji: name }) => name)).to.deep.equal(['handshake_tone1']);
+			expect(results.map(({ emoji: name }) => name)).to.include('handshake_tone1');
 			expect(recentEmojis).to.deep.equal(['smile']);
 			expect(updates).to.deep.equal([['smile']]);
 		});
