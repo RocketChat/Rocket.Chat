@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError, StatusVisibility } from '@rocket.chat/core-services';
-import { isUserFederated } from '@rocket.chat/core-typings';
+import { MeteorError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -25,7 +25,6 @@ import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
-import { setStatusText } from '../setStatusText';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -72,6 +71,35 @@ const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 	}
 
 	return user;
+};
+
+const STATUS_TEXT_MAX_LENGTH = 120;
+
+const getChangedStatusText = async (user: IUser, { statusText, presenceDisabledByAdmin }: SaveUserData): Promise<string | undefined> => {
+	const text = statusText?.trim().substring(0, STATUS_TEXT_MAX_LENGTH);
+
+	if (text === undefined || text === (user.statusText ?? '')) {
+		return undefined;
+	}
+
+	// this same save may be flipping the flag, and the service still answers for the state before the transaction
+	const presenceDisabled = presenceDisabledByAdmin ?? (await StatusVisibility.isPresenceDisabledFor(user._id));
+
+	return presenceDisabled ? undefined : text;
+};
+
+const isExpired = (expiresAt?: Date): boolean => expiresAt != null && new Date(expiresAt).getTime() < Date.now();
+
+const getOwnStatus = ({ statusDefault, statusSource, previousState }: IUser): UserStatus => {
+	if (!statusSource || statusSource === 'manual') {
+		return statusDefault ?? UserStatus.ONLINE;
+	}
+
+	if (previousState?.statusSource === 'manual' && !isExpired(previousState.statusExpiresAt)) {
+		return previousState.statusDefault;
+	}
+
+	return UserStatus.ONLINE;
 };
 
 const _saveUser = (session?: ClientSession) =>
@@ -137,8 +165,10 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.statusText === 'string') {
-			await setStatusText(oldUserData, userData.statusText, { updater, session });
+		const statusText = await getChangedStatusText(oldUserData, userData);
+
+		if (statusText !== undefined) {
+			updater.set('statusText', statusText);
 		}
 
 		if (userData.email) {
@@ -234,6 +264,14 @@ const _saveUser = (session?: ClientSession) =>
 		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
 
 		await onceTransactionCommitedSuccessfully(async () => {
+			if (presenceChanged || deniedByAdminChanged) {
+				await StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
+			}
+
+			if (statusText !== undefined && !(await StatusVisibility.isPresenceDisabledFor(userData._id))) {
+				await Presence.setStatus(userData._id, getOwnStatus(oldUserData), statusText);
+			}
+
 			if (session && options?.auditStore) {
 				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
 				// updater will be commited by this point, so it won't affect the external user activation/deactivation
@@ -242,10 +280,6 @@ const _saveUser = (session?: ClientSession) =>
 				}
 				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
 				void options.auditStore.commitAuditEvent();
-			}
-
-			if (presenceChanged || deniedByAdminChanged) {
-				void StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
 			}
 
 			// App IPostUserUpdated event hook
@@ -271,7 +305,7 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
-			const { statusVisibilityDeniedByAdmin: _adminOnly, ...notifiableUserData } = userData;
+			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
 
 			void notifyOnUserChange({
 				clientAction: 'updated',
