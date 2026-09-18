@@ -9685,6 +9685,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/gazzodown-alt@workspace:^, @rocket.chat/gazzodown-alt@workspace:packages/gazzodown-alt":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/gazzodown-alt@workspace:packages/gazzodown-alt"
+  dependencies:
+    "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/react": "npm:~19.2.17"
+    eslint: "npm:~9.39.3"
+    react: "npm:~19.2.7"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    "@rocket.chat/message-parser": "workspace:^"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/gazzodown@workspace:^, @rocket.chat/gazzodown@workspace:packages/gazzodown":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
@@ -10137,6 +10153,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
+    "@rocket.chat/gazzodown-alt": "workspace:^"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
     "@rocket.chat/icons": "npm:^0.50.0"
@@ -15314,7 +15331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:~19.2.18":
+"@types/react@npm:~19.2.17, @types/react@npm:~19.2.18":
   version: 19.2.18
   resolution: "@types/react@npm:19.2.18"
   dependencies:
@@ -22449,7 +22466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:~9.39.5":
+"eslint@npm:~9.39.3, eslint@npm:~9.39.5":
   version: 9.39.5
   resolution: "eslint@npm:9.39.5"
   dependencies:
@@ -32940,7 +32957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:~19.2.8":
+"react@npm:~19.2.7, react@npm:~19.2.8":
   version: 19.2.8
   resolution: "react@npm:19.2.8"
   checksum: 10/a3c697798035e295ca9e51591d3a8700824535cb8c070fac1f8abbe69717ceb99108cbc4ba7b31a606806f336b1eba705705f63b9d39ace198fe51e8990ac843
