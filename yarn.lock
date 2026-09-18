@@ -11171,6 +11171,7 @@ __metadata:
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@rocket.chat/core-typings": "workspace:~"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.91.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11256,6 +11257,7 @@ __metadata:
   resolution: "@rocket.chat/ui-composer@workspace:packages/ui-composer"
   dependencies:
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.91.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
