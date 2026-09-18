@@ -22,5 +22,5 @@ void storybookI18n.use(initReactI18next).init({
 	keySeparator: false,
 	nsSeparator: false,
 	interpolation: { escapeValue: false },
-	initImmediate: false,
+	initAsync: false,
 });
