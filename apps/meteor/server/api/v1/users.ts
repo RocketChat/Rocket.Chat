@@ -54,6 +54,7 @@ import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatu
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -94,7 +95,6 @@ import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
 import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 
 API.v1.addRoute(
 	'users.getAvatar',

@@ -9,9 +9,9 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
 import { getRoleIds } from '../../authorization/getRoles';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 import { checkEmailAvailability } from '../checkEmailAvailability';
 import { checkUsernameAvailability } from '../checkUsernameAvailability';
-import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 
 export const validateUserData = makeFunction(async (userId: IUser['_id'], userData: SaveUserData): Promise<void> => {
 	const existingRoles = await getRoleIds();

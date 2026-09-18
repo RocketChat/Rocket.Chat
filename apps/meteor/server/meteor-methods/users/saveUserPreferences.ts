@@ -14,8 +14,8 @@ import {
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
 import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
-import { settings as rcSettings } from '../../settings';
 import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
+import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
 	language: string;
