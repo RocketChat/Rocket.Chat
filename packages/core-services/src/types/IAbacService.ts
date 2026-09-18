@@ -23,6 +23,7 @@ export interface IAbacService {
 		},
 		actor?: AbacActor,
 	): Promise<{ attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[]; offset: number; count: number; total: number }>;
+	listAbacAttributeKeys(actor?: AbacActor): Promise<string[]>;
 	listAbacRooms(
 		filters?: {
 			offset?: number;
