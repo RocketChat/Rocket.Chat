@@ -1,0 +1,14 @@
+packages/authorization/package.json
+  h_4c386397e672f4 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6e2e37d4ed582336b4ec8e127b7d3fd6cd68a9e7",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
