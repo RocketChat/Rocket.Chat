@@ -6413,6 +6413,7 @@
   "Status_settings_reset_to_workspace_default": "{{name}}'s status settings reset to workspace default",
   "Status_you_can_use_emoji": "You can use emoji",
   "StatusMessage": "Status message",
+  "StatusMessage_admin_hint": "Overrides any existing user-created message.",
   "StatusMessage_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of status messages",
   "StatusMessage_Changed_Successfully": "Status message changed successfully.",
   "StatusMessage_Placeholder": "What are you doing right now?",
