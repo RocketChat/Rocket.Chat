@@ -39,6 +39,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		email: string | null | undefined,
 		phone: string | null | undefined,
 		customFields?: { [key: string]: RegExp },
+		options?: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;

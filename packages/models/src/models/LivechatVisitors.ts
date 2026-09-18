@@ -269,6 +269,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		email: string | null | undefined,
 		phone: string | null | undefined,
 		customFields?: { [key: string]: RegExp },
+		options?: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
 			{
@@ -285,7 +286,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return null;
 		}
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {
