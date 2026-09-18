@@ -1,8 +1,12 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { useCloseOnTrackMessageDeleted } from './useCloseOnTrackMessageDeleted';
+
+// The hook reads only `_id` and `t`, so a stream event is built from those rather than a full message.
+const streamedMessage = (fields: Pick<IMessage, '_id'> & Partial<IMessage>) => fields as IMessage;
 
 const buildTrack = (overrides: Partial<PersistentAudioTrack> = {}): PersistentAudioTrack => ({
 	id: 'mid1:url',
@@ -56,7 +60,7 @@ describe('useCloseOnTrackMessageDeleted', () => {
 			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 		});
 
-		roomMessagesRef.controller?.emit(track.rid!, [{ _id: track.mid!, t: 'rm' } as any]);
+		roomMessagesRef.controller?.emit(track.rid!, [streamedMessage({ _id: track.mid!, t: 'rm' })]);
 
 		expect(close).toHaveBeenCalledTimes(1);
 	});
@@ -71,7 +75,7 @@ describe('useCloseOnTrackMessageDeleted', () => {
 			wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 		});
 
-		roomMessagesRef.controller?.emit(track.rid!, [{ _id: track.mid! } as any]);
+		roomMessagesRef.controller?.emit(track.rid!, [streamedMessage({ _id: track.mid! })]);
 
 		expect(close).not.toHaveBeenCalled();
 	});
@@ -310,7 +314,7 @@ describe('useCloseOnTrackMessageDeleted', () => {
 				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 			});
 
-			roomMessagesRef.controller?.emit(track.rid!, [{ _id: 'mid1', t: 'rm' } as any]);
+			roomMessagesRef.controller?.emit(track.rid!, [streamedMessage({ _id: 'mid1', t: 'rm' })]);
 
 			expect(close).toHaveBeenCalledTimes(1);
 		});
@@ -486,7 +490,7 @@ describe('useCloseOnTrackMessageDeleted', () => {
 				wrapper: mockAppRoot().withStream('notify-room', notifyRef).withStream('room-messages', roomMessagesRef).build(),
 			});
 
-			roomMessagesRef.controller?.emit('room2', [{ _id: 'mid1', t: 'rm' } as any]);
+			roomMessagesRef.controller?.emit('room2', [streamedMessage({ _id: 'mid1', t: 'rm' })]);
 
 			expect(close).toHaveBeenCalledTimes(1);
 		});
