@@ -3096,6 +3096,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let roomOwner: IUser;
 		let roomOwnerCredentials: Credentials;
 		let adminReadableRoom: IRoom;
+		let abacAttributeId: string;
 		const abacKey = `rooms_info_abac_${Date.now()}`;
 
 		before(async () => {
@@ -3112,10 +3113,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.set(credentials)
 				.send({ key: abacKey, values: ['secret'] })
 				.expect(200);
+
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key: abacKey }).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find(({ key }) => key === abacKey);
+			if (!attribute) {
+				throw new Error(`ABAC attribute ${abacKey} was not created`);
+			}
+			abacAttributeId = attribute._id;
 		});
 
 		after(async () => {
 			await request.delete(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes`).set(credentials);
+			await request.delete(`${v1}/abac/attributes/${abacAttributeId}`).set(credentials);
 			await deleteRoom({ type: 'p', roomId: adminReadableRoom._id });
 			await deleteUser(roomOwner);
 			await updateSetting('ABAC_Enabled', false);
