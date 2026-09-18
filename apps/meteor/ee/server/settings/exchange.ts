@@ -121,6 +121,12 @@ export function addSettings(): void {
 						invalidValue: 1,
 					});
 
+					await this.add('Exchange_Contacts_Sync_Avatars', false, {
+						type: 'boolean',
+						enableQuery: contactsOnly,
+						invalidValue: false,
+					});
+
 					await this.add('Exchange_Contacts_Default_Region', '', {
 						type: 'string',
 						enableQuery: contactsOnly,

@@ -1,5 +1,5 @@
 import type { IContact, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -8,24 +8,21 @@ export type ImportedContact = Omit<InsertionModel<IContact>, '_id' | 'source' | 
 	folderId: string;
 };
 
-export type ManualContact = Omit<
+export type LocalContact = Omit<
 	InsertionModel<IContact>,
-	'_id' | 'source' | 'companyName' | 'officeLocation' | 'categories' | 'externalId' | 'folderId' | 'lastSyncAt'
+	'_id' | 'source' | 'officeLocation' | 'categories' | 'externalId' | 'folderId' | 'lastSyncAt'
 >;
 
-export type ContactListFilter = {
-	text?: string;
-	categories?: string[];
-	companies?: string[];
-};
+export type LocalContactUpdate = Omit<LocalContact, 'uid'>;
 
 export type ContactBulkUpsertResult = { matchedCount: number; modifiedCount: number; upsertedCount: number };
 
 export interface IContactsModel extends IBaseModel<IContact> {
-	findPaginatedByUserId(uid: IUser['_id'], filter: ContactListFilter, options: FindOptions<IContact>): FindPaginated<FindCursor<IContact>>;
-	findFilterOptionsByUserId(uid: IUser['_id']): Promise<{ categories: string[]; companies: string[] }>;
+	findPaginatedByUserId(uid: IUser['_id'], text: string | undefined, options: FindOptions<IContact>): FindPaginated<FindCursor<IContact>>;
 	findByUserIdAndPhone(uid: IUser['_id'], e164: string): FindCursor<IContact>;
-	createManual(contact: ManualContact): Promise<IContact['_id']>;
+	createLocal(contact: LocalContact): Promise<IContact['_id']>;
+	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult>;
+	deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult>;
 	bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult>;
 	deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], folderId: string, keepExternalIds: string[]): Promise<DeleteResult>;

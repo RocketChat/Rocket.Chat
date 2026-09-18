@@ -2,7 +2,15 @@ import type { IEwsTransport } from './IEwsTransport';
 import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
 import { findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { ContactFolder, DateRange, ExchangeContact, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type {
+	ContactFolder,
+	DateRange,
+	ExchangeContact,
+	ExchangeContactPhoto,
+	ExchangeEvent,
+	ExchangeProviderCapabilities,
+	Page,
+} from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 
@@ -132,5 +140,9 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	public async listContacts(_mailbox: string, _folderId: string, _cursor?: string): Promise<Page<ExchangeContact>> {
 		return { items: [], cursor: '', hasMore: true, isCompleteSnapshot: false };
+	}
+
+	public async getContactsPhotos(_mailbox: string, _externalIds: string[]): Promise<ExchangeContactPhoto[]> {
+		return [{ data: new Uint8Array(), contentType: '', externalId: '' }];
 	}
 }

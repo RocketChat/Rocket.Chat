@@ -8,6 +8,7 @@ import type {
 	DateRange,
 	ExchangeContact,
 	ExchangeContactEmail,
+	ExchangeContactPhoto,
 	ExchangeContactPhone,
 	ExchangeEvent,
 	ExchangeProviderCapabilities,
@@ -16,6 +17,7 @@ import type {
 import { ExchangeError } from '../errors';
 import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
+import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
@@ -30,6 +32,8 @@ const DEFAULT_CONTACT_FOLDER_ID = 'default';
 
 const CONTACT_FIELDS =
 	'id,displayName,givenName,surname,companyName,emailAddresses,mobilePhone,businessPhones,homePhones,categories,officeLocation';
+
+const GRAPH_BATCH_SIZE = 20;
 
 type GraphDateTimeTimeZone = {
 	dateTime?: unknown;
@@ -74,6 +78,15 @@ type GraphContact = {
 	'categories'?: unknown;
 	'officeLocation'?: unknown;
 	'@removed'?: unknown;
+};
+
+type GraphBatchResponse = {
+	responses?: Array<{
+		id: string;
+		status: number;
+		headers?: Record<string, string>;
+		body?: string;
+	}>;
 };
 
 /**
@@ -216,6 +229,64 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		logger.warn({ msg: 'Graph contact folder paged out before it was fully read', folderId, pages: MAX_DELTA_PAGES });
 
 		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
+	}
+
+	public async getContactsPhotos(mailbox: string, externalIds: string[]): Promise<ExchangeContactPhoto[]> {
+		if (!externalIds.length) {
+			return [];
+		}
+
+		const photos: ExchangeContactPhoto[] = [];
+		const batchUrl = `${this.graphHost}/${GRAPH_API_VERSION}/$batch`;
+
+		for (let i = 0; i < externalIds.length; i += GRAPH_BATCH_SIZE) {
+			const chunk = externalIds.slice(i, i + GRAPH_BATCH_SIZE);
+
+			const batchPayload = {
+				requests: chunk.map((externalId) => ({
+					id: externalId,
+					method: 'GET',
+					url: `/users/${encodeURIComponent(mailbox)}/contacts/${encodeURIComponent(externalId)}/photo/$value`,
+				})),
+			};
+
+			try {
+				const batchResult = await this.requestJson<GraphBatchResponse>(batchUrl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(batchPayload),
+				});
+
+				for (const res of batchResult.responses ?? []) {
+					if (res.status !== 200 || !res.body) {
+						continue;
+					}
+
+					const data = new Uint8Array(Buffer.from(res.body, 'base64'));
+
+					if (!data.byteLength) {
+						continue;
+					}
+
+					if (data.byteLength > MAX_CONTACT_PHOTO_BYTES) {
+						logger.warn({ msg: 'Skipping a Graph contact photo above the size cap', externalId: res.id, bytes: data.byteLength });
+						continue;
+					}
+
+					const contentType = res.headers?.['Content-Type'] ?? res.headers?.['content-type'] ?? 'image/jpeg';
+
+					photos.push({
+						externalId: res.id,
+						data,
+						contentType,
+					});
+				}
+			} catch (error) {
+				logger.error({ msg: 'Failed to fetch contact photos batch from Graph', mailbox, error });
+			}
+		}
+
+		return photos;
 	}
 
 	private contactsDeltaUrl(mailbox: string, folderId: string): string {

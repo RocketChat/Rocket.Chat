@@ -5,4 +5,5 @@ import { handleBrowserVersionCheck } from './browserVersion';
 
 WebApp.connectHandlers.use(handleBrowserVersionCheck);
 WebApp.connectHandlers.use('/avatar/uid/', protectAvatars);
+WebApp.connectHandlers.use('/avatar/contact/', protectAvatars);
 WebApp.connectHandlers.use('/avatar/', protectAvatarsWithFallback);

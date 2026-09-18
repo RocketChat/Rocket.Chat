@@ -2,6 +2,7 @@ import type {
 	ContactFolder,
 	DateRange,
 	ExchangeContact,
+	ExchangeContactPhoto,
 	ExchangeEvent,
 	Page,
 	ExchangeProviderId,
@@ -22,4 +23,6 @@ export interface IExchangeProvider {
 
 	/** Per folder, because both providers scope the contact delta token to one. */
 	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
+
+	getContactsPhotos(mailbox: string, externalIds: string[]): Promise<ExchangeContactPhoto[]>;
 }

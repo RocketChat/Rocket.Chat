@@ -2,13 +2,16 @@ import type { IContact } from '@rocket.chat/core-typings';
 import { Contacts } from '@rocket.chat/models';
 import {
 	isContactsCreateProps,
+	isContactsDeleteProps,
 	isContactsListProps,
+	isContactsUpdateProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
@@ -17,22 +20,39 @@ import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
 
 const SORTABLE_FIELDS = ['displayName', 'emails.address', 'categories', 'companyName', 'officeLocation'];
 
+const toLocalContact = ({ displayName, givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
+	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
+
+	return {
+		displayName: displayName || [givenName, surname].filter(Boolean).join(' '),
+		givenName,
+		...(surname && { surname }),
+		...(companyName && { companyName }),
+		emails: emails ?? [],
+		phones: (phones ?? []).map(({ raw }) => {
+			const e164 = normalizeE164(raw, defaultRegion);
+			return { raw, ...(e164 && { e164 }) };
+		}),
+	};
+};
+
 API.v1.get(
 	'contacts.list',
 	{
 		authRequired: true,
 		query: isContactsListProps,
 		response: {
-			200: ajv.compile<PaginatedResult<{ items: IContact[]; success: true }>>({
+			200: ajv.compile<PaginatedResult<{ items: IContact[]; unfilteredTotal: number; success: true }>>({
 				type: 'object',
 				properties: {
 					items: { type: 'array' },
 					count: { type: 'integer' },
 					offset: { type: 'integer' },
 					total: { type: 'integer' },
+					unfilteredTotal: { type: 'integer' },
 					success: { type: 'boolean', enum: [true] },
 				},
-				required: ['items', 'count', 'offset', 'total', 'success'],
+				required: ['items', 'count', 'offset', 'total', 'unfilteredTotal', 'success'],
 				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
@@ -42,7 +62,7 @@ API.v1.get(
 	},
 	async function action() {
 		const { userId } = this;
-		const { text, categories, companies } = this.queryParams;
+		const { text } = this.queryParams;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
@@ -51,15 +71,18 @@ API.v1.get(
 			return API.v1.failure('error-invalid-sort-keys');
 		}
 
-		const { cursor, totalCount } = Contacts.findPaginatedByUserId(
-			userId,
-			{ text, ...(categories && { categories }), ...(companies && { companies }) },
-			{ sort: sort ?? { displayName: 1 }, skip: offset, limit: count },
-		);
+		const { cursor, totalCount } = Contacts.findPaginatedByUserId(userId, text, {
+			sort: sort ?? { displayName: 1 },
+			skip: offset,
+			limit: count,
+		});
 
 		const [items, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		return API.v1.success({ items, count: items.length, offset, total });
+		// needed to display alongside the Sync button to compare against Outlook
+		const unfilteredTotal = text ? await Contacts.countDocuments({ uid: userId }) : total;
+
+		return API.v1.success({ items, count: items.length, offset, total, unfilteredTotal });
 	},
 );
 
@@ -85,50 +108,76 @@ API.v1.post(
 	},
 	async function action() {
 		const { userId } = this;
-		const { displayName, givenName, surname, companyName, emails, phones } = this.bodyParams;
 
-		// Same region policy as ingestion, or a locally created number would never match an incoming call.
-		const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
-
-		const id = await Contacts.createManual({
+		const id = await Contacts.createLocal({
 			uid: userId,
-			displayName,
-			...(givenName && { givenName }),
-			...(surname && { surname }),
-			...(companyName && { companyName }),
-			emails: emails ?? [],
-			phones: (phones ?? []).map(({ raw, label }) => {
-				const e164 = normalizeE164(raw, defaultRegion);
-				return { raw, ...(e164 && { e164 }), ...(label && { label }) };
-			}),
+			...toLocalContact(this.bodyParams),
 		});
 
 		return API.v1.success({ id });
 	},
 );
 
-API.v1.get(
-	'contacts.filters',
+API.v1.post(
+	'contacts.update',
 	{
 		authRequired: true,
+		body: isContactsUpdateProps,
 		response: {
-			200: ajv.compile<{ categories: string[]; companies: string[]; success: true }>({
+			200: ajv.compile<{ success: true }>({
 				type: 'object',
 				properties: {
-					categories: { type: 'array', items: { type: 'string' } },
-					companies: { type: 'array', items: { type: 'string' } },
 					success: { type: 'boolean', enum: [true] },
 				},
-				required: ['categories', 'companies', 'success'],
+				required: ['success'],
 				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
-		const { categories, companies } = await Contacts.findFilterOptionsByUserId(this.userId);
+		const { contactId, ...payload } = this.bodyParams;
 
-		return API.v1.success({ categories, companies });
+		const { matchedCount } = await Contacts.updateLocal(this.userId, contactId, toLocalContact(payload));
+
+		if (!matchedCount) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({});
+	},
+);
+
+API.v1.post(
+	'contacts.delete',
+	{
+		authRequired: true,
+		body: isContactsDeleteProps,
+		response: {
+			200: ajv.compile<{ success: true }>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { deletedCount } = await Contacts.deleteLocal(this.userId, this.bodyParams.contactId);
+
+		if (!deletedCount) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({});
 	},
 );

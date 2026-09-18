@@ -2,9 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { ImportedContact } from '@rocket.chat/model-typings';
 import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
 
+import { deleteContactAvatars, saveContactAvatar } from './contactAvatars';
 import { normalizeE164 } from './normalizeE164';
+import { settings } from '../../../../../../server/settings';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
-import type { ExchangeContactUpsert } from '../../definition/types';
+import type { ExchangeContactPhoto, ExchangeContactUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubForLog, scrubText } from '../../scrub';
@@ -95,6 +97,20 @@ const collectPages = async (
 	}
 };
 
+const syncAvatars = async (
+	provider: IExchangeProvider,
+	uid: IUser['_id'],
+	mailbox: string,
+	folderId: string,
+	externalIds: string[],
+): Promise<void> => {
+	const photos: ExchangeContactPhoto[] = await provider.getContactsPhotos(mailbox, externalIds);
+
+	for (const photo of photos) {
+		await saveContactAvatar(uid, folderId, photo);
+	}
+};
+
 export const syncContactFolder = async (
 	provider: IExchangeProvider,
 	uid: IUser['_id'],
@@ -121,6 +137,18 @@ export const syncContactFolder = async (
 			[...upserts.values()].map((contact) => toContact(uid, contact, defaultRegion)),
 			new Date(),
 		);
+
+		if (upserts.size && settings.get<boolean>('Exchange_Contacts_Sync_Avatars')) {
+			await syncAvatars(provider, uid, mailbox, folderId, [...upserts.keys()]);
+		}
+
+		if (removals.size) {
+			await deleteContactAvatars(uid, folderId, { in: [...removals] });
+		}
+
+		if (keepExternalIds) {
+			await deleteContactAvatars(uid, folderId, { notIn: keepExternalIds });
+		}
 
 		const deleted = removals.size ? await Contacts.deleteImportedByExternalIds(uid, folderId, [...removals]) : undefined;
 

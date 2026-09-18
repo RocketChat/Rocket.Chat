@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
-export type ContactSource = 'outlook' | 'manual';
+export type ContactSource = 'outlook' | 'local';
 
 export interface IContactPhone {
 	// As it came from the source, kept for display.
