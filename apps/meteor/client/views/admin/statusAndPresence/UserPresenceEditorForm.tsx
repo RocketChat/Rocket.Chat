@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { ContextualbarFooter, ContextualbarScrollableContent, GenericModal, UserAutoComplete } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
@@ -21,6 +21,7 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import UserPresenceConfirmModal from './UserPresenceConfirmModal';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useFindManagedUser } from './useManagedPresenceUsers';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -109,23 +110,15 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const confirm = useStableCallback(
 		(title: string, description: string, confirmText: string, onConfirm: () => Promise<boolean>, variant?: 'danger') => {
-			const handleCancel = (): void => setModal(null);
-
 			setModal(
-				<GenericModal
-					variant={variant}
+				<UserPresenceConfirmModal
 					title={title}
+					description={description}
 					confirmText={confirmText}
-					onConfirm={async () => {
-						if (await onConfirm()) {
-							setModal(null);
-						}
-					}}
-					onCancel={handleCancel}
-					onClose={handleCancel}
-				>
-					{description}
-				</GenericModal>,
+					variant={variant}
+					onConfirm={onConfirm}
+					onClose={() => setModal(null)}
+				/>,
 			);
 		},
 	);

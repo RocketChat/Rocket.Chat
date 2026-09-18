@@ -57,6 +57,7 @@ describe('StatusAndPresenceRoute', () => {
 
 		render(<StatusAndPresenceRoute />, { wrapper: mockAppRoot().withPermission('manage-user-status').withRouter(router).build() });
 
+		expect(navigate).toHaveBeenCalledTimes(1);
 		expect(navigate).toHaveBeenCalledWith({ name: 'user-status', params: { tab: 'custom-status' } }, { replace: true });
 		expect(lastPageProps()).toMatchObject({ tab: 'custom-status', settingIds: [] });
 	});
