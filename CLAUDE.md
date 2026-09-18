@@ -45,6 +45,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Testing
 
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
+- [Media signaling integration harness](packages/media-signaling/src/tests/README.md) — running whole call flows against a fake signaling server and a fake WebRTC stack
 
 ### Other
 

@@ -18,9 +18,9 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
