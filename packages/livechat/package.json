@@ -76,7 +76,7 @@
 		"autoprefixer": "^10.5.4",
 		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
-		"css-loader": "^6.11.0",
+		"css-loader": "^7.1.5",
 		"cssnano": "^7.1.9",
 		"desvg-loader": "^0.1.0",
 		"eslint": "~9.39.5",
