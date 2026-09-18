@@ -1,34 +1,38 @@
-import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { FieldLabel, MultiSelectFiltered, Field, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 import type { SettingLookupEndpoint } from '../../hooks/useSettingLookupOptions';
 import { useSettingLookupOptions } from '../../hooks/useSettingLookupOptions';
 
-export type LookupSettingInputProps = SettingInputProps & {
+export type MultiLookupSettingInputProps = SettingInputProps<string[], string[]> & {
 	lookupEndpoint: SettingLookupEndpoint;
 };
 
-function LookupSettingInput({
+function MultiLookupSettingInput({
 	_id,
 	label,
-	value,
+	value = [],
 	hint,
 	placeholder,
 	readonly,
-	autocomplete,
 	disabled,
 	required,
 	lookupEndpoint,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LookupSettingInputProps) {
-	const handleChange = (value: string): void => {
+}: MultiLookupSettingInputProps) {
+	const options = useSettingLookupOptions(lookupEndpoint);
+
+	const handleChange = (value: string[]): void => {
 		onChangeValue?.(value);
 	};
 
-	const options = useSettingLookupOptions(lookupEndpoint);
+	const optionPairs: [string, string][] = [
+		...options.map(({ key, label }): [string, string] => [key, label]),
+		...value.filter((stored) => !options.some(({ key }) => key === stored)).map((stored): [string, string] => [stored, stored]),
+	];
 
 	return (
 		<Field>
@@ -39,15 +43,16 @@ function LookupSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
-				<Select
+				<MultiSelectFiltered
+					max-width='full'
 					id={_id}
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
 					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={(value) => handleChange(String(value))}
-					options={options.map(({ key, label }) => [key, label])}
+					onChange={handleChange}
+					options={optionPairs}
+					aria-label={typeof label === 'string' ? label : _id}
 				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
@@ -55,4 +60,4 @@ function LookupSettingInput({
 	);
 }
 
-export default LookupSettingInput;
+export default MultiLookupSettingInput;

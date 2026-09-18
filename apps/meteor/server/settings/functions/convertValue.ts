@@ -10,7 +10,7 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 	if (type === 'int') {
 		return parseInt(value);
 	}
-	if (type === 'multiSelect') {
+	if (type === 'multiSelect' || type === 'multiLookup') {
 		return JSON.parse(value);
 	}
 	return value;
