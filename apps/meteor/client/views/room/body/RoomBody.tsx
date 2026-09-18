@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -53,9 +53,9 @@ const RoomBody = () => {
 	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
 
 	// RoomBody persists across room switches, so this state must be reset per room rather than carried over.
-	const previousRoomId = useRef(room._id);
-	if (previousRoomId.current !== room._id) {
-		previousRoomId.current = room._id;
+	const [previousRoomId, setPreviousRoomId] = useState(room._id);
+	if (previousRoomId !== room._id) {
+		setPreviousRoomId(room._id);
 		if (shouldJumpToBottom) {
 			setShouldJumpToBottom(false);
 		}
