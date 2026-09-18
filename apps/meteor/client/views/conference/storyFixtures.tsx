@@ -201,10 +201,9 @@ const RingRenewal = ({ queryKey, children }: { queryKey: QueryKey; children: Rea
  * Asks for a fetched fixture again, for the stories whose ring is stamped by a mocked endpoint rather than
  * passed as an arg.
  *
- * Re-stamping per request is only half of it: what asks again decides how long the ring is stale for. The
- * joinable list polls every twenty seconds against a fifteen-second window, and the conference itself is only
- * re-read when the stream says so — which in Storybook is never. So the story asks, on its own account, often
- * enough that the ring it is documented to show never lapses.
+ * Re-stamping per request is only half of it: what asks again decides how long the ring is stale for. Both lists
+ * are re-read only when the stream says so, which in Storybook is never, against a fifteen-second window. So the
+ * story asks on its own account, often enough that the ring it is documented to show never lapses.
  *
  * Must sit *inside* the providers: it needs their query client. In a story's `decorators` that means first.
  */

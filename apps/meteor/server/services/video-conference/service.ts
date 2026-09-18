@@ -532,13 +532,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		if (this.isEmbeddedProvider(call.providerName)) {
+		// Everyone who might still be holding this call on screen, whoever ran the media — the ongoing-calls list
+		// is refreshed by this broadcast and by nothing else, so a call that ends without one stays listed.
+		if (this.runsInOurCallWindow(call.providerName)) {
 			await this.notifyCallAndRoomUsers(call, 'end', {
 				callId: call._id,
 				rid: call.rid,
 				uid: call.createdBy._id,
 			});
+		}
 
+		if (this.isEmbeddedProvider(call.providerName)) {
 			// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
 			// else reports their departure: the call is over, so there is no leave left to arrive. Only embedded joins
 			// claim busy in the first place, so only they have anything to give back.
@@ -1568,11 +1572,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
 
-		if (this.isEmbeddedProvider(call.providerName)) {
-			// The leaver's own devices only. A room-wide 'end' here would dismiss everyone else's ringing popup
-			// while the call still runs; that one belongs to `endCall`.
+		// The leaver's own devices only. A room-wide 'end' here would dismiss everyone else's ringing popup
+		// while the call still runs; that one belongs to `endCall`.
+		if (this.runsInOurCallWindow(call.providerName)) {
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
 
+		if (this.isEmbeddedProvider(call.providerName)) {
 			// Out of the call, so back to whatever status they had before it. Only embedded joins claim busy,
 			// so only they have a claim to end.
 			await this.releaseBusyForCall(uid);

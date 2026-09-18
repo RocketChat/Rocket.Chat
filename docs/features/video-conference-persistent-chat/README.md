@@ -694,9 +694,9 @@ a dismissed call entirely and "silenced" would otherwise be indistinguishable fr
 
 Whether a ring is still ringing is the reader's own judgement (`isRingingVideoConferenceMember` over the `ringingAt`
 the joinable list carries), with `useRingingExpiry` waking the list when the earliest one is due to stop — nothing
-announces that a ring *ended*, so nothing can be waited for. The list also refreshes on the ring itself rather than
-on the poll: a ring *is* announced to the person being rung, and waiting up to twenty seconds to show a call that is
-ringing right now would miss it entirely.
+announces that a ring *ended*, so nothing can be waited for. The list also refreshes on the ring itself: a ring *is*
+announced to the person being rung, but it arrives at the popup rather than here, so the ring is what asks for the
+list again.
 
 ### Where the list lives
 
@@ -753,16 +753,29 @@ without reporting its departure — a crash, a killed tab, a client that never s
 user counted as present forever, which both misreports them and keeps a finished call listed as occupied. Joining
 anything is the moment that can be put right, and it costs one indexed read that usually finds nothing.
 
-### Liveness is polled, and why
+### What keeps the list current
 
-A call appearing does **not** reach these lists over a stream. Announcing a call to everyone who could join it
-means a broadcast to every subscriber of its room, which is the same fan-out that makes ringing a large room
-impossible in the first place — the problem this feature exists to work around. So `useJoinableCalls` polls,
-every 20 seconds, and anything the user does themselves invalidates the query at once.
+Nothing polls. `useJoinableCalls` refetches on one signal — `notify-user/<uid>/video-conference`, the same
+per-user channel the ring arrives on — plus window focus, which is what recovers a socket that dropped and came
+back having missed some. Anything the user does themselves invalidates the query at once, without waiting for
+the round trip.
 
-That is a deliberate trade. This list is not latency-critical: it exists precisely for the calls whose ring never
-arrived, where the alternative today is no route at all. A per-user signal remains the better answer if it can be
-made cheap — see [Improvement suggestions](#improvement-suggestions).
+That makes the server's side of it a contract rather than a nicety: **a change nobody broadcasts is a change the
+button goes on ignoring.** Three moments move a call in or out of the list, and each is announced to everyone it
+could be listed by:
+
+| | Who hears it | Why that set |
+| --- | --- | --- |
+| the first join | the room's subscribers, and the joiner's own other sessions | a call nobody has joined is not offered at all, so this is the moment it becomes joinable |
+| a member leaving | that member's own sessions | the call is still running for everyone else; a room-wide `end` here would dismiss their ringing popups |
+| the call ending | the room's subscribers **and** the call's own members | membership grants no room access, so a member can have no subscription to walk |
+
+All three are sent whatever runs the media, because the window listing the call is ours either way — a call
+handed to a provider's own page is still held in our window and still sits in our list. Without the call window
+none of the three is sent: nothing of ours is listing anything, which is the behaviour that was always there.
+
+Creating a call is deliberately not one of them. An empty call is not offered, so there is nothing to announce
+until somebody walks in — which is the join above.
 
 ## Provider Requirements
 
@@ -1124,11 +1137,13 @@ one of them, the caller gets an error toast; the others may or may not have gone
 notice re-reads and shows whoever is still missing — but the toast says less than it could. Per-user results
 would make a partial outcome legible at the moment it happens.
 
-### Joinable calls are polled rather than pushed
+### The list's events are a per-user fan-out
 
-The sidebar's list refreshes on a 20-second timer, because announcing a new call to every subscriber of its room
-is the fan-out this feature exists to avoid. A cheaper push would be better: a signal per *room* that the client
-already subscribes to would reach exactly the people who need it, without the server enumerating them.
+Every change to a joinable call is announced by enumerating its audience and sending one message per person (see
+[What keeps the list current](#what-keeps-the-list-current)). That is the fan-out this feature exists to avoid
+for *ringing*, kept small only because it is one message per event rather than per ring. A signal per **room**,
+which the client already subscribes to, would reach the same people without the server walking them — the same
+answer that would make ringing a large room possible.
 
 ### The members panel has no search
 

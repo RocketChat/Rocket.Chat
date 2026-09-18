@@ -151,7 +151,7 @@ id,title,description,preconditions,postconditions,tags,priority,severity,type,be
 2. The ""user2 will be notified when you start the call"" line disappears.
 3. user1 lands in the call. user2 hears no ring tone and gets no desktop notification, user2's navbar video dropdown does not open itself, and no row in it reads ""Ringing"".
 4. The panel lists user1 alone under ""In call"". There is no ""Not in the call"" section and no phone button beside anyone: with ringing declined the server makes a group conference rather than a direct call, so nothing put the callee on the roster and ringing back is not offered at all.
-5. The dropdown lists the call as an ordinary running call, joinable by clicking the row - it reaches user2 through the joinable list's twenty-second poll, not through a ring.
+5. The dropdown lists the call as an ordinary running call, joinable by clicking the row - it reaches user2 because somebody joined it, not through a ring.
 ","1. 
 2. 
 3. 
@@ -509,9 +509,9 @@ id,title,description,preconditions,postconditions,tags,priority,severity,type,be
 41,The navbar button appears only when there is a call to offer,"The list exists because a ring is one-shot and capped. The button that carries it counts what is being offered, and is absent when nothing is.","Workspace on an Enterprise licence that includes the videoconference-enterprise module. A video conference provider app is installed, enabled and selected as the active provider - the bundled Jitsi app v2.1.1 unless the case says otherwise - and Admin > Settings > Video Conference reports no provider problem. VideoConf_Enable_DMs, VideoConf_Enable_Channels, VideoConf_Enable_Groups and VideoConf_Enable_Teams are all On. Users user1, user2 and user3 exist with the default user role, which carries the videoconf-ring-users permission. Browser popups are allowed for the workspace origin. Unless stated otherwise you are signed in as user1 in one browser profile and as user2 in a second one, both looking at the app. Setting: Admin > Settings > Video Conference > VideoConf_Conference_Window_Enabled = On. Setting: VideoConf_Enable_Persistent_Chat = Off. A public channel #qa-calls with user1 and user2. No conference is running.",Set VideoConf_Conference_Window_Enabled back to Off. Close every call window still open and let any call left running end (10s after the last participant leaves).,"videoconf,conference-window,flag-on,ongoing-calls,automation-candidate",high,major,functional,positive,to-be-automated,actual,no,e2e,classic,"1. As user1, look at the navbar controls with no call running anywhere.
 2. Have user2 start a conference in #qa-calls and stay in it.
 3. Open the dropdown.
-4. Have user2 close their call window, and wait for the call to end (about 10 seconds) plus one poll interval.
+4. Have user2 close their call window and wait for the call to end (about 10 seconds).
 ","1. There is no video button in the navbar.
-2. Within 20 seconds a video button appears in user1's navbar carrying a badge reading 1.
+2. A video button appears in user1's navbar within a second or two, carrying a badge reading 1 - user2 joining is what announces it.
 3. One row: a camera icon, the call's name, when it started in the timestamp corner, and a line reading how many people have joined.
 4. The row disappears and the navbar button goes with it.
 ","1. 
