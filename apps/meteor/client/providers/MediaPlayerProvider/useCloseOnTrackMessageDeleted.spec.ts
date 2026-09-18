@@ -251,7 +251,9 @@ describe('useCloseOnTrackMessageDeleted', () => {
 		expect(closeNonDiscussion).toHaveBeenCalledTimes(1);
 	});
 
-	describe('when the audio was played from a quote', () => {
+	// No `originRid`, as on quotes stored before the attachment carried one: the original is
+	// watched in the quoting room.
+	describe('when the audio was played from a quote that does not name its origin room', () => {
 		const originTs = new Date('2023-12-31T00:00:00.000Z');
 		const buildQuotedTrack = (overrides: Partial<PersistentAudioTrack> = {}) =>
 			buildTrack({ id: 'mid2:url', mid: 'mid2', originMid: 'mid1', originTs, ...overrides });

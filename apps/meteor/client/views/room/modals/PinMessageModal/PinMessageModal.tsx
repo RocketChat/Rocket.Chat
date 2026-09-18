@@ -33,8 +33,6 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 			<AttachmentProvider>
 				<QuoteAttachment
 					attachment={attachment}
-					// Audio previewed here plays through the shared player, so it needs the message's
-					// identity for the player to notice that message going away.
 					source={{
 						rid: message.rid,
 						mid: message._id,

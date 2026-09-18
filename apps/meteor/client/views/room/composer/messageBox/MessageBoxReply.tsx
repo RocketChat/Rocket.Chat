@@ -39,8 +39,6 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 								collapsed: true,
 							} as MessageQuoteAttachment
 						}
-						// Audio previewed here plays through the shared player, so it needs the quoted
-						// message's identity for the player to notice that message going away.
 						source={{
 							rid: reply.rid,
 							mid: reply._id,

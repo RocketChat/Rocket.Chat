@@ -5,16 +5,10 @@ import { useEffect, useRef } from 'react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 
 /**
- * Keeps the mutable state the delete criteria are matched against in step with the server, from the
- * room stream rather than from the rendered message.
- *
- * The provider refreshes `pinned` while the owning message is mounted, which is not enough on its
- * own: a prune makes the client refetch the room history, and the message is unmounted for as long
- * as that takes. A `deleteMessageBulk` arriving in that window would be matched against whatever
- * the track was last told, so a message pinned moments earlier could still read as unpinned and
- * close a player the prune had spared.
- *
- * Watching the stream closes that window, because it does not depend on anything being rendered.
+ * Keeps `pinned` and `drid` in step with the server from the room stream, which — unlike the
+ * provider's refresh — does not depend on the owning message being mounted. A prune unmounts it
+ * while the room history refetches, and a `deleteMessageBulk` arriving in that window would
+ * otherwise be matched against stale state.
  */
 export const useRefreshTrackFromRoomMessages = (
 	track: PersistentAudioTrack | null,
@@ -22,17 +16,13 @@ export const useRefreshTrackFromRoomMessages = (
 ): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 
-	// Read through a ref so a refresh does not change the effect's inputs and resubscribe the
-	// stream on every update it causes. Synced after commit, so a callback never sees a track
-	// the render that introduced it has not finished with yet.
+	// Read through a ref so a refresh does not resubscribe the stream it was caused by.
 	const trackRef = useRef<PersistentAudioTrack | null>(track);
 	useEffect(() => {
 		trackRef.current = track;
 	}, [track]);
 
-	const rid = track?.rid;
-	const mid = track?.mid;
-	const id = track?.id;
+	const { rid, mid, id } = track ?? {};
 
 	useEffect(() => {
 		if (!rid || !mid || !id) {
@@ -45,7 +35,6 @@ export const useRefreshTrackFromRoomMessages = (
 			}
 
 			const { current } = trackRef;
-			// A callback that outlives its track must not patch whichever one replaced it.
 			if (current?.id !== id) {
 				return;
 			}
