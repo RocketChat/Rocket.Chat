@@ -5,9 +5,6 @@ import { act, render } from '@testing-library/react';
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import StatusAndPresenceRoute from './StatusAndPresenceRoute';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-
-jest.mock('../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: jest.fn() }));
 jest.mock('./StatusAndPresencePage', () => jest.fn(() => null));
 
 type RouteParams = Record<string, string>;
@@ -37,7 +34,6 @@ const lastPageProps = () => jest.mocked(StatusAndPresencePage).mock.lastCall?.[0
 
 beforeEach(() => {
 	jest.clearAllMocks();
-	jest.mocked(useHasLicenseModule).mockReturnValue({ isPending: false, data: false } as unknown as ReturnType<typeof useHasLicenseModule>);
 });
 
 describe('StatusAndPresenceRoute', () => {
@@ -60,6 +56,21 @@ describe('StatusAndPresenceRoute', () => {
 		expect(navigate).toHaveBeenCalledTimes(1);
 		expect(navigate).toHaveBeenCalledWith({ name: 'user-status', params: { tab: 'custom-status' } }, { replace: true });
 		expect(lastPageProps()).toMatchObject({ tab: 'custom-status', settingIds: [] });
+	});
+
+	it('keeps the user status tab out while the status visibility rules are disabled', () => {
+		const { router } = createRouter({ tab: 'user-presence' });
+
+		render(<StatusAndPresenceRoute />, {
+			wrapper: mockAppRoot()
+				.withSetting('Accounts_StatusVisibility_Admin_Enabled', false)
+				.withPermission('edit-other-user-info')
+				.withPermission('manage-user-status')
+				.withRouter(router)
+				.build(),
+		});
+
+		expect(lastPageProps()).toMatchObject({ canManageUserPresence: false });
 	});
 
 	it('opens the presence service panel once when the presence broadcast is disabled', () => {

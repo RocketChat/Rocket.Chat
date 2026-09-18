@@ -50,8 +50,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
-	const presenceDisabledByAdmin = user?.presenceDisabledByAdmin === true || workspacePresenceDisabled;
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && !presenceDisabledByAdmin;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const presenceDisabledByAdmin = (user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled) || workspacePresenceDisabled;
+	const statusVisibilityEnabled =
+		useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled && !presenceDisabledByAdmin;
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 

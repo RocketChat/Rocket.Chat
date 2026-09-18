@@ -45,7 +45,6 @@ import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
@@ -111,8 +110,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
-	const { data: hasPresenceLicense = false } = useHasLicenseModule('unlimited-presence');
 	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
@@ -141,7 +140,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
-	const showUserStatusSection = hasPresenceLicense && userStatusEnabled && canViewFullOtherUserInfo && canEditOtherUserInfo;
+	const showUserStatusSection = userStatusEnabled && adminStatusHidingEnabled && canViewFullOtherUserInfo && canEditOtherUserInfo;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
