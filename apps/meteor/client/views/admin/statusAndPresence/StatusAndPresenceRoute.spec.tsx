@@ -5,6 +5,7 @@ import { act, render } from '@testing-library/react';
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import StatusAndPresenceRoute from './StatusAndPresenceRoute';
+
 jest.mock('./StatusAndPresencePage', () => jest.fn(() => null));
 
 type RouteParams = Record<string, string>;
