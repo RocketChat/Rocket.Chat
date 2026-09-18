@@ -15,6 +15,7 @@ import {
 } from '../../lib/notifyListener';
 import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
 import { settings as rcSettings } from '../../settings';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 
 type UserPreferences = {
 	language: string;
@@ -210,6 +211,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
+	if (!isUserHidingAllowed()) {
+		delete settings.statusVisibilityDenied;
+	}
+
 	const requested = settings.statusVisibilityDenied?.filter((username) => username !== user.username);
 	const denied = requested ? await resolveUsersByUsernames(requested) : undefined;
 
@@ -234,7 +239,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		},
 	});
 
-	if (settings.statusVisibilityDenied != null && rcSettings.get<boolean>('Accounts_StatusVisibility_Enabled')) {
+	if (settings.statusVisibilityDenied != null) {
 		void StatusVisibility.invalidate([user._id]);
 	}
 
