@@ -140,9 +140,7 @@ describe('Reader family (base-runtime)', () => {
 			const { rec, senderFn } = setup({ 'bridges:getCallHistoryBridge:doGetByCallId': { id: 'h1' } });
 			const result = await new CallHistoryRead(senderFn).getByCallId('c1', 'u1');
 
-			assert.deepStrictEqual(rec.emitted(), [
-				{ method: 'bridges:getCallHistoryBridge:doGetByCallId', params: ['c1', 'u1', 'APP_ID'] },
-			]);
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getCallHistoryBridge:doGetByCallId', params: ['c1', 'u1', 'APP_ID'] }]);
 			assert.deepStrictEqual(result, { id: 'h1' });
 		});
 

@@ -1,4 +1,6 @@
 import type { APIRequestContext, Page } from '@playwright/test';
+import type { ICallHistorySearchFilters, ICallHistorySearchPagination } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IInternalCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
 import type { CallPreventionRecord, IInternalMediaCallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 import { MongoClient } from 'mongodb';
@@ -30,6 +32,15 @@ const APP_PREVENTION_WORDING = 'Calls to user2 are not allowed by this workspace
 
 /** The literal words the fixture app writes in plain `prevent` mode (no key). */
 const APP_PREVENTION_REASON = 'blocked by media-call-events-test';
+
+/**
+ * What the fixture app's `app.json` asks for, and what the install grants it.
+ *
+ * Granting a list replaces the default permissions rather than adding to them, so this has to
+ * name everything the app uses: its endpoints, the persistence its mode lives in, and the call
+ * history it reads. `media-call.history` is not a default one, so nothing grants it implicitly.
+ */
+const APP_PERMISSIONS = [{ name: 'api' }, { name: 'persistence' }, { name: 'media-call.history' }];
 
 /** The prevention record of an app that named a key rather than writing the words itself. */
 type I18nPreventionRecord = CallPreventionRecord & { i18n: NonNullable<CallPreventionRecord['i18n']> };
@@ -134,9 +145,32 @@ const waitForNewPreventedCall = async (connection: MongoClient, appId: string, p
 	return found as IMediaCall;
 };
 
+/** What the fixture app's `history` endpoint reads, and for whom. */
+type AppHistoryRequest = {
+	uid: string;
+	itemId?: string;
+	callId?: string;
+	search?: { filters?: ICallHistorySearchFilters; pagination?: ICallHistorySearchPagination };
+};
+
+/** A history item as the app reports it: it has been through JSON, so every date is a string. */
+type SerializedCallHistoryItem = {
+	[K in keyof IInternalCallHistoryItem]: IInternalCallHistoryItem[K] extends Date ? string : IInternalCallHistoryItem[K];
+};
+
+/** What each accessor answered. `null` is the app reporting that it was handed nothing back. */
+type AppHistoryReads = {
+	byId: SerializedCallHistoryItem | null;
+	byCallId: SerializedCallHistoryItem | null;
+	search: { items: SerializedCallHistoryItem[]; total: number } | null;
+};
+
+/** The instant a date carries, whichever side of a serialization boundary it was read from. */
+const instant = (value: Date | string | undefined): number => (value ? new Date(value as string).getTime() : NaN);
+
 /**
- * Split into two serial groups on purpose: within a group the tests share one pair of calls'
- * worth of state and have to run in order, but a failure in one group must not skip the other.
+ * Split into serial groups on purpose: within a group the tests share one pair of calls'
+ * worth of state and have to run in order, but a failure in one group must not skip the others.
  */
 test.describe('Apps > Media call events', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
@@ -161,6 +195,20 @@ test.describe('Apps > Media call events', () => {
 		await expect(response).toBeOK();
 	};
 
+	/**
+	 * Has the app read the call history through the accessors, and returns what it saw.
+	 *
+	 * The app reads on demand rather than from a call event: the history entry is written after
+	 * the end event fires, so an app that read it there would be racing the write.
+	 */
+	const readHistoryThroughApp = async (api: BaseTest['api'], query: AppHistoryRequest): Promise<AppHistoryReads> => {
+		const response = await api.post(`/apps/public/${appId}/history`, query, '/api');
+
+		await expect(response).toBeOK();
+
+		return response.json();
+	};
+
 	/** Places a call from user1 to user2 and has user2 answer it. */
 	const placeAndAnswerCall = async (): Promise<void> => {
 		const [user1, user2] = sessions;
@@ -182,7 +230,7 @@ test.describe('Apps > Media call events', () => {
 		screenSharingWasEnabled = await getSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled');
 		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', true);
 
-		const result = await installLocalTestPackage(appMediaCallEventsTest);
+		const result = await installLocalTestPackage(appMediaCallEventsTest, APP_PERMISSIONS);
 		appId = result.app.id;
 
 		await Promise.all([
@@ -593,6 +641,194 @@ test.describe('Apps > Media call events', () => {
 					expect(entryValue(log, 'post_ended_reason_known'), `unnamed reason: ${entryValue(log, 'post_ended_reason')}`).toBe('true');
 				}
 			}
+		});
+	});
+
+	/**
+	 * The accessors an app reads the call history with. They run last on purpose: every group
+	 * above leaves entries behind, and those entries are what these tests read back.
+	 */
+	test.describe.serial('call history accessors', () => {
+		/** The two entries one answered call leaves, one per side of it. */
+		let callerItem: RecordedCallHistoryItem;
+		let calleeItem: RecordedCallHistoryItem;
+
+		test('should read back the entries an answered call left on each side of it', async ({ api }) => {
+			const [, user2] = sessions;
+
+			await setMode(api, 'pass');
+
+			const [previousCallerItem, previousCalleeItem] = await Promise.all([
+				getNewestCallHistoryItem(userApis.user1, { direction: 'outbound', filter: 'user2' }),
+				getNewestCallHistoryItem(userApis.user2, { direction: 'inbound', filter: 'user1' }),
+			]);
+			const previousStarted = await getNewestAppLog(api, appId, 'executePostMediaCallStarted');
+
+			await placeAndAnswerCall();
+
+			// The entry records whole seconds, so a call ended at once would record a zero duration
+			// that proves nothing about what the accessor read.
+			await waitForNewAppLog(api, appId, 'executePostMediaCallStarted', previousStarted?._id);
+			await expect.poll(() => user2.poHomeChannel.voiceCalls.widget.getTimerContentInSeconds()).toBeGreaterThanOrEqual(1);
+
+			await user2.poHomeChannel.voiceCalls.widget.hangup();
+
+			[callerItem, calleeItem] = await Promise.all([
+				waitForNewCallHistoryItem(userApis.user1, { direction: 'outbound', filter: 'user2' }, previousCallerItem?._id),
+				waitForNewCallHistoryItem(userApis.user2, { direction: 'inbound', filter: 'user1' }, previousCalleeItem?._id),
+			]);
+
+			await test.step('the app reads the caller entry by its own id and by the call it belongs to', async () => {
+				const { byId, byCallId } = await readHistoryThroughApp(api, {
+					uid: Users.user1.data._id,
+					itemId: callerItem._id,
+					callId: callerItem.callId,
+				});
+
+				// A call leaves one entry per user, so both reads have to land on the same one
+				expect(byId).toEqual(byCallId);
+
+				expect(byId?.id).toBe(callerItem._id);
+				expect(byId?.uid).toBe(Users.user1.data._id);
+				expect(byId?.callId).toBe(callerItem.callId);
+				expect(byId?.type).toBe('media-call');
+				expect(byId?.direction).toBe('outbound');
+				expect(byId?.state).toBe('ended');
+				expect(byId?.external).toBe(false);
+				expect(byId?.contactUsername).toBe('user2');
+				expect(byId?.rid).toBe(callerItem.rid);
+				expect(byId?.messageId).toBe(callerItem.messageId);
+			});
+
+			await test.step('the entry the app reads carries what the user reads over the API', async () => {
+				const { byId } = await readHistoryThroughApp(api, { uid: Users.user1.data._id, itemId: callerItem._id });
+
+				expect(byId?.duration).toBe(callerItem.duration);
+				expect(byId?.duration).toBeGreaterThan(0);
+				// The bridge hands the app `Date`s and the app answers over HTTP, so the instant is
+				// what survives that trip - the shape it arrives in is not.
+				expect(instant(byId?.ts)).toBe(instant(callerItem.ts));
+				expect(instant(byId?.endedAt)).toBe(instant(callerItem.endedAt));
+			});
+
+			await test.step('the same call reads as the callee entry when read for the callee', async () => {
+				const { byCallId } = await readHistoryThroughApp(api, { uid: Users.user2.data._id, callId: callerItem.callId });
+
+				expect(byCallId?.id).toBe(calleeItem._id);
+				expect(byCallId?.direction).toBe('inbound');
+				expect(byCallId?.contactUsername).toBe('user1');
+			});
+		});
+
+		test('should keep every read to the entries the named user owns', async ({ api }) => {
+			await test.step('an entry read for the other user reads as nothing', async () => {
+				// The bridge is the first read path that can name any user, so the entry has to be
+				// scoped to the one it was given rather than found by id alone.
+				const { byId } = await readHistoryThroughApp(api, { uid: Users.user2.data._id, itemId: callerItem._id });
+
+				expect(byId).toBeNull();
+			});
+
+			await test.step('a search answers for the user it was given', async () => {
+				const { search } = await readHistoryThroughApp(api, {
+					uid: Users.user2.data._id,
+					search: { filters: { direction: 'inbound', searchTerm: 'user1' }, pagination: { count: 5 } },
+				});
+
+				expect(search?.items.length).toBeGreaterThan(0);
+
+				for (const item of search?.items ?? []) {
+					expect(item.uid).toBe(Users.user2.data._id);
+					expect(item.direction).toBe('inbound');
+					expect(item.contactUsername).toBe('user1');
+				}
+			});
+		});
+
+		test('should search a history with the filters and the page the app asked for', async ({ api }) => {
+			const search = { filters: { direction: 'outbound', searchTerm: 'user2' } } as const;
+
+			const [{ search: firstPage }, { search: secondPage }] = await Promise.all([
+				readHistoryThroughApp(api, { uid: Users.user1.data._id, search: { ...search, pagination: { count: 1 } } }),
+				readHistoryThroughApp(api, { uid: Users.user1.data._id, search: { ...search, pagination: { count: 1, offset: 1 } } }),
+			]);
+
+			// Every group above placed a call from user1 to user2, so one page is not the whole history
+			expect(firstPage?.total).toBeGreaterThan(1);
+			expect(firstPage?.items).toHaveLength(1);
+			// Newest first, and the newest is the call the first test of this group placed
+			expect(firstPage?.items[0].id).toBe(callerItem._id);
+
+			await test.step('the offset moves the page without changing what was counted', async () => {
+				expect(secondPage?.items).toHaveLength(1);
+				expect(secondPage?.items[0].id).not.toBe(callerItem._id);
+				expect(secondPage?.total).toBe(firstPage?.total);
+			});
+
+			await test.step('a state filter narrows the search to that state', async () => {
+				// The calls nobody answered, from the group above
+				const { search: unanswered } = await readHistoryThroughApp(api, {
+					uid: Users.user1.data._id,
+					search: { filters: { direction: 'outbound', inStates: ['not-answered'] }, pagination: { count: 10 } },
+				});
+
+				expect(unanswered?.items.length).toBeGreaterThan(0);
+
+				for (const item of unanswered?.items ?? []) {
+					expect(item.state).toBe('not-answered');
+				}
+			});
+		});
+
+		test('should read the caller-only entry a prevented call left', async ({ api }) => {
+			const { search } = await readHistoryThroughApp(api, {
+				uid: Users.user1.data._id,
+				search: { filters: { direction: 'outbound', inStates: ['prevented'] }, pagination: { count: 1 } },
+			});
+
+			const [prevented] = search?.items ?? [];
+
+			expect(prevented, 'the app found no entry for a call it refused').toBeTruthy();
+			expect(prevented.state).toBe('prevented');
+			// The call never rang, so there is nothing to time
+			expect(prevented.duration).toBe(0);
+
+			await test.step('the callee side of that call was never written', async () => {
+				const { byCallId } = await readHistoryThroughApp(api, { uid: Users.user2.data._id, callId: prevented.callId });
+
+				expect(byCallId).toBeNull();
+			});
+		});
+
+		test('should read nothing at all once the permission is taken away', async ({ api }) => {
+			// An install is the only thing that sets what an app was granted, so this runs last: the
+			// app that comes back is the same app without `media-call.history`.
+			await uninstallApp(appId);
+
+			const result = await installLocalTestPackage(
+				appMediaCallEventsTest,
+				APP_PERMISSIONS.filter(({ name }) => name !== 'media-call.history'),
+			);
+			appId = result.app.id;
+
+			// The app's endpoints are registered as it is enabled, which the install does not wait for
+			await expect
+				.poll(async () => (await api.get(`/apps/public/${appId}/mode`, undefined, '/api')).status(), {
+					message: 'the reinstalled app never answered on its endpoints',
+				})
+				.toBe(200);
+
+			const { byId, byCallId, search } = await readHistoryThroughApp(api, {
+				uid: Users.user1.data._id,
+				itemId: callerItem._id,
+				callId: callerItem.callId,
+				search: { pagination: { count: 1 } },
+			});
+
+			// The same three reads that answered above, refused at the bridge
+			expect(byId).toBeNull();
+			expect(byCallId).toBeNull();
+			expect(search).toBeNull();
 		});
 	});
 });
