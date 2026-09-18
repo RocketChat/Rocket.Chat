@@ -1,0 +1,97 @@
+{
+  "name": "astring",
+  "version": "1.8.6",
+  "description": "JavaScript code generator from an ESTree-compliant AST.",
+  "main": "./dist/astring.js",
+  "module": "./dist/astring.mjs",
+  "types": "./astring.d.ts",
+  "exports": {
+    "types": "./astring.d.ts",
+    "import": "./dist/astring.mjs",
+    "require": "./dist/astring.js",
+    "browser": "./dist/astring.min.js"
+  },
+  "bin": {
+    "astring": "bin/astring"
+  },
+  "scripts": {
+    "build": "babel src/astring.js --out-file dist/astring.js --source-maps --no-comments && cp src/astring.js dist/astring.mjs",
+    "build:watch": "babel src/astring.js --out-file dist/astring.js --source-maps --no-comments --watch",
+    "build:minified": "cross-env BABEL_MODE=minified babel src/astring.js --out-file dist/astring.min.js --source-maps --no-comments",
+    "build:demo": "npm run build:minified && cp dist/astring.min.* docs/demo/",
+    "prepare": "npm run build && npm run build:minified",
+    "test": "npm run eslint && npm run prettier:check && npm run build:minified && npm run test:coverage",
+    "dev": "ava --watch src/tests/astring.js",
+    "test:coverage": "c8 --reporter=html --reporter=text --reporter=lcov --include='src/*.js' --exclude='src/tests/**/*.js' ava src/tests/astring.js",
+    "test:scripts": "npm run test:scripts:build && ava src/tests/_scripts.js",
+    "test:performance": "ava src/tests/performance.js",
+    "benchmark": "node --require esm ./src/tests/benchmark.js",
+    "eslint": "eslint src",
+    "prettier": "prettier --write \"{src,scripts}/**/*.js\" \"bin/astring\"",
+    "prettier:check": "prettier --list-different \"{src,scripts}/**/*.js\" \"bin/astring\"",
+    "prepush": "npm test",
+    "release": "standard-version",
+    "deploy": "git push --follow-tags origin main && npm publish"
+  },
+  "keywords": [
+    "ast",
+    "codegen",
+    "code generator",
+    "estree",
+    "astravel"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidbonnet/astring.git"
+  },
+  "author": "David Bonnet <david@bonnet.cc>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/generator": "^7.14.3",
+    "@babel/parser": "^7.16.4",
+    "@babel/preset-env": "^7.14.4",
+    "acorn": "^8.6.0",
+    "astravel": "^0.5.0",
+    "ava": "^3.15.0",
+    "babel-preset-minify": "^0.5.1",
+    "benchmark": "^2.1.4",
+    "buble": "^0.20.0",
+    "c8": "^7.10.0",
+    "cross-env": "^7.0.3",
+    "escodegen": "^2.0.0",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "esm": "^3.2.25",
+    "glob": "^7.1.7",
+    "husky": "^6.0.0",
+    "lodash": "^4.17.21",
+    "meriyah": "^4.1.5",
+    "normalize-newline": "^3.0.0",
+    "prettier": "^2.4.1",
+    "standard-version": "^9.3.0",
+    "sucrase": "^3.18.1",
+    "uglify-js": "^3.13.8"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true
+  },
+  "ava": {
+    "files": [
+      "src/**/tests/astring.js",
+      "src/**/tests/performance.js"
+    ],
+    "require": [
+      "esm"
+    ]
+  },
+  "esm": "auto"
+}

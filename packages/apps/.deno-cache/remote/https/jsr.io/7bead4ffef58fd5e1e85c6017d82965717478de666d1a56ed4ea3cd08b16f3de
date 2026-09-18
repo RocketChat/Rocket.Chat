@@ -1,0 +1,13 @@
+// Copyright 2018-2025 the Deno authors. MIT license.
+
+/**
+ * Proxy type of {@code Uint8Array<ArrayBuffer} or {@code Uint8Array} in TypeScript 5.7 or below respectively.
+ *
+ * This type is internal utility type and should not be used directly.
+ *
+ * @internal @private
+ */
+
+export type Uint8Array_ = ReturnType<Uint8Array["slice"]>;
+
+// denoCacheMetadata={"headers":{"vary":"Origin","x-robots-tag":"noindex","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","content-type":"text/typescript","access-control-allow-origin":"*","x-content-type-options":"nosniff","cf-cache-status":"HIT","etag":"\"82430e6b74ddf8ae839923afbd532e9f\"","cf-ray":"a3c223c8eed0f254-GRU","cache-control":"public, max-age=31536000, immutable","date":"Wed, 16 Sep 2026 19:04:56 GMT","x-jsr-backend":"modules","cross-origin-resource-policy":"cross-origin","server":"cloudflare","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=%2B0mazd88J%2FPiMl9Ig981UVs2qXWpMyVA02VLjvSRCQFLPGeKsgJPKef3mx7LvozbPPriONXZK2WD2MGIoqKG%2BHAb16W%2Bd5BYzTSLPWs6AZXYR6WxjuapzCI%3D\"}]}","set-cookie":"__cf_bm=Eu3NIMWJ9VdpYFjBwWzfG8IcIv4srIIzzTrDNEuHGZ8-1789585496.47399-1.0.1.1-Wemovoo6N3QrKXuUapYosNwUFNq.veNVdd8InhcoKVvZDIt7Lvasg25f_iRGdFwAypBcQPfwXXTYWf2.8kEgISZ1IqpLN0csoVM9upGihVxVgU3DQ48hd64edplpa_n2; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","alt-svc":"h3=\":443\"; ma=86400","accept-ranges":"bytes","content-length":"333","age":"1736854","access-control-expose-headers":"*"},"url":"https://jsr.io/@std/bytes/1.0.6/_types.ts","time":1789585496}

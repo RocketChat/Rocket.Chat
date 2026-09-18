@@ -1,0 +1,30 @@
+// Copyright 2018-2026 the Deno authors. MIT license.
+// This module is browser compatible.
+
+/**
+ * Utilities for working with Deno's readers, writers, and web streams.
+ *
+ * `Reader` and `Writer` interfaces are deprecated in Deno, and so many of these
+ * utilities are also deprecated. Consider using web streams instead.
+ *
+ * ```ts ignore
+ * import { toReadableStream, toWritableStream } from "@std/io";
+ *
+ * await toReadableStream(Deno.stdin)
+ *   .pipeTo(toWritableStream(Deno.stdout));
+ * ```
+ *
+ * @module
+ */
+
+export * from "./buffer.ts";
+export * from "./copy.ts";
+export * from "./iterate_reader.ts";
+export * from "./read_all.ts";
+export * from "./reader_from_stream_reader.ts";
+export * from "./to_readable_stream.ts";
+export * from "./to_writable_stream.ts";
+export * from "./types.ts";
+export * from "./write_all.ts";
+
+// denoCacheMetadata={"headers":{"x-content-type-options":"nosniff","date":"Wed, 16 Sep 2026 19:04:56 GMT","cf-cache-status":"HIT","accept-ranges":"bytes","access-control-allow-origin":"*","content-length":"833","x-robots-tag":"noindex","age":"1736855","cross-origin-resource-policy":"cross-origin","set-cookie":"__cf_bm=b4Df0T0fAx_f.iUTh3fAHiSNiS3ViD9SiFkxPlIFAH0-1789585496.469649-1.0.1.1-GxVpIyxzNbUKI_87qRy5YOl.41bkJl6vx4jjNnq1KuPC6bv7OeGO7276P9wrdGqS.Hele98elSJDFV0Nai7Cwadom7Htch9Yx8hLj3LzZ.0lwnEBIq2FcPg_8x5NPzlS; HttpOnly; SameSite=None; Secure; Path=/; Domain=jsr.io; Expires=Wed, 16 Sep 2026 19:34:56 GMT","alt-svc":"h3=\":443\"; ma=86400","content-type":"text/typescript","vary":"Origin","cf-ray":"a3c223c8eeabf254-GRU","access-control-expose-headers":"*","cache-control":"public, max-age=31536000, immutable","x-jsr-backend":"modules","server":"cloudflare","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=vDCOqTl1NjcPfIQEEWMId7AFZ96x0J%2BkiihwSef4zo4sMlvPD%2FlBCKCxYweWiNqwYudH6pR5eGzYPy20YgjwJvtIlXgTx9HuPkXGVCr88Rau6jLhIEi1%2Fww%3D\"}]}","content-security-policy":"default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; frame-ancestors 'none'; sandbox; form-action 'none';","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","etag":"\"a0dd10b9f280e8d54aae517d6dca358c\""},"url":"https://jsr.io/@std/io/0.225.3/mod.ts","time":1789585496}

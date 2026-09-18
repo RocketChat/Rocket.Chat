@@ -1,0 +1,93 @@
+{
+  "name": "@msgpack/msgpack",
+  "version": "3.0.0-beta2",
+  "description": "MessagePack for ECMA-262/JavaScript/TypeScript",
+  "author": "The MessagePack community",
+  "license": "ISC",
+  "main": "./dist/index.js",
+  "module": "./dist.es5+esm/index.mjs",
+  "cdn": "./dist.es5+umd/msgpack.min.js",
+  "unpkg": "./dist.es5+umd/msgpack.min.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "npm publish --dry-run",
+    "prepare": "npm run clean && webpack --bail && tsc --build tsconfig.dist.json tsconfig.dist.es5+esm.json && ts-node tools/esmify.ts dist.es5+esm/*.js dist.es5+esm/*/*.js",
+    "prepublishOnly": "npm run test:dist",
+    "clean": "rimraf build dist dist.*",
+    "test": "mocha 'test/**/*.test.ts'",
+    "test:dist": "npm run lint && npm run test && npm run test:browser && npm run test:deno",
+    "test:cover": "npm run cover:clean && npx nyc --no-clean npm run 'test' && npm run cover:report",
+    "test:deno": "deno test test/deno_test.ts",
+    "test:fuzz": "npm exec --yes -- jsfuzz@git+https://gitlab.com/gitlab-org/security-products/analyzers/fuzzers/jsfuzz.git --fuzzTime 60 --no-versifier test/decode.jsfuzz.js corpus",
+    "cover:clean": "rimraf .nyc_output coverage/",
+    "cover:report": "npx nyc report --reporter=text-summary --reporter=html --reporter=json",
+    "test:browser": "karma start --single-run",
+    "test:browser:firefox": "karma start --single-run --browsers FirefoxHeadless",
+    "test:browser:chrome": "karma start --single-run --browsers ChromeHeadless",
+    "test:watch:browser": "karma start --browsers ChromeHeadless,FirefoxHeadless",
+    "test:watch:nodejs": "mocha -w 'test/**/*.test.ts'",
+    "lint": "eslint --ext .ts src test",
+    "lint:fix": "prettier --loglevel=warn --write 'src/**/*.ts' 'test/**/*.ts' && eslint --fix --ext .ts src test",
+    "lint:print-config": "eslint --print-config .eslintrc.js",
+    "update-dependencies": "npx rimraf node_modules/ package-lock.json ; npm install ; npm audit fix --force ; git restore package.json ; npm install"
+  },
+  "homepage": "https://msgpack.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msgpack/msgpack-javascript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/msgpack/msgpack-javascript/issues"
+  },
+  "keywords": [
+    "msgpack",
+    "MessagePack",
+    "serialization",
+    "universal"
+  ],
+  "engines": {
+    "node": ">= 14"
+  },
+  "devDependencies": {
+    "@bitjourney/check-es-version-webpack-plugin": "latest",
+    "@types/lodash": "latest",
+    "@types/mocha": "latest",
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "assert": "latest",
+    "buffer": "latest",
+    "core-js": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-tsdoc": "latest",
+    "ieee754": "latest",
+    "karma": "latest",
+    "karma-chrome-launcher": "latest",
+    "karma-cli": "latest",
+    "karma-firefox-launcher": "latest",
+    "karma-mocha": "latest",
+    "karma-sourcemap-loader": "latest",
+    "karma-webpack": "latest",
+    "lodash": "latest",
+    "mocha": "latest",
+    "msgpack-test-js": "latest",
+    "prettier": "latest",
+    "rimraf": "latest",
+    "ts-loader": "latest",
+    "ts-node": "latest",
+    "tsconfig-paths": "latest",
+    "typescript": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest"
+  },
+  "files": [
+    "mod.ts",
+    "src/**/*.*",
+    "dist/**/*.*",
+    "dist.es5+umd/**/*.*",
+    "dist.es5+esm/**/*.*"
+  ]
+}

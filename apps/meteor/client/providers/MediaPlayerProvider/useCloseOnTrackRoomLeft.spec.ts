@@ -3,8 +3,10 @@ import { renderHook } from '@testing-library/react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { useCloseOnTrackRoomLeft } from './useCloseOnTrackRoomLeft';
 
-// `@rocket.chat/mock-providers` forwards only the first stream argument, and
-// `subscriptions-changed` sends two, so the stream is stubbed directly here.
+// TODO: MockedAppRootBuilder drops every stream argument after the first
+// `@rocket.chat/emitter` emits as `emit(type, ...[event])`, so a stream event carrying two
+// arguments — `notify-user`'s `subscriptions-changed`, for one — loses the second before a
+// test sees it. Tests needing those arguments have to stub `useStream` directly, as below.
 type SubscriptionsChangedCallback = (event: string, subscription: { rid?: string }) => void;
 
 const mockUnsubscribe = jest.fn();
