@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
@@ -10,6 +11,7 @@ import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
@@ -22,6 +24,7 @@ import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
@@ -3173,6 +3176,76 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Edit user voice call extension is not allowed [error-action-not-allowed]');
 					});
+			});
+		});
+
+		describe('status message', () => {
+			let statusUser: TestUser<IUser>;
+			let statusUserCredentials: Credentials;
+
+			const findStatusFields = async () => {
+				const connection = await MongoClient.connect(URL_MONGODB);
+				const fields = await connection
+					.db()
+					.collection<IUser>('users')
+					.findOne(
+						{ _id: statusUser._id },
+						{ projection: { _id: 0, statusText: 1, statusDefault: 1, statusSource: 1, statusExpiresAt: 1 } },
+					);
+				await connection.close();
+
+				return fields;
+			};
+
+			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
+				withTimeout(async (signal) => {
+					for (;;) {
+						const fields = await findStatusFields();
+						if ((fields && predicate(fields)) || signal.aborted) {
+							return fields;
+						}
+						await sleep(200);
+					}
+				}, 15000);
+
+			const updateStatusText = (statusText: string) =>
+				request.post(api('users.update')).set(credentials).send({ userId: statusUser._id, data: { statusText } }).expect(200);
+
+			before(() => updateSetting('Accounts_AllowUserStatusMessageChange', true));
+
+			beforeEach(async () => {
+				statusUser = await createUser();
+				statusUserCredentials = await login(statusUser.username, password);
+			});
+
+			afterEach(() => deleteUser(statusUser));
+
+			it('should replace an expiring status with a manual one that keeps the status the user chose', async () => {
+				await request
+					.post(api('users.setStatus'))
+					.set(statusUserCredentials)
+					.send({ status: 'busy', message: 'focus time', expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString() })
+					.expect(200);
+
+				const { body } = await updateStatusText('set by an admin');
+				expect(body.user).to.have.property('statusText', 'set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+			});
+
+			it('should not leave the user busy when the message is replaced during a meeting', async () => {
+				await updateUserInDb(statusUser._id, {
+					statusDefault: UserStatus.BUSY,
+					statusText: 'Outlook: In a meeting',
+					statusSource: 'external',
+					statusExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+				});
+
+				await updateStatusText('set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
 			});
 		});
 
