@@ -6,6 +6,7 @@ import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { getUsersHiddenFrom, redactHiddenUser } from '../statusVisibility/hiddenUsers';
 import { resolveUsersByIds } from '../statusVisibility/resolveUsers';
+import { isAdminHidingAllowed, isUserHidingAllowed } from '../statusVisibility/settings';
 
 const logger = new Logger('getFullUserData');
 
@@ -124,10 +125,10 @@ export async function getFullUserDataByUniqueSearchTerm(
 	const options = {
 		projection: {
 			...fields,
-			...(canViewFullOtherUserInfo && { statusVisibilityDeniedByAdmin: 1 }),
+			...(canViewFullOtherUserInfo && isAdminHidingAllowed() && { statusVisibilityDeniedByAdmin: 1 }),
 			...(myself && {
 				services: 1,
-				...(settings.get<boolean>('Accounts_StatusVisibility_Enabled') && { 'settings.preferences.statusVisibilityDenied': 1 }),
+				...(isUserHidingAllowed() && { 'settings.preferences.statusVisibilityDenied': 1 }),
 			}),
 		},
 	};
@@ -149,9 +150,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 	delete user?.services?.email;
 
 	const ownBlockList =
-		myself && settings.get<boolean>('Accounts_StatusVisibility_Enabled') && user.settings?.preferences
-			? user.settings.preferences.statusVisibilityDenied
-			: undefined;
+		myself && isUserHidingAllowed() && user.settings?.preferences ? user.settings.preferences.statusVisibilityDenied : undefined;
 	const adminBlockList = user.statusVisibilityDeniedByAdmin;
 
 	if (ownBlockList?.length || adminBlockList?.length) {

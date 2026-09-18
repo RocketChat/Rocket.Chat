@@ -50,6 +50,26 @@ describe('StatusVisibilityGate', () => {
 		await expect(gate.ensureActive()).resolves.toBe(true);
 	});
 
+	it('should stay inactive while the status visibility rules are disabled, so the stream forwards presence untouched', async () => {
+		settingsGet.mockImplementation(async (id: string) => id !== 'Accounts_StatusVisibility_Admin_Enabled');
+
+		const gate = new StatusVisibilityGate();
+
+		await expect(gate.ensureActive()).resolves.toBe(false);
+		expect(getRestrictedUsers).not.toHaveBeenCalled();
+	});
+
+	it('should report no restriction once the set is known to be empty, so a feature nobody uses costs no lookup', async () => {
+		const gate = new StatusVisibilityGate();
+
+		const sync = gate.syncRestrictedUsers();
+		resolveOldestRead();
+		await sync;
+
+		expect(gate.isActive()).toBe(false);
+		expect(gate.hasRestrictions('anyone')).toBe(false);
+	});
+
 	it('should queue and re-run a sync requested while another one is in flight', async () => {
 		const gate = new StatusVisibilityGate();
 

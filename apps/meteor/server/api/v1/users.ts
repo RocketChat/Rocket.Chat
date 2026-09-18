@@ -94,6 +94,7 @@ import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
 import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -276,7 +277,7 @@ API.v1
 						preferences: {
 							...savedPreferences,
 							...(userId === this.userId &&
-								settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
+								isUserHidingAllowed() &&
 								statusVisibilityDenied?.length && {
 									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
 								}),
