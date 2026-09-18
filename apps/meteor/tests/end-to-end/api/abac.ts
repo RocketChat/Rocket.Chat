@@ -3095,6 +3095,60 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 		});
 	});
+
+	describe('[GET] /abac/attribute-keys', () => {
+		const keyPrefix = `keys_${Date.now()}`;
+		const createdKeys = [`${keyPrefix}_zulu`, `${keyPrefix}_alpha`];
+		const createdIds: string[] = [];
+
+		const findAttributeId = async (key: string): Promise<string> => {
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key }).expect(200);
+			const found = res.body.attributes.find((attribute: any) => attribute.key === key);
+			expect(found, `attribute ${key} was created but is not listed`).to.exist;
+			return found._id;
+		};
+
+		before(async () => {
+			for (const key of createdKeys) {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key, values: ['v1'] })
+					.expect(200);
+				createdIds.push(await findAttributeId(key));
+			}
+		});
+
+		after(async () => {
+			for (const _id of createdIds) {
+				await request.delete(`${v1}/abac/attributes/${_id}`).set(credentials).expect(200);
+			}
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request.get(`${v1}/abac/attribute-keys`).expect(401);
+		});
+
+		it('should return every registered key as a { key, label } option', async () => {
+			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('data').that.is.an('array');
+
+			const keys = res.body.data.map(({ key }: { key: string }) => key);
+			expect(keys).to.include.members(createdKeys);
+
+			res.body.data.forEach(({ key, label }: { key: string; label: string }) => expect(label).to.equal(key));
+		});
+
+		it('should return the keys sorted', async () => {
+			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
+
+			const keys: string[] = res.body.data.map(({ key }: { key: string }) => key);
+
+			expect(keys).to.deep.equal([...keys].sort((a, b) => a.localeCompare(b)));
+		});
+	});
 });
 
 (IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', function () {
@@ -3720,60 +3774,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				available: true,
 				message: 'ABAC_PDP_Health_OK',
 			});
-		});
-	});
-
-	describe('[GET] /abac/attribute-keys', () => {
-		const keyPrefix = `keys_${Date.now()}`;
-		const createdKeys = [`${keyPrefix}_zulu`, `${keyPrefix}_alpha`];
-		const createdIds: string[] = [];
-
-		const findAttributeId = async (key: string): Promise<string> => {
-			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key }).expect(200);
-			const found = res.body.attributes.find((attribute: any) => attribute.key === key);
-			expect(found, `attribute ${key} was created but is not listed`).to.exist;
-			return found._id;
-		};
-
-		before(async () => {
-			for (const key of createdKeys) {
-				await request
-					.post(`${v1}/abac/attributes`)
-					.set(credentials)
-					.send({ key, values: ['v1'] })
-					.expect(200);
-				createdIds.push(await findAttributeId(key));
-			}
-		});
-
-		after(async () => {
-			for (const _id of createdIds) {
-				await request.delete(`${v1}/abac/attributes/${_id}`).set(credentials);
-			}
-		});
-
-		it('should return 401 when not authenticated', async () => {
-			await request.get(`${v1}/abac/attribute-keys`).expect(401);
-		});
-
-		it('should return every registered key as a { key, label } option', async () => {
-			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
-
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('data').that.is.an('array');
-
-			const keys = res.body.data.map(({ key }: { key: string }) => key);
-			expect(keys).to.include.members(createdKeys);
-
-			res.body.data.forEach(({ key, label }: { key: string; label: string }) => expect(label).to.equal(key));
-		});
-
-		it('should return the keys sorted', async () => {
-			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
-
-			const keys: string[] = res.body.data.map(({ key }: { key: string }) => key);
-
-			expect(keys).to.deep.equal([...keys].sort((a, b) => a.localeCompare(b)));
 		});
 	});
 
