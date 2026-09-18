@@ -263,7 +263,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 										disabled={!presenceEnabled}
 										error={errors.statusText?.message}
 										aria-invalid={errors.statusText ? 'true' : 'false'}
-										aria-describedby={`${statusTextFieldId}-error`}
+										aria-describedby={`${statusTextFieldId}-error ${statusTextFieldId}-hint`}
 									/>
 								)}
 							/>
@@ -273,6 +273,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								{errors.statusText.message}
 							</FieldError>
 						)}
+						<FieldHint id={`${statusTextFieldId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={hiddenFromFieldId}>{t('Hide_presence_from')}</FieldLabel>

@@ -547,7 +547,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										disabled={statusFieldsDisabled}
 										error={errors?.statusText?.message}
 										aria-invalid={errors.statusText ? 'true' : 'false'}
-										aria-describedby={`${statusTextId}-error`}
+										aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 										flexGrow={1}
 									/>
 								)}
@@ -558,6 +558,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								{errors.statusText.message}
 							</FieldError>
 						)}
+						<FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
 					</Field>
 					{showUserStatusSection && !isNewUserPage && (
 						<Field>
