@@ -1,4 +1,4 @@
-import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, SettingValue, SettingValueMultiSelect } from '@rocket.chat/core-typings';
 
 const parseIntegerValue = (value: string): number => {
 	const parsed = Number(value);
@@ -21,7 +21,11 @@ export const convertValue = (value: 'true' | 'false' | string, type: ISetting['t
 		return parseIntegerValue(value);
 	}
 	if (type === 'multiSelect' || type === 'multiLookup') {
-		return JSON.parse(value);
+		const parsed: unknown = JSON.parse(value);
+		if (!Array.isArray(parsed)) {
+			throw new Error(`Expected an array but got ${typeof parsed}`);
+		}
+		return parsed as SettingValueMultiSelect;
 	}
 	return value;
 };
