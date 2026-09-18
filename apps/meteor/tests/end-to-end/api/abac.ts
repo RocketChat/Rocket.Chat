@@ -3109,6 +3109,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		};
 
 		before(async () => {
+			// The preceding describe leaves ABAC disabled, and the attribute endpoints refuse to run
+			// without it.
+			await updateSetting('ABAC_Enabled', true);
+
 			for (const key of createdKeys) {
 				await request
 					.post(`${v1}/abac/attributes`)
@@ -3123,6 +3127,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			for (const _id of createdIds) {
 				await request.delete(`${v1}/abac/attributes/${_id}`).set(credentials).expect(200);
 			}
+			await updateSetting('ABAC_Enabled', false);
 		});
 
 		it('should return 401 when not authenticated', async () => {

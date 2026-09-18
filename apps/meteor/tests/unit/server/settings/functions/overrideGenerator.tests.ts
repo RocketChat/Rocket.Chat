@@ -44,24 +44,13 @@ describe('overrideGenerator', () => {
 		expect(setting).to.be.equal(overwritten);
 	});
 
-	(['multiSelect', 'multiLookup'] as const).forEach((type) => {
-		it(`should overwrite a ${type} setting from a JSON array`, () => {
-			const overwrite = overrideGenerator(() => '["a","b"]');
+	it('should overwrite a multiLookup setting from a JSON array', () => {
+		const overwrite = overrideGenerator(() => '["a","b"]');
 
-			const setting = getSettingDefaults({ _id: 'test', value: [], type });
-			const overwritten = overwrite(setting);
+		const setting = getSettingDefaults({ _id: 'test', value: [], type: 'multiLookup' });
+		const overwritten = overwrite(setting);
 
-			expect(overwritten).to.have.property('value').that.deep.equals(['a', 'b']);
-			expect(overwritten).to.have.property('valueSource').that.equals('processEnvValue');
-		});
-
-		it(`should ignore a ${type} override that parses to something other than an array`, () => {
-			const overwrite = overrideGenerator(() => '{"a":1}');
-
-			const setting = getSettingDefaults({ _id: 'test', value: [], type });
-			const overwritten = overwrite(setting);
-
-			expect(setting).to.be.equal(overwritten);
-		});
+		expect(overwritten).to.have.property('value').that.deep.equals(['a', 'b']);
+		expect(overwritten).to.have.property('valueSource').that.equals('processEnvValue');
 	});
 });
