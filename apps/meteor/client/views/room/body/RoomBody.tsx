@@ -59,6 +59,9 @@ const RoomBody = () => {
 		if (shouldJumpToBottom) {
 			setShouldJumpToBottom(false);
 		}
+		if (isJumpingToMessage) {
+			setIsJumpingToMessage(false);
+		}
 	}
 
 	const retentionPolicy = useRetentionPolicy(room);
