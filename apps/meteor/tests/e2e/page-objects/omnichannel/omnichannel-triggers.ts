@@ -81,7 +81,7 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 export class OmnichannelTriggers extends OmnichannelAdmin {
 	protected readonly route = OmnichannelSectionsHref.triggers;
 
-	protected readonly title = 'Live chat triggers';
+	protected readonly title = 'Livechat triggers';
 
 	readonly editTrigger: OmnichannelEditTriggerFlexTab;
 

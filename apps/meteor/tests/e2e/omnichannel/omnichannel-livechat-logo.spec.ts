@@ -43,7 +43,7 @@ test.describe('OC - Livechat - Widget logo', async () => {
 		});
 
 		await test.step('expect to change widget logo', async () => {
-			await expect(poOmnichannelSettings.labelLivechatLogo).toHaveText('Live chat widget logo (svg, png, jpg)');
+			await expect(poOmnichannelSettings.labelLivechatLogo).toHaveText('Livechat widget logo (svg, png, jpg)');
 			await poOmnichannelSettings.inputLivechatLogo.setInputFiles('./tests/e2e/fixtures/files/test-image.jpeg');
 			await expect(poOmnichannelSettings.imgLivechatLogoPreview).toBeVisible();
 
