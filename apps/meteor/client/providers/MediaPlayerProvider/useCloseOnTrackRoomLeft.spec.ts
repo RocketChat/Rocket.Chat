@@ -3,8 +3,8 @@ import { renderHook } from '@testing-library/react';
 import type { PersistentAudioTrack } from './MediaPlayerContext';
 import { useCloseOnTrackRoomLeft } from './useCloseOnTrackRoomLeft';
 
-// `notify-user`'s `subscriptions-changed` delivers two arguments, and the shared stream mock in
-// `@rocket.chat/mock-providers` forwards only the first, so the stream is stubbed directly here.
+// `@rocket.chat/mock-providers` forwards only the first stream argument, and
+// `subscriptions-changed` sends two, so the stream is stubbed directly here.
 type SubscriptionsChangedCallback = (event: string, subscription: { rid?: string }) => void;
 
 const mockUnsubscribe = jest.fn();
