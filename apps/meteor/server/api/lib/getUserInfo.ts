@@ -3,10 +3,10 @@ import semver from 'semver';
 
 import { Info } from '../../../app/utils/rocketchat.info';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { getURL } from '../../lib/utils/getURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { settings } from '../../settings';
-import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 
 const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
 	if (!me || !Array.isArray(me.emails)) {
