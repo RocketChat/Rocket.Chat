@@ -154,7 +154,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	private async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		this.store.getState().replaceAll([]);
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
@@ -168,7 +167,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return mapped;
 		});
 
-		this.store.getState().storeMany(newRecords);
+		this.store.getState().replaceAll(newRecords);
 		this.handleLoadedFromServer(newRecords);
 
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
