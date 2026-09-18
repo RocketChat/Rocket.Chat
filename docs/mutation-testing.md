@@ -83,8 +83,11 @@ Selection rules:
   addition, checking the complete destination file in its new package context.
 - Deleted files and deletion-only hunks have no new lines to mutate and are
   reported as skipped. This mode does not assess whether tests detect deletions.
-- Tests, fixtures, declarations, stories, configuration files, benchmarks,
-  migrations, and known build-output directories are excluded by path/name.
+- The exclusion list covers type declarations, `*.test.*`, `*.spec.*`,
+  `*.stories.*`, `*.config.*`, and directories
+  named `__tests__`, `__mocks__`, `test`, `tests`, `dist`, `node_modules`, `coverage`,
+  or `migrations`. Generic production names such as `setup.ts`, `config.ts`, and
+  `reports/` remain eligible.
 - Files outside root workspaces and packages without `jest.config.ts` are
   skipped with a reason. Symlinks are skipped. Filenames that cannot be safely
   represented as mutation patterns fail explicitly.

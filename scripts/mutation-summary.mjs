@@ -2,11 +2,11 @@ const statuses = ['Killed', 'Survived', 'NoCoverage', 'Timeout', 'CompileError',
 
 function sourceAt(source, { start, end }) {
 	const lines = source.split('\n');
-	if (start.line === end.line) return lines[start.line - 1].slice(start.column, end.column);
+	if (start.line === end.line) return lines[start.line - 1].slice(start.column - 1, end.column - 1);
 	return [
-		lines[start.line - 1].slice(start.column),
+		lines[start.line - 1].slice(start.column - 1),
 		...lines.slice(start.line, end.line - 1),
-		lines[end.line - 1].slice(0, end.column),
+		lines[end.line - 1].slice(0, end.column - 1),
 	].join('\n');
 }
 

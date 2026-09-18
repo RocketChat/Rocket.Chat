@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs';
-import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, matchesGlob, relative, resolve, sep } from 'node:path';
 
 export class UsageError extends Error {}
 const slash = (path) => path.split(sep).join('/');
@@ -26,17 +26,20 @@ export function changedRanges(diff) {
 		.map(({ start, count }) => `${start}-${start + count - 1}`);
 }
 
+const NON_SOURCE = [
+	/\.d\.[cm]?ts$/,
+	/\.(test|spec)\.[cm]?[jt]sx?$/,
+	/(^|\/)__(tests|mocks)__\//,
+	/\.stories\.[cm]?[jt]sx?$/,
+	/\.config\.[cm]?[jt]s$/,
+	/(^|\/)(dist|node_modules|coverage)\//,
+	/(^|\/)tests?\//,
+	/(^|\/)migrations\//,
+];
+
 function exclusion(file) {
 	if (!/\.[cm]?[jt]sx?$/.test(file)) return 'not JavaScript or TypeScript';
-	if (/\.d\.[cm]?ts$/.test(file)) return 'type declaration';
-	if (
-		/(^|\/)(?:__tests__|__mocks__|__fixtures__|tests?|fixtures?|stories|migrations?|dist|build|coverage|reports|node_modules|generated)(\/|$)/.test(
-			file,
-		)
-	)
-		return 'test, generated, or non-production directory';
-	if (/(?:^|[./])(?:test|spec|stories|story|config|setup|bench|benchmark)(?:\.|$)/.test(file)) return 'test, config, story, or benchmark';
-	return null;
+	return NON_SOURCE.some((pattern) => pattern.test(file)) ? 'test, declaration, config, or excluded directory' : null;
 }
 
 export function planDiff(root, base = 'origin/develop') {
@@ -58,15 +61,6 @@ export function planDiff(root, base = 'origin/develop') {
 	}
 	const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
 	const workspaces = manifest.workspaces?.packages ?? manifest.workspaces ?? [];
-	const patterns = workspaces.map(
-		(pattern) =>
-			new RegExp(
-				`^${pattern
-					.split('*')
-					.map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-					.join('[^/]+')}$`,
-			),
-	);
 	const split = (output) => output.split('\0').filter(Boolean);
 	// Renames are deletion + addition: check the moved file in its new package context.
 	const tracked = split(git('diff', '--no-ext-diff', '--no-textconv', '--no-color', '--name-only', '-z', '--no-renames', mergeBase, '--'));
@@ -92,7 +86,7 @@ export function planDiff(root, base = 'origin/develop') {
 		let directory = dirname(absolute);
 		while (directory !== root && !existsSync(resolve(directory, 'package.json'))) directory = dirname(directory);
 		const packagePath = slash(relative(root, directory));
-		if (!patterns.some((pattern) => pattern.test(packagePath))) {
+		if (!workspaces.some((pattern) => matchesGlob(packagePath, pattern))) {
 			skip('outside a root workspace package');
 			continue;
 		}

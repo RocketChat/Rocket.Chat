@@ -100,20 +100,20 @@ async function runJob(job, options, minScore) {
 
 async function main() {
 	const args = process.argv.slice(2);
-	if (!args.length || args[0] === '--help' || args[0] === '-h') {
+	if (!args.length) {
 		console.log(usage);
-		return args.length ? 0 : 2;
+		return 2;
 	}
 	const { target, diff, base, plan, options, minScore } = parseArgs(args);
-	if (diff && options.some((option) => ['--help', '-h'].includes(option))) {
-		console.log(usage);
-		return 0;
-	}
-	if (!diff && !target) throw new UsageError(usage);
-	// Preserve access to Stryker's own CLI help without deleting reports.
-	if (target && options.some((option) => ['--help', '-h', '--version', '-V'].includes(option))) {
+	const version = options.some((option) => ['--version', '-V'].includes(option));
+	// Preserve access to Stryker's own CLI help and version without deleting reports.
+	if (version || options.some((option) => ['--help', '-h'].includes(option))) {
+		if (!target && !version) {
+			console.log(usage);
+			return 0;
+		}
 		const child = spawn(process.execPath, [fileURLToPath(new URL('./mutation-worker.mjs', import.meta.url)), ...options], {
-			cwd: packageDirectory(root, target),
+			cwd: target ? packageDirectory(root, target) : root,
 			stdio: 'inherit',
 		});
 		return new Promise((done) => {
@@ -121,6 +121,7 @@ async function main() {
 			child.on('close', (code) => done(code ?? 3));
 		});
 	}
+	if (!diff && !target) throw new UsageError(usage);
 	const selection = diff ? planDiff(root, base) : { jobs: [{ packagePath: target }], skipped: [] };
 	if (plan) {
 		console.log(JSON.stringify(selection, null, 2));

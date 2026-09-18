@@ -66,7 +66,7 @@ test('diff checks renamed files and reports deletions, excluded files, and unsup
 	write('packages/first/src/deletionOnly.ts', 'export const keep = 1;\n');
 	write('packages/first/src/value.spec.ts', 'test("example", () => {});');
 	write('packages/first/src/types.d.ts', 'declare const a: string;');
-	write('packages/first/src/fixtures/data.ts', 'export const data = 1;');
+	write('packages/first/src/__mocks__/data.ts', 'export const data = 1;');
 	write('packages/no-jest/package.json', '{}');
 	write('packages/no-jest/src/a.ts', 'export const a = 1;');
 	write('scripts/a.ts', 'export const a = 1;');
@@ -77,6 +77,28 @@ test('diff checks renamed files and reports deletions, excluded files, and unsup
 	assert.match(skipped.find(({ file }) => file.endsWith('deletionOnly.ts')).reason, /deletion-only/);
 	assert.match(skipped.find(({ file }) => file.endsWith('deleted.ts')).reason, /deleted/);
 	assert.match(skipped.find(({ file }) => file.includes('no-jest/src')).reason, /no jest/);
+});
+
+test('source filtering preserves production names while excluding explicit test and tooling conventions', (t) => {
+	const { root, write } = repository(t);
+	const sources = ['src/setup.ts', 'src/config.ts', 'src/reports/utils/round.ts', 'src/build/index.ts', 'src/generated/index.ts'];
+	const excluded = [
+		'src/value.test.js',
+		'src/value.spec.ts',
+		'src/value.stories.tsx',
+		'src/types.d.ts',
+		'webpack.config.js',
+		'src/__tests__/value.ts',
+		'src/__mocks__/value.ts',
+		'tests/value.ts',
+		'dist/value.js',
+		'coverage/value.js',
+		'migrations/value.ts',
+	];
+	for (const file of [...sources, ...excluded]) write(`packages/first/${file}`, 'export const value = 1;');
+	const { jobs, skipped } = planDiff(root, 'base');
+	assert.deepEqual(jobs, [{ packagePath: 'packages/first', targets: [...sources].sort() }]);
+	assert.deepEqual(skipped.map(({ file }) => file).sort(), excluded.map((file) => `packages/first/${file}`).sort());
 });
 
 test('comparison excludes independent base-branch changes', (t) => {
@@ -106,7 +128,7 @@ test('hunk selection handles zero-length deletions, omitted counts, and multiple
 	assert.deepEqual(changedRanges('@@ -1 +1 @@\n-a\n+b\n@@ -5,2 +5,0 @@\n-x\n-y\n@@ -10,0 +9,3 @@\n+a\n+b\n+c'), ['1-1', '9-11']);
 });
 
-const location = { start: { line: 1, column: 0 }, end: { line: 1, column: 1 } };
+const location = { start: { line: 1, column: 1 }, end: { line: 1, column: 2 } };
 function reportFor(statuses) {
 	return {
 		testFiles: { 'src/a.spec.ts': { tests: [{ id: 'test-1', name: 'checks a boundary' }] } },
@@ -138,6 +160,17 @@ test('summary identifies surviving behavior and covering tests, excluding ignore
 	assert.equal(summary.survivors[0].replacement, 'b');
 	assert.equal(summary.survivors[0].coveringTests[0].name, 'checks a boundary');
 	assert.equal(summary.ignored[0].reason, 'Equivalent behavior');
+});
+
+test('summary extracts single-line and multiline source using one-based report columns', () => {
+	const report = reportFor(['Survived']);
+	const file = report.files['src/a.ts'];
+	file.source = 'return true;';
+	file.mutants[0].location = { start: { line: 1, column: 8 }, end: { line: 1, column: 12 } };
+	assert.equal(buildSummary(report, complete).survivors[0].original, 'true');
+	file.source = 'return [\n  first,\n  second\n];';
+	file.mutants[0].location = { start: { line: 1, column: 8 }, end: { line: 4, column: 2 } };
+	assert.equal(buildSummary(report, complete).survivors[0].original, '[\n  first,\n  second\n]');
 });
 
 test('a threshold failure is distinct from failed, interrupted, incomplete and dry-only runs', () => {

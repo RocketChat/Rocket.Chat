@@ -214,7 +214,7 @@ test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
 	await git('branch', 'base');
 	for (const pkg of ['first', 'second']) await write(`packages/${pkg}/src/example.ts`, afterSource);
 	const statusBefore = await git('status', '--porcelain');
-	await exec(process.execPath, ['scripts/run-mutation-tests.mjs', '--diff', '--base', 'base', '--reporters', 'clear-text'], {
+	await exec(process.execPath, ['scripts/run-mutation-tests.mjs', '--diff', '--base', 'base', '--reporters', 'clear-text,html'], {
 		cwd: directory,
 		timeout: 60_000,
 	});
@@ -224,6 +224,23 @@ test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
 		assert.equal(summary.score, 100);
 		assert.deepEqual(summary.targets, ['src/example.ts:1-1', 'src/example.ts:3-3']);
 		assert.equal(await readFile(resolve(directory, `packages/${pkg}/src/example.ts`), 'utf8'), afterSource);
+	}
+	const reports = ['first', 'second'].flatMap((pkg) =>
+		['mutation.json', 'mutation.html', 'summary.json'].map((file) => resolve(directory, `packages/${pkg}/reports/mutation/${file}`)),
+	);
+	const reportContents = await Promise.all(reports.map((file) => readFile(file)));
+	for (const args of [
+		['--diff', '--base', 'base', '--version'],
+		['--diff', '--base', 'missing-base', '-V'],
+		['--version'],
+		['packages/first', '-V'],
+	]) {
+		const { stdout } = await exec(process.execPath, ['scripts/run-mutation-tests.mjs', ...args], {
+			cwd: directory,
+			timeout: 10_000,
+		});
+		assert.match(stdout.trim(), /^\d+\.\d+\.\d+[^\s]*$/);
+		assert.deepEqual(await Promise.all(reports.map((file) => readFile(file))), reportContents);
 	}
 	assert.equal(await git('status', '--porcelain'), statusBefore);
 });
