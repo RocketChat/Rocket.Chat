@@ -7,7 +7,7 @@
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
-	"main": "./dist/service.js",
+	"main": "./dist/ee/apps/ddp-streamer/src/service.js",
 	"files": [
 		"/dist"
 	],
@@ -29,6 +29,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/streamer": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
