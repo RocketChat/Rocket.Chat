@@ -84,14 +84,74 @@ for (const scope of ['src/missing.ts', 'src/isPositive.ts,!src/isPositive.ts']) 
 	});
 }
 
-test('rejects multi-project Jest configurations explicitly', async (t) => {
+test('Jest projects preserve client/server environments, setup, and aliases while detecting shared mutations', async (t) => {
 	const directory = await fixture(
 		t,
-		`export default { projects: [{ displayName: 'one', rootDir: '.' }, { displayName: 'two', rootDir: '.' }] };`,
+		`
+import client from '@rocket.chat/jest-presets/client';
+import server from '@rocket.chat/jest-presets/server';
+export default { projects: [
+  { displayName: 'client', preset: client.preset, testMatch: ['<rootDir>/src/isPositive.spec.ts'],
+    testEnvironmentOptions: { url: 'https://mutation.example.test/' },
+    setupFilesAfterEnv: [...client.setupFilesAfterEnv, '<rootDir>/client-setup.ts'],
+    moduleNameMapper: { '^react$': '<rootDir>/../../node_modules/react', '^local$': '<rootDir>/src/isPositive.ts' } },
+  { displayName: 'server', preset: server.preset, testMatch: ['<rootDir>/src/server.spec.ts'],
+    setupFilesAfterEnv: ['<rootDir>/server-setup.ts'],
+    moduleNameMapper: { '^local$': '<rootDir>/src/isPositive.ts' } },
+] };
+`,
 	);
+	await writeFile(resolve(directory, 'tsconfig.json'), JSON.stringify({ compilerOptions: { allowJs: true } }));
+	await writeFile(resolve(directory, 'client-setup.ts'), "globalThis.projectSetup = 'client';");
+	await writeFile(resolve(directory, 'server-setup.ts'), "globalThis.projectSetup = 'server';");
+	await writeFile(
+		resolve(directory, 'src/isPositive.spec.ts'),
+		`
+import { createElement } from 'react';
+import { isPositive } from 'local';
+test('client covers the positive case', () => {
+  expect(globalThis.projectSetup).toBe('client');
+  expect(window.location.href).toBe('https://mutation.example.test/');
+  expect(document.createElement('div')).toBeEmptyDOMElement();
+  expect(createElement('div').type).toBe('div');
+  expect(isPositive(1)).toBe(true);
+});
+`,
+	);
+	await writeFile(resolve(directory, 'src/isNegative.ts'), 'export const isNegative = (value: number) => value < 0;');
+	await writeFile(
+		resolve(directory, 'src/server.spec.ts'),
+		`
+import { isPositive } from 'local';
+import { isNegative } from './isNegative';
+test.each([-1, 0, 1])('server checks %s', (value) => {
+  expect(globalThis.projectSetup).toBe('server');
+  expect(typeof document).toBe('undefined');
+  if (value !== 1) expect(isPositive(value)).toBe(false);
+  expect(isNegative(value)).toBe(value === -1);
+});
+`,
+	);
+	const source = await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8');
+	await run(directory, '--mutate', 'src/isPositive.ts,src/isNegative.ts', '--min-score', '100').catch((error) =>
+		assert.fail(error.stdout + error.stderr),
+	);
+	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/mutation.json'), 'utf8'));
+	const summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
+	assert.equal(summary.status, 'complete');
+	assert.equal(summary.score, 100);
+	for (const file of ['src/isPositive.ts', 'src/isNegative.ts']) {
+		assert.ok(report.files[file].mutants.length > 0);
+		assert.ok(report.files[file].mutants.every(({ status }) => status === 'Killed'));
+	}
+	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
+});
+
+test('rejects Jest projects with different roots explicitly', async (t) => {
+	const directory = await fixture(t, `export default { projects: [{ rootDir: '.' }, { rootDir: './src' }] };`);
 	await assert.rejects(run(directory, '--mutate', 'src/isPositive.ts', '--dryRunOnly'), (error) => {
 		assert.equal(error.code, 3);
-		assert.match(error.stdout + error.stderr, /Multi-project configurations need a dedicated setup/);
+		assert.match(error.stdout + error.stderr, /inline Jest projects sharing the package root/);
 		return true;
 	});
 });
@@ -153,8 +213,8 @@ test('batched line ranges mutate the selected lines and leave other lines and so
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
-test('Mocha preserves TypeScript setup, scopes tests, and continues after unsupported Jest configurations', async (t) => {
-	const directory = await fixture(t, "export default { projects: [{ displayName: 'one' }, { displayName: 'two' }] };");
+test('Mocha preserves TypeScript setup, scopes tests, and continues after invalid Jest configurations', async (t) => {
+	const directory = await fixture(t, "throw new Error('Invalid Jest fixture configuration'); export default {};");
 	const requireMeteor = createRequire(resolve(root, 'apps/meteor/package.json'));
 	await writeFile(
 		resolve(directory, '.mocharc.base.json'),
@@ -198,10 +258,10 @@ for (const value of ${JSON.stringify(values)}) {
 	summary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/mocha/summary.json'), 'utf8'));
 	assert.equal(summary.status, 'failed');
 	assert.equal(summary.score, null);
-	// Automatic discovery must still run Mocha when the same package's Jest config is unsupported.
+	// Automatic discovery must still run Mocha when the same package's Jest config fails.
 	await assert.rejects(run(directory, ...args.slice(2)), (error) => {
 		assert.equal(error.code, 3);
-		assert.match(error.stdout + error.stderr, /Multi-project configurations need a dedicated setup/);
+		assert.match(error.stdout + error.stderr, /Invalid Jest fixture configuration/);
 		return true;
 	});
 	const jestSummary = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/summary.json'), 'utf8'));
@@ -248,6 +308,7 @@ test('diff CLI discovers Jest, Mocha, and mixed workspaces and preserves separat
 		'scripts/mutation-diff.mjs',
 		'scripts/mutation-summary.mjs',
 		'scripts/mutation-jest-config.mjs',
+		'scripts/mutation-jest-environment.cjs',
 		'scripts/mutation-target-reporter.mjs',
 	])
 		await copyFile(resolve(root, file), resolve(directory, file));

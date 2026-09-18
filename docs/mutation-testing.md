@@ -103,13 +103,21 @@ For Mocha, `--testFiles` accepts comma-separated paths or quoted globs and repla
 the configured test selection while preserving setup, including Meteor's `tsx`
 loader and Chai plugins. Without it, Mocha uses the tests selected by `.mocharc.js`.
 
+### Meteor's Jest projects
+
+Meteor's client and server projects run together in the Jest job, preserving
+`jsdom` for client tests and Node for server tests. Both contribute to the same
+Jest report. `--diff` discovers them automatically. Use `--diff --testRunner jest`
+to assess changed lines with Jest alone, or select a package and file with
+`yarn test:mutation apps/meteor --testRunner jest --mutate client/providers/CustomSoundProvider/lib/formatVolume.ts`.
+
 ### Supported suites
 
-- Single-project Jest configurations and Mocha unit tests that load production
-  code into the test process are supported.
-- Multi-project Jest configurations, including Meteor's client/server projects,
-  fail explicitly. Other discovered jobs still run, including Mocha in the same
-  package, but the overall command reports the failure.
+- Jest and Mocha unit tests that load production code into the test process are
+  supported. Jest projects must be inline configurations sharing the package root,
+  using Node or jsdom with `jest-circus`; separate project roots are unsupported.
+- A failed runner does not prevent other discovered jobs from running, but the
+  overall command reports the failure.
 - Vitest and Playwright are unsupported. API integration suites using a separate
   running server are also outside this setup: it does not run that server with
   mutated code.
@@ -234,7 +242,6 @@ saved summary. Partial results can help diagnosis but never pass the gate.
 | Cannot find a merge base               | Run `git fetch origin develop` or select an available ref with `--base`.                                                             |
 | No eligible changes or targets         | Inspect `--diff --plan` and skipped reasons. For manual targets, check package-relative paths and ranges.                            |
 | Missing modules or failing baseline    | Install dependencies, build required workspaces, and get ordinary tests passing. Use `--dryRunOnly` to check the mutation setup.     |
-| Meteor Jest configuration rejected     | For Mocha unit tests, select `--testRunner mocha` and the relevant `--testFiles`.                                                    |
 | Mostly `NoCoverage`                    | Check that the chosen suite exercises the selected production code.                                                                  |
 | A report exists but the command failed | Inspect `status`, `error`, and terminal output; the report may be incomplete.                                                        |
 | The run takes too long                 | Narrow `--mutate` to a file/range or scope Mocha with `--testFiles`. `--concurrency 1` reduces parallel workers, not the total work. |
@@ -252,8 +259,9 @@ runner setup, reports, score gates, and cancellation without changing package te
 or production code. Shared defaults live in [`stryker.config.mjs`](../stryker.config.mjs).
 
 Keep the compatibility checks passing when upgrading: the
-[Jest helper](../scripts/mutation-jest-config.mjs) preserves preset environments
-and redirects local aliases into the sandbox. The
+[Jest helper](../scripts/mutation-jest-config.mjs) preserves presets and aliases;
+its [environment adapter](../scripts/mutation-jest-environment.cjs) keeps each
+project's Node/jsdom environment under Stryker's coverage hooks. The
 [worker](../scripts/mutation-worker.mjs) records completion after reporters finish
 and maps Mocha `--testFiles` to `mochaOptions.spec` to avoid Stryker 10's static-mutant
 filtering issue.
