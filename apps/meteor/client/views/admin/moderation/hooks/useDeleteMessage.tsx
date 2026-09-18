@@ -22,7 +22,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 		},
 		onSuccess: async () => {
 			// Deletion streams are authorized by room access, which a moderator may not have.
-			if (track?.mid === mid) {
+			if (track?.mid === mid || track?.originMid === mid) {
 				closeMediaPlayer();
 			}
 

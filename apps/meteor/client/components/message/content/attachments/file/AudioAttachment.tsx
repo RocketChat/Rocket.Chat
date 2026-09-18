@@ -9,7 +9,6 @@ import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 
-/** Extra context about the message that owns this audio, used by the shared player. */
 export type AudioAttachmentSource = {
 	rid?: string;
 	mid?: string;
