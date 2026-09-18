@@ -31,8 +31,8 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 		}
 
 		const hasOrigin = Boolean(originMid && originMid !== mid);
-		// Quotes stored before the origin room existed carry only an id and a timestamp. Their
-		// original is assumed to live in the quoting room, which is what the player watched before.
+		// Quotes stored before `rid` was added carry no origin room, so they keep watching the
+		// quoting room — the behaviour they already had.
 		const originRoom = hasOrigin ? (originRid ?? rid) : undefined;
 
 		const watches = new Map<string, RoomWatch>();
@@ -78,12 +78,9 @@ export const useCloseOnTrackMessageDeleted = (track: PersistentAudioTrack | null
 
 				const matchesCriteria = createDeleteCriteria(params);
 
-				// The playing message is matched on its full state: `drid` never changes once set, and
-				// `pinned` is kept current from the room stream, so it holds even while the message is
-				// unmounted — which is exactly when a prune's refetch would otherwise leave it stale.
-				//
-				// A quoted original has no such refresh: the attachment stores its room but not its author
-				// or pinned state, so prunes filtering on those cannot be evaluated for it.
+				// A stored quote carries the original's room but never its author or pinned state, so
+				// prunes filtering on those cannot be evaluated for it. The playing message can, since
+				// `drid` is immutable and `pinned` is kept current from the room stream.
 				const canEvaluate = ({ isOrigin }: { isOrigin: boolean }): boolean =>
 					!isOrigin || (!params.users?.length && !params.excludePinned && !params.ignoreDiscussion);
 

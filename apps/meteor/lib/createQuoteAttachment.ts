@@ -16,10 +16,6 @@ export function createQuoteAttachment(
 		author_icon: userAvatarUrl,
 		attachments: message.attachments || [],
 		ts: message.ts,
-		// Room of the quoted message, so a client can watch it for deletions even when the quote is
-		// rendered elsewhere. Only immutable identity is stored: `pinned` and `drid` can change after
-		// the quote is saved and nothing refreshes the stored attachment, so a snapshot of them here
-		// would go stale silently.
 		rid: message.rid,
 	};
 }
