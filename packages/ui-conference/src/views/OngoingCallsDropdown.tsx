@@ -1,10 +1,9 @@
 import { FocusScope } from '@react-aria/focus';
-import { Box, Dropdown } from '@rocket.chat/fuselage';
+import { Badge, Box, Dropdown, IconButton } from '@rocket.chat/fuselage';
 import { useDropdownVisibility } from '@rocket.chat/ui-client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import IconButtonWithBadge from '../components/IconButtonWithBadge';
 import OngoingCallsList from '../components/OngoingCalls/OngoingCallsList';
 import { useOngoingCalls } from '../context/OngoingCallsContext';
 
@@ -56,7 +55,7 @@ const OngoingCallsDropdown = () => {
 	return (
 		<>
 			<Box display='inline-flex'>
-				<IconButtonWithBadge
+				<IconButton
 					ref={reference}
 					small
 					secondary={isOffering}
@@ -76,8 +75,7 @@ const OngoingCallsDropdown = () => {
 					// into the name and the badge is hidden from assistive technology — said once.
 					aria-label={active > 0 ? t('Ongoing_calls_count', { count: active }) : name}
 					icon='video'
-					badge={active > 0 ? active : undefined}
-					badgeVariant='secondary'
+					badge={active > 0 ? <Badge variant='secondary'>{active}</Badge> : undefined}
 				/>
 			</Box>
 			{isVisible && (

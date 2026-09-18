@@ -1,5 +1,5 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,7 +12,6 @@ import CallPanel from '../components/CallPanel';
 import CallTopBar from '../components/CallTopBar';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from '../components/ConferenceIframe';
-import IconButtonWithBadge from '../components/IconButtonWithBadge';
 import { ChatPanelContext } from '../context/ChatPanelContext';
 import { useConference } from '../context/ConferenceContext';
 import { useRinging } from '../hooks/useRinging';
@@ -182,7 +181,7 @@ const ConferenceWindow = () => {
 			{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
 
 			<CallTopBar startAt={call.createdAt} name={call.name}>
-				<IconButtonWithBadge
+				<IconButton
 					small
 					secondary
 					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
@@ -193,9 +192,9 @@ const ConferenceWindow = () => {
 					aria-pressed={activePanel === 'members'}
 					onClick={() => togglePanel('members')}
 					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-					badge={presentCount > 0 ? presentCount : undefined}
+					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 				/>
-				<IconButtonWithBadge
+				<IconButton
 					small
 					secondary
 					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
@@ -203,9 +202,16 @@ const ConferenceWindow = () => {
 					aria-pressed={chatVisible}
 					onClick={() => togglePanel('chat')}
 					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-					badge={chatBadge}
-					badgeVariant={unreadVariant}
-					badgeTitle={unreadTitle}
+					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+					// for truth.
+					badge={
+						chatBadge !== undefined ? (
+							<Badge variant={unreadVariant} title={unreadTitle}>
+								{chatBadge}
+							</Badge>
+						) : undefined
+					}
 				/>
 			</CallTopBar>
 

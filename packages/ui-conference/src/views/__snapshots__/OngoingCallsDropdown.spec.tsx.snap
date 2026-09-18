@@ -23,7 +23,7 @@ exports[`OngoingCallsDropdown renders OneOngoing without crashing 1`] = `
           aria-controls="_r_1_"
           aria-expanded="false"
           aria-label="1 ongoing call"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+          class="rcx-box rcx-box--full rcx-button--with-badge rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
           title="Ongoing calls"
           type="button"
         >
@@ -33,16 +33,16 @@ exports[`OngoingCallsDropdown renders OneOngoing without crashing 1`] = `
           >
             ❲
           </i>
-          <div
+          <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            class="rcx-button__badge"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
             >
               1
             </span>
-          </div>
+          </span>
         </button>
       </div>
     </div>
@@ -63,7 +63,7 @@ exports[`OngoingCallsDropdown renders OnlyDeclined without crashing 1`] = `
           aria-controls="_r_2_"
           aria-expanded="false"
           aria-label="Ongoing calls"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
           title="Ongoing calls"
           type="button"
         >
@@ -93,7 +93,7 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
           aria-controls="_r_3_"
           aria-expanded="true"
           aria-label="1 ongoing call"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+          class="rcx-box rcx-box--full rcx-button--with-badge rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
           title="Ongoing calls"
           type="button"
         >
@@ -103,16 +103,16 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
           >
             ❲
           </i>
-          <div
+          <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            class="rcx-button__badge"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
             >
               1
             </span>
-          </div>
+          </span>
         </button>
       </div>
       <div
@@ -245,7 +245,7 @@ exports[`OngoingCallsDropdown renders SeveralOngoing without crashing 1`] = `
           aria-controls="_r_4_"
           aria-expanded="false"
           aria-label="3 ongoing calls"
-          class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+          class="rcx-box rcx-box--full rcx-button--with-badge rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
           title="Ongoing calls"
           type="button"
         >
@@ -255,16 +255,16 @@ exports[`OngoingCallsDropdown renders SeveralOngoing without crashing 1`] = `
           >
             ❲
           </i>
-          <div
+          <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-rv30ce"
+            class="rcx-button__badge"
           >
             <span
               class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
             >
               3
             </span>
-          </div>
+          </span>
         </button>
       </div>
     </div>

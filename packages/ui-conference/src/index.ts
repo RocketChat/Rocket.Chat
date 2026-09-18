@@ -30,7 +30,6 @@ export { default as ChatAccessModal } from './components/ChatAccessModal/ChatAcc
 export { default as ChatAccessNotice } from './components/ChatAccessNotice/ChatAccessNotice';
 export { default as ConferenceChatNotShared } from './components/ConferenceChatNotShared';
 export { default as ConferenceErrorState } from './components/ConferenceErrorState';
-export { default as IconButtonWithBadge } from './components/IconButtonWithBadge';
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 
