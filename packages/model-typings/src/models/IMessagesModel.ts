@@ -6,6 +6,7 @@ import type {
 	MessageTypesValues,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	AudioTranscription,
 } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
@@ -151,6 +152,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	unsetReactions(messageId: string): Promise<UpdateResult>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
+	setAttachmentTranscription(
+		messageId: string,
+		attachmentIndex: string | number,
+		transcription: AudioTranscription,
+	): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
 		importFileId: string,
 		rocketChatUrl: string,

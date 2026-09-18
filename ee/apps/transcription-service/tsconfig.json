@@ -1,0 +1,10 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"strictPropertyInitialization": false,
+		"outDir": "./dist/ee/apps/transcription-service/src"
+	},
+	"files": ["./src/service.ts", "./src/fips.ts"],
+	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"exclude": ["./dist"]
+}

@@ -55,6 +55,7 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+import type { ITranscriptionService } from './types/ITranscriptionService';
 import type {
 	UiKitCoreAppBlockActionPayload,
 	UiKitCoreAppViewClosedPayload,
@@ -176,6 +177,7 @@ export type {
 	IImportService,
 	IOmnichannelAnalyticsService,
 	IUserService,
+	ITranscriptionService,
 };
 export { proxify };
 
@@ -205,6 +207,7 @@ export const Calendar = proxify<ICalendarService>('calendar');
 export const CallHistory = proxify<ICallHistoryService>('call-history');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
+export const Transcription = proxify<ITranscriptionService>('transcription');
 export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
 export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');

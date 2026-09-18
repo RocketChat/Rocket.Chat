@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
+import { TranscriptionService } from '@rocket.chat/transcription-service';
 import { MongoInternals } from 'meteor/mongo';
 
 import { isRunningMs } from '../lib/isRunningMs';
@@ -80,5 +81,6 @@ export const registerServices = async (): Promise<void> => {
 		// Always register the service and manage licensing inside the service (tbd)
 		api.registerService(new QueueWorker(db, Logger));
 		api.registerService(new OmnichannelTranscript(Logger, i18n));
+		api.registerService(new TranscriptionService(Logger));
 	}
 };

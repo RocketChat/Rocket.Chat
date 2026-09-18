@@ -8,6 +8,7 @@ import type {
 	MessageAttachment,
 	IMessageWithPendingFileImport,
 	DeepWritable,
+	AudioTranscription,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -617,6 +618,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
 		});
 		return this.updateOne({ _id: messageId }, { $set: updateObj });
+	}
+
+	setAttachmentTranscription(
+		messageId: string,
+		attachmentIndex: string | number,
+		transcription: AudioTranscription,
+	): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: messageId },
+			{ $set: { [`attachments.${attachmentIndex}.transcription`]: transcription } as UpdateFilter<IMessage>['$set'] },
+		);
 	}
 
 	setImportFileRocketChatAttachment(

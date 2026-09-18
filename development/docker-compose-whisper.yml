@@ -1,0 +1,66 @@
+# Local whisper.cpp HTTP server for voice message transcription (Linux hosts).
+#
+# Usage:
+#   docker compose -f development/docker-compose-whisper.yml up
+#
+# Point AI > Voice Transcription > Whisper server URL at http://localhost:8080
+# (or http://whisper:8080 from other compose services on the same network).
+#
+# GPU: set WHISPER_IMAGE=ghcr.io/ggml-org/whisper.cpp:main-cuda (or main-vulkan)
+# and add the appropriate device reservations for your host.
+#
+# macOS: do not use this file. The published image is linux/amd64 only, so Docker
+# Desktop runs it under Rosetta where model init can hang while the port is already
+# bound. Use the native Metal build instead, which is what this repo verifies on
+# Apple Silicon:
+#
+#   development/whisper/run-native-macos.sh start
+#
+# See docs/features/voice-transcription.md.
+
+services:
+  whisper-models:
+    image: curlimages/curl:8.12.1
+    volumes:
+      - whisper-models:/models
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -eu
+        MODEL="$${MODEL:-ggml-base.bin}"
+        if [ ! -f "/models/$${MODEL}" ]; then
+          echo "Downloading $${MODEL}..."
+          curl -fL --retry 3 --retry-delay 2 \
+            -o "/models/$${MODEL}" \
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/$${MODEL}"
+        else
+          echo "Model $${MODEL} already present"
+        fi
+    environment:
+      MODEL: ${MODEL:-ggml-base.bin}
+
+  whisper:
+    image: ${WHISPER_IMAGE:-ghcr.io/ggml-org/whisper.cpp:main}
+    depends_on:
+      whisper-models:
+        condition: service_completed_successfully
+    ports:
+      - '${WHISPER_PORT:-8080}:8080'
+    volumes:
+      - whisper-models:/models:ro
+    environment:
+      MODEL: ${MODEL:-ggml-base.bin}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -eu
+        exec whisper-server \
+          --host 0.0.0.0 \
+          --port 8080 \
+          -m "/models/$${MODEL}" \
+          --convert
+
+volumes:
+  whisper-models:

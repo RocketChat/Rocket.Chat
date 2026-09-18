@@ -35,3 +35,8 @@ services:
     build:
       target: release-fips
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}-fips
+
+  transcription-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/transcription-service:${DOCKER_TAG}-fips

@@ -303,7 +303,7 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service transcription-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()

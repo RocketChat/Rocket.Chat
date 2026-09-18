@@ -21,6 +21,7 @@ import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { SystemLogger } from '../../lib/logger/system';
 import { isImagePreviewSupported } from '../../lib/media/file-upload/isImagePreviewSupported';
 import { FileUpload } from '../../lib/media/file-upload/lib/FileUpload';
+import { settings } from '../../settings';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
@@ -122,6 +123,8 @@ export const parseFileIntoMessageAttachments = async (
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
+		const room = await Rooms.findOneById(roomId, { projection: { encrypted: 1 } });
+		const transcriptionEnabled = settings.get<boolean>('AI_Voice_Transcription_Enabled');
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
@@ -132,6 +135,7 @@ export const parseFileIntoMessageAttachments = async (
 			audio_type: file.type as string,
 			audio_size: file.size,
 			fileId: file._id,
+			...(transcriptionEnabled && !room?.encrypted ? { transcription: { status: 'pending' as const } } : {}),
 		};
 		attachments.push(attachment);
 	} else if (/^video\/.+/.test(file.type as string)) {

@@ -27,6 +27,7 @@ export type UsersSetPreferencesParamsPOST = {
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
 		showThreadsInMainChannel?: boolean;
+		showVoiceTranscriptions?: boolean;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -146,6 +147,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				showThreadsInMainChannel: {
+					type: 'boolean',
+					nullable: true,
+				},
+				showVoiceTranscriptions: {
 					type: 'boolean',
 					nullable: true,
 				},

@@ -58,6 +58,7 @@ type UserPreferences = {
 	mentionsWithSymbol?: boolean;
 	utcOffset?: number;
 	statusVisibilityDenied?: string[];
+	showVoiceTranscriptions?: boolean;
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -166,6 +167,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		mentionsWithSymbol: Match.Optional(Boolean),
 		utcOffset: Match.Optional(Number),
 		statusVisibilityDenied: Match.Optional([String]),
+		showVoiceTranscriptions: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 
