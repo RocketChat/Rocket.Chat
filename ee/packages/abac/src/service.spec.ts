@@ -366,6 +366,18 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('listAbacAttributeKeys', () => {
+		const actor = { _id: 'admin-1', username: 'admin', name: 'Admin' };
+
+		it('delegates to attributeStore.listAttributeKeys with the actor', async () => {
+			const fakeStore = { listAttributeKeys: jest.fn().mockResolvedValue(['clearance', 'team']) };
+			(service as any).attributeStores.local.store = fakeStore;
+
+			await expect(service.listAbacAttributeKeys(actor)).resolves.toEqual(['clearance', 'team']);
+			expect(fakeStore.listAttributeKeys).toHaveBeenCalledWith(actor);
+		});
+	});
+
 	describe('updateAbacAttributeById', () => {
 		beforeEach(() => {
 			mockAbacFindOne.mockReset();
