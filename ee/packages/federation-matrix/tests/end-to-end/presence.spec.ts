@@ -11,7 +11,13 @@ import { federationConfig } from '../helper/config';
 import { DDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';
 
-const localUser = federationConfig.rc1.additionalUser1;
+// Declared here rather than taken from `federationConfig`: per-test users live only on the Synapse
+// side of that config, and this spec creates its own on first run.
+const localUser = {
+	username: 'fed-presence-user',
+	password: 'fed-presence-pass',
+	matrixUserId: `@fed-presence-user:${federationConfig.rc1.domain}`,
+};
 const remoteUser = federationConfig.hs1.additionalUser1;
 
 const PRESENCE_SETTING = 'Federation_Service_EDU_Process_Presence';
