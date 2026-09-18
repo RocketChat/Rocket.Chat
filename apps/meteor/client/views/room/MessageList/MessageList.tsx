@@ -82,9 +82,16 @@ export const MessageList = function MessageList({
 
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const lastScrollSizeRef = useRef(0);
-	const initialCacheRef = useRef(RoomManager.getStore(rid)?.cache);
 
 	const messages = useMessages({ rid });
+
+	// Virtua's cache is positional, so only reuse it when the message count still matches the one it was captured against.
+	const initialCacheRef = useRef(
+		(() => {
+			const store = RoomManager.getStore(rid);
+			return store?.cacheMessageCount === messages.length ? store.cache : undefined;
+		})(),
+	);
 
 	const messagesLength = canPreview ? messages.length + 1 : messages.length;
 
@@ -205,7 +212,7 @@ export const MessageList = function MessageList({
 		setShouldJumpToBottom,
 	]);
 
-	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
+	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength: messages.length });
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');

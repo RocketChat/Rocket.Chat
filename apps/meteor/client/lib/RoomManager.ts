@@ -23,6 +23,9 @@ class RoomStore extends Emitter<{
 
 	cache?: CacheSnapshot;
 
+	// Message count the cache snapshot was taken against, since virtua's cache is positional.
+	cacheMessageCount?: number;
+
 	lm?: Date;
 
 	atBottom = true;
@@ -35,7 +38,19 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime, atBottom, cache }: { scroll?: number; lastTime?: Date; atBottom?: boolean; cache?: CacheSnapshot }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+		cache,
+		cacheMessageCount,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+		cache?: CacheSnapshot;
+		cacheMessageCount?: number;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
@@ -48,6 +63,7 @@ class RoomStore extends Emitter<{
 		}
 		if (cache !== undefined) {
 			this.cache = cache;
+			this.cacheMessageCount = cacheMessageCount;
 		}
 		if (scroll || lastTime) {
 			this.emit('changed');

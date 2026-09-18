@@ -242,11 +242,11 @@ describe('MessageList scroll position', () => {
 		fireEvent.scroll(screen.getByTestId('message-list'));
 
 		await waitFor(() => {
-			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: undefined });
+			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: undefined, cacheMessageCount: 2 });
 		});
 	});
 
-	it('should persist the virtualizer cache snapshot alongside the scroll position', async () => {
+	it('should persist the virtualizer cache snapshot alongside the scroll position and the message count it was measured against', async () => {
 		const store = {
 			scroll: 1,
 			atBottom: false,
@@ -262,16 +262,17 @@ describe('MessageList scroll position', () => {
 		fireEvent.scroll(screen.getByTestId('message-list'));
 
 		await waitFor(() => {
-			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: cacheSnapshot });
+			expect(store.update).toHaveBeenCalledWith({ scroll: 50, atBottom: false, cache: cacheSnapshot, cacheMessageCount: 2 });
 		});
 	});
 
-	it('should seed the virtualizer with the cache snapshot stored for the room', () => {
+	it('should seed the virtualizer with the cache snapshot stored for the room when the message count still matches', () => {
 		const cacheSnapshot = { fakeCache: true };
 		const store = {
 			scroll: 123,
 			atBottom: false,
 			cache: cacheSnapshot,
+			cacheMessageCount: 2,
 			update: jest.fn(),
 		};
 		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
@@ -279,6 +280,22 @@ describe('MessageList scroll position', () => {
 		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
 
 		expect(lastVListCacheProp).toBe(cacheSnapshot);
+	});
+
+	it('should not seed the virtualizer with a cache snapshot captured at a different message count', () => {
+		const cacheSnapshot = { fakeCache: true };
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			cache: cacheSnapshot,
+			cacheMessageCount: 5,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(lastVListCacheProp).toBeUndefined();
 	});
 });
 

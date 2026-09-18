@@ -8,9 +8,10 @@ type UseStoreScrollPositionProps = {
 	rid: string;
 	isAtBottom: MutableRefObject<boolean>;
 	virtualizerRef: MutableRefObject<VirtualizerHandle | null>;
+	messagesLength: number;
 };
 
-export function useStoreScrollPosition({ rid, isAtBottom, virtualizerRef }: UseStoreScrollPositionProps) {
+export function useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength }: UseStoreScrollPositionProps) {
 	return useDebouncedCallback(
 		() => {
 			const scroll = virtualizerRef.current?.scrollOffset;
@@ -21,9 +22,14 @@ export function useStoreScrollPosition({ rid, isAtBottom, virtualizerRef }: UseS
 
 			const store = RoomManager.getStore(rid);
 
-			store?.update({ scroll, atBottom: isAtBottom.current, cache: virtualizerRef.current?.cache });
+			store?.update({
+				scroll,
+				atBottom: isAtBottom.current,
+				cache: virtualizerRef.current?.cache,
+				cacheMessageCount: messagesLength,
+			});
 		},
 		100,
-		[rid, isAtBottom, virtualizerRef],
+		[rid, isAtBottom, virtualizerRef, messagesLength],
 	);
 }
