@@ -34830,7 +34830,6 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^2.27.12"
     "@rocket.chat/eslint-config": "workspace:~"
-    "@stryker-mutator/api": "npm:10.0.0"
     "@stryker-mutator/core": "npm:10.0.0"
     "@stryker-mutator/jest-runner": "npm:10.0.0"
     "@stryker-mutator/mocha-runner": "npm:10.0.0"

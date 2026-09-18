@@ -1,73 +1,20 @@
 import { spawn } from 'node:child_process';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { relative, resolve } from 'node:path';
+import { constants } from 'node:os';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { packageDirectory, packageRunners, planDiff, UsageError } from './mutation-diff.mjs';
-import { buildSummary, summaryExitCode } from './mutation-summary.mjs';
+import { planDiff, UsageError } from './mutation-diff.mjs';
 
-const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
-const usage = `Usage:
-  yarn test:mutation <package-path> [--min-score <0-100>] [Stryker options]
-  yarn test:mutation --diff [--base <ref>] [--plan] [--min-score <0-100>] [Stryker options]
+const root = fileURLToPath(new URL('../', import.meta.url));
+const usage = 'Usage: yarn test:mutation --diff';
 
-Examples:
-  yarn test:mutation packages/tools --mutate src/censorUrl.ts
-  yarn test:mutation --diff --base origin/develop --plan
-
---plan prints targets without running tests. --min-score enables an optional gate.
-Jest and Mocha suites are discovered automatically. --testRunner filters to jest or mocha.
---testFiles limits the test suite.
-Diff mode compares the working tree with the merge base, including untracked files.
-`;
-
-function parseArgs(args) {
-	const result = { options: [], minScore: null, base: 'origin/develop' };
-	if (args[0] && !args[0].startsWith('-')) result.target = args.shift();
-	for (let i = 0; i < args.length; i++) {
-		const [flag, inline] = args[i].split(/=(.*)/s);
-		if (flag === '--diff') result.diff = true;
-		else if (flag === '--plan') result.plan = true;
-		else if (flag === '--base' || flag === '--min-score' || flag === '--testRunner') {
-			const value = inline ?? args[++i];
-			if (!value || value.startsWith('--')) throw new UsageError(`${flag} requires a value.`);
-			if (flag === '--base') result.base = value;
-			else if (flag === '--testRunner') {
-				if (!['jest', 'mocha'].includes(value)) throw new UsageError('--testRunner must be jest or mocha.');
-				result.testRunner = value;
-			} else {
-				result.minScore = Number(value);
-				if (!Number.isFinite(result.minScore) || result.minScore < 0 || result.minScore > 100) {
-					throw new UsageError('--min-score must be a number from 0 to 100.');
-				}
-			}
-		} else result.options.push(args[i]);
-	}
-	if (result.diff && result.target) throw new UsageError('--diff cannot be combined with a package target.');
-	if (!result.diff && (result.plan || args.some((arg) => /^--base(?:=|$)/.test(arg))))
-		throw new UsageError('--plan and --base require --diff.');
-	if (result.diff && result.options.some((option) => /^(?:-m|--mutate)(?:=|$)/.test(option))) {
-		throw new UsageError('--diff selects mutation targets; do not combine it with --mutate.');
-	}
-	if (result.options.some((option) => /^--inPlace(?:=|$)/.test(option)))
-		throw new UsageError('This command uses sandboxed mutation testing.');
-	if (result.minScore !== null && result.options.includes('--dryRunOnly'))
-		throw new UsageError('--min-score cannot be used with --dryRunOnly.');
-	return result;
-}
-
-async function runJob(job, options, minScore) {
-	const { testRunner } = job;
-	const directory = packageDirectory(root, job.packagePath, testRunner);
-	const reports = resolve(directory, 'reports/mutation', testRunner);
-	await mkdir(reports, { recursive: true });
-	// Never let an old report make a crashed or dry-only run look successful.
-	await Promise.all(['mutation.json', 'mutation.html', 'summary.json'].map((file) => rm(resolve(reports, file), { force: true })));
-	const args = [fileURLToPath(new URL('./mutation-worker.mjs', import.meta.url)), ...options, '--testRunner', testRunner];
-	if (job.targets) args.push('--mutate', job.targets.join(','));
-	const outcome = await new Promise((done) => {
-		const child = spawn(process.execPath, args, { cwd: directory, stdio: ['inherit', 'inherit', 'inherit', 'ipc'] });
-		let state = {};
+async function runJob({ packagePath, testRunner, targets }) {
+	console.log(`\n${packagePath} (${testRunner}): ${targets.join(', ')}`);
+	return new Promise((done) => {
+		const child = spawn(process.execPath, [fileURLToPath(new URL('./mutation-worker.mjs', import.meta.url)), testRunner, ...targets], {
+			cwd: resolve(root, packagePath),
+			stdio: 'inherit',
+		});
 		let interrupted;
 		const interrupt = (signal) => {
 			interrupted = signal;
@@ -77,81 +24,25 @@ async function runJob(job, options, minScore) {
 		const onTerm = () => interrupt('SIGTERM');
 		process.on('SIGINT', onInt);
 		process.on('SIGTERM', onTerm);
-		child.on('message', (message) => {
-			state = message;
-		});
-		child.on('error', (error) => {
-			state.error = error.message;
-		});
-		child.on('close', (exitCode, signal) => {
+		child.on('error', (error) => console.error(error.message));
+		child.on('close', (code, signal) => {
 			process.off('SIGINT', onInt);
 			process.off('SIGTERM', onTerm);
-			done({ ...state, exitCode, signal: interrupted ?? signal });
+			const cancelled = interrupted ?? signal;
+			done(cancelled ? 128 + constants.signals[cancelled] : (code ?? 3));
 		});
 	});
-	let report = null;
-	try {
-		report = JSON.parse(await readFile(resolve(reports, 'mutation.json'), 'utf8'));
-	} catch (error) {
-		if (error.code !== 'ENOENT') outcome.error = `Cannot read mutation report: ${error.message}`;
-	}
-	const summary = buildSummary(report, {
-		...outcome,
-		packagePath: job.packagePath,
-		targets: job.targets ?? outcome.targets,
-		minScore,
-		testRunner,
-	});
-	await writeFile(resolve(reports, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
-	console.log(
-		`\n${job.packagePath} (${testRunner}): ${summary.status}; score ${summary.score === null ? 'n/a' : `${summary.score.toFixed(2)}%`}; gate ${summary.gate}`,
-	);
-	console.log(`Summary: ${relative(root, resolve(reports, 'summary.json'))}`);
-	return summaryExitCode(summary);
 }
 
 async function main() {
 	const args = process.argv.slice(2);
-	if (!args.length) {
-		console.log(usage);
-		return 2;
-	}
-	const { target, diff, base, plan, options, minScore, testRunner } = parseArgs(args);
-	const version = options.some((option) => ['--version', '-V'].includes(option));
-	// Preserve access to Stryker's own CLI help and version without deleting reports.
-	if (version || options.some((option) => ['--help', '-h'].includes(option))) {
-		if (!target && !version) {
-			console.log(usage);
-			return 0;
-		}
-		const child = spawn(process.execPath, [fileURLToPath(new URL('./mutation-worker.mjs', import.meta.url)), ...options], {
-			cwd: target ? packageDirectory(root, target, testRunner) : root,
-			stdio: 'inherit',
-		});
-		return new Promise((done) => {
-			child.on('error', () => done(3));
-			child.on('close', (code) => done(code ?? 3));
-		});
-	}
-	if (!diff && !target) throw new UsageError(usage);
-	const selection = diff
-		? planDiff(root, base, testRunner)
-		: {
-				jobs: packageRunners(packageDirectory(root, target, testRunner), testRunner).map((runner) => ({
-					packagePath: target,
-					testRunner: runner,
-				})),
-				skipped: [],
-			};
-	if (plan) {
-		console.log(JSON.stringify(selection, null, 2));
-		return 0;
-	}
-	for (const { file, reason } of selection.skipped) console.log(`Skipped ${file}: ${reason}`);
-	if (!selection.jobs.length) console.log('No eligible changed lines to mutation-test. No mutation score was measured.');
+	if (args.length !== 1 || args[0] !== '--diff') throw new UsageError(usage);
+	const { jobs, skipped } = planDiff(root);
+	for (const { file, reason } of skipped) console.log(`Skipped ${file}: ${reason}`);
+	if (!jobs.length) console.log('No changed production lines to mutation-test.');
 	let exitCode = 0;
-	for (const job of selection.jobs) {
-		const code = await runJob(job, options, minScore);
+	for (const job of jobs) {
+		const code = await runJob(job);
 		if (code >= 128) return code;
 		exitCode = Math.max(exitCode, code);
 	}

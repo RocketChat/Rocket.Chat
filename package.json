@@ -31,7 +31,7 @@
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"test:mutation": "node scripts/run-mutation-tests.mjs",
-		"test:mutation:tooling": "node --test scripts/run-mutation-tests.test.mjs scripts/mutation-health.test.mjs",
+		"test:mutation:tooling": "node --test scripts/run-mutation-tests.test.mjs scripts/mutation-diff.test.mjs",
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
@@ -212,7 +212,6 @@
 	"devDependencies": {
 		"@changesets/cli": "^2.27.12",
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@stryker-mutator/api": "10.0.0",
 		"@stryker-mutator/core": "10.0.0",
 		"@stryker-mutator/jest-runner": "10.0.0",
 		"@stryker-mutator/mocha-runner": "10.0.0",

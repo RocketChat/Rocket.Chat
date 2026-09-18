@@ -1,29 +1,15 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs';
-import { dirname, isAbsolute, matchesGlob, relative, resolve, sep } from 'node:path';
+import { dirname, matchesGlob, relative, resolve, sep } from 'node:path';
 
 export class UsageError extends Error {}
 const slash = (path) => path.split(sep).join('/');
 const runnerConfigs = { jest: 'jest.config.ts', mocha: '.mocharc.js' };
 
-export function packageRunners(directory, testRunner) {
+function packageRunners(directory) {
 	return Object.entries(runnerConfigs)
-		.filter(([runner, config]) => (!testRunner || runner === testRunner) && existsSync(resolve(directory, config)))
+		.filter(([, config]) => existsSync(resolve(directory, config)))
 		.map(([runner]) => runner);
-}
-
-export function packageDirectory(root, target, testRunner) {
-	const directory = resolve(root, target);
-	const path = relative(root, directory);
-	if (!path || path === '..' || path.startsWith(`..${sep}`) || isAbsolute(path) || !existsSync(resolve(directory, 'package.json'))) {
-		throw new UsageError(`Expected a package directory inside this repository: ${target}`);
-	}
-	const real = relative(realpathSync(root), realpathSync(directory));
-	if (real === '..' || real.startsWith(`..${sep}`) || isAbsolute(real))
-		throw new UsageError(`Package resolves outside this repository: ${target}`);
-	if (!packageRunners(directory, testRunner).length)
-		throw new UsageError(`No ${testRunner ? runnerConfigs[testRunner] : 'jest.config.ts or .mocharc.js'} found in ${target}.`);
-	return directory;
 }
 
 export function changedRanges(diff) {
@@ -50,7 +36,7 @@ function exclusion(file) {
 	return NON_SOURCE.some((pattern) => pattern.test(file)) ? 'test, declaration, config, or excluded directory' : null;
 }
 
-export function planDiff(root, base = 'origin/develop', testRunner) {
+export function planDiff(root, base = 'origin/develop') {
 	root = realpathSync(root);
 	const git = (...args) =>
 		execFileSync('git', args, {
@@ -65,7 +51,7 @@ export function planDiff(root, base = 'origin/develop', testRunner) {
 		const baseCommit = git('rev-parse', '--verify', '--end-of-options', `${base}^{commit}`).trim();
 		mergeBase = git('merge-base', baseCommit, 'HEAD').trim();
 	} catch {
-		throw new UsageError(`Cannot find a merge base with ${base}. Fetch the base branch or select an available ref with --base.`);
+		throw new UsageError(`Cannot find a merge base with ${base}. Run git fetch origin develop first.`);
 	}
 	const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
 	const workspaces = manifest.workspaces?.packages ?? manifest.workspaces ?? [];
@@ -98,9 +84,9 @@ export function planDiff(root, base = 'origin/develop', testRunner) {
 			skip('outside a root workspace package');
 			continue;
 		}
-		const runners = packageRunners(directory, testRunner);
+		const runners = packageRunners(directory);
 		if (!runners.length) {
-			skip(`package has no ${testRunner ? runnerConfigs[testRunner] : 'jest.config.ts or .mocharc.js'}`);
+			skip('package has no jest.config.ts or .mocharc.js');
 			continue;
 		}
 		const target = slash(relative(directory, absolute));

@@ -5,8 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
 
-import { changedRanges, packageDirectory, planDiff } from './mutation-diff.mjs';
-import { buildSummary, summaryExitCode } from './mutation-summary.mjs';
+import { changedRanges, planDiff } from './mutation-diff.mjs';
 
 function repository(t) {
 	const root = mkdtempSync(resolve(tmpdir(), 'mutation-diff-'));
@@ -102,7 +101,7 @@ test('source filtering preserves production names while excluding explicit test 
 	assert.deepEqual(skipped.map(({ file }) => file).sort(), excluded.map((file) => `packages/first/${file}`).sort());
 });
 
-test('diff discovers both runners and allows filtering to either one', (t) => {
+test('diff discovers Jest, Mocha, and mixed packages', (t) => {
 	const { root, write } = repository(t);
 	write('ee/packages/second/.mocharc.js', 'module.exports = {};');
 	write('packages/mocha-only/package.json', '{}');
@@ -116,16 +115,6 @@ test('diff discovers both runners and allows filtering to either one', (t) => {
 		{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/new.ts'] },
 		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/new.ts'] },
 	]);
-	assert.deepEqual(planDiff(root, 'base', 'mocha').jobs, [
-		{ packagePath: 'ee/packages/second', testRunner: 'mocha', targets: ['src/new.ts'] },
-		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/new.ts'] },
-	]);
-	assert.deepEqual(
-		planDiff(root, 'base', 'jest').jobs.map(({ packagePath }) => packagePath),
-		['ee/packages/second', 'packages/first'],
-	);
-	assert.equal(packageDirectory(root, 'packages/mocha-only', 'mocha'), resolve(root, 'packages/mocha-only'));
-	assert.throws(() => packageDirectory(root, 'packages/first', 'mocha'), /No .mocharc.js/);
 });
 
 test('comparison excludes independent base-branch changes', (t) => {
@@ -148,82 +137,8 @@ test('invalid bases and filenames fail explicitly; empty changes produce no jobs
 	assert.throws(() => planDiff(root, 'missing-base'), /Cannot find a merge base/);
 	write('packages/first/src/a,b.ts', 'export const comma = 1;');
 	assert.throws(() => planDiff(root, 'base'), /Cannot safely express/);
-	assert.throws(() => packageDirectory(root, '..'), /inside this repository/);
 });
 
 test('hunk selection handles zero-length deletions, omitted counts, and multiple ranges', () => {
 	assert.deepEqual(changedRanges('@@ -1 +1 @@\n-a\n+b\n@@ -5,2 +5,0 @@\n-x\n-y\n@@ -10,0 +9,3 @@\n+a\n+b\n+c'), ['1-1', '9-11']);
-});
-
-const location = { start: { line: 1, column: 1 }, end: { line: 1, column: 2 } };
-function reportFor(statuses) {
-	return {
-		testFiles: { 'src/a.spec.ts': { tests: [{ id: 'test-1', name: 'checks a boundary' }] } },
-		files: {
-			'src/a.ts': {
-				source: 'a > 0',
-				mutants: statuses.map((status, index) => ({
-					id: String(index),
-					status,
-					location,
-					mutatorName: 'EqualityOperator',
-					replacement: 'b',
-					coveredBy: ['test-1'],
-					statusReason: 'Equivalent behavior',
-				})),
-			},
-		},
-	};
-}
-const complete = { packagePath: 'packages/example', completion: 'complete', exitCode: 0 };
-
-test('summary identifies surviving behavior and covering tests, excluding ignored and invalid mutants from score', () => {
-	const summary = buildSummary(reportFor(['Killed', 'Timeout', 'Survived', 'NoCoverage', 'Ignored', 'CompileError']), complete);
-	assert.equal(summary.score, 50);
-	assert.equal(summary.status, 'complete');
-	assert.equal(summaryExitCode(summary), 0);
-	assert.equal(summary.survivors.length, 2);
-	assert.equal(summary.survivors[0].original, 'a');
-	assert.equal(summary.survivors[0].replacement, 'b');
-	assert.equal(summary.survivors[0].coveringTests[0].name, 'checks a boundary');
-	assert.equal(summary.ignored[0].reason, 'Equivalent behavior');
-});
-
-test('summary extracts single-line and multiline source using one-based report columns', () => {
-	const report = reportFor(['Survived']);
-	const file = report.files['src/a.ts'];
-	file.source = 'return true;';
-	file.mutants[0].location = { start: { line: 1, column: 8 }, end: { line: 1, column: 12 } };
-	assert.equal(buildSummary(report, complete).survivors[0].original, 'true');
-	file.source = 'return [\n  first,\n  second\n];';
-	file.mutants[0].location = { start: { line: 1, column: 8 }, end: { line: 4, column: 2 } };
-	assert.equal(buildSummary(report, complete).survivors[0].original, '[\n  first,\n  second\n]');
-});
-
-test('a threshold failure is distinct from failed, interrupted, incomplete and dry-only runs', () => {
-	assert.equal(summaryExitCode(buildSummary(reportFor(['Killed', 'Survived']), { ...complete, minScore: 80 })), 1);
-	assert.equal(summaryExitCode(buildSummary(reportFor(['Killed']), { ...complete, minScore: 100 })), 0);
-	for (const overrides of [{ completion: 'failed', exitCode: 3 }, { completion: undefined }, { exitCode: 1 }]) {
-		const summary = buildSummary(reportFor(['Killed']), { ...complete, ...overrides, minScore: 0 });
-		assert.equal(summary.status, 'incomplete');
-		assert.equal(summaryExitCode(summary), 3);
-	}
-	for (const status of ['Pending', 'RuntimeError', 'Unknown']) {
-		assert.equal(summaryExitCode(buildSummary(reportFor([status]), complete)), 3);
-	}
-	assert.equal(summaryExitCode(buildSummary(null, { ...complete, completion: 'failed', exitCode: 3 })), 3);
-	assert.equal(summaryExitCode(buildSummary(null, { ...complete, signal: 'SIGTERM' })), 143);
-	const dry = buildSummary(null, { ...complete, completion: 'dry-run' });
-	assert.equal(dry.status, 'dry-run');
-	assert.equal(dry.score, null);
-	assert.equal(summaryExitCode(dry), 0);
-});
-
-test('an empty or fully ignored selection has no score and cannot satisfy an enabled gate', () => {
-	for (const statuses of [[], ['Ignored'], ['CompileError']]) {
-		const summary = buildSummary(reportFor(statuses), { ...complete, minScore: 0 });
-		assert.equal(summary.status, 'no-mutants');
-		assert.equal(summary.score, null);
-		assert.equal(summaryExitCode(summary), 1);
-	}
 });
