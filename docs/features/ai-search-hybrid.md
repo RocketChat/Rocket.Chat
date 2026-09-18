@@ -10,7 +10,7 @@ evicted half the workloads" even though the two share almost no words.
 Meaning-based search has the opposite weakness. Embeddings deliberately discard surface form, so they
 are weakest exactly where the surface form *is* the question: an error code, a ticket id, a CVE, a
 function name. Someone pasting `E11000 duplicate key error` into search is being as specific as a person
-can be, and meaning-based search is the worst-equipped mode to honour it.
+can be, and meaning-based search is the worst-equipped mode to honor it.
 
 **Hybrid search runs both and merges the results.** One retriever looks for meaning, the other for exact
 terms, and an admin decides how much say each one gets. Optionally, newer messages can be nudged up the
@@ -32,11 +32,10 @@ list.
    with room, author and timestamp, loads more on demand, and — when an LLM provider is configured —
    generates a written answer from the messages it found, with those messages cited as sources below it.
 
-Two things are deliberately invisible: nobody chooses a "search mode", and results never mix in messages
-from rooms the person is not in — every result is re-checked against their own room access before it is
-shown.
+Results never include messages from rooms the person is not in: every result is re-checked against their
+own room access before it is shown.
 
-You may notice a match percentage on some results and not others. That is intentional; see
+A match percentage appears on some results and not others, depending on how the list was ranked — see
 [Score conventions](#score-conventions).
 
 ## How the ranking works
@@ -82,9 +81,11 @@ Two consequences worth knowing:
   no wasted work.
 
 After merging, the optional recency boost multiplies each result's score by a little extra for being
-recent — most for something posted today, tapering off as messages age. Because it is a multiplier on
-relevance rather than a sort by date, it reshuffles results that were already close together and cannot
-drag an unrelated-but-recent message to the top.
+recent — most for something posted today, tapering off as messages age. It is a multiplier on relevance
+rather than a sort by date, so at low settings it mostly breaks ties between results that were already
+close. The reach grows with the setting, though: merged scores sit close together by design, so a high
+recency weight can lift a recent but weaker match above an older, stronger one. The boost is off by
+default for that reason.
 
 Finally, every surviving message is looked up in the database and checked against the reader's room
 subscriptions, and the requested page is taken from what is left.
@@ -106,16 +107,15 @@ the request body:
 
 Which of them runs is decided by a single setting, `AI_Intelligent_Search_Semantic_Weight` (0-100):
 
-| Balance | Behaviour |
+| Balance | Behavior |
 | --- | --- |
 | `0` | keyword only - the semantic retriever is never called |
 | `1`-`99` | both in parallel, fused with weighted RRF |
 | `100` | semantic only - the keyword retriever is never called |
 
-There is deliberately no separate "search mode" setting: the balance already expresses every mode, and a
-second control would only let the two disagree. A caller can pin an endpoint of the range per request
-with the `searchType` query parameter on `GET /api/v1/ai.search` (`keyword` maps to 0, `semantic` to 100,
-`hybrid` to whatever the setting says).
+The balance is the only retrieval control; there is no separate search-mode setting. A caller can pin an
+endpoint of the range per request with the `searchType` query parameter on `GET /api/v1/ai.search`
+(`keyword` maps to 0, `semantic` to 100, `hybrid` to whatever the setting says).
 
 ## Score conventions
 
@@ -165,7 +165,7 @@ The two branches are issued with `Promise.allSettled`, not `Promise.all`: if one
 than returning nothing. A double failure rejects the service call. The existing REST handler logs
 that error and returns an empty result list.
 
-`C` and the candidate pool size are implementation parameters and are intentionally not admin settings.
+`C` and the candidate pool size are fixed internally and are not admin settings.
 
 ## The similarity guardrail
 
@@ -173,10 +173,10 @@ that error and returns an empty result list.
 pipeline request's distance threshold and again after retrieval. A keyword hit is never discarded for
 being semantically unremarkable (for example, exact error codes, ticket ids, and function names).
 
-It defaults to `0` (disabled) and should stay that way for most workspaces: a fixed embedding threshold
-is brittle across embedding models, query length, language and corpus, whereas ranking is stable. Treat
-it as a garbage-result guardrail, not a quality control. If the pipeline omits all similarity metadata,
-unscored semantic candidates are preserved for compatibility.
+It defaults to `0` (disabled). A fixed similarity threshold behaves inconsistently across embedding
+models, query length, language and corpus, so it suits filtering out obviously poor matches rather than
+tuning result quality. If the pipeline omits all similarity metadata, unscored semantic candidates are
+preserved for compatibility.
 
 For an enabled minimum `p`, eligibility is `similarity >= p/100`, equivalently `distance <= 1-p/100`.
 No candidate-score rounding occurs before that comparison. A minimum of zero skips the local guardrail;
