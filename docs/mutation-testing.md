@@ -1,72 +1,97 @@
 # Local mutation testing
 
-StrykerJS introduces small changes to production code and runs the existing Jest
-and Mocha unit tests to check whether they detect each change. Use it to investigate missing
-assertions and boundary cases when working on a package's tests.
-
-## Run
-
-Install dependencies with `yarn install` and build the shared Jest presets if
-needed:
-
-```sh
-yarn workspace @rocket.chat/jest-presets build
-```
-
-Run the ordinary unit tests first. Then, from the repository root, assess changed
-lines across both runners with one command:
+StrykerJS makes small changes to production code and runs existing Jest and Mocha
+unit tests to check whether they detect each change. The main command is:
 
 ```sh
 yarn test:mutation --diff
 ```
 
+It assesses changed production lines, including uncommitted work. Mutation testing
+is opt-in and separate from `testunit` and CI: you can run it before committing
+or pushing, without waiting for CI.
+
+## What mutation testing tells you
+
+Coverage shows whether tests execute code. Mutation testing checks whether their
+assertions detect changes in behavior. Each generated change is called a **mutant**.
+
+Consider a hypothetical weak test for Rocket.Chat's `censorUrl`:
+
+```ts
+const result = censorUrl('https://example.com/?access_token=secret');
+expect(typeof result).toBe('string');
+```
+
+This executes the redaction code but would pass if the secret remained in the URL.
+A mutant that removes the redaction could survive. Checking the expected output
+would detect that change:
+
+```ts
+expect(censorUrl('https://example.com/?access_token=secret')).toBe('https://example.com/?access_token=*Redacted*');
+```
+
+The existing [`censorUrl` tests](../packages/tools/src/censorUrl.spec.ts) already
+check redacted output; this example illustrates why executing a line is not enough.
+
+During a run, Stryker creates a sandbox and checks that the baseline tests pass.
+It then activates mutations, such as changed comparisons or removed statements,
+and reruns tests using per-test coverage where possible. One expression can
+produce several mutants. The wrapper writes reports and optionally checks a
+minimum score. Mutations stay in the sandbox; `--inPlace` is unsupported.
+
+## Quick start
+
+Use the Node and Yarn versions supported by the root `package.json`. From the
+repository root:
+
+```sh
+yarn install
+yarn workspace @rocket.chat/jest-presets build
+```
+
+Build any other workspace dependencies required by the selected package and get
+its ordinary unit tests passing. Preview the selection, then run it:
+
+```sh
+yarn test:mutation --diff --plan
+yarn test:mutation --diff
+```
+
 The command discovers `jest.config.ts` and `.mocharc.js` in affected workspace
-packages. If both exist, it runs both suites separately against the same changed
-lines. Add `--plan` to preview the package, runner, and targets without running tests.
+packages. If both exist, it runs both suites separately against the selected lines.
+Use `--testRunner jest` or `--testRunner mocha` to select one runner.
 
-For a focused run, select a package directory and optionally a production file:
+Open the package's `reports/mutation/<runner>/mutation.html` or read `summary.json`.
+Review survivors, improve the relevant tests, and repeat the same selection.
+For documentation-only or test-only changes, use a focused run to select production
+code explicitly.
+
+## Choose files and tests
+
+The first argument is a package directory containing `package.json` and a supported
+runner configuration. Mutation patterns and test paths are relative to that package:
 
 ```sh
+# One production file.
 yarn test:mutation packages/tools --mutate src/censorUrl.ts
-```
 
-The package and file above are examples. Manual package runs also discover both
-runners; use `--testRunner jest` or `--testRunner mocha` to select just one.
-The package must have a `package.json` and at least one supported runner config.
-Any workspace dependencies needed by its tests must already be built.
-For Jest, the shared configuration resolves the environment and
-module aliases before creating the sandbox: client presets retain `jsdom`,
-external aliases retain their repository paths, and local aliases point to the
-mutated copies.
-
-Without `--mutate`, Stryker uses its default source patterns under the selected
-package's `src` and `lib` directories, excluding test files. Start with a single
-file to assess runtime. Mutation patterns are relative to the package, not the
-repository root. Quote globs to prevent shell expansion:
-
-```sh
+# Only a line range, or several files in one run.
+yarn test:mutation packages/tools --mutate 'src/censorUrl.ts:30-36'
 yarn test:mutation packages/tools --mutate 'src/censorUrl.ts,src/getLoginExpiration.ts'
+
+# Wrapper help and Stryker options.
 yarn test:mutation --help
+yarn test:mutation packages/tools --help
 ```
 
-Arguments after the package path are forwarded to Stryker, except `--min-score`; use
-`yarn test:mutation packages/tools --help` for its available options. An explicit
-`--mutate` overrides the default patterns, so select production files only.
-An empty selection fails instead of reporting a successful run with no mutation
-targets. This check uses Stryker's selected files, including exclusions and line
-ranges. The wrapper retains the JSON and `mutation-targets` reporters when
-overriding `--reporters`, because summaries and empty-selection checks need them.
+Quote globs to prevent shell expansion. Without `--mutate`, Stryker uses its default
+source patterns under `src` and `lib`, excluding tests. An explicit `--mutate`
+overrides those defaults, so select production files only. Empty selections fail.
+Line ranges restrict mutations, not which tests may detect them.
 
-Multi-project Jest configurations (such as Meteor's client/server Jest projects)
-require a dedicated setup and fail explicitly. Other discovered suites, including
-Mocha in the same package, still run; the overall command reports the failure.
-Playwright suites are not supported.
-
-### Mocha unit tests
-
-Mocha suites are discovered automatically from `.mocharc.js`. For a focused
-Mocha-only run, use `--testRunner mocha`. For example, select one Meteor production
-file and its existing unit tests:
+Manual package runs also discover both runners. Jest retains the package's resolved
+presets, environments, and module aliases. For a focused Meteor Mocha unit suite:
 
 ```sh
 yarn test:mutation apps/meteor --testRunner mocha \
@@ -74,177 +99,164 @@ yarn test:mutation apps/meteor --testRunner mocha \
   --testFiles server/lib/callbacks.spec.ts
 ```
 
-`--testFiles` accepts comma-separated paths or quoted globs relative to the
-selected package. It replaces the configured test selection while retaining the
-Mocha setup, including Meteor's `tsx` loader and Chai plugins. Without it, Mocha
-runs the tests selected by `.mocharc.js`. Start with a focused suite, and ensure
-its ordinary tests pass first.
+For Mocha, `--testFiles` accepts comma-separated paths or quoted globs and replaces
+the configured test selection while preserving setup, including Meteor's `tsx`
+loader and Chai plugins. Without it, Mocha uses the tests selected by `.mocharc.js`.
 
-Mocha uses the same sandbox, reports, summaries, and optional `--min-score` gate.
-Meteor's build cache, coverage output, and asset directory symlinks are excluded
-from the sandbox inputs. Type-check preprocessing is disabled for Mocha because
-the unit suite uses `tsx` to transpile TypeScript without type checking.
+### Supported suites
 
-This supports unit tests that load production code into the test process.
-The API integration suites use separate `.mocharc.api*.js` configurations and a
-running server; this command does not arrange for that server to run mutated code.
+- Single-project Jest configurations and Mocha unit tests that load production
+  code into the test process are supported.
+- Multi-project Jest configurations, including Meteor's client/server projects,
+  fail explicitly. Other discovered jobs still run, including Mocha in the same
+  package, but the overall command reports the failure.
+- Vitest and Playwright are unsupported. API integration suites using a separate
+  running server are also outside this setup: it does not run that server with
+  mutated code.
 
 ## Test changed lines
 
-Preview the selection, then run it:
+`--diff` compares the current working tree with the merge base of `HEAD` and
+`origin/develop`. It includes committed branch changes, staged and unstaged edits,
+and non-ignored untracked files. Use `--base` to select another ref, such as the
+parent branch when working on a stack:
 
 ```sh
 yarn test:mutation --diff --base origin/develop --plan
-yarn test:mutation --diff --base origin/develop
+yarn test:mutation --diff --base origin/develop --testRunner mocha
 ```
 
-`--base` defaults to `origin/develop`. For a stacked branch, select its parent
-branch instead. The command resolves the merge base with `HEAD` and compares
-that baseline with the current working tree. This includes committed branch
-changes, staged and unstaged edits, and non-ignored untracked source files.
-It does not fetch the base automatically; missing refs fail with an explanation.
+The base is not fetched automatically. `--plan` prints JSON with the base, merge
+base, package/runner jobs, targets, and skipped paths. It does not run tests or
+write reports, and finding a configuration does not guarantee that it can run.
 
-The planner discovers packages using the root `package.json` workspace patterns
-and groups all changed ranges into one Stryker invocation per package and runner.
-Runs execute sequentially, with the existing two-worker setting inside each run. Normal
-Stryker options, such as `--concurrency 1`, can follow `--diff`. `--mutate` cannot
-be combined with `--diff`, because the planner owns the mutation selection.
-`--testRunner` is an optional filter: `--diff --testRunner mocha` runs only Mocha
-jobs, while omitting it runs both discovered runners. The planner does not guess
-which framework covers each production file; a package with both configurations
-gets a separate assessment from each suite.
+Selection follows these rules:
 
-`--plan` prints JSON containing the base, merge base, jobs (including `testRunner`),
-and skipped paths without running tests or writing mutation reports. It checks
-file and configuration-file presence, not whether each configuration or its
-dependencies can run.
+- Added and modified JavaScript/TypeScript lines are selected. Untracked files
+  are selected in full; renames are treated as deletion plus addition.
+- Deleted files and deletion-only hunks are skipped because they have no new
+  lines to mutate. This mode does not assess whether tests detect deletions.
+- Declarations, `*.test.*`, `*.tests.*`, `*.spec.*`, `*.stories.*`, `*.config.*`,
+  `.mocharc.*`, and directories named `__tests__`, `__mocks__`, `test`, `tests`,
+  `dist`, `node_modules`, `coverage`, or `migrations` are excluded. Production
+  names such as `setup.ts`, `config.ts`, and `reports/` remain eligible.
+- Files outside root workspaces, symlinks, and packages without a matching runner
+  configuration are skipped with a reason. Filenames that cannot safely become
+  mutation patterns fail explicitly.
 
-Selection rules:
+All selected ranges are batched into one job per package and runner. Jobs run
+sequentially, with two Stryker workers per job by default. Batching avoids a separate
+baseline run for every file, while line selection reduces the number of mutants.
+The baseline suite still has to run, so a small diff can remain expensive.
 
-- Added and modified lines in JavaScript/TypeScript files are selected. New
-  untracked files are selected in full. Renames are treated as deletion plus
-  addition, checking the complete destination file in its new package context.
-- Deleted files and deletion-only hunks have no new lines to mutate and are
-  reported as skipped. This mode does not assess whether tests detect deletions.
-- The exclusion list covers type declarations, `*.test.*`, `*.tests.*`, `*.spec.*`,
-  `*.stories.*`, `*.config.*`, `.mocharc.*`, and directories
-  named `__tests__`, `__mocks__`, `test`, `tests`, `dist`, `node_modules`, `coverage`,
-  or `migrations`. Generic production names such as `setup.ts`, `config.ts`, and
-  `reports/` remain eligible.
-- Files outside root workspaces and packages without a matching runner config
-  (`jest.config.ts` or `.mocharc.js`) are
-  skipped with a reason. Symlinks are skipped. Filenames that cannot be safely
-  represented as mutation patterns fail explicitly.
-- A selected multi-project Jest package still fails explicitly, including
-  Meteor. Other jobs, including Mocha in that package, can finish and retain
-  their own summaries.
-
-A run with no eligible changes prints that no mutation score was measured.
-Test-only changes do not select production code automatically; use the manual
-package/file command to assess the affected behavior in that case.
+Normal Stryker options, such as `--concurrency 1`, can follow `--diff`. Do not combine
+`--diff` with `--mutate`. The planner discovers configurations; it does not infer
+which framework covers a file. Each runner produces an independent assessment.
+Test-only changes require a manual production-file selection.
 
 ## Review results
 
-Reports are written inside the selected package under `reports/mutation/jest/`
-and `reports/mutation/mocha/`, depending on the runner:
+Reports live in the selected package's `reports/mutation/jest/` or
+`reports/mutation/mocha/` directory:
 
-- `mutation.html`: open in a browser to inspect mutations.
+- `mutation.html`: a browsable view of the mutations.
 - `mutation.json`: the full Stryker report.
-- `summary.json`: compact counts, score, run status, test runner, selected
-  targets (or `null` for default selection), survivors and covering test names,
-  and ignored mutants with their supplied reasons.
+- `summary.json`: counts, score, status, runner, targets, surviving mutations,
+  covering tests, and ignored mutations with their supplied reasons.
 
-Each job replaces only that package's reports for its runner. Old reports in
-that runner's directory are removed before starting, so failed runs cannot reuse
-a previous successful result or erase another runner's results. The older flat
-report paths under `reports/mutation/` are no longer updated.
-Run only one mutation command per package at a time.
-Generated reports and temporary Stryker sandboxes are ignored by Git. Mutations
-stay in Stryker's sandbox; `--inPlace` is not supported.
+Each job clears and replaces only its own runner's reports. Failed runs cannot
+reuse that runner's old result or erase the other runner's reports. Reports and
+sandboxes are ignored by Git. Run only one mutation command per package at a time.
 
-- **Killed:** a test detected the change.
-- **Survived:** the covering tests passed despite the change; review whether a
-  meaningful assertion or test case is missing.
-- **No coverage:** no test exercised the mutation.
+| Outcome                    | Meaning                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| `Killed`                   | A test failed with the mutation active.                                                     |
+| `Survived`                 | The tests did not detect the mutation. Review assertions and boundary cases.                |
+| `NoCoverage`               | No test exercised the mutation. Check the test selection and missing cases.                 |
+| `Timeout`                  | The mutation exceeded the time limit; counted as detected. Investigate unexpected timeouts. |
+| `Ignored` / `CompileError` | Excluded from the score. Review supplied ignore reasons.                                    |
+| `RuntimeError` / `Pending` | The assessment is incomplete and cannot satisfy a score gate.                               |
 
-Compare each survivor with the intended behavior before adding a test. Some
-mutations preserve behavior and cannot be killed. After improving a test, rerun
-the same scope to check whether it catches the mutation.
+Start with `summary.json`. Its `survivors` list includes both `Survived` and
+`NoCoverage`, with locations, original source, replacements, and covering test
+metadata when available. A test may be represented only by its ID.
 
-The shared configuration uses two workers, per-test coverage, and local HTML and
-JSON reports. The score threshold is non-blocking by default. To enforce a minimum
-for every selected package and runner in an individual run:
+1. Compare `original` and `replacement`. Find a supported input for which behavior
+   differs; for a changed comparison, try the boundary value.
+2. Inspect `coveringTests` and add or improve an assertion about the intended
+   result or side effect. For `NoCoverage`, first check the selected suite.
+3. Run the ordinary test, then repeat the same mutation selection and check the
+   individual mutant's outcome.
+
+A survivor is not proof of a production bug. Some mutations preserve observable
+behavior; document that reasoning rather than adding an implementation-dependent
+assertion just to increase the score.
+
+### Score and optional gate
+
+```text
+score = 100 × (Killed + Timeout) / (Killed + Timeout + Survived + NoCoverage)
+```
+
+For example, 7 killed, 1 timed out, 1 survived, and 1 uncovered mutant yield 80%.
+With no scorable mutants, the score is `null`, not 100%. Scores describe the selected
+lines and tests, not the entire package. Small selections cause large percentage
+swings, so compare runs with the same scope and inspect individual results.
+
+Survivors do not fail a run by default. To enforce a minimum score for each job:
 
 ```sh
 yarn test:mutation --diff --min-score 80
-yarn test:mutation packages/tools --mutate src/censorUrl.ts --min-score 80
 ```
 
-The threshold is optional, not a repository-wide policy. Survivors do not fail a
-report-only run. A threshold run compares the unrounded score; it does not require
-zero survivors. Scores are assessed independently for each runner; tests from one
-runner do not count toward the other runner's score. Ignored and invalid mutants
-are excluded from the score. A run
-with no scorable mutants reports `score: null` and cannot satisfy an enabled gate.
+The gate compares the unrounded score independently for each runner; their results
+are not combined. It does not require zero survivors. Only a `complete` assessment
+can pass: `no-mutants`, `dry-run`, `incomplete`, and `failed` cannot satisfy a gate.
+`--dryRunOnly` checks the baseline without scoring and cannot accompany `--min-score`.
 
-The summary distinguishes `complete`, `no-mutants`, `dry-run`, `incomplete`, and
-`failed`. Partial results can be inspected but never satisfy a gate. Pending or
-runtime-error mutants make the assessment incomplete. `--dryRunOnly` checks the
-baseline only, produces no mutation score, and cannot be combined with
-`--min-score`.
+| Exit code     | Meaning                                                                          |
+| ------------- | -------------------------------------------------------------------------------- |
+| `0`           | Completed report-only run, passed gate, successful dry run, or no eligible jobs. |
+| `1`           | The optional score gate was not satisfied.                                       |
+| `2`           | Invalid arguments, package path, or comparison base.                             |
+| `3`           | Configuration, baseline, or Stryker failure, or an incomplete assessment.        |
+| `130` / `143` | Interrupted by SIGINT / SIGTERM.                                                 |
 
-Exit codes:
+Check the printed status as well as the exit code. A diff with no eligible jobs
+exits `0` even with `--min-score`, measures no score, and leaves existing reports
+untouched. Check `generatedAt`, `targets`, and `testRunner` before relying on a
+saved summary. Partial results can help diagnosis but never pass the gate.
 
-- `0`: completed report-only run, passed optional threshold, successful dry run,
-  or no eligible changes (check the printed status).
-- `1`: a completed mutation assessment did not satisfy the optional threshold.
-- `2`: invalid wrapper arguments, package path, or comparison base.
-- `3`: Stryker/configuration/baseline failure or incomplete assessment.
-- `130` / `143`: interrupted with SIGINT / SIGTERM.
+## Troubleshooting
 
-Mutation testing remains opt-in and separate from `testunit` and CI.
+| Symptom                                | Next step                                                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Cannot find a merge base               | Run `git fetch origin develop` or select an available ref with `--base`.                                                             |
+| No eligible changes or targets         | Inspect `--diff --plan` and skipped reasons. For manual targets, check package-relative paths and ranges.                            |
+| Missing modules or failing baseline    | Install dependencies, build required workspaces, and get ordinary tests passing. Use `--dryRunOnly` to check the mutation setup.     |
+| Meteor Jest configuration rejected     | For Mocha unit tests, select `--testRunner mocha` and the relevant `--testFiles`.                                                    |
+| Mostly `NoCoverage`                    | Check that the chosen suite exercises the selected production code.                                                                  |
+| A report exists but the command failed | Inspect `status`, `error`, and terminal output; the report may be incomplete.                                                        |
+| The run takes too long                 | Narrow `--mutate` to a file/range or scope Mocha with `--testFiles`. `--concurrency 1` reduces parallel workers, not the total work. |
+
+## Maintain the tooling
+
+After changing the wrapper, shared Jest presets, or Jest/Mocha/Stryker versions, run:
+
+```sh
+yarn test:mutation:tooling
+```
+
+These checks use temporary fixtures and Git repositories to exercise selection,
+runner setup, reports, score gates, and cancellation without changing package tests
+or production code. Shared defaults live in [`stryker.config.mjs`](../stryker.config.mjs).
+
+Keep the compatibility checks passing when upgrading: the
+[Jest helper](../scripts/mutation-jest-config.mjs) preserves preset environments
+and redirects local aliases into the sandbox. The
+[worker](../scripts/mutation-worker.mjs) records completion after reporters finish
+and maps Mocha `--testFiles` to `mochaOptions.spec` to avoid Stryker 10's static-mutant
+filtering issue.
 
 See the [StrykerJS documentation](https://stryker-mutator.io/docs/stryker-js/)
-for configuration and runner details.
-
-## Validate changes to the tooling
-
-After dependencies and the shared Jest presets are built, run
-`yarn test:mutation:tooling`. These integration checks create and remove temporary
-fixtures to verify preset environments, module aliases, Mocha TypeScript setup and test selection,
-target selection,
-report freshness, optional gates, and the multi-project restriction. Temporary
-Git repositories exercise merge-base selection, dirty/untracked files, renames,
-and multiple packages, including an end-to-end Stryker run. They do not change any
-package's production code or tests.
-
-## Upgrading Jest or Stryker
-
-Run `yarn test:mutation:tooling` whenever upgrading Jest or any
-`@stryker-mutator/*` dependency, and when changing the shared Jest presets.
-This focused check exercises the integration without running mutation testing
-across the codebase.
-
-The Jest compatibility logic lives in
-[`scripts/mutation-jest-config.mjs`](../scripts/mutation-jest-config.mjs), keeping
-`stryker.config.mjs` focused on Stryker settings. It uses Jest's `readConfigs` API
-through the selected package's `jest` / `jest-cli` dependencies. That API and
-dependency layout may change between Jest versions; investigate this helper
-first if an upgrade breaks configuration loading.
-
-The helper resolves presets before Stryker creates its sandbox because the
-coverage environment can otherwise fall back to Node when `jsdom` is inherited
-from a preset. It also preserves external module aliases while redirecting local
-aliases to the mutated copies. Keep the integration checks passing when adjusting
-these workarounds: loading the original source instead of the sandbox copy can
-produce misleading mutation results.
-
-The CLI worker uses Stryker's command-line parser with a run callback to record
-successful completion after reporters finish. Keep its callback integration
-covered when upgrading Stryker; process success alone cannot prove that a
-mutation report was produced.
-
-For Mocha, the worker maps `--testFiles` to `mochaOptions.spec`. In Stryker 10,
-the global test-file filter conflicts with the Mocha runner's test-name filter
-for static mutants. Keep the integration test covering top-level arrow-function
-mutations passing when upgrading the runner.
+for additional configuration and runner details.
