@@ -418,7 +418,7 @@
 		"@types/underscore": "^1.13.0",
 		"@types/xml-encryption": "~1.2.4",
 		"autoprefixer": "^10.5.4",
-		"babel-loader": "~10.0.0",
+		"babel-loader": "~10.1.1",
 		"babel-plugin-array-includes": "^2.0.3",
 		"babel-plugin-istanbul": "~7.0.1",
 		"chai": "^4.5.0",

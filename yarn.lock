@@ -9887,7 +9887,7 @@ __metadata:
     ajv: "npm:^8.20.0"
     ajv-formats: "npm:^3.0.1"
     autoprefixer: "npm:^10.5.4"
-    babel-loader: "npm:~10.0.0"
+    babel-loader: "npm:~10.1.1"
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^6.11.0"
     css-vars-ponyfill: "npm:^2.4.9"
@@ -10258,7 +10258,7 @@ __metadata:
     archiver: "npm:^7.0.1"
     atlassian-crowd-patched: "npm:^0.5.1"
     autoprefixer: "npm:^10.5.4"
-    babel-loader: "npm:~10.0.0"
+    babel-loader: "npm:~10.1.1"
     babel-plugin-array-includes: "npm:^2.0.3"
     babel-plugin-istanbul: "npm:~7.0.1"
     bad-words: "npm:^3.0.4"
@@ -17587,15 +17587,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-loader@npm:~10.0.0":
-  version: 10.0.0
-  resolution: "babel-loader@npm:10.0.0"
+"babel-loader@npm:~10.1.1":
+  version: 10.1.1
+  resolution: "babel-loader@npm:10.1.1"
   dependencies:
     find-up: "npm:^5.0.0"
   peerDependencies:
-    "@babel/core": ^7.12.0
+    "@babel/core": ^7.12.0 || ^8.0.0-beta.1
+    "@rspack/core": ^1.0.0 || ^2.0.0-0
     webpack: ">=5.61.0"
-  checksum: 10/f22dc803e38a6b29cc61fbc3482f1f42a8787df2a43706dc937d328103ba6b947a223f67706b07af765d415664ad56e9fed00f85b524fe223f3ac3f00b03770b
+  peerDependenciesMeta:
+    "@rspack/core":
+      optional: true
+    webpack:
+      optional: true
+  checksum: 10/4169d55704e7b5204d79b628266d7820856602864044c7110893052e8a7c118a4cacb94bebfb33a6ca2e91b195e0359e6e214e6ef3c9e48137537b7624cc3338
   languageName: node
   linkType: hard
 
