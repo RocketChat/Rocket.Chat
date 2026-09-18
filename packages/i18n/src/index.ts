@@ -20,7 +20,7 @@ export const addSprinfToI18n = (t: TFunction) => {
 		}
 
 		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
-			return t(key, replaces[0]);
+			return t(key, replaces[0] as TOptions);
 		}
 
 		return t(key, {
