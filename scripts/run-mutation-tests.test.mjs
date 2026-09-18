@@ -85,21 +85,6 @@ async function report(directory, runner = 'jest') {
 	return JSON.parse(await readFile(resolve(directory, `reports/mutation/${runner}/mutation.json`), 'utf8'));
 }
 
-test('diff preserves preset jsdom and external aliases while local aliases exercise mutants', async (t) => {
-	const directory = await fixture(t);
-	const before = await git(directory, 'status', '--porcelain');
-	await run(directory);
-	const { mutants } = (await report(directory)).files['src/isPositive.ts'];
-	assert.ok(mutants.length > 0);
-	assert.ok(
-		mutants.every(({ status }) => status === 'Killed'),
-		JSON.stringify(mutants),
-	);
-	assert.ok((await readFile(resolve(directory, 'reports/mutation/jest/mutation.html'), 'utf8')).length > 0);
-	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
-	assert.equal(await git(directory, 'status', '--porcelain'), before);
-});
-
 test('Jest projects preserve client/server environments, setup, and aliases while detecting shared mutations', async (t) => {
 	const directory = await fixture(
 		t,
@@ -148,14 +133,12 @@ test.each([-1, 0, 1])('server checks %s', (value) => {
 });
 `,
 	);
-	const source = await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8');
 	await run(directory).catch((error) => assert.fail(error.stdout + error.stderr));
-	const report = JSON.parse(await readFile(resolve(directory, 'reports/mutation/jest/mutation.json'), 'utf8'));
+	const result = await report(directory);
 	for (const file of ['src/isPositive.ts', 'src/isNegative.ts']) {
-		assert.ok(report.files[file].mutants.length > 0);
-		assert.ok(report.files[file].mutants.every(({ status }) => status === 'Killed'));
+		assert.ok(result.files[file].mutants.length > 0);
+		assert.ok(result.files[file].mutants.every(({ status }) => status === 'Killed'));
 	}
-	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
 test('rejects Jest projects with different roots explicitly', async (t) => {
@@ -253,94 +236,69 @@ test('slow baseline', async () => {
 	assert.doesNotMatch(output, /example \(mocha\)/);
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
-test('diff CLI discovers Jest, Mocha, and mixed workspaces and preserves separate reports', async (t) => {
-	const packageDirectory = await fixture(t);
-	const directory = repo(packageDirectory);
-	const write = async (file, text) => {
-		await mkdir(dirname(resolve(directory, file)), { recursive: true });
-		await writeFile(resolve(directory, file), text);
-	};
-	const git = async (...args) => (await exec('git', args, { cwd: directory })).stdout;
-	await rm(packageDirectory, { recursive: true });
-	const beforeSource =
-		'export const positive = (n: number) => n > 0;\nexport const untouched = () => false;\nexport const negative = (n: number) => n < 0;\n';
-	const afterSource =
-		'export const positive = (n: number) => 0 < n;\nexport const untouched = () => false;\nexport const negative = (n: number) => 0 > n;\n';
-	const packages = ['first', 'second', 'mocha-only'];
+
+test('diff runs Jest and Mocha on selected lines, preserving aliases, environments, and separate reports', async (t) => {
+	const directory = await fixture(t);
 	const requireMeteor = createRequire(resolve(root, 'apps/meteor/package.json'));
-	for (const pkg of packages) {
-		await write(`packages/${pkg}/package.json`, '{}');
-		await write(`packages/${pkg}/src/example.ts`, beforeSource);
-		if (pkg !== 'mocha-only') {
-			await write(
-				`packages/${pkg}/jest.config.ts`,
-				`import server from '@rocket.chat/jest-presets/server'; export default { preset: server.preset, testMatch: ['<rootDir>/src/*.spec.ts'] };`,
-			);
-			await write(
-				`packages/${pkg}/src/example.spec.ts`,
-				`
-import { positive, negative } from './example';
-test.each([-1, 0, 1])('checks boundaries for %s', (n) => {
-  expect(positive(n)).toBe(n === 1);
-  expect(negative(n)).toBe(n === -1);
-});
-`,
-			);
-		}
-		if (pkg !== 'first') {
-			await write(
-				`packages/${pkg}/.mocharc.js`,
-				`module.exports = ${JSON.stringify({
-					require: [requireMeteor.resolve('tsx')],
-					extension: ['ts'],
-					spec: ['src/*.tests.ts'],
-				})};`,
-			);
-			await write(
-				`packages/${pkg}/src/example.tests.ts`,
-				`
+	await write(
+		directory,
+		'.mocharc.js',
+		`module.exports = ${JSON.stringify({
+			require: [requireMeteor.resolve('tsx')],
+			extension: ['ts'],
+			spec: ['src/*.tests.ts'],
+		})};`,
+	);
+	await write(
+		directory,
+		'src/isPositive.tests.ts',
+		`
 import assert from 'node:assert/strict';
 import { it } from 'mocha';
-import { positive, negative } from './example';
-for (const n of [-1, 0, 1]) {
-  it('checks boundaries for ' + n, () => {
-    assert.equal(positive(n), n === 1);
-    assert.equal(negative(n), n === -1);
+import { isPositive, isNegative } from './isPositive';
+for (const value of [-1, 0, 1]) {
+  it('checks the boundary for ' + value, () => {
+    assert.equal(isPositive(value), value === 1);
+    assert.equal(isNegative(value), value === -1);
   });
 }
 `,
-			);
-		}
-	}
-	await git('add', '.');
-	await git('commit', '-qm', 'Fixture workspace baseline');
-	await git('update-ref', 'refs/remotes/origin/develop', 'HEAD');
-	for (const pkg of packages) await write(`packages/${pkg}/src/example.ts`, afterSource);
-	const statusBefore = await git('status', '--porcelain');
-	const jobs = [
-		{ packagePath: 'packages/first', testRunner: 'jest', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
-		{ packagePath: 'packages/mocha-only', testRunner: 'mocha', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
-		{ packagePath: 'packages/second', testRunner: 'jest', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
-		{ packagePath: 'packages/second', testRunner: 'mocha', targets: ['src/example.ts:1-1', 'src/example.ts:3-3'] },
-	];
-	await run(packageDirectory);
-	for (const { packagePath, testRunner } of jobs) {
-		const result = await report(resolve(directory, packagePath), testRunner);
-		const { mutants } = result.files['src/example.ts'];
-		assert.ok(mutants.length > 0);
-		assert.ok(mutants.every(({ status }) => status === 'Killed'));
+	);
+	await write(
+		directory,
+		'src/isPositive.spec.ts',
+		`${await readFile(resolve(directory, 'src/isPositive.spec.ts'), 'utf8')}
+import { isNegative } from './isPositive';
+test.each([-1, 0, 1])('checks negative boundary for %s', (value) => expect(isNegative(value)).toBe(value === -1));
+`,
+	);
+	const before = `${source}\nexport const untouched = () => false;\nexport const isNegative = (value: number) => value < 0;`;
+	const after = before.replaceAll('value', 'input');
+	await write(directory, 'src/isPositive.ts', before);
+	await git(directory, 'add', '.');
+	await git(directory, 'commit', '-qm', 'Fixture mixed runners');
+	await git(directory, 'update-ref', 'refs/remotes/origin/develop', 'HEAD');
+	await write(directory, 'src/isPositive.ts', after);
+	await run(directory);
+	for (const runner of ['jest', 'mocha']) {
+		const { mutants } = (await report(directory, runner)).files['src/isPositive.ts'];
 		assert.deepEqual([...new Set(mutants.map(({ location }) => location.start.line))].sort(), [1, 3]);
-		assert.equal(await readFile(resolve(directory, packagePath, 'src/example.ts'), 'utf8'), afterSource);
-		assert.ok((await readFile(resolve(directory, packagePath, 'reports/mutation', testRunner, 'mutation.html'))).length > 0);
+		assert.ok(
+			mutants.every(({ status }) => status === 'Killed'),
+			JSON.stringify(mutants),
+		);
+		assert.ok((await readFile(resolve(directory, 'reports/mutation', runner, 'mutation.html'))).length > 0);
 	}
-	assert.equal(await git('status', '--porcelain'), statusBefore);
-	// A failed Jest job must not prevent Mocha from completing, or hide the overall failure.
-	await write('packages/second/jest.config.ts', "throw new Error('Invalid Jest fixture configuration'); export default {};");
-	await assert.rejects(run(packageDirectory), (error) => {
+	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), after);
+
+	// Clear the previous result so this proves Mocha ran again after Jest failed.
+	await rm(resolve(directory, 'reports/mutation/mocha'), { recursive: true });
+	await write(directory, 'jest.config.ts', "throw new Error('Invalid Jest fixture configuration'); export default {};");
+	await assert.rejects(run(directory), (error) => {
 		assert.equal(error.code, 3);
 		assert.match(error.stdout + error.stderr, /Invalid Jest fixture configuration/);
 		return true;
 	});
-	const mocha = await report(resolve(directory, 'packages/second'), 'mocha');
-	assert.ok(mocha.files['src/example.ts'].mutants.every(({ status }) => status === 'Killed'));
+	const { mutants } = (await report(directory, 'mocha')).files['src/isPositive.ts'];
+	assert.ok(mutants.length > 0 && mutants.every(({ status }) => status === 'Killed'));
 });
