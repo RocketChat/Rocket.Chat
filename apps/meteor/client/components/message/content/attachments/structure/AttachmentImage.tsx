@@ -79,8 +79,9 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 					}}
 				>
 					<img
-						className='rcx-message-generic-preview__image preview-image'
-						data-id={dataSrc || src}
+						className={id ? 'gallery-item' : 'rcx-message-generic-preview__image preview-image'}
+						data-id={id || dataSrc || src}
+						{...(id && { 'data-src': dataSrc || src })}
 						src={src}
 						alt={alt}
 						width={dimensions.width}
