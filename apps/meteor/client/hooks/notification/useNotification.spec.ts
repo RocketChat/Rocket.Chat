@@ -193,12 +193,9 @@ describe('useNotification', () => {
 			const [replyListener] = MockNotification.listenersByInstance;
 			replyListener({ response: 'reply text' });
 
-			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith(
-				'/v1/chat.sendMessage',
-				expect.objectContaining({
-					message: expect.objectContaining({ rid: 'roomId', msg: 'reply text', tmid: 'threadId' }),
-				}),
-			);
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: { _id: expect.any(String), rid: 'roomId', msg: 'reply text', tmid: 'threadId' },
+			});
 		});
 
 		it('does not include tmid in the sendMessage payload when the notification is for a room message', async () => {
@@ -211,15 +208,9 @@ describe('useNotification', () => {
 			const [replyListener] = MockNotification.listenersByInstance;
 			replyListener({ response: 'reply text' });
 
-			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith(
-				'/v1/chat.sendMessage',
-				expect.objectContaining({
-					message: expect.objectContaining({ rid: 'roomId', msg: 'reply text' }),
-				}),
-			);
-
-			const [, body] = (sdk.rest.post as jest.Mock).mock.calls[0];
-			expect('tmid' in body.message).toBe(false);
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: { _id: expect.any(String), rid: 'roomId', msg: 'reply text' },
+			});
 		});
 	});
 });
