@@ -40,8 +40,8 @@ const findParentMessage = async (tmid: string) => {
 			parentMessage = await Livechat.message(tmid, { rid } as Parameters<typeof Livechat.message>[1]);
 			await addParentMessage(parentMessage);
 		} catch (error: any) {
-			// Network/transport errors carry no `data` payload; fall back to the error message.
-			const reason = error?.data?.error ?? error?.message ?? 'Could not load the parent message';
+			// Server rejections expose the reason as a top-level `error` field; network/transport errors fall back to `message`.
+			const reason = error?.data?.error ?? error?.error ?? error?.message ?? 'Could not load the parent message';
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
