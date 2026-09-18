@@ -32,8 +32,8 @@ export const filterSemanticCandidatesByMinimumSimilarity = (
 	return candidates.filter((candidate) => candidate.semanticSimilarity === undefined || candidate.semanticSimilarity >= threshold);
 };
 
-// Fuses on rank only: the retrievers report cosine distance and full-text rank respectively, so their
-// raw scores are not comparable and must never meet. `semanticWeight` is the 0-100 admin balance.
+// Fuses on rank position only; the retrievers' raw scores are not comparable and must never meet.
+// `semanticWeight` is the 0-100 admin balance.
 export const fuseCandidatesWithWeightedRRF = (
 	semanticCandidates: IntelligentSearchCandidate[],
 	keywordCandidates: IntelligentSearchCandidate[],

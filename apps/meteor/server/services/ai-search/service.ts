@@ -238,7 +238,6 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const minimumSimilarityPercent = Number(config.minimumSimilarityPercent || 0);
 
-		// at the extremes the other retriever is never requested
 		if (semanticWeight === 0) {
 			return { candidates: toRankedCandidates(await queryBranch('keyword')), orderedBySemanticSimilarity: false };
 		}
@@ -249,8 +248,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return { candidates: toRankedCandidates(semanticOnly), orderedBySemanticSimilarity: true };
 		}
 
-		// allSettled, not all: searchIntelligentPipeline rethrows on network failure and timeout, and one
-		// flaky branch must degrade hybrid to the survivor rather than to an empty result set
+		// one failing retriever must degrade hybrid to the survivor, not to an empty result set
 		const [semanticResult, keywordResult] = await Promise.allSettled([queryBranch('semantic'), queryBranch('keyword')]);
 		if (semanticResult.status === 'rejected' && keywordResult.status === 'rejected') {
 			throw semanticResult.reason;
@@ -360,8 +358,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		searchCandidates: IntelligentSearchCandidate[],
 		userId: string,
 		limit = AI_SEARCH_PAGE_SIZE,
-		// a similarity is only shown when it is what ordered the list; fused or recency-boosted rankings
-		// would otherwise display a percentage that contradicts the order the reader can see
+		// set only when the similarity is what ordered the list - see docs/features/ai-search-hybrid.md
 		includeSimilarity = true,
 	): Promise<AISearchResult[]> {
 		// the whole pool is resolved, not just the first page: pre-slicing here returns short pages once
