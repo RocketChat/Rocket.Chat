@@ -37,7 +37,9 @@ const findParentMessage = async (tmid: string) => {
 	if (!parentMessage) {
 		const { _id: rid } = room ?? {};
 		try {
-			parentMessage = await Livechat.message(tmid, { rid } as Parameters<typeof Livechat.message>[1]);
+			// `Livechat.message` resolves to the response envelope (`{ message }`), so unwrap it before use.
+			const { message } = await Livechat.message(tmid, { rid } as Parameters<typeof Livechat.message>[1]);
+			parentMessage = message;
 			await addParentMessage(parentMessage);
 		} catch (error: any) {
 			// Server rejections expose the reason as a top-level `error` field; network/transport errors fall back to `message`.
