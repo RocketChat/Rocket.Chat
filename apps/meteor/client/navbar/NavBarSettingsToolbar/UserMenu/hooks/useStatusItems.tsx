@@ -78,11 +78,12 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	});
 
 	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
-	const userPresenceDisabled = user?.presenceDisabledByAdmin === true;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const userPresenceDisabled = user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled;
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const handleStatusVisibility = useStatusVisibilityModalHandler();
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled;
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {

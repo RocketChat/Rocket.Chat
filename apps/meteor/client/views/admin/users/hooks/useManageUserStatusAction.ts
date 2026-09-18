@@ -1,16 +1,15 @@
-import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 export const useManageUserStatusAction = (username?: string): AdminUserAction | undefined => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
-	const { data: hasUnlimitedPresence = false } = useHasLicenseModule('unlimited-presence');
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
 
-	return canEditOtherUserInfo && hasUnlimitedPresence && username
+	return canEditOtherUserInfo && adminStatusHidingEnabled && username
 		? {
 				icon: 'circle-unfilled',
 				content: t('Manage_status'),
