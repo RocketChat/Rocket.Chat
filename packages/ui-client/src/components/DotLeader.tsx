@@ -1,12 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
+import type { BorderWidth } from '@rocket.chat/fuselage';
 import type { CSSProperties } from 'react';
 
 export type DotLeaderProps = {
 	color?: CSSProperties['borderColor'];
-	dotSize?: CSSProperties['borderBlockEndWidth'];
+	dotSize?: BorderWidth;
 };
 
-const DotLeader = ({ color = 'neutral-300', dotSize = 'x2' }: DotLeaderProps) => (
+const DotLeader = ({ color = 'neutral-300', dotSize = 'medium' }: DotLeaderProps) => (
 	<Box
 		flexGrow={1}
 		height='full'

@@ -25,7 +25,7 @@ const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 			display='flex'
 			paddingBlock={12}
 			paddingInline={24}
-			borderRadius={4}
+			borderRadius='medium'
 			className={customClass}
 			{...props}
 		/>
