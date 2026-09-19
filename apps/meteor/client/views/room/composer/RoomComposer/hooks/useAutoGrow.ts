@@ -2,9 +2,9 @@ import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
 import { useCallback } from 'react';
 
-function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
+export function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
 	const isCursorAtBottom = textarea.selectionEnd === textarea.value.length;
-	const isScrolledToBottom = textarea.scrollTop + textarea.clientHeight === textarea.scrollHeight;
+	const isScrolledToBottom = textarea.scrollTop + textarea.clientHeight >= textarea.scrollHeight - 1;
 
 	return isCursorAtBottom || isScrolledToBottom;
 }
