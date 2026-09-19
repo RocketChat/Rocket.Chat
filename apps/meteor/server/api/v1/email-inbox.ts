@@ -2,9 +2,10 @@ import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, Users } from '@rocket.chat/models';
 import {
 	ajv,
-	isEmailInboxList,
 	isEmailInbox,
+	isEmailInboxList,
 	isEmailInboxSearch,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
@@ -20,9 +21,7 @@ const paginatedEmailInboxesResponseSchema = ajv.compile<{ emailInboxes: IEmailIn
 	type: 'object',
 	properties: {
 		emailInboxes: { type: 'array', items: { $ref: '#/components/schemas/IEmailInbox' } },
-		total: { type: 'number' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['emailInboxes', 'total', 'count', 'offset', 'success'],

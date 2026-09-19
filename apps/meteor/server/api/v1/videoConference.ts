@@ -2,19 +2,20 @@ import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
 import {
 	ajv,
-	isVideoConfStartProps,
-	isVideoConfJoinProps,
-	isVideoConfRingProps,
+	isVideoConfAddParticipantsProps,
 	isVideoConfCallIdProps,
 	isVideoConfInfoProps,
+	isVideoConfJoinProps,
 	isVideoConfListProps,
-	isVideoConfAddParticipantsProps,
 	isVideoConfRenameProps,
+	isVideoConfRingProps,
 	isVideoConfShareChatProps,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	isVideoConfStartProps,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { availabilityErrors } from '../../../lib/videoConference/constants';
@@ -140,9 +141,7 @@ const listResponseSchema = ajv.compile<{ data: VideoConference[]; count: number;
 				],
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['data', 'count', 'offset', 'total', 'success'],

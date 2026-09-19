@@ -3,9 +3,11 @@ import { CustomUserStatus } from '@rocket.chat/models';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -22,14 +24,7 @@ type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string;
 const CustomUserStatusListSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -72,18 +67,7 @@ const customUserStatusEndpoints = API.v1.get(
 							$ref: '#/components/schemas/ICustomUserStatus',
 						},
 					},
-					count: {
-						type: 'number',
-						description: 'The number of custom user statuses returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of custom user statuses that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of custom user statuses that match the query.',
-					},
+					...paginatedResponseProperties,
 					success: {
 						type: 'boolean',
 						enum: [true],
