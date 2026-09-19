@@ -30,8 +30,8 @@ afterEach(() => {
 
 describe('mention resolution', () => {
 	it('uses the supplied resolvers when rendering user and channel mentions', () => {
-		const resolveUserMention = jest.fn(() => ({ _id: 'user-id', username: 'alice', name: 'Alice' }));
-		const resolveChannelMention = jest.fn(() => ({ _id: 'room-id', name: 'general', fname: 'general' }));
+		const resolveUserMention = jest.fn(() => ({ _id: 'user-id', username: 'resolved-alice', name: 'Alice' }));
+		const resolveChannelMention = jest.fn(() => ({ _id: 'room-id', name: 'general', fname: 'Resolved General' }));
 
 		const input = mountMarkup('hi @alice #general', {
 			resolveUserMention,
@@ -42,6 +42,8 @@ describe('mention resolution', () => {
 		expect(resolveChannelMention).toHaveBeenCalledWith('general');
 		expect(input.textContent).toContain('@alice');
 		expect(input.textContent).toContain('#general');
+		expect(input.querySelector('[data-uid="user-id"]')).not.toBeNull();
+		expect(input.querySelector('[data-rid="room-id"]')).not.toBeNull();
 	});
 });
 
