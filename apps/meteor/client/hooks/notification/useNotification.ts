@@ -24,9 +24,6 @@ export const useNotification = () => {
 			return;
 		}
 
-		// A notification can opt into staying until interacted with, on top of the user preference.
-		const requireInteraction = Boolean(notification.requireInteraction || requireInteractionPreference);
-
 		const { rid, name: roomName, _id: msgId } = notification.payload;
 		if (!rid) {
 			return;
@@ -36,6 +33,10 @@ export const useNotification = () => {
 			msg: notification.text,
 			notification: true,
 		} as any);
+
+		// A notification may demand interaction on its own — a conference ring outlives the
+		// recipient's preference, per INotificationDesktop.requireInteraction.
+		const requireInteraction = requireInteractionPreference || notification.requireInteraction;
 
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
@@ -48,7 +49,7 @@ export const useNotification = () => {
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
-		const notificationDuration = !requireInteraction ? (notification.duration ?? 0) - 0 || 10 : -1;
+		const notificationDuration = !requireInteraction && notification.duration ? notification.duration - 0 : 0;
 		if (notificationDuration > 0) {
 			setTimeout(() => n.close(), notificationDuration * 1000);
 		}
@@ -62,6 +63,7 @@ export const useNotification = () => {
 							_id: Random.id(),
 							rid,
 							msg: response,
+							...(notification.payload.tmid && { tmid: notification.payload.tmid }),
 						},
 					}),
 			);

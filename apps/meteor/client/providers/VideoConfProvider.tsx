@@ -1,4 +1,4 @@
-import { useRouter, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useRouter, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
@@ -66,6 +66,11 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
 	}, []);
 
+	// The conference window is its own window, running its own copy of the app — so "am I the call window" is a
+	// question this provider can answer once, for everything under it, from the only place that knows: the route.
+	// Blocks that act on it are shared components and have no business knowing what a call window's address is.
+	const joinDisabled = !!useCurrentRoutePath()?.startsWith('/conference/');
+
 	/**
 	 * Placing a call, once the user has asked for one.
 	 *
@@ -88,6 +93,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 
 	const contextValue = useMemo<VideoConfContextValue>(
 		() => ({
+			joinDisabled,
 			dispatchOutgoing: (option) => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall,
@@ -104,7 +110,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			queryCapabilities: () => [(cb) => VideoConfManager.on('capabilities/changed', cb), () => VideoConfManager.capabilities],
 			queryPreferences: () => [(cb) => VideoConfManager.on('preference/changed', cb), () => VideoConfManager.preferences],
 		}),
-		[startCall],
+		[joinDisabled, startCall],
 	);
 
 	return (

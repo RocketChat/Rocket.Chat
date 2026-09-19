@@ -19,8 +19,6 @@ export const CALL_FACES_SHOWN = 2;
  */
 export type PersistentChatMode = 'thread' | 'main_room';
 
-export const PREFLIGHT_FACES_SHOWN = 10;
-
 /** How long a conference outlives its last participant, so a reload can cancel the ending. */
 export const EMPTY_CALL_GRACE_MS = 10_000;
 

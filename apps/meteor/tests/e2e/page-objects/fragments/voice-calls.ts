@@ -127,11 +127,16 @@ export class Widget {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get btnShowCallHere(): Locator {
 		return this.root.getByRole('button', { name: 'Show call here' });
+	}
+
+	/** Dismisses the widget while it sits on the dialer, before a call is placed. */
+	get btnClose(): Locator {
+		return this.root.getByRole('button', { name: 'Close', exact: true });
 	}
 
 	async showCallHere(): Promise<void> {
@@ -257,7 +262,7 @@ export class RoomSection {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get allScreenShareVideos(): Locator {

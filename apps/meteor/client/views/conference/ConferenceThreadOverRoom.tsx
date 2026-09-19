@@ -1,7 +1,10 @@
+import { ConferenceThreadModal } from '@rocket.chat/ui-conference';
 import { useCurrentModal, useSetModal } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { lazy, useEffect, useRef } from 'react';
 
-import ConferenceThreadModal from './ConferenceThreadModal';
+import ConferenceThreadChat from './ConferenceThreadChat';
+
+const ChatProvider = lazy(() => import('../room/providers/ChatProvider'));
 
 type ConferenceThreadOverRoomProps = {
 	tmid: string;
@@ -28,7 +31,13 @@ const ConferenceThreadOverRoom = ({ tmid, onClose }: ConferenceThreadOverRoomPro
 	currentModalRef.current = currentModal;
 
 	useEffect(() => {
-		const ours = <ConferenceThreadModal tmid={tmid} onClose={onClose} />;
+		const ours = (
+			<ConferenceThreadModal onClose={onClose}>
+				<ChatProvider tmid={tmid}>
+					<ConferenceThreadChat tmid={tmid} onEscape={onClose} />
+				</ChatProvider>
+			</ConferenceThreadModal>
+		);
 
 		setModal(ours);
 

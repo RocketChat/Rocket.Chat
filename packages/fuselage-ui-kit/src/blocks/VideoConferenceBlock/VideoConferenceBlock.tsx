@@ -1,5 +1,5 @@
 import { getUserDisplayName, hasJoinedVideoConference, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import { useCurrentRoutePath, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
 	VideoConfMessageSkeleton,
@@ -14,6 +14,7 @@ import {
 	VideoConfMessageContent,
 	VideoConfMessageActions,
 	VideoConfMessageAction,
+	VideoConfContext,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
@@ -41,10 +42,16 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
 	// The call window renders this same message list beside the call it is already in, where "Join" and "Call
-	// back" would start a second one. Asked here rather than handed down through `UiKitContext`: that context is
-	// shared by every app's blocks and knows nothing about any of them, so a flag about video conferencing had no
-	// business in its signature. This block is the only thing that reads the answer, and it can ask for itself.
-	const joinDisabled = !!useCurrentRoutePath()?.startsWith('/conference/');
+	// back" would start a second one.
+	//
+	// Read from the video-conf context rather than worked out here: which window this is, is the application's to
+	// know, and a block that decided it for itself would have to know what a call window's address looks like.
+	// Not `UiKitContext` either — that one is shared by every app's blocks and knows nothing about any of them.
+	//
+	// Read optionally, unlike the two throws above. Those guard what this component cannot render without; this
+	// only decides whether a button is dimmed, and a surface that never mounts the provider should lose the
+	// dimming rather than the message.
+	const joinDisabled = useContext(VideoConfContext)?.joinDisabled ?? false;
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');

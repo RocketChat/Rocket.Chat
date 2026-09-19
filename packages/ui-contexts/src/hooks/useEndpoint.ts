@@ -8,9 +8,10 @@ type EndpointOptions = {
 	signal?: AbortSignal;
 	/**
 	 * Keeps the request alive past the document being torn down, for the one thing that has to be said on the way
-	 * out: a `pagehide` handler's fetch is otherwise cancelled with the page. The REST client has always accepted
-	 * it — it takes `RequestInit` — but there was no way to ask for it from here, so callers that needed it were
-	 * reaching around the SDK to `fetch` and re-doing authentication by hand.
+	 * out: a fetch started from a `pagehide` handler is otherwise cancelled along with the page.
+	 *
+	 * The REST client already takes it — its options are `Omit<RequestInit, 'method'>` — so the only thing missing
+	 * was a way to ask for it from here.
 	 */
 	keepalive?: boolean;
 };

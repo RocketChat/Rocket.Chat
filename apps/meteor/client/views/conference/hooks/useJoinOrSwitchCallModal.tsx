@@ -1,9 +1,8 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
+import { SwitchCallModal } from '@rocket.chat/ui-conference';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useCallback, useRef } from 'react';
-
-import SwitchCallModal from '../components/SwitchCallModal';
 
 /**
  * Joins a call, asking first when it means leaving the one the user is already in.

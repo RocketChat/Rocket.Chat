@@ -1,7 +1,6 @@
+import { ConferenceStatePage } from '@rocket.chat/ui-conference';
 import { UserContext, useTranslation, useUser, useRoute } from '@rocket.chat/ui-contexts';
 import { useContext } from 'react';
-
-import ConferenceStatePage from './ConferenceStatePage';
 
 const ConferenceUnauthorizedPage = () => {
 	const t = useTranslation();

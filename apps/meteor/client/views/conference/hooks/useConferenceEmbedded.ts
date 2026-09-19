@@ -1,6 +1,6 @@
-import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
+import type { CallPreferences, ConferenceChatAccess } from '@rocket.chat/ui-conference';
 import {
 	useConnectionStatus,
 	useEndpoint,
@@ -14,7 +14,6 @@ import { useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { CallPreferences } from './useCallDevicesInitialState';
 import { departureFor } from './useLeaveConferenceOnClose';
 import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
 import type { PersistentChatMode } from '../../../../lib/videoConference/constants';
@@ -23,22 +22,6 @@ import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 import { NEW_CONFERENCE_ID } from '../lib/callWindow';
-
-/**
- * A member of the call, as this window holds them: who they are, and where they stand with the call.
- *
- * Narrower than `IVideoConferenceUser` on purpose — the avatar etag and the `ts` are of no interest to anything
- * rendering a member, and leaving them out keeps the fixtures honest about what the UI actually reads.
- */
-export type ConferenceMember = Pick<
-	IVideoConferenceUser,
-	'_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'
->;
-
-/** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
-export type ConferenceChatAccess = VideoConferenceChatAccess & {
-	members: ConferenceMember[];
-};
 
 /**
  * Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous.

@@ -1,16 +1,19 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import {
+	CallPanelHeader,
+	ChatAccessModal,
+	ConferenceChatNotShared,
+	hasConferenceChatAccess,
+	useConference,
+	useConferenceChatPanel,
+} from '@rocket.chat/ui-conference';
 import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
 import ConferenceRoomPanel from './ConferenceRoomPanel';
-import CallPanelHeader from './components/CallPanelHeader';
 import NotFoundPage from '../notFound/NotFoundPage';
-import ChatAccessModal from './components/ChatAccessModal/ChatAccessModal';
-import ConferenceChatNotShared from './components/ConferenceChatNotShared';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
-import { hasConferenceChatAccess } from '../../../lib/videoConference/chatAccess';
 import PageLoading from '../root/PageLoading';
 import { useMainReady } from '../root/hooks/useMainReady';
 
@@ -25,36 +28,22 @@ const roomTypeIcon = (t?: IRoom['t']) => {
 	}
 };
 
-type ConferenceChatProps = {
-	callId: string;
-	rid?: string;
-	tmid?: string;
-	roomName?: string;
-	roomType?: IRoom['t'];
-	loading: boolean;
-	chatAccess?: ConferenceChatAccess;
-	/** A thread of this room to show over it, if one is open. */
-	thread?: string;
-	onCloseThread?: () => void;
-	onClose: () => void;
-};
-
-const ConferenceChat = ({
-	callId,
-	rid,
-	tmid,
-	roomName,
-	roomType,
-	loading,
-	chatAccess,
-	thread,
-	onCloseThread,
-	onClose,
-}: ConferenceChatProps) => {
+/**
+ * The call's chat: the product's own room, rendered inside the conference window's panel.
+ *
+ * It is handed to the window as a node rather than built by it, because it is a whole room — its provider, its
+ * message list, its composer — and none of that belongs in a package of call chrome. What it reads, it reads
+ * from the conference it is mounted in; closing the panel it sits in is the panel's to do, and it asks.
+ */
+const ConferenceChat = () => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const setModal = useSetModal();
 	const storesReady = useMainReady();
+	const { room, thread } = useConference();
+	const { close } = useConferenceChatPanel();
+
+	const { rid, tmid, name: roomName, type: roomType, loading, chatAccess } = room;
 
 	if (loading) {
 		return <PageLoading />;
@@ -90,7 +79,7 @@ const ConferenceChat = ({
 			{/* No `titleLabel` any more: the heading names itself from its own contents, and `Icon` renders
 			    `aria-hidden`, so the icon in the middle of the sentence contributes nothing to that name. The
 			    label existed to work around an icon that was never in the name to begin with. */}
-			<CallPanelHeader title={title} onClose={onClose}>
+			<CallPanelHeader title={title} onClose={close}>
 				{presentWithoutAccess > 0 && chatAccess && (
 					<IconButton
 						icon='balloon-exclamation'
@@ -98,18 +87,18 @@ const ConferenceChat = ({
 						aria-label={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
 						title={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
 						danger
-						onClick={() => setModal(<ChatAccessModal callId={callId} access={chatAccess} onClose={() => setModal(null)} />)}
+						onClick={() => setModal(<ChatAccessModal access={chatAccess} onClose={() => setModal(null)} />)}
 					/>
 				)}
 			</CallPanelHeader>
 
 			{!shared && <ConferenceChatNotShared />}
 
-			{/* The stores are marked ready by `useConferenceSubscription`, up on the page; this waits for that to have
-			    happened, because the room UI reads the flag and renders nothing useful before it is set. */}
+			{/* The stores are marked ready by `useConferenceSubscription`, up in the provider; this waits for that to
+			    have happened, because the room UI reads the flag and renders nothing useful before it is set. */}
 			{shared &&
 				(storesReady ? (
-					<ConferenceRoomPanel rid={rid} tmid={tmid} thread={thread} onCloseThread={onCloseThread} onEscape={onClose} />
+					<ConferenceRoomPanel rid={rid} tmid={tmid} thread={thread.tmid} onCloseThread={thread.close} onEscape={close} />
 				) : (
 					<PageLoading />
 				))}

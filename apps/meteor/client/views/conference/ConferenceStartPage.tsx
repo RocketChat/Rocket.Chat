@@ -1,7 +1,7 @@
+import { ConferencePreflight } from '@rocket.chat/ui-conference';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePageError from './ConferencePageError';
-import ConferencePreflight from './ConferencePreflight';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useStartConference } from './hooks/useStartConference';
 import { closeCallWindow } from './lib/callWindow';

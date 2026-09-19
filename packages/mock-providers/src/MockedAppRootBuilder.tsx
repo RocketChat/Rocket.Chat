@@ -713,7 +713,7 @@ export class MockedAppRootBuilder {
 		interpolation: {
 			escapeValue: false,
 		},
-		initImmediate: false,
+		initAsync: false,
 	}).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {

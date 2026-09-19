@@ -1,9 +1,9 @@
 import type { StreamControllerRef } from '@rocket.chat/mock-providers';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { buildJoinableCall } from '@rocket.chat/ui-conference';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useJoinableCalls } from './useJoinableCalls';
-import { buildJoinableCall } from '../testFixtures';
 
 const getJoinable = jest.fn(() => ({ calls: [buildJoinableCall({ callId: 'one' })], success: true }) as any);
 

@@ -1,10 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { ConferenceChatAccess, ConferenceContextValue } from '@rocket.chat/ui-conference';
+import { ConferenceContext, buildChatAccess, defaultConferenceContextValue } from '@rocket.chat/ui-conference';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
+import type { ReactNode } from 'react';
 
 import ConferenceChat from './ConferenceChat';
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
-import { buildChatAccess } from './testFixtures';
 
 /**
  * What this panel decides is what it shows: the chat, or the screen saying the chat was never shared with this
@@ -12,8 +13,8 @@ import { buildChatAccess } from './testFixtures';
  * case is a render and the snapshot is the answer.
  *
  * Snapshotted from the component rather than from stories, which it has none of: the room underneath needs the
- * cached stores seeded, and what seeds them is the page above — so it is stubbed out here to leave this panel's
- * own decisions visible.
+ * cached stores seeded, and what seeds them is the provider above — so it is stubbed out here to leave this
+ * panel's own decisions visible.
  */
 jest.mock('./ConferenceRoomPanel', () => ({ __esModule: true, default: () => null }));
 jest.mock('../root/hooks/useMainReady', () => ({ useMainReady: () => true }));
@@ -23,10 +24,23 @@ const uid = 'john.doe';
 
 const buildAccess = (membersWithoutAccess: string[]) => buildChatAccess({ membersWithoutAccess });
 
-const renderChat = (chatAccess: ConferenceChatAccess) =>
-	render(<ConferenceChat callId='call-id' rid='room-id' loading={false} chatAccess={chatAccess} onClose={jest.fn()} />, {
-		wrapper: mockAppRoot().withJohnDoe().build(),
-	});
+const renderChat = (chatAccess: ConferenceChatAccess) => {
+	const AppRoot = mockAppRoot().withJohnDoe().build();
+
+	const conference: ConferenceContextValue = {
+		...defaultConferenceContextValue,
+		callId: 'call-id',
+		room: { ...defaultConferenceContextValue.room, rid: 'room-id', loading: false, chatAccess },
+	};
+
+	const wrapper = ({ children }: { children: ReactNode }) => (
+		<AppRoot>
+			<ConferenceContext.Provider value={conference}>{children}</ConferenceContext.Provider>
+		</AppRoot>
+	);
+
+	return render(<ConferenceChat />, { wrapper });
+};
 
 const cases = [
 	['the chat was never shared with this member', [uid]],

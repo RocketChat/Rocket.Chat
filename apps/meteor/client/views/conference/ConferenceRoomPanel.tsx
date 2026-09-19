@@ -1,13 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import { ModalProviderWithRegion } from '@rocket.chat/ui-client';
+import { ConferenceChatNotShared, narrowRoomStyle } from '@rocket.chat/ui-conference';
 import { lazy, Suspense } from 'react';
 
 import ConferenceThreadChat from './ConferenceThreadChat';
 import ConferenceThreadOverRoom from './ConferenceThreadOverRoom';
-import ConferenceChatNotShared from './components/ConferenceChatNotShared';
 import ConferenceRoomError from './components/ConferenceRoomError';
 import ConferenceRoomSkeleton from './components/ConferenceRoomSkeleton';
-import { narrowRoomStyle } from './panelStyles';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';

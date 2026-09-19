@@ -1,6 +1,6 @@
+import { ConferenceErrorState } from '@rocket.chat/ui-conference';
 import { useEffect } from 'react';
 
-import ConferenceErrorState from './components/ConferenceErrorState';
 import ThreadChat from '../room/contextualBar/Threads/components/ThreadChat';
 import ThreadSkeleton from '../room/contextualBar/Threads/components/ThreadSkeleton';
 import { MESSAGE_NOT_FOUND } from '../room/contextualBar/Threads/hooks/useGetMessageByID';

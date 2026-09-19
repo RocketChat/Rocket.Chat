@@ -5,16 +5,14 @@ import { useMemo } from 'react';
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import HomeSkeleton from '../../home/HomeSkeleton';
 
 export type UsernameCheckProps = {
 	children: ReactNode;
 	/**
-	 * Placeholder shown while the user is being resolved. Defaults to the app-shaped skeleton, which only
-	 * suits routes that render inside the navigation chrome — standalone routes should pass their own so
-	 * they don't flash a sidebar and composer they will never show.
+	 * Shown while the user is being resolved. Required, because the right shape depends on whether the route
+	 * renders inside the navigation chrome, and only the caller knows that.
 	 */
-	loadingElement?: ReactNode;
+	loadingElement: ReactNode;
 };
 
 const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
@@ -39,7 +37,7 @@ const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
 	}, [userData?.user, userId, allowAnonymousRead]);
 
 	if (isLoading) {
-		return loadingElement ?? <HomeSkeleton />;
+		return loadingElement;
 	}
 
 	if (shouldRegisterUsername) {

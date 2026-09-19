@@ -1,4 +1,5 @@
-import ConferenceErrorState from './ConferenceErrorState';
+import { ConferenceErrorState } from '@rocket.chat/ui-conference';
+
 import RoomLayout from '../../room/layout/RoomLayout';
 
 /**

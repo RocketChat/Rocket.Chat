@@ -5,7 +5,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
