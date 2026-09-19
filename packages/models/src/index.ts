@@ -13,6 +13,7 @@ import type {
 	IEmojiCustomModel,
 	IExportOperationsModel,
 	IFederationKeysModel,
+	IFederationMatrixTransactionsModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -144,6 +145,9 @@ export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMes
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
+export const FederationMatrixTransactions = proxify<IFederationMatrixTransactionsModel>(
+	'IFederationMatrixTransactionsModel',
+);
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
