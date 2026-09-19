@@ -18,8 +18,14 @@ export class Publication extends EventEmitter implements IPublication {
 		super();
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);
-		client.once('close', () => this.emit('stop', this.client, this.packet));
-		this.once('stop', () => client.subscriptions.delete(packet.id));
+
+		const onClientClose = (): boolean => this.emit('stop', this.client, this.packet);
+		client.once('close', onClientClose);
+
+		this.once('stop', () => {
+			client.subscriptions.delete(packet.id);
+			client.off('close', onClientClose);
+		});
 
 		this._session = {
 			sendAdded: this.added.bind(this),
