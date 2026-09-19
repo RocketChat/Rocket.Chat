@@ -18,7 +18,7 @@ export const EnterpriseCheck: ServiceSchema = {
 			const services: {
 				name: string;
 				nodes: string[];
-			}[] = await this.broker.call('$node.services', { skipInternal: true });
+			}[] = await this.broker.call('$node.services', { skipInternal: true }, { nodeID: this.broker.nodeID });
 
 			const currentService = services.find((service) => {
 				return service.name === this.name;
