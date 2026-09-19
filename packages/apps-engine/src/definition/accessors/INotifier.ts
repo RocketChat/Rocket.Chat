@@ -3,10 +3,13 @@ import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 import type { IMessageBuilder } from './IMessageBuilder';
 
+/** Where a typing indicator is shown. */
 export enum TypingScope {
+	/** In a room, to everyone looking at it. */
 	Room = 'room',
 }
 
+/** Who to show a typing indicator to, and on whose behalf. */
 export interface ITypingOptions {
 	/**
 	 * The typing scope where the typing message should be presented,
@@ -28,6 +31,13 @@ export interface ITypingOptions {
 	username?: string;
 }
 
+/**
+ * Sends messages that are shown but never stored.
+ *
+ * Nothing here is written to a room: the message reaches whoever is connected
+ * at the time, and is gone when they reload. Use `IModifyCreator` for a
+ * message that has to stay.
+ */
 export interface INotifier {
 	/**
 	 * Notifies the provided user of the provided message.
