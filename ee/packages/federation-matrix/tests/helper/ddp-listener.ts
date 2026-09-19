@@ -141,6 +141,14 @@ export class DDPListener {
 		this.ephemeralMessages = [];
 	}
 
+	async publishUserActivity(rid: string, shownName: string, activities: string[]): Promise<void> {
+		if (!this.sdk) {
+			throw new Error('DDP connection is not established');
+		}
+
+		await this.sdk.client.callAsync('stream-notify-room', `${rid}/user-activity`, shownName, activities, {});
+	}
+
 	/**
 	 * Disconnect from DDP server
 	 */
