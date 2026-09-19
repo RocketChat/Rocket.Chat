@@ -746,6 +746,26 @@ a call nobody answered:
 | `post_ended_accepted_at` | Logged **only** inside the `isAnsweredCall` branch, so its presence is the guard firing and its absence is the guard correctly refusing. |
 | `post_ended_reason_known` | `isKnownMediaCallHangupReason(context.call.hangupReason)`. A `false` here means `MediaCallHangupReason` has drifted from what the server records. |
 
+**History endpoint:**
+
+- `POST /api/apps/public/:appId/history` with `{ "uid", "itemId"?, "callId"?, "search"? }`
+
+Drives `read.getCallHistoryReader()`. Each of the three accessors runs only when the request names what it
+wants: `itemId` for `getById`, `callId` for `getByCallId`, and `search` (`{ filters?, pagination? }`) for
+`search`. Every read is scoped to `uid`.
+
+The response is `{ "byId", "byCallId", "search" }`, with `null` where the accessor answered nothing. `null`
+rather than an absent key, so a test can tell a read the bridge refused from one it never asked for.
+
+The app reads the history on demand rather than from a call event because the history entry is written
+*after* the end event fires - an app that read it from the event would be racing the write.
+
+**Permissions:** this app declares `api`, `persistence` and `media-call.history` in its `app.json`.
+Declaring a list replaces the default permissions rather than adding to them, so the list has to name
+everything the app uses. `media-call.history` is not a default permission, and the accessors answer
+`undefined` without it. The install grants what the caller passes, so the spec passes the same three to
+`installLocalTestPackage` - the `app.json` list alone grants nothing.
+
 <details>
 <summary>App source code</summary>
 
@@ -753,6 +773,8 @@ a call nobody answered:
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import type {
 	IAppAccessors,
+	ICallHistorySearchFilters,
+	ICallHistorySearchPagination,
 	IConfigurationExtend,
 	IHttp,
 	ILogger,
@@ -795,6 +817,18 @@ const MODES: Mode[] = ['pass', 'prevent', 'prevent-i18n', 'drop-screen-share'];
 const PREVENTION_I18N_KEY = 'call_prevented_for_callee';
 
 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'media-call-events-test-mode');
+
+/**
+ * What the `history` endpoint should read. Each of the three reads runs only when the
+ * caller names what it wants, so one request can drive one accessor or all of them.
+ */
+type HistoryRequest = {
+	/** The user whose history to read. Every accessor scopes its answer to this user. */
+	uid?: string;
+	itemId?: string;
+	callId?: string;
+	search?: { filters?: ICallHistorySearchFilters; pagination?: ICallHistorySearchPagination };
+};
 
 /**
  * Exercises every method of `IMediaCallHandler` and records what it saw in the app
@@ -904,6 +938,44 @@ export class MediaCallEventsTestApp extends App implements IMediaCallHandler {
 
 					public async get(_request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
 						return { status: HttpStatusCode.OK, content: { mode: await readMode(read.getPersistenceReader()) } };
+					}
+				})(this),
+
+				/**
+				 * `POST /api/apps/public/:appId/history` - see `HistoryRequest`.
+				 *
+				 * Reads the call history through the accessor, on demand. The app cannot read it from a
+				 * call event instead: the history entry is written after the end event fires, so an app
+				 * that read it there would be racing the write.
+				 */
+				new (class extends ApiEndpoint {
+					public override path = 'history';
+
+					public async post(request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+						const { uid, itemId, callId, search } = (request.content || {}) as HistoryRequest;
+
+						if (!uid) {
+							return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'uid is required' } };
+						}
+
+						const callHistory = read.getCallHistoryReader();
+
+						const [byId, byCallId, searchResult] = await Promise.all([
+							itemId ? callHistory.getById(itemId, uid) : undefined,
+							callId ? callHistory.getByCallId(callId, uid) : undefined,
+							search ? callHistory.search(uid, search.filters, search.pagination) : undefined,
+						]);
+
+						// `undefined` would drop the key on the way out, and the caller could not tell an
+						// entry the accessor refused to return from one it was never asked for.
+						return {
+							status: HttpStatusCode.OK,
+							content: {
+								byId: byId ?? null,
+								byCallId: byCallId ?? null,
+								search: searchResult ?? null,
+							},
+						};
 					}
 				})(this),
 			],

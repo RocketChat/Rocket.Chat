@@ -1,5 +1,11 @@
 export type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 export type {
+	ICallHistorySearchFilters as IAppsCallHistorySearchFilters,
+	ICallHistorySearchPagination as IAppsCallHistorySearchPagination,
+	ICallHistorySearchResult as IAppsCallHistorySearchResult,
+} from '@rocket.chat/apps-engine/definition/accessors';
+export type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+export type {
 	IDepartment as IAppsDepartment,
 	ILivechatMessage as IAppsLivechatMessage,
 	ILivechatRoom as IAppsLivechatRoom,
