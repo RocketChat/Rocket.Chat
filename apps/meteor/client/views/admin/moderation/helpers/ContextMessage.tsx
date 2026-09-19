@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import ReportReasonCollapsible from './ReportReasonCollapsible';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
+import type { AudioAttachmentSource } from '../../../../components/message/content/attachments/file/AudioAttachment';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -66,6 +67,16 @@ const ContextMessage = ({
 
 	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
+	const source: AudioAttachmentSource = {
+		rid: message.rid,
+		mid: message._id,
+		username: message.u.username,
+		name: message.u.name,
+		ts: new Date(message.ts),
+		pinned: message.pinned,
+		drid: message.drid,
+	};
+
 	return (
 		<>
 			<MessageDivider>{formatDate(message._updatedAt)}</MessageDivider>
@@ -84,7 +95,7 @@ const ContextMessage = ({
 						<MessageRole>{room.name || room.fname || 'DM'}</MessageRole>
 					</MessageHeader>
 					<MessageBody>
-						{!!quotes?.length && <Attachments attachments={quotes} />}
+						{!!quotes?.length && <Attachments attachments={quotes} source={source} />}
 						{!message.blocks?.length && !!message.md?.length ? (
 							<>
 								{(!isEncryptedMessage || message.e2e === 'done') && (
@@ -98,7 +109,7 @@ const ContextMessage = ({
 							)
 						)}
 
-						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} source={source} />}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					</MessageBody>
 					<ReportReasonCollapsible>

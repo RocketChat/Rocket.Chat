@@ -25,6 +25,12 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
+	ts?: Date;
+	drid?: string;
+	pinned?: boolean;
+	originMid?: string;
+	originTs?: Date;
+	originRid?: string;
 };
 
 export type MediaPlayerContextValue = {
@@ -43,6 +49,7 @@ export type MediaPlayerContextValue = {
 	cyclePlaybackRate: () => void;
 	/** Stops playback and clears the active track. */
 	close: () => void;
+	updateTrack: (next: PersistentAudioTrack) => void;
 	/** Whether the given track id is the one currently owned by the shared element. */
 	isActive: (id: string) => boolean;
 };
@@ -60,6 +67,7 @@ export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
 	seek: noop,
 	cyclePlaybackRate: noop,
 	close: noop,
+	updateTrack: noop,
 	isActive: () => false,
 });
 

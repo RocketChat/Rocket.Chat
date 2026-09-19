@@ -16,5 +16,6 @@ export function createQuoteAttachment(
 		author_icon: userAvatarUrl,
 		attachments: message.attachments || [],
 		ts: message.ts,
+		rid: message.rid,
 	};
 }
