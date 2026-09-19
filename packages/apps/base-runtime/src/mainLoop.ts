@@ -8,11 +8,11 @@ import outboundMessageHandler from './handlers/outboundcomms-handler';
 import handleScheduler from './handlers/scheduler-handler';
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
-import { decoder } from './lib/codec';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
 import { sendMetrics } from './lib/metricsCollector';
 import type { RequestContext } from './lib/requestContext';
+import { applySecureFieldsDeep } from './lib/secureFields';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -86,42 +86,49 @@ function handleResponse(response: Messenger.JsonRpcResponse): void {
 	Messenger.RPCResponseObserver.emit(`response:${response.payload.id}`, payload);
 }
 
+async function handleIncomingMessage(message: unknown): Promise<void> {
+	try {
+		// Process PING command first as it is not JSON RPC
+		if (message === COMMAND_PING) {
+			void Messenger.pongResponse();
+			sendMetrics();
+			return;
+		}
+
+		const JSONRPCMessage = Messenger.parseMessage(applySecureFieldsDeep(message) as Record<string, unknown>);
+
+		if (Messenger.isRequest(JSONRPCMessage)) {
+			void requestRouter(JSONRPCMessage);
+			return;
+		}
+
+		if (Messenger.isResponse(JSONRPCMessage)) {
+			handleResponse(JSONRPCMessage);
+		}
+	} catch (error) {
+		if (Messenger.isErrorResponse(error)) {
+			await Messenger.errorResponse(error);
+		} else {
+			await Messenger.sendParseError();
+		}
+	}
+}
+
 /**
  * The platform-agnostic message loop shared by every runtime.
  *
- * Adapters are expected to wire up their platform seams — transport, sandbox
+ * Adapters are expected to wire up their platform seams — sandbox
  * `require`/globals, error listeners — during bootstrap and only then invoke
- * this loop. It reads messages from `process.stdin` (a `node:` API available on
- * every supported platform) and dispatches them to the shared handlers.
+ * this loop. It receives messages from the host over the IPC channel and
+ * dispatches them to the shared handlers.
  */
-export async function startMainLoop(): Promise<void> {
+export function startMainLoop(): void {
+	process.on('message', (message) => void handleIncomingMessage(message));
+
+	// Without a connected IPC channel this process has no host to serve; exit
+	// instead of lingering as an orphan when the host dies or disconnects
+	process.on('disconnect', () => process.exit(0));
+
+	// The host waits for this notification before sending any message
 	Messenger.sendNotification({ method: 'ready', params: [] });
-
-	for await (const message of decoder.decodeStream(process.stdin)) {
-		try {
-			// Process PING command first as it is not JSON RPC
-			if (message === COMMAND_PING) {
-				void Messenger.pongResponse();
-				void sendMetrics();
-				continue;
-			}
-
-			const JSONRPCMessage = Messenger.parseMessage(message as Record<string, unknown>);
-
-			if (Messenger.isRequest(JSONRPCMessage)) {
-				void requestRouter(JSONRPCMessage);
-				continue;
-			}
-
-			if (Messenger.isResponse(JSONRPCMessage)) {
-				handleResponse(JSONRPCMessage);
-			}
-		} catch (error) {
-			if (Messenger.isErrorResponse(error)) {
-				await Messenger.errorResponse(error);
-			} else {
-				await Messenger.sendParseError();
-			}
-		}
-	}
 }

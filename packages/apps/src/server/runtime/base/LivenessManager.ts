@@ -79,12 +79,6 @@ export class LivenessManager {
 			this.lastHeartbeatTimestamp = Date.now();
 			this.pingTimeoutConsecutiveCount = 0;
 		});
-
-		this.controller.on('error', async (reason) => {
-			if (reason instanceof Error && reason.message.startsWith('DECODE_ERROR')) {
-				await this.restartProcess('Decode error', 'controller');
-			}
-		});
 	}
 
 	public getRuntimeData() {
