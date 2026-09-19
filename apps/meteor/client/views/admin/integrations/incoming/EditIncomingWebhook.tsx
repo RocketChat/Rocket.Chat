@@ -59,7 +59,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 	const {
 		reset,
 		handleSubmit,
-		formState: { isDirty },
+		formState: { isDirty, isValid },
 	} = methods;
 
 	const handleDeleteIntegration = useCallback(() => {
@@ -122,7 +122,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
 					</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} primary type='submit' disabled={!isValid}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
