@@ -59,7 +59,7 @@ Meteor.startup(() => {
 
 		Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
-		Accounts.emailTemplates.from = `${settings.get('Site_Name')} <${settings.get('From_Email')}>`;
+		Accounts.emailTemplates.from = settings.get('From_Email');;
 	});
 });
 
