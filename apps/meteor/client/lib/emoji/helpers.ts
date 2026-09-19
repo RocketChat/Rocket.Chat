@@ -61,6 +61,18 @@ export const createPickerEmojis = (
 	return [mappedCategories, categoriesIndexes];
 };
 
+export const getCurrentCategory = (categoriesIndexes: CategoriesIndexes, startIndex: number, endIndex: number) => {
+	const lastCategory = categoriesIndexes.at(-1);
+
+	// the last category can be short enough that its divider never reaches the top of the list,
+	// so it becomes the current one as soon as that divider is rendered
+	if (lastCategory && lastCategory.index <= endIndex) {
+		return lastCategory;
+	}
+
+	return categoriesIndexes.findLast(({ index }) => index < startIndex) ?? categoriesIndexes[0];
+};
+
 export const createEmojiList = (
 	customItemsLimit: number,
 	category: string,
