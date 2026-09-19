@@ -682,13 +682,20 @@ import { IS_EE } from '../../e2e/config/constants';
 		it('should not persist a user block list written while the feature is off', async () => {
 			await request
 				.post(api('users.setPreferences'))
-				.set(hiderCredentials)
+				.set(bystanderCredentials)
 				.send({ data: { statusVisibilityDenied: [viewer.username] } })
 				.expect(200);
 
 			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', true);
 
-			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
+			await request
+				.get(api('users.info'))
+				.set(bystanderCredentials)
+				.query({ userId: bystander._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.user.settings?.preferences?.statusVisibilityDenied ?? []).to.be.an('array').that.is.empty;
+				});
 
 			await updateEESetting('Accounts_StatusVisibility_Admin_Enabled', false);
 		});
