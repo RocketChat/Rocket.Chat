@@ -33,7 +33,7 @@ import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
