@@ -74,7 +74,7 @@
 		"@types/react": "~19.2.18",
 		"@types/webpack-env": "~1.18.8",
 		"autoprefixer": "^10.5.4",
-		"babel-loader": "~10.0.0",
+		"babel-loader": "~10.1.1",
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.11.0",
 		"cssnano": "^7.1.9",
