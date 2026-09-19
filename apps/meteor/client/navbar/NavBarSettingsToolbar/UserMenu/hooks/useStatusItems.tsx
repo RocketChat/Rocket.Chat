@@ -1,4 +1,5 @@
-import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -16,6 +17,7 @@ import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
 import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
+import UserStatusDisabledInfo from '../../../../views/account/profile/UserStatusDisabledInfo';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
@@ -75,13 +77,27 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		staleTime: Infinity,
 	});
 
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const userPresenceDisabled = user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled;
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const handleStatusVisibility = useStatusVisibilityModalHandler();
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled;
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
+		if (userPresenceDisabled || workspacePresenceDisabled) {
+			return [
+				{
+					id: 'user-status-disabled',
+					status: <UserStatus status={UserStatusEnum.OFFLINE} />,
+					content: t('Offline'),
+					addon: <UserStatusDisabledInfo workspace={workspacePresenceDisabled} />,
+				},
+			];
+		}
+
 		if (presenceDisabled) {
 			return [
 				{
@@ -174,6 +190,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
+		userPresenceDisabled,
+		workspacePresenceDisabled,
 		allowUserStatusMessageChange,
 		t,
 		handleStatusDisabledModal,

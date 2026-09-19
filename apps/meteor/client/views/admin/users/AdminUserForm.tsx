@@ -23,6 +23,7 @@ import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
+	usePermission,
 	useSetting,
 	useEndpoint,
 	useRouter,
@@ -30,6 +31,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
@@ -40,10 +42,12 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
@@ -55,7 +59,12 @@ export type AdminUserFormProps = {
 };
 
 export type UserFormProps = Omit<
-	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	UserCreateParamsPOST & {
+		avatar: AvatarObject;
+		passwordConfirmation: string;
+		freeSwitchExtension?: string;
+		statusVisibilityDeniedByAdmin?: string[];
+	},
 	'fields'
 >;
 
@@ -84,6 +93,8 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
+	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
@@ -99,6 +110,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
+	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -124,7 +139,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
+	const showUserStatusSection = userStatusEnabled && adminStatusHidingEnabled && canViewFullOtherUserInfo && canEditOtherUserInfo;
+	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -142,6 +159,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
+			queryClient.invalidateQueries({ queryKey: managedPresenceQueryKeys.all });
 			router.navigate(`/admin/users/info/${_id}`);
 			onReload();
 			refetchUserFormData?.();
@@ -171,13 +189,22 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
-			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
+			return handleUpdateUser.mutateAsync({
+				userId: userData?._id,
+				data: {
+					...userFormData,
+					...(showUserStatusSection && {
+						presenceDisabledByAdmin,
+						...(statusVisibilityDeniedByAdmin && { statusVisibilityDeniedByAdmin }),
+					}),
+				},
+			});
 		}
 
-		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
+		return handleCreateUser.mutateAsync({ ...userFormData, ...(showUserStatusSection && { presenceDisabledByAdmin }), fields: '' });
 	});
 
 	const nameId = useId();
@@ -186,6 +213,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
+	const userStatusId = useId();
+	const hiddenFromId = useId();
 	const bioId = useId();
 	const nicknameId = useId();
 	const passwordId = useId();
@@ -474,8 +503,35 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</>
 						)}
 					</Field>
+					{showUserStatusSection && (
+						<Field>
+							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
+								<FieldLabel htmlFor={userStatusId}>{t('Show_status')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='presenceDisabledByAdmin'
+										render={({ field: { ref, onChange, value } }) => (
+											<ToggleSwitch
+												id={userStatusId}
+												ref={ref}
+												aria-describedby={`${userStatusId}-hint`}
+												onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+												checked={value !== true}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Box>
+							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
+								{t('User_presence_admin_hint')}
+							</FieldHint>
+						</Field>
+					)}
 					<Field>
-						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
+						<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
+							{t('StatusMessage')}
+						</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -487,9 +543,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									<TextInput
 										{...field}
 										id={statusTextId}
+										disabled={statusFieldsDisabled}
 										error={errors?.statusText?.message}
 										aria-invalid={errors.statusText ? 'true' : 'false'}
-										aria-describedby={`${statusTextId}-error`}
+										aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 										flexGrow={1}
 									/>
 								)}
@@ -500,7 +557,33 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								{errors.statusText.message}
 							</FieldError>
 						)}
+						<FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
 					</Field>
+					{showUserStatusSection && !isNewUserPage && (
+						<Field>
+							<FieldLabel htmlFor={hiddenFromId} disabled={statusFieldsDisabled}>
+								{t('Hide_presence_from')}
+							</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='statusVisibilityDeniedByAdmin'
+									render={({ field: { value, onChange } }) => (
+										<UserAutoCompleteMultiple
+											id={hiddenFromId}
+											value={value}
+											onChange={onChange}
+											disabled={statusFieldsDisabled}
+											exceptions={userData?.username ? [userData.username] : undefined}
+											aria-describedby={`${hiddenFromId}-hint`}
+											placeholder={t('Select_users')}
+										/>
+									)}
+								/>
+							</FieldRow>
+							<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_presence_from_hint')}</FieldHint>
+						</Field>
+					)}
 					<Field>
 						<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
 						<FieldRow>
