@@ -1,9 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
-import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
+import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
-import { useEffect, useSyncExternalStore, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MediaCallLogger } from './MediaCallLogger';
@@ -25,7 +26,6 @@ const getSessionIdKey = (userId: string) => {
 };
 
 type MediaSessionStoreEventMap = {
-	change: void;
 	requestToast: { message: TranslationKey; args?: Record<string, string>; type: 'error' | 'success' | 'info' | 'warning' };
 };
 
@@ -70,35 +70,20 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 	private sendSignalFn: SignalTransport | null = null;
 
-	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) | null = null;
-
 	private failedScreenShareAttempts = 0;
 
 	private logger = new MediaCallLogger();
 
 	private popoutWindow: Window | undefined;
 
+	private lastSessionId: string | undefined;
+
 	constructor() {
 		super();
 	}
 
-	private change() {
-		this.emit('change');
-	}
-
-	public onChange(callback: () => void) {
-		return this.on('change', callback);
-	}
-
 	private requestToast({ message, args, type }: MediaSessionStoreEventMap['requestToast']) {
 		this.emit('requestToast', { message, args, type });
-	}
-
-	private webrtcProcessorFactory(config: WebRTCProcessorConfig) {
-		if (!this._webrtcProcessorFactory) {
-			throw new Error('WebRTC processor factory not set');
-		}
-		return this._webrtcProcessorFactory(config);
 	}
 
 	private sendSignal(signal: ClientMediaSignal) {
@@ -124,6 +109,13 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		}
 
 		window.sessionStorage.removeItem(key);
+
+		// never resume a session this tab created itself: the stored id is written on creation, so a re-created
+		// instance (StrictMode remount, userId change and back) would otherwise adopt the id of the one it replaced
+		if (oldSessionId === this.lastSessionId) {
+			return undefined;
+		}
+
 		return oldSessionId;
 	}
 
@@ -182,21 +174,38 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		}
 	}
 
-	private cleanupInstance() {
-		if (this.sessionInstance !== null) {
-			this.sessionInstance.endSession();
-			this.sessionInstance = null;
+	public cleanupInstance() {
+		if (this.sessionInstance === null) {
+			return;
 		}
+		this.sessionInstance.endSession();
+		this.sessionInstance = null;
+		this.sendSignalFn = null;
 	}
 
-	private makeInstance(userId: string) {
+	public getInstance(
+		userId: string,
+		sendSignalFn: SignalTransport,
+		getWebRTCConfig: () => { iceServers: RTCIceServer[]; iceGatheringTimeout: number },
+	) {
+		// must be idempotent: it's called from render, which may run more than once per commit (StrictMode, discarded renders)
+		if (this.sessionInstance?.userId === userId) {
+			return this.sessionInstance;
+		}
+		return this.makeInstance(userId, sendSignalFn, getWebRTCConfig);
+	}
+
+	private makeInstance(
+		userId: string,
+		sendSignalFn: SignalTransport,
+		getWebRTCConfig: () => { iceServers: RTCIceServer[]; iceGatheringTimeout: number },
+	) {
 		this.cleanupInstance();
 
 		this.failedScreenShareAttempts = 0;
 
-		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
-			return null;
-		}
+		// must be set before the session is constructed: the constructor already sends the register signal
+		this.sendSignalFn = sendSignalFn;
 
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
@@ -204,7 +213,11 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 				void this.sendSignal(signal);
 			},
 			processorFactories: {
-				webrtc: (config) => this.webrtcProcessorFactory(config),
+				// config read on every processor creation, so setting/ice changes apply without recreating the session
+				webrtc: (config) => {
+					const { iceServers, iceGatheringTimeout } = getWebRTCConfig();
+					return new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout });
+				},
 			},
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
 			mediaStreamFactory: (...args) => this.getUserMedia(...args),
@@ -215,51 +228,13 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			autoSync: true,
 		});
 
+		this.lastSessionId = this.sessionInstance.sessionId;
+
 		if (window.sessionStorage) {
 			window.sessionStorage.setItem(getSessionIdKey(userId), this.sessionInstance.sessionId);
 		}
 
-		this.change();
-
 		return this.sessionInstance;
-	}
-
-	public getInstance(userId?: string, enabled = true) {
-		if (!enabled) {
-			this.cleanupInstance();
-			return null;
-		}
-
-		if (!userId) {
-			return null;
-		}
-
-		if (this.sessionInstance?.userId === userId) {
-			return this.sessionInstance;
-		}
-
-		return this.makeInstance(userId);
-	}
-
-	public setSendSignalFn(sendSignalFn: SignalTransport) {
-		this.sendSignalFn = sendSignalFn;
-		this.change();
-		return () => {
-			this.sendSignalFn = null;
-		};
-	}
-
-	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
-		this._webrtcProcessorFactory = factory;
-		this.change();
-	}
-
-	public processSignal(signal: ServerMediaSignal, userId?: string) {
-		if (!this.sessionInstance || this.sessionInstance.userId !== userId) {
-			return;
-		}
-
-		void this.sessionInstance.processSignal(signal);
 	}
 
 	public setPopoutWindow(popoutWindow?: Window) {
@@ -280,6 +255,7 @@ export const useSetPopoutWindow = (popoutWindow?: Window) => {
 };
 
 export const useMediaSessionInstance = (userId?: string, enabled = true) => {
+	const [instance, setInstance] = useState<MediaSignalingSession | undefined>(undefined);
 	const { t } = useTranslation();
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
@@ -289,45 +265,31 @@ export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	useEffect(() => {
-		mediaSession.setWebRTCProcessorFactory(
-			(config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout }),
-		);
-	}, [iceServers, iceGatheringTimeout]);
+	useEffect(
+		() => mediaSession.on('requestToast', ({ message, args, type }) => dispatchToastMessage({ message: t(message, args), type })),
+		[dispatchToastMessage, t],
+	);
+
+	const sendSignal = useStableCallback((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
+	const getWebRTCConfig = useStableCallback(() => ({ iceServers, iceGatheringTimeout }));
 
 	useEffect(() => {
-		// TODO: This stream is not typed.
-		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
-	}, [writeStream, userId]);
-
-	useEffect(() => {
-		if (!userId) {
+		if (!userId || !enabled) {
+			setInstance(undefined);
 			return;
 		}
 
-		const unsubNotification = notifyUserStream(`${userId}/media-signal`, (signal: ServerMediaSignal) =>
-			mediaSession.processSignal(signal, userId),
-		);
+		const instance = mediaSession.getInstance(userId, sendSignal, getWebRTCConfig);
+
+		setInstance(instance);
+
+		const subscription = notifyUserStream(`${userId}/media-signal`, (signal: ServerMediaSignal) => instance.processSignal(signal));
 
 		return () => {
-			unsubNotification();
+			subscription();
+			mediaSession.cleanupInstance();
 		};
-	}, [userId, notifyUserStream]);
+	}, [userId, enabled, sendSignal, getWebRTCConfig, notifyUserStream]);
 
-	useEffect(() => {
-		return mediaSession.on('requestToast', ({ message, args, type }) => {
-			dispatchToastMessage({ message: t(message, args), type });
-		});
-	}, [dispatchToastMessage, t]);
-
-	const instance = useSyncExternalStore(
-		useCallback((callback) => {
-			return mediaSession.onChange(callback);
-		}, []),
-		useCallback(() => {
-			return mediaSession.getInstance(userId, enabled);
-		}, [userId, enabled]),
-	);
-
-	return instance ?? undefined;
+	return instance;
 };
