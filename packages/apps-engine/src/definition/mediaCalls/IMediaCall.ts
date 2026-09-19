@@ -16,16 +16,25 @@ export type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangu
  */
 export type MediaCallOrigin = 'internal' | 'sip-outbound' | 'sip-inbound';
 
+/** Whoever moved a call along, which may be the workspace itself. */
 export interface IMediaCallActor {
+	/** What kind of party this is. */
 	type: MediaCallActorType | 'server';
+	/** The party's identifier. */
 	id: string;
 }
 
+/** One of the two ends of a call. */
 export interface IMediaCallContact {
+	/** What kind of party this is. */
 	type: MediaCallActorType;
+	/** The party's identifier. */
 	id: string;
+	/** The username, when the party is a workspace user. */
 	username?: string;
+	/** The name to show for the party. */
 	displayName?: string;
+	/** The telephony extension, when the party is reached over SIP. */
 	sipExtension?: string;
 }
 

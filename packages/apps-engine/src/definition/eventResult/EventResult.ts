@@ -29,10 +29,14 @@ type Marker = { '@kind': typeof EVENT_RESULT_KIND };
 /** Key of the phantom on `PatchEventResult` — see the type for what it is for. */
 declare const PATCH_PHANTOM_KEY: '__patchedType';
 
+/** The phantom key's type, so a caller can name it without reaching for the declaration. */
 export type PatchPhantomKey = typeof PATCH_PHANTOM_KEY;
 
+/** A message the workspace translates, so the reader sees it in their own language. */
 export type I18nMessage = {
+	/** The translation key the App ships. */
 	key: string;
+	/** The values to fill the translation's placeholders with. */
 	args?: { [key: string]: string | number };
 };
 
@@ -51,6 +55,12 @@ export type PreventReason = { reason: string; i18n?: never } | { i18n: I18nMessa
 /** Branded variant returned by `EventResult.prevent()`. */
 export type PreventEventResult = Marker & { type: 'prevent' } & PreventReason;
 
+/**
+ * Whatever a handler returns: let the action through, change it, or block it.
+ *
+ * Declare the handler's return type as this with the patch type filled in;
+ * that is what makes `EventResult.patch` check the properties you pass.
+ */
 export type MarkedEventResult<T = unknown> = PassEventResult | PatchEventResult<T> | PreventEventResult;
 
 /**
