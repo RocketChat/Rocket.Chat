@@ -4,6 +4,7 @@ import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSkeleton';
 import BaseGroupPage from '../groups/BaseGroupPage';
 import EnterpriseGroupPage from '../groups/EnterpriseGroupPage';
+import ExchangeGroupPage from '../groups/ExchangeGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
 import SAMLGroupPage from '../groups/SAMLGroupPage';
@@ -26,6 +27,10 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
+	}
+
+	if (groupId === 'Outlook_Calendar') {
+		return <ExchangeGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'SAML') {
