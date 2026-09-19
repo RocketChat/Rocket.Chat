@@ -76,7 +76,7 @@ describe('renderComposerContent', () => {
 
 		render(mountInput('a *b*'));
 
-		expect(renderMock).toHaveBeenCalledWith(expect.anything(), 'a *b*');
+		expect(renderMock).toHaveBeenCalledWith(expect.anything(), 'a *b*', {});
 	});
 
 	it('keeps the rendered markup when it holds the same text as the source', () => {

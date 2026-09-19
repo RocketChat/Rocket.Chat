@@ -33,6 +33,7 @@ import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
@@ -164,6 +165,21 @@ const RichTextMessageBox = ({
 		[customDomains],
 	);
 
+	const resolveUserMention = useCallback((mention: string) => {
+		const normalizedMention = normalizeUsername(mention);
+		const mention = Messages.state.flatMap(({ mentions }) => mentions ?? []).find(
+			({ username, type }) => type !== 'team' && username && normalizeUsername(username) === normalizedMention,
+		);
+
+		return mention ? { _id: mention._id, username: mention.username, name: mention.name } : undefined;
+	}, []);
+
+	const resolveChannelMention = useCallback((mention: string) => {
+		const channel = Subscriptions.state.find(({ name, fname }) => name === mention || fname === mention);
+
+		return channel ? { _id: channel._id, name: channel.name, fname: channel.fname } : undefined;
+	}, []);
+
 	const callbackRef = useCallback(
 		(node: HTMLDivElement) => {
 			if (node === null && chat.composer) {
@@ -176,13 +192,19 @@ const RichTextMessageBox = ({
 			}
 
 			chat.setComposerAPI(
-				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
-					rid: room._id,
-					tmid,
-				}),
+				createRichTextComposerAPI(
+					node,
+					persistLocal,
+					initialValue,
+					quoteChainLimit,
+					parseOptions,
+					messageComposerRef,
+					{ rid: room._id, tmid },
+					{ resolveUserMention, resolveChannelMention },
+				),
 			);
 		},
-		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
+		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, resolveChannelMention, resolveUserMention, room._id, tmid],
 	);
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');

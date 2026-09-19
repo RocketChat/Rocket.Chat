@@ -1,12 +1,13 @@
+import type { ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
 import { parse } from '@rocket.chat/message-parser';
 
 import { renderComposerContent } from './messageStateHandler';
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
-const mountMarkup = (text: string): HTMLDivElement => {
+const mountMarkup = (text: string, context: ComposerMarkupContextValue = {}): HTMLDivElement => {
 	const input = document.createElement('div');
-	input.innerHTML = renderComposerMarkup(parse(text, {}), text);
+	input.innerHTML = renderComposerMarkup(parse(text, {}), text, context);
 	document.body.appendChild(input);
 	return input;
 };
@@ -25,6 +26,25 @@ const stripLineEnd = (text: string): string => text.replace(/\n$/, '');
 afterEach(() => {
 	window.getSelection()?.removeAllRanges();
 	document.body.innerHTML = '';
+});
+
+describe('mention resolution', () => {
+	it('uses the supplied resolvers when rendering user and channel mentions', () => {
+		const resolveUserMention = jest.fn(() => ({ _id: 'user-id', username: 'resolved-alice', name: 'Alice' }));
+		const resolveChannelMention = jest.fn(() => ({ _id: 'room-id', name: 'general', fname: 'Resolved General' }));
+
+		const input = mountMarkup('hi @alice #general', {
+			resolveUserMention,
+			resolveChannelMention,
+		});
+
+		expect(resolveUserMention).toHaveBeenCalledWith('alice');
+		expect(resolveChannelMention).toHaveBeenCalledWith('general');
+		expect(input.textContent).toContain('@alice');
+		expect(input.textContent).toContain('#general');
+		expect(input.querySelector('[data-uid="user-id"]')).not.toBeNull();
+		expect(input.querySelector('[data-rid="room-id"]')).not.toBeNull();
+	});
 });
 
 describe('text exactness and caret round-trip on real rendered markup', () => {
