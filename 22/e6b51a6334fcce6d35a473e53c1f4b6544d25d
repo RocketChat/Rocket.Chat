@@ -1,0 +1,19 @@
+docs/adr/0002-streamer-package-barrel-entry.md
+  s_00ff27bda72447::t_a9d73a39a587cd 1,11-27,31-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "22e6b51a6334fcce6d35a473e53c1f4b6544d25d",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

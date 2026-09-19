@@ -1,0 +1,20 @@
+apps/meteor/package.json
+  h_4c386397e672f4 113
+ee/packages/federation-matrix/package.json
+  h_4c386397e672f4 25
+packages/core-services/package.json
+  h_4c386397e672f4 21
+yarn.lock
+  h_4c386397e672f4 9271,9505,9534-9536,9550,10147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c0c1172d6e5a00584e4c74ee3cc0374b56a24e3e",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

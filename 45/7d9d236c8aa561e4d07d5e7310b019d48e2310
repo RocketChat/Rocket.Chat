@@ -1,0 +1,45 @@
+ee/apps/ddp-streamer/src/Publication.ts
+  s_00ff27bda72447::t_f85f305791ea3a 3
+apps/meteor/server/services/meteor/service.ts
+  s_00ff27bda72447::t_33b6a0d3eaa6f6 6
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_00ff27bda72447::t_c8516435955a8d 6-7
+packages/streamer/tsconfig.json
+  s_00ff27bda72447::t_fe7c9188854fb9 6
+apps/meteor/ee/server/apps/communication/websockets.ts
+  s_00ff27bda72447::t_f1fe53e082e415 6
+apps/meteor/server/startup/localServices.ts
+  s_00ff27bda72447::t_819498dff3b978 2
+packages/streamer/src/index.ts
+  s_00ff27bda72447::t_41fd89ff2f5ee0 1-6
+apps/meteor/server/lib/import/classes/ImporterWebsocket.ts
+  s_00ff27bda72447::t_9614a73b2158a9 2
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_00ff27bda72447::t_339c056ce6d014 3
+apps/meteor/ee/server/local-services/instance/service.ts
+  s_00ff27bda72447::t_918168cc1c8098 8
+apps/meteor/ee/server/startup/federation.ts
+  s_00ff27bda72447::t_89ad817572cbb8 8
+packages/streamer/package.json
+  s_00ff27bda72447::t_8dcf798ba19e59 10-11,13
+ee/apps/ddp-streamer/src/Streamer.ts
+  s_00ff27bda72447::t_469d79e22b3aa7 3-4
+ee/apps/ddp-streamer/src/service.ts
+  s_00ff27bda72447::t_0c5a071d8f38e8 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "457d9d236c8aa561e4d07d5e7310b019d48e2310",
+  "prompts": {},
+  "sessions": {
+    "s_00ff27bda72447": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a1ce84c-c7fe-4f64-a56f-8f25ead841ee",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
