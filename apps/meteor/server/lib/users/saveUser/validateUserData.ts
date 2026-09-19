@@ -9,6 +9,7 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
 import { getRoleIds } from '../../authorization/getRoles';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 import { checkEmailAvailability } from '../checkEmailAvailability';
 import { checkUsernameAvailability } from '../checkUsernameAvailability';
 
@@ -33,6 +34,17 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 		throw new MeteorError('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
+		});
+	}
+
+	if (
+		!isUpdateUserData(userData) &&
+		userData.presenceDisabledByAdmin !== undefined &&
+		(!(await hasPermissionAsync(userId, 'edit-other-user-info')) || !isAdminHidingAllowed())
+	) {
+		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
 		});
 	}
 
