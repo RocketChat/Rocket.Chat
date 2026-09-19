@@ -27,16 +27,18 @@ import _ from 'underscore';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { refreshLoginServices } from '../../lib/refreshLoginServices';
-import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
+import { SettingValidationError } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
+ refactor/shared-settings-validator
 import type { FetchedSetting } from '../../settings/SettingsRegistry';
-import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
+ develop
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 import { setValue } from '../../settings/raw';
+import { validateSetting } from '../../settings/validateSetting';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -453,11 +455,8 @@ API.v1.post(
 		}
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
-			// TODO(next major): unify both validations into one function with a common API error response
-			checkSettingValueBounds(setting, bodyParams.value);
-
 			try {
-				validateSettingRules([{ _id, value: bodyParams.value }]);
+				validateSetting(setting, bodyParams.value);
 			} catch (error) {
 				if (error instanceof SettingValidationError) {
 					return API.v1.failure(error.message, 'error-setting-validation-failed');
