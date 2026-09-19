@@ -6,7 +6,7 @@ import { registerAccessTokenService } from './oauth';
 
 const whitelistedFields = ['id', 'name', 'description', 'profile_image_url', 'profile_image_url_https', 'lang', 'email'];
 
-const getIdentity = async function (accessToken, appId, appSecret, accessTokenSecret) {
+const getIdentity = async function (accessToken: string, appId: string, appSecret: string, accessTokenSecret: string) {
 	const client = new TwitterApi({
 		appKey: appId,
 		appSecret,
@@ -16,8 +16,8 @@ const getIdentity = async function (accessToken, appId, appSecret, accessTokenSe
 	try {
 		return await client.v1.verifyCredentials({ include_email: true });
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Twitter. ${err.message}`), {
-			data: err.data ?? err.response,
+		throw _.extend(new Error(`Failed to fetch identity from Twitter. ${(err as Error).message}`), {
+			data: (err as any).data ?? (err as any).response,
 		});
 	}
 };
@@ -38,7 +38,7 @@ registerAccessTokenService('twitter', async (options) => {
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
+		expiresAt: Date.now() + 1000 * options.expiresIn,
 	};
 
 	const fields = _.pick(identity, whitelistedFields);

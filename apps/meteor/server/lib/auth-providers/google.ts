@@ -7,8 +7,8 @@ import { OAuth } from 'meteor/oauth';
 Meteor.startup(() => {
 	const appRedirectUrl = 'rocketchat://auth';
 
-	const renderEndOfLoginResponse = async (options) => {
-		const escape = (s) => {
+	const renderEndOfLoginResponse = async (options: any) => {
+		const escape = (s: string) => {
 			if (!s) {
 				return s;
 			}
@@ -52,7 +52,7 @@ Meteor.startup(() => {
 		let redirectUrl;
 
 		if (details.loginStyle === 'redirect') {
-			redirectUrl = OAuth._stateFromQuery(details.query).redirectUrl;
+			redirectUrl = OAuth._stateFromQuery(details.query)!.redirectUrl;
 			const appHost = Meteor.absoluteUrl();
 
 			if (redirectUrl.startsWith(appRedirectUrl)) {

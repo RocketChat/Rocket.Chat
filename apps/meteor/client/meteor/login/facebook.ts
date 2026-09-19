@@ -1,53 +1,32 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
-// eslint-disable-next-line import-x/no-duplicates
-import { Facebook } from 'meteor/facebook-oauth';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import-x/no-duplicates
-import { OAuth } from 'meteor/oauth';
 
-import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { createOAuthLoginFunctionForMeteor, launchLogin, redirectUri, stateParam, wrapRequestCredentialFn } from './oauth';
+import type { LoginWithExternalServiceOptions } from '../../definitions/IOAuthProvider';
+import type { AbsoluteUrlOptions } from '../../lib/absoluteUrl';
 
-const { loginWithFacebook } = Meteor;
-const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
-Meteor.loginWithFacebook = (options, callback) => {
-	overrideLoginMethod(loginWithFacebook, [options], callback, loginWithFacebookAndTOTP);
+type LoginWithFacebookOptions = LoginWithExternalServiceOptions & {
+	absoluteUrlOptions?: AbsoluteUrlOptions;
+	params?: Record<string, any>;
+	auth_type?: string;
 };
 
-Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>(
+const requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration, LoginWithFacebookOptions>(
 	'facebook',
-	({ config, loginStyle, options: requestOptions, credentialRequestCompleteCallback }) => {
-		const options = requestOptions as Meteor.LoginWithExternalServiceOptions & {
-			absoluteUrlOptions?: Record<string, any>;
-			params?: Record<string, any>;
-			auth_type?: string;
-		};
+	({ config, loginStyle, options, credentialRequestCompleteCallback, credentialToken }) => {
+		const loginUrl = new URL('https://www.facebook.com/v17.0/dialog/oauth');
+		loginUrl.searchParams.append('client_id', config.appId);
+		loginUrl.searchParams.append('redirect_uri', redirectUri('facebook', config, options.params, options.absoluteUrlOptions));
+		loginUrl.searchParams.append(
+			'display',
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) ? 'touch' : 'popup',
+		);
+		loginUrl.searchParams.append('scope', options.requestPermissions?.join(',') ?? 'email');
+		loginUrl.searchParams.append('state', stateParam(loginStyle, credentialToken, options?.redirectUrl));
+		if (options.auth_type) loginUrl.searchParams.append('auth_type', options.auth_type);
 
-		const credentialToken = Random.secret();
-		const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
-		const display = mobile ? 'touch' : 'popup';
-
-		const scope = options?.requestPermissions ? options.requestPermissions.join(',') : 'email';
-
-		const API_VERSION = Meteor.settings?.public?.packages?.['facebook-oauth']?.apiVersion || '17.0';
-
-		const loginUrlParameters: Record<string, any> = {
-			client_id: config.appId,
-			redirect_uri: OAuth._redirectUri('facebook', config, options.params, options.absoluteUrlOptions),
-			display,
-			scope,
-			state: OAuth._stateParam(loginStyle, credentialToken, options?.redirectUrl),
-			// Handle authentication type (e.g. for force login you need auth_type: "reauthenticate")
-			...(options.auth_type && { auth_type: options.auth_type }),
-		};
-
-		const loginUrl = `https://www.facebook.com/v${API_VERSION}/dialog/oauth?${Object.keys(loginUrlParameters)
-			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
-			.join('&')}`;
-
-		OAuth.launchLogin({
+		launchLogin({
 			loginService: 'facebook',
 			loginStyle,
 			loginUrl,
@@ -56,3 +35,11 @@ Facebook.requestCredential = wrapRequestCredentialFn<FacebookOAuthConfiguration>
 		});
 	},
 );
+
+const loginWithFacebook = createOAuthLoginFunctionForMeteor(requestCredential);
+
+Accounts.oauth.registerService('facebook');
+Accounts.registerClientLoginFunction('facebook', loginWithFacebook);
+Object.assign(Meteor, {
+	loginWithFacebook: (...args: Parameters<typeof loginWithFacebook>) => Accounts.applyLoginFunction('facebook', args),
+});
