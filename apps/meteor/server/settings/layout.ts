@@ -145,6 +145,25 @@ export const createLayoutSettings = () =>
 				i18nDescription: 'Layout_Sidenav_Footer_description',
 			});
 		});
+		await this.section('Layout_Dark_Alpha_Theme', async function () {
+			await this.add('Layout_Dark_Alpha_Watermark_Url', '', {
+				type: 'string',
+				public: true,
+			});
+			await this.add('Layout_Dark_Alpha_Watermark_Opacity', 12, {
+				type: 'int',
+				public: true,
+				enableQuery: [
+					{
+						_id: 'Layout_Dark_Alpha_Watermark_Url',
+						value: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+				],
+			});
+		});
 		await this.section('Custom_Scripts', async function () {
 			await this.add('Custom_Script_On_Logout', '//Add your script', {
 				type: 'code',

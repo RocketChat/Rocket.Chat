@@ -1,5 +1,6 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-client';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { codeBlock } from '../lib/codeBlockStyles';
 
@@ -7,7 +8,7 @@ import { codeBlock } from '../lib/codeBlockStyles';
 // background (the theme anchor) shows through the translucent surfaces.
 // Elevated surfaces are translucent veils, so they blur whatever sits
 // behind them to stay legible over arbitrary content.
-const darkAlphaShell = `#rocket-chat.menu-nav {
+const darkAlphaShellBase = `#rocket-chat.menu-nav {
 	/* !important to outweigh the Box backgroundColor prop's css-in-js rule */
 	background-color: transparent !important;
 }
@@ -48,20 +49,6 @@ const darkAlphaShell = `#rocket-chat.menu-nav {
 .rcx-input-box__wrapper.rcx-input-box__wrapper:not(:focus-within) {
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
 }
-/* workspace watermark: a fixed pseudo-element with its own opacity, so it
-   layers between the translucent anchor and the content without an opaque
-   dim layer (which would block the window vibrancy). Inline style tag —
-   the custom-css endpoint is MIME-refused inside the desktop webview. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background: url('https://commons.wikimedia.org/wiki/Special:FilePath/Seal_of_the_Central_Intelligence_Agency.svg?width=480')
-		center / 480px no-repeat;
-	opacity: 0.12;
-}
 /* alpha veils are not idempotent: exactly ONE painter per region. The
    app-level sidebar wrapper Box paints the T1 veil once; every nested
    Fuselage element that repaints surface-sidebar goes transparent. */
@@ -71,8 +58,30 @@ body::before {
 	background-color: transparent !important;
 }`;
 
+// CSS url() string literal: escape what could break out of the quotes
+const cssUrl = (url: string) => `url("${url.replace(/[\\"\n\r]/g, (c) => `\\${c.charCodeAt(0).toString(16)} `)}")`;
+
+/* workspace watermark (admin setting): a fixed pseudo-element with its own
+   opacity, layered between the anchor and the content — no opaque dim
+   layer, so the body anchor still shows through every veil. It goes in
+   this inline style tag on purpose: the custom-css endpoint is served as
+   text/plain and refused inside webviews. Empty URL = no layer at all. */
+const darkAlphaWatermark = (url: string, opacityPercent: number) => `
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: ${cssUrl(url)} center / 480px no-repeat;
+	opacity: ${Math.min(100, Math.max(0, opacityPercent)) / 100};
+}`;
+
 export const MainLayoutStyleTags = () => {
 	const theme = useThemeMode();
+	const watermarkUrl = useSetting('Layout_Dark_Alpha_Watermark_Url', '').trim();
+	const watermarkOpacity = useSetting('Layout_Dark_Alpha_Watermark_Opacity', 12);
+	const darkAlphaShell = watermarkUrl ? darkAlphaShellBase + darkAlphaWatermark(watermarkUrl, watermarkOpacity) : darkAlphaShellBase;
 
 	return (
 		<>
