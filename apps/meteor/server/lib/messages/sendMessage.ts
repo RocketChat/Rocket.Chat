@@ -263,6 +263,11 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		return;
 	}
 
+	// `parseUrls` is a transient input directive consumed by beforeSave (to decide whether to
+	// populate `message.urls`); it is not part of the persisted message shape. Drop it before
+	// insert so it never reaches the database or leaks into REST responses (type drift, #42086).
+	delete message.parseUrls;
+
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
