@@ -190,10 +190,16 @@ const RichTextMessageBox = ({
 			}
 
 			chat.setComposerAPI(
-				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
-					rid: room._id,
-					tmid,
-				}, { resolveUserMention, resolveChannelMention }),
+				createRichTextComposerAPI(
+					node,
+					persistLocal,
+					initialValue,
+					quoteChainLimit,
+					parseOptions,
+					messageComposerRef,
+					{ rid: room._id, tmid },
+					{ resolveUserMention, resolveChannelMention },
+				),
 			);
 		},
 		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, resolveChannelMention, resolveUserMention, room._id, tmid],
