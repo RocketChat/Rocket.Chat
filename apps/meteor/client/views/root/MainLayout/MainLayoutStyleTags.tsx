@@ -53,8 +53,8 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
    app-level sidebar wrapper Box paints the T1 veil once; every nested
    Fuselage element that repaints surface-sidebar goes transparent. */
 .rcx-sidebar--main.rcx-sidebar--main,
-.rcx-sidebar-v2-collapse-group__bar,
-.rcx-sidebar-v2-footer {
+.rcx-sidebar-collapse-group__bar,
+.rcx-sidebar-footer {
 	background-color: transparent !important;
 }`;
 
