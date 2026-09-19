@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +7,7 @@ import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
+import { useUnhideRoomAction } from '../../../../../hooks/useUnhideRoomAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
@@ -18,21 +20,24 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const { t } = useTranslation();
+	const subscription = useUserSubscription(room._id);
+	const isRoomHidden = subscription?.open === false;
 
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
 	const handleHide = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const handleUnhide = useUnhideRoomAction({ rid: room._id, type: room.t });
 
 	return useMemo(() => {
 		const memoizedActions = {
 			items: [
 				{
-					id: 'hide',
-					content: t('Hide'),
-					icon: 'eye-off' as const,
-					onClick: handleHide,
+					id: isRoomHidden ? 'unhide' : 'hide',
+					content: isRoomHidden ? t('Unhide') : t('Hide'),
+					icon: isRoomHidden ? ('eye' as const) : ('eye-off' as const),
+					onClick: isRoomHidden ? handleUnhide : handleHide,
 				},
 
 				...(onClickEnterRoom
@@ -100,5 +105,17 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [
+		canDeleteRoom,
+		handleConvertToTeam,
+		handleDelete,
+		handleHide,
+		handleUnhide,
+		handleLeave,
+		handleMoveToTeam,
+		isRoomHidden,
+		onClickEdit,
+		onClickEnterRoom,
+		t,
+	]);
 };
