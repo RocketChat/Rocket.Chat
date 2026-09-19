@@ -1,12 +1,14 @@
 import { faker } from '@faker-js/faker';
 import { request as playwrightRequest } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { APIRequestContext, Page } from '@playwright/test';
 
+import { API_PREFIX, BASE_API_URL } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
 import { sendMessageFromUser } from './utils/sendMessage';
+import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -15,17 +17,42 @@ test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ api }) => {
-		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: [Users.user1.data.username] });
-		targetChannel = channel.name as string;
-		const request = await playwrightRequest.newContext();
+	// beforeAll/afterAll only accept worker-scoped fixtures, while `api`
+	// depends on the test-scoped `request` fixture, so build a small
+	// worker-scoped admin client here instead of injecting `api`.
+	const createWorkerAdminApi = async () => {
+		const adminRequest = await playwrightRequest.newContext({
+			baseURL: BASE_API_URL,
+			extraHTTPHeaders: {
+				'X-Auth-Token': Users.admin.data.loginToken,
+				'X-User-Id': Users.admin.data._id,
+			},
+		});
+		const workerApi = {
+			get: (uri: string, params?: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.get(`${prefix}${uri}`, { params }),
+			post: (uri: string, data: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.post(`${prefix}${uri}`, { data }),
+			put: (uri: string, data: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.put(`${prefix}${uri}`, { data }),
+			delete: (uri: string, params?: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.delete(`${prefix}${uri}`, { params }),
+		} as unknown as BaseTest['api'];
+		return { adminRequest, workerApi };
+	};
+
+	test.beforeAll(async () => {
+		const { adminRequest, workerApi } = await createWorkerAdminApi();
 		try {
-			for (const message of ['msg1', 'msg2']) {
-				const response = await sendMessageFromUser(request, Users.user1, channel._id, message);
-				expect(response.success).toBe(true);
+			const { channel } = await createTargetChannelAndReturnFullRoom(workerApi, { members: [Users.user1.data.username] });
+			targetChannel = channel.name as string;
+			const request: APIRequestContext = await playwrightRequest.newContext();
+			try {
+				for (const message of ['msg1', 'msg2']) {
+					const response = await sendMessageFromUser(request, Users.user1, channel._id, message);
+					expect(response.success).toBe(true);
+				}
+			} finally {
+				await request.dispose();
 			}
 		} finally {
-			await request.dispose();
+			await adminRequest.dispose();
 		}
 	});
 
@@ -34,8 +61,13 @@ test.describe('Messaging', () => {
 		await channelPage.goto();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await deleteChannel(api, targetChannel);
+	test.afterAll(async () => {
+		const { adminRequest, workerApi } = await createWorkerAdminApi();
+		try {
+			await deleteChannel(workerApi, targetChannel);
+		} finally {
+			await adminRequest.dispose();
+		}
 	});
 
 	test.describe.serial('Navigation', () => {
