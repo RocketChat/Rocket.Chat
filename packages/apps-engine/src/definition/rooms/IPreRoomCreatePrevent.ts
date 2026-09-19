@@ -1,6 +1,13 @@
 import type { IHttp, IPersistence, IRead } from '../accessors';
 import type { IRoom } from './IRoom';
 
+/**
+ * Lets an App stop a room from being created.
+ *
+ * The room does not exist yet, so nothing an App does here can be attached to
+ * it. To change the room instead of refusing it, implement
+ * `IPreRoomCreateModify`.
+ */
 export interface IPreRoomCreatePrevent {
 	/**
 	 * Checks whether the handler actually shall execute.
