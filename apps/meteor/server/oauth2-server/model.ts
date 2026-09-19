@@ -1,3 +1,5 @@
+import { Logger } from '@rocket.chat/logger';
+
 import type {
 	AuthorizationCode,
 	AuthorizationCodeModel,
@@ -14,7 +16,9 @@ export type ModelConfig = {
 	debug?: boolean;
 };
 
-export class Model implements AuthorizationCodeModel, RefreshTokenModel {
+export const logger = new Logger('OAuth2Server');
+
+class Model implements AuthorizationCodeModel, RefreshTokenModel {
 	private debug: boolean;
 
 	private grants = ['authorization_code', 'refresh_token'];
@@ -25,7 +29,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async verifyScope(token: Token, scope: string | string[]): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
+			logger.debug('in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
 		}
 
 		if (!Array.isArray(scope)) {
@@ -38,7 +42,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getAccessToken(accessToken: string): Promise<Token | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in getAccessToken (bearerToken:', accessToken, ')');
+			logger.debug('in getAccessToken (bearerToken:', accessToken, ')');
 		}
 
 		const token = await OAuthAccessTokens.findOneByAccessToken(accessToken);
@@ -71,7 +75,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getClient(clientId: string, clientSecret?: string): Promise<Client | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in getClient (clientId:', clientId, ', clientSecret:', clientSecret, ')');
+			logger.debug('in getClient (clientId:', clientId, ', clientSecret:', clientSecret, ')');
 		}
 
 		let client;
@@ -96,7 +100,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getAuthorizationCode(authorizationCode: string): Promise<AuthorizationCode | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in getAuthorizationCode (authCode: ${authorizationCode})`);
+			logger.debug(`in getAuthorizationCode (authCode: ${authorizationCode})`);
 		}
 
 		const code = await OAuthAuthCodes.findOneByAuthCode(authorizationCode);
@@ -132,9 +136,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		user: User,
 	): Promise<AuthorizationCode | Falsey> {
 		if (this.debug === true) {
-			console.log(
-				'[OAuth2Server]',
-				'in saveAuthCode (code:',
+			logger.debug('in saveAuthCode (code:',
 				code.authorizationCode,
 				', clientId:',
 				client.id,
@@ -171,9 +173,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey> {
 		if (this.debug === true) {
-			console.log(
-				'[OAuth2Server]',
-				'in saveToken (token:',
+			logger.debug('in saveToken (token:',
 				token.accessToken,
 				', refreshToken:',
 				token.refreshToken,
@@ -215,7 +215,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getRefreshToken(refreshToken: string): Promise<RefreshToken | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);
+			logger.debug(`in getRefreshToken (refreshToken: ${refreshToken})`);
 		}
 
 		// Keep compatibility with old collection
@@ -258,7 +258,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async revokeToken(token: RefreshToken | Token): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in revokeToken (token: ${token.accessToken})`);
+			logger.debug(`in revokeToken (token: ${token.accessToken})`);
 		}
 
 		if (token.refreshToken) {
@@ -277,7 +277,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async revokeAuthorizationCode(code: AuthorizationCode): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in revokeAuthorizationCode (code: ${code.authorizationCode})`);
+			logger.debug(`in revokeAuthorizationCode (code: ${code.authorizationCode})`);
 		}
 		await OAuthAuthCodes.deleteOne({ authCode: code.authorizationCode });
 		return true;
