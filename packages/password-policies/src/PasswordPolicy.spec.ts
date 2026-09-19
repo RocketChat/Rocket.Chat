@@ -212,8 +212,57 @@ describe('Password Policy', () => {
 		const policy = passwordPolicy.getPasswordPolicy();
 
 		expect(policy.enabled).toBe(true);
-		// even when no policy is specified, forbidRepeatingCharactersCount is still configured
-		// since its default value is 3
-		expect(policy.policy.length).toBe(1);
+		// forbidRepeatingCharacters is disabled by default, so the count entry
+		// (and its default of 3) is not reported as an active policy
+		expect(policy.policy.length).toBe(0);
+	});
+
+	it.each([0, -1, 1.5, Number.NaN, 1e21, '3'])('should use the default repeating character count when configured with %p', (count) => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: count as number,
+			throwError: false,
+		});
+
+		// Default count is 3 → "111" is allowed, "1111" is not
+		expect(passwordPolicy.validate('111')).toBe(true);
+		expect(passwordPolicy.validate('1111')).toBe(false);
+
+		expect(passwordPolicy.sendValidationMessage('1111')).toContainEqual({
+			name: 'get-password-policy-forbidRepeatingCharactersCount',
+			isValid: false,
+			limit: 3,
+		});
+
+		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
+			'get-password-policy-forbidRepeatingCharactersCount',
+			{ forbidRepeatingCharactersCount: 3 },
+		]);
+	});
+
+	it('should not lock every password out when configured with a count of 0', () => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: 0,
+			throwError: false,
+		});
+
+		// `(.)\1{0,}` matches any non-empty string, so a count of 0 would reject every password
+		expect(passwordPolicy.validate('1')).toBe(true);
+		expect(passwordPolicy.validate('Passw0rd!')).toBe(true);
+	});
+
+	it('should keep enforcing the rule when configured with an unusable count', () => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: -1,
+			throwError: false,
+		});
+
+		// a `{-1,}` quantifier is read as a literal, which would silently disable the rule
+		expect(passwordPolicy.validate('11111111')).toBe(false);
 	});
 });
