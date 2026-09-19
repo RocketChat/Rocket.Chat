@@ -3,6 +3,7 @@ import type { IClientMediaCallLocalParticipant } from '../IClientMediaCallPartic
 
 export interface ITempMediaCallData {
 	readonly confirmed: false;
+	readonly hidden: boolean;
 	readonly tempCallId: string;
 
 	readonly state: CallState;
