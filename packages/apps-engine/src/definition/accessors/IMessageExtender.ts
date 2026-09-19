@@ -1,6 +1,13 @@
 import type { IMessage, IMessageAttachment } from '../messages';
 import type { RocketChatAssociationModel } from '../metadata';
 
+/**
+ * Adds attachments and custom fields to a message, leaving everything already
+ * on it alone.
+ *
+ * Get one from `IModifyExtender.extendMessage` and hand it back to
+ * `IModifyExtender.finish` to apply the additions.
+ */
 export interface IMessageExtender {
 	kind: RocketChatAssociationModel.MESSAGE;
 
