@@ -1,5 +1,5 @@
 export { ConferenceContext, defaultConferenceContextValue, useConference } from './context/ConferenceContext';
-export type { ConferenceContextValue } from './context/ConferenceContext';
+export type { ConferenceContextValue, ConferencePanel } from './context/ConferenceContext';
 export { OngoingCallsContext, defaultOngoingCallsContextValue, useOngoingCalls } from './context/OngoingCallsContext';
 export type { OngoingCallsContextValue, CallRing } from './context/OngoingCallsContext';
 export { useConferenceChatPanel } from './context/ChatPanelContext';
@@ -43,6 +43,24 @@ export { getConferenceMemberStatus } from './lib/memberStatus';
 export type { ConferenceMemberStatus } from './lib/memberStatus';
 export { PREFLIGHT_FACES_SHOWN, canDeclineCall } from './lib/constants';
 export { CONFERENCE_THEMED_CLASS, narrowRoomStyle } from './lib/panelStyles';
+// The provider-plugin protocol: its vocabulary, and the shapes the member rows and their controls read.
+export { PLUGIN_FEATURES } from './lib/providerPlugin';
+export type {
+	PluginFeature,
+	PluginParticipant,
+	PluginParticipantPermissions,
+	PluginSelf,
+	ProviderPluginActions,
+	ProviderPluginControls,
+} from './lib/providerPlugin';
+export {
+	areAllGuestsMuted,
+	canOfferControl,
+	composeCallParticipants,
+	matchesConferenceMember,
+	resolveParticipant,
+} from './lib/callParticipants';
+export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroups } from './lib/callParticipants';
 
 // Shared with the application's own specs, which build the same calls and members this package's do.
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';

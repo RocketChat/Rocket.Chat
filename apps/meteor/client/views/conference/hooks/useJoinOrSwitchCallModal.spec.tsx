@@ -32,6 +32,9 @@ const renderJoin = async (calls: JoinableVideoConference[]) => {
 		{
 			wrapper: mockAppRoot()
 				.withJohnDoe()
+				// The joinable list is gated on the window, and without it the query never runs — so every case here
+				// would take the "no other call" path whatever the fixture says.
+				.withSetting('VideoConf_Conference_Window_Enabled', true)
 				// Naming the call being left is the point of the confirmation, and the name only reaches the screen
 				// through this string's interpolation — the untranslated key would carry no name at all.
 				.withTranslations('en', 'core', {

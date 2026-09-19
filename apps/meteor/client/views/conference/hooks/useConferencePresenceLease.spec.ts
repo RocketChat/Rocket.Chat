@@ -33,7 +33,7 @@ const runFor = async (ms: number) => {
 		const step = Math.min(remaining, PRESENCE_HEARTBEAT_MS);
 
 		pass(step);
-		// eslint-disable-next-line no-await-in-loop
+
 		await jest.advanceTimersByTimeAsync(step);
 	}
 };

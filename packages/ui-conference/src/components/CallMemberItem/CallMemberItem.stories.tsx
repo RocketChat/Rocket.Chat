@@ -4,7 +4,16 @@ import type { ComponentProps } from 'react';
 import { action } from 'storybook/actions';
 
 import CallMemberItem from './CallMemberItem';
-import { conferenceAppRoot, members, withCallProviders, withLiveRings } from '../../fixtures/storyFixtures';
+import {
+	buildCallParticipant,
+	conferenceAppRoot,
+	members,
+	speakingProvider,
+	withCallProviders,
+	withLiveRings,
+} from '../../fixtures/storyFixtures';
+
+const provider = speakingProvider();
 
 /**
  * One member of a call, labelled with where they stand with it.
@@ -87,4 +96,20 @@ export const ShowingBothNames: Story = {
 export const WithoutRingPermission: Story = {
 	args: { member: members.declined },
 	decorators: [withCallProviders(conferenceAppRoot())],
+};
+
+/**
+ * A member the provider has in the call, so the row carries that participant's own controls beside everything
+ * it already said about them. A member the provider does not have carries none: there is nothing a request
+ * about them could name.
+ */
+export const WithCallControls: Story = {
+	args: {
+		member: members.joined,
+		controls: {
+			participant: buildCallParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' }),
+			features: provider.features,
+			actions: provider.actions,
+		},
+	},
 };

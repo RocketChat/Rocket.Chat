@@ -7,10 +7,12 @@ import {
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
 	useVideoConfLoadCapabilities,
+	useVideoConfStartCall,
 } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -27,6 +29,8 @@ export const useVideoCallRoomAction = () => {
 
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const startCall = useVideoConfStartCall();
+	const preflight = useConferenceWindowEnabled();
 	const loadCapabilities = useVideoConfLoadCapabilities();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
@@ -59,7 +63,17 @@ export const useVideoCallRoomAction = () => {
 		}
 
 		try {
+			// Still asked for, because it is what fails when no provider is available — that error belongs here,
+			// before a window opens, not inside one.
 			await loadCapabilities();
+
+			// The call window asks before it starts anything, so a popup asking the same thing first is one
+			// confirmation too many. Without a preflight to ask, the popup is still where mic and camera are set.
+			if (preflight) {
+				startCall(room._id);
+				return;
+			}
+
 			dispatchPopup({ rid: room._id });
 		} catch (error: any) {
 			dispatchWarning(error.error);

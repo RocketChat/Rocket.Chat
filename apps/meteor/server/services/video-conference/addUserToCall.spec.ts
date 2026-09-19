@@ -87,9 +87,11 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 		providerCapabilities.current = undefined;
 		// Persistent chat fully on and in thread mode, so a join has a thread to follow at all. Discussions have
 		// to be on for that, and the E2E keys stay off, since enforced encryption on private rooms switches
-		// persistent chat back off.
+		// persistent chat back off. The window belongs to thread mode rather than being incidental to it:
+		// without it `getPersistentChatMode` answers `main_room` whatever the mode setting says.
 		settingsValues = {
 			VideoConf_Enable_Persistent_Chat: true,
+			VideoConf_Conference_Window_Enabled: true,
 			VideoConf_Persistent_Chat_Mode: 'thread',
 			Discussion_enabled: true,
 		};
@@ -147,6 +149,18 @@ describe('VideoConfService.addUserToCall provider gating', () => {
 		await service.addUser('call1', 'joiner');
 
 		expect(followStub.calledWith({ tmid: 'msg1', uid: 'joiner' }), 'followed the call thread').to.be.true;
+	});
+
+	// With the window off there is no chat panel to read a thread in, and `getPersistentChatMode` answers
+	// `main_room` whatever the mode setting says — so subscribing anyone here would subscribe them to nothing.
+	it('does not follow the thread while the call window is off', async () => {
+		settingsValues.VideoConf_Conference_Window_Enabled = false;
+		fixture = buildGroupCall([buildMember({ _id: 'host' })], { messages: { started: 'msg1' } });
+
+		await service.addUser('call1', 'joiner');
+
+		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('call1', 'joiner')).to.be.true;
+		expect(followStub.called, 'followed the call thread').to.be.false;
 	});
 
 	// Nor is it the provider's window: a call handed to a provider's own page, held in ours, threads too. This is

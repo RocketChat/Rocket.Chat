@@ -4,8 +4,16 @@ import { action } from 'storybook/actions';
 
 import CallMembersPanel from './CallMembersPanel';
 import type { ConferenceChatAccess, ConferenceMember } from '../../context/definitions';
-import { conferenceAppRoot, members, withCallProviders, withLiveConference } from '../../fixtures/storyFixtures';
+import {
+	buildCallParticipant,
+	conferenceAppRoot,
+	members,
+	speakingProvider,
+	withCallProviders,
+	withLiveConference,
+} from '../../fixtures/storyFixtures';
 import { buildChatAccess } from '../../fixtures/testFixtures';
+import type { ProviderPluginControls } from '../../lib/providerPlugin';
 
 /**
  * The people panel: who is in the call, and who isn't, under headings that count them.
@@ -16,8 +24,8 @@ import { buildChatAccess } from '../../fixtures/testFixtures';
  */
 const withMembers = (
 	shown: ConferenceMember[],
-	{ rid = 'room-id', chatAccess }: { rid?: string; chatAccess?: ConferenceChatAccess } = {},
-) => withLiveConference({ call: { members: shown }, room: { rid, chatAccess } });
+	{ rid = 'room-id', chatAccess, provider }: { rid?: string; chatAccess?: ConferenceChatAccess; provider?: ProviderPluginControls } = {},
+) => withLiveConference({ call: { members: shown }, room: { rid, chatAccess }, provider });
 
 const meta = {
 	component: CallMembersPanel,
@@ -80,4 +88,69 @@ export const NobodyAnsweredYet: Story = {
  */
 export const WithoutARoom: Story = {
 	decorators: [withMembers([members.joined, members.ringing], { rid: undefined })],
+};
+
+/**
+ * With a provider plugin speaking. Each member the provider has in the call carries that participant's own
+ * controls — the panel offers a control only where the provider announced the feature *and* that participant's
+ * flags allow it, so a button here is one the provider will honour.
+ */
+export const WithProviderControls: Story = {
+	decorators: [
+		withMembers([members.joined, members.ringing], {
+			provider: speakingProvider({
+				participants: [buildCallParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' })],
+				self: { participantUuid: 'p-me', micMuted: false, camMuted: false, clientMuted: false, isHost: true, canControl: true },
+			}),
+		}),
+	],
+};
+
+/**
+ * Somebody in the call the conference never invited: a guest with a link, or a telephone. There is no user
+ * behind the row, because the protocol carries names and nothing else.
+ */
+export const WithExternalParticipant: Story = {
+	decorators: [
+		withMembers([members.joined], {
+			provider: speakingProvider({
+				participants: [
+					buildCallParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' }),
+					buildCallParticipant({ uuid: 'p-guest', displayName: 'Jean Bartik (guest)' }),
+				],
+			}),
+		}),
+	],
+};
+
+/**
+ * The lobby, ahead of everyone else because they are all waiting on somebody looking at this panel. Letting
+ * them in is a button rather than a menu item — it is the only thing anyone wants to do here.
+ */
+export const WithLobby: Story = {
+	decorators: [
+		withMembers([members.joined], {
+			provider: speakingProvider({
+				participants: [
+					buildCallParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' }),
+					buildCallParticipant({ uuid: 'p-waiting', displayName: 'Margaret Hamilton', isWaiting: true }),
+				],
+			}),
+		}),
+	],
+};
+
+/**
+ * The same call under a provider that announced only its roster. Nothing is offered, because nothing would be
+ * carried out — the protocol answers no request, so a control that fails looks exactly like one that worked.
+ */
+export const WithoutAnnouncedControls: Story = {
+	decorators: [
+		withMembers([members.joined], {
+			provider: speakingProvider({
+				features: ['roster'],
+				participants: [buildCallParticipant({ uuid: 'p-ada', displayName: 'Ada Lovelace' })],
+			}),
+		}),
+	],
 };

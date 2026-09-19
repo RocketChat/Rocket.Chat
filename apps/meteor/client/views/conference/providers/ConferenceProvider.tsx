@@ -1,4 +1,4 @@
-import type { ConferenceContextValue, ConferenceFailure } from '@rocket.chat/ui-conference';
+import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext } from '@rocket.chat/ui-conference';
 import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,6 +19,7 @@ import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease'
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useProviderPlugin } from '../hooks/useProviderPlugin';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
@@ -72,6 +73,34 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
+
+	/**
+	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry
+	 * its own chat and participants buttons — those are outside the window, and the plugin below is what hears
+	 * them. See `panel` on the conference context.
+	 */
+	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>();
+	const panel = useMemo(() => ({ active: activePanel, set: setActivePanel }), [activePanel]);
+
+	const chatVisible = activePanel === 'chat';
+	// Nothing is unread about a chat the reader is looking at.
+	const hasUnread =
+		!chatVisible && ((showUnread && unreadCount.total > 0) || (Boolean(subscription?.alert) && !subscription?.hideUnreadStatus));
+
+	// Keeps the provider's own controls and this window's panels saying the same thing, and hands back who the
+	// provider has in the call and what may be asked of them — which is what the people panel renders from.
+	// Inert for a provider that speaks none of it.
+	const provider = useProviderPlugin({
+		conferenceUrl: conference.url,
+		chatVisible,
+		participantsVisible: activePanel === 'members',
+		hasUnread,
+		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
+		onToggleParticipants: (active) => setActivePanel(active ? 'members' : undefined),
+		// The same thing hanging up does for a provider that runs the call in here: report the departure and
+		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
+		onLeave: leaveNow,
+	});
 
 	const thread = useMemo(
 		() => ({
@@ -163,6 +192,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			},
 			viewer: { uid, useRealName, displayAvatars, canRingUsers },
 			thread,
+			panel,
+			provider,
 		}),
 		[
 			actions,
@@ -171,6 +202,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			conference,
 			canRingUsers,
 			displayAvatars,
+			panel,
+			provider,
 			renderMemberStatus,
 			renderUserPicker,
 			room,
