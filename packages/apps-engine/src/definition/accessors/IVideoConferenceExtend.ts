@@ -2,6 +2,13 @@ import type { RocketChatAssociationModel } from '../metadata';
 import type { IVideoConferenceUser, VideoConference } from '../videoConferences';
 import type { VideoConferenceMember } from '../videoConferences/IVideoConference';
 
+/**
+ * Records what happened to a conference: who joined, when it ended, and
+ * whatever the provider needs to keep.
+ *
+ * Get one from `IModifyExtender.extendVideoConference` and hand it back to
+ * `IModifyExtender.finish`.
+ */
 export interface IVideoConferenceExtender {
 	kind: RocketChatAssociationModel.VIDEO_CONFERENCE;
 

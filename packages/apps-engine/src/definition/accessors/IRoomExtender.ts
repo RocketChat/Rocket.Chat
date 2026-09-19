@@ -2,6 +2,13 @@ import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 
+/**
+ * Adds members and custom fields to a room, leaving everything already on it
+ * alone.
+ *
+ * Get one from `IModifyExtender.extendRoom` and hand it back to
+ * `IModifyExtender.finish` to apply the additions.
+ */
 export interface IRoomExtender {
 	kind: RocketChatAssociationModel.ROOM;
 
