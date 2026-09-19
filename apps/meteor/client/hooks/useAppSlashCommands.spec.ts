@@ -2,6 +2,7 @@ import type { SlashCommand } from '@rocket.chat/core-typings';
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
++import { createElement, type ReactNode } from 'react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
 import { appsQueryKeys } from '../lib/queryKeys';
@@ -260,6 +261,79 @@ describe('useAppSlashCommands', () => {
 
 		await waitFor(() => {
 			expect(Object.keys(slashCommands.commands)).toHaveLength(largeMockCommands.length);
+		});
+	});
+
+	it('should respect API_Upper_Count_Limit setting for batch size', async () => {
+		const mockCommands: SlashCommand[] = Array.from({ length: 30 }, (_, i) => ({
+			command: `/command${i + 1}`,
+			description: `Description for command ${i + 1}`,
+			params: '',
+			clientOnly: false,
+			providesPreview: false,
+			appId: `app-${i + 1}`,
+			permission: undefined,
+		}));
+
+		mockGetSlashCommands.mockImplementation(({ offset, count }) => {
+			return Promise.resolve({
+				commands: mockCommands.slice(offset, offset + count),
+				total: mockCommands.length,
+				appsLoaded: true,
+			});
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('API_Upper_Count_Limit', 25)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		await waitFor(() => {
+			expect(Object.keys(slashCommands.commands)).toHaveLength(mockCommands.length);
+		});
+
+		expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 25 });
+		expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 25, count: 25 });
+	});
+
+	it.each([0, -1])('should fallback to 100 when API_Upper_Count_Limit is %i', async (upperCountLimit) => {
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('API_Upper_Count_Limit', upperCountLimit)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 100 });
+		});
+	});
+
+	it('should refetch with new batch size when API_Upper_Count_Limit setting changes', async () => {
+		const { rerender } = renderHook(() => useAppSlashCommands(), {
+			wrapper: ({ children, limit = 100 }: { children: ReactNode; limit?: number }) => {
+				const AppRoot = mockAppRoot()
+					.withJohnDoe()
+					.withSetting('API_Upper_Count_Limit', limit)
+					.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+					.build();
+				return createElement(AppRoot, undefined, children);
+			},
+			initialProps: { limit: 100 },
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 100 });
+		});
+
+		rerender({ limit: 25 });
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalledWith({ offset: 0, count: 25 });
 		});
 	});
 
