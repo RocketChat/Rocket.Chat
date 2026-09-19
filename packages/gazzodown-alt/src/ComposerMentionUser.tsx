@@ -14,8 +14,11 @@ const ComposerMentionUser = ({ mention }: ComposerMentionUserProps): ReactElemen
 	const resolved = resolveUserMention?.(mention);
 
 	return (
-		<span className={highlightClassName(mention === 'all' || mention === 'here' ? 'relevant' : 'other')}>
-			@{resolved?.username ?? mention}
+		<span
+			className={highlightClassName(mention === 'all' || mention === 'here' ? 'relevant' : 'other')}
+			{...(resolved && { 'data-uid': resolved._id })}
+		>
+			@{mention}
 		</span>
 	);
 };
