@@ -139,6 +139,24 @@ describe('isValidQuery', () => {
 			expect(isValidQuery(query, props, [])).to.be.true;
 			expect(isValidQuery.errors.length).to.be.equals(0);
 		});
+
+		it('should return false if the query contains an attribute sharing the prefix without dot notation', () => {
+			const props = ['user.*'];
+			const query = {
+				username: '123',
+			};
+			expect(isValidQuery(query, props, [])).to.be.false;
+			expect(isValidQuery.errors.length).to.be.equals(1);
+		});
+
+		it('should return false if the query contains nested attribute sharing prefix without dot boundary', () => {
+			const props = ['email.address.*'];
+			const query = {
+				'email.address_confirmed': true,
+			};
+			expect(isValidQuery(query, props, [])).to.be.false;
+			expect(isValidQuery.errors.length).to.be.equals(1);
+		});
 	});
 
 	describe('using * for match keys', () => {
