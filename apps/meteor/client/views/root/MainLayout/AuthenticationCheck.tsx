@@ -8,7 +8,6 @@ import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 import { useStoredItem } from '../../../hooks/useStoredItem';
 import { STORAGE_KEYS } from '../../../lib/sdk/storage';
-import HomeSkeleton from '../../home/HomeSkeleton';
 
 /*
  * Anonymous and guest are similar in some way
@@ -22,8 +21,8 @@ import HomeSkeleton from '../../home/HomeSkeleton';
 export type AuthenticationCheckProps = {
 	children: ReactNode;
 	guest?: boolean;
-	/** Placeholder shown while the user is resolved — see `UsernameCheck`. */
-	loadingElement?: ReactNode;
+	/** Shown while the user is resolved, here and in the `UsernameCheck` below — see its own prop. */
+	loadingElement: ReactNode;
 };
 
 /**
@@ -98,9 +97,7 @@ const AuthenticationCheck = ({ children, guest, loadingElement }: Authentication
 	const isResumingSession = !user && !hasSeenUser.current && !forceLogin && !unreachable && !!loginToken;
 
 	if (isResumingSession) {
-		// A route that brought its own placeholder gets it here too: the app-shaped skeleton is the wrong shape
-		// for a window that never shows the app around it.
-		return <>{loadingElement ?? <HomeSkeleton />}</>;
+		return <>{loadingElement}</>;
 	}
 
 	if (user) {
