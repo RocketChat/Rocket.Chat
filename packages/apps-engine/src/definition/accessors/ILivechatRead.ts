@@ -3,6 +3,12 @@ import type { ILivechatRoom } from '../livechat/ILivechatRoom';
 import type { IVisitor } from '../livechat/IVisitor';
 import type { IMessage } from '../messages';
 
+/**
+ * Reads Livechat visitors, departments and conversations.
+ *
+ * It needs the read permission of whatever it touches:
+ * `livechat-visitor.read`, `livechat-room.read`, `livechat-department.read`.
+ */
 export interface ILivechatRead {
 	/**
 	 * Gets online status of the livechat.

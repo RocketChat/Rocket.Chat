@@ -1,5 +1,11 @@
 import type { IOAuthAppParams } from './IOAuthApp';
 
+/**
+ * Registers and removes the OAuth clients an App owns on the workspace.
+ *
+ * An App can only reach the clients it registered. It needs the
+ * `oauth-app.write` permission.
+ */
 export interface IOAuthAppsModify {
 	/**
 	 * Create an OAuthApp
