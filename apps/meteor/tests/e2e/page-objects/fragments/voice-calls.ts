@@ -127,7 +127,7 @@ export class Widget {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get btnShowCallHere(): Locator {
@@ -262,7 +262,7 @@ export class RoomSection {
 	}
 
 	get timer(): Locator {
-		return this.root.getByRole('time');
+		return this.root.getByRole('timer');
 	}
 
 	get allScreenShareVideos(): Locator {
