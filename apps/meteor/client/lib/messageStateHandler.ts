@@ -1,5 +1,6 @@
 import { parse, type Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/tools';
+import type { ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
 
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
@@ -13,12 +14,13 @@ export const renderComposerContent = (
 	target: HTMLDivElement,
 	parseOptions: Options,
 	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
+	markupContext: ComposerMarkupContextValue = {},
 ): void => {
 	const text = target.innerText;
 	const source = text === '' ? '\n' : text;
 
 	// Parse the raw text and render the AST through the gazzodown-alt WYSIWYG components
-	target.innerHTML = renderComposerMarkup(parse(source, parseOptions), source);
+	target.innerHTML = renderComposerMarkup(parse(source, parseOptions), source, markupContext);
 
 	// Caret offsets are flat character counts over the rendered text, so a node without a renderer
 	// would both lose the user's text and shift the caret. Fall back to the raw text instead.
@@ -31,7 +33,7 @@ export const renderComposerContent = (
 };
 
 // Resolve the Composer after the user modifies text
-export const resolveComposerBox = (event: Event, parseOptions: Options) => {
+export const resolveComposerBox = (event: Event, parseOptions: Options, markupContext: ComposerMarkupContextValue = {}) => {
 	if (!event.isTrusted) return;
 
 	const target = event.target as HTMLDivElement;
@@ -39,14 +41,14 @@ export const resolveComposerBox = (event: Event, parseOptions: Options) => {
 	// Get the position of the cursor after text modification
 	// This is so that after parsing and rendering inside the editor
 	// the cursor is restored to the correct position
-	renderComposerContent(target, parseOptions, getSelectionRange(target));
+	renderComposerContent(target, parseOptions, getSelectionRange(target), markupContext);
 };
 
 // Rendering replaces the composer's innerHTML and re-anchors the DOM selection, and both abort an
 // in-flight IME composition (dead keys, CJK input, mobile predictive text): the browser loses the
 // text node its marked text was attached to, so `˜` then `a` commits as `˜a` instead of `ã`. Hold
 // the render back until the composition commits.
-export const createComposerRenderer = (input: HTMLDivElement, parseOptions: Options): { release: () => void } => {
+export const createComposerRenderer = (input: HTMLDivElement, parseOptions: Options, markupContext: ComposerMarkupContextValue = {}): { release: () => void } => {
 	let composing = false;
 	let pendingFrame: number | undefined;
 
@@ -70,7 +72,7 @@ export const createComposerRenderer = (input: HTMLDivElement, parseOptions: Opti
 		// Chrome fires a composition's last `input` before `compositionend` and Firefox after it, so
 		// whichever arrives first renders and drops the other's scheduled work.
 		cancelPending();
-		resolveComposerBox(event, parseOptions);
+		resolveComposerBox(event, parseOptions, markupContext);
 	};
 
 	const onCompositionStart = (): void => {
