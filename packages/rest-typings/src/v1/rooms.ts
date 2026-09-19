@@ -172,6 +172,10 @@ const RoomsCreateDiscussionSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		topic: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['prid', 't_name'],
 	additionalProperties: false,
