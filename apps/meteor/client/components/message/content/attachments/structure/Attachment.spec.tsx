@@ -1,15 +1,13 @@
 import { render } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { createElement } from 'react';
+import { createElement, type ReactNode } from 'react';
 
 jest.mock('@rocket.chat/fuselage', () => ({
-	Box: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) =>
+	Box: ({ children, width, maxWidth }: { children?: ReactNode; width?: unknown; maxWidth?: unknown }) =>
 		createElement(
 			'div',
 			{
-				...props,
-				'data-box-width': props.width,
-				'data-box-max-width': props.maxWidth,
+				'data-box-width': width,
+				'data-box-max-width': maxWidth,
 			},
 			children,
 		),
