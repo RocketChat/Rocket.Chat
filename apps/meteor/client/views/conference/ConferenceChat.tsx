@@ -4,6 +4,7 @@ import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import {
 	CallPanelHeader,
 	ChatAccessModal,
+	ConferenceContext,
 	ConferenceChatNotShared,
 	hasConferenceChatAccess,
 	useConference,
@@ -40,7 +41,8 @@ const ConferenceChat = () => {
 	const uid = useUserId();
 	const setModal = useSetModal();
 	const storesReady = useMainReady();
-	const { room, thread } = useConference();
+	const conference = useConference();
+	const { room, thread } = conference;
 	const { close } = useConferenceChatPanel();
 
 	const { rid, tmid, name: roomName, type: roomType, loading, chatAccess } = room;
@@ -87,7 +89,15 @@ const ConferenceChat = () => {
 						aria-label={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
 						title={t('__count__participants_cannot_see_the_chat', { count: presentWithoutAccess })}
 						danger
-						onClick={() => setModal(<ChatAccessModal access={chatAccess} onClose={() => setModal(null)} />)}
+						// Carried across because the app's modal region is mounted above this window, outside the
+						// conference's provider — the modal reads the viewer and the share action from it.
+						onClick={() =>
+							setModal(
+								<ConferenceContext.Provider value={conference}>
+									<ChatAccessModal access={chatAccess} onClose={() => setModal(null)} />
+								</ConferenceContext.Provider>,
+							)
+						}
 					/>
 				)}
 			</CallPanelHeader>

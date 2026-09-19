@@ -4,7 +4,7 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useConference } from '../../context/ConferenceContext';
+import { ConferenceContext, useConference } from '../../context/ConferenceContext';
 import type { CallParticipantEntry } from '../../lib/callParticipants';
 import { composeCallParticipants } from '../../lib/callParticipants';
 import { hasConferenceChatAccess } from '../../lib/chatAccess';
@@ -25,7 +25,8 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { call, room, actions, provider } = useConference();
+	const conference = useConference();
+	const { call, room, actions, provider } = conference;
 	const { members } = call;
 	const { rid, chatAccess } = room;
 
@@ -84,7 +85,20 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 		<>
 			<CallPanelHeader title={t('People')} onClose={onClose}>
 				{rid && (
-					<Button small icon='user-plus' onClick={() => setModal(<AddParticipantsModal onClose={() => setModal(null)} />)}>
+					<Button
+						small
+						icon='user-plus'
+						// The modal is rendered by the app's own modal region, which is mounted above this window and so
+						// outside the conference's provider — without carrying the context across, the modal falls back
+						// to the default one and loses the user picker and the ring option along with it.
+						onClick={() =>
+							setModal(
+								<ConferenceContext.Provider value={conference}>
+									<AddParticipantsModal onClose={() => setModal(null)} />
+								</ConferenceContext.Provider>,
+							)
+						}
+					>
 						{t('Add_people')}
 					</Button>
 				)}
