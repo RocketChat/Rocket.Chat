@@ -11,7 +11,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"testunit": "jest"
 	},
 	"dependencies": {
 		"cron": "~1.8.2",
@@ -22,8 +23,10 @@
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/debug": "^4.1.13",
 		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
