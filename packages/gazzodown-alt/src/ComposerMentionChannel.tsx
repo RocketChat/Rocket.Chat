@@ -13,7 +13,11 @@ const ComposerMentionChannel = ({ mention }: ComposerMentionChannelProps): React
 	const { resolveChannelMention } = useContext(ComposerMarkupContext);
 	const resolved = resolveChannelMention?.(mention);
 
-	return <span className={className}>#{resolved?.fname ?? resolved?.name ?? mention}</span>;
+	return (
+		<span className={className} {...(resolved && { 'data-rid': resolved._id })}>
+			#{mention}
+		</span>
+	);
 };
 
 export default memo(ComposerMentionChannel);
