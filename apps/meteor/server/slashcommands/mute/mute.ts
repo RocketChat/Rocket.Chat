@@ -28,6 +28,7 @@ slashCommands.add({
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 
 		await muteUserInRoom(userId, {
