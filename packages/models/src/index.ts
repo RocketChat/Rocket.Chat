@@ -78,9 +78,12 @@ import type {
 	IMediaCallsModel,
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
+	ICronJobsModel,
+	IAppSchedulerModel,
 	IAbacAttributesModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
+	IOmnichannelSchedulerModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -109,6 +112,9 @@ import {
 	ServerEventsRaw,
 	SamlUsedAssertionsRaw,
 	CronHistoryRaw,
+	CronJobsRaw,
+	AppSchedulerRaw,
+	OmnichannelSchedulerRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -205,12 +211,17 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 );
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
+export const CronJobs = proxify<ICronJobsModel>('ICronJobsModel');
+export const AppScheduler = proxify<IAppSchedulerModel>('IAppSchedulerModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
+export const OmnichannelAutoCloseScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelAutoCloseSchedulerModel');
+export const OmnichannelAutoTransferScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelAutoTransferSchedulerModel');
+export const OmnichannelQueueInactivityScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelQueueInactivitySchedulerModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
@@ -244,7 +255,12 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+	registerModel('ICronJobsModel', () => new CronJobsRaw(db));
+	registerModel('IAppSchedulerModel', () => new AppSchedulerRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
+	registerModel('IOmnichannelAutoCloseSchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_auto_close_on_hold_scheduler'));
+	registerModel('IOmnichannelAutoTransferSchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_scheduler'));
+	registerModel('IOmnichannelQueueInactivitySchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_queue_inactivity_monitor'));
 }

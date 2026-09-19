@@ -20,6 +20,9 @@ const mockLivechatRooms = {
 const mockUsers = {
 	findOneById: sinon.stub(),
 };
+const mockOmnichannelAutoCloseScheduler = {
+	updateOne: sinon.stub().resolves(),
+};
 
 class MockAgendaClass {
 	constructor(opts: Record<string, any>) {
@@ -31,7 +34,8 @@ class MockAgendaClass {
 	}
 
 	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
+		mockAgendaScheduler(...args);
+		return { attrs: { _id: 'mock-job-id' } };
 	}
 
 	async cancel(...args: any) {
@@ -54,6 +58,7 @@ const mockLogger = {
 
 const mocks = {
 	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
+	'@rocket.chat/cron': { withCronHistory: sinon.stub().callsFake(async (_name: string, _type: string, cb: () => Promise<unknown>) => cb()) },
 	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
 	'meteor/mongo': {
 		MongoInternals: {
@@ -69,6 +74,7 @@ const mocks = {
 	'@rocket.chat/models': {
 		LivechatRooms: mockLivechatRooms,
 		Users: mockUsers,
+		OmnichannelAutoCloseScheduler: mockOmnichannelAutoCloseScheduler,
 	},
 };
 
