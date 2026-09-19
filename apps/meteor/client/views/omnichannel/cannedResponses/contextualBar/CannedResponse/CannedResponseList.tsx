@@ -32,7 +32,7 @@ export type CannedResponseListProps = {
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
-	onClickItem: (data: any) => void; // FIXME: fix typings
+	onClickItem: (data: IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] }) => void;
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
