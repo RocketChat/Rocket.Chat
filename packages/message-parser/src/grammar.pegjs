@@ -424,7 +424,7 @@ MarkdownLinkExtra = [.,!%*\"':;=]
 Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
-  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(URLBody*) { return head + tail; }
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHostNoLocalhost)) tail:$(URLBody*) { return head + tail; }
 
 URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
@@ -454,6 +454,15 @@ URLAuthorityPort
 DomainName
   = "localhost"
   / $(![\x5F] DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+
+URLAuthorityHostNoLocalhost = URLAuthorityHostNameNoLocalhost (":" URLAuthorityPort)?
+
+URLAuthorityHostNameNoLocalhost
+  = DomainNameNoLocalhost
+  / $(Digits |4, "."|) // TODO: IPv4 and IPv6
+
+DomainNameNoLocalhost
+  = $(![\x5F] DomainNameLabel ("." DomainChar DomainNameLabel*)+)
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
@@ -516,7 +525,7 @@ PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { retur
 AutolinkedURL = &([^ \t\r\n:./@]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHostNoLocalhost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody
   = [^ \t\r\n.,!%~*\"':;()=~]
