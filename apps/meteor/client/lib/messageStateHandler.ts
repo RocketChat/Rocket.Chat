@@ -1,6 +1,6 @@
+import type { ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
 import { parse, type Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/tools';
-import type { ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
 
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
@@ -98,7 +98,7 @@ export const createComposerRenderer = (input: HTMLDivElement, parseOptions: Opti
 				return;
 			}
 
-			renderComposerContent(input, parseOptions, getSelectionRange(input));
+			renderComposerContent(input, parseOptions, getSelectionRange(input), markupContext);
 		});
 	};
 
