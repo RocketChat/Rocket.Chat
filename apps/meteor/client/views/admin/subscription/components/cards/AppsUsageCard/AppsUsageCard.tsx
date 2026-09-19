@@ -23,9 +23,9 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const { t } = useTranslation();
 
 	if (!privateAppsLimit || !marketplaceAppsLimit) {
-		// FIXME: not accessible enough
+
 		return (
-			<FeatureUsageCard card={{ title: t('Apps') }}>
+			<FeatureUsageCard card={{ title: t('Apps') }} aria-busy='true' aria-label={t('Loading')}>
 				<FeatureUsageCardBody justifyContent='flex-start'>
 					<Skeleton variant='rect' width='x112' height='x224' role='presentation' />
 				</FeatureUsageCardBody>
