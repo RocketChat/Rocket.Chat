@@ -19,6 +19,15 @@ import type { IAppInfo } from './metadata/IAppInfo';
 import type { ISetting } from './settings';
 import type { ISettingUpdateContext } from './settings/ISettingUpdateContext';
 
+/**
+ * The base class every Rocket.Chat App extends.
+ *
+ * Override the lifecycle hooks you care about — they all no-op by default —
+ * and declare settings, slash commands and listeners from
+ * {@link App.extendConfiguration}. The host owns the instance: it constructs
+ * the App, drives it through the {@link AppStatus} values and passes the
+ * accessors into each hook.
+ */
 export abstract class App implements IApp {
 	private status: AppStatus = AppStatus.UNKNOWN;
 
@@ -239,8 +248,9 @@ export abstract class App implements IApp {
 	}
 
 	/**
-	 * Method will be called during initialization. It allows for adding custom configuration options and defaults
-	 * @param configuration
+	 * Method will be called during initialization. It allows for adding custom configuration options and defaults.
+	 *
+	 * This is where an App registers its settings, slash commands, API endpoints and UI actions.
 	 */
 	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {}
 
@@ -254,7 +264,10 @@ export abstract class App implements IApp {
 		this.status = status;
 	}
 
-	// Avoid leaking references if object is serialized (e.g. to be sent over IPC)
+	/**
+	 * Serializes the App as its {@link IAppInfo}, so that no reference to the
+	 * host system leaks when the object crosses a process boundary.
+	 */
 	public toJSON(): Record<string, any> {
 		return this.info;
 	}
