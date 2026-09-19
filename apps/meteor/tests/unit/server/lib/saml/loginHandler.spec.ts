@@ -4,18 +4,19 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const retrieveCredential = sinon.stub().resolves(null);
-const removeById = sinon.stub().resolves();
+const setExpiresAtById = sinon.stub().resolves();
 const samlUtilsMock = {
 	serviceProviders: [{ provider: 'test-saml' }] as any[],
 	log: sinon.stub(),
-	mapProfileToUserObject: sinon.stub(),
+	mapProfileToUserObject: sinon.stub().returns({ username: 'saml-user' }),
 	events: { emit: sinon.stub() },
 };
+const insertOrUpdateSAMLUser = sinon.stub().resolves({ userId: 'user-id', token: 'auth-token' });
 
 const handler = sinon.stub();
 proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'@rocket.chat/models': {
-		CredentialTokens: { removeById },
+		CredentialTokens: { setExpiresAtById },
 	},
 	'meteor/accounts-base': {
 		Accounts: {
@@ -29,7 +30,7 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 		Meteor: { Error },
 	},
 	'./lib/SAML': {
-		SAML: { retrieveCredential },
+		SAML: { retrieveCredential, insertOrUpdateSAMLUser },
 	},
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
@@ -42,9 +43,14 @@ describe('SAML loginHandler', () => {
 	beforeEach(() => {
 		retrieveCredential.reset();
 		retrieveCredential.resolves(null);
-		removeById.reset();
-		removeById.resolves();
+		setExpiresAtById.reset();
+		setExpiresAtById.resolves();
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
+		samlUtilsMock.mapProfileToUserObject.reset();
+		samlUtilsMock.mapProfileToUserObject.returns({ username: 'saml-user' });
+		samlUtilsMock.events.emit.reset();
+		insertOrUpdateSAMLUser.reset();
+		insertOrUpdateSAMLUser.resolves({ userId: 'user-id', token: 'auth-token' });
 	});
 
 	it('should reject non-string credentialToken and never query the database (NoSQL injection prevention)', async () => {
@@ -65,10 +71,19 @@ describe('SAML loginHandler', () => {
 		expect(retrieveCredential.called).to.be.false;
 	});
 
-	it('should delete the credential token after retrieval', async () => {
-		await handler({ saml: true, credentialToken: 'token-to-delete' });
+	it('should not extend the credential token when no login attempt is found', async () => {
+		await handler({ saml: true, credentialToken: 'missing-token' });
 
-		expect(removeById.calledOnce).to.be.true;
-		expect(removeById.calledWith('token-to-delete')).to.be.true;
+		expect(setExpiresAtById.called).to.be.false;
+	});
+
+	it('should extend the credential token expiration after retrieval so TOTP retries can reuse it', async () => {
+		retrieveCredential.resolves({ profile: { email: 'user@example.com' } });
+
+		await handler({ saml: true, credentialToken: 'token-to-extend' });
+
+		expect(setExpiresAtById.calledOnce).to.be.true;
+		expect(setExpiresAtById.firstCall.args[0]).to.be.equal('token-to-extend');
+		expect(setExpiresAtById.firstCall.args[1]).to.be.instanceOf(Date);
 	});
 });

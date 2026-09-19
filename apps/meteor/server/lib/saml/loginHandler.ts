@@ -27,12 +27,15 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 
 	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 
-	await CredentialTokens.removeById(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
 		return makeError('No matching login attempt found');
 	}
+
+	const expireAt = new Date();
+	expireAt.setMinutes(expireAt.getMinutes() + 2);
+	await CredentialTokens.setExpiresAtById(loginRequest.credentialToken, expireAt);
 
 	if (!loginResult.profile) {
 		return makeError('No profile information found');
