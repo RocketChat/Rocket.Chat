@@ -77,6 +77,8 @@ export interface DefaultEndpoints {
 				schemas: unknown;
 			};
 			paths: Record<string, Record<string, unknown>>;
+			/** The plain OpenAPI document: it is NOT wrapped in the `{ success: true }` envelope */
+			success?: never;
 		};
 	};
 }
