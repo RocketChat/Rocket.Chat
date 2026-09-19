@@ -43,4 +43,15 @@ describe('shouldScrollToBottom', () => {
 		const textarea = mockTextarea({ selectionEnd: 0, valueLength: 100, scrollTop: 0, clientHeight: 40, scrollHeight: 200 });
 		expect(shouldScrollToBottom(textarea)).toBe(false);
 	});
+
+	// Pin the intended 1px tolerance so a regression that loosens it fails these tests.
+	it('returns true at the 1px tolerance boundary (1px above the bottom)', () => {
+		const textarea = mockTextarea({ selectionEnd: 0, valueLength: 100, scrollTop: 159, clientHeight: 40, scrollHeight: 200 });
+		expect(shouldScrollToBottom(textarea)).toBe(true);
+	});
+
+	it('returns false just beyond the 1px tolerance (2px above the bottom)', () => {
+		const textarea = mockTextarea({ selectionEnd: 0, valueLength: 100, scrollTop: 158, clientHeight: 40, scrollHeight: 200 });
+		expect(shouldScrollToBottom(textarea)).toBe(false);
+	});
 });
