@@ -16,6 +16,7 @@ import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
 import RoomMembers from './RoomMembers';
 import * as Federation from '../../../../lib/federation/Federation';
+import { useIsRoomLocked } from '../../../admin/ABAC/hooks/useIsRoomLocked';
 import { useMembersList } from '../../../hooks/useMembersList';
 import UserInfoWithData from '../UserInfo';
 
@@ -33,6 +34,7 @@ export type RoomMembersWithDataProps = { rid: IRoom['_id'] };
 const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const user = useUser();
 	const room = useUserRoom(rid);
+	const isLocked = useIsRoomLocked(room);
 	const { closeTab } = useRoomToolbox();
 	const [type, setType] = useLocalStorage<'online' | 'all'>('members-list-type', 'online');
 	const [text, setText] = useState('');
@@ -135,6 +137,7 @@ const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
 			isABACRoom={Boolean(room?.abacAttributes)}
+			isLocked={isLocked}
 		/>
 	);
 };
