@@ -459,7 +459,6 @@ describe('[Rooms]', () => {
 		});
 
 		let fileNewUrl: string;
-		let fileOldUrl: string;
 		let fileId: string;
 		it('should upload a PNG file to room', async () => {
 			await request
@@ -477,7 +476,6 @@ describe('[Rooms]', () => {
 					// expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 
 					fileNewUrl = res.body.file.url;
-					fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 					fileId = res.body.file._id;
 				});
 
@@ -551,7 +549,6 @@ describe('[Rooms]', () => {
 						expect(res.body.file).to.have.property('url');
 
 						fileNewUrl = res.body.file.url;
-						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 						fileId = res.body.file._id;
 					});
 
@@ -591,7 +588,6 @@ describe('[Rooms]', () => {
 						expect(res.body.file).to.have.property('url');
 
 						fileNewUrl = res.body.file.url;
-						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
 						fileId = res.body.file._id;
 					});
 
@@ -625,36 +621,30 @@ describe('[Rooms]', () => {
 
 		it('should be able to get the file', async () => {
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should be able to get the file when no access to the room if setting allows it', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file when no access to the room if setting blocks', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await request.get(fileNewUrl).set(userCredentials).expect(403);
-			await request.get(fileOldUrl).set(userCredentials).expect(403);
 		});
 
 		it('should be able to get the file if member and setting blocks outside access', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file without credentials', async () => {
 			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
-			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
 		});
 
 		it('should be able to get the file without credentials if setting allows', async () => {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should generate thumbnail for SVG files correctly', async () => {
@@ -1641,8 +1631,8 @@ describe('[Rooms]', () => {
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
-				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
-				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
+				updatePermission('leave-c', ['admin', 'user', 'bot', 'app']),
+				updatePermission('leave-p', ['admin', 'user', 'bot', 'app']),
 				deleteUser(user2),
 				updateSetting('API_User_Limit', 10000),
 			]),
@@ -2075,10 +2065,7 @@ describe('[Rooms]', () => {
 		});
 
 		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
-				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
-			]),
+			Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), updatePermission('view-c-room', ['admin', 'user', 'bot', 'app'])]),
 		);
 
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', async () => {
@@ -2098,7 +2085,7 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Not Allowed');
 					})
-					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot']).then(done));
 			});
 		});
 		it('should return a list of discussions with ONE discussion', async () => {
