@@ -132,7 +132,7 @@ export const ImageGallery = ({
 			<PaletteStyleTag theme='dark' selector='.swiper-container.image-gallery' tagId='image-gallery-palette' />
 			<FocusScope contain autoFocus>
 				<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
-					<div role='presentation' className='swiper-container image-gallery' onClick={onClose}>
+					<div role='presentation' className='swiper-container image-gallery' onClick={onClose} tabIndex={0}>
 						<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
 							{zoomScale !== 1 && (
 								<IconButton
@@ -185,6 +185,9 @@ export const ImageGallery = ({
 							navigation={{
 								nextEl: '.rcx-swiper-next-button',
 								prevEl: '.rcx-swiper-prev-button',
+							}}
+							onSlideChange={(swiper: SwiperClass) => {
+								swiper.el.focus();
 							}}
 							keyboard
 							zoom={{ toggle: false }}
