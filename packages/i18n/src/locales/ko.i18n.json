@@ -2751,7 +2751,7 @@
   "Parent_channel_or_team": "상위 채널 또는 그룹",
   "Password": "비밀번호",
   "Password_Change_Disabled": "Rock.Chat 관리자는 비밀번호를 변경할 수 없습니다.",
-  "Password_Changed_Description": "다음 자리 표시자를 사용할 수 있습니다.:  \n -   [password] 임시 비밀번호.  \n -  `[name]`, `[fname]`, `[lname]`은 이름 , 성 긜고 사용자의 전체 이름입니다.  \n -  [email] 사용자의 이메일입니다. </li> <li> [Site_Name] 과 [Site_URL]은 애플리케이션 이름과 URL입니다.  ",
+  "Password_Changed_Description": "다음 자리 표시자를 사용할 수 있습니다.:  \n - `[password]` 임시 비밀번호.  \n - `[name]`, `[fname]`, `[lname]`은 이름 , 성 긜고 사용자의 전체 이름입니다.  \n - `[email]` 사용자의 이메일입니다.  \n - `[Site_Name]` 과 `[Site_URL]`은 애플리케이션 이름과 URL입니다.  ",
   "Password_Changed_Email_Subject": "[Site_Name]-비밀번호 변경",
   "Password_changed_section": "비밀번호 변경",
   "Password_changed_successfully": "비밀번호를  변경했습니다.",
