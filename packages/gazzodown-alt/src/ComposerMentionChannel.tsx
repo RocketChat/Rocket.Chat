@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react';
-import { useContext } from 'react';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 
