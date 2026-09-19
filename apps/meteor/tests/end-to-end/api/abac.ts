@@ -3091,6 +3091,63 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 		});
 	});
+
+	describe('rooms.info for non-member admins', () => {
+		let roomOwner: IUser;
+		let roomOwnerCredentials: Credentials;
+		let adminReadableRoom: IRoom;
+		let abacAttributeId: string;
+		const abacKey = `rooms_info_abac_${Date.now()}`;
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+			await updatePermission('view-room-administration', ['admin']);
+
+			roomOwner = await createUser();
+			roomOwnerCredentials = await login(roomOwner.username, password);
+			adminReadableRoom = (await createRoom({ type: 'p', name: `rooms.info.abac.${Date.now()}`, credentials: roomOwnerCredentials })).body
+				.group;
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: abacKey, values: ['secret'] })
+				.expect(200);
+
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key: abacKey }).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find(({ key }) => key === abacKey);
+			if (!attribute) {
+				throw new Error(`ABAC attribute ${abacKey} was not created`);
+			}
+			abacAttributeId = attribute._id;
+		});
+
+		after(async () => {
+			await request.delete(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes`).set(credentials);
+			await request.delete(`${v1}/abac/attributes/${abacAttributeId}`).set(credentials);
+			await deleteRoom({ type: 'p', roomId: adminReadableRoom._id });
+			await deleteUser(roomOwner);
+			await updateSetting('ABAC_Enabled', false);
+		});
+
+		it('should return a private room the admin is not a member of while it carries no ABAC attributes', async () => {
+			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(200);
+
+			expect(res.body.room).to.have.property('_id', adminReadableRoom._id);
+		});
+
+		it('should stop returning that room to the admin once it becomes ABAC managed', async () => {
+			await request
+				.post(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes/${abacKey}`)
+				.set(credentials)
+				.send({ values: ['secret'] })
+				.expect(200);
+
+			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(400);
+
+			expect(res.body).to.have.property('error', 'not-allowed');
+		});
+	});
 });
 
 (IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', function () {
