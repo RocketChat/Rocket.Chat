@@ -462,7 +462,7 @@
 		"sinon": "^19.0.5",
 		"source-map": "~0.7.6",
 		"storybook": "^9.1.20",
-		"stylelint": "^16.10.0",
+		"stylelint": "^17.15.0",
 		"stylelint-config-standard": "^36.0.1",
 		"stylelint-order": "^6.0.4",
 		"stylelint-selector-bem-pattern": "^4.0.1",
