@@ -133,7 +133,6 @@ export class AutoTransferChatSchedulerClass {
 			await Promise.all([LivechatRooms.setAutoTransferredAtById(roomId), this.unscheduleRoom(roomId)]);
 		}).catch((error: unknown) => {
 			this.logger.error({ msg: 'Error while executing auto-transfer job', schedulerName: SCHEDULER_NAME, roomId, err: error });
-			throw error;
 		});
 	}
 }

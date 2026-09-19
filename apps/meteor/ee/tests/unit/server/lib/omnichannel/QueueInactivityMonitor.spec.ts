@@ -20,7 +20,6 @@ const modelsMock = {
 	LivechatRooms: { findOneById: sinon.stub() },
 	LivechatInquiry: { findOneById: sinon.stub() },
 	Users: { findOneById: sinon.stub() },
-	CronHistory: { insertOne: sinon.stub().resolves({ insertedId: 'mockId' }), updateOne: sinon.stub().resolves() },
 	OmnichannelQueueInactivityScheduler: { updateOne: sinon.stub().resolves() },
 };
 const meteorMock = { Meteor: { startup: sinon.stub() } };
@@ -41,6 +40,7 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire
 		'@rocket.chat/agenda': {
 			Agenda: sinon.stub().returns(AgendaStub),
 		},
+		'@rocket.chat/cron': { withCronHistory: sinon.stub().callsFake(async (_name: string, _type: string, cb: () => Promise<unknown>) => cb()) },
 		'@rocket.chat/models': modelsMock,
 		'meteor/meteor': meteorMock,
 		'meteor/mongo': mongoMock,
