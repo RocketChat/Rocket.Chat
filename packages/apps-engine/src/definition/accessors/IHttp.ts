@@ -6,17 +6,23 @@ import type { IRead } from './IRead';
  * Based off of: https://github.com/meteor-typings/meteor/blob/master/1.4/main.d.ts#L869
  */
 export interface IHttp {
+	/** Sends a GET request. */
 	get(url: string, options?: IHttpRequest): Promise<IHttpResponse>;
 
+	/** Sends a POST request. */
 	post(url: string, options?: IHttpRequest): Promise<IHttpResponse>;
 
+	/** Sends a PUT request. */
 	put(url: string, options?: IHttpRequest): Promise<IHttpResponse>;
 
+	/** Sends a DELETE request. */
 	del(url: string, options?: IHttpRequest): Promise<IHttpResponse>;
 
+	/** Sends a PATCH request. */
 	patch(url: string, options?: IHttpRequest): Promise<IHttpResponse>;
 }
 
+/** An HTTP method. */
 export enum RequestMethod {
 	GET = 'get',
 	POST = 'post',
@@ -27,17 +33,38 @@ export enum RequestMethod {
 	PATCH = 'patch',
 }
 
+/**
+ * How to make one outbound request.
+ *
+ * The App's `IHttpExtend` defaults are merged in, so anything set here is
+ * per-request. Sending a request needs the `networking` permission, and only
+ * the domains that permission lists can be reached.
+ */
 export interface IHttpRequest {
+	/** The request's body, as a string. */
 	content?: string;
+	/** The request's body as an object. Used only when `content` is not set. */
 	data?: any;
+	/** A raw query string to append to the URL. */
 	query?: string;
+	/**
+	 * Values to send as name and value pairs.
+	 *
+	 * They go into the URL's query string when the request already has a body,
+	 * or when the method is GET or HEAD. Otherwise they become a form-encoded
+	 * body. Write them into the URL yourself when it has to be the query string
+	 * either way.
+	 */
 	params?: {
 		[key: string]: string;
 	};
+	/** Credentials for basic authentication, as `username:password`. */
 	auth?: string;
+	/** The request's headers. */
 	headers?: {
 		[key: string]: string;
 	};
+	/** How long to wait, in milliseconds, before giving up on the request. */
 	timeout?: number;
 	/**
 	 * The encoding to be used on response data.
@@ -72,17 +99,35 @@ export interface IHttpRequest {
 	ssrfValidation?: boolean;
 }
 
+/**
+ * What came back from an outbound request.
+ *
+ * A response arrives whatever its status: check
+ * {@link IHttpResponse.statusCode} rather than expecting a rejection.
+ */
 export interface IHttpResponse {
+	/** The URL the request went to. */
 	url: string;
+	/** The method the request used. */
 	method: RequestMethod;
+	/** The status the server answered with. */
 	statusCode: number;
+	/** The response's headers. */
 	headers?: {
 		[key: string]: string;
 	};
+	/** The response's body, decoded with `IHttpRequest.encoding`. */
 	content?: string;
+	/** The response's body parsed as JSON, when the server said it was JSON. */
 	data?: any;
 }
 
+/**
+ * The defaults and hooks applied to every request the App makes.
+ *
+ * Set these up once from `IConfigurationExtend.http`; anything an individual
+ * `IHttpRequest` sets is merged on top.
+ */
 export interface IHttpExtend {
 	/**
 	 * A method for providing a single header which is added to every request.
@@ -157,14 +202,27 @@ export interface IHttpExtend {
 	getPreResponseHandlers(): Array<IHttpPreResponseHandler>;
 }
 
+/** Rewrites a request on its way out, a token refresh for instance. */
 export interface IHttpPreRequestHandler {
+	/**
+	 * Returns the request to send in place of this one.
+	 *
+	 * Throw to abort the request.
+	 */
 	executePreHttpRequest(url: string, request: IHttpRequest, read: IRead, persistence: IPersistence): Promise<IHttpRequest>;
 }
 
+/** Rewrites a response before the caller sees it. */
 export interface IHttpPreResponseHandler {
+	/**
+	 * Returns the response to hand back in place of this one.
+	 *
+	 * Throw to keep the caller from receiving a response at all.
+	 */
 	executePreHttpResponse(response: IHttpResponse, read: IRead, persistence: IPersistence): Promise<IHttpResponse>;
 }
 
+/** The HTTP status codes {@link IHttpResponse.statusCode} and `IApiResponse.status` use. */
 export enum HttpStatusCode {
 	CONTINUE = 100,
 	SWITCHING_PROTOCOLS = 101,
