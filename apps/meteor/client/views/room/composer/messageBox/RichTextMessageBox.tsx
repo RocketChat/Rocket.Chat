@@ -34,6 +34,7 @@ import { createRichTextComposerAPI } from '../../../../lib/createRichTextCompose
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
@@ -164,6 +165,19 @@ const RichTextMessageBox = ({
 		[customDomains],
 	);
 
+	const resolveUserMention = useCallback((mention: string) => {
+		const normalizedMention = normalizeUsername(mention);
+		const user = Messages.state.find(({ u }) => u?.username && normalizeUsername(u.username) === normalizedMention)?.u;
+
+		return user ? { _id: user._id, username: user.username, name: user.name } : undefined;
+	}, []);
+
+	const resolveChannelMention = useCallback((mention: string) => {
+		const channel = Subscriptions.state.find(({ name, fname }) => name === mention || fname === mention);
+
+		return channel ? { _id: channel._id, name: channel.name, fname: channel.fname } : undefined;
+	}, []);
+
 	const callbackRef = useCallback(
 		(node: HTMLDivElement) => {
 			if (node === null && chat.composer) {
@@ -179,10 +193,10 @@ const RichTextMessageBox = ({
 				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
 					rid: room._id,
 					tmid,
-				}),
+				}, { resolveUserMention, resolveChannelMention }),
 			);
 		},
-		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
+		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, resolveChannelMention, resolveUserMention, room._id, tmid],
 	);
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');
