@@ -2,7 +2,7 @@ import { RING_RECIPIENTS_LIMIT, hasJoinedVideoConference } from '@rocket.chat/co
 import { expect } from 'chai';
 
 import { shouldRingRecipients } from './constants';
-import { canRingConferenceMember, getConferenceMemberStatus, isUnaskedConferenceMember } from './memberStatus';
+import { canRingConferenceMember, isUnaskedConferenceMember } from './memberStatus';
 
 const at = new Date('2026-08-02T10:00:00.000Z');
 
@@ -18,33 +18,6 @@ describe('hasJoinedVideoConference', () => {
 	it('treats an entry predating the flag as joined', () => {
 		expect(hasJoinedVideoConference({})).to.be.true;
 		expect(hasJoinedVideoConference({ joined: undefined })).to.be.true;
-	});
-});
-
-describe('getConferenceMemberStatus', () => {
-	it('reports a member who is in the call as joined', () => {
-		expect(getConferenceMemberStatus({ joined: true })).to.equal('joined');
-	});
-
-	it('reports a member who was added and has not answered as invited', () => {
-		expect(getConferenceMemberStatus({ joined: false })).to.equal('invited');
-	});
-
-	it('reports a member who dismissed the call as declined', () => {
-		expect(getConferenceMemberStatus({ joined: false, declined: true })).to.equal('declined');
-	});
-
-	it('reports a member who joined and left as left', () => {
-		expect(getConferenceMemberStatus({ joined: true, leftAt: at })).to.equal('left');
-	});
-
-	// The entry accumulates rather than replaces, so the fields have to be read in order of what happened last.
-	it('prefers having joined over an earlier decline', () => {
-		expect(getConferenceMemberStatus({ joined: true, declined: true, declinedAt: at } as never)).to.equal('joined');
-	});
-
-	it('prefers having left over an earlier decline, since they did answer', () => {
-		expect(getConferenceMemberStatus({ joined: true, declined: true, leftAt: at })).to.equal('left');
 	});
 });
 

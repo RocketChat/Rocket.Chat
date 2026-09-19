@@ -1,7 +1,7 @@
 # Video conferences
 
 How a conference is modelled on the server: who belongs to it, how it ends, and why its chat is a separate
-question from the call itself.
+question from the call itself — and how the window that renders it is put together.
 
 This is the model, not the mechanism. Names of functions and constants are deliberately absent — read the code
 for those.
@@ -140,3 +140,45 @@ The claim is released when the member leaves — including when leaving was infe
 crashed tab is exactly the kind of thing nobody thinks to fix by hand.
 
 Nothing about presence is allowed to fail a join. It is a courtesy; joining is not.
+
+## The conference window
+
+The call does not open a page inside the workspace. It opens a window of its own, which is why it establishes
+its own viewport box rather than taking a height from an ancestor, and why it carries two things the workspace
+would otherwise have given it.
+
+### A dark window with light rooms inside it
+
+The document is pinned dark for as long as the conference is mounted. A call surface is dark in every product
+that has one, and light controls over a black video tile read as a bug rather than as a light theme. The pin
+paints the *document* rather than the window's own subtree, because half of the window's controls are not in
+that subtree: every menu, popover and modal portals to `document.body`, and a scoped palette would leave those
+in the reader's theme, floating over a dark call. High contrast outranks the pin — unlike light and dark, it
+answers a legibility need rather than a taste.
+
+What the panels beside the call carry is not call surface, though: it is room UI — a chat, a members list, a
+thread. Those are read the way the reader reads the rest of Rocket.Chat, so a second rule hands the preference
+back to whichever subtrees ask for it by class, winning over the pin by specificity.
+
+### Its own modal region
+
+Modals render into the nearest region, and the application's is mounted at the app root — outside this tree,
+where a modal of the conference's would be cut off from the providers it was written under. The window mounts a
+region of its own, which keeps such a modal inside the conference's React tree while the DOM still goes through
+the modal portal. The voip popout window is arranged the same way.
+
+### Docked panels, and sheets
+
+A panel beside the call is a column that animates its width to zero to close, so its contents slide out rather
+than reflowing on the way. It is a sibling of the call area and sits *above* the call's top bar, never inside
+it, so opening one never reflows the bar.
+
+A small window has no room to split. Below the `md` breakpoint there is no width for a column beside the call;
+a phone in landscape has the width but not the height, and docking there leaves the call a third of a short
+screen and the chat a message list two lines tall above its own composer. In both cases the panel stops being a
+column and becomes a **sheet** that rises over the whole window, the way a phone shows a screen that owns your
+attention until you dismiss it. A hair of the call is left showing around it, so it reads as something laid
+over the call rather than as the window's new contents.
+
+Because the two cases are told apart by height as well as width, the breakpoint alone is never the question
+asked.

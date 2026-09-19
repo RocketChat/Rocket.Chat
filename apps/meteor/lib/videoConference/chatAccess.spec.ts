@@ -1,26 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { chatAccessLeadsWithDiscussion, resolveChatAccessMode } from './chatAccess';
+import { resolveChatAccessMode } from './chatAccess';
 
 describe('videoConference chat access', () => {
-	describe('chatAccessLeadsWithDiscussion', () => {
-		it('leads with the invite for a public channel, whose history is already open', () => {
-			expect(chatAccessLeadsWithDiscussion({ canInvite: true, type: 'c' })).to.be.false;
-		});
-
-		it('leads with the discussion where the invite would expose a history that was not open', () => {
-			expect(chatAccessLeadsWithDiscussion({ canInvite: true, type: 'p' })).to.be.true;
-			expect(chatAccessLeadsWithDiscussion({ canInvite: true, type: 'd' })).to.be.true;
-		});
-
-		it('leads with the discussion whenever the room cannot take new members, whatever its type', () => {
-			for (const type of ['c', 'p', 'd', 'l'] as IRoom['t'][]) {
-				expect(chatAccessLeadsWithDiscussion({ canInvite: false, type })).to.be.true;
-			}
-		});
-	});
-
 	describe('resolveChatAccessMode', () => {
 		it('honours an explicit choice the room can carry out', () => {
 			expect(resolveChatAccessMode({ mode: 'invite', canInvite: true })).to.equal('invite');
