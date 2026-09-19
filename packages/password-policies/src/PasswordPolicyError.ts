@@ -5,6 +5,7 @@ export class PasswordPolicyError extends Error {
 
 	constructor(message: string, error: string, details?: { error: string; message: string }[]) {
 		super(message);
+		this.name = 'PasswordPolicyError';
 		this.error = error;
 		this.details = details;
 	}
