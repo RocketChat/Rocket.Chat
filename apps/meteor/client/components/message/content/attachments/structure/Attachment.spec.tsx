@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 
+import Attachment from './Attachment';
+
 jest.mock('@rocket.chat/fuselage', () => ({
 	Box: ({ children, width, maxWidth }: { children?: ReactNode; width?: unknown; maxWidth?: unknown }) =>
 		createElement(
@@ -12,8 +14,6 @@ jest.mock('@rocket.chat/fuselage', () => ({
 			children,
 		),
 }));
-
-import Attachment from './Attachment';
 
 describe('Attachment', () => {
 	it('does not constrain the attachment wrapper to the media preview width', () => {
