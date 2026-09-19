@@ -33,8 +33,8 @@ import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
@@ -167,9 +167,11 @@ const RichTextMessageBox = ({
 
 	const resolveUserMention = useCallback((mention: string) => {
 		const normalizedMention = normalizeUsername(mention);
-		const user = Messages.state.find(({ u }) => u?.username && normalizeUsername(u.username) === normalizedMention)?.u;
+		const mention = Messages.state.flatMap(({ mentions }) => mentions ?? []).find(
+			({ username, type }) => type !== 'team' && username && normalizeUsername(username) === normalizedMention,
+		);
 
-		return user ? { _id: user._id, username: user.username, name: user.name } : undefined;
+		return mention ? { _id: mention._id, username: mention.username, name: mention.name } : undefined;
 	}, []);
 
 	const resolveChannelMention = useCallback((mention: string) => {
