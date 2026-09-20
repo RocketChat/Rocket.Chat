@@ -111,7 +111,8 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<FieldRow justifyContent='initial'>
 							<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
 								<Trans i18nKey='cloud.RegisterWorkspace_Setup_Terms_Privacy'>
-									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
+									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink>
+									{' and '}
 									<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
 								</Trans>
 							</FieldLabel>
