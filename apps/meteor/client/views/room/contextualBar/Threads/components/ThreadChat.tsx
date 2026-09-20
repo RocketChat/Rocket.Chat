@@ -3,6 +3,7 @@ import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings'
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
@@ -17,9 +18,14 @@ import { DateListProvider } from '../../../providers/DateListProvider';
 
 export type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
-};
+	/**
+	 * What Escape on an empty composer does, for a caller where closing the room's thread tab is not it — the
+	 * conference window has a toolbox, but nothing in it that this thread is a tab of.
+	 */
+	onEscape?: () => void;
+} & Omit<ComponentProps<typeof ContextualbarContent>, 'children'>;
 
-const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
+const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => {
 	const chat = useChat();
 
 	if (!chat) {
@@ -46,10 +52,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	}, [sendToChannelPreference]);
 
 	const { closeTab } = useRoomToolbox();
-
-	const handleComposerEscape = useCallback((): void => {
-		closeTab();
-	}, [closeTab]);
+	const handleComposerEscape = onEscape ?? closeTab;
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
@@ -89,7 +92,8 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
 	return (
-		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
+		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
+		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...boxProps} {...fileUploadTriggerProps}>
 			<DateListProvider>
 				<DropTargetOverlay {...fileUploadOverlayProps} />
 				<Box
