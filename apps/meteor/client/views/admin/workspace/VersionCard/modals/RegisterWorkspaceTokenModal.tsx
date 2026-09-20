@@ -77,7 +77,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 			</ModalHeader>
 			<ModalContent>
 				<Box is='p'>
-					<Trans i18nKey='RegisterWorkspace_Token_Step_One'>
+					<Trans i18nKey='cloud.RegisterWorkspace_Token_Step_One'>
 						1. Go to:{' '}
 						<Box is='span' fontWeight={600}>
 							cloud.rocket.chat {'>'} Workspaces
