@@ -1,4 +1,3 @@
-import { once } from 'node:events';
 import fs from 'node:fs';
 import type Stream from 'node:stream';
 
@@ -186,11 +185,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		const writeStream = fs.createWriteStream(tempFilePath);
 		streamParam.pipe(writeStream);
 
-		// unlinking while the write stream is still opening loses the race and orphans the temp file
+		const writeStreamClosed = () =>
+			writeStream.closed ? Promise.resolve() : new Promise<void>((resolve) => writeStream.once('close', () => resolve()));
+
 		const cleanup = async (err: unknown) => {
-			if (!writeStream.closed) {
-				await once(writeStream, 'close');
-			}
+			await writeStreamClosed();
 			await fs.promises.unlink(tempFilePath).catch(() => undefined);
 			resolver.reject(err);
 		};
