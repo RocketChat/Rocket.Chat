@@ -11,7 +11,14 @@ const useVideoConfContext = () => {
 	return context;
 };
 
-export const useVideoConfWindowEnabled = () => useVideoConfContext().conferenceWindowEnabled;
+/**
+ * Whether the workspace has the call-window experience turned on.
+ *
+ * Read optionally, unlike its siblings: this one is asked from the navbar, the sidebar and the message blocks,
+ * which render wherever the product does. Throwing there would take the page down over a setting, and the
+ * answer for somewhere with no call context is the same as for a workspace with the window off.
+ */
+export const useVideoConfWindowEnabled = (): boolean => useContext(VideoConfContext)?.conferenceWindowEnabled ?? false;
 export const useVideoConfDispatchOutgoing = () => useVideoConfContext().dispatchOutgoing;
 export const useVideoConfDismissOutgoing = () => useVideoConfContext().dismissOutgoing;
 export const useVideoConfStartCall = () => useVideoConfContext().startCall;
