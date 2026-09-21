@@ -162,7 +162,9 @@ export interface IHttpExtend {
 	/**
 	 * Method for providing a function which is called before every request is called out to the final destination.
 	 * This can be called more than once which means there can be more than one handler. The order provided is the order called.
-	 * Note: if this handler throws an error when it is executed then the request will be aborted.
+	 *
+	 * > [!WARNING]
+	 * > A handler that throws aborts the request.
 	 *
 	 * @param handler the instance of the IHttpPreRequestHandler
 	 */
@@ -171,7 +173,9 @@ export interface IHttpExtend {
 	/**
 	 * Method for providing a function which is called after every response is got from the url and before the result is returned.
 	 * This can be called more than once which means there can be more than one handler. The order provided is the order called.
-	 * Note: if this handler throws an error when it is executed then the respone will not be returned
+	 *
+	 * > [!WARNING]
+	 * > A handler that throws keeps the caller from receiving a response.
 	 *
 	 * @param handler the instance of the IHttpPreResponseHandler
 	 */

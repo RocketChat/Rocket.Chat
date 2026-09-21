@@ -33,9 +33,13 @@ export abstract class App implements IApp {
 
 	/**
 	 * Create a new App, this is called whenever the server starts up and initiates the Apps.
-	 * Note, your implementation of this class should call `super(name, id, version)` so we have it.
-	 * Also, please use the `initialize()` method to do items instead of the constructor as the constructor
-	 * *might* be called more than once but the `initialize()` will only be called once.
+	 *
+	 * > [!IMPORTANT]
+	 * > Your subclass has to call `super(info, logger, accessors)`.
+	 *
+	 * > [!WARNING]
+	 * > The constructor may run more than once, so set the App up from
+	 * > {@link App.initialize} instead, which runs exactly once.
 	 */
 	public constructor(
 		private readonly info: IAppInfo,
