@@ -478,12 +478,19 @@ import { IS_EE } from '../../e2e/config/constants';
 	describe('[Accounts_UserStatus_Enabled]', () => {
 		before(async () => {
 			await setUserStatus(bystanderCredentials, UserStatus.ONLINE);
-			await setUserStatus(viewerCredentials, UserStatus.BUSY);
+			await request.post(api('users.setStatus')).set(viewerCredentials).send({ status: UserStatus.BUSY, message: 'own-status' });
 			await updateEESetting('Accounts_UserStatus_Enabled', false);
 		});
 
 		after(async () => {
 			await updateEESetting('Accounts_UserStatus_Enabled', true);
+			await setUserStatus(viewerCredentials, UserStatus.BUSY);
+		});
+
+		it('should keep a user visible to themselves through users.info', async () => {
+			const { body } = await request.get(api('users.info')).set(viewerCredentials).query({ userId: viewer._id }).expect(200);
+
+			expect(body.user.statusText).to.be.equal('own-status');
 		});
 
 		it('should hide everyone from everyone, not only the users who chose to hide', async () => {

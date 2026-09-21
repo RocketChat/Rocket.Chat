@@ -167,6 +167,10 @@ export async function getFullUserDataByUniqueSearchTerm(
 		}
 	}
 
+	if (myself) {
+		return user;
+	}
+
 	const hidden = await getUsersHiddenFrom(userId);
 
 	return redactHiddenUser(user, hidden);
