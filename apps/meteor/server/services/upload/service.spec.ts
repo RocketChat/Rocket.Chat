@@ -49,13 +49,6 @@ const cursorOf = (ids: string[]) => ({
 	map: (fn: (doc: { _id: string }) => string) => ({ toArray: async () => ids.map((_id) => fn({ _id })) }),
 });
 
-const waitForRemoval = async (file: string) => {
-	for (let attempt = 0; attempt < 100 && fs.existsSync(file); attempt++) {
-		await new Promise((resolve) => setImmediate(resolve));
-	}
-	return fs.existsSync(file);
-};
-
 const user = { _id: 'u1', username: 'jane' } as IUser;
 const uploadedAt = new Date('2026-09-01T10:00:00.000Z');
 
@@ -63,7 +56,7 @@ describe('UploadService', () => {
 	let service: UploadService;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 		jest.mocked(FileUpload.getStore).mockImplementation((name) => ({ Uploads: uploadsStore, Avatars: avatarsStore })[name] as any);
 		jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf([]) as any);
 		uploadsStore.deleteById.mockResolvedValue(undefined);
@@ -339,7 +332,7 @@ describe('UploadService', () => {
 			await expect(upload).rejects.toBe(err);
 			expect(uploadsStore.insert).not.toHaveBeenCalled();
 			expect(createWriteStream.mock.results[0].value.destroyed).toBe(true);
-			await expect(waitForRemoval(tempFilePath)).resolves.toBe(false);
+			expect(fs.existsSync(tempFilePath)).toBe(false);
 		});
 
 		it('rejects when the temporary file cannot be written', async () => {
@@ -360,7 +353,7 @@ describe('UploadService', () => {
 			streamParam.end('a file');
 
 			await expect(upload).rejects.toBe(err);
-			await expect(waitForRemoval(tempFilePath)).resolves.toBe(false);
+			expect(fs.existsSync(tempFilePath)).toBe(false);
 		});
 	});
 
