@@ -1,6 +1,6 @@
 import type { ICredentialToken, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICredentialTokensModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -40,5 +40,9 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 		};
 
 		return this.findOneAndDelete(query);
+	}
+
+	setExpiresAtById(_id: string, expireAt: Date): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { expireAt } });
 	}
 }
