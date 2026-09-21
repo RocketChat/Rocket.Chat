@@ -93,7 +93,7 @@ const MockedMediaCallProvider = ({
 	};
 
 	const onCall = async (id?: string) => {
-		if (id) {
+		if (typeof id === 'string') {
 			setPeerInfo(await getPeerInfo(id));
 		}
 
