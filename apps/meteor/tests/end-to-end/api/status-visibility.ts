@@ -4,12 +4,14 @@ import { TeamType, UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { api, credentials, getCredentials, request } from '../../data/api-data';
 import { updateEESetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[Status Visibility] (Enterprise Only)', function () {
@@ -447,9 +449,17 @@ import { IS_EE } from '../../e2e/config/constants';
 				.send({ userId: bystander._id, data: { presenceDisabledByAdmin: false, statusText } })
 				.expect(200);
 
-			const { body } = await request.get(api('me')).set(bystanderCredentials).expect(200);
+			const me = await withTimeout(async (signal) => {
+				for (;;) {
+					const { body } = await request.get(api('me')).set(bystanderCredentials).expect(200);
+					if (body.statusSource === 'manual' || signal.aborted) {
+						return body;
+					}
+					await sleep(200);
+				}
+			}, 15000);
 
-			expect(body).to.include({ statusText, statusSource: 'manual' });
+			expect(me).to.include({ statusText, statusSource: 'manual' });
 		});
 
 		it('should not touch the per-user choices of the CORE-2522 axis', async () => {
