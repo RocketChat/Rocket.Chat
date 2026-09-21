@@ -14,6 +14,95 @@ A component is a reusable piece of code that represents a single UI element. Com
 | Simple & Logical | ❌             | ❌                |
 | Complex & Logical| ❌             | ✅                |
 
+## A provider reads, a component is told
+
+> Scale this to the change. A three-prop dropdown needs no context of its own — passing
+> the value in is the whole of it. What follows matters for a screen, or for a set of
+> components that share a situation.
+
+The line is the provider, not the package. `useSetting` in a package's provider is fine;
+the same call in one of its components is not.
+
+The reason is dependencies. Every context a component reads is one more thing standing
+between it and being rendered: a story has to mock it, a test has to stand it up, and
+moving the component means carrying that context along. A provider pays that cost once,
+for a whole screen.
+
+`packages/ui-voip` is the precedent — its providers reach endpoints, streams and
+settings, and nothing under its `components/` reads an application context at all.
+
+### Settings, permissions and the viewer
+
+`useSetting`, `usePermission`, `useUserId`, `useUser`, `useUserPreference`.
+
+❌
+
+```tsx
+const CallMemberItem = ({ member }: CallMemberItemProps) => {
+	const canRing = usePermission('videoconf-ring-users');
+	const useRealName = useSetting('UI_Use_Real_Name', false);
+```
+
+✅ — a prop when one component needs it; one group on the provider when a screenful do:
+
+```ts
+export type ConferenceViewer = {
+	uid: IUser['_id'] | null;
+	useRealName: boolean;
+	displayAvatars: boolean;
+	canRingUsers: boolean;
+};
+```
+
+Asked once, where the screen is assembled. A story then states the workspace instead of
+mocking one.
+
+### Where it is mounted
+
+Routes and the surrounding screen are circumstances the provider recognises.
+
+❌
+
+```tsx
+const joinDisabled = useCurrentRoutePath()?.startsWith('/conference/');
+```
+
+✅
+
+```tsx
+const joinDisabled = useContext(VideoConfContext)?.joinDisabled ?? false;
+```
+
+The provider knows the circumstance; the block only knows how to dim a button. Deciding
+it in the block means the block has to know what a call window's address looks like.
+
+### Ask about the item, don't hand over the collection
+
+If a row needs one fact about its own item, give it that fact.
+
+❌
+
+```tsx
+const { silencedCalls } = useOngoingCalls();
+const incoming = useVideoConfIncomingCalls();
+const silenced = silencedCalls.includes(call.callId);
+const audible = incoming.some(({ callId, dismissed }) => callId === call.callId && !dismissed);
+```
+
+✅
+
+```tsx
+const { audible, silenced, silence } = callRing(call.callId);
+```
+
+Handing over the collection couples the row to how the set is stored, and here it dragged
+in a second context to search alongside the first.
+
+### The question that settles it
+
+Can this component be rendered from a plain object — no workspace, no router, no server?
+If not, whatever stands in the way belongs on the provider.
+
 ## Simple components
 
 Simple components represent atomic UI elements like buttons or text fields.
@@ -107,6 +196,9 @@ Complex components combine multiple simple components for sophisticated UI eleme
 
 Concentrate solely on the user interface design, ensuring it is poised to incorporate the required logic seamlessly.
 
+What counts as logic, and where it goes instead, is
+[A provider reads, a component is told](#a-provider-reads-a-component-is-told).
+
 ```jsx
 export const Default = () => (
 	<Modal>
@@ -135,35 +227,54 @@ Structure components into understandable, logical segments.
 
 ### Develop with Storybook first
 
-Start with Storybook to separate interface from logic:
+Start by inventing the shape the screen needs, and build against it. Not the endpoint's
+shape — the screen's. None of it has to exist yet.
+
+```ts
+type ConferenceCall = {
+	members: ConferenceMember[];
+	canRing: boolean;
+	ended: boolean;
+	name: string;
+	capabilities: VideoConferenceCapabilities;
+};
+```
+
+Every story then **states a situation** rather than arranging one:
 
 ```tsx
-export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageIcon variant='incoming' />
-			<VideoConfMessageText>Calling...</VideoConfMessageText>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageAction primary>Join</VideoConfMessageAction>
-			<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
-
-export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageIcon />
-			<VideoConfMessageText>Call ended</VideoConfMessageText>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageAction>Call Back</VideoConfMessageAction>
-			<VideoConfMessageFooterText>Call was not answered</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+withLiveConference({
+	call: { members, name: 'Weekly sync', createdAt, capabilities },
+	room: { rid: 'room-id', name: 'general', type: 'c', loading: false },
+	session: { joined: true, url: 'about:blank' },
+});
 ```
+
+That story used to seed a query client with a join result and mock six endpoints to reach
+the same frame. The gain is not convenience: a story that mocks transport documents the
+transport, and breaks when the transport changes.
+
+**Actions are values too.** `join`, `leave`, `ringMember` and `shareChat` arrive as
+functions the screen calls — a story logs them, a spec asserts a spy. `ChatAccessModal`
+asserted `shareChat({ callId, mode })` against a mocked endpoint; it now asserts
+`shareChat(mode)` against a spy, and the modal has no idea a server exists.
+
+**What cannot be built this way, take as a slot.** Some parts are genuinely the product's:
+a whole room with its composer, a live presence store, an autocomplete that has to read
+the room. Those arrive as nodes or render props rather than being reimplemented.
+
+```ts
+type ConferenceSlots = {
+	chat?: ReactNode;
+	renderMemberStatus?: (uid: string) => ReactNode;
+	renderUserPicker?: (props: UserPickerProps) => ReactNode;
+};
+```
+
+**Wiring is a separate step**, and can be a separate pull request: the screens land with
+their stories and no way to reach them, then a second change supplies the reads, the
+actions and the routes. The first carries no risk by construction; the second is where
+the risk is, and it is small enough to read.
 
 ### Child components must remain scoped
 
