@@ -1,9 +1,31 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "name": "Rocket.Chat Apps TypeScript Definition",
+    "name": "Rocket.Chat Apps-Engine API Reference",
     "entryPointStrategy": "expand",
     "entryPoints": ["./src/definition"],
     "excludePrivate": true,
     "out": "docs",
-    "gitRevision": "master"
+    "gitRevision": "master",
+    "intentionallyNotExported": [
+        "src/definition/eventResult/EventResult.ts:Marker",
+        "src/definition/eventResult/EventResult.ts:PATCH_PHANTOM_KEY",
+        "src/definition/livechat/ILivechatRoom.ts:IOmnichannelSourceApp",
+        "src/definition/mediaCalls/helpers.ts:WithCall",
+        "src/definition/mediaCalls/helpers.ts:EndedCall",
+        "src/definition/messages/IMessageRaw.ts:IBlock",
+        "src/definition/outboundCommunication/IOutboundProviderTemplate.ts:Component",
+        "src/definition/scheduler/IProcessor.ts:StartupSetting",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonBase",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonMessageBox",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonMessage",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonRoomSidebar",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonRoom",
+        "src/definition/uikit/IUIKitIncomingInteractionActionButton.ts:IUIKitIncomingInteractionActionButtonUserDropdown",
+        "src/definition/uikit/blocks/BlockBuilder.ts:ActionsBlockParam",
+        "src/definition/uikit/blocks/BlockBuilder.ts:ContextBlockParam",
+        "src/definition/uikit/blocks/BlockBuilder.ts:ImageBlockParam",
+        "src/definition/uikit/blocks/BlockBuilder.ts:InputBlockParam",
+        "src/definition/uikit/blocks/BlockBuilder.ts:SectionBlockParam",
+        "src/definition/uikit/blocks/BlockBuilder.ts:ImageElementParam"
+    ]
 }
