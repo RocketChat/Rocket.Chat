@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes the custom scrollbars staying permanently visible on virtualized lists (sidebar room list, message list and thread list) instead of hiding when the pointer is away
+Fixes the custom scrollbars staying permanently visible on virtualized lists (sidebar room list, message list, thread list, discussions list and other paginated virtual lists) instead of hiding when the pointer is away
