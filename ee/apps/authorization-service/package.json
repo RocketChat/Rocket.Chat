@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/abac": "workspace:^",
+		"@rocket.chat/authorization": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",

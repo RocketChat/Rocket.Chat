@@ -6,6 +6,7 @@ import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
+import HomeSkeleton from '../../home/HomeSkeleton';
 
 export type MainLayoutProps = {
 	children?: ReactNode;
@@ -19,7 +20,7 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 	if (isEmbeddedLayout) {
 		return (
 			<EmbeddedPreload>
-				<AuthenticationCheck>
+				<AuthenticationCheck loadingElement={<HomeSkeleton />}>
 					<Suspense fallback={null}>{children}</Suspense>
 				</AuthenticationCheck>
 			</EmbeddedPreload>
@@ -28,7 +29,7 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 
 	return (
 		<Preload>
-			<AuthenticationCheck>
+			<AuthenticationCheck loadingElement={<HomeSkeleton />}>
 				<Suspense fallback={null}>{children}</Suspense>
 			</AuthenticationCheck>
 		</Preload>

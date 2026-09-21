@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCategoryMenuItems } from '../../../../sidebar/categories/hooks/useCategoryMenuItems';
 
-const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean): 'star-filled' | 'folder' | 'star' => {
+const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean) => {
 	if (favorite) {
 		return 'star-filled';
 	}
@@ -15,7 +15,7 @@ const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnable
 		return 'folder';
 	}
 
-	return isFavoritesEnabled ? 'star' : 'folder';
+	return isFavoritesEnabled ? 'folder-star' : 'folder';
 };
 
 type RoomHeaderCategoryMenuProps = {

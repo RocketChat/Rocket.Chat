@@ -167,7 +167,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return mapped;
 		});
 
-		this.store.getState().storeMany(newRecords);
+		this.store.getState().replaceAll(newRecords);
 		this.handleLoadedFromServer(newRecords);
 
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
