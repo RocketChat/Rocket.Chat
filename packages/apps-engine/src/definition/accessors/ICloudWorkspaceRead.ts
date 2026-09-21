@@ -16,9 +16,10 @@ export interface ICloudWorkspaceRead {
 	 * Returns an access token that can be used to access
 	 * Cloud Services on the workspace's behalf.
 	 *
-	 * @param scope The scope that the token should be authorized with
+	 * It needs the `cloud.workspace-token` permission, and the scope asked for
+	 * here has to be one of the scopes that permission declares.
 	 *
-	 * @RequiresPermission cloud.workspace-token; scopes: Array<string>
+	 * @param scope The scope that the token should be authorized with
 	 */
 	getWorkspaceToken(scope: string): Promise<IWorkspaceToken>;
 }
