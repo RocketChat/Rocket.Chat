@@ -5419,6 +5419,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@libraz/typedoc-theme@npm:~0.1.1":
+  version: 0.1.1
+  resolution: "@libraz/typedoc-theme@npm:0.1.1"
+  peerDependencies:
+    typedoc: ">=0.28.0 <0.29.0"
+  checksum: 10/dbb801b1dce9590bcfd6d8946ba6654e9eb3576f55279f8b3333662af369da44b9afd61c005b3c4e0ae019bf7e67a8c531dbeb533f7f639d7c173aad0c4aed6a
+  languageName: node
+  linkType: hard
+
 "@manypkg/find-root@npm:^1.1.0":
   version: 1.1.0
   resolution: "@manypkg/find-root@npm:1.1.0"
@@ -9200,6 +9209,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps-engine@workspace:packages/apps-engine"
   dependencies:
+    "@libraz/typedoc-theme": "npm:~0.1.1"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/node": "npm:~24.13.2"
     eslint: "npm:~9.39.5"

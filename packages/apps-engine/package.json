@@ -68,6 +68,7 @@
 		"uuid": "~11.1.1"
 	},
 	"devDependencies": {
+		"@libraz/typedoc-theme": "~0.1.1",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@types/node": "~24.13.2",
 		"eslint": "~9.39.5",
