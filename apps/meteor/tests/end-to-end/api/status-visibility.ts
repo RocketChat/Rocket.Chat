@@ -702,6 +702,18 @@ import { IS_EE } from '../../e2e/config/constants';
 			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
 		});
 
+		it('should list nobody while the feature is off', async () => {
+			await request
+				.get(api('users.listStatusVisibility'))
+				.set(credentials)
+				.query({ count: 25, offset: 0 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.users).to.be.an('array').that.is.empty;
+					expect(res.body.total).to.be.equal(0);
+				});
+		});
+
 		it('should refuse writing the admin fields while the feature is off', async () => {
 			await setAdminDenied(hider._id, [viewer.username]).expect(400);
 
