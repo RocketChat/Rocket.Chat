@@ -1,0 +1,19 @@
+apps/meteor/tests/unit/app/emoji/helpers.spec.ts
+  s_e4076b3d44cc4e::t_10278449c245a8 54-58,71-72,115-119,122-140,142,144-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b396094ad2d8cb9de21f49b77ba4da2e21ba9bd7",
+  "prompts": {},
+  "sessions": {
+    "s_e4076b3d44cc4e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "90fc6e87-b7d1-4e3a-9613-11e750a6f121",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
