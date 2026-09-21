@@ -2369,7 +2369,7 @@
   "LDAP_Search_Size_Limit": "搜尋大小限制",
   "LDAP_Search_Size_Limit_Description": "要返回的最大條目數。  \n **注意**此數字應大於**搜索頁面大小**",
   "LDAP_Server_Type": "伺服器類型",
-  "LDAP_Server_Type_AD": "Active directory",
+  "LDAP_Server_Type_AD": "Active Directory",
   "LDAP_Server_Type_Other": "其他",
   "LDAP_Sync_AutoLogout_Enabled": "啟用自動登出",
   "LDAP_Sync_AutoLogout_Interval": "自動登出間隔",

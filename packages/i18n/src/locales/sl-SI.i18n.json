@@ -1151,7 +1151,7 @@
   "Global_purge_override_warning": "Uveljavljena je globalna politika hrambe. Če pustite »Override global retention policy« off, lahko uporabite le strožji pravilnik od globalnega pravilnika.",
   "Global_Search": "Globalno iskanje",
   "Go_to_your_workspace": "Odprite svoj delovni prostor",
-  "GoogleCloudStorage": "Google cloud storage",
+  "GoogleCloudStorage": "Google Cloud Storage",
   "GoogleNaturalLanguage_ServiceAccount_Description": "Ključ za račun storitve JSON file. Več informacij najdete [here] (https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)",
   "GoogleTagManager_id": "ID Google upravitelja oznak",
   "Government": "Vlada",

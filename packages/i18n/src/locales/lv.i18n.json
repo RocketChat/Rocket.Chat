@@ -246,7 +246,7 @@
   "Analytics_features_messages_Description": "Izseko pielāgotos notikumus, kas saistīti ar darbībām, ko lietotājs veic ziņojumos.",
   "Analytics_features_rooms_Description": "Izseko pielāgotus notikumus, kas saistīti ar darbībām kanālā vai grupā (izveidojiet, atstājiet, izdzēsiet).",
   "Analytics_features_users_Description": "Izseko pielāgotus notikumus ar darbībām, kas saistītas ar lietotājiem (paroles atiestatīšanas laiks, profila attēlu maiņa utt.).",
-  "Analytics_Google": "Google analytics",
+  "Analytics_Google": "Google Analytics",
   "Analytics_Google_id": "Tracking ID",
   "and": "un",
   "And_more": "And {{length}} more",

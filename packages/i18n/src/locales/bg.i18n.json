@@ -1161,7 +1161,7 @@
   "Global_purge_override_warning": "Налице е глобална политика за задържане. Ако оставите \"Премахване на правилата за глобално задържане\", можете да приложите политика, която е по-строга от глобалната политика.",
   "Global_Search": "Глобално търсене",
   "Go_to_your_workspace": "Отидете в работното си пространство",
-  "GoogleCloudStorage": "Google cloud storage",
+  "GoogleCloudStorage": "Google Cloud Storage",
   "GoogleNaturalLanguage_ServiceAccount_Description": "Ключ за услугата ключ JSON файл. Повече информация може да намерите [тук] (https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)",
   "GoogleTagManager_id": "Идент",
   "Government": "правителство",

@@ -284,7 +284,7 @@
   "Analytics_features_messages_Description": "Rastreia eventos personalizados relacionados com acções que um utilizador faz em mensagens.",
   "Analytics_features_rooms_Description": "Rastreia eventos personalizados relacionados com acções num canal ou grupo (criar, sair, apagar).",
   "Analytics_features_users_Description": "Rastreia eventos personalizados relacionados com ações de utilizadores  (tempos de redefinição de senha, mudança imagem de perfil, etc).",
-  "Analytics_Google": "Google analytics",
+  "Analytics_Google": "Google Analytics",
   "Analytics_Google_id": "ID de Tracking",
   "and": "e",
   "And_more": "E mais {{length}}",

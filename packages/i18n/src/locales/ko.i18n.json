@@ -1750,7 +1750,7 @@
   "Global_purge_override_warning": "글로벌 보존 정책이 시행 중입니다. \"글로벌 보존 정책 재정의\"를 해제 한 상태로두면 글로벌 정책보다 엄격한 정책 만 적용 할 수 있습니다.",
   "Global_Search": "글로벌 검색",
   "Go_to_your_workspace": " Workspace로 이동하십시오.",
-  "GoogleCloudStorage": "Google cloud storage",
+  "GoogleCloudStorage": "Google Cloud Storage",
   "GoogleNaturalLanguage_ServiceAccount_Description": "서비스 계정 키 JSON 파일 자세한 내용은 [여기] (https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)에서 확인할 수 있습니다.",
   "GoogleTagManager_id": "Google 태그 관리자 아이디",
   "Government": "정부",

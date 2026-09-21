@@ -2422,7 +2422,7 @@
   "LDAP_Search_Size_Limit": "حد حجم البحث",
   "LDAP_Search_Size_Limit_Description": "الحد الأقصى لعدد الإدخالات المراد إرجاعها.  \n  **تنبيه** يجب أن يكون هذا الرقم أكبر من **حجم صفحة البحث**",
   "LDAP_Server_Type": "نوع الخادم",
-  "LDAP_Server_Type_AD": "Active directory",
+  "LDAP_Server_Type_AD": "Active Directory",
   "LDAP_Server_Type_Other": "أخرى",
   "LDAP_Sync_AutoLogout_Enabled": "تمكين تسجيل الخروج التلقائي",
   "LDAP_Sync_AutoLogout_Interval": "الفاصل الزمني لتسجيل الخروج التلقائي",
