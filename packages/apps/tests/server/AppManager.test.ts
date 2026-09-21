@@ -274,4 +274,62 @@ describe('AppManager', () => {
 		assert.strictEqual(expectedStorageItem.signature, 'signed-app-data');
 		assert.strictEqual(updatePartialAndReturnDocumentSpy.mock.calls.length, 1);
 	});
+
+	describe('migrate', () => {
+		it('throws when the storage update returns null because the app no longer exists', async () => {
+			const manager = new AppManager({
+				metadataStorage: testingInfastructure.getAppStorage(),
+				logStorage: testingInfastructure.getLogStorage(),
+				bridges: testingInfastructure.getAppBridges(),
+				sourceStorage: testingInfastructure.getSourceStorage(),
+				tempFilePath: testingInfastructure.getTempFilePath(),
+			});
+
+			const mockStorageItem = TestData.getAppStorageItem();
+			const mockApp = TestData.getMockApp(mockStorageItem, manager);
+
+			(manager as any).apps = new Map([[mockStorageItem.id, mockApp]]);
+
+			mock.method(manager.getStorage(), 'retrieveOne', () => Promise.resolve(mockStorageItem));
+			mock.method(manager.getSignatureManager(), 'signApp', () => Promise.resolve('signed-app-data'));
+			mock.method(mockApp, 'validateLicense', () => Promise.resolve());
+			mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () => Promise.resolve(null));
+
+			await assert.rejects(
+				manager.migrate(mockStorageItem.id),
+				/Could not update app storage for the id "test-app" - the app no longer exists\./,
+			);
+		});
+	});
+
+	describe('update', () => {
+		it('throws when the storage update returns null because the app no longer exists', async () => {
+			const manager = new AppManager({
+				metadataStorage: testingInfastructure.getAppStorage(),
+				logStorage: testingInfastructure.getLogStorage(),
+				bridges: testingInfastructure.getAppBridges(),
+				sourceStorage: testingInfastructure.getSourceStorage(),
+				tempFilePath: testingInfastructure.getTempFilePath(),
+			});
+
+			const mockStorageItem = TestData.getAppStorageItem();
+
+			mock.method(manager.getParser(), 'unpackageApp', () =>
+				Promise.resolve({
+					info: mockStorageItem.info,
+					implemented: { getValues: () => ({}) },
+					languageContent: {},
+				}),
+			);
+			mock.method(manager.getStorage(), 'retrieveOne', () => Promise.resolve(mockStorageItem));
+			mock.method(manager, 'disable', () => Promise.resolve(true));
+			mock.method(manager.getSignatureManager(), 'signApp', () => Promise.resolve('signed-app-data'));
+			mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () => Promise.resolve(null));
+
+			await assert.rejects(
+				manager.update(Buffer.from(''), []),
+				/Can not update an App that does not currently exist: "test-app"\./,
+			);
+		});
+	});
 });

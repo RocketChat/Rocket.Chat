@@ -541,6 +541,10 @@ export class AppManager {
 		const { marketplaceInfo, signature, migrated, _id } = storageItem;
 		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({ marketplaceInfo, signature, migrated, _id });
 
+		if (!stored) {
+			throw new Error(`Could not update app storage for the id "${id}" - the app no longer exists.`);
+		}
+
 		await this.updateLocal(stored, app);
 		await this.bridges
 			.getAppActivationBridge()
@@ -765,6 +769,10 @@ export class AppManager {
 		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument(descriptor, {
 			unsetPermissionsGranted: typeof permissionsGranted === 'undefined',
 		});
+
+		if (!stored) {
+			throw new Error(`Can not update an App that does not currently exist: "${old.id}".`);
+		}
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
