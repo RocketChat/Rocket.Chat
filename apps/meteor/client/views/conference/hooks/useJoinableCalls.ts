@@ -67,5 +67,7 @@ export const useJoinableCalls = () => {
 		enabled,
 	});
 
-	return { calls: data ?? [], isLoading };
+	// Disabling the query leaves its last answer in the cache, so the flag decides what is returned as well as
+	// whether to ask: a workspace that turned the window off would otherwise go on listing the calls it fetched.
+	return { calls: enabled ? (data ?? []) : [], isLoading };
 };
