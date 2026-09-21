@@ -73,8 +73,8 @@ describe('UserBuilder', () => {
 	});
 
 	it('getSettings() reflects whatever settings were provided on construction', () => {
-		const settings = { preferredLanguage: 'en' };
-		const builder = new UserBuilder({ username: 'u', name: 'U', settings: settings as IUser['settings'] });
+		const settings: IUser['settings'] = { preferences: { language: 'en' } };
+		const builder = new UserBuilder({ username: 'u', name: 'U', settings });
 
 		assert.deepStrictEqual(builder.getSettings(), settings);
 	});
