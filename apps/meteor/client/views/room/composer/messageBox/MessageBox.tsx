@@ -136,26 +136,20 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useStableCallback(async () => {
+	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
 
-		const { composer } = chat;
-		const text = composer?.text ?? '';
+		const text = chat.composer?.text ?? '';
 		popup.clear();
+		flushDraft('');
 
 		void onSend?.({
 			value: text,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
-		}).then(() => {
-			if (!composer) {
-				return;
-			}
-
-			flushDraft(composer.text);
 		});
 	});
 
