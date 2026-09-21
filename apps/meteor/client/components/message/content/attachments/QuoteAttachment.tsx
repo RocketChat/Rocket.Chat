@@ -75,7 +75,7 @@ export const QuoteAttachment = ({ attachment, source, path }: QuoteAttachmentPro
 							<Attachments
 								attachments={attachment.attachments}
 								id={attachment.attachments[0]?.title_link}
-								source={source && { ...source, originMid, originTs: attachment.ts, originRid: attachment.rid }}
+								source={source && { ...source, originMid, originTs: attachment.ts }}
 								keyPrefix={path}
 							/>
 						</AttachmentInner>
