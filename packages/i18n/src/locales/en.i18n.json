@@ -442,7 +442,7 @@
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth account or Gravatar",
   "Accounts_ShowFormLogin": "Show default login form",
   "Accounts_StatusVisibility_Admin_Enabled": "Admin status hiding",
-  "Accounts_StatusVisibility_Admin_Enabled_Description": "Let admins hide a user's status. Required for users to hide their own status too.",
+  "Accounts_StatusVisibility_Admin_Enabled_Description": "Let admin control individual user status, status message and status hiding. This may affect presence service performance.",
   "Accounts_StatusVisibility_Enabled": "User status hiding",
   "Accounts_StatusVisibility_Enabled_Description": "Let users conceal their actual status from users they select, always appearing offline to them.",
   "Accounts_StatusVisibility_HideFrom": "Hide from...",
