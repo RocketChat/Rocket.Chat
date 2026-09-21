@@ -1,4 +1,4 @@
-import type { CallHistoryDirection, CallHistoryItemState, ICallHistoryItem } from '../callHistory/ICallHistoryItem';
+import type { CallHistoryDirection, CallHistoryItemState, ICallHistoryItem } from '../mediaCalls/ICallHistoryItem';
 
 export interface ICallHistorySearchFilters {
 	/** Matches the contact's name, username or extension */

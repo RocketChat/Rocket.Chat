@@ -1,4 +1,4 @@
-import type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+import type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import type { CallHistoryItem } from '@rocket.chat/core-typings';
 
 export function toAppCallHistoryItem(item: CallHistoryItem): IAppsCallHistoryItem {

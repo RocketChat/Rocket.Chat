@@ -5,7 +5,7 @@ import type {
 	ICallHistorySearchPagination,
 	ICallHistorySearchResult,
 } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+import type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import { CallHistory as CallHistoryService } from '@rocket.chat/core-services';
 import { CallHistory } from '@rocket.chat/models';
 

@@ -1,6 +1,6 @@
 import type { APIRequestContext, Page } from '@playwright/test';
 import type { ICallHistorySearchFilters, ICallHistorySearchPagination } from '@rocket.chat/apps-engine/definition/accessors';
-import type { IInternalCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+import type { IInternalCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import type { CallPreventionRecord, IInternalMediaCallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 import { MongoClient } from 'mongodb';

@@ -10,6 +10,13 @@ export type {
 	MediaCallOrigin,
 	MediaCallState,
 } from './IMediaCall';
+export type {
+	ICallHistoryItem,
+	IExternalCallHistoryItem,
+	IInternalCallHistoryItem,
+	CallHistoryDirection,
+	CallHistoryItemState,
+} from './ICallHistoryItem';
 export type { IPreMediaCallCreatedContext, MediaCallCreatePatch } from './IPreMediaCallCreatedContext';
 export type { IMediaCallStartedContext } from './IMediaCallStartedContext';
 export type { IMediaCallParticipantJoinedContext } from './IMediaCallParticipantJoinedContext';

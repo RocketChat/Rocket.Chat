@@ -4,7 +4,7 @@ export type {
 	ICallHistorySearchPagination as IAppsCallHistorySearchPagination,
 	ICallHistorySearchResult as IAppsCallHistorySearchResult,
 } from '@rocket.chat/apps-engine/definition/accessors';
-export type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+export type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 export type {
 	IDepartment as IAppsDepartment,
 	ILivechatMessage as IAppsLivechatMessage,

@@ -4,7 +4,7 @@ import type {
 	ICallHistorySearchPagination,
 	ICallHistorySearchResult,
 } from '@rocket.chat/apps-engine/definition/accessors';
-import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/callHistory';
+import type { ICallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
 
 import { bridgeCall } from '../../bridges/bridgeCall';
 import type * as Messenger from '../../messenger';
