@@ -54,7 +54,7 @@ import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatu
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
-import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
+import { isAdminHidingAllowed, isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -882,6 +882,10 @@ API.v1.get(
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { searchTerm } = this.queryParams;
+
+		if (!isAdminHidingAllowed()) {
+			return API.v1.success({ users: [], count: 0, offset, total: 0 });
+		}
 
 		const { cursor, totalCount } = Users.findPaginatedManagedPresenceUsers(searchTerm, {
 			projection: {
