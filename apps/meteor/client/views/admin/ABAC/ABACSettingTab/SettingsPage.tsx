@@ -4,6 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation, Trans } from 'react-i18next';
 
 import AbacEnabledToggle from './AbacEnabledToggle';
+import RequiredAttributesField from './RequiredAttributesField';
 import SettingField from './SettingField';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { links } from '../../../../lib/links';
@@ -17,6 +18,8 @@ const SettingsPage = () => {
 		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
+				<RequiredAttributesField />
+				<SettingField settingId='ABAC_Enforce_All_Rooms' />
 				<SettingField settingId='ABAC_PDP_Type' />
 				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
