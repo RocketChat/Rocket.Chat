@@ -15,11 +15,11 @@ export type SettingFieldProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
-	/** Runs before a change or a reset is applied; call `proceed` to let it through. */
+	disabled?: boolean;
 	onBeforeChange?: (value: SettingValue, proceed: () => void) => void;
 };
 
-function SettingField({ className = undefined, settingId, sectionChanged, onBeforeChange }: SettingFieldProps) {
+function SettingField({ className = undefined, settingId, sectionChanged, disabled: forceDisabled, onBeforeChange }: SettingFieldProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -113,7 +113,7 @@ function SettingField({ className = undefined, settingId, sectionChanged, onBefo
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 
-	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
+	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery) || Boolean(forceDisabled);
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
