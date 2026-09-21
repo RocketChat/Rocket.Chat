@@ -146,7 +146,7 @@ export const createLayoutSettings = () =>
 			});
 		});
 		await this.section('Layout_Dark_Alpha_Theme', async function () {
-			await this.add('Layout_Dark_Alpha_Watermark_Url', '', {
+			await this.add('Layout_Dark_Alpha_Watermark_Url', '/images/logo/icon.svg', {
 				type: 'string',
 				public: true,
 			});
