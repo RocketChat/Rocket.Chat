@@ -1,3 +1,4 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription, type UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -5,7 +6,6 @@ import type { Document } from 'mongodb';
 
 import { settings } from '../settings';
 import { effectiveStatusExpression, effectiveStatusFilter } from './statusVisibility/effectiveStatus';
-import type { PresenceScope } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;

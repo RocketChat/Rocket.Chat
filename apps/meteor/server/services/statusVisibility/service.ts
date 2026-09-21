@@ -8,8 +8,6 @@ const logger = new Logger('StatusVisibility');
 
 const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1, statusExpiresAt: 1 } as const;
 
-const PRESENCE_MODULE = 'unlimited-presence';
-
 export class StatusVisibilityService extends ServiceClassInternal implements IStatusVisibilityService {
 	protected name = 'status-visibility';
 
@@ -43,7 +41,7 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		});
 
 		this.onEvent('license.module', async ({ module }) => {
-			if (module === PRESENCE_MODULE) {
+			if (module === 'unlimited-presence') {
 				await this.invalidate();
 			}
 		});
@@ -228,20 +226,16 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 	}
 
 	async invalidate(targets?: IUser['_id'][], options?: { allViewers?: boolean }): Promise<void> {
-		const scoped = Boolean(targets) && !options?.allViewers;
-
-		if (!scoped) {
-			this.broadcastInvalidation(targets, undefined);
+		if (!targets || options?.allViewers) {
+			this.broadcastInvalidation(targets);
 			return;
 		}
 
-		const previousViewers = this.viewersOf(targets as IUser['_id'][]);
+		const previousViewers = this.viewersOf(targets);
 
 		await this.refresh(targets);
 
-		const viewers = [...new Set([...previousViewers, ...this.viewersOf(targets as IUser['_id'][])])];
-
-		this.broadcastInvalidation(targets, viewers);
+		this.broadcastInvalidation(targets, [...new Set([...previousViewers, ...this.viewersOf(targets)])]);
 	}
 
 	private broadcastInvalidation(targets?: IUser['_id'][], viewers?: IUser['_id'][]): void {

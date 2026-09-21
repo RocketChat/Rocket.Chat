@@ -1,3 +1,4 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typings';
@@ -7,7 +8,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Streamer } from './streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from './types';
 import { statusVisibilityGate } from './StatusVisibilityGate';
-import type { PresenceScope } from './presenceScope';
 import { NOTHING_HIDDEN, isHiddenFor } from './presenceScope';
 
 type UserPresenceStreamProps = {

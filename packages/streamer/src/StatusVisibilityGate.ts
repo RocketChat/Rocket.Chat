@@ -5,10 +5,6 @@ import { Logger } from '@rocket.chat/logger';
 
 const logger = new Logger('StatusVisibilityGate');
 
-const STATUS_VISIBILITY_SETTING_ID = 'Accounts_StatusVisibility_Enabled';
-const STATUS_VISIBILITY_ADMIN_SETTING_ID = 'Accounts_StatusVisibility_Admin_Enabled';
-const USER_STATUS_SETTING_ID = 'Accounts_UserStatus_Enabled';
-
 export class StatusVisibilityGate {
 	private settingCache = new Map<string, Promise<boolean>>();
 
@@ -23,18 +19,18 @@ export class StatusVisibilityGate {
 	private queuedSync?: Promise<void>;
 
 	watch(service: IServiceClass): void {
-		service.onSettingChanged(STATUS_VISIBILITY_SETTING_ID, async ({ setting }) => {
-			this.settingCache.set(STATUS_VISIBILITY_SETTING_ID, Promise.resolve(setting.value === true));
+		service.onSettingChanged('Accounts_StatusVisibility_Enabled', async ({ setting }) => {
+			this.settingCache.set('Accounts_StatusVisibility_Enabled', Promise.resolve(setting.value === true));
 		});
 
-		service.onSettingChanged(STATUS_VISIBILITY_ADMIN_SETTING_ID, async ({ setting }) => {
+		service.onSettingChanged('Accounts_StatusVisibility_Admin_Enabled', async ({ setting }) => {
 			this.adminHidingEnabled = setting.value === true;
-			this.settingCache.set(STATUS_VISIBILITY_ADMIN_SETTING_ID, Promise.resolve(this.adminHidingEnabled));
+			this.settingCache.set('Accounts_StatusVisibility_Admin_Enabled', Promise.resolve(this.adminHidingEnabled));
 		});
 
-		service.onSettingChanged(USER_STATUS_SETTING_ID, async ({ setting }) => {
+		service.onSettingChanged('Accounts_UserStatus_Enabled', async ({ setting }) => {
 			this.everyoneHidden = setting.value === false;
-			this.settingCache.set(USER_STATUS_SETTING_ID, Promise.resolve(!this.everyoneHidden));
+			this.settingCache.set('Accounts_UserStatus_Enabled', Promise.resolve(!this.everyoneHidden));
 		});
 	}
 
@@ -57,12 +53,12 @@ export class StatusVisibilityGate {
 		return lookup;
 	}
 
-	private async adminHidingAllowed(): Promise<boolean> {
-		return this.isSettingEnabled(STATUS_VISIBILITY_ADMIN_SETTING_ID, true);
+	private adminHidingAllowed(): Promise<boolean> {
+		return this.isSettingEnabled('Accounts_StatusVisibility_Admin_Enabled', true);
 	}
 
 	private async hidesEveryone(): Promise<boolean> {
-		return !(await this.isSettingEnabled(USER_STATUS_SETTING_ID, false));
+		return !(await this.isSettingEnabled('Accounts_UserStatus_Enabled', false));
 	}
 
 	private restricted(answer: (users: Set<IUser['_id']>) => boolean): boolean {
@@ -91,7 +87,7 @@ export class StatusVisibilityGate {
 			return false;
 		}
 
-		return (await this.isSettingEnabled(STATUS_VISIBILITY_SETTING_ID, true)) || this.isActive();
+		return (await this.isSettingEnabled('Accounts_StatusVisibility_Enabled', true)) || this.isActive();
 	}
 
 	hasRestrictions(targetId: IUser['_id']): boolean {

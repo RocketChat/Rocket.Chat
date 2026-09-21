@@ -5,11 +5,7 @@ type WithPresenceFields = Partial<Pick<IUser, 'statusText' | 'statusSource' | 's
 	statusDefault?: string;
 };
 
-export const redactStatus = <T extends WithPresenceFields>(user: T, redact: boolean): T => {
-	if (!redact) {
-		return user;
-	}
-
+export const redactStatus = <T extends WithPresenceFields>(user: T): T => {
 	const { statusText, statusSource, statusExpiresAt, statusDefault, ...rest } = user;
 
 	return { ...rest, status: 'offline', statusConnection: 'offline' } as T;

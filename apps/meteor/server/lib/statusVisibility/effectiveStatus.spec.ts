@@ -1,8 +1,8 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { effectiveStatusExpression, effectiveStatusFilter, excludingHiddenFilter, excludingOfflineFilter } from './effectiveStatus';
-import type { PresenceScope } from './presenceScope';
 
 const nobody: PresenceScope = { hideAll: false };
 const hiding = (...ids: string[]): PresenceScope => ({ hideAll: false, hidden: new Set(ids) });

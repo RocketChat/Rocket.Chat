@@ -729,7 +729,7 @@ API.v1.addRoute(
 				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
 			}
 
-			const actualSort = sort || { username: 1 };
+			const actualSort = sort ? { ...sort } : { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
@@ -859,7 +859,7 @@ API.v1.get(
 	'users.listStatusVisibility',
 	{
 		authRequired: true,
-		permissionsRequired: ['edit-other-user-info'],
+		permissionsRequired: ['edit-other-user-info', 'view-full-other-user-info'],
 		query: isUsersListStatusVisibilityParamsGET,
 		response: {
 			200: ajv.compile<{ users: object[]; count: number; offset: number; total: number }>({
