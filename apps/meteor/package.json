@@ -171,7 +171,7 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@types/meteor": "^2.9.11",
 		"@xmldom/xmldom": "~0.8.15",
-		"adm-zip": "0.6.0",
+		"adm-zip": "0.6.1",
 		"ajv": "^8.20.0",
 		"ajv-formats": "~3.0.1",
 		"archiver": "^7.0.1",
