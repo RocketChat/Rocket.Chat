@@ -440,7 +440,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 
 test.describe('Internal Voice Calls - Docked Widget (call panel) - Enterprise Edition', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
-	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
+	let sessions: { page: Page; poHomeChannel: HomeChannel }[] = [];
 
 	test.beforeAll(async ({ api }) => {
 		await Promise.all([

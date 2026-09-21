@@ -257,7 +257,7 @@ export class DockedWidget extends Widget {
 	}
 
 	public override async reject(): Promise<void> {
-		await this.controls.hangup.click();
+		await this.controls.reject.click();
 		await expect(this.content).toBeVisible();
 	}
 

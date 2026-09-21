@@ -1,16 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { SessionContext } from '@rocket.chat/ui-contexts';
-import type { SessionContextValue } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactNode } from 'react';
 
 import SidebarRail from './SidebarRail';
-
-const sessionMock = (state: Record<string, unknown>): SessionContextValue => ({
-	query: (name) => [() => () => undefined, () => state[name]],
-	dispatch: () => undefined,
-});
 
 const baseRoot = () =>
 	mockAppRoot().withSetting('Layout_Show_Home_Button', true).withTranslations('en', 'core', {
@@ -46,15 +38,6 @@ export const Anonymous: Story = {
 
 export const LoggedIn: Story = {
 	decorators: [baseRoot().withJohnDoe().buildStoryDecorator()],
-};
-
-export const WithUnreadBadge: Story = {
-	decorators: [
-		baseRoot()
-			.withJohnDoe()
-			.wrap((children: ReactNode) => <SessionContext.Provider value={sessionMock({ unread: 5 })}>{children}</SessionContext.Provider>)
-			.buildStoryDecorator(),
-	],
 };
 
 export const WithCreatePermissions: Story = {
