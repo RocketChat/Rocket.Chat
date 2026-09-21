@@ -40,23 +40,32 @@ export async function createDirectMessage(
 		});
 	}
 
+	const targets = usernames.filter((username) => username !== me.username);
+
+	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
+	if ((excludeSelf ? targets.length : targets.length + 1) > maxUsers) {
+		throw new Meteor.Error(
+			'error-direct-message-max-user-exceeded',
+			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
+			{ method: 'createDirectMessage' },
+		);
+	}
+
 	const users = await Promise.all(
-		usernames
-			.filter((username) => username !== me.username)
-			.map(async (username) => {
-				const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
-				if (to) {
-					return to;
-				}
+		targets.map(async (username) => {
+			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
+			if (to) {
+				return to;
+			}
 
-				if (validateFederatedUsername(username)) {
-					return username;
-				}
+			if (validateFederatedUsername(username)) {
+				return username;
+			}
 
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'createDirectMessage',
-				});
-			}),
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'createDirectMessage',
+			});
+		}),
 	);
 
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
