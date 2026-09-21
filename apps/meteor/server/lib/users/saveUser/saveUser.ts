@@ -268,8 +268,14 @@ const _saveUser = (session?: ClientSession) =>
 				await StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
 			}
 
-			if (statusText !== undefined && !(await StatusVisibility.isPresenceDisabledFor(userData._id))) {
-				await Presence.setStatus(userData._id, getOwnStatus(oldUserData), statusText);
+			if (statusText !== undefined) {
+				if (presenceChanged) {
+					await StatusVisibility.refresh([userData._id]);
+				}
+
+				if (!(await StatusVisibility.isPresenceDisabledFor(userData._id))) {
+					await Presence.setStatus(userData._id, getOwnStatus(oldUserData), statusText);
+				}
 			}
 
 			if (session && options?.auditStore) {
