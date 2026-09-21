@@ -113,15 +113,11 @@ slashCommands.add({
 					);
 				} catch (e: unknown) {
 					if (isMeteorError(e)) {
-						if (e.error === 'error-only-compliant-users-can-be-added-to-abac-rooms') {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),
-							});
-						} else {
-							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-								msg: i18n.t(e.message, { lng: settings.get('Language') || 'en' }),
-							});
-						}
+						const key = typeof e.error === 'string' && i18n.exists(e.error) ? e.error : e.message;
+
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t(key, { lng: settings.get('Language') || 'en' }),
+						});
 						return;
 					}
 

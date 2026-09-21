@@ -20,6 +20,27 @@ export function addSettings(): Promise<void> {
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Enabled_Description',
 				});
+				await this.add('ABAC_Required_Attributes', [], {
+					type: 'multiLookup',
+					lookupEndpoint: 'v1/abac/attribute-keys',
+					public: false,
+					invalidValue: [],
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Required_Attributes_Description',
+					enableQuery: abacEnabledQuery,
+				});
+				// TODO(ABAC-P4/D13): `general` is public, attribute-less and `default: true`, so
+				// enforcement locks it while `addUserToDefaultChannels` still subscribes every new user
+				// into it. Whether it is exempted or has `default` cleared at rollout is still open.
+				await this.add('ABAC_Enforce_All_Rooms', false, {
+					type: 'boolean',
+					public: true,
+					// Losing the license must never leave rooms locked.
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Enforce_All_Rooms_Description',
+					enableQuery: abacEnabledQuery,
+				});
 				await this.add('ABAC_PDP_Type', 'local', {
 					type: 'select',
 					public: true,

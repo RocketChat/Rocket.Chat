@@ -42,6 +42,7 @@ module.exports = {
 		'server/lib/notifications/push/**/*.spec.ts',
 		'server/lib/utils/**/*.spec.ts',
 		'lib/videoConference/*.spec.ts',
+		'lib/rooms/*.spec.ts',
 		'server/services/video-conference/**/*.spec.ts',
 	],
 };
