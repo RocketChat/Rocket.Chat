@@ -30,12 +30,12 @@ import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import UserStatusDisabledInfo from './UserStatusDisabledInfo';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';

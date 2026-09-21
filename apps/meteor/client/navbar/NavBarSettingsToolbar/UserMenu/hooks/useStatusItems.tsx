@@ -12,12 +12,12 @@ import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 import { useStatusVisibilityModalHandler } from './useStatusVisibilityModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../../components/UserStatusDisabledInfo';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
 import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
-import UserStatusDisabledInfo from '../../../../views/account/profile/UserStatusDisabledInfo';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {

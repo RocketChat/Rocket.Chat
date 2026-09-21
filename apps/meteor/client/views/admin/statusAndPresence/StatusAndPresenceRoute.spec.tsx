@@ -66,6 +66,7 @@ describe('StatusAndPresenceRoute', () => {
 			wrapper: mockAppRoot()
 				.withSetting('Accounts_StatusVisibility_Admin_Enabled', false)
 				.withPermission('edit-other-user-info')
+				.withPermission('view-full-other-user-info')
 				.withPermission('manage-user-status')
 				.withRouter(router)
 				.build(),

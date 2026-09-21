@@ -49,7 +49,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)}>
-				<Button onClick={() => onEdit()}>{t('Manage_user_presence')}</Button>
+				<Button onClick={() => onEdit()}>{t('Manage_user_status')}</Button>
 			</FilterByText>
 			{isError && <GenericError icon='circle-exclamation' buttonAction={() => refetch()} />}
 			{isSuccess && data.users.length === 0 && (

@@ -86,7 +86,7 @@ test.describe('Admin > Status and presence > User status', () => {
 		await test.step('the admin removes the rule through the confirmation modal', async () => {
 			await row.click();
 
-			const editDialog = page.getByRole('dialog', { name: 'Manage user status' });
+			const editDialog = admin.editor;
 			await expect(editDialog).toBeVisible();
 			await editDialog.getByRole('button', { name: 'Remove user status settings', exact: true }).click();
 

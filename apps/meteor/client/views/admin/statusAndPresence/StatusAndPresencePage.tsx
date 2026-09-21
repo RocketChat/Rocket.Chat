@@ -86,7 +86,7 @@ const StatusAndPresencePage = ({ tab, canManageCustomStatus, canManageUserPresen
 		(canManageUserPresence &&
 			tab === 'user-presence' &&
 			(context === 'new' || context === 'edit') && {
-				title: t('Manage_user_presence'),
+				title: t('Manage_user_status'),
 				content: <UserPresenceEditorFormWithData username={id} onClose={handleClose} />,
 			}) ||
 		undefined;
