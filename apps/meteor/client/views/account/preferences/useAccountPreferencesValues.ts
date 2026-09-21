@@ -32,7 +32,7 @@ export type AccountPreferencesData = {
 	sidebarShowFavorites?: boolean;
 	sidebarShowUnread?: boolean;
 	sidebarSortby?: string;
-	sidebarViewMode?: string;
+	sidebarViewMode?: 'extended' | 'condensed';
 	sidebarDisplayAvatar?: boolean;
 	sidebarGroupByType?: boolean;
 	masterVolume?: number;

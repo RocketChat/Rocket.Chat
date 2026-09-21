@@ -13,17 +13,11 @@ it('should render viewMode items', async () => {
 
 	expect(result.current[1]).toEqual(
 		expect.objectContaining({
-			id: 'medium',
-		}),
-	);
-
-	expect(result.current[2]).toEqual(
-		expect.objectContaining({
 			id: 'condensed',
 		}),
 	);
 
-	expect(result.current[3]).toEqual(
+	expect(result.current[2]).toEqual(
 		expect.objectContaining({
 			id: 'avatars',
 		}),
