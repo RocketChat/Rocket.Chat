@@ -2156,6 +2156,7 @@
   "Disabled": "Disabled",
   "disabled": "disabled",
   "Disabled_apps_admin_message": "There are one or more disabled apps with valid licenses. Go to {{marketplace}} > {{installed}} to review.",
+  "Disabled_by_unread_group_see_display_options": "Disabled by unread group, see display options",
   "Disabled_E2E_Encryption_for_this_room": "disabled E2E encryption for this room",
   "Disallow_reacting": "Disallow Reacting",
   "Disallow_reacting_Description": "Disallows reacting",
