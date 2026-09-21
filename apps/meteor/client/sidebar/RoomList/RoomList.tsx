@@ -45,7 +45,7 @@ const RoomList = () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const ref = useRef<HTMLElement | null>(null);
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'condensed';
+	const sidebarViewMode: SidebarViewMode = useUserPreference('sidebarViewMode') === 'extended' ? 'extended' : 'condensed';
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
 	const extended = sidebarViewMode === 'extended';
