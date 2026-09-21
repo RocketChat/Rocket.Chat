@@ -129,7 +129,7 @@ export type ContactsEndpoints = {
 		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContact[]; syncedTotal: number }>;
 	};
 	'/v1/contacts.create': {
-		POST: (params: ContactsCreateProps) => { id: IContact['_id'] };
+		POST: (params: ContactsCreateProps) => { contact: IContact };
 	};
 	'/v1/contacts.update': {
 		POST: (params: ContactsUpdateProps) => void;

@@ -91,13 +91,13 @@ API.v1.post(
 		authRequired: true,
 		body: isContactsCreateProps,
 		response: {
-			200: ajv.compile<{ id: IContact['_id']; success: true }>({
+			200: ajv.compile<{ contact: IContact; success: true }>({
 				type: 'object',
 				properties: {
-					id: { type: 'string' },
+					contact: { type: 'object' },
 					success: { type: 'boolean', enum: [true] },
 				},
-				required: ['id', 'success'],
+				required: ['contact', 'success'],
 				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
@@ -108,12 +108,16 @@ API.v1.post(
 	async function action() {
 		const { userId } = this;
 
-		const id = await Contacts.createLocal({
+		const contact = await Contacts.createLocal({
 			uid: userId,
 			...toLocalContact(this.bodyParams),
 		});
 
-		return API.v1.success({ id });
+		if (!contact) {
+			return API.v1.failure('error-contact-not-created');
+		}
+
+		return API.v1.success({ contact });
 	},
 );
 

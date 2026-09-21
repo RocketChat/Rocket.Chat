@@ -64,10 +64,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		return this.countDocuments({ uid, source: OUTLOOK, externalId: { $exists: true } });
 	}
 
-	public async createLocal(contact: LocalContact): Promise<IContact['_id']> {
+	public async createLocal(contact: LocalContact): Promise<IContact | null> {
 		const { insertedId } = await this.insertOne({ ...contact, source: LOCAL });
 
-		return insertedId;
+		return this.findOneById(insertedId);
 	}
 
 	public async updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult> {
