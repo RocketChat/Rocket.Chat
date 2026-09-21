@@ -19,11 +19,11 @@ export class OngoingCalls {
 	}
 
 	/**
-	 * What the button opens: a region named after the list it holds, which is what makes the calls in it a group
-	 * to scope to rather than loose rows somewhere on the page.
+	 * What the button opens: the list itself, named, which is what makes the calls in it a group to scope to
+	 * rather than loose rows somewhere on the page.
 	 */
 	get regionOngoingCalls(): Locator {
-		return this.root.getByRole('region', { name: 'Ongoing calls', exact: true });
+		return this.root.getByRole('list', { name: 'Ongoing calls', exact: true });
 	}
 
 	/**

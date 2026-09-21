@@ -24,8 +24,6 @@ const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => 
 		);
 	}
 
-	// The surrounding navigation chrome is applied by `MainLayout`, not here, so routes that only need
-	// the authentication checks (e.g. the conference page) render standalone.
 	return children;
 };
 
