@@ -17,7 +17,7 @@ it('should render viewMode items', async () => {
 		}),
 	);
 
-	expect(result.current[3]).toEqual(
+	expect(result.current[2]).toEqual(
 		expect.objectContaining({
 			id: 'avatars',
 		}),
