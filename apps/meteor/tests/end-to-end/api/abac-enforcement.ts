@@ -3,6 +3,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import { updateSetting } from '../../data/permissions.helper';
@@ -73,6 +74,8 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		after(async () => {
 			await setEnforcement(false);
+			await deleteRoom({ type: 'd', roomId: dmRoomId });
+			await deleteRoom({ type: 'd', roomId: groupDmRoomId });
 		});
 
 		it('allows sending a message in a 1-on-1 DM', async () => {
@@ -163,6 +166,13 @@ import { IS_EE } from '../../e2e/config/constants';
 				.send({ key: laterKey, values: ['value'] })
 				.expect(200);
 
+			// Both keys: without `laterKey` the tightening below evicts the admin, and the test
+			// observes the eviction instead of the lock.
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+				{ key: carriedKey, values: ['value'] },
+				{ key: laterKey, values: ['value'] },
+			]);
+
 			const room = await createRoom({ type: 'p', name: `abac-compliant-${Date.now()}` });
 			compliantRoomId = room.body.group._id;
 
@@ -180,6 +190,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(false);
 			await setRequiredAttributes([]);
 			await deleteRoom({ type: 'p', roomId: compliantRoomId });
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], []);
 		});
 
 		it('allows a message while the room carries every required attribute', async () => {
