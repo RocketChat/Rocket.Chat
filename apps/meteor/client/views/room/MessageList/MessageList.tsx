@@ -85,6 +85,14 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
+	// Virtua's cache is positional, so only reuse it when the message count still matches the one it was captured against.
+	const initialCacheRef = useRef(
+		(() => {
+			const store = RoomManager.getStore(rid);
+			return store?.cacheMessageCount === messages.length ? store.cache : undefined;
+		})(),
+	);
+
 	const messagesLength = canPreview ? messages.length + 1 : messages.length;
 
 	useEffect(() => {
@@ -204,7 +212,7 @@ export const MessageList = function MessageList({
 		setShouldJumpToBottom,
 	]);
 
-	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
+	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength: messages.length });
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -264,6 +272,7 @@ export const MessageList = function MessageList({
 					role='list'
 					className='messages-list'
 					keepMounted={keepMountedMessages}
+					cache={initialCacheRef.current}
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();

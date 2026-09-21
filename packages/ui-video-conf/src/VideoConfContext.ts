@@ -8,6 +8,15 @@ export type VideoConfPopupPayload = {
 };
 
 export type VideoConfContextValue = {
+	/**
+	 * Whether joining or starting a call is off the table here.
+	 *
+	 * True in the call window, which renders the room's message list beside the call it is already in — where
+	 * "Join" and "Call back" would start a second one. Stated by whoever provides this context, because the
+	 * circumstance is the application's to recognise: a component that worked it out for itself would have to
+	 * know what a call window's address looks like.
+	 */
+	joinDisabled?: boolean;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
