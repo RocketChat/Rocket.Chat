@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
+import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer';
+import { ListenersModule, StreamerCentral, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
@@ -12,12 +14,13 @@ import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
-import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
-import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
-import { invalidate as invalidatePublicationUserCache } from '../../../../apps/meteor/server/modules/streamer/publication-user-cache';
-import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 
 const { PORT = 4000 } = process.env;
+
+// This process never populated the monolith settings cache the listeners used to read,
+// so every lookup already resolved to undefined here. Kept explicit until a reader backed
+// by Settings.get + onSettingChanged replaces it.
+const noSettings: SettingsReader = { get: () => undefined };
 
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
@@ -29,7 +32,7 @@ export class DDPStreamer extends ServiceClass {
 	constructor(notifications: NotificationsModule) {
 		super();
 
-		new ListenersModule(this, notifications);
+		new ListenersModule(this, notifications, noSettings);
 
 		// TODO this is triggered by local events too, need to find a way to ignore if it's local
 		this.onEvent('stream', ([streamer, eventName, args]): void => {

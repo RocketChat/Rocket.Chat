@@ -1,7 +1,4 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
-
-import { Streamer, StreamerCentral } from '../../../../../server/modules/streamer/streamer.module';
+import { Streamer, StreamerCentral } from './streamer.module';
 
 class TestStreamer extends Streamer<any> {
 	registerPublication(): void {
@@ -20,11 +17,11 @@ class TestStreamer extends Streamer<any> {
 type TestSubscription = {
 	entry: any;
 	connection: Record<string, unknown>;
-	send: sinon.SinonSpy;
+	send: jest.Mock;
 };
 
 const makeSubscription = (connectionId: string): TestSubscription => {
-	const send = sinon.spy();
+	const send = jest.fn();
 	const connection = { id: connectionId };
 
 	return {
@@ -51,23 +48,25 @@ describe('Streamer.sendToManySubscriptions', () => {
 	});
 
 	afterEach(() => {
-		sinon.restore();
+		jest.restoreAllMocks();
 		delete StreamerCentral.instances[streamer.name];
 	});
 
 	it('waits for async permission checks before resolving', async () => {
 		const sub = makeSubscription('conn-1');
 
-		const isEmitAllowed = sinon.stub(streamer, 'isEmitAllowed').resolves(true);
+		const isEmitAllowed = jest.spyOn(streamer, 'isEmitAllowed').mockResolvedValue(true);
 
 		const sendPromise = streamer.sendToManySubscriptions(new Set([sub.entry]), undefined, 'event', [], 'test-msg');
 
-		expect(sub.send.called).to.equal(false);
+		expect(sub.send).not.toHaveBeenCalled();
 
 		await sendPromise;
 
-		expect(isEmitAllowed.calledOnceWithExactly(sub.entry.subscription, 'event')).to.equal(true);
-		expect(sub.send.calledOnceWithExactly('test-msg')).to.equal(true);
+		expect(isEmitAllowed).toHaveBeenCalledTimes(1);
+		expect(isEmitAllowed).toHaveBeenCalledWith(sub.entry.subscription, 'event');
+		expect(sub.send).toHaveBeenCalledTimes(1);
+		expect(sub.send).toHaveBeenCalledWith('test-msg');
 	});
 
 	it('skips origin subscription and sends only to allowed subscriptions', async () => {
@@ -75,9 +74,7 @@ describe('Streamer.sendToManySubscriptions', () => {
 		const allowedSub = makeSubscription('allowed');
 		const deniedSub = makeSubscription('denied');
 
-		const isEmitAllowed = sinon.stub(streamer, 'isEmitAllowed');
-		isEmitAllowed.onFirstCall().resolves(true);
-		isEmitAllowed.onSecondCall().resolves(false);
+		jest.spyOn(streamer, 'isEmitAllowed').mockResolvedValueOnce(true).mockResolvedValueOnce(false);
 
 		await streamer.sendToManySubscriptions(
 			new Set([originSub.entry, allowedSub.entry, deniedSub.entry]),
@@ -87,9 +84,10 @@ describe('Streamer.sendToManySubscriptions', () => {
 			'test-msg',
 		);
 
-		expect(originSub.send.called).to.equal(false);
-		expect(allowedSub.send.calledOnceWithExactly('test-msg')).to.equal(true);
-		expect(deniedSub.send.called).to.equal(false);
+		expect(originSub.send).not.toHaveBeenCalled();
+		expect(allowedSub.send).toHaveBeenCalledTimes(1);
+		expect(allowedSub.send).toHaveBeenCalledWith('test-msg');
+		expect(deniedSub.send).not.toHaveBeenCalled();
 	});
 
 	it('continues dispatching to other subscribers when a permission check rejects', async () => {
@@ -97,16 +95,15 @@ describe('Streamer.sendToManySubscriptions', () => {
 		const successSub = makeSubscription('success');
 		const error = new Error('boom');
 
-		const isEmitAllowed = sinon.stub(streamer, 'isEmitAllowed');
-		isEmitAllowed.onFirstCall().rejects(error);
-		isEmitAllowed.onSecondCall().resolves(true);
+		const isEmitAllowed = jest.spyOn(streamer, 'isEmitAllowed').mockRejectedValueOnce(error).mockResolvedValueOnce(true);
 
 		await streamer.sendToManySubscriptions(new Set([failingSub.entry, successSub.entry]), undefined, 'event-name', [], 'test-msg');
 
-		expect(isEmitAllowed.calledTwice).to.equal(true);
-		expect(isEmitAllowed.firstCall.calledWithExactly(failingSub.entry.subscription, 'event-name')).to.equal(true);
-		expect(isEmitAllowed.secondCall.calledWithExactly(successSub.entry.subscription, 'event-name')).to.equal(true);
-		expect(failingSub.send.called).to.equal(false);
-		expect(successSub.send.calledOnceWithExactly('test-msg')).to.equal(true);
+		expect(isEmitAllowed).toHaveBeenCalledTimes(2);
+		expect(isEmitAllowed).toHaveBeenNthCalledWith(1, failingSub.entry.subscription, 'event-name');
+		expect(isEmitAllowed).toHaveBeenNthCalledWith(2, successSub.entry.subscription, 'event-name');
+		expect(failingSub.send).not.toHaveBeenCalled();
+		expect(successSub.send).toHaveBeenCalledTimes(1);
+		expect(successSub.send).toHaveBeenCalledWith('test-msg');
 	});
 });
