@@ -2,7 +2,7 @@ import type { IAuditServerUserActor, IAuditServerSystemActor, IAuditServerAppAct
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useTranslation } from 'react-i18next';
 
 import { AppInfoField } from './AppInfoField';

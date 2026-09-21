@@ -15,13 +15,13 @@ const AnalyticsReports = () => {
 			<Callout title={t('Server_logs_access_has_changed_callout_title')} marginBlockEnd={16}>
 				<MarkdownText variant='inline' content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })} />
 			</Callout>
-			<Box backgroundColor='light' padding={20} paddingBlockEnd={28} marginBlockEnd={16} borderRadius={4}>
+			<Box backgroundColor='light' padding={20} paddingBlockEnd={28} marginBlockEnd={16} borderRadius='medium'>
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={20}>
 					<Box
 						display='flex'
 						justifyContent='center'
 						alignItems='center'
-						borderRadius={2}
+						borderRadius='small'
 						padding={4}
 						marginInlineEnd={8}
 						backgroundColor='status-background-info'
@@ -36,7 +36,7 @@ const AnalyticsReports = () => {
 				<Box fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Box>
 			</Box>
 			<Scrollable vertical>
-				<Box marginBlockEnd={8} padding={8} backgroundColor='neutral' borderRadius={4} height='100%'>
+				<Box marginBlockEnd={8} padding={8} backgroundColor='neutral' borderRadius='medium' height='100%'>
 					{isSuccess && <pre>{JSON.stringify(data, null, '\t')}</pre>}
 					{isError && t('Something_went_wrong_try_again_later')}
 					{isLoading && Array.from({ length: 10 }).map((_, index) => <Skeleton key={index} />)}

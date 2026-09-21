@@ -24,11 +24,13 @@ it('should redirect to /home', async () => {
 	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
-			<MockedUserContext>
-				<RouterContextMock navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
-			</MockedUserContext>
+			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+				<MockedUserContext>
+					<RouterContextMock navigate={navigateStub}>
+						<SAMLLoginRoute />
+					</RouterContextMock>
+				</MockedUserContext>
+			</MockedSettingsContext>
 		</MockedServerContext>,
 	);
 
@@ -40,9 +42,11 @@ it('should redirect to /home when userId is null and the stored invite token is 
 	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
-			<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
-				<SAMLLoginRoute />
-			</RouterContextMock>
+			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedSettingsContext>
 		</MockedServerContext>,
 	);
 
@@ -54,9 +58,11 @@ it('should redirect to the invite page with the stored invite token when it is v
 	mockUseSamlInviteToken.mockReturnValue(['test', () => ({})]);
 	render(
 		<MockedServerContext>
-			<RouterContextMock navigate={navigateStub}>
-				<SAMLLoginRoute />
-			</RouterContextMock>
+			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+				<RouterContextMock navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedSettingsContext>
 		</MockedServerContext>,
 	);
 
@@ -67,9 +73,11 @@ it('should redirect to the invite page with the stored invite token when it is v
 it('should call loginWithSamlToken when component is mounted', async () => {
 	render(
 		<MockedServerContext>
-			<RouterContextMock navigate={navigateStub}>
-				<SAMLLoginRoute />
-			</RouterContextMock>
+			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+				<RouterContextMock navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedSettingsContext>
 		</MockedServerContext>,
 	);
 
@@ -80,9 +88,11 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 it('should call loginWithSamlToken with the token when it is present', async () => {
 	render(
 		<MockedUserContext>
-			<RouterContextMock routeParameters={{ token: 'testToken' }} navigate={navigateStub}>
-				<SAMLLoginRoute />
-			</RouterContextMock>
+			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+				<RouterContextMock routeParameters={{ token: 'testToken' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedSettingsContext>
 		</MockedUserContext>,
 	);
 
@@ -109,9 +119,11 @@ describe('native client handoff', () => {
 	it.each(['mobile', 'desktop'])('should hand the credential token to the %s client without logging in', async (loginClient) => {
 		render(
 			<MockedServerContext>
-				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient }} navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
+				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient }} navigate={navigateStub}>
+						<SAMLLoginRoute />
+					</RouterContextMock>
+				</MockedSettingsContext>
 			</MockedServerContext>,
 		);
 
@@ -127,9 +139,11 @@ describe('native client handoff', () => {
 	it('should log in normally for an unrecognized loginClient', async () => {
 		render(
 			<MockedServerContext>
-				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
+				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
+					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
+						<SAMLLoginRoute />
+					</RouterContextMock>
+				</MockedSettingsContext>
 			</MockedServerContext>,
 		);
 

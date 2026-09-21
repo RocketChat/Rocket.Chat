@@ -143,7 +143,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					flexDirection='row'
 					alignItems='center'
 					justifyContent='center'
-					borderRadius='x4'
+					borderRadius='medium'
 					invisible={!showStatus && !loading}
 				>
 					<Button

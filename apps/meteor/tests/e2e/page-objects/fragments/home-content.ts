@@ -99,6 +99,11 @@ export class HomeContent {
 		return this.messageListItems.nth(index);
 	}
 
+	/** One message of the list, by its id, for a message whose id is known from elsewhere. */
+	messageById(mid: string): Locator {
+		return this.mainMessageList.locator(`[role="listitem"][data-mid="${mid}"]`);
+	}
+
 	get lastUserMessageBody(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
@@ -117,6 +122,14 @@ export class HomeContent {
 
 	get lastIgnoredUserMessage(): Locator {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
+	}
+
+	get lastIgnoredThreadMessage(): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name: 'This message was ignored' });
+	}
+
+	get ignoredThreadMessages(): Locator {
+		return this.threadMessageListItems.getByRole('button', { name: 'This message was ignored' });
 	}
 
 	async joinRoomIfNeeded(): Promise<void> {
@@ -422,6 +435,19 @@ export class HomeContent {
 		if (responsePromise) {
 			await responsePromise;
 		}
+	}
+
+	async sendMultipleFilesMessage(fileNames: string[], { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		await this.page
+			.getByLabel('Room composer')
+			.locator('input[type=file]')
+			.setInputFiles(fileNames.map((name) => getFilePath(name)));
+
+		if (!waitForResponse) {
+			return;
+		}
+
+		await expect(this.composer.btnSend).toBeEnabled();
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {

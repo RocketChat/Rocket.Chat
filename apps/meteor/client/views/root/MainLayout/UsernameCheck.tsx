@@ -5,11 +5,17 @@ import { useMemo } from 'react';
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import HomeSkeleton from '../../home/HomeSkeleton';
 
-export type UsernameCheckProps = { children: ReactNode };
+export type UsernameCheckProps = {
+	children: ReactNode;
+	/**
+	 * Shown while the user is being resolved. Required, because the right shape depends on whether the route
+	 * renders inside the navigation chrome, and only the caller knows that.
+	 */
+	loadingElement: ReactNode;
+};
 
-const UsernameCheck = ({ children }: UsernameCheckProps) => {
+const UsernameCheck = ({ children, loadingElement }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 
@@ -31,7 +37,7 @@ const UsernameCheck = ({ children }: UsernameCheckProps) => {
 	}, [userData?.user, userId, allowAnonymousRead]);
 
 	if (isLoading) {
-		return <HomeSkeleton />;
+		return loadingElement;
 	}
 
 	if (shouldRegisterUsername) {

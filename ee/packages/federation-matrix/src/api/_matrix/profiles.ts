@@ -33,14 +33,14 @@ const QueryProfileQuerySchema = {
 	properties: {
 		user_id: UsernameSchema,
 		field: {
+			// open string, not an enum: the spec defines displayname, avatar_url and m.tz,
+			// and servers MAY allow arbitrary additional profile fields
 			type: 'string',
-			enum: ['displayname', 'avatar_url'],
 			description: 'Profile field to query',
 			nullable: true,
 		},
 	},
 	required: ['user_id'],
-	additionalProperties: false,
 };
 
 const isQueryProfileQueryProps = ajvQuery.compile(QueryProfileQuerySchema);
@@ -157,20 +157,13 @@ const MakeJoinQuerySchema = {
 	type: 'object',
 	properties: {
 		ver: {
-			anyOf: [
-				{
-					type: 'string',
-					description: 'Supported room version',
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					minItems: 0,
-					description: 'Supported room versions',
-				},
-			],
+			// a string branch here would be redundant: ajvQuery coerces a single `?ver=` into a
+			// one-element array, and in a `oneOf` both branches would match and fail validation
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			description: 'Room versions supported by the sending server',
 		},
 	},
 };
@@ -261,6 +254,26 @@ const MakeJoinResponseSchema = {
 
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
+const MakeJoinIncompatibleVersionResponseSchema = {
+	type: 'object',
+	properties: {
+		errcode: {
+			type: 'string',
+			const: 'M_INCOMPATIBLE_ROOM_VERSION',
+		},
+		error: {
+			type: 'string',
+		},
+		room_version: {
+			type: 'string',
+			description: 'The version of the room',
+		},
+	},
+	required: ['errcode', 'error', 'room_version'],
+};
+
+const isMakeJoinIncompatibleVersionResponseProps = ajv.compile(MakeJoinIncompatibleVersionResponseSchema);
+
 const GetMissingEventsParamsSchema = {
 	type: 'object',
 	properties: {
@@ -289,13 +302,18 @@ const GetMissingEventsBodySchema = {
 			description: 'Latest events',
 		},
 		limit: {
-			type: 'number',
-			minimum: 1,
-			maximum: 100,
+			// optional per spec (defaults to 10) and unbounded; the handler applies the default and a cap
+			type: 'integer',
 			description: 'Maximum number of events to return',
+			nullable: true,
+		},
+		min_depth: {
+			type: 'integer',
+			description: 'Minimum depth of events to retrieve',
+			nullable: true,
 		},
 	},
-	required: ['earliest_events', 'latest_events', 'limit'],
+	required: ['earliest_events', 'latest_events'],
 };
 
 const isGetMissingEventsBodyProps = ajv.compile(GetMissingEventsBodySchema);
@@ -347,174 +365,219 @@ const EventAuthResponseSchema = {
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
 export const getMatrixProfilesRoutes = () => {
-	return new Router('/federation')
-		.use(isAuthenticatedMiddleware())
-		.get(
-			'/v1/query/profile',
-			{
-				query: isQueryProfileQueryProps,
-				response: {
-					200: isQueryProfileResponseProps,
+	return (
+		new Router('/federation')
+			.use(isAuthenticatedMiddleware())
+			// GET /_matrix/federation/v1/query/profile
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1queryprofile
+			.get(
+				'/v1/query/profile',
+				{
+					query: isQueryProfileQueryProps,
+					response: {
+						200: isQueryProfileResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async (c) => {
-				const { user_id: userId, field } = c.req.query();
+				async (c) => {
+					const { user_id: userId, field } = c.req.query();
 
-				const response = await federationSDK.queryProfile(userId);
+					const response = await federationSDK.queryProfile(userId);
 
-				if (!response) {
+					if (!response) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: `User ${userId} not found`,
+							},
+							statusCode: 404,
+						};
+					}
+
+					if (field) {
+						return {
+							body: {
+								[field]: response[field as 'displayname' | 'avatar_url'] || null,
+							},
+							statusCode: 200,
+						};
+					}
+
 					return {
 						body: {
-							errcode: 'M_NOT_FOUND',
-							error: `User ${userId} not found`,
-						},
-						statusCode: 404,
-					};
-				}
-
-				if (field) {
-					return {
-						body: {
-							[field]: response[field as 'displayname' | 'avatar_url'] || null,
+							displayname: response.displayname,
+							avatar_url: response.avatar_url,
 						},
 						statusCode: 200,
 					};
-				}
-
-				return {
-					body: {
-						displayname: response.displayname,
-						avatar_url: response.avatar_url,
+				},
+			)
+			// POST /_matrix/federation/v1/user/keys/query
+			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1userkeysquery
+			.post(
+				'/v1/user/keys/query',
+				{
+					body: isQueryKeysBodyProps,
+					response: {
+						200: isQueryKeysResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		)
-		.post(
-			'/v1/user/keys/query',
-			{
-				body: isQueryKeysBodyProps,
-				response: {
-					200: isQueryKeysResponseProps,
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async (c) => {
-				const body = await c.req.json();
+				async (c) => {
+					const body = await c.req.json();
 
-				const response = await federationSDK.queryKeys(body.device_keys);
+					const response = await federationSDK.queryKeys(body.device_keys);
 
-				return {
-					body: response,
-					statusCode: 200,
-				};
-			},
-		)
-		.get(
-			'/v1/user/devices/:userId',
-			{
-				params: isGetDevicesParamsProps,
-				response: {
-					200: isGetDevicesResponseProps,
+					return {
+						body: response,
+						statusCode: 200,
+					};
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			async (c) => {
-				return {
-					body: {
-						devices: [],
-						stream_id: 0,
-						user_id: c.req.param('userId'),
+			)
+			// GET /_matrix/federation/v1/user/devices/{userId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1userdevicesuserid
+			.get(
+				'/v1/user/devices/:userId',
+				{
+					params: isGetDevicesParamsProps,
+					response: {
+						200: isGetDevicesResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		)
-		.get(
-			'/v1/make_join/:roomId/:userId',
-			{
-				params: isMakeJoinParamsProps,
-				query: isMakeJoinQueryProps,
-				response: {
-					200: isMakeJoinResponseProps,
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			canAccessResourceMiddleware('room'),
-			async (c) => {
-				const { roomId, userId } = c.req.param();
-				const url = new URL(c.req.url);
-				const verParams = url.searchParams.getAll('ver');
-
-				const response = await federationSDK.makeJoin(
-					roomIdSchema.parse(roomId),
-					userIdSchema.parse(userId),
-					verParams.length > 0 ? (verParams as RoomVersion[]) : ['1'],
-				);
-
-				return {
-					body: {
-						room_version: response.room_version,
-						event: response.event,
+				async (c) => {
+					return {
+						body: {
+							devices: [],
+							stream_id: 0,
+							user_id: c.req.param('userId'),
+						},
+						statusCode: 200,
+					};
+				},
+			)
+			// GET /_matrix/federation/v1/make_join/{roomId}/{userId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1make_joinroomiduserid
+			.get(
+				'/v1/make_join/:roomId/:userId',
+				{
+					params: isMakeJoinParamsProps,
+					query: isMakeJoinQueryProps,
+					response: {
+						200: isMakeJoinResponseProps,
+						400: isMakeJoinIncompatibleVersionResponseProps,
 					},
-					statusCode: 200,
-				};
-			},
-		)
-		.post(
-			'/v1/get_missing_events/:roomId',
-			{
-				params: isGetMissingEventsParamsProps,
-				body: isGetMissingEventsBodyProps,
-				response: {
-					200: isGetMissingEventsResponseProps,
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			canAccessResourceMiddleware('room'),
-			async (c) => {
-				const { roomId } = c.req.param();
-				const body = await c.req.json();
+				canAccessResourceMiddleware('room'),
+				async (c) => {
+					const { roomId, userId } = c.req.param();
+					const url = new URL(c.req.url);
+					const verParams = url.searchParams.getAll('ver');
 
-				const response = await federationSDK.getMissingEvents(
-					roomIdSchema.parse(roomId),
-					body.earliest_events,
-					body.latest_events,
-					body.limit,
-				);
+					try {
+						const response = await federationSDK.makeJoin(
+							roomIdSchema.parse(roomId),
+							userIdSchema.parse(userId),
+							// spec: "The room versions the sending server has support for. Defaults to [1]."
+							verParams.length > 0 ? (verParams as RoomVersion[]) : ['1'],
+						);
 
-				return {
-					body: response,
-					statusCode: 200,
-				};
-			},
-		)
-		.get(
-			'/v1/event_auth/:roomId/:eventId',
-			{
-				params: isEventAuthParamsProps,
-				response: {
-					200: isEventAuthResponseProps,
+						return {
+							body: {
+								room_version: response.room_version,
+								event: response.event,
+							},
+							statusCode: 200,
+						};
+					} catch (error) {
+						// the SDK throws when the room's version is not in the requested `ver` list
+						const incompatibleVersion = error instanceof Error && error.message.match(/^Unsupported room version: (.+)$/);
+						if (incompatibleVersion) {
+							return {
+								body: {
+									errcode: 'M_INCOMPATIBLE_ROOM_VERSION',
+									error: 'Your homeserver does not support the features required to join this room',
+									room_version: incompatibleVersion[1],
+								},
+								statusCode: 400,
+							};
+						}
+
+						throw error;
+					}
 				},
-				tags: ['Federation'],
-				license: ['federation'],
-			},
-			canAccessResourceMiddleware('room'),
-			async (c) => {
-				const { roomId, eventId } = c.req.param();
+			)
+			// POST /_matrix/federation/v1/get_missing_events/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#post_matrixfederationv1get_missing_eventsroomid
+			.post(
+				'/v1/get_missing_events/:roomId',
+				{
+					params: isGetMissingEventsParamsProps,
+					body: isGetMissingEventsBodyProps,
+					response: {
+						200: isGetMissingEventsResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				canAccessResourceMiddleware('room'),
+				async (c) => {
+					const { roomId } = c.req.param();
+					const body = await c.req.json();
 
-				const response = await federationSDK.eventAuth(roomIdSchema.parse(roomId), eventIdSchema.parse(eventId));
+					const limit = Math.min(body.limit ?? 10, 100);
+					const minDepth = body.min_depth ?? 0;
 
-				return {
-					body: response,
-					statusCode: 200,
-				};
-			},
-		);
+					// this will be handled by the federation-sdk on next versions so this can be removed
+					if (limit < 1) {
+						return {
+							body: { events: [] },
+							statusCode: 200,
+						};
+					}
+
+					const response = await federationSDK.getMissingEvents(
+						roomIdSchema.parse(roomId),
+						body.earliest_events,
+						body.latest_events,
+						limit,
+						minDepth,
+					);
+
+					return {
+						body: response,
+						statusCode: 200,
+					};
+				},
+			)
+			// GET /_matrix/federation/v1/event_auth/{roomId}/{eventId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1event_authroomideventid
+			.get(
+				'/v1/event_auth/:roomId/:eventId',
+				{
+					params: isEventAuthParamsProps,
+					response: {
+						200: isEventAuthResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				canAccessResourceMiddleware('room'),
+				async (c) => {
+					const { roomId, eventId } = c.req.param();
+
+					const response = await federationSDK.eventAuth(roomIdSchema.parse(roomId), eventIdSchema.parse(eventId));
+
+					return {
+						body: response,
+						statusCode: 200,
+					};
+				},
+			)
+	);
 };

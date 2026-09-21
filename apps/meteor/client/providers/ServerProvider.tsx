@@ -34,31 +34,33 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	keys,
 	params,
 	signal,
+	keepalive,
 }: {
 	method: TMethod;
 	pathPattern: TPathPattern;
 	keys: UrlParams<TPathPattern>;
 	params: OperationParams<TMethod, TPathPattern>;
 	signal?: AbortSignal;
+	keepalive?: boolean;
 }): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 	switch (method) {
 		case 'GET':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.get(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'POST':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.post(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'PUT':
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
+			return sdk.rest.put(compiledPath, params as never, { signal, keepalive }) as never;
 
 		case 'DELETE':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.delete(compiledPath, params as any, { signal, keepalive }) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');

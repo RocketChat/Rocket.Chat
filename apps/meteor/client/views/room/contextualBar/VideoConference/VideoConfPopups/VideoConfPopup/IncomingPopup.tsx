@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
 	VideoConfPopup,
@@ -14,8 +13,8 @@ import {
 	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
 	VideoConfPopupHeader,
+	useVideoConferenceInfo,
 } from '@rocket.chat/ui-video-conf';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
@@ -36,11 +35,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const setPreferences = useVideoConfSetPreferences();
 	const roomName = useVideoConfRoomName(room);
 
-	const videoConfInfo = useEndpoint('GET', '/v1/video-conference.info');
-	const { data, isPending, isSuccess } = useQuery({
-		queryKey: ['getVideoConferenceInfo', id],
-		queryFn: async () => videoConfInfo({ callId: id }),
-	});
+	const { data, isPending, isSuccess } = useVideoConferenceInfo(id);
 
 	const showMic = Boolean(data?.capabilities?.mic);
 	const showCam = Boolean(data?.capabilities?.cam);

@@ -82,7 +82,7 @@ const ContactInfoChannelsItem = ({
 	return (
 		<Box
 			tabIndex={0}
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
