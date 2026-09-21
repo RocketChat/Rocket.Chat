@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { UserStatus, IUser } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -15,6 +15,7 @@ import { callbacks } from '../../lib/callbacks';
 import { compareUserPassword } from '../../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory';
 import { notifyOnUserChange } from '../../lib/notifyListener';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
 import { saveUserIdentity } from '../../lib/users/saveUserIdentity';
@@ -22,6 +23,8 @@ import { settings as rcSettings } from '../../settings';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
+
+const isBroken = shouldBreakInVersion('9.0.0');
 
 async function saveUserProfile(
 	this: AuthenticatedContext,
@@ -34,6 +37,7 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phones?: IUserPhoneNumber[];
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -112,6 +116,21 @@ async function saveUserProfile(
 			});
 		}
 		await Users.setNickname(user._id, settings.nickname.trim());
+	}
+
+	if (Array.isArray(settings.phones)) {
+		await Users.setPhones(user._id, settings.phones);
+
+		if (settings.phones.length === 0) {
+			unset.phones = true;
+		}
+
+		// TODO: 9.0 - migrate `phone` to `phones`
+		unset.phone = true;
+
+		if (isBroken) {
+			throw new Error("IUser['phone'] is deprecated and should be migrated to IUser['phones']");
+		}
 	}
 
 	if (user && settings.email) {
@@ -209,6 +228,7 @@ declare module '@rocket.chat/ddp-client' {
 				statusType?: string;
 				bio?: string;
 				nickname?: string;
+				phones?: IUserPhoneNumber[];
 			},
 			customFields: Record<string, any>,
 			...args: unknown[]
@@ -228,6 +248,7 @@ export function executeSaveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phones?: IUserPhoneNumber[];
 	},
 	customFields: Record<string, any> = {},
 	...args: unknown[]
