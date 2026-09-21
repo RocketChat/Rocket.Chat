@@ -126,7 +126,7 @@ export const isContactsDeleteProps = ajv.compile(contactsDeletePropsSchema);
 
 export type ContactsEndpoints = {
 	'/v1/contacts.list': {
-		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContact[]; unfilteredTotal: number }>;
+		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContact[]; syncedTotal: number }>;
 	};
 	'/v1/contacts.create': {
 		POST: (params: ContactsCreateProps) => { id: IContact['_id'] };

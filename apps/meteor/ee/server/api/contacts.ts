@@ -42,17 +42,17 @@ API.v1.get(
 		authRequired: true,
 		query: isContactsListProps,
 		response: {
-			200: ajv.compile<PaginatedResult<{ items: IContact[]; unfilteredTotal: number; success: true }>>({
+			200: ajv.compile<PaginatedResult<{ items: IContact[]; syncedTotal: number; success: true }>>({
 				type: 'object',
 				properties: {
 					items: { type: 'array' },
 					count: { type: 'integer' },
 					offset: { type: 'integer' },
 					total: { type: 'integer' },
-					unfilteredTotal: { type: 'integer' },
+					syncedTotal: { type: 'integer' },
 					success: { type: 'boolean', enum: [true] },
 				},
-				required: ['items', 'count', 'offset', 'total', 'unfilteredTotal', 'success'],
+				required: ['items', 'count', 'offset', 'total', 'syncedTotal', 'success'],
 				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
@@ -79,10 +79,9 @@ API.v1.get(
 
 		const [items, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		// needed to display alongside the Sync button to compare against Outlook
-		const unfilteredTotal = text ? await Contacts.countDocuments({ uid: userId }) : total;
+		const syncedTotal = await Contacts.countImportedByUserId(userId);
 
-		return API.v1.success({ items, count: items.length, offset, total, unfilteredTotal });
+		return API.v1.success({ items, count: items.length, offset, total, syncedTotal });
 	},
 );
 
