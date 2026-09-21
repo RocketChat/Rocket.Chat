@@ -49,6 +49,7 @@ module.exports = {
 		'server/lib/utils/**/*.spec.ts',
 		'lib/mapLivechatContactConflicts.spec.ts',
 		'lib/videoConference/*.spec.ts',
+		'lib/rooms/*.spec.ts',
 		'server/services/video-conference/**/*.spec.ts',
 	],
 };
