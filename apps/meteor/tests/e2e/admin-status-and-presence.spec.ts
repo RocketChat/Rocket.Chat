@@ -6,6 +6,8 @@ import { Users } from './fixtures/userStates';
 import { AdminStatusAndPresence } from './page-objects';
 import { expectPollUserStatus } from './utils/expectPollUserStatus';
 import { getUserStatusAsViewer } from './utils/getUserStatusAsViewer';
+import { preserveSettings } from './utils/preserveSettings';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser, loginTestUser } from './utils/user-helpers';
@@ -13,6 +15,8 @@ import { createTestUser, loginTestUser } from './utils/user-helpers';
 test.describe('Admin > Status and presence > User status', () => {
 	test.skip(!IS_EE);
 	test.use({ storageState: Users.admin.state });
+
+	preserveSettings(['Accounts_StatusVisibility_Admin_Enabled']);
 
 	let hiddenUser: ITestUser;
 	let blockedViewer: ITestUser;
@@ -22,6 +26,8 @@ test.describe('Admin > Status and presence > User status', () => {
 	let asControlViewer: APIRequestContext;
 
 	test.beforeAll(async ({ api, browser }) => {
+		await setSettingValueById(api, 'Accounts_StatusVisibility_Admin_Enabled', true);
+
 		hiddenUser = await createTestUser(api);
 		blockedViewer = await createTestUser(api);
 		controlViewer = await createTestUser(api);
