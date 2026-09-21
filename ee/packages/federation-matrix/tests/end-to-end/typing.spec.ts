@@ -13,6 +13,7 @@ const remoteUser = federationConfig.hs1.additionalUser1;
 
 const stamp = Date.now();
 const SHARED_NAME = 'Wilhelmina Featherstonehaugh';
+const REMOTE_DISPLAY_NAME = `Ada Featherstonehaugh ${stamp}`;
 
 const localUser = {
 	username: `fed-typist-${stamp}`,
@@ -45,6 +46,41 @@ const namesake = {
 			.set(rc1AdminRequestConfig.credentials)
 			.send({ value })
 			.expect(200);
+	};
+
+	const expectStoredRemoteName = async (expectedName: string) =>
+		retry(
+			`waiting for Rocket.Chat to store "${expectedName}" as the remote user's name`,
+			async () => {
+				const response = await rc1AdminRequestConfig.request
+					.get(api('users.info'))
+					.set(rc1AdminRequestConfig.credentials)
+					.query({ username: remoteUser.matrixUserId });
+
+				expect(response.body?.user?.name).toBe(expectedName);
+			},
+			{ retries: 10, delayMs: 2000 },
+		);
+
+	const expectLocalTypingIndicator = async (expectedName: string) => {
+		await retry(
+			`waiting for the local client to see "${expectedName}" typing`,
+			async () => {
+				// Matrix emits one EDU per typing state change and never resends it, so the trigger belongs
+				// inside the loop: a settings write that has not reached the server yet would otherwise be
+				// baked into the single event this assertion is allowed to see. Toggling off first keeps
+				// Synapse from suppressing the repeat as a no-op state change.
+				await hs1UserApp.matrixClient.sendTyping(matrixRoomId, false, 0);
+				await hs1UserApp.matrixClient.sendTyping(matrixRoomId, true, 30000);
+
+				const typing = ddp.getUserActivities().filter(({ activities }) => activities.includes('user-typing'));
+
+				expect(typing.map(({ shownName }) => shownName)).toContain(expectedName);
+			},
+			{ retries: 10, delayMs: 2000 },
+		);
+
+		await hs1UserApp.matrixClient.sendTyping(matrixRoomId, false, 0);
 	};
 
 	const remoteTypingUserIds = (): string[] =>
@@ -80,6 +116,8 @@ const namesake = {
 
 		hs1UserApp = new SynapseClient(federationConfig.hs1.url, remoteUser.username, remoteUser.password);
 		await hs1UserApp.initialize();
+		// set before the invite below, so the membership event Rocket.Chat receives already carries it
+		await hs1UserApp.matrixClient.setDisplayName(REMOTE_DISPLAY_NAME);
 
 		const channelName = `fed-typing-${stamp}`;
 		const group = await rc1UserRequestConfig.request
@@ -128,6 +166,7 @@ const namesake = {
 
 		ddp = new DDPListener(federationConfig.rc1.url, rc1UserRequestConfig);
 		await ddp.connect();
+		ddp.observeUserActivity(roomId);
 
 		const namesakeRequestConfig = await getRequestConfig(federationConfig.rc1.url, namesake.username, namesake.password);
 		namesakeDdp = new DDPListener(federationConfig.rc1.url, namesakeRequestConfig);
@@ -204,6 +243,30 @@ const namesake = {
 				},
 				{ retries: 10, delayMs: 2000 },
 			);
+		}, 120000);
+	});
+
+	describe('when a remote user types', () => {
+		// the spec sets the Matrix displayname itself rather than trusting the fixture's: without a
+		// stored name distinct from the Matrix id, the real name case below asserts nothing
+		beforeAll(async () => {
+			await expectStoredRemoteName(REMOTE_DISPLAY_NAME);
+		}, 60000);
+
+		afterEach(async () => {
+			await hs1UserApp.matrixClient.sendTyping(matrixRoomId, false, 0).catch(() => undefined);
+		});
+
+		it('should identify the remote user by username when UI_Use_Real_Name is disabled', async () => {
+			await setRealName(false);
+
+			await expectLocalTypingIndicator(remoteUser.matrixUserId);
+		}, 120000);
+
+		it('should identify the remote user by real name when UI_Use_Real_Name is enabled', async () => {
+			await setRealName(true);
+
+			await expectLocalTypingIndicator(REMOTE_DISPLAY_NAME);
 		}, 120000);
 	});
 });
