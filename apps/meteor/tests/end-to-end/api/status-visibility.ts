@@ -436,6 +436,22 @@ import { IS_EE } from '../../e2e/config/constants';
 			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
 		});
 
+		it('should apply a status message sent in the same save that re-enables the status', async () => {
+			const statusText = `re-enabled-${Date.now()}`;
+
+			await setPresenceDisabled(bystander._id, true).expect(200);
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({ userId: bystander._id, data: { presenceDisabledByAdmin: false, statusText } })
+				.expect(200);
+
+			const { body } = await request.get(api('me')).set(bystanderCredentials).expect(200);
+
+			expect(body).to.include({ statusText, statusSource: 'manual' });
+		});
+
 		it('should not touch the per-user choices of the CORE-2522 axis', async () => {
 			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.OFFLINE);
 			expect(await statusSeenBy(bystanderCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
