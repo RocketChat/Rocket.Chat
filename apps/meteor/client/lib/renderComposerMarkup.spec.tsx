@@ -39,6 +39,22 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 		['heading', '# Title'],
 		['heading with a link', '# see rocket.chat'],
 		['quote', '> quoted'],
+		['multiline quote', '> one\n> two'],
+		['quote with an empty line', '> one\n>\n> two'],
+		['quote without a space after the marker', '>one'],
+		['quote with extra spacing after the marker', '>  one'],
+		['quote after a heading', '# head\n>one'],
+		['quote after a code block', '```\na\n```\n>one'],
+		['quote after a list', '- item\n>one'],
+		['quote after a horizontal rule', '---\n>one'],
+		['quote after a table', '|a|b|\n|-|-|\n|1|2|\n>one'],
+		['quote after another quote', '> one\n\n>two'],
+		['blank line made of spaces', 'a\n  \nb'],
+		['blank line made of a tab', 'a\n\t\nb'],
+		['quote followed by a blank line made of spaces', '> one\n  \n'],
+		['quote, paragraph, blank line made of spaces', '> one\ntwo *three*\n  \n'],
+		['blank line made of spaces between quotes', '> one\n  \n> two'],
+		['message that is only a blank line made of spaces', '  \n'],
 		['multiline', 'first\nsecond\nthird'],
 		['user mention', 'hi @rocket.cat'],
 		['channel mention', 'hi #general'],
@@ -209,6 +225,35 @@ describe('schemeless links', () => {
 	});
 });
 
+describe('quote styling', () => {
+	const barsOf = (text: string): HTMLElement[] =>
+		Array.from(mountMarkup(text).querySelectorAll('span')).filter((span) => span.getAttribute('style')?.includes('border-inline-start'));
+
+	it('gives every line of a quote its own quote bar', () => {
+		const bars = barsOf('> one\n> two');
+
+		expect(bars.map((bar) => bar.textContent)).toEqual(['> one\n', '> two\n']);
+
+		for (const bar of bars) {
+			expect(bar.getAttribute('style')).toBe(
+				'border-inline-start:2px solid var(--rcx-color-stroke-light, #ccc);padding-inline-start:8px;color:var(--rcx-color-font-secondary-info, #666)',
+			);
+		}
+	});
+
+	it('bars an empty quote line as well', () => {
+		expect(barsOf('> one\n>\n> two').map((bar) => bar.textContent)).toEqual(['> one\n', '>\n', '> two\n']);
+	});
+
+	it.each([
+		['no space', '>one'],
+		['two spaces', '>  one'],
+		['a tab', '>\tone'],
+	])('keeps a marker written with %s instead of normalizing it', (_label, text) => {
+		expect(mountMarkup(text).textContent).toBe(`${text}\n`);
+	});
+});
+
 describe('list styling', () => {
 	it.each([
 		['unordered', '- one\n- two', /^- $/],
@@ -241,6 +286,7 @@ const lossy: [string, string][] = [
 	['phone link', 'call +15551234567 now'],
 	['padded horizontal rule', '  ---'],
 	['several big emoji', '😄 😄'],
+	['code block with a leading empty line', '```\n\nconst a = 1;\n```'],
 ];
 
 describe('markup the renderer cannot reproduce', () => {
