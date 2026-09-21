@@ -47,7 +47,6 @@ const CallMemberItem = ({ member }: CallMemberItemProps) => {
 
 ```ts
 export type ConferenceViewer = {
-	uid: IUser['_id'] | null;
 	useRealName: boolean;
 	displayAvatars: boolean;
 	canRingUsers: boolean;
@@ -56,6 +55,9 @@ export type ConferenceViewer = {
 
 Asked once, where the screen is assembled. A story then states the workspace instead of
 mocking one.
+
+Every field there is already an answer. Note what is *not* in it: the viewer's id. See
+below.
 
 ### Where it is mounted
 
@@ -76,9 +78,13 @@ const joinDisabled = useContext(VideoConfContext)?.joinDisabled ?? false;
 The provider knows the circumstance; the block only knows how to dim a button. Deciding
 it in the block means the block has to know what a call window's address looks like.
 
-### Ask about the item, don't hand over the collection
+### Hand over the answer, not the material
 
-If a row needs one fact about its own item, give it that fact.
+Two shapes of one mistake: giving a component a collection to search, or an identity to
+derive from. Both leave the deriving in the component, which is where it will be written
+again by the next component that needs it.
+
+**A collection to search.** If a row needs one fact about its own item, give it that fact.
 
 ❌
 
@@ -97,6 +103,35 @@ const { audible, silenced, silence } = callRing(call.callId);
 
 Handing over the collection couples the row to how the set is stored, and here it dragged
 in a second context to search alongside the first.
+
+**An identity to derive from.** Passing the viewer's id is the same move: raw material
+plus a rule the component now has to carry.
+
+❌
+
+```tsx
+const { uid } = useConferenceViewer();
+const present = access.members.filter(isInVideoConference);
+
+if (!present.length || !hasConferenceChatAccess(access, uid)) {
+	return null;
+}
+```
+
+✅
+
+```tsx
+const { present, canShare } = access;
+
+if (!present.length || !canShare) {
+	return null;
+}
+```
+
+If who the viewer *is* genuinely matters — the component shows their name, or keys
+storage by them — then pass the id and say so in its name. Otherwise the provider should
+answer the question the id was going to be used to ask, and expose the actions and the
+derived facts rather than the identity behind them.
 
 ### The question that settles it
 

@@ -10,8 +10,9 @@ code that lives in another file — that belongs in `docs/features/`. Full rules
 
 A provider reads; a component is told. A setting, a permission, the logged-in user or the
 current route belongs in a provider — in a component each one is another dependency a
-caller has to stand up before it can render. Build the screen against a shape you invent,
-with its stories, and wire it afterwards. Full rules:
+caller has to stand up before it can render. What the provider hands down is the answer:
+actions and derived facts, not the raw material to work one out from. Build the screen
+against a shape you invent, with its stories, and wire it afterwards. Full rules:
 [docs/frontend/building-components.md](docs/frontend/building-components.md).
 
 ## Documentation index
