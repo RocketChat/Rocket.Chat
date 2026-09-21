@@ -51,8 +51,11 @@ const registerCustomEmoji = (name: string) => {
 	emoji.list[`:${name}:`] = { emojiPackage: 'emojiCustom', name } as any;
 };
 
-const fakePackage = (emojisByCategory: Record<string, string[]>, renderPicker: (emojiToRender: string) => string | undefined) =>
-	({ emojisByCategory, toneList: {}, renderPicker }) as any;
+const fakePackage = (
+	emojisByCategory: Record<string, string[]>,
+	renderPicker: (emojiToRender: string) => string | undefined,
+	toneList: Record<string, number> = {},
+) => ({ emojisByCategory, toneList, renderPicker }) as any;
 
 const listEmojiNames = (rows: ReturnType<typeof createEmojiList>) =>
 	rows.flatMap((row) => (isLoadMore(row) ? [] : row.map(({ emoji: name }) => name)));
@@ -65,8 +68,8 @@ describe('Emoji Client Helpers', () => {
 	describe('getEmojisBySearchTerm', () => {
 		before(registerNativeEmojis);
 
-		const search = (term: string) => getEmojisBySearchTerm(term, 0, [], () => undefined);
-		const names = (term: string) => search(term).map((result) => result.emoji);
+		const search = (term: string, tone = 0) => getEmojisBySearchTerm(term, tone, [], () => undefined);
+		const names = (term: string, tone = 0) => search(term, tone).map((result) => result.emoji);
 		const rendersThumbsUp = (term: string) => search(term).some((result) => result.image?.includes('👍'));
 
 		it('finds an emoji by its primary shortcode', () => {
@@ -109,19 +112,39 @@ describe('Emoji Client Helpers', () => {
 
 		it('leaves out native mixed skin-tone variants that do not match the selected tone', () => {
 			expect(names('handshake')).to.deep.equal(['handshake']);
+
+			const selectedTone = names('handshake', 1);
+
+			expect(selectedTone).to.include('handshake_tone1');
+			expect(selectedTone).to.not.include('handshake_tone2-1');
 		});
 
-		it('drops a recent entry whose toned variant does not exist and notifies the caller', () => {
-			// `:handshake_tone1-2:` passes the tone filter when tone 1 is selected, and the search then looks
-			// its toned variant `:handshake_tone1-2_tone1:` up, which no emoji package provides.
-			const recentEmojis = ['handshake_tone1-2_tone1', 'smile'];
-			const updates: string[][] = [];
+		describe('when a package offers tones for an emoji whose toned variant it does not provide', () => {
+			const originalPackages = emoji.packages;
+			const originalList = emoji.list;
 
-			const results = getEmojisBySearchTerm('handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
+			beforeEach(() => {
+				emoji.packages = {
+					native: fakePackage({ people: ['handshake'] }, (name) => `<native>${name}</native>`, { handshake: 1 }),
+				};
+				emoji.list = { ':handshake:': { emojiPackage: 'native', name: 'handshake' } as any };
+			});
 
-			expect(results.map(({ emoji: name }) => name)).to.include('handshake_tone1');
-			expect(recentEmojis).to.deep.equal(['smile']);
-			expect(updates).to.deep.equal([['smile']]);
+			afterEach(() => {
+				emoji.packages = originalPackages;
+				emoji.list = originalList;
+			});
+
+			it('drops the recent entry that points at the missing variant and notifies the caller', () => {
+				const recentEmojis = ['handshake_tone1', 'smile'];
+				const updates: string[][] = [];
+
+				const results = getEmojisBySearchTerm('handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
+
+				expect(results).to.be.empty;
+				expect(recentEmojis).to.deep.equal(['smile']);
+				expect(updates).to.deep.equal([['smile']]);
+			});
 		});
 	});
 
