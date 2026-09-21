@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type UsersListStatusVisibilityParamsGET = {
 	searchTerm?: string;
@@ -16,4 +16,4 @@ const schema = {
 	additionalProperties: false,
 };
 
-export const isUsersListStatusVisibilityParamsGET = ajv.compile<UsersListStatusVisibilityParamsGET>(schema);
+export const isUsersListStatusVisibilityParamsGET = ajvQuery.compile<UsersListStatusVisibilityParamsGET>(schema);

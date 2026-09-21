@@ -578,7 +578,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		it('should list only users under an admin rule, with usernames resolved', async () => {
 			await setAdminDenied(hider._id, [bystander.username]).expect(200);
 
-			const { body } = await request.get(api('users.listStatusVisibility')).set(credentials).expect(200);
+			const { body } = await request.get(api('users.listStatusVisibility')).set(credentials).query({ count: 25, offset: 0 }).expect(200);
 			const row = body.users.find((user: { _id: string }) => user._id === hider._id);
 
 			expect(row).to.not.be.undefined;
