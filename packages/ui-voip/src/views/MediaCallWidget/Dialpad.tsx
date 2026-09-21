@@ -1,5 +1,6 @@
 import { Divider, Box, TextInput, Field, FieldRow } from '@rocket.chat/fuselage';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Keypad from '../../components/Keypad/Keypad';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
@@ -9,6 +10,7 @@ export type DialpadProps = {
 };
 
 const Dialpad = ({ autoFocus = true }: DialpadProps) => {
+	const { t } = useTranslation();
 	const { onTone } = useMediaCallView();
 	const [inputValue, setInputValue] = useState('');
 
@@ -16,7 +18,7 @@ const Dialpad = ({ autoFocus = true }: DialpadProps) => {
 		<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
 			<Field marginBlockEnd={8}>
 				<FieldRow>
-					<TextInput value={inputValue} readOnly small marginInline={24} />
+					<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small marginInline={24} />
 				</FieldRow>
 			</Field>
 			<Keypad

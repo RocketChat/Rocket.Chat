@@ -1,5 +1,5 @@
 import { Box, NavBarGroup } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,14 +8,21 @@ import SidebarRailDivider from './SidebarRailDivider';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailSort from './SidebarRailSort';
+import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
 import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
 const SidebarRail = () => {
 	const { t } = useTranslation();
 	const user = useUser();
+
+	const hasManageAppsPermission = usePermission('manage-apps');
+	const hasAccessMarketplacePermission = usePermission('access-marketplace');
+	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
+	const showOmnichannel = useOmnichannelEnabled();
 
 	return (
 		<Box
@@ -40,13 +47,19 @@ const SidebarRail = () => {
 					<NavBarItemHomePage title={t('Home')} />
 					<SidebarRailSort />
 					<SidebarRailCreateNew />
+					<NavBarItemDirectoryPage title={t('Directory')} />
+					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 				</NavBarGroup>
 				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Voice_Call')}>
 					<SidebarRailPhone />
-					<NavBarItemDirectoryPage title={t('Directory')} />
-					<NavBarItemMarketPlaceMenu />
 				</NavBarGroup>
+				{showOmnichannel && (
+					<>
+						<SidebarRailDivider />
+						<NavBarOmnichannelGroup vertical />
+					</>
+				)}
 			</Box>
 			<Box padding={8}>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>

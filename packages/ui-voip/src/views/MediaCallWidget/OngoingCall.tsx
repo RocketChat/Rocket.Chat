@@ -70,7 +70,7 @@ const OngoingCall = () => {
 						<ActionButton
 							disabled={connecting || reconnecting}
 							icon='dialpad'
-							label='Dialpad'
+							label={t('Dialpad')}
 							title={dialpadOpen ? t('Close_dialpad') : t('Open_dialpad')}
 							onClick={() => setDialpadOpen((open) => !open)}
 						/>
