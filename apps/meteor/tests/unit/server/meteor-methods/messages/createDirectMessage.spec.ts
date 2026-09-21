@@ -62,6 +62,20 @@ describe('createDirectMessage', () => {
 		expect(modelsMock.Users.findOneByUsernameIgnoringCase.called).to.be.false;
 	});
 
+	it('should treat a case-variant of the caller as self', async () => {
+		modelsMock.Users.findOneByUsernameIgnoringCase.resolves(me);
+
+		await createDirectMessage(['ME'], me._id);
+
+		expect(createRoomMock.firstCall.args[3]).to.deep.equal([me]);
+	});
+
+	it('should reject a case-variant self-DM when self-DMs are disabled', async () => {
+		settingsGetMock.withArgs('Message_AllowDirectMessagesToYourself').returns(false);
+
+		await expect(createDirectMessage(['ME'], me._id)).to.be.rejectedWith('Invalid user');
+	});
+
 	it('should reject a username that does not exist', async () => {
 		modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
 

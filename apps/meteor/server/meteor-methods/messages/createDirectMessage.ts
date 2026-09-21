@@ -34,13 +34,16 @@ export async function createDirectMessage(
 		});
 	}
 
-	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
+	const myUsername = me.username.toLowerCase();
+	const isMe = (username: string) => username.toLowerCase() === myUsername;
+
+	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && isMe(usernames[0])) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const targets = usernames.filter((username) => username !== me.username);
+	const targets = usernames.filter((username) => !isMe(username));
 
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 	if ((excludeSelf ? targets.length : targets.length + 1) > maxUsers) {
