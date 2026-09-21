@@ -13,7 +13,13 @@ import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 export type ConferenceMember = Pick<
 	IVideoConferenceUser,
 	'_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'
->;
+> & {
+	/**
+	 * Which participant the provider knows this member as, where this window is the one that can say. Only ever
+	 * set for the reader themselves — the plugin reports the participant it joined as, and nobody else's.
+	 */
+	providerParticipantId?: string;
+};
 
 /** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
 export type ConferenceChatAccess = VideoConferenceChatAccess & {

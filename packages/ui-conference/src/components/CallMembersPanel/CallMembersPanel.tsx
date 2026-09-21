@@ -26,15 +26,28 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const conference = useConference();
-	const { call, room, actions, provider } = conference;
+	const { call, room, actions, provider, viewer } = conference;
 	const { members } = call;
 	const { rid, chatAccess } = room;
+
+	// The plugin says which participant this window joined as, and that is the one pairing a shared display
+	// name cannot settle on its own. Nobody else's row can be claimed this way: the provider only ever reports
+	// its own side.
+	const claimants = useMemo(() => {
+		const participantUuid = provider?.self?.participantUuid;
+
+		if (!participantUuid || !viewer.uid) {
+			return members;
+		}
+
+		return members.map((member) => (member._id === viewer.uid ? { ...member, providerParticipantId: participantUuid } : member));
+	}, [members, provider?.self?.participantUuid, viewer.uid]);
 
 	// Our own membership decides which group a row is in and the provider's roster decides what the row can do,
 	// so the two are composed rather than one being derived from the other.
 	const { waiting, present, absent } = useMemo(
-		() => composeCallParticipants(members, provider?.participants ?? NO_PARTICIPANTS),
-		[members, provider?.participants],
+		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
+		[claimants, provider?.participants],
 	);
 
 	// A set rather than one pending request: ringing a second member put the first back in reach.
