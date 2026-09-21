@@ -20,8 +20,9 @@ export interface IUploadDescriptor {
 	/**
 	 * The user that performed the upload
 	 *
-	 * NOTE: please ignore this property if you are going
-	 * to assign a livechat visitor to perform upload.
+	 * > [!NOTE]
+	 * > Leave this out when a Livechat visitor is the uploader; name them with
+	 * > `visitorToken` instead.
 	 */
 	user?: IUser | null;
 	/**
