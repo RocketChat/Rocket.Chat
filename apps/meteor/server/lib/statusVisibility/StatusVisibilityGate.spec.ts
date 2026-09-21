@@ -80,7 +80,7 @@ describe('StatusVisibilityGate', () => {
 		const second = gate.syncRestrictedUsers();
 		expect(getRestrictedUsers).toHaveBeenCalledTimes(1);
 
-		resolveOldestRead();
+		pendingReads.shift()?.([]);
 		await first;
 		await settle();
 
