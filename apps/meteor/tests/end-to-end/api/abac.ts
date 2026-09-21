@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials, methodCall } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
@@ -23,19 +24,6 @@ import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-// NOTE: This manipulates the DB directly to add ABAC attributes to a user
-// The idea is to avoid having to go through LDAP to add info to the user
-let connection: MongoClient;
-const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
-	await connection.db().collection('users').updateOne(
-		{
-			// @ts-expect-error - collection types for _id
-			_id: userId,
-		},
-		{ $set: { abacAttributes } },
-	);
-};
-
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
@@ -52,8 +40,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		connection = await MongoClient.connect(URL_MONGODB);
-
 		await Promise.all([
 			updatePermission('abac-management', ['admin']),
 			updatePermission('manage-abac-admin-settings', ['admin']),
@@ -73,8 +59,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await deleteRoom({ type: 'p', roomId: testRoom._id });
 		await deleteUser(unauthorizedUser);
 		await updateSetting('ABAC_Enabled', false);
-
-		await connection.close();
 	});
 
 	const v1 = '/api/v1';
@@ -3168,8 +3152,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	before(async function () {
 		this.timeout(15000);
 
-		connection = await MongoClient.connect(URL_MONGODB);
-
 		const healthy = await mockServerHealthy();
 		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
@@ -3205,8 +3187,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await mockServerReset();
 		await updateSetting('ABAC_PDP_Type', 'local');
 		await updateSetting('ABAC_Enabled', false);
-
-		await connection.close();
 	});
 
 	describe('PERMIT all: users remain when PDP permits everyone', () => {

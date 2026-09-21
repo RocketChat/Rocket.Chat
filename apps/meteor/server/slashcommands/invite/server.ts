@@ -2,6 +2,7 @@ import { api, FederationMatrix, isMeteorError } from '@rocket.chat/core-services
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,6 +11,8 @@ import { slashCommands } from '../../lib/utils/slashCommand';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../meteor-methods/rooms/addUsersToRoom';
 import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
 import { settings } from '../../settings';
+
+const logger = new Logger('SlashCommandInvite');
 
 // Type guards for the error
 function isStringError(error: unknown): error is { error: string } {
@@ -113,10 +116,16 @@ slashCommands.add({
 					);
 				} catch (e: unknown) {
 					if (isMeteorError(e)) {
-						const key = typeof e.error === 'string' && i18n.exists(e.error) ? e.error : e.message;
+						const isTranslated = typeof e.error === 'string' && i18n.exists(e.error);
+
+						if (!isTranslated) {
+							logger.error({ msg: 'Failed to invite user to room', err: e, rid: message.rid, uid: userId });
+						}
 
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(key, { lng: settings.get('Language') || 'en' }),
+							msg: i18n.t(isTranslated ? (e.error as string) : 'Error_something_went_wrong', {
+								lng: settings.get('Language') || 'en',
+							}),
 						});
 						return;
 					}

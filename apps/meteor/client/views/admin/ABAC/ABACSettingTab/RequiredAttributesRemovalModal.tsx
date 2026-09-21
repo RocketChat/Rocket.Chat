@@ -3,12 +3,13 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
 export type RequiredAttributesRemovalModalProps = {
-	unrestorableKeys: string[];
+	attributeKeys: string[];
+	entitlementsKnown: boolean;
 	onConfirm: () => void;
 	onCancel: () => void;
 };
 
-const RequiredAttributesRemovalModal = ({ unrestorableKeys, onConfirm, onCancel }: RequiredAttributesRemovalModalProps) => {
+const RequiredAttributesRemovalModal = ({ attributeKeys, entitlementsKnown, onConfirm, onCancel }: RequiredAttributesRemovalModalProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -23,8 +24,8 @@ const RequiredAttributesRemovalModal = ({ unrestorableKeys, onConfirm, onCancel 
 			onDismiss={onCancel}
 		>
 			<Trans
-				i18nKey='ABAC_Required_Attributes_Removal_Content'
-				values={{ attributes: unrestorableKeys.join(', ') }}
+				i18nKey={entitlementsKnown ? 'ABAC_Required_Attributes_Removal_Content' : 'ABAC_Required_Attributes_Removal_Content_Unknown'}
+				values={{ attributes: attributeKeys.join(', ') }}
 				components={{ bold: <Box is='span' fontWeight='bold' /> }}
 			/>
 		</GenericModal>

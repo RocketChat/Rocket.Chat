@@ -20,12 +20,15 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 	const coreServices = dependencies['@rocket.chat/core-services'];
 	const broadcast = coreServices?.api?.broadcast ?? sinon.stub().resolves();
 	const translate = sinon.stub().callsFake((key: string) => `translated:${key}`);
+	const translationExists = sinon.stub().returns(false);
 	const settings = { get: sinon.stub() };
+	const logger = { error: sinon.stub(), warn: sinon.stub(), info: sinon.stub(), debug: sinon.stub() };
 	let lastInvocation: SlashCommandCallbackParams<string> | undefined;
 
 	proxyquire.noCallThru().load(`../../../../server/slashcommands/${path}`, {
 		'meteor/meteor': { Meteor: { Error: MeteorError } },
-		'../../lib/i18n': { i18n: { t: translate } },
+		'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
+		'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
 		'../../settings': { settings },
 		...dependencies,
 		'@rocket.chat/core-services': { ...coreServices, api: { ...coreServices?.api, broadcast } },
@@ -37,6 +40,8 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 	return {
 		broadcast,
 		translate,
+		translationExists,
+		logger,
 		settings,
 		registeredCommands,
 		async runCommand(command: string, overrides: Partial<SlashCommandCallbackParams<string>> = {}) {

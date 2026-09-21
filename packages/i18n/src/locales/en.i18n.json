@@ -148,6 +148,7 @@
   "ABAC_Required_Attributes_Description": "Every ABAC room must carry these attributes. Adding one locks existing rooms that do not have it until the attribute is assigned in ABAC > Rooms.",
   "ABAC_Required_Attributes_Removal_Confirm": "Remove",
   "ABAC_Required_Attributes_Removal_Content": "You do not hold <bold>{{attributes}}</bold>, so you will not be able to add it back to the requirements.",
+  "ABAC_Required_Attributes_Removal_Content_Unknown": "Could not check which attributes you hold. You may not be able to add <bold>{{attributes}}</bold> back to the requirements.",
   "ABAC_Required_Attributes_Removal_Title": "Remove required attribute",
   "ABAC_Revoked_Object_Access": "Automatic removal",
   "ABAC_Room": "Room",
