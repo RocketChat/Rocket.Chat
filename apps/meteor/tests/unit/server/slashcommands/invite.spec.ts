@@ -157,10 +157,6 @@ describe('/invite', () => {
 	});
 
 	[
-		{
-			error: new MeteorError('error-only-compliant-users-can-be-added-to-abac-rooms', 'ABAC failure'),
-			key: 'error-only-compliant-users-can-be-added-to-abac-rooms',
-		},
 		{ error: { error: 'error-federated-users-in-non-federated-rooms' }, key: 'You_cannot_add_external_users_to_non_federated_room' },
 		{ error: { error: 'cant-invite-for-direct-room' }, key: 'Cannot_invite_users_to_direct_rooms' },
 		{ error: { error: 'other-invitation-error' }, key: 'other-invitation-error' },
@@ -178,17 +174,35 @@ describe('/invite', () => {
 		});
 	});
 
-	it('delivers translated Meteor error feedback while continuing other invitations', async () => {
+	it('reports a Meteor error under its own code when that code is translatable', async () => {
 		toArray.resolves([bob, carol]);
-		addUsers.onFirstCall().rejects(new MeteorError('error-not-allowed', 'Not allowed'));
+		const error = new MeteorError('error-only-compliant-users-can-be-added-to-abac-rooms', 'ABAC failure');
+		addUsers.onFirstCall().rejects(error);
+		slashCommand.translationExists.withArgs('error-only-compliant-users-can-be-added-to-abac-rooms').returns(true);
 		slashCommand.settings.get.withArgs('Language').returns('pt');
-		// The handler currently translates error.message, including Meteor's error-code suffix.
-		// Protect delivery of the translation result without requiring that translation key.
-		slashCommand.translate.returns('localized invitation error');
 		await slashCommand.runCommand('invite', { params: '@bob @carol' });
-		sinon.assert.calledOnceWithExactly(slashCommand.translate, sinon.match.string, { lng: 'pt' });
-		sinon.assert.calledOnceWithExactly(broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
-			msg: 'localized invitation error',
+		slashCommand.expectTranslatedFeedback('error-only-compliant-users-can-be-added-to-abac-rooms');
+		sinon.assert.calledOnce(broadcast);
+		expect(slashCommand.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
+		sinon.assert.notCalled(slashCommand.logger.error);
+		sinon.assert.calledTwice(addUsers);
+		sinon.assert.calledWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
+	});
+
+	it('keeps an untranslatable Meteor error server-side and reports a generic failure', async () => {
+		toArray.resolves([bob, carol]);
+		const error = new MeteorError('connect ECONNREFUSED 10.0.0.1:27017', 'Not allowed');
+		addUsers.onFirstCall().rejects(error);
+		slashCommand.settings.get.withArgs('Language').returns('pt');
+		await slashCommand.runCommand('invite', { params: '@bob @carol' });
+		slashCommand.expectTranslatedFeedback('Error_something_went_wrong');
+		sinon.assert.calledOnce(broadcast);
+		expect(slashCommand.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
+		sinon.assert.calledOnceWithExactly(slashCommand.logger.error, {
+			msg: 'Failed to invite user to room',
+			err: error,
+			rid: 'current-room',
+			uid: 'actor',
 		});
 
 		sinon.assert.calledTwice(addUsers);
