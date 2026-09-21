@@ -25,8 +25,8 @@ export interface ITypingOptions {
 	/**
 	 * The name of the user who is typing the message
 	 *
-	 * **Note**: If not provided, it will use app assigned
-	 * user's name by default.
+	 * > [!NOTE]
+	 * > The App's own user is used when this is not provided.
 	 */
 	username?: string;
 }
@@ -42,8 +42,9 @@ export interface INotifier {
 	/**
 	 * Notifies the provided user of the provided message.
 	 *
-	 * **Note**: Notifications only are shown to the user if they are
-	 * online and it only stays around for the duration of their session.
+	 * > [!NOTE]
+	 * > The user sees this only if they are online, and only until their
+	 * > session ends. Nothing is stored.
 	 *
 	 * @param user The user who should be notified
 	 * @param message The message with the content to notify the user about
@@ -53,8 +54,9 @@ export interface INotifier {
 	/**
 	 * Notifies all of the users in the provided room.
 	 *
-	 * **Note**: Notifications only are shown to those online
-	 * and it only stays around for the duration of their session.
+	 * > [!NOTE]
+	 * > Only the users who are online see this, and only until their session
+	 * > ends. Nothing is stored.
 	 *
 	 * @param room The room which to notify the users in
 	 * @param message The message content to notify users about

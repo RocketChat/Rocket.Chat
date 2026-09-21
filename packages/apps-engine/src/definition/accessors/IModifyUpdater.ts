@@ -52,7 +52,9 @@ export interface IModifyUpdater {
 
 	/**
 	 * Finishes the updating process, saving the object to the database.
-	 * Note: If there is an issue or error while updating, this will throw an error.
+	 *
+	 * > [!WARNING]
+	 * > This throws when the save fails, so nothing is written silently.
 	 *
 	 * @param builder the builder instance
 	 */
