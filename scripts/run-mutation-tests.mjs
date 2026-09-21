@@ -3,10 +3,10 @@ import { constants } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { planDiff, UsageError } from './mutation-diff.mjs';
+import { planDiff, planExplicit, UsageError } from './mutation-diff.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const usage = 'Usage: yarn test:mutation --diff';
+const usage = 'Usage: yarn test:mutation --diff\n       yarn test:mutation <package-path> --mutate <source-patterns>';
 
 async function runJob({ packagePath, testRunner, targets }) {
 	console.log(`\n${packagePath} (${testRunner}): ${targets.join(', ')}`);
@@ -36,8 +36,11 @@ async function runJob({ packagePath, testRunner, targets }) {
 
 async function main() {
 	const args = process.argv.slice(2);
-	if (args.length !== 1 || args[0] !== '--diff') throw new UsageError(usage);
-	const { jobs, skipped } = planDiff(root);
+	let plan;
+	if (args.length === 1 && args[0] === '--diff') plan = planDiff(root);
+	else if (args.length === 3 && !args[0].startsWith('-') && args[1] === '--mutate') plan = planExplicit(root, args[0], args[2]);
+	else throw new UsageError(usage);
+	const { jobs, skipped } = plan;
 	for (const { file, reason } of skipped) console.log(`Skipped ${file}: ${reason}`);
 	if (!jobs.length) console.log('No changed production lines to mutation-test.');
 	let exitCode = 0;

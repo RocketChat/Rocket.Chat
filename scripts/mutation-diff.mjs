@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs';
-import { dirname, matchesGlob, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, matchesGlob, relative, resolve, sep } from 'node:path';
 
 export class UsageError extends Error {}
 const slash = (path) => path.split(sep).join('/');
@@ -10,6 +10,39 @@ function packageRunners(directory) {
 	return Object.entries(runnerConfigs)
 		.filter(([, config]) => existsSync(resolve(directory, config)))
 		.map(([runner]) => runner);
+}
+
+function workspacePatterns(root) {
+	const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+	return manifest.workspaces?.packages ?? manifest.workspaces ?? [];
+}
+
+export function planExplicit(root, packagePath, scope) {
+	root = realpathSync(root);
+	const directory = resolve(root, packagePath);
+	packagePath = slash(relative(root, directory));
+	if (
+		!packagePath ||
+		packagePath.startsWith('../') ||
+		isAbsolute(packagePath) ||
+		!workspacePatterns(root).some((pattern) => matchesGlob(packagePath, pattern)) ||
+		!existsSync(resolve(directory, 'package.json')) ||
+		realpathSync(directory) !== directory
+	) {
+		throw new UsageError('Expected a workspace package directory inside this repository.');
+	}
+	const runners = packageRunners(directory);
+	if (!runners.length) throw new UsageError(`${packagePath} has no jest.config.ts or .mocharc.js.`);
+	// Match Stryker CLI's comma-separated scope; Stryker resolves globs, exclusions, and line ranges.
+	const targets = scope.split(',').filter(Boolean);
+	if (!targets.some((target) => !target.startsWith('!'))) throw new UsageError('--mutate requires a production source target.');
+	for (const target of targets) {
+		const path = target.replace(/^!/, '');
+		if (isAbsolute(path) || path.includes('\\') || /^[A-Za-z]:/.test(path) || path.split('/').includes('..')) {
+			throw new UsageError('--mutate paths must stay inside the selected package and use forward slashes.');
+		}
+	}
+	return { jobs: runners.map((testRunner) => ({ packagePath, testRunner, targets })), skipped: [] };
 }
 
 export function changedRanges(diff) {
@@ -53,8 +86,7 @@ export function planDiff(root, base = 'origin/develop') {
 	} catch {
 		throw new UsageError(`Cannot find a merge base with ${base}. Run git fetch origin develop first.`);
 	}
-	const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
-	const workspaces = manifest.workspaces?.packages ?? manifest.workspaces ?? [];
+	const workspaces = workspacePatterns(root);
 	const split = (output) => output.split('\0').filter(Boolean);
 	// Renames are deletion + addition: check the moved file in its new package context.
 	const tracked = split(git('diff', '--no-ext-diff', '--no-textconv', '--no-color', '--name-only', '-z', '--no-renames', mergeBase, '--'));

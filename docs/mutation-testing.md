@@ -12,7 +12,18 @@ passing, run from the repository root:
 yarn test:mutation --diff
 ```
 
-The command compares your working tree with the merge base of `HEAD` and
+For test-only changes, select the production code explicitly:
+
+```sh
+yarn test:mutation packages/password-policies --mutate src/PasswordPolicy.ts
+```
+
+Paths are package-relative. Quote globs and select production files only.
+[Stryker's `--mutate` patterns](https://stryker-mutator.io/docs/stryker-js/configuration/#mutate-string)
+support comma-separated files, exclusions, and line ranges. This mode needs no
+Git base and uses the same runners and reports as `--diff`.
+
+The `--diff` mode compares your working tree with the merge base of `HEAD` and
 `origin/develop`. It includes committed, staged, unstaged, and non-ignored untracked
 changes. If the base is unavailable, run `git fetch origin develop` first.
 
@@ -26,9 +37,9 @@ both, each runs separately. Meteor's Jest client and server projects retain thei
 jsdom and Node environments. Vitest, Playwright, and API tests against a separate
 server are unsupported.
 
-A test-only or documentation-only PR prints `No changed production lines to
+A test-only or documentation-only PR using `--diff` prints `No changed production lines to
 mutation-test.` and stops without generating a report. This command does not infer
-production targets from changed tests.
+production targets from changed tests; use explicit selection to check them.
 
 This is a local, opt-in command; you do not need to wait for CI. Each job runs a
 baseline before testing mutants, so even a small diff can take time.

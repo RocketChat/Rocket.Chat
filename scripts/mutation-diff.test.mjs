@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
 
-import { changedRanges, planDiff } from './mutation-diff.mjs';
+import { changedRanges, planDiff, planExplicit, UsageError } from './mutation-diff.mjs';
 
 function repository(t) {
 	const root = mkdtempSync(resolve(tmpdir(), 'mutation-diff-'));
@@ -141,4 +141,28 @@ test('invalid bases and filenames fail explicitly; empty changes produce no jobs
 
 test('hunk selection handles zero-length deletions, omitted counts, and multiple ranges', () => {
 	assert.deepEqual(changedRanges('@@ -1 +1 @@\n-a\n+b\n@@ -5,2 +5,0 @@\n-x\n-y\n@@ -10,0 +9,3 @@\n+a\n+b\n+c'), ['1-1', '9-11']);
+});
+
+test('explicit selection uses existing runners and forwards Stryker patterns without requiring a Git base', (t) => {
+	const { root, write } = repository(t);
+	write('packages/first/.mocharc.js', 'module.exports = {};');
+	const scope = 'src/**/*.ts,!src/**/*.spec.ts,src/value.ts:1-2';
+	assert.deepEqual(planExplicit(root, 'packages/first', scope), {
+		jobs: ['jest', 'mocha'].map((testRunner) => ({ packagePath: 'packages/first', testRunner, targets: scope.split(',') })),
+		skipped: [],
+	});
+});
+
+test('explicit selection rejects invalid packages and paths outside the selected package', (t) => {
+	const { root, write } = repository(t);
+	write('packages/no-runner/package.json', '{}');
+	write('scripts/example/package.json', '{}');
+	write('scripts/example/jest.config.ts', 'export default {};');
+	symlinkSync(resolve(root, 'packages/first'), resolve(root, 'packages/link'));
+	for (const pkg of ['.', '..', 'packages/missing', 'scripts/example', 'packages/link', 'packages/no-runner']) {
+		assert.throws(() => planExplicit(root, pkg, 'src/value.ts'), UsageError);
+	}
+	for (const scope of ['', ',', '!src/value.ts', '../second/src/value.ts', '/tmp/value.ts', 'C:/value.ts', 'src/../../value.ts']) {
+		assert.throws(() => planExplicit(root, 'packages/first', scope), UsageError);
+	}
 });

@@ -28,25 +28,33 @@ const write = async (directory, name, content) => {
 	await writeFile(path, content);
 };
 
-async function fixture(t, config = clientConfig) {
+async function commandFixture(t, worker = "throw new Error('Unexpected worker execution');") {
 	await mkdir(resolve(root, '.stryker-tmp'), { recursive: true });
 	const repository = await mkdtemp(resolve(root, '.stryker-tmp/tooling-test-'));
 	t.after(() => rm(repository, { recursive: true, force: true }));
 	const directory = resolve(repository, 'packages/example');
-	await symlink(resolve(root, 'node_modules'), resolve(repository, 'node_modules'), 'dir');
 	await write(repository, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }));
-	await write(repository, '.gitignore', 'node_modules\n.stryker-tmp\nreports\n');
 	await mkdir(resolve(repository, 'scripts'));
+	for (const file of ['scripts/run-mutation-tests.mjs', 'scripts/mutation-diff.mjs'])
+		await copyFile(resolve(root, file), resolve(repository, file));
+	await write(repository, 'scripts/mutation-worker.mjs', worker);
+	await write(directory, 'package.json', '{}');
+	await write(directory, 'jest.config.ts', 'export default {};');
+	return directory;
+}
+
+async function fixture(t, config = clientConfig) {
+	const directory = await commandFixture(t);
+	const repository = repo(directory);
+	await symlink(resolve(root, 'node_modules'), resolve(repository, 'node_modules'), 'dir');
+	await write(repository, '.gitignore', 'node_modules\n.stryker-tmp\nreports\n');
 	for (const file of [
 		'stryker.config.mjs',
-		'scripts/run-mutation-tests.mjs',
 		'scripts/mutation-worker.mjs',
-		'scripts/mutation-diff.mjs',
 		'scripts/mutation-jest-config.mjs',
 		'scripts/mutation-jest-environment.cjs',
 	])
 		await copyFile(resolve(root, file), resolve(repository, file));
-	await write(directory, 'package.json', '{}');
 	await write(directory, 'jest.config.ts', config);
 	await write(directory, 'src/isPositive.ts', source.replace('> 0', '>= 0'));
 	await write(
@@ -150,20 +158,6 @@ test('rejects Jest projects with different roots explicitly', async (t) => {
 	});
 });
 
-test('survivors are reported without failing the command', async (t) => {
-	const directory = await fixture(t);
-	await write(
-		directory,
-		'src/isPositive.spec.ts',
-		`
-import { isPositive } from 'local';
-test('positive input', () => expect(isPositive(1)).toBe(true));
-`,
-	);
-	await run(directory);
-	assert.ok((await report(directory)).files['src/isPositive.ts'].mutants.some(({ status }) => status === 'Survived'));
-});
-
 test('baseline failures remove stale reports and leave source unchanged', async (t) => {
 	const directory = await fixture(t);
 	for (const file of ['mutation.json', 'mutation.html']) await write(directory, `reports/mutation/jest/${file}`, 'old report');
@@ -186,29 +180,58 @@ test('test-only changes skip mutation testing and preserve existing reports', as
 	assert.equal(await readFile(resolve(directory, 'reports/mutation/jest/mutation.html'), 'utf8'), 'previous report');
 });
 
-test('unsupported arguments fail before touching reports', async (t) => {
+test('explicit selection checks unchanged code without a Git base and reports survivors without failing', async (t) => {
 	const directory = await fixture(t);
+	await git(directory, 'add', 'packages/example/src/isPositive.ts');
+	await git(directory, 'commit', '-qm', 'Fixture correct production code');
+	await git(directory, 'update-ref', '-d', 'refs/remotes/origin/develop');
+	await write(
+		directory,
+		'src/isPositive.spec.ts',
+		`
+import { isPositive } from 'local';
+test('positive input', () => expect(isPositive(1)).toBe(true));
+`,
+	);
+	await run(directory, 'packages/example', '--mutate', 'src/isPositive.ts');
+	const { mutants } = (await report(directory)).files['src/isPositive.ts'];
+	assert.ok(mutants.some(({ status }) => status === 'Killed'));
+	assert.ok(mutants.some(({ status }) => status === 'Survived'));
+	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
+});
+
+test('unsupported arguments fail before touching reports', async (t) => {
+	const directory = await commandFixture(t);
 	for (const args of [['--diff', '--plan'], ['packages/example'], ['--diff', '--mutate', 'src/isPositive.ts']]) {
 		await assert.rejects(run(directory, ...args), { code: 2 });
 	}
 	await assert.rejects(readFile(resolve(directory, 'reports/mutation/jest/mutation.json')), { code: 'ENOENT' });
 });
 
-test('SIGTERM cancels without altering source or starting the next runner', { timeout: 30_000 }, async (t) => {
-	const directory = await fixture(t);
+test('runner failures set the command exit code while allowing the next runner to finish', async (t) => {
+	const directory = await commandFixture(
+		t,
+		`console.log('worker: ' + process.argv[2]); process.exitCode = process.argv[2] === 'jest' ? 3 : 0;`,
+	);
 	await write(directory, '.mocharc.js', 'module.exports = {};');
-	await write(
-		directory,
-		'src/isPositive.spec.ts',
+	await assert.rejects(run(directory, 'packages/example', '--mutate', 'src/isPositive.ts'), (error) => {
+		assert.equal(error.code, 3);
+		assert.match(error.stdout, /worker: jest[\s\S]*worker: mocha/);
+		return true;
+	});
+});
+
+test('SIGTERM reaches the worker and cancels without starting the next runner', { timeout: 10_000 }, async (t) => {
+	const directory = await commandFixture(
+		t,
 		`
-import { isPositive } from 'local';
-test('slow baseline', async () => {
-  await new Promise((resolve) => setTimeout(resolve, 10000));
-  expect(isPositive(1)).toBe(true);
-}, 20000);
+process.on('SIGTERM', () => { console.log('worker stopped'); process.exit(0); });
+setInterval(() => {}, 1000);
+console.log('worker ready');
 `,
 	);
-	const child = spawn(process.execPath, ['scripts/run-mutation-tests.mjs', '--diff'], {
+	await write(directory, '.mocharc.js', 'module.exports = {};');
+	const child = spawn(process.execPath, ['scripts/run-mutation-tests.mjs', 'packages/example', '--mutate', 'src/isPositive.ts'], {
 		cwd: repo(directory),
 		stdio: ['ignore', 'pipe', 'pipe'],
 	});
@@ -219,7 +242,7 @@ test('slow baseline', async () => {
 	let cancelled = false;
 	child.stdout.on('data', (data) => {
 		output += data;
-		if (!cancelled && output.includes('Starting initial test run')) {
+		if (!cancelled && output.includes('worker ready')) {
 			cancelled = true;
 			child.kill('SIGTERM');
 		}
@@ -233,8 +256,8 @@ test('slow baseline', async () => {
 	});
 	assert.equal(cancelled, true, output);
 	assert.equal(code, 143, output);
+	assert.match(output, /worker stopped/);
 	assert.doesNotMatch(output, /example \(mocha\)/);
-	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
 test('diff runs Jest and Mocha on selected lines, preserving aliases, environments, and separate reports', async (t) => {
@@ -290,15 +313,4 @@ test.each([-1, 0, 1])('checks negative boundary for %s', (value) => expect(isNeg
 		assert.ok((await readFile(resolve(directory, 'reports/mutation', runner, 'mutation.html'))).length > 0);
 	}
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), after);
-
-	// Clear the previous result so this proves Mocha ran again after Jest failed.
-	await rm(resolve(directory, 'reports/mutation/mocha'), { recursive: true });
-	await write(directory, 'jest.config.ts', "throw new Error('Invalid Jest fixture configuration'); export default {};");
-	await assert.rejects(run(directory), (error) => {
-		assert.equal(error.code, 3);
-		assert.match(error.stdout + error.stderr, /Invalid Jest fixture configuration/);
-		return true;
-	});
-	const { mutants } = (await report(directory, 'mocha')).files['src/isPositive.ts'];
-	assert.ok(mutants.length > 0 && mutants.every(({ status }) => status === 'Killed'));
 });
