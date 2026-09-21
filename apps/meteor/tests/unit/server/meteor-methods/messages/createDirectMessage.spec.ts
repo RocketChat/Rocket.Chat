@@ -9,6 +9,7 @@ const sandbox = sinon.createSandbox();
 const createRoomMock = sandbox.stub();
 const hasPermissionMock = sandbox.stub();
 const validateFederatedUsernameMock = sandbox.stub();
+const settingsGetMock = sandbox.stub();
 
 const modelsMock = {
 	Users: {
@@ -38,7 +39,7 @@ const { createDirectMessage } = p.noCallThru().load('../../../../../server/meteo
 	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
 	'../../lib/callbacks': { callbacks: { run: sandbox.stub() } },
 	'../../lib/rooms/createRoom': { createRoom: createRoomMock },
-	'../../settings': { settings: { get: sandbox.stub() } },
+	'../../settings': { settings: { get: settingsGetMock } },
 });
 
 const me = { _id: 'me', username: 'me' };
@@ -50,7 +51,15 @@ describe('createDirectMessage', () => {
 		modelsMock.Users.findOneById.resolves(me);
 		hasPermissionMock.resolves(true);
 		validateFederatedUsernameMock.returns(false);
+		settingsGetMock.withArgs('DirectMesssage_maxUsers').returns(8);
 		createRoomMock.resolves({ _id: 'rid', inserted: true });
+	});
+
+	it('should reject an oversized member list before resolving any username', async () => {
+		const targets = Array.from({ length: 9 }, (_, i) => `user${i}`);
+
+		await expect(createDirectMessage(targets, me._id)).to.be.rejectedWith('You cannot add more than 8 users');
+		expect(modelsMock.Users.findOneByUsernameIgnoringCase.called).to.be.false;
 	});
 
 	it('should reject a username that does not exist', async () => {
