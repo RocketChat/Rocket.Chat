@@ -11,6 +11,7 @@ const useVideoConfContext = () => {
 	return context;
 };
 
+export const useVideoConfWindowEnabled = () => useVideoConfContext().conferenceWindowEnabled;
 export const useVideoConfDispatchOutgoing = () => useVideoConfContext().dispatchOutgoing;
 export const useVideoConfDismissOutgoing = () => useVideoConfContext().dismissOutgoing;
 export const useVideoConfStartCall = () => useVideoConfContext().startCall;

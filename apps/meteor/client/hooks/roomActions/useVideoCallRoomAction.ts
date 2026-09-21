@@ -2,17 +2,10 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
-import {
-	useVideoConfDispatchOutgoing,
-	useVideoConfIsCalling,
-	useVideoConfIsRinging,
-	useVideoConfLoadCapabilities,
-	useVideoConfStartCall,
-} from '@rocket.chat/ui-video-conf';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfLoadCapabilities, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -30,7 +23,7 @@ export const useVideoCallRoomAction = () => {
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const startCall = useVideoConfStartCall();
-	const preflight = useConferenceWindowEnabled();
+	const preflight = useVideoConfWindowEnabled();
 	const loadCapabilities = useVideoConfLoadCapabilities();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();

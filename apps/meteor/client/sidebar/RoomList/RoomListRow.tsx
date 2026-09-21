@@ -1,10 +1,9 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import { useVideoConfAcceptCall, useVideoConfIncomingCalls, useVideoConfRejectIncomingCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
@@ -28,7 +27,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
 	const incomingCalls = useVideoConfIncomingCalls();
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
 
 	// With the call window, a ringing call is answered from the list of the calls already running rather than

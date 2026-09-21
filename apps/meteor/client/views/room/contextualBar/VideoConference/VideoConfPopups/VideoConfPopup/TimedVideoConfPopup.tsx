@@ -1,20 +1,12 @@
 import { useFocusManager } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
-import {
-	useVideoConfAcceptCall,
-	useVideoConfAbortCall,
-	useVideoConfRejectIncomingCall,
-	useVideoConfDismissCall,
-	useVideoConfStartCall,
-	useVideoConfDismissOutgoing,
-} from '@rocket.chat/ui-video-conf';
+import { useVideoConfAbortCall, useVideoConfAcceptCall, useVideoConfDismissCall, useVideoConfDismissOutgoing, useVideoConfRejectIncomingCall, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useEffect, useState } from 'react';
 
 import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
 import StartCallPopup from './StartCallPopup';
-import { useConferenceWindowEnabled } from '../../../../../conference/hooks/useConferenceWindowEnabled';
 
 export type TimedVideoConfPopupProps = {
 	id: string;
@@ -35,7 +27,7 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 	const dismissOutgoing = useVideoConfDismissOutgoing();
 	const focusManager = useFocusManager();
 	const room = useUserRoom(rid);
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	// Whether anything renders below at all — the same condition, so the two cannot drift. Focusing when nothing
 	// does looks for the parent of a node the focus scope never got, and throws.

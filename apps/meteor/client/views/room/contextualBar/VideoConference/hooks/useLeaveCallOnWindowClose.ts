@@ -1,7 +1,7 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useCallback, useEffect, useRef } from 'react';
 
-import { useConferenceWindowEnabled } from '../../../../conference/hooks/useConferenceWindowEnabled';
 
 /** How often to look at the call window. Cheap, and a second's delay in ending a call nobody is in is nothing. */
 const POLL_INTERVAL = 1_000;
@@ -15,7 +15,7 @@ const POLL_INTERVAL = 1_000;
  */
 export const useLeaveCallOnWindowClose = () => {
 	const leaveCall = useEndpoint('POST', '/v1/video-conference.leave');
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 	const watching = useRef<ReturnType<typeof setInterval>>(undefined);
 
 	const stop = useCallback(() => {

@@ -2,19 +2,10 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import {
-	useVideoConfDispatchOutgoing,
-	useVideoConfIsCalling,
-	useVideoConfIsRinging,
-	useVideoConfJoinCall,
-	useVideoConfLoadCapabilities,
-	useVideoConfSetPreferences,
-	useVideoConfStartCall,
-} from '@rocket.chat/ui-video-conf';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfJoinCall, useVideoConfLoadCapabilities, useVideoConfSetPreferences, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from './useUiKitActionManager';
-import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_id']): ContextType<typeof UiKitContext> => {
@@ -26,7 +17,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const loadVideoConfCapabilities = useVideoConfLoadCapabilities();
 	const startCall = useVideoConfStartCall();
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const handleOpenVideoConf = useStableCallback(async (rid: IRoom['_id']) => {
 		if (isCalling || isRinging) {

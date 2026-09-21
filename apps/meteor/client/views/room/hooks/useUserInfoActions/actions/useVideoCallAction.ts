@@ -10,16 +10,9 @@ import {
 	useUserCard,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import {
-	useVideoConfDispatchOutgoing,
-	useVideoConfIsCalling,
-	useVideoConfIsRinging,
-	useVideoConfLoadCapabilities,
-	useVideoConfStartCall,
-} from '@rocket.chat/ui-video-conf';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfLoadCapabilities, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useConferenceWindowEnabled } from '../../../../conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 
@@ -36,7 +29,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);

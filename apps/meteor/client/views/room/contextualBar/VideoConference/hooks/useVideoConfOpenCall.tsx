@@ -1,7 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useCallback } from 'react';
 
-import { useConferenceWindowEnabled } from '../../../../conference/hooks/useConferenceWindowEnabled';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
 // Shared window name for in-product (same-origin) conferences, so we never stack duplicate windows even if
@@ -137,7 +137,7 @@ const openConferenceWindow = (callUrl: string): Window | null => {
 
 export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const handleOpenCall = useCallback(
 		(callUrl: string, providerName?: string): Window | null | undefined => {

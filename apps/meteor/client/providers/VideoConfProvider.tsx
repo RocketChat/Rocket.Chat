@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
 import { absoluteUrl } from '../lib/absoluteUrl';
-import { useConferenceWindowEnabled } from '../views/conference/hooks/useConferenceWindowEnabled';
 import { NEW_CONFERENCE_ID } from '../views/conference/lib/callWindow';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useLeaveCallOnWindowClose } from '../views/room/contextualBar/VideoConference/hooks/useLeaveCallOnWindowClose';
@@ -23,7 +22,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	const router = useRouter();
 	const { t } = useTranslation();
 	const logLevel = useSetting<number>('Log_Level', 0);
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useSetting('VideoConf_Conference_Window_Enabled', false);
 
 	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
@@ -94,6 +93,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	const contextValue = useMemo<VideoConfContextValue>(
 		() => ({
 			joinDisabled,
+			conferenceWindowEnabled,
 			dispatchOutgoing: (option) => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall,
@@ -110,7 +110,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			queryCapabilities: () => [(cb) => VideoConfManager.on('capabilities/changed', cb), () => VideoConfManager.capabilities],
 			queryPreferences: () => [(cb) => VideoConfManager.on('preference/changed', cb), () => VideoConfManager.preferences],
 		}),
-		[joinDisabled, startCall],
+		[joinDisabled, conferenceWindowEnabled, startCall],
 	);
 
 	return (

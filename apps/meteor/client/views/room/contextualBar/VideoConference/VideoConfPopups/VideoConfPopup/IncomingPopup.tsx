@@ -2,25 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import {
-	useVideoConfSetPreferences,
-	VideoConfPopup,
-	VideoConfPopupContent,
-	VideoConfPopupControllers,
-	VideoConfController,
-	useVideoConfControllers,
-	VideoConfButton,
-	VideoConfPopupFooter,
-	VideoConfPopupFooterButtons,
-	VideoConfPopupTitle,
-	VideoConfPopupHeader,
-	useVideoConferenceInfo,
-} from '@rocket.chat/ui-video-conf';
+import { VideoConfButton, VideoConfController, VideoConfPopup, VideoConfPopupContent, VideoConfPopupControllers, VideoConfPopupFooter, VideoConfPopupFooterButtons, VideoConfPopupHeader, VideoConfPopupTitle, useVideoConfControllers, useVideoConfSetPreferences, useVideoConfWindowEnabled, useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupCallerInfo from './VideoConfPopupCallerInfo';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useConferenceWindowEnabled } from '../../../../../conference/hooks/useConferenceWindowEnabled';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type IncomingPopupProps = {
@@ -44,7 +30,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
 	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there. Without that window
 	// this popup is still where mic and camera are chosen.
-	const preflight = useConferenceWindowEnabled();
+	const preflight = useVideoConfWindowEnabled();
 	const showMic = !preflight && Boolean(data?.capabilities?.mic);
 	const showCam = !preflight && Boolean(data?.capabilities?.cam);
 
