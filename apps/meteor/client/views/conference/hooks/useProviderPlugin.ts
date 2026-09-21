@@ -220,7 +220,6 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'toggle-participants':
-
 					onToggleParticipantsRef.current(data.active === true);
 					break;
 
