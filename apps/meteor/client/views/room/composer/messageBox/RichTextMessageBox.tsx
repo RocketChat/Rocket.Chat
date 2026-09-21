@@ -215,6 +215,7 @@ const RichTextMessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
+		flushDraft('');
 
 		onSend?.({
 			value: text,
