@@ -224,7 +224,7 @@ export abstract class App implements IApp {
 	 *
 	 * @param setting the setting which was updated
 	 * @param configurationModify the accessor to modifiy the system
-	 * @param reader the reader accessor
+	 * @param read the reader accessor
 	 * @param http an accessor to the outside world
 	 */
 	public async onSettingUpdated(setting: ISetting, configurationModify: IConfigurationModify, read: IRead, http: IHttp): Promise<void> {}
@@ -233,9 +233,9 @@ export abstract class App implements IApp {
 	 * Method which is called before a setting which belongs to this App is going to be updated
 	 * by an external system and not this App itself. The setting passed is the newly updated one.
 	 *
-	 * @param setting the setting which is going to be updated
+	 * @param context the setting as it stands and as it is going to become
 	 * @param configurationModify the accessor to modifiy the system
-	 * @param reader the reader accessor
+	 * @param read the reader accessor
 	 * @param http an accessor to the outside world
 	 */
 	public async onPreSettingUpdate(

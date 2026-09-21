@@ -155,7 +155,7 @@ export interface IHttpExtend {
 	/**
 	 * A method for providing more than one query parameters which are added to every request.
 	 *
-	 * @param headers an object with strings as the keys (parameter name) and strings as values (parameter content)
+	 * @param params an object with strings as the keys (parameter name) and strings as values (parameter content)
 	 */
 	provideDefaultParams(params: { [key: string]: string }): void;
 
