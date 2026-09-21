@@ -2,7 +2,16 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfJoinCall, useVideoConfLoadCapabilities, useVideoConfSetPreferences, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import {
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfJoinCall,
+	useVideoConfLoadCapabilities,
+	useVideoConfSetPreferences,
+	useVideoConfStartCall,
+	useVideoConfWindowEnabled,
+} from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from './useUiKitActionManager';

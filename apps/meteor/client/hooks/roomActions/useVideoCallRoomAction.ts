@@ -2,7 +2,14 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfLoadCapabilities, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import {
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfLoadCapabilities,
+	useVideoConfStartCall,
+	useVideoConfWindowEnabled,
+} from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

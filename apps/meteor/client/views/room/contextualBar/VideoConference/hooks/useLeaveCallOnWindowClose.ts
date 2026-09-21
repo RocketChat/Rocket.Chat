@@ -2,7 +2,6 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useCallback, useEffect, useRef } from 'react';
 
-
 /** How often to look at the call window. Cheap, and a second's delay in ending a call nobody is in is nothing. */
 const POLL_INTERVAL = 1_000;
 

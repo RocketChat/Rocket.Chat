@@ -1,7 +1,7 @@
 import { NavBarSection, NavBarGroup } from '@rocket.chat/fuselage';
 import { useUser, useLayout } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
 import NavBarControlsWithData from './NavBarControlsWithData';

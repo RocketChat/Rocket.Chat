@@ -3,8 +3,8 @@ import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
+import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
-import type { ConferenceContextValue, ConferencePanel } from '../context/definitions';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 /**

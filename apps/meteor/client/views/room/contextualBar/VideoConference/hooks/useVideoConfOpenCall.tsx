@@ -1,9 +1,8 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
-
-import { asCallUrl } from '../../../../../lib/utils/asCallUrl';
 import { useCallback } from 'react';
 
+import { asCallUrl } from '../../../../../lib/utils/asCallUrl';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
 // Shared window name for in-product (same-origin) conferences, so we never stack duplicate windows even if

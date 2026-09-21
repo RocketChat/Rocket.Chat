@@ -1,5 +1,10 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useVideoConfAcceptCall, useVideoConfIncomingCalls, useVideoConfRejectIncomingCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import {
+	useVideoConfAcceptCall,
+	useVideoConfIncomingCalls,
+	useVideoConfRejectIncomingCall,
+	useVideoConfWindowEnabled,
+} from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 

@@ -10,7 +10,14 @@ import {
 	useUserCard,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfLoadCapabilities, useVideoConfStartCall, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import {
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfLoadCapabilities,
+	useVideoConfStartCall,
+	useVideoConfWindowEnabled,
+} from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
