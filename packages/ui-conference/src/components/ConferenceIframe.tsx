@@ -26,18 +26,15 @@ const ConferenceIframe = ({ url, ref }: ConferenceIframeProps) => {
 	useEffect(() => setLoading(true), [url]);
 
 	return (
-		// Black, and on the frame itself as well as behind it: it is what a provider letterboxes its video
-		// against, and what shows through wherever the provider's own page is transparent. The window's surface
-		// colour in those bands would read as a rendering fault rather than as a call.
+		// Black on the frame and behind it: it is what a provider letterboxes against, and what shows through
+		// wherever its page is transparent.
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: '#000' }}>
 			{/* `aria-label` names the frame instead of `title`. A `title` on a full-viewport iframe also renders
 			    as a hover tooltip, floating a label over the call for as long as the pointer is inside it. */}
 			{/* eslint-disable-next-line jsx-a11y/iframe-has-title */}
 			<iframe
 				ref={ref}
-				// `border: none` is not cosmetic tidying: an iframe's UA default is `2px inset`, which over the call's
-				// black draws a pale line around the whole picture — the one thing this frame is meant to be invisible
-				// around.
+				// An iframe's UA default is `2px inset`, a pale line around the whole picture.
 				style={{ width: '100%', height: '100%', flexGrow: 1, border: 'none', display: 'block', backgroundColor: '#000' }}
 				aria-label={t('Video_Conference')}
 				src={url}
@@ -48,11 +45,8 @@ const ConferenceIframe = ({ url, ref }: ConferenceIframeProps) => {
 			/>
 
 			{loading && (
-				// Over the frame rather than behind it, which is the only side it can be seen from: the frame
-				// paints its own black from the first render, so anything underneath would never show.
-				//
-				// `pointer-events: none` because it covers the whole frame, and the moment the provider is worth
-				// clicking is the moment before this goes away.
+				// Over the frame, not behind it: the frame paints its own black from the first render, so anything
+				// underneath would never show. `pointer-events: none`, since it covers the whole frame.
 				<Box
 					role='status'
 					position='absolute'

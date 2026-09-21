@@ -30,9 +30,8 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 	const { members } = call;
 	const { rid, chatAccess } = room;
 
-	// The plugin says which participant this window joined as, and that is the one pairing a shared display
-	// name cannot settle on its own. Nobody else's row can be claimed this way: the provider only ever reports
-	// its own side.
+	// The plugin says which participant this window joined as — the one pairing a shared display name cannot
+	// settle on its own. No other row can be claimed this way.
 	const claimants = useMemo(() => {
 		const participantUuid = provider?.self?.participantUuid;
 
@@ -43,8 +42,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 		return members.map((member) => (member._id === viewer.uid ? { ...member, providerParticipantId: participantUuid } : member));
 	}, [members, provider?.self?.participantUuid, viewer.uid]);
 
-	// Our own membership decides which group a row is in and the provider's roster decides what the row can do,
-	// so the two are composed rather than one being derived from the other.
+	// Ours decides which group a row is in, the provider's decides what it can do: composed, not derived.
 	const { waiting, present, absent } = useMemo(
 		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
 		[claimants, provider?.participants],
@@ -70,8 +68,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 						features: provider.features,
 						actions: provider.actions,
 						self: provider.self,
-						// The viewer's own row, which the provider names for us — the only thing that can, since our
-						// membership and the provider's roster are different lists of different things.
+						// The provider is the only thing that can name the viewer's own row across the two lists.
 						isSelf: provider.self?.participantUuid === participant.uuid,
 					}
 				: undefined;
@@ -101,9 +98,8 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 					<Button
 						small
 						icon='user-plus'
-						// The modal is rendered by the app's own modal region, which is mounted above this window and so
-						// outside the conference's provider — without carrying the context across, the modal falls back
-						// to the default one and loses the user picker and the ring option along with it.
+						// The modal region is mounted outside the conference's provider, so the context is carried
+						// across by hand or the modal loses the user picker and the ring option.
 						onClick={() =>
 							setModal(
 								<ConferenceContext.Provider value={conference}>

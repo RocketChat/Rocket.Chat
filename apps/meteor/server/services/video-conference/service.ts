@@ -532,8 +532,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		// Everyone who might still be holding this call on screen, whoever ran the media — the ongoing-calls list
-		// is refreshed by this broadcast and by nothing else, so a call that ends without one stays listed.
+		// The ongoing-calls list is refreshed by this broadcast and nothing else: a call that ends without one
+		// stays listed.
 		if (this.runsInOurCallWindow(call.providerName)) {
 			await this.notifyCallAndRoomUsers(call, 'end', {
 				callId: call._id,
@@ -838,11 +838,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const isEmbedded = this.isEmbeddedProvider(providerName);
 
-		// Being called makes you a member, exactly as being added to a group conference does. Without this the
-		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
-		// and a call they missed leaves them no history entry. Only where the ring waits for the caller: a callee
-		// who is rung at creation has always entered `users` by answering, and putting them there earlier would
-		// rewrite the call history their clients build from it.
+		// Being called makes you a member, so "still ringing" can be told from "nobody was called" and a missed
+		// call leaves a history entry. Only where the ring waits for the caller: a callee rung at creation has
+		// always entered `users` by answering, and doing it earlier rewrites the history clients build from it.
 		if (this.runsInOurCallWindow(providerName)) {
 			await this.addAbsentMember(callId, calleeId);
 		}
@@ -885,9 +883,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}, 40000);
 
-		// A call that rings at creation rings the callee's phone now, as it always has. Where the ring waits for
-		// the caller, so does the push — `ringCalleeOnCallerArrival` sends it — and pushing here as well would
-		// buzz the callee twice for one call.
+		// Where the ring waits for the caller, so does the push — `ringCalleeOnCallerArrival` sends it, and
+		// pushing here as well buzzes the callee twice for one call.
 		if (!this.runsInOurCallWindow(providerName)) {
 			await this.sendPushNotification(call, calleeId);
 		}
@@ -1028,10 +1025,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
-		// Someone arriving changes which calls are worth offering — a call nobody has joined is not offered at
-		// all — so it is announced wherever that list is read: to the room, whose members may now have a call to
-		// join, and to the arriver's own other sessions, which is what stops the app behind the window they just
-		// joined in from thinking they are free to join something else.
+		// Arriving changes which calls are worth offering, so it is announced to the room and to the arriver's
+		// own other sessions — which is what stops the app behind the call window offering them another.
 		if (user && this.runsInOurCallWindow(call.providerName)) {
 			await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
 				callId: call._id,
@@ -1271,8 +1266,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
-		// And the room, which every other change to the roster tells — declining, adding, ending — so the call's
-		// own message block keeps a current count.
+		// And the room, as every other change to the roster does, so the call's message block keeps its count.
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
@@ -1288,10 +1282,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			// Only while the call is still ringing for its caller to arrive. Asked of the call rather than of the
-			// setting, so an admin toggling the window mid-call can't decide differently than its creation did —
-			// and so someone added later with `ring: false` isn't rung by the creator turning up, which asking
-			// only "is this member unasked" would do.
+			// Asked of the call rather than of the setting, so an admin toggling the window mid-call cannot decide
+			// differently than its creation did.
 			const rang = call.status === VideoConferenceStatus.CALLING ? await this.ringCalleeOnCallerArrival(call, _id) : false;
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
@@ -1570,8 +1562,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
 
-		// The leaver's own devices only. A room-wide 'end' here would dismiss everyone else's ringing popup
-		// while the call still runs; that one belongs to `endCall`.
+		// The leaver's own devices only: a room-wide 'end' would dismiss everyone else's popup mid-call.
 		if (this.runsInOurCallWindow(call.providerName)) {
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
 		}
