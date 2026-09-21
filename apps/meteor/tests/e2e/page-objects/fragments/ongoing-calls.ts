@@ -19,11 +19,26 @@ export class OngoingCalls {
 	}
 
 	/**
-	 * What the button opens: the list itself, named, which is what makes the calls in it a group to scope to
-	 * rather than loose rows somewhere on the page.
+	 * The calls still on offer. One of the two lists the dropdown holds — a call that has been turned down
+	 * moves out of this one and into {@link listDeclined}.
 	 */
 	get regionOngoingCalls(): Locator {
 		return this.root.getByRole('list', { name: 'Ongoing calls', exact: true });
+	}
+
+	/** The calls this user turned down, kept below a divider as the way back into one. */
+	get listDeclined(): Locator {
+		return this.root.getByRole('list', { name: 'Declined', exact: true });
+	}
+
+	/**
+	 * Either list, for the things that can be in either.
+	 *
+	 * The dropdown shows a group only when it has something in it, so a user with nothing but declined calls
+	 * has no `Ongoing calls` list at all — scoping everything to that one makes those rows unreachable.
+	 */
+	get anyList(): Locator {
+		return this.regionOngoingCalls.or(this.listDeclined);
 	}
 
 	/**
@@ -35,7 +50,7 @@ export class OngoingCalls {
 	 * the handler ignores clicks that landed on one of the row's buttons.
 	 */
 	getCall(name: string): Locator {
-		return this.regionOngoingCalls.getByRole('link', { name });
+		return this.anyList.getByRole('link', { name });
 	}
 
 	/**
@@ -53,9 +68,9 @@ export class OngoingCalls {
 		return this.regionOngoingCalls.getByText('Ringing');
 	}
 
-	/** What a declined row says where its actions were. */
+	/** What a declined row says where its actions were. Only ever in the declined list. */
 	get textDeclined(): Locator {
-		return this.regionOngoingCalls.getByText('(Declined)', { exact: true });
+		return this.listDeclined.getByText('(Declined)', { exact: true });
 	}
 
 	get btnDecline(): Locator {
@@ -77,11 +92,11 @@ export class OngoingCalls {
 	async ensureOpen(): Promise<void> {
 		await this.btnOngoingCalls.waitFor();
 
-		if (await this.regionOngoingCalls.isVisible()) {
+		if (await this.anyList.isVisible()) {
 			return;
 		}
 
 		await this.btnOngoingCalls.click();
-		await this.regionOngoingCalls.waitFor();
+		await this.anyList.waitFor();
 	}
 }

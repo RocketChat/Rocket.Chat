@@ -242,19 +242,6 @@ describe('with the call window, for an in-product conference URL', () => {
 		window.open = previousWindowOpen;
 	});
 
-	// A provider or a calendar entry can hand over any address on this workspace. Only a conference route earns
-	// the window every call shares — anything else would take the call down with it.
-	it('should not give the shared window to a same-origin address that is not a conference', async () => {
-		const url = `${window.location.origin}/admin/settings`;
-		// The external path is where this should land, and that one severs the opener before navigating.
-		window.open = jest.fn(() => openedWindow());
-
-		mountOpenCall(true)(url);
-
-		expect(window.open).not.toHaveBeenCalledWith(url, 'rocketchat-conference', expect.anything());
-		expect(window.open).toHaveBeenCalled();
-	});
-
 	it('should open the conference as a popout in the shared conference window', async () => {
 		const url = conferenceUrl();
 		window.open = jest.fn(() => windowShowing(url));

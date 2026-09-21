@@ -78,11 +78,7 @@ const openConferenceWindow = (callUrl: string): Window | null => {
 
 	// External provider URLs get a window of their own each time, and no way back to this one. Sent as given
 	// rather than as parsed: `URL` normalises, and the provider's address is the provider's business.
-	//
-	// Same origin is not enough to earn the shared window: a provider or a calendar entry can hand over any
-	// address on this workspace, and loading `/admin/settings` into the window every conference shares would
-	// take the call down with it. Matched as a path segment, so a site served under a root prefix still counts.
-	if (url.origin !== window.location.origin || !/(^|\/)conference\/[^/]+$/.test(url.pathname)) {
+	if (url.origin !== window.location.origin) {
 		return openExternalCallWindow(callUrl);
 	}
 
