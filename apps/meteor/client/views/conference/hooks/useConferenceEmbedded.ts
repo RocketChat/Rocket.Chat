@@ -95,17 +95,11 @@ export const useConferenceEmbedded = (callId: string) => {
 	});
 
 	// Subscribing too early is permanent: `allowRead` refuses a call id that does not exist yet, and a connection
-	// with no user on it, and nothing reports the refusal or asks again. So this waits until the call has been
-	// read once — which is the same permission the stream is about to ask for, already answered — and subscribes
-	// per connection, since one lost with the socket leaves the window watching nothing. See [the feature
-	// doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#realtime-updates).
-	//
-	// A boolean rather than the call itself, so the answers that arrive over the subscription do not tear it
-	// down and build it again.
-	const hasReadTheCall = Boolean(info);
-
+	// with no user on it, and nothing reports the refusal or asks again. So this waits for a real id and a user,
+	// and subscribes per connection — one lost with the socket leaves the window watching nothing. See [the
+	// feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#realtime-updates).
 	useEffect(() => {
-		if (callId === NEW_CONFERENCE_ID || !connected || !uid || !hasReadTheCall) {
+		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
 			return;
 		}
 
@@ -116,7 +110,7 @@ export const useConferenceEmbedded = (callId: string) => {
 		setWatchingSince((epoch) => epoch + 1);
 
 		return stop;
-	}, [callId, connected, uid, hasReadTheCall, subscribeToVideoConference, queryClient]);
+	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
 
 	// And read the call again once something is listening: subscribing is a round trip, and whatever moved while
 	// it was in flight was announced once, to nobody here. After the first read has settled, because invalidating

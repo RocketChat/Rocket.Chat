@@ -1,7 +1,7 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
@@ -475,7 +475,10 @@ export class NotificationsModule {
 			}
 
 			const [callId] = eventName.split('/');
-			const call = await VideoConference.findOneById(callId, { projection: { users: 1, rid: 1, discussionRid: 1 } });
+			// Through the service, not the model: this runs in whichever process holds the stream, and the
+			// ddp-streamer has no video-conference model registered — reaching for one there throws, the
+			// subscription is refused with a 500, and nothing retries it.
+			const call = await VideoConf.getUnfiltered(callId);
 			if (!call) {
 				return false;
 			}
