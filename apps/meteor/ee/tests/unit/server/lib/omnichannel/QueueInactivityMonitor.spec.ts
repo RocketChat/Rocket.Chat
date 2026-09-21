@@ -4,9 +4,10 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const AgendaJobStub = {
-	schedule: sinon.stub(),
-	unique: sinon.stub(),
-	save: sinon.stub(),
+	attrs: { _id: 'mock-job-id' },
+	schedule: sinon.stub().returnsThis(),
+	unique: sinon.stub().returnsThis(),
+	save: sinon.stub().resolves(),
 };
 const AgendaStub = {
 	start: sinon.stub(),
@@ -19,6 +20,7 @@ const modelsMock = {
 	LivechatRooms: { findOneById: sinon.stub() },
 	LivechatInquiry: { findOneById: sinon.stub() },
 	Users: { findOneById: sinon.stub() },
+	OmnichannelQueueInactivityScheduler: { updateOne: sinon.stub().resolves() },
 };
 const meteorMock = { Meteor: { startup: sinon.stub() } };
 const createIndexStub = sinon.stub();
@@ -38,6 +40,7 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire
 		'@rocket.chat/agenda': {
 			Agenda: sinon.stub().returns(AgendaStub),
 		},
+		'@rocket.chat/cron': { withCronHistory: sinon.stub().callsFake(async (_name: string, _type: string, cb: () => Promise<unknown>) => cb()) },
 		'@rocket.chat/models': modelsMock,
 		'meteor/meteor': meteorMock,
 		'meteor/mongo': mongoMock,

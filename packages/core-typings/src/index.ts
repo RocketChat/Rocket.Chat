@@ -118,6 +118,7 @@ export type * from './search';
 export * from './omnichannel';
 export type * from './ILivechatUnitMonitor';
 export type * from './ICronHistoryItem';
+export type * from './ICronJobItem';
 
 export type * from './migrations/IControl';
 export type * from './OauthConfig';
