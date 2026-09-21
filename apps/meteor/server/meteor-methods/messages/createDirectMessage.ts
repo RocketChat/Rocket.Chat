@@ -1,6 +1,7 @@
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -39,7 +40,25 @@ export async function createDirectMessage(
 		});
 	}
 
-	const users = await Promise.all(usernames.filter((username) => username !== me.username));
+	const users = await Promise.all(
+		usernames
+			.filter((username) => username !== me.username)
+			.map(async (username) => {
+				const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
+				if (to) {
+					return to;
+				}
+
+				if (validateFederatedUsername(username)) {
+					return username;
+				}
+
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'createDirectMessage',
+				});
+			}),
+	);
+
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
@@ -52,7 +71,7 @@ export async function createDirectMessage(
 
 	if (!(await hasPermissionAsync(userId, 'create-d'))) {
 		// If the user can't create DMs but can access already existing ones
-		if ((await hasPermissionAsync(userId, 'view-d-room')) && !Object.keys(roomUsers).some((user) => typeof user === 'string')) {
+		if ((await hasPermissionAsync(userId, 'view-d-room')) && !roomUsers.some((user) => typeof user === 'string')) {
 			// Check if the direct room already exists, then return it
 			const uids = (roomUsers as IUser[]).map(({ _id }) => _id).sort();
 			// No projection: the full room is spread into the ICreatedRoom-shaped return below.

@@ -1217,6 +1217,64 @@ describe('[Direct Messages]', () => {
 			roomIds = { ...roomIds, self: res.body.room._id };
 		});
 
+		it('should resolve usernames ignoring case', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(userCredentials)
+				.send({
+					username: thirdUser.username.toUpperCase(),
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, thirdUser.username]);
+			roomIds = { ...roomIds, ignoringCase: res.body.room._id };
+		});
+
+		it('should fail when the username does not exist', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(userCredentials)
+				.send({
+					username: `missing.user.${Date.now()}`,
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-user');
+		});
+
+		it('should fail when only some of the usernames exist', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(userCredentials)
+				.send({
+					usernames: [otherUser.username, `missing.user.${Date.now()}`].join(','),
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-user');
+		});
+
+		it('should fail when the username does not exist and self is excluded', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: `missing.user.${Date.now()}`,
+					excludeSelf: true,
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-user');
+		});
+
 		describe('should create dm with correct notification preferences', () => {
 			let user: TestUser<IUser>;
 			let userCredentials: Credentials;
