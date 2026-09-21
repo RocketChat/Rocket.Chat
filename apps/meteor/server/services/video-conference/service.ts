@@ -1296,8 +1296,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
-
-		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
 	/**

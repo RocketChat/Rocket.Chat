@@ -1,5 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+
+import { asCallUrl } from '../../../../../lib/utils/asCallUrl';
 import { useCallback } from 'react';
 
 import VideoConfBlockModal from '../VideoConfBlockModal';
@@ -41,17 +43,6 @@ const isBlocked = (target: Window | null): boolean => !target || target.closed;
  * conference URLs are built with `absoluteUrl`, so none of them is turned away. `http:`/`https:` only, because a
  * `javascript:` or `data:` "URL" is not somewhere to go but something to run, in a window we opened for it.
  */
-const asCallUrl = (candidate: string): URL | undefined => {
-	try {
-		// Deliberately no base: only an absolute address parses.
-		const url = new URL(candidate);
-
-		return url.protocol === 'https:' || url.protocol === 'http:' ? url : undefined;
-	} catch {
-		return undefined;
-	}
-};
-
 /**
  * Opens the call as a popout, falling back to an ordinary tab when the popout is refused — some browsers
  * and extensions block popup-shaped windows while still allowing a plain one.

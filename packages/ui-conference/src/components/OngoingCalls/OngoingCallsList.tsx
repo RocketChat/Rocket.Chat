@@ -25,7 +25,7 @@ const OngoingCallsList = () => {
 	// "Show all" with no number in the one case where the cap is what hid a declined call.
 	const hidden = total - (visibleActive.length + visibleDeclined.length);
 
-	const showAllLabel = hidden > 0 ? t('Show_all_count_new', { count: hidden }) : t('Show_all');
+	const showAllLabel = hidden > 0 ? t('Show_all__count__calls', { count: hidden }) : t('Show_all');
 
 	return (
 		<Box display='flex' flexDirection='column'>
