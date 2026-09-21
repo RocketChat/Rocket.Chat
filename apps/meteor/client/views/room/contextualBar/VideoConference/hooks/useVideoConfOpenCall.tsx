@@ -1,5 +1,4 @@
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
+import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { asCallUrl } from '../../../../../lib/utils/asCallUrl';
@@ -110,7 +109,7 @@ const openConferenceWindow = (callUrl: string): Window | null => {
 
 export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
-	const conferenceWindowEnabled = useVideoConfWindowEnabled();
+	const conferenceWindowEnabled = useSetting('VideoConf_Conference_Window_Enabled', false);
 
 	const handleOpenCall = useCallback(
 		(callUrl: string, providerName?: string): Window | null | undefined => {
