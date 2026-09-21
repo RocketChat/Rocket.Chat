@@ -14,8 +14,10 @@ export interface IRoomExtender {
 
 	/**
 	 * Adds a custom field to the room.
-	 * Note: This key can not already exist or it will throw an error.
-	 * Note: The key must not contain a period in it, an error will be thrown.
+	 *
+	 * > [!WARNING]
+	 * > The key has to be new, and it must not contain a period. Either one
+	 * > throws an error.
 	 *
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field
@@ -41,7 +43,9 @@ export interface IRoomExtender {
 
 	/**
 	 * Gets the resulting room that has been extended at the point of calling this.
-	 * Note: modifying the returned value will have no effect.
+	 *
+	 * > [!NOTE]
+	 * > Modifying the returned value will have no effect.
 	 */
 	getRoom(): IRoom;
 }
