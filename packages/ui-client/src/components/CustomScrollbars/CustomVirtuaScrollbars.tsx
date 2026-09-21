@@ -2,7 +2,7 @@ import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { useEffect, memo, forwardRef, useRef } from 'react';
 
-import BaseScrollbars from './BaseScrollbars';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
 export type CustomScrollbarsProps = {
 	children: ReactNode;
@@ -12,6 +12,7 @@ const CustomVirtuaScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(fu
 	const rootRef = useRef<HTMLElement | null>(null);
 
 	const [initialize] = useOverlayScrollbars({
+		options: getScrollbarsOptions(),
 		defer: true,
 		events: {
 			initialized(osInstance) {
