@@ -97,6 +97,9 @@ export class Server extends EventEmitter {
 		if (client.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
+
+		let publication: Publication | undefined;
+
 		try {
 			if (!this._subscriptions.has(packet.name)) {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
@@ -108,12 +111,16 @@ export class Server extends EventEmitter {
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
 
-			const publication = new Publication(client, packet, this);
+			publication = new Publication(client, packet, this);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 
 			end?.();
 		} catch (err: unknown) {
+			// A publication may already be registered (and hold a client "close" listener) by the
+			// time the subscription handler rejects; run its stop cleanup so it doesn't outlive the
+			// failed subscription.
+			publication?.emit('stop', client, packet);
 			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
 		}
 	}
