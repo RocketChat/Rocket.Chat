@@ -19,7 +19,7 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
 /* modals are large reading surfaces over unpredictable content — steadier
    ground than the transient menus/popovers */
 .rcx-modal {
-	--rcx-color-surface-light: rgba(44, 46, 50, 0.92);
+	--rcx-color-surface-light: rgba(46, 46, 46, 0.92);
 }
 /* input recipe lives on :root because some inputs (navbar search) render
    outside #rocket-chat; the doubled wrapper class below beats the Box
