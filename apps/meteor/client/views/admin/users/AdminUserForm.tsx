@@ -524,7 +524,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								</FieldRow>
 							</Box>
 							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
-								{t('User_presence_admin_hint')}
+								{t('User_status_admin_hint')}
 							</FieldHint>
 						</Field>
 					)}
@@ -562,7 +562,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					{showUserStatusSection && !isNewUserPage && (
 						<Field>
 							<FieldLabel htmlFor={hiddenFromId} disabled={statusFieldsDisabled}>
-								{t('Hide_presence_from')}
+								{t('Hide_status_from')}
 							</FieldLabel>
 							<FieldRow>
 								<Controller
@@ -581,7 +581,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									)}
 								/>
 							</FieldRow>
-							<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_presence_from_hint')}</FieldHint>
+							<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_status_from_hint')}</FieldHint>
 						</Field>
 					)}
 					<Field>

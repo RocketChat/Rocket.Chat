@@ -29,7 +29,7 @@ const StatusAndPresenceTabs = ({
 			)}
 			{canManageCustomStatus && (
 				<TabsItem selected={currentTab === 'custom-status'} onClick={() => onChange('custom-status')}>
-					{t('Custom_status')}
+					{t('Custom_User_Status')}
 				</TabsItem>
 			)}
 			{canManageUserPresence && (

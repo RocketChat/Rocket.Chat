@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserPresenceConfirmModal from './UserPresenceConfirmModal';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
-import { useFindManagedUser } from './useManagedPresenceUsers';
+import { hasAdminStatusRules } from './useManagedPresenceUsers';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
@@ -63,7 +63,6 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const updateUser = useEndpoint('POST', '/v1/users.update');
-	const findManagedUser = useFindManagedUser();
 
 	const {
 		control,
@@ -123,45 +122,36 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 		},
 	);
 
+	const resolveTarget = useStableCallback(async (username: string) => {
+		if (userId) {
+			return { _id: userId, replacesExistingRule: false };
+		}
+
+		try {
+			const { user: found } = await getUserInfo({ username });
+
+			return { _id: found._id, replacesExistingRule: hasAdminStatusRules(found) };
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+
+			return undefined;
+		}
+	});
+
 	const handleSave = useStableCallback(async ({ username, presenceEnabled, hiddenFrom, statusText }: UserPresenceEditorFormValues) => {
-		if (userId && presenceEnabled && hiddenFrom.length === 0 && statusText === '') {
-			confirm(t('Reset_user_status_settings'), t('Reset_user_status_settings_description', { name: username }), t('Reset'), () =>
-				applyPresence(
-					{ targetUserId: userId, presenceEnabled, hiddenFrom, statusText: '' },
-					t('Status_settings_reset_to_workspace_default', { name: username }),
-				),
-			);
-			return;
-		}
+		const target = await resolveTarget(username);
 
-		let targetUserId = userId;
-		let replacesExistingRule = false;
-
-		if (!targetUserId) {
-			try {
-				const managed = await findManagedUser(username);
-
-				replacesExistingRule = Boolean(managed);
-				targetUserId = managed?._id ?? (await getUserInfo({ username })).user._id;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				return;
-			}
-		}
-
-		const resolvedId = targetUserId;
-
-		if (!resolvedId) {
+		if (!target) {
 			return;
 		}
 
 		const apply = () =>
 			applyPresence(
-				{ targetUserId: resolvedId, presenceEnabled, hiddenFrom, statusText: dirtyFields.statusText ? statusText : undefined },
-				t('Presence_settings_updated', { name: username }),
+				{ targetUserId: target._id, presenceEnabled, hiddenFrom, statusText: dirtyFields.statusText ? statusText : undefined },
+				t('Status_settings_updated', { name: username }),
 			);
 
-		if (replacesExistingRule) {
+		if (target.replacesExistingRule) {
 			confirm(t('Replace_user_status_settings'), t('Replace_user_status_settings_description', { name: username }), t('Replace'), apply);
 			return;
 		}
@@ -171,12 +161,14 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const submit = useFormSubmitWithDirtyCheck(handleSave, { isDirty });
 
+	const hasRules = hasAdminStatusRules(user);
+
 	const handleRemoveClick = useStableCallback(() => {
 		const username = user?.username ?? '';
 
 		confirm(
-			t('Remove_user_presence_settings'),
-			t('Remove_user_presence_settings_description', { name: username }),
+			t('Remove_user_status_settings'),
+			t('Remove_user_status_settings_description', { name: username }),
 			t('Remove'),
 			() =>
 				applyPresence(
@@ -244,7 +236,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								)}
 							/>
 						</FieldRow>
-						<FieldHint id={`${presenceFieldId}-hint`}>{t('User_presence_admin_hint')}</FieldHint>
+						<FieldHint id={`${presenceFieldId}-hint`}>{t('User_status_admin_hint')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={statusTextFieldId}>{t('StatusMessage')}</FieldLabel>
@@ -276,7 +268,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 						<FieldHint id={`${statusTextFieldId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={hiddenFromFieldId}>{t('Hide_presence_from')}</FieldLabel>
+						<FieldLabel htmlFor={hiddenFromFieldId}>{t('Hide_status_from')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -294,7 +286,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								)}
 							/>
 						</FieldRow>
-						<FieldHint id={`${hiddenFromFieldId}-hint`}>{t('Hide_presence_from_hint')}</FieldHint>
+						<FieldHint id={`${hiddenFromFieldId}-hint`}>{t('Hide_status_from_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
 			</ContextualbarScrollableContent>
@@ -304,7 +296,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 					<Button form={formId} type='submit' primary loading={isSubmitting}>
 						{t('Save')}
 					</Button>
-					{userId && <IconButton icon='trash' small title={t('Remove_user_presence_settings')} onClick={handleRemoveClick} />}
+					{hasRules && <IconButton icon='trash' small title={t('Remove_user_status_settings')} onClick={handleRemoveClick} />}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>

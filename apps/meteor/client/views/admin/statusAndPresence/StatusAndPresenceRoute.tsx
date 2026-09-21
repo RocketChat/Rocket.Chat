@@ -29,7 +29,9 @@ const StatusAndPresenceRoute = () => {
 	const hasPrivateSettings = useIsPrivilegedSettingsContext();
 	const statusSettings = useSettings(statusSettingsQuery);
 	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
-	const canManageUserPresence = usePermission('edit-other-user-info') && adminStatusHidingEnabled;
+	const canEditOtherUserInfo = usePermission('edit-other-user-info');
+	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
+	const canManageUserPresence = canEditOtherUserInfo && canViewFullOtherUserInfo && adminStatusHidingEnabled;
 
 	const settingIds = useMemo(
 		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),

@@ -14,16 +14,10 @@ const managedAlice: ManagedPresenceUser = {
 	statusVisibilityDeniedByAdmin: ['bob'],
 };
 
-const buildWrapper = (updateUser: jest.Mock, managedUsers: ManagedPresenceUser[] = []) =>
+const buildWrapper = (updateUser: jest.Mock, stored?: ManagedPresenceUser) =>
 	mockAppRoot()
 		.withEndpoint('GET', '/v1/users.autocomplete', () => ({ items: [] }))
-		.withEndpoint('GET', '/v1/users.listStatusVisibility', () => ({
-			users: managedUsers,
-			count: managedUsers.length,
-			offset: 0,
-			total: managedUsers.length,
-		}))
-		.withEndpoint('GET', '/v1/users.info', () => ({ user: { _id: 'alice-id', username: 'alice' } }) as any)
+		.withEndpoint('GET', '/v1/users.info', () => ({ user: { _id: 'alice-id', username: 'alice', ...stored } }) as any)
 		.withEndpoint('POST', '/v1/users.update', updateUser)
 		.build();
 
@@ -64,7 +58,7 @@ describe('UserPresenceEditorForm', () => {
 	});
 
 	it('asks before replacing the rules a user already has', async () => {
-		render(<UserPresenceEditorForm defaultUsername='alice' onClose={onClose} />, { wrapper: buildWrapper(updateUser, [managedAlice]) });
+		render(<UserPresenceEditorForm defaultUsername='alice' onClose={onClose} />, { wrapper: buildWrapper(updateUser, managedAlice) });
 
 		await toggleShowStatusAndSave();
 
@@ -80,9 +74,9 @@ describe('UserPresenceEditorForm', () => {
 	it('removes the rules of a user after confirmation', async () => {
 		render(<UserPresenceEditorForm user={managedAlice} defaultUsername='alice' onClose={onClose} />, { wrapper: buildWrapper(updateUser) });
 
-		await userEvent.click(screen.getByRole('button', { name: 'Remove_user_presence_settings' }));
+		await userEvent.click(screen.getByRole('button', { name: 'Remove_user_status_settings' }));
 
-		const dialog = await screen.findByRole('dialog', { name: 'Remove_user_presence_settings' });
+		const dialog = await screen.findByRole('dialog', { name: 'Remove_user_status_settings' });
 		await userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }));
 
 		await waitFor(() =>
