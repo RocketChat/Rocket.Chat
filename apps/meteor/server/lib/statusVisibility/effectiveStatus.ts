@@ -1,13 +1,15 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 
-import type { PresenceScope } from './presenceScope';
 import { hiddenIds } from './presenceScope';
+
+const matchesNobody = (): Filter<IUser> => ({ $nor: [{}] });
 
 export const effectiveStatusFilter = (status: UserStatus[], hidden: PresenceScope): Filter<IUser> => {
 	if (hidden.hideAll) {
-		return status.includes(UserStatus.OFFLINE) ? {} : { $nor: [{}] };
+		return status.includes(UserStatus.OFFLINE) ? {} : matchesNobody();
 	}
 
 	const ids = hiddenIds(hidden);
@@ -35,7 +37,7 @@ export const effectiveStatusExpression = (hidden: PresenceScope) => {
 
 export const excludingHiddenFilter = (hidden: PresenceScope): Filter<IUser> => {
 	if (hidden.hideAll) {
-		return { $nor: [{}] };
+		return matchesNobody();
 	}
 
 	const ids = hiddenIds(hidden);
@@ -45,7 +47,7 @@ export const excludingHiddenFilter = (hidden: PresenceScope): Filter<IUser> => {
 
 export const excludingOfflineFilter = (hidden: PresenceScope): Filter<IUser> => {
 	if (hidden.hideAll) {
-		return { $nor: [{}] };
+		return matchesNobody();
 	}
 
 	const ids = hiddenIds(hidden);

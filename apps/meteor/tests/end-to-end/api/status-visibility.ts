@@ -571,7 +571,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	});
 
 	describe('[/users.listStatusVisibility]', () => {
-		it('should refuse a user who cannot edit other users', async () => {
+		it('should refuse a user who cannot both edit and view the full info of other users', async () => {
 			await request.get(api('users.listStatusVisibility')).set(bystanderCredentials).expect(403);
 		});
 

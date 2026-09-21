@@ -17,10 +17,18 @@ const collectUsers = async (users: FindCursor<Pick<IUser, '_id' | 'username'>>):
 	return resolved;
 };
 
-export const resolveUsersByIds = async (ids: IUser['_id'][]): Promise<ResolvedUsers> =>
-	ids.length
-		? collectUsers(Users.findByIds<Pick<IUser, '_id' | 'username'>>(ids, { projection: { username: 1 } }))
-		: { ids: [], usernames: [] };
+export const resolveUsersByIds = async (ids: IUser['_id'][]): Promise<ResolvedUsers> => {
+	if (!ids.length) {
+		return { ids: [], usernames: [] };
+	}
 
-export const resolveUsersByUsernames = async (usernames: string[]): Promise<ResolvedUsers> =>
-	usernames.length ? collectUsers(Users.findByUsernames(usernames, { projection: { username: 1 } })) : { ids: [], usernames: [] };
+	return collectUsers(Users.findByIds<Pick<IUser, '_id' | 'username'>>(ids, { projection: { username: 1 } }));
+};
+
+export const resolveUsersByUsernames = async (usernames: string[]): Promise<ResolvedUsers> => {
+	if (!usernames.length) {
+		return { ids: [], usernames: [] };
+	}
+
+	return collectUsers(Users.findByUsernames(usernames, { projection: { username: 1 } }));
+};

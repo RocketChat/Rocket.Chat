@@ -1,14 +1,15 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { statusVisibilityGate } from '@rocket.chat/streamer';
 
-import type { PresenceScope } from './presenceScope';
 import { NOTHING_HIDDEN, isHiddenFor, scopeHidesAnyone } from './presenceScope';
 import { redactStatus } from './redactStatus';
+import { isAdminHidingAllowed } from './settings';
 import { settings } from '../../settings';
 
 export const getUsersHiddenFrom = async (viewerId: IUser['_id'] | null | undefined): Promise<PresenceScope> => {
-	if (settings.get<boolean>('Accounts_UserStatus_Enabled') && !statusVisibilityGate.isActive()) {
+	if (settings.get<boolean>('Accounts_UserStatus_Enabled') && (!isAdminHidingAllowed() || !statusVisibilityGate.isActive())) {
 		return NOTHING_HIDDEN;
 	}
 
@@ -19,7 +20,7 @@ export const filterHiddenUsers = <T extends Pick<IUser, '_id'>>(users: T[], hidd
 	users.filter((user) => !isHiddenFor(hidden, user._id));
 
 export const redactHiddenUser = <T extends Pick<IUser, '_id'>>(user: T, hidden: PresenceScope): T =>
-	redactStatus(user, isHiddenFor(hidden, user._id));
+	isHiddenFor(hidden, user._id) ? redactStatus(user) : user;
 
 export const redactHiddenUsers = <T extends Pick<IUser, '_id'>>(users: T[], hidden: PresenceScope): T[] =>
 	scopeHidesAnyone(hidden) ? users.map((user) => redactHiddenUser(user, hidden)) : users;

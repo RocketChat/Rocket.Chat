@@ -21,7 +21,11 @@ export class AppUserBridge extends UserBridge {
 	}
 
 	private async redactPresence(user: IUser | undefined): Promise<IUser | undefined> {
-		return user && redactStatus(user, await StatusVisibility.isPresenceDisabledFor(user.id));
+		if (!user || !(await StatusVisibility.isPresenceDisabledFor(user.id))) {
+			return user;
+		}
+
+		return redactStatus(user);
 	}
 
 	protected async getById(userId: string, appId: string): Promise<IUser> {
@@ -48,13 +52,13 @@ export class AppUserBridge extends UserBridge {
 
 		const user = await Users.findOneByAppId(appId);
 
-		return this.redactPresence(await this.orch.getConverters()?.get('users').convertToApp(user));
+		return this.redactPresence(this.orch.getConverters()?.get('users').convertToApp(user));
 	}
 
 	protected async getBySipExtension(extension: string, _appId: string): Promise<IUser | undefined> {
 		const user = await Users.findOneByFreeSwitchExtension(extension);
 
-		return this.redactPresence(await this.orch.getConverters()?.get('users').convertToApp(user));
+		return this.redactPresence(this.orch.getConverters()?.get('users').convertToApp(user));
 	}
 
 	/**
