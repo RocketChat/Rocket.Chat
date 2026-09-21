@@ -1,4 +1,4 @@
-/** What kind of account an {@link IUser} is. */
+/** What kind of account an {@link users/IUser!IUser | IUser} is. */
 export enum UserType {
 	/** A user type for Rocket.Chat apps. */
 	APP = 'app',

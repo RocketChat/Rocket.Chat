@@ -2,7 +2,7 @@
  * The name of every method the host may invoke on an App.
  *
  * The framework uses these names to find a handler on the App instance, so they
- * mirror the method names of the {@link AppInterface} handlers. Members
+ * mirror the method names of the {@link metadata/AppInterface!AppInterface | AppInterface} handlers. Members
  * prefixed with an underscore belong to a registered artifact — a slash
  * command, an API endpoint, a job processor — rather than to the App class
  * itself.

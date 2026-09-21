@@ -3,7 +3,7 @@
  * record itself.
  *
  * These are one-off instructions, not part of the account: nothing here can be
- * read back from the resulting {@link IUser}.
+ * read back from the resulting {@link users/IUser!IUser | IUser}.
  */
 export interface IUserCreationOptions {
 	/** An image to fetch and set as the new user's avatar. */

@@ -1,4 +1,4 @@
-/** Which kind of conversation an {@link IRoom} is. */
+/** Which kind of conversation an {@link rooms/IRoom!IRoom | IRoom} is. */
 export enum RoomType {
 	/** A channel anyone on the workspace can find and join. */
 	CHANNEL = 'c',
