@@ -1,5 +1,5 @@
 /**
- * The input the administration area renders for an {@link ISetting}, and with it
+ * The input the administration area renders for an {@link settings/ISetting!ISetting | ISetting}, and with it
  * the type of the setting's value.
  */
 export enum SettingType {
