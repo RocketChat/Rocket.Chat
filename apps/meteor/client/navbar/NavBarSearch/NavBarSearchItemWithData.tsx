@@ -4,10 +4,12 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItem from './NavBarSearchItem';
+import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 
 export type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
@@ -33,7 +35,14 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={
+				<SidebarItemBadges
+					room={room}
+					roomTitle={title}
+					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
+					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
+				/>
+			}
 			avatar={AvatarTemplate}
 		/>
 	);

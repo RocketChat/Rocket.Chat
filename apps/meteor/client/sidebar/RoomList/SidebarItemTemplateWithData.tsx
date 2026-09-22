@@ -6,6 +6,7 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
+import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -13,6 +14,7 @@ import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
+import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
@@ -134,7 +136,14 @@ const SidebarItemTemplateWithData = ({
 			icon={icon}
 			titleIcon={titleIcon}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={
+				<SidebarItemBadges
+					room={room}
+					roomTitle={title}
+					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
+					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
+				/>
+			}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
