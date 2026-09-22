@@ -91,7 +91,7 @@ export class Navbar {
 		return this.menuDisplay.getByRole('group', { name: 'Display' });
 	}
 
-	getDisplayMenuItem(mode: 'Detailed' | 'Compact' | 'Avatars'): Locator {
+	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
 		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
 	}
 
@@ -221,7 +221,7 @@ export class Navbar {
 		await this.waitForChannel();
 	}
 
-	async setDisplayMode(mode: 'Detailed' | 'Compact'): Promise<void> {
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.btnDisplay.click();
 		await this.menuDisplay.getByRole('menuitemcheckbox', { name: mode }).click();
 		await this.root.keyboard.press('Escape');

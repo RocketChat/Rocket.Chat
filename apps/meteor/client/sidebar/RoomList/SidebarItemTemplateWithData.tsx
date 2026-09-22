@@ -43,14 +43,18 @@ type RoomListRowProps = {
 	>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 	openedRoom?: string;
+	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 	userId?: string;
+
 	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
+
 	selected?: boolean;
-	sidebarViewMode?: 'extended' | 'condensed';
+
+	sidebarViewMode?: unknown;
 	videoConfActions?: {
 		[action: string]: () => void;
 	};

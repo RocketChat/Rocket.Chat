@@ -50,7 +50,7 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 };
 
 const userPreferences: Record<string, unknown> = {
-	sidebarViewMode: 'condensed',
+	sidebarViewMode: 'medium',
 	sidebarDisplayAvatar: true,
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
