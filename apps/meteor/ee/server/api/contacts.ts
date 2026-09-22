@@ -18,7 +18,7 @@ import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { settings } from '../../../server/settings';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
 
-const SORTABLE_FIELDS = ['displayName', 'emails.address', 'categories', 'companyName', 'officeLocation'];
+const SORTABLE_FIELDS = ['displayName', 'emails.address', 'phones.raw', 'categories', 'companyName', 'officeLocation'];
 
 const toLocalContact = ({ displayName, givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
 	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
