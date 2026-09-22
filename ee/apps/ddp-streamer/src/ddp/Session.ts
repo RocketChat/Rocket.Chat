@@ -16,7 +16,7 @@ import type { ConnectionLifecycle } from './lifecycle';
 
 type WebSocketWithSender = { _sender: { sendFrame(frame: Buffer[], cb: (err?: Error) => void): void } };
 
-export class Client extends EventEmitter {
+export class Session extends EventEmitter {
 	private chain = Promise.resolve();
 
 	protected timeout: NodeJS.Timeout;
@@ -186,7 +186,7 @@ export class Client extends EventEmitter {
 		return this.ws.send(this.encodePayload(payload));
 	}
 
-	/** Writes a message the codec framed once, picking the frame for this client's transport. */
+	/** Writes a message the codec framed once, picking the frame for this session's transport. */
 	sendFrames(frames: FanOutFrames): Promise<void> {
 		return new Promise((resolve, reject) => {
 			// ws.send would frame the payload again, which is what the shared frame exists to avoid.

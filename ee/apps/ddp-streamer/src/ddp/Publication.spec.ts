@@ -1,42 +1,42 @@
 import { Publication } from './Publication';
-import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 
 describe('Publication', () => {
-	let client: ReturnType<typeof makeClient>;
+	let session: ReturnType<typeof makeSession>;
 	let publication: Publication;
 
 	beforeEach(() => {
-		client = makeClient();
-		publication = new Publication(client, makeSubscription());
+		session = makeSession();
+		publication = new Publication(session, makeSubscription());
 	});
 
 	it('registers itself under the subscription ID', () => {
-		expect(client.subscriptions.get('test-id')).toBe(publication);
+		expect(session.subscriptions.get('test-id')).toBe(publication);
 	});
 
 	it('removes only its own subscription and sends nosub on explicit stop', () => {
-		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' });
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
 
 		publication.stop();
 
-		expect(client.subscriptions.has('test-id')).toBe(false);
-		expect(client.subscriptions.get('other-id')).toBe(other);
-		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+		expect(session.subscriptions.has('test-id')).toBe(false);
+		expect(session.subscriptions.get('other-id')).toBe(other);
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
 	});
 
-	it('cleans up all publications when the client disconnects', () => {
-		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' });
+	it('cleans up all publications when the session disconnects', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
 		const onStop = jest.fn();
 		const onOtherStop = jest.fn();
 		publication.onStop(onStop);
 		other.onStop(onOtherStop);
 
-		client.emit('close');
+		session.emit('close');
 
-		expect(client.subscriptions.size).toBe(0);
+		expect(session.subscriptions.size).toBe(0);
 		expect(onStop).toHaveBeenCalledTimes(1);
 		expect(onOtherStop).toHaveBeenCalledTimes(1);
-		expect(client.send).not.toHaveBeenCalled();
+		expect(session.send).not.toHaveBeenCalled();
 	});
 
 	it('runs each stop callback only once across repeated stops and disconnection', () => {
@@ -47,41 +47,41 @@ describe('Publication', () => {
 
 		publication.stop();
 		publication.stop();
-		client.emit('close');
+		session.emit('close');
 
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
 	});
 
-	it('notifies the client that its subscription is ready', () => {
+	it('notifies the session that its subscription is ready', () => {
 		publication.ready();
 
-		expect(sentPackets(client)).toEqual([{ msg: 'ready', subs: ['test-id'] }]);
+		expect(sentPackets(session)).toEqual([{ msg: 'ready', subs: ['test-id'] }]);
 	});
 
-	it('reads the current client user ID and returns null when logged out', () => {
+	it('reads the current session user ID and returns null when logged out', () => {
 		expect(publication.userId).toBe('user1');
-		client.userId = 'user2';
+		session.userId = 'user2';
 		expect(publication.userId).toBe('user2');
-		client.userId = undefined;
+		session.userId = undefined;
 		expect(publication.userId).toBeNull();
 	});
 
 	it('exposes the session socket, initial user, connection, and bound sendAdded', () => {
-		expect(publication.connection).toBe(client.connection);
-		expect(publication._session?.socket).toBe(client);
+		expect(publication.connection).toBe(session.connection);
+		expect(publication._session?.socket).toBe(session);
 		expect(publication._session?.userId).toBe('user1');
 		const sendAdded = publication._session?.sendAdded;
 		expect(sendAdded).toBeDefined();
 
 		sendAdded?.('messages', 'message1', { text: 'hello' });
 
-		expect(sentPackets(client)).toEqual([{ msg: 'added', collection: 'messages', id: 'message1', fields: { text: 'hello' } }]);
+		expect(sentPackets(session)).toEqual([{ msg: 'added', collection: 'messages', id: 'message1', fields: { text: 'hello' } }]);
 	});
 
 	it('allows a session without an authenticated user', () => {
-		client.userId = undefined;
-		const anonymous = new Publication(client, { ...makeSubscription(), id: 'anonymous' });
+		session.userId = undefined;
+		const anonymous = new Publication(session, { ...makeSubscription(), id: 'anonymous' });
 
 		expect(anonymous.userId).toBeNull();
 		expect(anonymous._session?.userId).toBeUndefined();
@@ -98,7 +98,7 @@ describe('Publication', () => {
 		publication.changed('messages', 'message1', { text: 'updated' });
 		publication.removed('messages', 'message1');
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'added', collection: 'messages', id: 'message1', fields: { text: 'hello' } },
 			{ msg: 'changed', collection: 'messages', id: 'message1', fields: { text: 'updated' } },
 			{ msg: 'removed', collection: 'messages', id: 'message1' },
@@ -108,7 +108,7 @@ describe('Publication', () => {
 	it('accepts the error and unblock operations without sending anything', () => {
 		expect(() => publication.error(new Error('failure'))).not.toThrow();
 		expect(() => publication.unblock()).not.toThrow();
-		expect(client.send).not.toHaveBeenCalled();
-		expect(client.subscriptions.get('test-id')).toBe(publication);
+		expect(session.send).not.toHaveBeenCalled();
+		expect(session.subscriptions.get('test-id')).toBe(publication);
 	});
 });

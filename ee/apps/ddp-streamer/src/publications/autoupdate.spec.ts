@@ -1,5 +1,5 @@
 import { registerAutoupdatePublication } from './autoupdate';
-import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 import { Server } from '../ddp/Server';
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -13,11 +13,11 @@ describe('meteor_autoupdate_clientVersions publication', () => {
 		const server = new Server();
 		const mirror = registerAutoupdatePublication(server);
 		mirror.set('web.browser', { version: 'v1', versionRefreshable: 'r1', versionNonRefreshable: 'n1', versionHmr: 1 });
-		const client = makeClient();
+		const session = makeSession();
 
-		await server.subscribe(client, makeSubscription('meteor_autoupdate_clientVersions'));
+		await server.subscribe(session, makeSubscription('meteor_autoupdate_clientVersions'));
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{
 				msg: 'added',
 				collection: 'meteor_autoupdate_clientVersions',

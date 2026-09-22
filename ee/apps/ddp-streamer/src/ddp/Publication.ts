@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 
 import type { IPublication } from '@rocket.chat/streamer';
 
-import type { Client } from './Client';
 import type { IPacket } from './IPacket';
+import type { Session } from './Session';
 import { encodeAdded, encodeChanged, encodeNosub, encodeReady, encodeRemoved } from './codec';
 
 export class Publication extends EventEmitter implements IPublication {
@@ -12,7 +12,7 @@ export class Publication extends EventEmitter implements IPublication {
 	connection: IPublication['connection'];
 
 	constructor(
-		public client: Client,
+		public client: Session,
 		private packet: IPacket,
 	) {
 		super();

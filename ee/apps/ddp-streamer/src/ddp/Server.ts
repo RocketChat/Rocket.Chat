@@ -4,21 +4,21 @@ import { Logger } from '@rocket.chat/logger';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
-import type { Client } from './Client';
 import type { IPacket } from './IPacket';
 import { Publication } from './Publication';
+import type { Session } from './Session';
 import { encodeNosub, encodeResult, encodeUpdated } from './codec';
 
 const logger = new Logger('DDP-Streamer');
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
-type MethodFn = (this: Client, ...args: any[]) => any;
+type MethodFn = (this: Session, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
 };
 
 /** Resolves a method call that no local method handles, with the caller's credentials. */
-export type RemoteMethodCall = (client: Client, method: string, params: any[]) => Promise<unknown>;
+export type RemoteMethodCall = (session: Session, method: string, params: any[]) => Promise<unknown>;
 
 const noRemoteMethods: RemoteMethodCall = async (_client, method) => {
 	throw new MeteorError(404, `Method '${method}' not found`);
@@ -51,14 +51,14 @@ export class Server {
 		this.metrics = metrics;
 	}
 
-	async call(client: Client, packet: IPacket): Promise<void> {
+	async call(session: Session, packet: IPacket): Promise<void> {
 		// if client is not connected we don't need to do anything
-		if (client.ws.readyState !== WebSocket.OPEN) {
+		if (session.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
 		try {
 			if (!this._methods.has(packet.method)) {
-				return this.sendResult(client, packet, await this.callRemoteMethod(client, packet.method, packet.params));
+				return this.sendResult(session, packet, await this.callRemoteMethod(session, packet.method, packet.params));
 			}
 
 			const fn = this._methods.get(packet.method);
@@ -66,10 +66,10 @@ export class Server {
 				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
 
-			const result = await fn.apply(client, packet.params);
-			return this.sendResult(client, packet, result);
+			const result = await fn.apply(session, packet.params);
+			return this.sendResult(session, packet, result);
 		} catch (err: unknown) {
-			return this.sendResult(client, packet, null, handleInternalException(err, 'Method call error'));
+			return this.sendResult(session, packet, null, handleInternalException(err, 'Method call error'));
 		}
 	}
 
@@ -82,9 +82,9 @@ export class Server {
 		});
 	}
 
-	async subscribe(client: Client, packet: IPacket): Promise<void> {
+	async subscribe(session: Session, packet: IPacket): Promise<void> {
 		// if client is not connected we don't need to do anything
-		if (client.ws.readyState !== WebSocket.OPEN) {
+		if (session.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
 		try {
@@ -98,13 +98,13 @@ export class Server {
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
 
-			const publication = new Publication(client, packet);
+			const publication = new Publication(session, packet);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 
 			end?.();
 		} catch (err: unknown) {
-			return client.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			return session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
 		}
 	}
 
@@ -115,8 +115,8 @@ export class Server {
 		this._subscriptions.set(name, fn);
 	}
 
-	private sendResult(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
-		client.send(encodeResult(id, result, error));
-		return client.send(encodeUpdated(id));
+	private sendResult(session: Session, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
+		session.send(encodeResult(id, result, error));
+		return session.send(encodeUpdated(id));
 	}
 }

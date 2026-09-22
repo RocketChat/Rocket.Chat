@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 
 import { Publication } from './Publication';
 import { Server } from './Server';
-import { makeClient, makePacket, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makePacket, makeSubscription, sentPackets } from '../__tests__/helpers';
 import { callMeteorMethod } from '../methods/meteorFallback';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -24,13 +24,13 @@ const mockCallMethodWithToken = jest.mocked(MeteorService.callMethodWithToken);
 
 describe('Server method contracts', () => {
 	let server: Server;
-	let client: ReturnType<typeof makeClient>;
+	let session: ReturnType<typeof makeSession>;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockCallMethodWithToken.mockReset();
 		server = new Server(callMeteorMethod);
-		client = makeClient();
+		session = makeSession();
 	});
 
 	it('registers multiple methods and retains the original when a name is duplicated', async () => {
@@ -40,14 +40,14 @@ describe('Server method contracts', () => {
 		server.methods({ first, second });
 		server.methods({ first: replacement });
 
-		await server.call(client, makePacket('first', 'm1'));
-		await server.call(client, makePacket('second', 'm2'));
+		await server.call(session, makePacket('first', 'm1'));
+		await server.call(session, makePacket('second', 'm2'));
 
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
 		expect(replacement).not.toHaveBeenCalled();
 		expect(mockCallMethodWithToken).not.toHaveBeenCalled();
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'm1', result: 'first result' },
 			{ msg: 'updated', methods: ['m1'] },
 			{ msg: 'result', id: 'm2', result: 'second result' },
@@ -55,16 +55,16 @@ describe('Server method contracts', () => {
 		]);
 	});
 
-	it('forwards parameters and binds the local method to the client', async () => {
+	it('forwards parameters and binds the local method to the session', async () => {
 		const method = jest.fn().mockResolvedValue({ saved: true });
 		server.methods({ save: method });
 		const packet = { ...makePacket('save'), params: ['room1', { text: 'hello' }] };
 
-		await server.call(client, packet);
+		await server.call(session, packet);
 
 		expect(method).toHaveBeenCalledWith('room1', { text: 'hello' });
-		expect(method.mock.contexts).toEqual([client]);
-		expect(sentPackets(client)).toEqual([
+		expect(method.mock.contexts).toEqual([session]);
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'test-id', result: { saved: true } },
 			{ msg: 'updated', methods: ['test-id'] },
 		]);
@@ -74,10 +74,10 @@ describe('Server method contracts', () => {
 		mockCallMethodWithToken.mockResolvedValue({ result: 'remote result' });
 		const packet = { ...makePacket('remote'), params: ['room1', 42] };
 
-		await server.call(client, packet);
+		await server.call(session, packet);
 
 		expect(mockCallMethodWithToken).toHaveBeenCalledWith('user1', 'token1', 'remote', ['room1', 42]);
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'test-id', result: 'remote result' },
 			{ msg: 'updated', methods: ['test-id'] },
 		]);
@@ -87,10 +87,10 @@ describe('Server method contracts', () => {
 		const method = jest.fn();
 		server.methods({ save: method });
 
-		await server.call(client, makePacket('save'));
+		await server.call(session, makePacket('save'));
 
 		expect(method).toHaveBeenCalledTimes(1);
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'test-id' },
 			{ msg: 'updated', methods: ['test-id'] },
 		]);
@@ -99,9 +99,9 @@ describe('Server method contracts', () => {
 	it('sends result and updated when a Meteor method returns void', async () => {
 		mockCallMethodWithToken.mockResolvedValue({ result: undefined });
 
-		await server.call(client, makePacket('setAvatarFromService'));
+		await server.call(session, makePacket('setAvatarFromService'));
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'test-id' },
 			{ msg: 'updated', methods: ['test-id'] },
 		]);
@@ -124,36 +124,36 @@ describe('Server method contracts', () => {
 				mockCallMethodWithToken.mockRejectedValue(error);
 			}
 
-			await server.call(client, makePacket('failing'));
+			await server.call(session, makePacket('failing'));
 
 			expect(source === 'local' ? method : mockCallMethodWithToken).toHaveBeenCalledTimes(1);
-			expect(sentPackets(client)).toEqual([
+			expect(sentPackets(session)).toEqual([
 				{ msg: 'result', id: 'test-id', error: expectedError },
 				{ msg: 'updated', methods: ['test-id'] },
 			]);
 		});
 	});
 
-	it('does not execute a registered method or send messages to a disconnected client', async () => {
+	it('does not execute a registered method or send messages to a disconnected session', async () => {
 		const method = jest.fn();
 		server.methods({ save: method });
-		client.ws.readyState = WebSocket.CLOSED;
+		session.ws.readyState = WebSocket.CLOSED;
 
-		await server.call(client, makePacket('save'));
+		await server.call(session, makePacket('save'));
 
 		expect(method).not.toHaveBeenCalled();
 		expect(mockCallMethodWithToken).not.toHaveBeenCalled();
-		expect(client.send).not.toHaveBeenCalled();
+		expect(session.send).not.toHaveBeenCalled();
 	});
 });
 
 describe('Server subscriptions', () => {
 	let server: Server;
-	let client: ReturnType<typeof makeClient>;
+	let session: ReturnType<typeof makeSession>;
 
 	beforeEach(() => {
 		server = new Server();
-		client = makeClient();
+		session = makeSession();
 	});
 
 	it('registers a publication and forwards parameters with the publication as context', async () => {
@@ -163,14 +163,14 @@ describe('Server subscriptions', () => {
 		});
 		server.publish('messages', handler);
 
-		await server.subscribe(client, makeSubscription());
+		await server.subscribe(session, makeSubscription());
 
 		expect(handler).toHaveBeenCalledWith('room1', { useCollection: true });
-		const publication = client.subscriptions.get('test-id');
+		const publication = session.subscriptions.get('test-id');
 		expect(publication).toBeInstanceOf(Publication);
 		expect(handler.mock.contexts).toEqual([publication]);
-		expect(publication?.client).toBe(client);
-		expect(sentPackets(client)).toEqual([
+		expect(publication?.client).toBe(session);
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'added', collection: 'messages', id: 'message1', fields: { text: 'hello' } },
 			{ msg: 'ready', subs: ['test-id'] },
 		]);
@@ -182,7 +182,7 @@ describe('Server subscriptions', () => {
 		server.publish('messages', original);
 		server.publish('messages', replacement);
 
-		await server.subscribe(client, makeSubscription());
+		await server.subscribe(session, makeSubscription());
 
 		expect(original).toHaveBeenCalledTimes(1);
 		expect(replacement).not.toHaveBeenCalled();
@@ -191,22 +191,22 @@ describe('Server subscriptions', () => {
 	it('ignores disconnected clients before executing or registering a publication', async () => {
 		const handler = jest.fn();
 		server.publish('messages', handler);
-		client.ws.readyState = WebSocket.CLOSED;
+		session.ws.readyState = WebSocket.CLOSED;
 
-		await server.subscribe(client, makeSubscription());
+		await server.subscribe(session, makeSubscription());
 
 		expect(handler).not.toHaveBeenCalled();
-		expect(client.subscriptions.size).toBe(0);
-		expect(client.send).not.toHaveBeenCalled();
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.send).not.toHaveBeenCalled();
 	});
 
 	it('sends a 404 nosub response for a missing publication', async () => {
-		await server.subscribe(client, makeSubscription('missing'));
+		await server.subscribe(session, makeSubscription('missing'));
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'nosub', id: 'test-id', error: new MeteorError(404, "Subscription 'missing' not found").toJSON() },
 		]);
-		expect(client.subscriptions.size).toBe(0);
+		expect(session.subscriptions.size).toBe(0);
 	});
 
 	it.each([
@@ -220,10 +220,10 @@ describe('Server subscriptions', () => {
 		const handler = jest.fn().mockRejectedValue(error);
 		server.publish('messages', handler);
 
-		await server.subscribe(client, makeSubscription());
+		await server.subscribe(session, makeSubscription());
 
 		expect(handler).toHaveBeenCalledTimes(1);
-		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id', error: expectedError }]);
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: expectedError }]);
 	});
 
 	it('handles a synchronous publication failure', async () => {
@@ -232,10 +232,10 @@ describe('Server subscriptions', () => {
 		});
 		server.publish('messages', handler);
 
-		await server.subscribe(client, makeSubscription());
+		await server.subscribe(session, makeSubscription());
 
 		expect(handler).toHaveBeenCalledTimes(1);
-		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
 	});
 
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
@@ -259,7 +259,7 @@ describe('Server subscriptions', () => {
 		const handler = jest.fn().mockReturnValue(pending);
 		server.publish('messages', handler);
 
-		const subscription = server.subscribe(client, makeSubscription());
+		const subscription = server.subscribe(session, makeSubscription());
 
 		expect(metrics.timer).toHaveBeenCalledWith('rocketchat_subscription', { subscription: 'messages' });
 		expect(handler).toHaveBeenCalledTimes(1);
@@ -268,6 +268,6 @@ describe('Server subscriptions', () => {
 		finish();
 		await subscription;
 		expect(end).toHaveBeenCalledTimes(1);
-		expect(client.send).not.toHaveBeenCalled();
+		expect(session.send).not.toHaveBeenCalled();
 	});
 });

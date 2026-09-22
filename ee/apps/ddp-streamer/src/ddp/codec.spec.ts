@@ -82,7 +82,7 @@ describe('message encoders', () => {
 		expect(ejson.parse(encoded)).toEqual(expected);
 	});
 
-	it('serializes the Meteor error in the client-safe shape', () => {
+	it('serializes the Meteor error in the session-safe shape', () => {
 		expect(ejson.parse(encodeResult('m1', undefined, meteorError)).error).toEqual({
 			isClientSafe: true,
 			errorType: 'Meteor.Error',

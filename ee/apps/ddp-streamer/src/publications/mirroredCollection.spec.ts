@@ -1,5 +1,5 @@
 import { publishMirroredCollection } from './mirroredCollection';
-import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 import { Server } from '../ddp/Server';
 import { MirroredCollection } from '../lib/MirroredCollection';
 
@@ -20,9 +20,9 @@ describe('publishMirroredCollection', () => {
 	});
 
 	async function subscribe(id = 'sub1') {
-		const client = makeClient();
-		await server.subscribe(client, { ...makeSubscription('things.publication'), id });
-		return client;
+		const session = makeSession();
+		await server.subscribe(session, { ...makeSubscription('things.publication'), id });
+		return session;
 	}
 
 	it('replays the current records under the collection name and reports ready', async () => {
@@ -30,9 +30,9 @@ describe('publishMirroredCollection', () => {
 		mirror.set('b', { name: 'second' });
 		mirror.set('a', { name: 'first, updated' });
 
-		const client = await subscribe();
+		const session = await subscribe();
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'added', collection: 'things', id: 'a', fields: { name: 'first, updated' } },
 			{ msg: 'added', collection: 'things', id: 'b', fields: { name: 'second' } },
 			{ msg: 'ready', subs: ['sub1'] },
@@ -40,14 +40,14 @@ describe('publishMirroredCollection', () => {
 	});
 
 	it('forwards added, changed and removed to an active subscriber', async () => {
-		const client = await subscribe();
-		client.send.mockClear();
+		const session = await subscribe();
+		session.send.mockClear();
 
 		mirror.set('a', { name: 'first' });
 		mirror.set('a', { name: 'renamed' });
 		mirror.remove('a');
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{ msg: 'added', collection: 'things', id: 'a', fields: { name: 'first' } },
 			{ msg: 'changed', collection: 'things', id: 'a', fields: { name: 'renamed' } },
 			{ msg: 'removed', collection: 'things', id: 'a' },

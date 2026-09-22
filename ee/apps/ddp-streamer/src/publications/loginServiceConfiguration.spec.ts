@@ -1,5 +1,5 @@
 import { registerLoginServiceConfigurationPublication } from './loginServiceConfiguration';
-import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 import { Server } from '../ddp/Server';
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -13,11 +13,11 @@ describe('meteor.loginServiceConfiguration publication', () => {
 		const server = new Server();
 		const mirror = registerLoginServiceConfigurationPublication(server);
 		mirror.set('github', { _id: 'github', service: 'github', clientId: 'seeded' });
-		const client = makeClient();
+		const session = makeSession();
 
-		await server.subscribe(client, makeSubscription('meteor.loginServiceConfiguration'));
+		await server.subscribe(session, makeSubscription('meteor.loginServiceConfiguration'));
 
-		expect(sentPackets(client)).toEqual([
+		expect(sentPackets(session)).toEqual([
 			{
 				msg: 'added',
 				collection: 'meteor_accounts_loginServiceConfiguration',

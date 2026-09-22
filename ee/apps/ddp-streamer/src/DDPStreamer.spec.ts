@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
 import { DDPStreamer } from './DDPStreamer';
-import { makeClient, sentPackets } from './__tests__/helpers';
+import { makeSession, sentPackets } from './__tests__/helpers';
 import { ConnectionRegistry } from './ddp/ConnectionRegistry';
 import { Server } from './ddp/Server';
 import { ConnectionLifecycle } from './ddp/lifecycle';
@@ -114,17 +114,17 @@ describe('DDPStreamer lifecycle handling', () => {
 
 	it('counts a new connection and broadcasts it', async () => {
 		const { lifecycle, metrics, api } = await createService();
-		const client = makeClient();
+		const session = makeSession();
 
-		lifecycle.emit('connected', client);
+		lifecycle.emit('connected', session);
 
 		expect(metrics.increment).toHaveBeenCalledWith('users_connected', { nodeID: 'node1' }, 1);
-		expect(api.broadcast).toHaveBeenCalledWith('socket.connected', client.connection);
+		expect(api.broadcast).toHaveBeenCalledWith('socket.connected', session.connection);
 	});
 
 	it('reports the number of clients still connected when one disconnects', async () => {
 		const { lifecycle } = await createService();
-		const [first, second] = [makeClient(), makeClient()];
+		const [first, second] = [makeSession(), makeSession()];
 		lifecycle.emit('connected', first);
 		lifecycle.emit('connected', second);
 
@@ -145,7 +145,7 @@ describe('DDPStreamer lifecycle handling', () => {
 			expect([...mirrors.loginServices.entries()]).toEqual([]);
 		});
 
-		it('stores client versions by architecture without repeating the id in the record', () => {
+		it('stores session versions by architecture without repeating the id in the record', () => {
 			const { service, mirrors } = makeService();
 
 			service.emit('meteor.clientVersionUpdated', {
@@ -163,21 +163,21 @@ describe('DDPStreamer lifecycle handling', () => {
 	});
 
 	describe('on activity', () => {
-		it('refreshes presence for a logged in client', async () => {
+		it('refreshes presence for a logged in session', async () => {
 			const { lifecycle } = await createService();
-			const client = makeClient();
+			const session = makeSession();
 
-			lifecycle.emit('activity', client);
+			lifecycle.emit('activity', session);
 
 			expect(Presence.updateConnection).toHaveBeenCalledWith('user1', 'connection1');
 		});
 
 		it('ignores anonymous clients', async () => {
 			const { lifecycle } = await createService();
-			const client = makeClient();
-			client.userId = undefined;
+			const session = makeSession();
+			session.userId = undefined;
 
-			lifecycle.emit('activity', client);
+			lifecycle.emit('activity', session);
 
 			expect(Presence.updateConnection).not.toHaveBeenCalled();
 		});
@@ -213,27 +213,27 @@ describe('DDPStreamer lifecycle handling', () => {
 		it('registers presence, sends the user document after the method result, and broadcasts the login', async () => {
 			mockFindOneById.mockResolvedValue(user as any);
 			const { lifecycle, metrics, api } = await createService();
-			const client = makeClient();
+			const session = makeSession();
 
-			lifecycle.emit('loggedIn', client);
+			lifecycle.emit('loggedIn', session);
 
 			expect(metrics.increment).toHaveBeenCalledWith('users_logged', { nodeID: 'node1' }, 1);
 			expect(Presence.newConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
-			expect(client.send).not.toHaveBeenCalled();
+			expect(session.send).not.toHaveBeenCalled();
 
 			await flushImmediates();
 
 			expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(0);
 			expect(jest.mocked(Presence.newConnection).mock.invocationCallOrder[0]).toBeLessThan(mockFindOneById.mock.invocationCallOrder[0]);
-			expect(sentPackets(client)).toEqual([{ msg: 'added', collection: 'users', id: 'user1', fields: user }]);
-			expect(api.broadcast).toHaveBeenCalledWith('accounts.login', { userId: 'user1', connection: client.connection });
+			expect(sentPackets(session)).toEqual([{ msg: 'added', collection: 'users', id: 'user1', fields: user }]);
+			expect(api.broadcast).toHaveBeenCalledWith('accounts.login', { userId: 'user1', connection: session.connection });
 		});
 
 		it('loads the user with the same projection Meteor sends after login', async () => {
 			mockFindOneById.mockResolvedValue(user as any);
 			const { lifecycle } = await createService();
 
-			lifecycle.emit('loggedIn', makeClient());
+			lifecycle.emit('loggedIn', makeSession());
 			await flushImmediates();
 
 			expect(mockFindOneById).toHaveBeenCalledWith('user1', {
@@ -274,60 +274,60 @@ describe('DDPStreamer lifecycle handling', () => {
 		it('still broadcasts the login when the user document is gone', async () => {
 			mockFindOneById.mockResolvedValue(null);
 			const { lifecycle, api } = await createService();
-			const client = makeClient();
+			const session = makeSession();
 
-			lifecycle.emit('loggedIn', client);
+			lifecycle.emit('loggedIn', session);
 			await flushImmediates();
 
-			expect(client.send).not.toHaveBeenCalled();
-			expect(api.broadcast).toHaveBeenCalledWith('accounts.login', { userId: 'user1', connection: client.connection });
+			expect(session.send).not.toHaveBeenCalled();
+			expect(api.broadcast).toHaveBeenCalledWith('accounts.login', { userId: 'user1', connection: session.connection });
 		});
 	});
 
 	describe('on logout', () => {
 		it('broadcasts, refreshes the connection count, and removes presence for the user', async () => {
 			const { lifecycle, api } = await createService();
-			const client = makeClient();
+			const session = makeSession();
 
-			lifecycle.emit('loggedOut', client);
+			lifecycle.emit('loggedOut', session);
 
-			expect(api.broadcast).toHaveBeenCalledWith('accounts.logout', { userId: 'user1', connection: client.connection });
+			expect(api.broadcast).toHaveBeenCalledWith('accounts.logout', { userId: 'user1', connection: session.connection });
 			expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(0);
 			expect(Presence.removeConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
 		});
 
-		it('leaves presence alone for an anonymous client', async () => {
+		it('leaves presence alone for an anonymous session', async () => {
 			const { lifecycle, api } = await createService();
-			const client = makeClient();
-			client.userId = undefined;
+			const session = makeSession();
+			session.userId = undefined;
 
-			lifecycle.emit('loggedOut', client);
+			lifecycle.emit('loggedOut', session);
 
-			expect(api.broadcast).toHaveBeenCalledWith('accounts.logout', { userId: undefined, connection: client.connection });
+			expect(api.broadcast).toHaveBeenCalledWith('accounts.logout', { userId: undefined, connection: session.connection });
 			expect(Presence.removeConnection).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('on disconnect', () => {
-		it('decrements both gauges, broadcasts, and removes presence for a logged in client', async () => {
+		it('decrements both gauges, broadcasts, and removes presence for a logged in session', async () => {
 			const { lifecycle, metrics, api } = await createService();
-			const client = makeClient();
+			const session = makeSession();
 
-			lifecycle.emit('disconnected', client);
+			lifecycle.emit('disconnected', session);
 
 			expect(metrics.decrement).toHaveBeenCalledWith('users_connected', { nodeID: 'node1' }, 1);
 			expect(metrics.decrement).toHaveBeenCalledWith('users_logged', { nodeID: 'node1' }, 1);
-			expect(api.broadcast).toHaveBeenCalledWith('socket.disconnected', client.connection);
+			expect(api.broadcast).toHaveBeenCalledWith('socket.disconnected', session.connection);
 			expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(0);
 			expect(Presence.removeConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
 		});
 
-		it('only decrements the connection gauge for an anonymous client', async () => {
+		it('only decrements the connection gauge for an anonymous session', async () => {
 			const { lifecycle, metrics } = await createService();
-			const client = makeClient();
-			client.userId = undefined;
+			const session = makeSession();
+			session.userId = undefined;
 
-			lifecycle.emit('disconnected', client);
+			lifecycle.emit('disconnected', session);
 
 			expect(metrics.decrement).toHaveBeenCalledTimes(1);
 			expect(metrics.decrement).toHaveBeenCalledWith('users_connected', { nodeID: 'node1' }, 1);

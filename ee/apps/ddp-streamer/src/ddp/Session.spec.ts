@@ -5,8 +5,8 @@ import { MeteorError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
-import { Client } from './Client';
 import { Server } from './Server';
+import { Session } from './Session';
 import { SERVER_ID, preframe } from './codec';
 import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
 import { ConnectionLifecycle } from './lifecycle';
@@ -44,7 +44,7 @@ function sentPackets(ws: ReturnType<typeof makeSocket>) {
 	return ws.send.mock.calls.map(([payload]) => ejson.parse(payload));
 }
 
-describe('Client', () => {
+describe('Session', () => {
 	let server: Server;
 	let lifecycle: ConnectionLifecycle;
 	let ws: ReturnType<typeof makeSocket>;
@@ -69,23 +69,23 @@ describe('Client', () => {
 			const connected = jest.fn();
 			lifecycle.on('connected', connected);
 
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
 			expect(ws.send.mock.calls).toEqual([[SERVER_ID]]);
-			expect(connected).toHaveBeenCalledWith(client);
+			expect(connected).toHaveBeenCalledWith(session);
 		});
 
 		it('greets SockJS clients with "o" and wraps every payload in a SockJS frame', () => {
-			new Client(server, lifecycle, ws, true, makeRequest('/sockjs/123/abc/websocket'));
+			new Session(server, lifecycle, ws, true, makeRequest('/sockjs/123/abc/websocket'));
 
 			expect(ws.send.mock.calls).toEqual([['o'], [`a${JSON.stringify([SERVER_ID])}`]]);
 		});
 
 		it('describes the connection with the session id, server instance id and request data', () => {
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
-			expect(client.connection).toEqual({
-				id: client.session,
+			expect(session.connection).toEqual({
+				id: session.session,
 				instanceId: server.id,
 				onClose: expect.any(Function),
 				clientAddress: '10.0.0.1',
@@ -94,15 +94,15 @@ describe('Client', () => {
 		});
 
 		it('replies with connected and the session id to a connect message', () => {
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect', version: '1', support: ['1'] });
 
-			expect(sentPackets(ws)).toEqual([ejson.parse(SERVER_ID), { msg: 'connected', session: client.session }]);
+			expect(sentPackets(ws)).toEqual([ejson.parse(SERVER_ID), { msg: 'connected', session: session.session }]);
 		});
 
 		it('closes with a protocol error when the first message is not connect', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'ping' });
 
@@ -110,7 +110,7 @@ describe('Client', () => {
 		});
 
 		it('closes with unsupported data when a message cannot be parsed', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, 'not json');
 
@@ -119,7 +119,7 @@ describe('Client', () => {
 		});
 
 		it('closes with unsupported data when a binary message arrives', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect' }, true);
 
@@ -128,7 +128,7 @@ describe('Client', () => {
 		});
 
 		it('closes with a protocol error when the socket errors', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 
 			ws.emit('error', new Error('boom'));
 
@@ -138,10 +138,10 @@ describe('Client', () => {
 	});
 
 	describe('dispatch', () => {
-		let client: Client;
+		let session: Session;
 
 		beforeEach(() => {
-			client = new Client(server, lifecycle, ws, false, makeRequest());
+			session = new Session(server, lifecycle, ws, false, makeRequest());
 			receive(ws, { msg: 'connect' });
 			ws.send.mockClear();
 		});
@@ -153,14 +153,14 @@ describe('Client', () => {
 			expect(sentPackets(ws)).toEqual([{ msg: 'pong', id: 'p1' }, { msg: 'pong' }]);
 		});
 
-		it('forwards a method call to the server bound to this client', async () => {
+		it('forwards a method call to the server bound to this session', async () => {
 			const call = jest.spyOn(server, 'call').mockResolvedValue();
 			const packet = { msg: 'method', id: 'm1', method: 'save', params: ['a'] };
 
 			receive(ws, packet);
 			await jest.runAllTimersAsync();
 
-			expect(call).toHaveBeenCalledWith(client, packet);
+			expect(call).toHaveBeenCalledWith(session, packet);
 		});
 
 		it('runs method and subscription calls one at a time in arrival order', async () => {
@@ -226,7 +226,7 @@ describe('Client', () => {
 
 		it('stops the matching subscription on unsub and ignores unknown ids', () => {
 			const subscription = { stop: jest.fn() };
-			client.subscriptions.set('s1', subscription);
+			session.subscriptions.set('s1', subscription);
 
 			receive(ws, { msg: 'unsub', id: 'unknown' });
 			receive(ws, { msg: 'unsub', id: 's1' });
@@ -247,17 +247,17 @@ describe('Client', () => {
 		const frames = preframe('{"msg":"changed"}');
 
 		it('writes the raw frame for websocket clients', async () => {
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
-			await client.sendFrames(frames);
+			await session.sendFrames(frames);
 
 			expect(ws._sender.sendFrame).toHaveBeenCalledWith(frames.raw, expect.any(Function));
 		});
 
 		it('writes the SockJS frame for SockJS clients', async () => {
-			const client = new Client(server, lifecycle, ws, true, makeRequest('/sockjs/1/a/websocket'));
+			const session = new Session(server, lifecycle, ws, true, makeRequest('/sockjs/1/a/websocket'));
 
-			await client.sendFrames(frames);
+			await session.sendFrames(frames);
 
 			expect(ws._sender.sendFrame).toHaveBeenCalledWith(frames.sockjs, expect.any(Function));
 		});
@@ -265,31 +265,31 @@ describe('Client', () => {
 		it('rejects with the error the socket reports', async () => {
 			const failure = Object.assign(new Error('destroyed'), { code: 'ERR_STREAM_DESTROYED' });
 			ws._sender.sendFrame.mockImplementation((_frame, cb) => cb(failure));
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
-			await expect(client.sendFrames(frames)).rejects.toBe(failure);
+			await expect(session.sendFrames(frames)).rejects.toBe(failure);
 		});
 	});
 
 	describe('activity', () => {
 		// Underscore's throttle reads the real clock, so only the collapsing of a burst is observable under fake timers.
-		it('reports a burst of messages as a single activity event carrying the client', () => {
+		it('reports a burst of messages as a single activity event carrying the session', () => {
 			const activity = jest.fn();
 			lifecycle.on('activity', activity);
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect' });
 			receive(ws, { msg: 'ping' });
 			receive(ws, { msg: 'ping' });
 
 			expect(activity).toHaveBeenCalledTimes(1);
-			expect(activity).toHaveBeenCalledWith(client);
+			expect(activity).toHaveBeenCalledWith(session);
 		});
 	});
 
 	describe('idle timeout', () => {
-		it('pings after the initial grace period and closes when the client stays silent', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+		it('pings after the initial grace period and closes when the session stays silent', () => {
+			new Session(server, lifecycle, ws, false, makeRequest());
 			ws.send.mockClear();
 
 			jest.advanceTimersByTime(TIMEOUT / 1000);
@@ -303,7 +303,7 @@ describe('Client', () => {
 		});
 
 		it('restarts the idle timer whenever a message arrives', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 			receive(ws, { msg: 'connect' });
 			ws.send.mockClear();
 
@@ -327,20 +327,20 @@ describe('Client', () => {
 		it('announces the disconnection, runs onClose callbacks, and clears subscriptions', () => {
 			const disconnected = jest.fn();
 			lifecycle.on('disconnected', disconnected);
-			const client = new Client(server, lifecycle, ws, false, makeRequest());
+			const session = new Session(server, lifecycle, ws, false, makeRequest());
 			const onClose = jest.fn();
-			client.connection.onClose(onClose);
-			client.subscriptions.set('s1', { stop: jest.fn() });
+			session.connection.onClose(onClose);
+			session.subscriptions.set('s1', { stop: jest.fn() });
 
 			ws.emit('close', 1000, 'bye');
 
-			expect(disconnected).toHaveBeenCalledWith(client);
+			expect(disconnected).toHaveBeenCalledWith(session);
 			expect(onClose).toHaveBeenCalledWith(1000, 'bye');
-			expect(client.subscriptions.size).toBe(0);
+			expect(session.subscriptions.size).toBe(0);
 		});
 
 		it('stops the idle timer once the socket is closed', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
+			new Session(server, lifecycle, ws, false, makeRequest());
 			ws.send.mockClear();
 
 			ws.emit('close');

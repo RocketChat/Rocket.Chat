@@ -11,9 +11,9 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
-import { Client } from './ddp/Client';
 import type { ConnectionRegistry } from './ddp/ConnectionRegistry';
 import type { Server } from './ddp/Server';
+import { Session } from './ddp/Session';
 import { encodeAdded } from './ddp/codec';
 import type { ConnectionLifecycle } from './ddp/lifecycle';
 import { proxy } from './http/proxy';
@@ -142,9 +142,9 @@ export class DDPStreamer extends ServiceClass {
 			void this.api?.broadcast('socket.connected', connection);
 		});
 
-		this.lifecycle.on('loggedIn', (client) => {
+		this.lifecycle.on('loggedIn', (session) => {
 			metrics.increment('users_logged', { nodeID }, 1);
-			void this.onLoggedIn(client, nodeID);
+			void this.onLoggedIn(session, nodeID);
 		});
 
 		this.lifecycle.on('loggedOut', ({ userId, connection }) => {
@@ -185,8 +185,8 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 
-	private async onLoggedIn(client: Client, nodeID: string): Promise<void> {
-		const { userId, connection } = client;
+	private async onLoggedIn(session: Session, nodeID: string): Promise<void> {
+		const { userId, connection } = session;
 
 		if (!userId) {
 			throw new Error('User not logged in');
@@ -197,12 +197,12 @@ export class DDPStreamer extends ServiceClass {
 		this.updateConnections();
 
 		// mimic Meteor's default publication that sends user data after login
-		await this.sendUserData(client, userId);
+		await this.sendUserData(session, userId);
 
 		void this.api?.broadcast('accounts.login', { userId, connection });
 	}
 
-	private async sendUserData(client: Client, userId: string): Promise<void> {
+	private async sendUserData(session: Session, userId: string): Promise<void> {
 		// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
 		const loggedUser = await Users.findOneById(userId, {
 			projection: {
@@ -242,7 +242,7 @@ export class DDPStreamer extends ServiceClass {
 		}
 
 		// using setImmediate here so login's method result is sent before we send the user data
-		setImmediate(() => client.send(encodeAdded('users', userId, loggedUser)));
+		setImmediate(() => session.send(encodeAdded('users', userId, loggedUser)));
 	}
 
 	// The architecture is the DDP document id, so it is not repeated in the fields, matching Meteor's autoupdate collection.
@@ -294,7 +294,7 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss = new WebSocket.Server({ server: this.app.server });
 
-			this.wss.on('connection', (ws, req) => new Client(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
+			this.wss.on('connection', (ws, req) => new Session(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
 
 			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {

@@ -1,14 +1,14 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { Client } from './Client';
+import type { Session } from './Session';
 
 export type ConnectionLifecycleEvents = {
-	connected: Client;
-	loggedIn: Client;
-	loggedOut: Client;
-	disconnected: Client;
+	connected: Session;
+	loggedIn: Session;
+	loggedOut: Session;
+	disconnected: Session;
 	/** At most once per idle timeout while the client keeps sending. */
-	activity: Client;
+	activity: Session;
 };
 
 /** Connection-state changes and activity, emitted by the connection side and consumed by the service. */

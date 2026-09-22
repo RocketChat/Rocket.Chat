@@ -1,7 +1,7 @@
 import { Account, MeteorError } from '@rocket.chat/core-services';
 
 import { registerAccountMethods } from './accounts';
-import { makeClient, makePacket, sentPackets } from '../__tests__/helpers';
+import { makeSession, makePacket, sentPackets } from '../__tests__/helpers';
 import { Server } from '../ddp/Server';
 import { WS_ERRORS } from '../ddp/constants';
 import { ConnectionLifecycle } from '../ddp/lifecycle';
@@ -26,7 +26,7 @@ const mockLogout = jest.mocked(Account.logout);
 describe('account methods', () => {
 	let server: Server;
 	let lifecycle: ConnectionLifecycle;
-	let client: ReturnType<typeof makeClient>;
+	let session: ReturnType<typeof makeSession>;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -34,7 +34,7 @@ describe('account methods', () => {
 		server = new Server();
 		lifecycle = new ConnectionLifecycle();
 		registerAccountMethods(server, lifecycle);
-		client = makeClient();
+		session = makeSession();
 	});
 
 	afterEach(() => {
@@ -44,21 +44,21 @@ describe('account methods', () => {
 	describe('login', () => {
 		const tokenExpires = new Date(0);
 
-		it('stores the credentials on the client and announces the login before sending the result', async () => {
+		it('stores the credentials on the session and announces the login before sending the result', async () => {
 			mockLogin.mockResolvedValue({ uid: 'user2', hashedToken: 'hashed', token: 'plain', tokenExpires, type: 'resume' } as any);
 			const loggedIn = jest.fn(() => {
-				expect(client.send).not.toHaveBeenCalled();
+				expect(session.send).not.toHaveBeenCalled();
 			});
 			lifecycle.on('loggedIn', loggedIn);
 
-			await server.call(client, { ...makePacket('login'), params: [{ resume: 'plain' }] });
+			await server.call(session, { ...makePacket('login'), params: [{ resume: 'plain' }] });
 
 			expect(mockLogin).toHaveBeenCalledWith({ resume: 'plain' });
-			expect(client.userId).toBe('user2');
-			expect(client.userToken).toBe('hashed');
-			expect(client.connection.loginToken).toBe('hashed');
-			expect(loggedIn).toHaveBeenCalledWith(client);
-			expect(sentPackets(client)).toEqual([
+			expect(session.userId).toBe('user2');
+			expect(session.userToken).toBe('hashed');
+			expect(session.connection.loginToken).toBe('hashed');
+			expect(loggedIn).toHaveBeenCalledWith(session);
+			expect(sentPackets(session)).toEqual([
 				{ msg: 'result', id: 'test-id', result: { id: 'user2', token: 'plain', tokenExpires, type: 'resume' } },
 				{ msg: 'updated', methods: ['test-id'] },
 			]);
@@ -69,11 +69,11 @@ describe('account methods', () => {
 			const loggedIn = jest.fn();
 			lifecycle.on('loggedIn', loggedIn);
 
-			await server.call(client, { ...makePacket('login'), params: [{ resume: 'stale' }] });
+			await server.call(session, { ...makePacket('login'), params: [{ resume: 'stale' }] });
 
 			expect(loggedIn).not.toHaveBeenCalled();
-			expect(client.userId).toBe('user1');
-			expect(sentPackets(client)[0]).toEqual({
+			expect(session.userId).toBe('user1');
+			expect(sentPackets(session)[0]).toEqual({
 				msg: 'result',
 				id: 'test-id',
 				error: new MeteorError(403, "You've been logged out by the server. Please log in again").toJSON(),
@@ -86,34 +86,34 @@ describe('account methods', () => {
 			const seenUserId: (string | undefined)[] = [];
 			lifecycle.on('loggedOut', (loggedOut) => seenUserId.push(loggedOut.userId));
 
-			await server.call(client, makePacket('logout'));
+			await server.call(session, makePacket('logout'));
 
 			expect(mockLogout).toHaveBeenCalledWith({ userId: 'user1', token: 'token1' });
 			expect(seenUserId).toEqual(['user1']);
-			expect(client.userId).toBeUndefined();
-			expect(client.userToken).toBeUndefined();
-			expect(sentPackets(client)).toEqual([
+			expect(session.userId).toBeUndefined();
+			expect(session.userToken).toBeUndefined();
+			expect(sentPackets(session)).toEqual([
 				{ msg: 'result', id: 'test-id' },
 				{ msg: 'updated', methods: ['test-id'] },
 			]);
-			expect(client.ws.close).not.toHaveBeenCalled();
+			expect(session.ws.close).not.toHaveBeenCalled();
 
 			jest.advanceTimersByTime(1);
 
-			expect(client.ws.close).toHaveBeenCalledWith(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
+			expect(session.ws.close).toHaveBeenCalledWith(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 		});
 
-		it('still announces and closes for an anonymous client without revoking anything', async () => {
-			client.userId = undefined;
+		it('still announces and closes for an anonymous session without revoking anything', async () => {
+			session.userId = undefined;
 			const loggedOut = jest.fn();
 			lifecycle.on('loggedOut', loggedOut);
 
-			await server.call(client, makePacket('logout'));
+			await server.call(session, makePacket('logout'));
 			jest.advanceTimersByTime(1);
 
 			expect(mockLogout).not.toHaveBeenCalled();
-			expect(loggedOut).toHaveBeenCalledWith(client);
-			expect(client.ws.close).toHaveBeenCalledWith(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
+			expect(loggedOut).toHaveBeenCalledWith(session);
+			expect(session.ws.close).toHaveBeenCalledWith(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 		});
 	});
 });

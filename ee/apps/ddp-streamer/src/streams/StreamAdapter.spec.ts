@@ -15,12 +15,12 @@ const Stream = createStreamAdapter(new Server());
 const stream = new Stream('notify-all');
 
 function makeSubscription({ readyState = WebSocket.OPEN as number, connectionId = 'c1' } = {}) {
-	const client = {
+	const session = {
 		meteorClient: false,
 		ws: { readyState, close: jest.fn() },
 		sendFrames: jest.fn<Promise<void>, [unknown]>().mockResolvedValue(undefined),
 	};
-	const subscription = { client, connection: { id: connectionId }, stop: jest.fn() };
+	const subscription = { client: session, connection: { id: connectionId }, stop: jest.fn() };
 
 	return { eventName: 'event', subscription } as unknown as DDPSubscription & { subscription: typeof subscription };
 }

@@ -1,27 +1,27 @@
 import WebSocket from 'ws';
 
-import type { Client } from './Client';
+import type { Session } from './Session';
 import type { ConnectionLifecycle } from './lifecycle';
 
 const FORCE_LOGOUT_GRACE_MS = 5000;
 
-/** The clients currently connected to this process, with the ways the service is allowed to disconnect them. */
+/** The live sessions of this process, and the ways the service may end them. */
 export class ConnectionRegistry {
-	private readonly clients = new Set<Client>();
+	private readonly sessions = new Set<Session>();
 
 	constructor(lifecycle: ConnectionLifecycle) {
-		lifecycle.on('connected', (client) => this.clients.add(client));
-		lifecycle.on('disconnected', (client) => this.clients.delete(client));
+		lifecycle.on('connected', (session) => this.sessions.add(session));
+		lifecycle.on('disconnected', (session) => this.sessions.delete(session));
 	}
 
 	get size(): number {
-		return this.clients.size;
+		return this.sessions.size;
 	}
 
 	closeSession(sessionId: string): void {
-		for (const client of this.clients) {
-			if (client.connection.id === sessionId) {
-				client.ws.close();
+		for (const session of this.sessions) {
+			if (session.connection.id === sessionId) {
+				session.ws.close();
 			}
 		}
 	}
@@ -31,12 +31,12 @@ export class ConnectionRegistry {
 	 * still reach the client, and terminates any socket that has not finished closing within the grace period.
 	 */
 	closeForUser(userId: string): void {
-		for (const client of this.clients) {
-			if (client.userId !== userId) {
+		for (const session of this.sessions) {
+			if (session.userId !== userId) {
 				continue;
 			}
 
-			const { ws } = client;
+			const { ws } = session;
 			ws.close();
 			const guard = setTimeout(() => {
 				if (ws.readyState !== WebSocket.CLOSED) {
@@ -48,8 +48,8 @@ export class ConnectionRegistry {
 	}
 
 	terminateAll(): void {
-		for (const client of this.clients) {
-			client.ws.terminate();
+		for (const session of this.sessions) {
+			session.ws.terminate();
 		}
 	}
 }

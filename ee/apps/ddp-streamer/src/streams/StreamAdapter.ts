@@ -3,8 +3,8 @@ import { Streamer } from '@rocket.chat/streamer';
 import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
-import type { Client } from '../ddp/Client';
 import type { Server } from '../ddp/Server';
+import type { Session } from '../ddp/Session';
 import { encodeChanged, preframe } from '../ddp/codec';
 import { isEmpty } from '../lib/utils';
 
@@ -36,12 +36,12 @@ export const createStreamAdapter = (server: Server) =>
 			const frames = preframe(getMsg);
 
 			for (const { subscription } of subscriptions) {
-				// Every publication in this process is our Publication, so its client is our Client.
-				const client = subscription.client as Client;
+				// Every publication in this process is our Publication, so its client is our Session.
+				const session = subscription.client as Session;
 
-				if (client.ws.readyState !== WebSocket.OPEN) {
+				if (session.ws.readyState !== WebSocket.OPEN) {
 					subscription.stop();
-					client.ws.close();
+					session.ws.close();
 					continue;
 				}
 
@@ -54,14 +54,14 @@ export const createStreamAdapter = (server: Server) =>
 				}
 
 				try {
-					await client.sendFrames(frames);
+					await session.sendFrames(frames);
 				} catch (error: any) {
 					if (error.code === 'ERR_STREAM_DESTROYED') {
 						console.warn('Trying to send data to destroyed stream, closing connection.');
 
-						if (client.ws.readyState !== WebSocket.OPEN) {
+						if (session.ws.readyState !== WebSocket.OPEN) {
 							subscription.stop();
-							client.ws.close();
+							session.ws.close();
 						}
 					}
 					console.error('Error trying to send data to stream.', error);
