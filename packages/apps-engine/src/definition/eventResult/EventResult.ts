@@ -70,18 +70,55 @@ export type PreventEventResult = Marker & { type: 'prevent' } & PreventReason;
 export type MarkedEventResult<T = unknown> = PassEventResult | PatchEventResult<T> | PreventEventResult;
 
 /**
- * Factory that builds the branded objects for event results
+ * Builds what a pre-event handler returns.
+ *
+ * The engine acts on a result one of these factories built and skips anything
+ * else, so a handler returns `EventResult.pass()`, never `{ type: 'pass' }`.
+ *
+ * The engine runs the subscribed apps one after another. See
+ * [ADR 0002](../../../../../docs/adr/0002-unified-event-result-for-pre-events.md)
+ * for why the three variants are what they are.
+ *
+ * @example
+ * ```ts
+ * public async executePreMediaCallCreated(context: IPreMediaCallCreatedContext): Promise<MediaCallCreateEventResult> {
+ * 	if (await this.callerIsBlocked(context)) {
+ * 		return EventResult.prevent({ i18n: { key: 'caller_is_blocked' } });
+ * 	}
+ *
+ * 	return EventResult.patch({ features: ['audio'] });
+ * }
+ * ```
  */
 export const EventResult = {
+	/**
+	 * Let the event continue with no intervention
+	 */
 	pass(): PassEventResult {
 		return { '@kind': EVENT_RESULT_KIND, 'type': 'pass' };
 	},
 
+	/**
+	 * Changes the properties named in `patch` and lets the action proceed.
+	 *
+	 * The engine keeps only the properties the event declares as patchable and drops the rest.
+	 * Each event specifies its own rules, and some may not allow for patching at all.
+	 *
+	 * @typeParam T - the event's patchable definition.
+	 */
 	patch<T>(patch: Partial<NoInfer<T>>): PatchEventResult<T> {
 		return { '@kind': EVENT_RESULT_KIND, 'type': 'patch', 'patch': patch as Partial<T> };
 	},
 
-	prevent(input: PreventReason): PreventEventResult {
-		return { '@kind': EVENT_RESULT_KIND, 'type': 'prevent', ...input };
+	/**
+	 * Blocks the action.
+	 *
+	 * Reason should clarify why the app is preventing it. Prefer using a translation key
+	 * so the user sees the translated content. Fallback to a text string otherwise.
+	 *
+	 * How this message reaches users depends on the host server and what event is being blocked.
+	 */
+	prevent(reason: PreventReason): PreventEventResult {
+		return { '@kind': EVENT_RESULT_KIND, 'type': 'prevent', ...reason };
 	},
 };
