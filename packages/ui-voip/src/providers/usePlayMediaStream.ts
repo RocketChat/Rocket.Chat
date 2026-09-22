@@ -1,3 +1,4 @@
+import type { RefCallback } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
@@ -13,9 +14,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * compares first: the same stream arriving in a new wrapper costs nothing, and only a genuinely different stream is
  * swapped in. The source is cleared when the element goes away or the stream does, and not otherwise.
  */
-export const usePlayMediaStream = (
-	stream?: MediaStream | null,
-): [(node: HTMLAudioElement | null) => void, { current: HTMLAudioElement | null }] => {
+export const usePlayMediaStream = (stream?: MediaStream | null): [RefCallback<HTMLAudioElement>, { current: HTMLAudioElement | null }] => {
 	const actualRef = useRef<HTMLAudioElement | null>(null);
 
 	// Read by the ref callback, which cannot depend on the stream without getting a new identity for each one.
@@ -39,22 +38,18 @@ export const usePlayMediaStream = (
 	}, []);
 
 	const setNode = useCallback(
-		(node: HTMLAudioElement | null) => {
-			if (!node) {
-				const previous = actualRef.current;
-				actualRef.current = null;
-				if (previous) {
-					previous.pause();
-					previous.srcObject = null;
-				}
-				return;
-			}
-
+		(node: HTMLAudioElement) => {
 			actualRef.current = node;
 			const { current } = streamRef;
 			if (current) {
 				play(node, current);
 			}
+
+			return () => {
+				actualRef.current = null;
+				node.pause();
+				node.srcObject = null;
+			};
 		},
 		[play],
 	);

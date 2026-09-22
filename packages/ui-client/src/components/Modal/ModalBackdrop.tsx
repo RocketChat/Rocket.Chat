@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSafeRefCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 
@@ -32,45 +32,43 @@ const isAtBackdropChildren = (e: MouseEvent, backdrop: HTMLElement): boolean => 
 const useOutsideClick = (onDismiss: (() => void) | undefined) => {
 	const handleDismiss = useStableCallback(() => onDismiss?.());
 
-	return useSafeRefCallback(
-		useCallback(
-			(node: HTMLElement) => {
-				let hasClicked = false;
+	return useCallback(
+		(node: HTMLElement) => {
+			let hasClicked = false;
 
-				const onMouseDown = (e: MouseEvent): void => {
-					if (isAtBackdropChildren(e, node)) {
-						hasClicked = false;
-						return;
-					}
-
-					hasClicked = true;
-				};
-
-				const onMouseUp = (e: MouseEvent): void => {
-					if (isAtBackdropChildren(e, node)) {
-						hasClicked = false;
-						return;
-					}
-
-					if (!hasClicked) {
-						return;
-					}
-
+			const onMouseDown = (e: MouseEvent): void => {
+				if (isAtBackdropChildren(e, node)) {
 					hasClicked = false;
-					e.stopPropagation();
-					handleDismiss();
-				};
+					return;
+				}
 
-				node.addEventListener('mousedown', onMouseDown);
-				node.addEventListener('mouseup', onMouseUp);
+				hasClicked = true;
+			};
 
-				return () => {
-					node.removeEventListener('mousedown', onMouseDown);
-					node.removeEventListener('mouseup', onMouseUp);
-				};
-			},
-			[handleDismiss],
-		),
+			const onMouseUp = (e: MouseEvent): void => {
+				if (isAtBackdropChildren(e, node)) {
+					hasClicked = false;
+					return;
+				}
+
+				if (!hasClicked) {
+					return;
+				}
+
+				hasClicked = false;
+				e.stopPropagation();
+				handleDismiss();
+			};
+
+			node.addEventListener('mousedown', onMouseDown);
+			node.addEventListener('mouseup', onMouseUp);
+
+			return () => {
+				node.removeEventListener('mousedown', onMouseDown);
+				node.removeEventListener('mouseup', onMouseUp);
+			};
+		},
+		[handleDismiss],
 	);
 };
 
