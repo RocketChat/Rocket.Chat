@@ -17,6 +17,7 @@ import InviteUsers from './InviteUsers';
 import RoomMembers from './RoomMembers';
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
+import { useIsRoomAbacLocked } from '../../hooks/useIsRoomAbacLocked';
 import UserInfoWithData from '../UserInfo';
 
 enum ROOM_MEMBERS_TABS {
@@ -44,6 +45,7 @@ const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const isFederated = room && isRoomFederated(room);
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
+	const isAbacLocked = useIsRoomAbacLocked(room);
 
 	const canCreateInviteLinks =
 		room && user && isFederated && !isFederationBlocked
@@ -135,6 +137,7 @@ const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
 			isABACRoom={Boolean(room?.abacAttributes)}
+			isAbacLocked={isAbacLocked}
 		/>
 	);
 };

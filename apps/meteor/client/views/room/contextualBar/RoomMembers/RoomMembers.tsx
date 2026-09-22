@@ -48,6 +48,7 @@ export type RoomMembersProps = {
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 	isABACRoom?: boolean;
+	isAbacLocked?: boolean;
 };
 
 const RoomMembers = ({
@@ -71,6 +72,7 @@ const RoomMembers = ({
 	isDirect,
 	reload,
 	isABACRoom = false,
+	isAbacLocked = false,
 }: RoomMembersProps) => {
 	const { t } = useTranslation();
 	const membersListId = useId();
@@ -215,13 +217,18 @@ const RoomMembers = ({
 			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>
+					{isAbacLocked && (
+						<Callout type='danger' marginBlockEnd={16}>
+							{t('ABAC_Cannot_add_members_to_locked_room')}
+						</Callout>
+					)}
 					<ButtonGroup stretch>
 						{onClickInvite && (
 							<Button
 								icon='link'
 								onClick={onClickInvite}
 								width='50%'
-								disabled={isABACRoom}
+								disabled={isABACRoom || isAbacLocked}
 								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
 								aria-label={t('Invite_Link')}
 							>
@@ -229,7 +236,7 @@ const RoomMembers = ({
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
+							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary disabled={isAbacLocked}>
 								{t('Add')}
 							</Button>
 						)}
