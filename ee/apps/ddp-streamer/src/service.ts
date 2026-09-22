@@ -4,7 +4,19 @@ import { api, getConnection, getTrashCollection } from '@rocket.chat/core-servic
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
+import { NotificationsModule, StreamerCentral } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
+
+import { DDPStreamer } from './DDPStreamer';
+import { ConnectionRegistry } from './ddp/ConnectionRegistry';
+import { Server } from './ddp/Server';
+import { ConnectionLifecycle } from './ddp/lifecycle';
+import { registerAccountMethods } from './methods/accounts';
+import { callMeteorMethod } from './methods/meteorFallback';
+import { registerPresenceMethods } from './methods/presence';
+import { registerAutoupdatePublication } from './publications/autoupdate';
+import { registerLoginServiceConfigurationPublication } from './publications/loginServiceConfiguration';
+import { createStreamAdapter } from './streams/StreamAdapter';
 
 void (async () => {
 	const { db, client } = await getConnection();
@@ -18,19 +30,6 @@ void (async () => {
 			nodeID: `${os.hostname().toLowerCase()}-${InstanceStatus.id()}`,
 		}),
 	);
-
-	// need to import service after models are registered
-	const { NotificationsModule, StreamerCentral } = await import('@rocket.chat/streamer');
-	const { DDPStreamer } = await import('./DDPStreamer');
-	const { Server } = await import('./ddp/Server');
-	const { createStreamAdapter } = await import('./streams/StreamAdapter');
-	const { ConnectionLifecycle } = await import('./ddp/lifecycle');
-	const { ConnectionRegistry } = await import('./ddp/ConnectionRegistry');
-	const { registerAccountMethods } = await import('./methods/accounts');
-	const { callMeteorMethod } = await import('./methods/meteorFallback');
-	const { registerPresenceMethods } = await import('./methods/presence');
-	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');
-	const { registerAutoupdatePublication } = await import('./publications/autoupdate');
 
 	const server = new Server(callMeteorMethod);
 	const lifecycle = new ConnectionLifecycle();
