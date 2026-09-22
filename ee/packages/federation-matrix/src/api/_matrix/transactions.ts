@@ -194,17 +194,20 @@ const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema
 const ErrorResponseSchema = {
 	type: 'object',
 	properties: {
+		errcode: {
+			type: 'string',
+		},
 		error: {
 			type: 'string',
 		},
-		details: {
-			type: 'object',
-		},
 	},
-	required: ['error', 'details'],
+	required: ['errcode', 'error'],
 };
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
+
+const isTooManyConcurrentTransactionsError = (error: unknown): error is Error =>
+	error instanceof Error && error.message === 'too-many-concurrent-transactions';
 
 const GetStateIdsParamsSchema = {
 	type: 'object',
@@ -331,6 +334,7 @@ export const getMatrixTransactionsRoutes = () => {
 					response: {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
+						429: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -340,13 +344,12 @@ export const getMatrixTransactionsRoutes = () => {
 
 					try {
 						await federationSDK.processIncomingTransaction(body);
-					} catch (error: any) {
-						// TODO custom error types?
-						if (error.message === 'too-many-concurrent-transactions') {
+					} catch (error) {
+						if (isTooManyConcurrentTransactionsError(error)) {
 							return {
 								statusCode: 429,
 								body: {
-									errorcode: 'M_UNKNOWN',
+									errcode: 'M_UNKNOWN',
 									error: 'Too many concurrent transactions',
 								},
 							};
@@ -354,7 +357,10 @@ export const getMatrixTransactionsRoutes = () => {
 
 						return {
 							statusCode: 400,
-							body: {},
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to process transaction',
+							},
 						};
 					}
 
