@@ -1,5 +1,3 @@
-import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { usePermission } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import ComposerAbacLocked from './ComposerAbacLocked';
@@ -14,81 +12,40 @@ import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerSelectMessages from './ComposerSelectMessages';
-import { useRoom } from '../contexts/RoomContext';
-import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
-import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchived';
-import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
-import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
-import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
-import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
-import { useIsRoomAbacLocked } from '../hooks/useIsRoomAbacLocked';
+import { useComposerState } from './hooks/useComposerState';
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
-	const room = useRoom();
+	const state = useComposerState(props.subscription);
 
-	const canJoinWithoutCode = usePermission('join-without-join-code');
-	const mustJoinWithCode = !props.subscription && room.joinCodeRequired && !canJoinWithoutCode;
-
-	const isAnonymous = useMessageComposerIsAnonymous();
-	const isSelectingMessages = useIsSelecting();
-	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
-	const isArchived = useMessageComposerIsArchived(room, props.subscription);
-	const isReadOnly = useMessageComposerIsReadOnly(room);
-	const isAbacLocked = useIsRoomAbacLocked(room._id, room);
-
-	const isOmnichannel = isOmnichannelRoom(room);
-	const isFederation = isRoomFederated(room);
-
-	const isFederationBlocked = !isRoomNativeFederated(room);
-
-	const [isAirGappedRestricted] = useAirGappedRestriction();
-
-	if (isAirGappedRestricted) {
-		return <ComposerAirGappedRestricted />;
+	switch (state.kind) {
+		case 'airGappedRestricted':
+			return <ComposerAirGappedRestricted />;
+		case 'omnichannel':
+			return <ComposerOmnichannel {...props} />;
+		case 'federation':
+			return <ComposerFederation blocked={state.blocked} {...props} />;
+		case 'anonymous':
+			return <ComposerAnonymous />;
+		case 'readOnly':
+			return <ComposerReadOnly />;
+		case 'archived':
+			return <ComposerArchived />;
+		case 'abacLocked':
+			return <ComposerAbacLocked />;
+		case 'joinWithCode':
+			return <ComposerJoinWithPassword />;
+		case 'blocked':
+			return <ComposerBlocked />;
+		case 'selectingMessages':
+			return <ComposerSelectMessages {...props} />;
+		case 'message':
+			return (
+				<>
+					{children}
+					<ComposerMessage {...props} />
+				</>
+			);
 	}
-
-	if (isOmnichannel) {
-		return <ComposerOmnichannel {...props} />;
-	}
-
-	if (isFederation) {
-		return <ComposerFederation blocked={isFederationBlocked} {...props} />;
-	}
-
-	if (isAnonymous) {
-		return <ComposerAnonymous />;
-	}
-
-	if (isReadOnly) {
-		return <ComposerReadOnly />;
-	}
-
-	if (isArchived) {
-		return <ComposerArchived />;
-	}
-
-	if (isAbacLocked) {
-		return <ComposerAbacLocked />;
-	}
-
-	if (mustJoinWithCode) {
-		return <ComposerJoinWithPassword />;
-	}
-
-	if (isBlockedOrBlocker) {
-		return <ComposerBlocked />;
-	}
-
-	if (isSelectingMessages) {
-		return <ComposerSelectMessages {...props} />;
-	}
-
-	return (
-		<>
-			{children}
-			<ComposerMessage {...props} />
-		</>
-	);
 };
 
 export default memo(ComposerContainer);
