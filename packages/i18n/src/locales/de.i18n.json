@@ -2377,7 +2377,6 @@
   "error-business-hour-finish-time-equals-start-time": "Start- und Endzeit dürfen nicht identisch sein",
   "error-business-hours-are-closed": "Geschäftszeiten sind geschlossen",
   "error-canned-response-not-found": "Vorformulierte Antwort nicht gefunden",
-  "error-cannot-convert-default-room-to-abac": "Standardräume und Team-Standardräume können nicht in Räume mit attributbasierter Zugriffskontrolle umgewandelt werden.",
   "error-cannot-delete-app-user": "Das Löschen von App-Benutzern ist nicht erlaubt, deinstallieren Sie die entsprechende App, um sie zu entfernen.",
   "error-cannot-place-chat-on-hold": "Sie können den Chat nicht in Wartestellung versetzen",
   "error-cant-add-federated-users": "Es können keine Verbund-Benutzer zu einem Nicht-Verbundraum hinzugefügt werden",
