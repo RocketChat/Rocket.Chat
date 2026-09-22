@@ -278,8 +278,9 @@
     - **The handler throws with a typed constructor**: `throw errors.ROOM_NOT_FOUND({ roomId })`. A
       name that the procedure does not declare is a compile error.
     - **The client narrows with `isProcedureError(e, path, name)`**, which types `e.data`. A promise
-      rejection has no type in TypeScript, so a guard is the only way to type it. The client rebuilds
-      a `-32001` response as a `ProcedureError`.
+      rejection has no type in TypeScript, so a guard is the only way to type it, and the guard takes
+      the contract from a type argument: `createErrorGuard<HostContract>()`. The client rebuilds a
+      `-32001` response as a `ProcedureError`.
     - **The first migration declares no errors.** Each bridge method keeps its current contract, for
       example `message.create` keeps `output: type<string | undefined>()`. A move from `undefined`
       to a declared error changes what the accessor sees, so it is a separate change per procedure.
@@ -358,7 +359,7 @@ packages/apps/protocol/            # 4th tsc project, strict: true, built first
 │   │   └── errors.ts              # closed code enum + declared data shapes              (D6)
 │   ├── rpc/
 │   │   ├── contract.ts            # request, notification, type<T>, shaped<T>   — Zod, host only
-│   │   ├── errors.ts              # ProcedureError, isProcedureError             (zero deps, D20)
+│   │   ├── errors.ts              # ProcedureError, createErrorGuard             (zero deps, D20)
 │   │   ├── server.ts              # implement, Handlers<>, middleware, call, dispatch — host only
 │   │   ├── local.ts               # createLocalClient                           — tests only (D23)
 │   │   └── client.ts              # createClient, Client<>             (zero deps, runtime, D23)
@@ -499,9 +500,8 @@ Named `params` (decision 19) and `-32001` (decision 20) are not deviations. JSON
 - **Declared errors add type complexity.** A procedure without an error map must cost nothing in
   `Handlers<>`, the `errors` constructors and `isProcedureError`.
 - **The output type does not describe what survives the wire.** The sanitizer drops functions and
-  `App` instances, and structured clone drops class prototypes. The client should type an output as
-  `Wire<T>`, a mapped type that removes function members, instead of `T`. The RPC machinery PR
-  decides this.
+  `App` instances, and structured clone drops class prototypes. So the client types an output as
+  `Wire<T>`, a mapped type that removes function members, instead of `T`.
 - **Each domain migrates on both sides in one PR.** A procedure takes a named object; the legacy
   path takes a positional array with `'APP_ID'`. No version skew makes this safe.
 - **The legacy fallback keeps today's exposure until it is deleted, and no longer.** While domains
