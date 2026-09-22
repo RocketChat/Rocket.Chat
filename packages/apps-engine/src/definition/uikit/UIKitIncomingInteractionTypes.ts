@@ -38,9 +38,7 @@ export interface IUIKitBlockIncomingInteraction extends IUIKitBaseIncomingIntera
 	room: IUIKitBaseIncomingInteraction['room'];
 	/** Where the blocks were rendered. */
 	container:
-		| IUIKitIncomingInteractionModalContainer
-		| IUIKitIncomingInteractionContextualBarContainer
-		| IUIKitIncomingInteractionMessageContainer;
+		IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
 }
 
 /**
