@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import { useSidebarPresentation } from './hooks/useSidebarPresentation';
+import RoomListProvider from './providers/RoomListProvider';
 import BannerSection from './sections/BannerSection';
 import NowPlayingSection from './sections/NowPlayingSection';
 
@@ -20,7 +21,9 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			<SidebarRoomList />
+			<RoomListProvider>
+				<SidebarRoomList />
+			</RoomListProvider>
 			<NowPlayingSection />
 			<SidebarFooter />
 		</FuselageSidebar>

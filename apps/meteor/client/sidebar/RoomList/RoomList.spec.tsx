@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
+import { RoomListContext, defaultRoomListContextValue } from '../contexts/RoomListContext';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const mockCollapsedGroups: string[] = [];
@@ -90,36 +91,12 @@ jest.mock('../components/SidebarVirtualList', () => ({
 	default: (props: MockSidebarVirtualListProps) => mockSidebarVirtualList(props),
 }));
 
-jest.mock('../../lib/RoomManager', () => ({
-	useOpenedRoom: () => 'GENERAL',
-}));
-
-jest.mock('../categories/hooks/useMoveCategoryPosition', () => ({
-	useMoveCategoryPosition: () => mockMoveCategory,
-}));
-
 jest.mock('../hooks/useCategoryList', () => ({
 	SIDEBAR_DYNAMIC_GROUP_KEYS: ['Unread', 'Favorites'],
 }));
 
-jest.mock('../hooks/useCollapsedGroups', () => ({
-	useCollapsedGroups: () => ({
-		collapsedGroups: mockCollapsedGroups,
-		handleClick: mockHandleClick,
-		handleKeyDown: mockHandleKeyDown,
-	}),
-}));
-
 jest.mock('../hooks/usePreventDefault', () => ({
 	usePreventDefault: (ref: unknown) => mockUsePreventDefault(ref),
-}));
-
-jest.mock('../hooks/useRoomList', () => ({
-	useRoomList: () => ({
-		groups,
-		groupsCount: [2, 1, 0],
-		totalCount: 3,
-	}),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
@@ -147,7 +124,24 @@ jest.mock('./RoomListRowWrapper', () => ({
 	),
 }));
 
-const appRoot = mockAppRoot().withJohnDoe().withUserPreference('sidebarViewMode', 'extended').build();
+const appRoot = mockAppRoot().withJohnDoe().build();
+
+// The list is driven entirely from its context — which is what a second sidebar would supply too.
+const renderRoomList = () =>
+	render(
+		<RoomListContext.Provider
+			value={{
+				...defaultRoomListContextValue,
+				groups,
+				collapse: { keys: mockCollapsedGroups, toggle: mockHandleClick, onKeyDown: mockHandleKeyDown },
+				viewer: { ...defaultRoomListContextValue.viewer, openedRoom: 'GENERAL', isAnonymous: false },
+				actions: { moveCategory: mockMoveCategory },
+			}}
+		>
+			<RoomList />
+		</RoomListContext.Provider>,
+		{ wrapper: appRoot },
+	);
 
 describe('RoomList', () => {
 	beforeEach(() => {
@@ -155,7 +149,7 @@ describe('RoomList', () => {
 	});
 
 	it('passes grouped room data to SidebarVirtualList', () => {
-		render(<RoomList />, { wrapper: appRoot });
+		renderRoomList();
 
 		expect(screen.getByTestId('sidebar-virtual-list')).toBeInTheDocument();
 		expect(mockSidebarVirtualList).toHaveBeenCalledWith(

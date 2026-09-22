@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,38 +7,34 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useShortTimeAgo } from '../../hooks/useTimeAgo';
-import { useOpenedRoom } from '../../lib/RoomManager';
-import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
-import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import {
+	useRoomListActions,
+	useRoomListCollapse,
+	useRoomListGroups,
+	useRoomListPresentation,
+	useRoomListViewer,
+} from '../contexts/RoomListContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useSidebarPresentation } from '../hooks/useSidebarPresentation';
 import { canMoveGroup } from '../lib/reorderableGroups';
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
 const RoomList = () => {
 	const { t } = useTranslation();
-	const userId = useUserId();
-	const isAnonymous = !userId;
 
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
-	const moveCategory = useMoveCategoryPosition();
-	const openedRoom = useOpenedRoom() ?? '';
-	const formatTime = useShortTimeAgo();
-	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
+	const groups = useRoomListGroups();
+	const { toggle: handleClick, onKeyDown: handleKeyDown } = useRoomListCollapse();
+	const { moveCategory } = useRoomListActions();
+	const { userId, isAnonymous, openedRoom, isPriorityEnabled, formatTime } = useRoomListViewer();
 	const {
 		viewMode: sidebarViewMode,
 		extended,
 		rowHeight,
 		ItemTemplate: sideBarItemTemplate,
 		AvatarTemplate: avatarTemplate,
-	} = useSidebarPresentation();
+	} = useRoomListPresentation();
 	const bufferSize = rowHeight * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 	const itemData = useMemo(
 		() => ({

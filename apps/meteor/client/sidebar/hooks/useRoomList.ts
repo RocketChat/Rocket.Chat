@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
@@ -15,25 +15,14 @@ import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInqui
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 import { getGroupRooms } from '../lib/groupRooms';
-import type { GroupUnreadInfo } from '../lib/unreadRooms';
+import type { SidebarRoomListGroup } from '../lib/sidebarGroups';
 import { buildUnreadInfo } from '../lib/unreadRooms';
+
+export type { SidebarRoomListGroup };
 
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
-
-export type SidebarRoomListGroup = {
-	key: string;
-	title: string;
-	translateTitle: boolean;
-	category?: ISidebarCategory;
-	showUnreads: boolean;
-	keepUnreadsOnTop: boolean;
-	collapsed: boolean;
-	rooms: SubscriptionWithRoom[];
-	unreadInfo: GroupUnreadInfo;
-	empty: boolean;
-};
 
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
