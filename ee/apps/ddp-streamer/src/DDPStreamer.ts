@@ -17,7 +17,7 @@ import { Session } from './ddp/Session';
 import { encodeAdded } from './ddp/codec';
 import type { ConnectionLifecycle } from './ddp/lifecycle';
 import { proxy } from './http/proxy';
-import type { MirroredCollection } from './lib/MirroredCollection';
+import type { MeteorCollection } from './lib/MeteorCollection';
 import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;
@@ -29,9 +29,9 @@ const CONNECTION_COUNT_REPORT_INTERVAL_MS = 30_000;
 // by Settings.get + onSettingChanged replaces it.
 const noSettings: SettingsReader = { get: () => undefined };
 
-export type Mirrors = {
-	loginServices: MirroredCollection<Partial<LoginServiceConfiguration>>;
-	clientVersions: MirroredCollection<ClientVersion>;
+export type MeteorCollections = {
+	loginServices: MeteorCollection<Partial<LoginServiceConfiguration>>;
+	clientVersions: MeteorCollection<ClientVersion>;
 };
 
 export class DDPStreamer extends ServiceClass {
@@ -45,7 +45,7 @@ export class DDPStreamer extends ServiceClass {
 		private readonly server: Server,
 		private readonly lifecycle: ConnectionLifecycle,
 		private readonly registry: ConnectionRegistry,
-		private readonly mirrors: Mirrors,
+		private readonly collections: MeteorCollections,
 		notifications: NotificationsModule,
 	) {
 		super();
@@ -61,12 +61,12 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 			if (clientAction === 'removed') {
-				this.mirrors.loginServices.remove(id);
+				this.collections.loginServices.remove(id);
 				return;
 			}
 
 			if (data) {
-				this.mirrors.loginServices.set(id, data);
+				this.collections.loginServices.set(id, data);
 			}
 		});
 
@@ -247,12 +247,12 @@ export class DDPStreamer extends ServiceClass {
 
 	// The architecture is the DDP document id, so it is not repeated in the fields, matching Meteor's autoupdate collection.
 	private setClientVersion({ _id, ...version }: AutoUpdateRecord): void {
-		this.mirrors.clientVersions.set(_id, version);
+		this.collections.clientVersions.set(_id, version);
 	}
 
 	override async started(): Promise<void> {
 		void MeteorService.getLoginServiceConfiguration()
-			.then((records = []) => records.forEach((record) => this.mirrors.loginServices.set(record._id, record)))
+			.then((records = []) => records.forEach((record) => this.collections.loginServices.set(record._id, record)))
 			.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?

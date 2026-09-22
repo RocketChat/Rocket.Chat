@@ -9,7 +9,7 @@ import { makeSession, sentPackets } from './__tests__/helpers';
 import { ConnectionRegistry } from './ddp/ConnectionRegistry';
 import { Server } from './ddp/Server';
 import { ConnectionLifecycle } from './ddp/lifecycle';
-import { MirroredCollection } from './lib/MirroredCollection';
+import { MeteorCollection } from './lib/MeteorCollection';
 import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -64,13 +64,13 @@ function makeMetrics(): jest.Mocked<IServiceMetrics> {
 function makeService() {
 	const lifecycle = new ConnectionLifecycle();
 	const registry = new ConnectionRegistry(lifecycle);
-	const mirrors = { loginServices: new MirroredCollection<any>(), clientVersions: new MirroredCollection<any>() };
-	const service = new DDPStreamer(server, lifecycle, registry, mirrors, notifications);
+	const collections = { loginServices: new MeteorCollection<any>(), clientVersions: new MeteorCollection<any>() };
+	const service = new DDPStreamer(server, lifecycle, registry, collections, notifications);
 	const api = { broadcast: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<IApiService>;
 	service.setApi(api);
 	const metrics = makeMetrics();
 
-	return { lifecycle, registry, mirrors, service, api, metrics };
+	return { lifecycle, registry, collections, service, api, metrics };
 }
 
 async function createService() {
@@ -133,20 +133,20 @@ describe('DDPStreamer lifecycle handling', () => {
 		expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(1);
 	});
 
-	describe('mirrors fed by broker events', () => {
-		it('applies login service configuration changes to the mirror', () => {
-			const { service, mirrors } = makeService();
+	describe('collections fed by broker events', () => {
+		it('applies login service configuration changes to the collection', () => {
+			const { service, collections } = makeService();
 			const record = { _id: 'google', service: 'google', clientId: 'x' };
 
 			service.emit('watch.loginServiceConfiguration', { clientAction: 'inserted', id: 'google', data: record });
-			expect([...mirrors.loginServices.entries()]).toEqual([['google', record]]);
+			expect([...collections.loginServices.entries()]).toEqual([['google', record]]);
 
 			service.emit('watch.loginServiceConfiguration', { clientAction: 'removed', id: 'google' });
-			expect([...mirrors.loginServices.entries()]).toEqual([]);
+			expect([...collections.loginServices.entries()]).toEqual([]);
 		});
 
 		it('stores session versions by architecture without repeating the id in the record', () => {
-			const { service, mirrors } = makeService();
+			const { service, collections } = makeService();
 
 			service.emit('meteor.clientVersionUpdated', {
 				_id: 'web.browser',
@@ -156,7 +156,7 @@ describe('DDPStreamer lifecycle handling', () => {
 				versionHmr: 2,
 			});
 
-			expect([...mirrors.clientVersions.entries()]).toEqual([
+			expect([...collections.clientVersions.entries()]).toEqual([
 				['web.browser', { version: 'v2', versionRefreshable: 'r2', versionNonRefreshable: 'n2', versionHmr: 2 }],
 			]);
 		});

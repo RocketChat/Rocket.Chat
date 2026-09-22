@@ -9,10 +9,10 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 describe('meteor_autoupdate_clientVersions publication', () => {
-	it('publishes the mirror under the same name as its collection with the architecture as id', async () => {
+	it('publishes the collection under the same name as its collection with the architecture as id', async () => {
 		const server = new Server();
-		const mirror = registerAutoupdatePublication(server);
-		mirror.set('web.browser', { version: 'v1', versionRefreshable: 'r1', versionNonRefreshable: 'n1', versionHmr: 1 });
+		const collection = registerAutoupdatePublication(server);
+		collection.set('web.browser', { version: 'v1', versionRefreshable: 'r1', versionNonRefreshable: 'n1', versionHmr: 1 });
 		const session = makeSession();
 
 		await server.subscribe(session, makeSubscription('meteor_autoupdate_clientVersions'));

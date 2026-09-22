@@ -1,15 +1,15 @@
 import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 
-import { publishMirroredCollection } from './mirroredCollection';
+import { publishMeteorCollection } from './meteorCollection';
 import type { Server } from '../ddp/Server';
-import { MirroredCollection } from '../lib/MirroredCollection';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
 export type ClientVersion = Omit<AutoUpdateRecord, '_id'>;
 
-const collection = 'meteor_autoupdate_clientVersions';
+const name = 'meteor_autoupdate_clientVersions';
 
-export function registerAutoupdatePublication(server: Server): MirroredCollection<ClientVersion> {
-	const mirror = new MirroredCollection<ClientVersion>();
-	publishMirroredCollection(server, collection, collection, mirror);
-	return mirror;
+export function registerAutoupdatePublication(server: Server): MeteorCollection<ClientVersion> {
+	const collection = new MeteorCollection<ClientVersion>();
+	publishMeteorCollection(server, name, name, collection);
+	return collection;
 }

@@ -1,7 +1,7 @@
-import { publishMirroredCollection } from './mirroredCollection';
+import { publishMeteorCollection } from './meteorCollection';
 import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 import { Server } from '../ddp/Server';
-import { MirroredCollection } from '../lib/MirroredCollection';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({
@@ -9,14 +9,14 @@ jest.mock('@rocket.chat/logger', () => ({
 	}),
 }));
 
-describe('publishMirroredCollection', () => {
+describe('publishMeteorCollection', () => {
 	let server: Server;
-	let mirror: MirroredCollection<{ name: string }>;
+	let collection: MeteorCollection<{ name: string }>;
 
 	beforeEach(() => {
 		server = new Server();
-		mirror = new MirroredCollection();
-		publishMirroredCollection(server, 'things.publication', 'things', mirror);
+		collection = new MeteorCollection();
+		publishMeteorCollection(server, 'things.publication', 'things', collection);
 	});
 
 	async function subscribe(id = 'sub1') {
@@ -26,9 +26,9 @@ describe('publishMirroredCollection', () => {
 	}
 
 	it('replays the current records under the collection name and reports ready', async () => {
-		mirror.set('a', { name: 'first' });
-		mirror.set('b', { name: 'second' });
-		mirror.set('a', { name: 'first, updated' });
+		collection.set('a', { name: 'first' });
+		collection.set('b', { name: 'second' });
+		collection.set('a', { name: 'first, updated' });
 
 		const session = await subscribe();
 
@@ -43,9 +43,9 @@ describe('publishMirroredCollection', () => {
 		const session = await subscribe();
 		session.send.mockClear();
 
-		mirror.set('a', { name: 'first' });
-		mirror.set('a', { name: 'renamed' });
-		mirror.remove('a');
+		collection.set('a', { name: 'first' });
+		collection.set('a', { name: 'renamed' });
+		collection.remove('a');
 
 		expect(sentPackets(session)).toEqual([
 			{ msg: 'added', collection: 'things', id: 'a', fields: { name: 'first' } },
@@ -61,7 +61,7 @@ describe('publishMirroredCollection', () => {
 		stopped.send.mockClear();
 		active.send.mockClear();
 
-		mirror.set('a', { name: 'first' });
+		collection.set('a', { name: 'first' });
 
 		expect(stopped.send).not.toHaveBeenCalled();
 		expect(sentPackets(active)).toEqual([{ msg: 'added', collection: 'things', id: 'a', fields: { name: 'first' } }]);

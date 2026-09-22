@@ -9,10 +9,10 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 describe('meteor.loginServiceConfiguration publication', () => {
-	it('publishes the mirror under the Meteor accounts collection name with the full record as fields', async () => {
+	it('publishes the collection under the Meteor accounts collection name with the full record as fields', async () => {
 		const server = new Server();
-		const mirror = registerLoginServiceConfigurationPublication(server);
-		mirror.set('github', { _id: 'github', service: 'github', clientId: 'seeded' });
+		const collection = registerLoginServiceConfigurationPublication(server);
+		collection.set('github', { _id: 'github', service: 'github', clientId: 'seeded' });
 		const session = makeSession();
 
 		await server.subscribe(session, makeSubscription('meteor.loginServiceConfiguration'));

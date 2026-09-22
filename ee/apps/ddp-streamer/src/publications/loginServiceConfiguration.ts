@@ -1,11 +1,11 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { publishMirroredCollection } from './mirroredCollection';
+import { publishMeteorCollection } from './meteorCollection';
 import type { Server } from '../ddp/Server';
-import { MirroredCollection } from '../lib/MirroredCollection';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
-export function registerLoginServiceConfigurationPublication(server: Server): MirroredCollection<Partial<LoginServiceConfiguration>> {
-	const mirror = new MirroredCollection<Partial<LoginServiceConfiguration>>();
-	publishMirroredCollection(server, 'meteor.loginServiceConfiguration', 'meteor_accounts_loginServiceConfiguration', mirror);
-	return mirror;
+export function registerLoginServiceConfigurationPublication(server: Server): MeteorCollection<Partial<LoginServiceConfiguration>> {
+	const collection = new MeteorCollection<Partial<LoginServiceConfiguration>>();
+	publishMeteorCollection(server, 'meteor.loginServiceConfiguration', 'meteor_accounts_loginServiceConfiguration', collection);
+	return collection;
 }
