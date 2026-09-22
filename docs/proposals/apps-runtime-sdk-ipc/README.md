@@ -60,12 +60,12 @@ handler.** Nothing is derived from a name at runtime.
 | Piece | Location | Imported by |
 | --- | --- | --- |
 | Contract builders — `request`, `notification`, `type<T>`, `shaped<T>` | `protocol/src/rpc/contract.ts` | the contract modules |
-| The app→host contract — paths, kinds, Zod input schemas, output types, declared errors | `protocol/src/contracts/appToHost/` | host, value import; `base-runtime`, `import type` only |
+| The app→host contract — paths, kinds, Zod input schemas, output types, declared errors | `protocol/src/contracts/hostContract/` | host, value import; `base-runtime`, `import type` only |
 | `ProcedureError` and `isProcedureError` | `protocol/src/rpc/errors.ts` — zero dependencies | `rpc/server.ts`, `rpc/client.ts` |
 | `implement`, middleware, `call` and `dispatch` | `protocol/src/rpc/server.ts` | host, value import |
 | `createLocalClient` | `protocol/src/rpc/local.ts` | tests only |
 | The client | `protocol/src/rpc/client.ts` — zero dependencies | `base-runtime`, value import |
-| The implementation — one handler per procedure, plus middleware | `src/server/runtime/appToHost/` | the controller |
+| The implementation — one handler per procedure, plus middleware | `src/server/runtime/hostContract/` | the controller |
 | The client instance | `base-runtime/src/lib/host.ts` | the accessors |
 
 `protocol/` owns the machinery and the contract. The contract knows nothing about bridges, so
@@ -80,7 +80,7 @@ is the intent of ADR 0006 decision 12.
 ### The contract
 
 ```ts
-// protocol/src/contracts/appToHost/message.ts
+// protocol/src/contracts/hostContract/message.ts
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 
 export const message = {
@@ -95,8 +95,8 @@ export const message = {
 	}),
 };
 
-// protocol/src/contracts/appToHost/index.ts
-export const appToHostContract = {
+// protocol/src/contracts/hostContract/index.ts
+export const hostContract = {
 	message,
 	room,
 	livechat,
@@ -106,7 +106,7 @@ export const appToHostContract = {
 	// …
 };
 
-export type AppToHostContract = typeof appToHostContract;
+export type HostContract = typeof hostContract;
 ```
 
 - **The input is one named object, not a positional tuple.** JSON-RPC 2.0 allows `params` as an
@@ -131,7 +131,7 @@ oRPC (`oc.errors({ … })`), on the error taxonomy of ADR 0006 decision 6. The e
 possible later form of `room.getById`, not the form of the first migration:
 
 ```ts
-// protocol/src/contracts/appToHost/room.ts
+// protocol/src/contracts/hostContract/room.ts
 export const room = {
 	getById: request({
 		input: z.strictObject({ roomId: z.string() }),
@@ -231,16 +231,16 @@ The [`benchmarks/`](./benchmarks/README.md) directory has the probes behind thes
 ### The implementation
 
 ```ts
-// src/server/runtime/appToHost/message.ts
-export const messageHandlers: Handlers<AppToHostContract['message'], HostContext> = {
+// src/server/runtime/hostContract/message.ts
+export const messageHandlers: Handlers<HostContract['message'], HostContext> = {
 	addReaction: ({ ctx, input }) =>
 		ctx.bridges.getMessageBridge().doAddReaction(input.messageId, input.userId, input.reaction, ctx.appId),
 
 	getById: ({ ctx, input }) => ctx.bridges.getMessageBridge().doGetById(input.messageId, ctx.appId),
 };
 
-// src/server/runtime/appToHost/index.ts
-export const appToHost = implement(appToHostContract, {
+// src/server/runtime/hostContract/index.ts
+export const hostImplementation = implement(hostContract, {
 	message: messageHandlers,
 	room: roomHandlers,
 	// …
@@ -393,11 +393,11 @@ The two middlewares of the first migration:
 
 ```ts
 // base-runtime/src/lib/host.ts
-import type { AppToHostContract } from '@rocket.chat/apps/protocol/dist/contracts/appToHost';
+import type { HostContract } from '@rocket.chat/apps/protocol/dist/contracts/hostContract';
 import { createClient } from '@rocket.chat/apps/protocol/dist/rpc/client';
 
-export type HostClient = Client<AppToHostContract>;
-export const createHostClient = (sender: typeof Messenger.sendRequest): HostClient => createClient<AppToHostContract>(sender);
+export type HostClient = Client<HostContract>;
+export const createHostClient = (sender: typeof Messenger.sendRequest): HostClient => createClient<HostContract>(sender);
 
 // base-runtime/src/lib/accessors/modify/MessageUpdater.ts
 await this.host.request('message.addReaction', { messageId, userId, reaction });
@@ -421,7 +421,7 @@ process. It is the in-process client of oRPC (`createRouterClient`), on the in-h
 ```ts
 // packages/apps/tests/… — an accessor test on the real handlers
 const bridges = new TestBridges();
-const host = createLocalClient(appToHost, { appId: 'app1', bridges, … });
+const host = createLocalClient(hostImplementation, { appId: 'app1', bridges, … });
 
 await new ModifyCreator(host).finish(messageBuilder);
 
@@ -483,19 +483,19 @@ packages/apps/protocol/src/
 │   ├── local.ts             createLocalClient()                                 — Zod, tests only
 │   └── client.ts            createClient(), Client<>                            — zero deps, runtime
 └── contracts/
-    └── appToHost/
-        ├── index.ts         appToHostContract and type AppToHostContract
+    └── hostContract/
+        ├── index.ts         hostContract and type HostContract
         ├── shared.ts        Ref and other small reusable schemas
         └── message.ts       the `message` domain
 ```
 
 ```ts
-// protocol/src/contracts/appToHost/shared.ts
+// protocol/src/contracts/hostContract/shared.ts
 export const Ref = z.looseObject({ id: z.string() });
 ```
 
 ```ts
-// protocol/src/contracts/appToHost/message.ts
+// protocol/src/contracts/hostContract/message.ts
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 
 import { request, shaped, type } from '../../rpc/contract';
@@ -515,21 +515,21 @@ export const message = {
 ### In the host
 
 ```ts
-// src/server/runtime/appToHost/message.ts
-import type { AppToHostContract } from '@rocket.chat/apps/protocol/dist/contracts/appToHost';
+// src/server/runtime/hostContract/message.ts
+import type { HostContract } from '@rocket.chat/apps/protocol/dist/contracts/hostContract';
 import type { Handlers } from '@rocket.chat/apps/protocol/dist/rpc/server';
 
 import type { HostContext } from './context';
 
-export const messageHandlers: Handlers<AppToHostContract['message'], HostContext> = {
+export const messageHandlers: Handlers<HostContract['message'], HostContext> = {
 	create: ({ ctx, input }) => ctx.bridges.getMessageBridge().doCreate(input.message, ctx.appId),
 	// …
 };
 ```
 
 ```ts
-// src/server/runtime/appToHost/index.ts
-export const appToHost = implement(appToHostContract, {
+// src/server/runtime/hostContract/index.ts
+export const hostImplementation = implement(hostContract, {
 	message: messageHandlers,
 	// … one entry per contract domain; a missing one is a compile error
 });
@@ -546,7 +546,7 @@ private readonly rpcContext: HostContext = {
 };
 
 private async handleIncomingMessage(message: jsonrpc.NotificationObject | jsonrpc.RequestObject): Promise<void> {
-	const response = await appToHost.dispatch(message, this.rpcContext);
+	const response = await hostImplementation.dispatch(message, this.rpcContext);
 
 	if (response) {
 		this.messenger.send(response);
@@ -738,7 +738,7 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 
 ### Not scheduled
 
-**Host→app on the same machinery.** A host→app contract in `protocol/`, implemented by
+**Host→app on the same machinery.** A host→app contract, `AppContract`, in `protocol/`, implemented by
 `base-runtime` and called by the host, would replace the method-string dispatch on the subprocess
 side too. It needs PR 10's flattened method set first. The contract model is what makes it
 possible without either side importing the other.
