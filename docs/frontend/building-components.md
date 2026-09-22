@@ -28,8 +28,14 @@ between it and being rendered: a story has to mock it, a test has to stand it up
 moving the component means carrying that context along. A provider pays that cost once,
 for a whole screen.
 
-`packages/ui-voip` is the precedent — its providers reach endpoints, streams and
-settings, and nothing under its `components/` reads an application context at all.
+`packages/ui-voip` is the precedent — its providers reach endpoints, streams and settings,
+and its `components/` read almost no application context; `DevicePicker.tsx` and
+`CallHistoryInternalUser.tsx` are the two that still do, and they are the exception rather
+than the shape to copy.
+
+`packages/ui-video-conf` is the stricter one: after its user stack was given `showAvatars`
+and `showRealName`, no component in that package reads a setting, a preference, a
+permission, the viewer or the route at all.
 
 ### Settings, permissions and the viewer
 
@@ -209,6 +215,36 @@ and a spec can assert without a server.
 
 Can this component be rendered from a plain object — no workspace, no router, no server?
 If not, whatever stands in the way belongs on the provider.
+
+### When the point is a second UI
+
+Everything above buys testability. Swapping the UI asks for more: the provider has to carry
+the *whole* screen, or the alternative reimplements whatever was left out.
+
+`packages/ui-conference` is the shape to copy. Its contract is grouped by kind of thing —
+the entity, the session, `actions`, `slots`, `viewer` — with a full default value so any
+corner renders from a fixture, and the provider itself lives in the application rather than
+the package.
+
+Three parts of it are what make a second UI possible:
+
+- **One `viewer` bag.** Every `useSetting`/`usePermission`/`useUserPreference` the screen
+  needs, read once and handed down as settled answers, instead of scattered through the tree.
+- **Slots for what is genuinely the product's.** A whole room with its composer, a people
+  picker that has to read the room: `chat?: ReactNode`, `renderUserPicker?: (props) =>
+  ReactNode`. They arrive through the context, so the alternative UI inherits them.
+- **A default value that renders.** Not one that throws, which would make every story supply
+  the whole contract; not one that fetches, which is the coupling the split exists to remove.
+
+The leaks to watch for, all of them real ones found in this codebase:
+
+- a provider that **renders its own UI**, so mounting the logic hands you the shipped screen
+- an action that opens a **specific modal** — deciding to transfer a call is logic, the modal
+  is not
+- **UI vocabulary in the contract**: drag coordinates, or a union naming the three surfaces
+  that happen to exist today
+- a hook in the logic layer returning **icon names or copy**
+- a **state→screen mapping that exists only as JSX**, so it cannot be reused or tested
 
 ## Simple components
 
