@@ -29,9 +29,9 @@ export function addSettings(): Promise<void> {
 					i18nDescription: 'ABAC_Required_Attributes_Description',
 					enableQuery: abacEnabledQuery,
 				});
-				// TODO(ABAC-P4/D13): `general` is public, attribute-less and `default: true`, so
-				// enforcement locks it while `addUserToDefaultChannels` still subscribes every new user
-				// into it. Whether it is exempted or has `default` cleared at rollout is still open.
+				// TODO(ABAC-P4/D13): auto-join now skips every room enforcement locks, which under
+				// enforcement includes `general`, so a new user can land in no channel at all. What
+				// the default room should be in that case is still open.
 				await this.add('ABAC_Enforce_All_Rooms', false, {
 					type: 'boolean',
 					public: true,

@@ -847,33 +847,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			}
 		});
 
-		it('should fail adding ABAC attribute to private default room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should fail adding ABAC attribute to team default private room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should allow adding ABAC attribute after removing default flag from private room', async () => {
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to private default room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -884,37 +858,18 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
-		it('should allow adding ABAC attribute after removing team default flag', async () => {
-			await request
-				.post(`${v1}/teams.updateRoom`)
-				.set(credentials)
-				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
-				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
-				.expect(200);
-
+		it('should allow adding ABAC attribute to team default private room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['green'] })
+				.send({ values: ['red'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should enforce restriction on team main room when default using rooms.saveRoomSettings', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to a team main room that is default', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -1064,28 +1019,27 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
 		});
 
-		it('should fail converting ABAC-managed private room into default room', async () => {
+		it('should allow converting ABAC-managed private room into default room', async () => {
 			await request
 				.post(`${v1}/rooms.saveRoomSettings`)
 				.set(credentials)
 				.send({ rid: abacRoomId, default: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('Setting an ABAC managed room as default is not allowed [error-action-not-allowed]');
+					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should fail converting ABAC-managed team room into team default room', async () => {
+		it('should allow converting ABAC-managed team room into team default room', async () => {
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
 				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-room-is-abac-managed');
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
 				});
 		});
 	});
