@@ -35,16 +35,16 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
 	   keep a single outline. */
 	--rcx-input-colors-background-color: rgba(0, 0, 0, 0.35);
 	--rcx-input-colors-disabled-background-color: rgba(0, 0, 0, 0.35);
-	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.08);
-	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.16);
-	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.16);
+	--rcx-input-colors-border-color: rgba(255, 255, 255, 0.05);
+	--rcx-input-colors-hover-border-color: rgba(255, 255, 255, 0.1);
+	--rcx-input-colors-active-border-color: rgba(255, 255, 255, 0.1);
 	--rcx-input-colors-disabled-border-color: transparent;
 	--rcx-input-colors-focus-shadow-color: transparent;
 }
 .rcx-input-box__wrapper.rcx-input-box__wrapper {
 	background-color: rgba(0, 0, 0, 0.35) !important;
 }
-/* the inset sells the "cut into" depth that lets an 8% border suffice —
+/* the inset sells the "cut into" depth that lets a 5% border suffice —
    part of the field recipe (fill + stroke + inset), forbidden elsewhere */
 .rcx-input-box__wrapper.rcx-input-box__wrapper:not(:focus-within) {
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
