@@ -1,7 +1,7 @@
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import { useId, useRef, type ComponentType } from 'react';
+import { useId, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -26,7 +26,6 @@ type SidePanelProps<R = any> = {
 
 const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
 	const { t } = useTranslation();
-	const ref = useRef(null);
 	const unreadFieldId = useId();
 	const openedRoom = useOpenedRoom();
 	const {
@@ -35,7 +34,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 	} = useLayout();
 	const isRoomFilter = useIsRoomFilter();
 
-	usePreventDefault(ref);
+	const ref = usePreventDefault();
 
 	return (
 		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>

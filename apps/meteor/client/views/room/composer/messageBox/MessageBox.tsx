@@ -262,7 +262,7 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
+	const { autoGrowRef, textAreaStyle } = useAutoGrow(isRecordingAudio);
 
 	const federationMatrixEnabled = useIsFederationEnabled();
 

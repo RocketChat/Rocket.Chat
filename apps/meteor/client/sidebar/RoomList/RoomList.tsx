@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomListCollapser from './RoomListCollapser';
@@ -43,7 +44,6 @@ const RoomList = () => {
 	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
-	const ref = useRef<HTMLElement | null>(null);
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode: SidebarViewMode = useUserPreference('sidebarViewMode') === 'extended' ? 'extended' : 'condensed';
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
@@ -75,8 +75,9 @@ const RoomList = () => {
 		[groups],
 	);
 
-	usePreventDefault(ref);
-	useShortcutOpenMenu(ref);
+	const preventDefaultRef = usePreventDefault();
+	const shortcutOpenMenuRef = useShortcutOpenMenu();
+	const ref = useMergedRefs(preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
