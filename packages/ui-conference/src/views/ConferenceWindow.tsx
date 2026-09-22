@@ -13,11 +13,10 @@ import CallTopBar from '../components/CallTopBar';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from '../components/ConferenceIframe';
 import { ChatPanelContext } from '../context/ChatPanelContext';
+import type { ConferencePanel } from '../context/ConferenceContext';
 import { useConference } from '../context/ConferenceContext';
 import { useRinging } from '../hooks/useRinging';
 import { PREFLIGHT_FACES_SHOWN } from '../lib/constants';
-
-type ConferencePanel = 'members' | 'chat';
 
 /**
  * Folds a badge into its button's name. The badges are `aria-hidden` and `aria-label` overrides a button's
@@ -33,26 +32,28 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
  * from a fixture — and what keeps the one part it cannot build, the call's chat, a node it is handed.
  */
 const ConferenceWindow = () => {
-	const { room, session, call, actions, slots, thread, viewer } = useConference();
+	const { room, session, call, actions, slots, thread, viewer, panel } = useConference();
 	const { t } = useTranslation();
 
-	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>();
+	// Which panel is open is the window's own until the application asks for it — see `panel` on the context.
+	const [ownPanel, setOwnPanel] = useState<ConferencePanel | undefined>();
+	const activePanel = panel ? panel.active : ownPanel;
+	const setActivePanel = panel?.set ?? setOwnPanel;
 	const chatVisible = activePanel === 'chat';
 
 	const togglePanel = useCallback(
-		(panel: ConferencePanel) => {
-			// A thread is shown in the chat panel, so any click that leaves the chat closed takes the thread with
-			// it — including switching straight to the members panel.
-			const chatStaysOpen = panel === 'chat' && activePanel !== 'chat';
-
-			setActivePanel((current) => (current === panel ? undefined : panel));
-
-			if (!chatStaysOpen) {
-				thread.close();
-			}
-		},
-		[activePanel, thread],
+		(target: ConferencePanel) => setActivePanel(activePanel === target ? undefined : target),
+		[activePanel, setActivePanel],
 	);
+
+	// A thread is shown inside the chat panel, so it goes when the chat does. Keyed on the panel rather than on
+	// the click because the provider's own chat button reaches `panel.set` directly, and a thread left behind by
+	// that route came back the next time the chat was opened.
+	useEffect(() => {
+		if (!chatVisible) {
+			thread.close();
+		}
+	}, [chatVisible, thread]);
 
 	// Stable: it is a context value the chat panel reads, and rebuilding it re-renders the product's whole room.
 	const closeChat = useMemo(() => ({ close: () => togglePanel('chat') }), [togglePanel]);

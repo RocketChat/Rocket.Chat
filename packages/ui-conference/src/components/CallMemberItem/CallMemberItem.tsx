@@ -9,12 +9,20 @@ import type { ConferenceMember } from '../../context/definitions';
 import { useIsRinging } from '../../hooks/useRinging';
 import type { ConferenceMemberStatus } from '../../lib/memberStatus';
 import { getConferenceMemberStatus } from '../../lib/memberStatus';
+import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
+import CallParticipantControls from '../CallParticipantControls/CallParticipantControls';
+import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatus';
 
 type CallMemberItemProps = {
 	member: ConferenceMember;
 	hasChatAccess: boolean;
 	/** Whether this member's ring has been asked for and not yet answered. */
 	ringing?: boolean;
+	/**
+	 * What the provider lets this row do, for a member it has in the call. Absent for everyone else: a member
+	 * the provider does not have is one no request could name.
+	 */
+	controls?: Omit<CallParticipantControlsProps, 'name'>;
 	onRing: (memberId: string) => void;
 };
 
@@ -24,7 +32,7 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	invited: 'Waiting_for_answer',
 };
 
-const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, onRing }: CallMemberItemProps) => {
+const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, controls, onRing }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
 	const { useRealName, canRingUsers } = useConferenceViewer();
@@ -50,6 +58,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 							{displayUsername}
 						</Box>
 					)}
+					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
 						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.
 						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
@@ -76,6 +85,11 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 						disabled={ringRequested}
 						onClick={() => onRing(member._id)}
 					/>
+				</OptionColumn>
+			)}
+			{controls && (
+				<OptionColumn>
+					<CallParticipantControls name={nameOrUsername} {...controls} />
 				</OptionColumn>
 			)}
 		</Option>

@@ -4,7 +4,7 @@ import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceViewer } from '../../context/ConferenceContext';
+import { ConferenceContext, useConference, useConferenceViewer } from '../../context/ConferenceContext';
 import type { ConferenceChatAccess } from '../../context/definitions';
 import { hasConferenceChatAccess } from '../../lib/chatAccess';
 import ChatAccessModal from '../ChatAccessModal/ChatAccessModal';
@@ -24,6 +24,7 @@ type ChatAccessNoticeProps = {
 const ChatAccessNotice = ({ access, onDismiss }: ChatAccessNoticeProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const conference = useConference();
 	const { uid } = useConferenceViewer();
 
 	// Someone merely invited may never turn up, and telling everyone else about a person who isn't there is
@@ -49,7 +50,18 @@ const ChatAccessNotice = ({ access, onDismiss }: ChatAccessNoticeProps) => {
 					{t('__count__participants_cannot_see_the_chat', { count: present.length })}
 				</Box>
 				<Box display='flex' alignItems='center' flexShrink={0} gap={4}>
-					<Button small onClick={() => setModal(<ChatAccessModal access={access} onClose={() => setModal(null)} />)}>
+					<Button
+						small
+						// Carried across because the app's modal region is mounted above this window: see
+						// `CallMembersPanel`, which opens its own modal the same way and for the same reason.
+						onClick={() =>
+							setModal(
+								<ConferenceContext.Provider value={conference}>
+									<ChatAccessModal access={access} onClose={() => setModal(null)} />
+								</ConferenceContext.Provider>,
+							)
+						}
+					>
 						{t('Review')}
 					</Button>
 					{onDismiss && <IconButton small secondary icon='cross' aria-label={t('Dismiss')} onClick={onDismiss} />}
