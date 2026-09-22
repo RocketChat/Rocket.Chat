@@ -2360,7 +2360,6 @@
   "error-business-hour-finish-time-equals-start-time": "Start- och sluttid kan inte vara samma",
   "error-business-hours-are-closed": "Kontorstiden är slut",
   "error-canned-response-not-found": "Standardsvaret hittades inte",
-  "error-cannot-convert-default-room-to-abac": "Standard- och teamstandardrum kan inte konverteras till attributbaserade åtkomstkontrollerade rum.",
   "error-cannot-delete-app-user": "Det är inte tillåtet att ta bort appanvändaren. Avinstallera den motsvarande appen om du vill ta bort användaren.",
   "error-cannot-place-chat-on-hold": "Du kan inte sätta chatten i vänteläge",
   "error-cant-add-federated-users": "Kan inte lägga till samordnade användare i ett icke federerat rum",
