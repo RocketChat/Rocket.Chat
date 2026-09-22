@@ -3,10 +3,10 @@ import { Streamer } from '@rocket.chat/streamer';
 import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
-import type { Client } from './Client';
-import type { Server } from './Server';
-import { encodeChanged, preframe } from './codec';
-import { isEmpty } from './lib/utils';
+import type { Client } from '../ddp/Client';
+import type { Server } from '../ddp/Server';
+import { encodeChanged, preframe } from '../ddp/codec';
+import { isEmpty } from '../lib/utils';
 
 export const createStreamAdapter = (server: Server) =>
 	class Stream<N extends StreamNames> extends Streamer<N> {

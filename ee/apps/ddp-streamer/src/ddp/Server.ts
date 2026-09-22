@@ -5,9 +5,9 @@ import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
 import type { Client } from './Client';
+import type { IPacket } from './IPacket';
 import { Publication } from './Publication';
 import { encodeNosub, encodeResult, encodeUpdated } from './codec';
-import type { IPacket } from './types/IPacket';
 
 const logger = new Logger('DDP-Streamer');
 

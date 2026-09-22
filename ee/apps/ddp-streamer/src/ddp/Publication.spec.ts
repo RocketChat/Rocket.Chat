@@ -1,5 +1,5 @@
 import { Publication } from './Publication';
-import { makeClient, makeSubscription, sentPackets } from './__tests__/helpers';
+import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
 
 describe('Publication', () => {
 	let client: ReturnType<typeof makeClient>;

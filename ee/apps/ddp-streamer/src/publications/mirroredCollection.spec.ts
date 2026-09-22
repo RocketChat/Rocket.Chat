@@ -1,6 +1,6 @@
-import { Server } from '../Server';
 import { publishMirroredCollection } from './mirroredCollection';
 import { makeClient, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { Server } from '../ddp/Server';
 import { MirroredCollection } from '../lib/MirroredCollection';
 
 jest.mock('@rocket.chat/logger', () => ({

@@ -3,9 +3,9 @@ import { EventEmitter } from 'events';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
-import type { Client } from '../Client';
-import type { Publication } from '../Publication';
-import type { IPacket } from '../types/IPacket';
+import type { Client } from '../ddp/Client';
+import type { IPacket } from '../ddp/IPacket';
+import type { Publication } from '../ddp/Publication';
 
 export function makeClient(readyState: number = WebSocket.OPEN) {
 	const client = Object.assign(new EventEmitter(), {

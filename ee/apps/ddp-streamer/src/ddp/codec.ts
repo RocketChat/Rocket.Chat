@@ -2,8 +2,8 @@ import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
+import type { IPacket } from './IPacket';
 import { DDP_EVENTS } from './constants';
-import type { IPacket } from './types/IPacket';
 
 export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 

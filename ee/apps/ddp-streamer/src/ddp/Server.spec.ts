@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 
 import { Publication } from './Publication';
 import { Server } from './Server';
-import { makeClient, makePacket, makeSubscription, sentPackets } from './__tests__/helpers';
+import { makeClient, makePacket, makeSubscription, sentPackets } from '../__tests__/helpers';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

@@ -22,10 +22,10 @@ void (async () => {
 	// need to import service after models are registered
 	const { NotificationsModule, StreamerCentral } = await import('@rocket.chat/streamer');
 	const { DDPStreamer } = await import('./DDPStreamer');
-	const { Server } = await import('./Server');
-	const { createStreamAdapter } = await import('./Streamer');
-	const { ConnectionLifecycle } = await import('./lifecycle');
-	const { ConnectionRegistry } = await import('./ConnectionRegistry');
+	const { Server } = await import('./ddp/Server');
+	const { createStreamAdapter } = await import('./streams/StreamAdapter');
+	const { ConnectionLifecycle } = await import('./ddp/lifecycle');
+	const { ConnectionRegistry } = await import('./ddp/ConnectionRegistry');
 	const { registerAccountMethods } = await import('./methods/accounts');
 	const { registerPresenceMethods } = await import('./methods/presence');
 	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');

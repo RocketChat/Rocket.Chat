@@ -1,8 +1,8 @@
 import { Account, MeteorError } from '@rocket.chat/core-services';
 
-import type { Server } from '../Server';
-import { WS_ERRORS } from '../constants';
-import type { ConnectionLifecycle } from '../lifecycle';
+import type { Server } from '../ddp/Server';
+import { WS_ERRORS } from '../ddp/constants';
+import type { ConnectionLifecycle } from '../ddp/lifecycle';
 
 export function registerAccountMethods(server: Server, lifecycle: ConnectionLifecycle): void {
 	server.methods({

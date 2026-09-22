@@ -11,13 +11,13 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
-import { Client } from './Client';
-import type { ConnectionRegistry } from './ConnectionRegistry';
-import type { Server } from './Server';
-import { encodeAdded } from './codec';
+import { Client } from './ddp/Client';
+import type { ConnectionRegistry } from './ddp/ConnectionRegistry';
+import type { Server } from './ddp/Server';
+import { encodeAdded } from './ddp/codec';
+import type { ConnectionLifecycle } from './ddp/lifecycle';
+import { proxy } from './http/proxy';
 import type { MirroredCollection } from './lib/MirroredCollection';
-import type { ConnectionLifecycle } from './lifecycle';
-import { proxy } from './proxy';
 import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;

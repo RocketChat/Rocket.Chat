@@ -4,13 +4,13 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
-import { ConnectionRegistry } from './ConnectionRegistry';
 import { DDPStreamer } from './DDPStreamer';
-import { Server } from './Server';
-import { createStreamAdapter } from './Streamer';
 import { makeClient, sentPackets } from './__tests__/helpers';
+import { ConnectionRegistry } from './ddp/ConnectionRegistry';
+import { Server } from './ddp/Server';
+import { ConnectionLifecycle } from './ddp/lifecycle';
 import { MirroredCollection } from './lib/MirroredCollection';
-import { ConnectionLifecycle } from './lifecycle';
+import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

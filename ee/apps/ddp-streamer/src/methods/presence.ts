@@ -1,7 +1,7 @@
 import { Presence } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import type { Server } from '../Server';
+import type { Server } from '../ddp/Server';
 
 export function registerPresenceMethods(server: Server): void {
 	server.methods({

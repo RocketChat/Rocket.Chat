@@ -1,7 +1,7 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import type { Server } from '../Server';
 import { publishMirroredCollection } from './mirroredCollection';
+import type { Server } from '../ddp/Server';
 import { MirroredCollection } from '../lib/MirroredCollection';
 
 export function registerLoginServiceConfigurationPublication(server: Server): MirroredCollection<Partial<LoginServiceConfiguration>> {

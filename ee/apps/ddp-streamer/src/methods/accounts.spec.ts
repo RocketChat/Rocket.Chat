@@ -1,10 +1,10 @@
 import { Account, MeteorError } from '@rocket.chat/core-services';
 
-import { Server } from '../Server';
-import { makeClient, makePacket, sentPackets } from '../__tests__/helpers';
-import { WS_ERRORS } from '../constants';
-import { ConnectionLifecycle } from '../lifecycle';
 import { registerAccountMethods } from './accounts';
+import { makeClient, makePacket, sentPackets } from '../__tests__/helpers';
+import { Server } from '../ddp/Server';
+import { WS_ERRORS } from '../ddp/constants';
+import { ConnectionLifecycle } from '../ddp/lifecycle';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

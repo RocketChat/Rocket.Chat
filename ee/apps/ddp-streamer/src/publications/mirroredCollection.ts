@@ -1,4 +1,4 @@
-import type { Server } from '../Server';
+import type { Server } from '../ddp/Server';
 import type { MirroredCollection } from '../lib/MirroredCollection';
 
 /** Publishes a mirror as a DDP collection: replays what it holds, forwards its changes until the subscription stops. */

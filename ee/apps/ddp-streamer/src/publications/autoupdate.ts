@@ -1,7 +1,7 @@
 import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 
-import type { Server } from '../Server';
 import { publishMirroredCollection } from './mirroredCollection';
+import type { Server } from '../ddp/Server';
 import { MirroredCollection } from '../lib/MirroredCollection';
 
 export type ClientVersion = Omit<AutoUpdateRecord, '_id'>;
