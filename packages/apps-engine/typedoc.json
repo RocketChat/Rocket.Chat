@@ -5,6 +5,7 @@
     "entryPoints": ["./src/definition"],
     "excludePrivate": true,
     "excludeInternal": true,
+    "exclude": ["**/index.ts"],
     "out": "docs",
     "gitRevision": "master",
     "intentionallyNotExported": [
