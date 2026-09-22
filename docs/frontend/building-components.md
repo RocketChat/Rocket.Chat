@@ -133,6 +133,78 @@ storage by them — then pass the id and say so in its name. Otherwise the provi
 answer the question the id was going to be used to ask, and expose the actions and the
 derived facts rather than the identity behind them.
 
+### A rule is a function, not an effect
+
+❌ — what a room may be, decided across four effects that each fire on their own
+dependency and write back into form state:
+
+```tsx
+useEffect(() => {
+	if (federated) {
+		setValue('encrypted', false);
+		setValue('broadcast', false);
+		setValue('readOnly', false);
+	}
+}, [federated, setValue]);
+
+useEffect(() => {
+	if (!isPrivate) {
+		setValue('encrypted', false);
+	}
+}, [isPrivate, setValue]);
+```
+
+✅ — one function that answers both questions the screen has:
+
+```ts
+const { room, editable } = resolveRoomCreation(draft, policy);
+```
+
+An effect that only reads state and writes state is a derivation in an effect's clothes.
+It cannot be tested without rendering the component, it is invisible as a rule because it
+is spread across several dependency arrays, and the next screen that needs the same rule
+writes it again — differently. Effects are for reaching outside React.
+
+What remains after hoisting is still an effect, and that is fine: writing the answer into
+a form library's store *is* reaching outside React. Keep it, and keep it branchless. The
+deciding already happened.
+
+**Check the transition before you delete it.** A rule that clears a field is not always a
+mask. Making a room public does not hide the encryption choice, it drops it — turn the
+room private again and the toggle is off, not restored. Rewriting that as a pure "derive
+the effective value" loses a decision someone made on purpose. The tests pinning it are
+the ones to run first.
+
+### A component reports, it does not route
+
+❌
+
+```tsx
+await forwardChat(payload);
+dispatchToastMessage({ type: 'success', message: t('Transferred') });
+router.navigate('/home');
+```
+
+✅
+
+```tsx
+await onForward({ department, username, comment });
+onCancel();
+```
+
+A modal for handing a chat to someone else should not know the workspace's home address.
+It calls the action it was given and says what happened; what that means for the screen
+around it — where to go, what to close, what to announce — belongs to the caller, the
+only place that knows.
+
+The toast is the same decision in smaller print: a component that dispatches its own
+success message has decided, on behalf of every caller it will ever have, that succeeding
+is worth announcing.
+
+`useQuickActions` already hands `TranscriptModal` its `onRequest`, `onSend` and
+`onDiscard`. A screen whose actions arrive as values is one a story can drive with spies
+and a spec can assert without a server.
+
 ### The question that settles it
 
 Can this component be rendered from a plain object — no workspace, no router, no server?
