@@ -16,8 +16,11 @@ jest.mock('@rocket.chat/logger', () => ({
 
 const collection = 'meteor_accounts_loginServiceConfiguration';
 
+const subscribedClients: ReturnType<typeof makeClient>[] = [];
+
 async function subscribe(id: string) {
 	const client = makeClient();
+	subscribedClients.push(client);
 	await server.subscribe(client, { ...makeSubscription('meteor.loginServiceConfiguration'), id });
 	return client;
 }
@@ -25,6 +28,13 @@ async function subscribe(id: string) {
 describe('meteor.loginServiceConfiguration publication', () => {
 	beforeAll(async () => {
 		await new Promise(setImmediate);
+	});
+
+	// Subscriptions register listeners on a module level emitter, so a leaked one would keep the
+	// mirror updated on behalf of the code under test and mask the very regression covered here.
+	afterEach(() => {
+		subscribedClients.forEach((client) => client.subscriptions.forEach((subscription) => subscription.stop()));
+		subscribedClients.length = 0;
 	});
 
 	it('replays the seeded configuration and reports ready', async () => {
@@ -75,5 +85,7 @@ describe('meteor.loginServiceConfiguration publication', () => {
 		updateLoginServiceConfiguration('added', { _id: 'bitbucket', service: 'bitbucket' });
 
 		expect(client.send).not.toHaveBeenCalled();
+
+		updateLoginServiceConfiguration('removed', { _id: 'bitbucket' });
 	});
 });
