@@ -8,6 +8,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 
 import RoomListCollapser from './RoomListCollapser';
 import RoomsListFilters from './RoomListFilters';
+import RoomListGroupWrapper from './RoomListGroupWrapper';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
@@ -64,7 +65,7 @@ const RoomList = () => {
 							return <RoomListRow data={itemData} item={rooms[correctedIndex]} />;
 						},
 					})}
-					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper }}
+					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper, Group: RoomListGroupWrapper }}
 				/>
 			</VirtualizedScrollbars>
 		</Box>
