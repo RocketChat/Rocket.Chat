@@ -24,6 +24,16 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
 .rcx-tile {
 	--rcx-color-surface-tint: rgba(0, 0, 0, 0.2);
 }
+/* composer popups (slash/mention/emoji autocomplete, preview, emoji picker)
+   hang over the message list while the user is typing — the most content-
+   rich backdrop in the app — so they can afford a thinner pane than the
+   generic menus: less veil, more blur to keep the option text legible. */
+.rc-message-box .rcx-tile,
+.rcx-tile:has([role='dialog']) {
+	--rcx-color-surface-light: rgba(46, 46, 46, 0.72);
+	-webkit-backdrop-filter: blur(24px);
+	backdrop-filter: blur(24px);
+}
 /* modals are large reading surfaces over unpredictable content — steadier
    ground than the transient menus/popovers */
 .rcx-modal {
