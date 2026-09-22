@@ -114,16 +114,16 @@ describe('SockJS transport', () => {
 	it('pre-frames a payload as one unmasked text frame per transport', () => {
 		const payload = '{"msg":"ping"}';
 
-		const { meteor, normal } = preframe(payload);
+		const { sockjs, raw } = preframe(payload);
 
-		const [normalFrame] = normal;
-		const [meteorFrame] = meteor;
-		expect(normal).toHaveLength(1);
-		expect(meteor).toHaveLength(1);
-		expect(normalFrame[0]).toBe(0x81);
-		expect(normalFrame[1]).toBe(payload.length);
-		expect(normalFrame.subarray(2).toString()).toBe(payload);
-		expect(meteorFrame[0]).toBe(0x81);
-		expect(meteorFrame.subarray(2).toString()).toBe(wrapForSockJs(payload));
+		const [rawFrame] = raw;
+		const [sockjsFrame] = sockjs;
+		expect(raw).toHaveLength(1);
+		expect(sockjs).toHaveLength(1);
+		expect(rawFrame[0]).toBe(0x81);
+		expect(rawFrame[1]).toBe(payload.length);
+		expect(rawFrame.subarray(2).toString()).toBe(payload);
+		expect(sockjsFrame[0]).toBe(0x81);
+		expect(sockjsFrame.subarray(2).toString()).toBe(wrapForSockJs(payload));
 	});
 });

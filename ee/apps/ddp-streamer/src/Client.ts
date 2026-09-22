@@ -8,11 +8,14 @@ import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
 import type { Server } from './Server';
+import type { FanOutFrames } from './codec';
 import { SERVER_ID, SOCKJS_OPEN_FRAME, decode, encodeConnected, encodePing, encodePong, wrapForSockJs } from './codec';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import { getClientAddress } from './lib/clientAddress';
 import type { ConnectionLifecycle } from './lifecycle';
 import type { IPacket } from './types/IPacket';
+
+type WebSocketWithSender = { _sender: { sendFrame(frame: Buffer[], cb: (err?: Error) => void): void } };
 
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
@@ -192,5 +195,15 @@ export class Client extends EventEmitter {
 
 	send(payload: string): void {
 		return this.ws.send(this.encodePayload(payload));
+	}
+
+	/** Writes a message the codec framed once, picking the frame for this client's transport. */
+	sendFrames(frames: FanOutFrames): Promise<void> {
+		return new Promise((resolve, reject) => {
+			// ws.send would frame the payload again, which is what the shared frame exists to avoid.
+			(this.ws as unknown as WebSocketWithSender)._sender.sendFrame(frames[this.meteorClient ? 'sockjs' : 'raw'], (err) =>
+				err ? reject(err) : resolve(),
+			);
+		});
 	}
 }

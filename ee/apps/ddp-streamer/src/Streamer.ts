@@ -3,6 +3,7 @@ import { Streamer } from '@rocket.chat/streamer';
 import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
+import type { Client } from './Client';
 import type { Server } from './Server';
 import { encodeChanged, preframe } from './codec';
 import { isEmpty } from './lib/utils';
@@ -32,12 +33,15 @@ export const createStreamAdapter = (server: Server) =>
 				return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
 			}
 
-			const data = preframe(getMsg);
+			const frames = preframe(getMsg);
 
 			for (const { subscription } of subscriptions) {
-				if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+				// Every publication in this process is our Publication, so its client is our Client.
+				const client = subscription.client as Client;
+
+				if (client.ws.readyState !== WebSocket.OPEN) {
 					subscription.stop();
-					subscription.client.ws.close();
+					client.ws.close();
 					continue;
 				}
 
@@ -50,23 +54,14 @@ export const createStreamAdapter = (server: Server) =>
 				}
 
 				try {
-					await new Promise<void>((resolve, reject) => {
-						const frame = data[subscription.client.meteorClient ? 'meteor' : 'normal'];
-
-						subscription.client.ws._sender.sendFrame(frame, (err: unknown) => {
-							if (err) {
-								return reject(err);
-							}
-							resolve();
-						});
-					});
+					await client.sendFrames(frames);
 				} catch (error: any) {
 					if (error.code === 'ERR_STREAM_DESTROYED') {
 						console.warn('Trying to send data to destroyed stream, closing connection.');
 
-						if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+						if (client.ws.readyState !== WebSocket.OPEN) {
 							subscription.stop();
-							subscription.client.ws.close();
+							client.ws.close();
 						}
 					}
 					console.error('Error trying to send data to stream.', error);

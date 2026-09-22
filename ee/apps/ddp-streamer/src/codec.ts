@@ -83,12 +83,12 @@ const TEXT_FRAME_OPTIONS = {
 	readOnly: false,
 };
 
-export type FanOutFrames = { meteor: Buffer[]; normal: Buffer[] };
+export type FanOutFrames = { sockjs: Buffer[]; raw: Buffer[] };
 
 /** Frames a payload once per transport so a fan-out writes ready-made frames instead of encoding per subscriber. */
 export function preframe(payload: string): FanOutFrames {
 	return {
-		meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(wrapForSockJs(payload)), TEXT_FRAME_OPTIONS))],
-		normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(payload), TEXT_FRAME_OPTIONS))],
+		sockjs: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(wrapForSockJs(payload)), TEXT_FRAME_OPTIONS))],
+		raw: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(payload), TEXT_FRAME_OPTIONS))],
 	};
 }
