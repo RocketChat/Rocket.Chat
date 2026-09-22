@@ -1,0 +1,67 @@
+ee/apps/ddp-streamer/src/ddp/ConnectionRegistry.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 9,16,34-35,48-49,64-68,81-84,102-103
+  s_6a07e872e1831e::t_d91e126768b4e8 6
+ee/apps/ddp-streamer/src/ddp/Publication.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 2,5,9-10,14,18,22-24,27-28,34,36,39,50,56,59,62,64,66,71-72,79,83-84,101,111-112
+ee/apps/ddp-streamer/src/ddp/Session.spec.ts
+  s_6a07e872e1831e::t_13af654822a88c 1-7,9-45,47-70,72-73,75-77,79-83,85,88-95,97-99,101-103,105-111,113-120,122-129,131-139,141-142,144-154,156-161,163-227,229-248,250,252-256,258,260-266,268,270-274,276-277,279-284,286-289,292-304,306-328,330,333-335,337,339-341,343-352
+  s_6a07e872e1831e::t_73f19bd823decc 8,46,71,74,78,84,86-87,96,100,104,112,121,130,140,143,155,162,228,249,251,257,259,267,269,275,278,285,290-291,305,329,331-332,336,338,342
+ee/apps/ddp-streamer/src/ddp/ConnectionRegistry.ts
+  s_6a07e872e1831e::t_73f19bd823decc 3,8,10,13-14,22-24,34-35,39,51-52
+  s_6a07e872e1831e::t_13af654822a88c 18
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_73f19bd823decc 145,147,188-189,200,205,245,297
+  s_6a07e872e1831e::t_6620563988570c 16
+ee/apps/ddp-streamer/src/publications/mirroredCollection.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 2,23-25,33,35,43-44,50
+ee/apps/ddp-streamer/src/ddp/Session.ts
+  s_6a07e872e1831e::t_13af654822a88c 1-18,20-188,190-198
+  s_6a07e872e1831e::t_73f19bd823decc 19
+  s_6a07e872e1831e::t_fa404181fdaa7e 189
+ee/apps/ddp-streamer/src/ddp/Publication.ts
+  s_6a07e872e1831e::t_73f19bd823decc 15
+  s_6a07e872e1831e::t_3411d441d9f9e1 6
+ee/apps/ddp-streamer/src/methods/accounts.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 4,29,37,47,50,54,57-61,72,75-76,89,93-95,99,103,106-107,111,115-116
+ee/apps/ddp-streamer/src/ddp/codec.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 85
+ee/apps/ddp-streamer/src/ddp/Server.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 7,27,33,43-44,50,58,63,66-67,77,80,90,93,102,104,127,130,137,140,142,146,152,156,166,169,172-173,185,194,196,199-200,204,206,209,223,226,235,238,262,271
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 2,16,18,20
+ee/apps/ddp-streamer/src/streams/StreamAdapter.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 18,23
+ee/apps/ddp-streamer/src/ddp/Server.ts
+  s_6a07e872e1831e::t_73f19bd823decc 15,21,54,56,61,69-70,72,85,87,101,107,118-120
+  s_6a07e872e1831e::t_58b10e5e4d03ff 9
+ee/apps/ddp-streamer/src/streams/StreamAdapter.ts
+  s_6a07e872e1831e::t_73f19bd823decc 39
+  s_6a07e872e1831e::t_2099908612460d 7,40,42,44,57,62,64
+ee/apps/ddp-streamer/src/__tests__/helpers.ts
+  s_6a07e872e1831e::t_73f19bd823decc 10-11,20,31-32
+  s_6a07e872e1831e::t_e5df346e8841f3 8
+ee/apps/ddp-streamer/src/ddp/lifecycle.ts
+  s_6a07e872e1831e::t_73f19bd823decc 3,6-9,11
+ee/apps/ddp-streamer/src/publications/autoupdate.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 2,16,18,20
+ee/apps/ddp-streamer/src/methods/meteorFallback.ts
+  s_6a07e872e1831e::t_73f19bd823decc 6-7
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_6a07e872e1831e::t_73f19bd823decc 8,117,119,122,127,148,166,168,170,177-178,180,216,218,222,228-229,236,277,279,282-283,290,292,294,299,301-302,304,306,312,314,316,320,325,327-328,330
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "dfbe3750f8e090d57fecba2e7720c8c61a51aca7",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
