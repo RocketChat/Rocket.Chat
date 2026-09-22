@@ -2,6 +2,7 @@ export default {
 	testRunner: 'jest',
 	plugins: ['@stryker-mutator/jest-runner', '@stryker-mutator/mocha-runner'],
 	coverageAnalysis: 'perTest',
+	allowEmpty: true,
 	concurrency: 2,
 	// Meteor build output and asset directory symlinks are not needed by unit tests.
 	ignorePatterns: [

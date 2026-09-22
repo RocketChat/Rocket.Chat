@@ -37,6 +37,9 @@ both, each runs separately. Meteor's Jest client and server projects retain thei
 jsdom and Node environments. Vitest, Playwright, and API tests against a separate
 server are unsupported.
 
+Runners with no matching tests print `No tests were found` and finish successfully,
+so Jest and Mocha can run independently. This also applies if neither finds tests.
+
 A test-only or documentation-only PR using `--diff` prints `No changed production lines to
 mutation-test.` and stops without generating a report. This command does not infer
 production targets from changed tests; use explicit selection to check them.
@@ -48,8 +51,9 @@ baseline before testing mutants, so even a small diff can take time.
 
 Open `reports/mutation/<runner>/mutation.html` inside the affected package, where
 `<runner>` is `jest` or `mocha`. The same directory contains `mutation.json`.
-Each run replaces its runner's previous reports. If nothing is selected, existing
-reports remain unchanged.
+Each run clears its runner's previous reports; runners with no matching tests
+produce no new report. If no production lines are selected, existing reports remain
+unchanged.
 
 - **Killed**: a test detected the change.
 - **Survived**: tests passed with the change; inspect assertions and boundary cases.

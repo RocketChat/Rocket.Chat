@@ -161,7 +161,12 @@ test('rejects Jest projects with different roots explicitly', async (t) => {
 test('baseline failures remove stale reports and leave source unchanged', async (t) => {
 	const directory = await fixture(t);
 	for (const file of ['mutation.json', 'mutation.html']) await write(directory, `reports/mutation/jest/${file}`, 'old report');
-	await write(directory, 'src/isPositive.spec.ts', 'test("broken baseline", () => expect(false).toBe(true));');
+	await write(
+		directory,
+		'src/isPositive.spec.ts',
+		`import { isPositive } from 'local';
+test('broken baseline', () => expect(isPositive(1)).toBe(false));`,
+	);
 	await assert.rejects(run(directory), { code: 3 });
 	for (const file of ['mutation.json', 'mutation.html']) {
 		await assert.rejects(readFile(resolve(directory, 'reports/mutation/jest', file)), { code: 'ENOENT' });
@@ -313,4 +318,12 @@ test.each([-1, 0, 1])('checks negative boundary for %s', (value) => expect(isNeg
 		assert.ok((await readFile(resolve(directory, 'reports/mutation', runner, 'mutation.html'))).length > 0);
 	}
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), after);
+
+	await write(directory, 'jest.config.ts', "export default { testMatch: ['<rootDir>/missing/**/*.spec.ts'] };");
+	await rm(resolve(directory, 'reports/mutation/mocha'), { recursive: true });
+	const { stdout } = await run(directory);
+	assert.match(stdout, /No tests were found/);
+	await assert.rejects(report(directory), { code: 'ENOENT' });
+	const { mutants } = (await report(directory, 'mocha')).files['src/isPositive.ts'];
+	assert.ok(mutants.length > 0 && mutants.every(({ status }) => status === 'Killed'));
 });
