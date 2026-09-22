@@ -1,10 +1,9 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { useConferenceWindowEnabled } from './useConferenceWindowEnabled';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 
 /**
@@ -19,7 +18,7 @@ export const useJoinableCalls = () => {
 	const queryClient = useQueryClient();
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');
-	const enabled = useConferenceWindowEnabled();
+	const enabled = useVideoConfWindowEnabled();
 
 	// A ring *is* announced, to the person being rung, but the announcement arrives at the popup rather than here.
 	// So the ring is what asks for the list again.
@@ -68,5 +67,7 @@ export const useJoinableCalls = () => {
 		enabled,
 	});
 
-	return { calls: data ?? [], isLoading };
+	// Disabling the query leaves its last answer in the cache, so the flag decides what is returned as well as
+	// whether to ask: a workspace that turned the window off would otherwise go on listing the calls it fetched.
+	return { calls: enabled ? (data ?? []) : [], isLoading };
 };

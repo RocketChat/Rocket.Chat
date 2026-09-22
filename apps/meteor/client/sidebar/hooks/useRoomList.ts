@@ -3,14 +3,13 @@ import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
-import { useConferenceWindowEnabled } from '../../views/conference/hooks/useConferenceWindowEnabled';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
@@ -73,7 +72,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	// so the sidebar keeps no group of its own for it. Reported as no incoming call rather than by dropping the
 	// group: `Incoming_Calls` is a dynamic group, so an empty one is left out, and the room stays in whichever
 	// group it would otherwise be in.
-	const conferenceWindowEnabled = useConferenceWindowEnabled();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 

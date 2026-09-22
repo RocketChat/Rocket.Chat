@@ -396,10 +396,10 @@ Adding someone to a conference makes them a **member of the conference**. It put
 
 > Dial-out (typing a raw phone/SIP destination into the same field) is **not** wired up. No provider on this branch exposes a dial-out channel, so the affordance would have silently discarded the input; it was removed rather than left as dead UI. Restoring it means passing a provider-supplied `onDialOut` down to the modal.
 
-`POST /v1/video-conference.add-participants` takes `{ callId, users }` — no `keepHistory`, no room choice — and calls `addMembers`:
+`POST /v1/video-conference.add-participants` takes `{ callId, users, ring }` — no `keepHistory`, no room choice — and calls `addMembers`:
 
 - Each user who isn't already associated with the call gets a `users[]` entry with `joined: false`. Users who already have an entry are skipped, so an existing member's `joinedAt` (or `declined`) is never overwritten.
-- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`). The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
+- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
 - They also get a desktop notification, because the ring only reaches a client that is on screen and is one-shot. It deliberately carries **no room name**, which is what stops its click from navigating: the room behind the call may be one they can't open. Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
 
 Nothing about the conference's rooms changes, so `discussionRid` is untouched and no discussion is created.

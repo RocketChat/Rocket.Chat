@@ -26,15 +26,26 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const conference = useConference();
-	const { call, room, actions, provider } = conference;
+	const { call, room, actions, provider, viewer } = conference;
 	const { members } = call;
 	const { rid, chatAccess } = room;
 
-	// Our own membership decides which group a row is in and the provider's roster decides what the row can do,
-	// so the two are composed rather than one being derived from the other.
+	// The plugin says which participant this window joined as — the one pairing a shared display name cannot
+	// settle on its own. No other row can be claimed this way.
+	const claimants = useMemo(() => {
+		const participantUuid = provider?.self?.participantUuid;
+
+		if (!participantUuid || !viewer.uid) {
+			return members;
+		}
+
+		return members.map((member) => (member._id === viewer.uid ? { ...member, providerParticipantId: participantUuid } : member));
+	}, [members, provider?.self?.participantUuid, viewer.uid]);
+
+	// Ours decides which group a row is in, the provider's decides what it can do: composed, not derived.
 	const { waiting, present, absent } = useMemo(
-		() => composeCallParticipants(members, provider?.participants ?? NO_PARTICIPANTS),
-		[members, provider?.participants],
+		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
+		[claimants, provider?.participants],
 	);
 
 	// A set rather than one pending request: ringing a second member put the first back in reach.
@@ -57,8 +68,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 						features: provider.features,
 						actions: provider.actions,
 						self: provider.self,
-						// The viewer's own row, which the provider names for us — the only thing that can, since our
-						// membership and the provider's roster are different lists of different things.
+						// The provider is the only thing that can name the viewer's own row across the two lists.
 						isSelf: provider.self?.participantUuid === participant.uuid,
 					}
 				: undefined;
@@ -88,9 +98,8 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 					<Button
 						small
 						icon='user-plus'
-						// The modal is rendered by the app's own modal region, which is mounted above this window and so
-						// outside the conference's provider — without carrying the context across, the modal falls back
-						// to the default one and loses the user picker and the ring option along with it.
+						// The modal region is mounted outside the conference's provider, so the context is carried
+						// across by hand or the modal loses the user picker and the ring option.
 						onClick={() =>
 							setModal(
 								<ConferenceContext.Provider value={conference}>

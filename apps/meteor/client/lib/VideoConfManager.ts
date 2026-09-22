@@ -134,9 +134,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public isCalling(): boolean {
-		// Once joined, the wait belongs to the call window — the room is not "calling" any more, even though the
-		// ringing interval is still running there on the callee's behalf. Only with the call window: without one
-		// the caller has gone nowhere, and the room's outgoing popup *is* the wait.
+		// Once joined, the wait belongs to the call window rather than to the room. Without one the caller has
+		// gone nowhere, and the room's outgoing popup *is* the wait.
 		if (this._conferenceWindow && this.currentCallData?.joined) {
 			return false;
 		}
@@ -180,14 +179,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		switch (data.type) {
 			case 'direct':
-				// Without the call window, a direct call is placed exactly as it always was: ring the callee and
-				// wait in the room, opening nothing until they answer.
+				// Placed exactly as it always was: ring, and wait in the room until they answer.
 				if (!this._conferenceWindow) {
 					return this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
 				}
 
-				// With it, the server rings the callee once the caller has actually entered the call — ringing here
-				// would ring them while the caller is still choosing a camera on the preflight screen.
+				// The server rings once the caller has entered the call; ringing here would ring them while the
+				// caller is still on the preflight. See [the feature doc](../../../docs/features/video-conference-persistent-chat/README.md#when-the-callee-is-rung).
 				return this.joinCall(data.callId);
 			case 'videoconference':
 				return this.joinCall(data.callId);
@@ -217,9 +215,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// Mute this call Id so any lingering notifications don't trigger it again
 		this.dismissIncomingCall(callId);
 
-		// Nobody is waiting to hand us a link, so there is nothing to negotiate — the conference already exists
-		// and membership is what authorizes joining it. Only a `ring` creates such a call, and only the call
-		// window acts on a `ring`, so without it this is never taken.
+		// Nothing to negotiate: the conference already exists, and membership is what authorizes joining it.
 		if (!callData.handshake) {
 			void this.joinCall(callId);
 			return;
@@ -255,20 +251,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		// Record the decline on the server against our own membership. The client-published `rejected` below
-		// is what drives the 1:1 flow (the caller's client is waiting on it), but it's a claim one client makes
-		// about another user's call, so it can't be trusted as the record of what happened.
-		//
-		// Only the call window's list reads that record back, and only the new flow can produce a decline that
-		// isn't also a `rejected`. Without it, turning a call down stays a matter between the two clients.
+		// The record goes to the server, because the `rejected` below is one client's claim about another
+		// user's call and cannot stand as what happened.
 		if (this._conferenceWindow) {
 			void sdk.rest.post('/v1/video-conference.decline', { callId });
 		}
 
-		// Only a caller's own client is waiting to hear this; for a server-originated ring the record above is
-		// the whole story, and telling the user who added us that we "rejected" would read as ending their call.
-		// Every incoming call is a handshake unless a `ring` created it, so without the call window this is
-		// always taken.
+		// Only a caller's own client waits for this: telling whoever added us that we "rejected" would read as
+		// ending their call.
+
 		if (callData.handshake) {
 			this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
 		}
@@ -428,8 +419,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.removeIncomingCall(callId);
 		}
 
-		// The conference page runs a preflight and joins from there, so joining here would both throw away the URL
-		// it returns and mark the user as present in a call they have not chosen to enter yet.
+		// The conference page joins from its own preflight; joining here marks the user present in a call they
+		// have not chosen to enter.
 		if (this._conferenceWindow) {
 			this.markCurrentCallJoined(callId);
 			this.emit('call/join', { callId });
@@ -603,13 +594,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		switch (action) {
 			case 'call':
 				return this.onDirectCall(params);
-			// A server-originated ring: the conference already exists and the server is telling us to ring for
-			// it, rather than a caller's client repeating `call` while it waits for an answer. Nothing refreshes
-			// the timeout, so it rings once and gives up — and accepting joins the call rather than negotiating.
-			//
-			// Only with the call window. The server has always broadcast `ring` for group calls and a client with
-			// no case for it ignored them; ringing a whole channel for every group call is exactly the change
-			// that has to wait for the setting.
+			// A server-originated ring, not a caller's client repeating `call`: nothing refreshes the timeout, so
+			// it rings once and gives up, and accepting joins rather than negotiating. Gated, because the server
+			// has always broadcast `ring` for group calls and clients ignored it — see [the feature doc](../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
 			case 'ring':
 				if (!this._conferenceWindow) {
 					return;

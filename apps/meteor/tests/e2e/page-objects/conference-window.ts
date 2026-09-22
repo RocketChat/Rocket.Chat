@@ -254,7 +254,7 @@ export class ConferenceWindow {
 
 	/** Labelled rather than named by its placeholder, which the first keystroke takes away. */
 	get inputAddPeople(): Locator {
-		return this.dialogAddPeople.getByRole('combobox', { name: 'Add people', exact: true });
+		return this.dialogAddPeople.getByRole('combobox', { name: 'People', exact: true });
 	}
 
 	get btnConfirmAddPeople(): Locator {

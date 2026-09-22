@@ -408,6 +408,7 @@ describe('the Incoming calls group', () => {
 						value={
 							{
 								queryIncomingCalls: () => [() => () => undefined, () => ringingCalls],
+								conferenceWindowEnabled,
 							} as any
 						}
 					>

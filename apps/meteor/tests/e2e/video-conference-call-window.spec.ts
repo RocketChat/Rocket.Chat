@@ -7,6 +7,7 @@ import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
 import { ConferenceWindow, HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel, isChannelMember, setSettingValueById } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
@@ -71,12 +72,12 @@ test.describe('video conference call window', () => {
 
 	test.skip(!IS_EE, 'Enterprise Only');
 
+	// Put back whatever the workspace had, rather than a value this suite assumes: it shares a workspace with
+	// every other suite, and one of the tests below turns persistent chat off part-way through.
+	preserveSettings(['VideoConf_Conference_Window_Enabled', 'VideoConf_Enable_Persistent_Chat']);
+
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'VideoConf_Conference_Window_Enabled', true);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'VideoConf_Conference_Window_Enabled', false);
 	});
 
 	test.beforeEach(async ({ page }) => {

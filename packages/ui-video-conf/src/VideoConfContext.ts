@@ -17,6 +17,11 @@ export type VideoConfContextValue = {
 	 * know what a call window's address looks like.
 	 */
 	joinDisabled?: boolean;
+	/**
+	 * Whether this workspace has the call-window experience turned on. Read once where this context is built,
+	 * so the sites that change with it agree on the answer instead of each reading the setting for itself.
+	 */
+	conferenceWindowEnabled: boolean;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;

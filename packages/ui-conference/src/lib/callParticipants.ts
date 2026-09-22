@@ -110,7 +110,7 @@ export const matchesConferenceMember = (displayName: string, member: Pick<Confer
  * member's own window reported joining as — self-reported and unverifiable, which is why the name still has to
  * agree with it.
  */
-type ResolvableMember = Pick<ConferenceMember, 'username' | 'name'> & { providerParticipantId?: string };
+type ResolvableMember = Pick<ConferenceMember, 'username' | 'name' | 'providerParticipantId'>;
 
 const claims = (member: ResolvableMember, participant: PluginParticipant): boolean =>
 	!!member.providerParticipantId && member.providerParticipantId === participant.uuid;

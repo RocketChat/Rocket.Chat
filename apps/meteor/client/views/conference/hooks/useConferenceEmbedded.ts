@@ -10,7 +10,7 @@ import {
 	useUser,
 	useUserId,
 } from '@rocket.chat/ui-contexts';
-import { useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
+import { useVideoConfWindowEnabled, useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -49,9 +49,11 @@ const withDisplayName = (callUrl: string, displayName?: string): string => {
 /**
  * Whether the call's chat lives in a thread off the call message, rather than in the room itself.
  *
- * Mirrors `VideoConfService.chatLivesInAThread` from the two public settings, and has to keep giving the same
- * answer as it: disagree and the panel is titled "Thread in …" over a thread nobody is subscribed to. See [the
- * feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
+ * Has to give the same answer as `VideoConfService.chatLivesInAThread`, which asks the same two settings:
+ * disagree and the panel is titled "Thread in …" over a thread nobody is subscribed to. The call window is
+ * required here on top of those two, which the server does not ask — it cannot change the answer, since this
+ * only runs inside that window. See [the feature
+ * doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
  */
 const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: PersistentChatMode): boolean =>
 	isPersistentChatEnabled && isCallWindowEnabled && chatMode === 'thread';
@@ -74,7 +76,7 @@ export const useConferenceEmbedded = (callId: string) => {
 	// window — and there the server answers `main_room` too. Once the window is on, the registered value wins.
 	const chatMode = useSetting<PersistentChatMode>('VideoConf_Persistent_Chat_Mode', 'main_room');
 	const isPersistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
-	const isCallWindowEnabled = useSetting('VideoConf_Conference_Window_Enabled', false);
+	const isCallWindowEnabled = useVideoConfWindowEnabled();
 
 	const {
 		data: info,

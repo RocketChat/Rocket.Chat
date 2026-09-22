@@ -123,13 +123,11 @@ export const useProviderPlugin = ({
 	onToggleParticipants,
 	onLeave,
 }: UseProviderPluginOptions): ProviderPluginControls => {
-	// The plugin's own frame, learned from the messages it sends. Not the iframe this page renders: a plugin may
-	// run in a frame *inside* the provider's page — Pexip's does — and a message posted to the provider's own
-	// window would never reach it there. So there is nothing to say until it has said `ready`.
+	// Learned from the messages it sends, not from the iframe this page renders: a plugin may run in a frame
+	// *inside* the provider's page, where a message posted to the provider's own window would never reach it.
 	const pluginWindowRef = useRef<Window | null>(null);
-	// Answered to the origin it spoke from, not a wildcard: `transfer` carries a conference PIN. A sandboxed
-	// plugin frame reports the opaque `null`, which no concrete target origin can name, and only there is the
-	// wildcard the sole way to reach it.
+	// Answered to the origin it spoke from, since `transfer` carries a conference PIN. A sandboxed frame reports
+	// the opaque `null`, which no concrete target origin can name, and only there is the wildcard the only way.
 	const targetOriginRef = useRef('*');
 
 	// Read inside the listener, which is bound once per call rather than on every panel toggle.
@@ -146,8 +144,8 @@ export const useProviderPlugin = ({
 	const onLeaveRef = useRef(onLeave);
 	onLeaveRef.current = onLeave;
 
-	// `disconnected` also arrives from a provider's own prejoin screen, where nobody has joined anything yet.
-	// Reporting a leave from there would end a call for everyone still on their way into it.
+	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
+	// would end the call for everyone still on their way into it.
 	const wasConnectedRef = useRef(false);
 
 	const [features, setFeatures] = useState<ReadonlySet<PluginFeature>>(NO_FEATURES);
@@ -166,8 +164,7 @@ export const useProviderPlugin = ({
 			expectedOrigin = '';
 		}
 
-		// Nothing to listen for without a provider page to attribute the messages to. Listening anyway would
-		// mean acting on `toggle-chat` from whatever else can reach this window.
+		// Without a page to attribute messages to, listening means acting on whatever else can reach this window.
 		if (!expectedOrigin) {
 			return;
 		}
@@ -183,14 +180,12 @@ export const useProviderPlugin = ({
 				return;
 			}
 
-			// The provider's own origin, or `null` for a sandboxed plugin frame — a sandbox without
-			// `allow-same-origin` reports its origin as the opaque string rather than the document's.
+			// A sandbox without `allow-same-origin` reports the opaque `null` rather than its document's origin.
 			if (event.origin !== expectedOrigin && event.origin !== 'null') {
 				return;
 			}
 
-			// Where to answer. Re-read from every message, so a reloaded provider page is answered in its new
-			// frame rather than the one that went away with it.
+			// Re-read every message, so a reloaded page is answered in its new frame rather than the one that went.
 			if (event.source) {
 				pluginWindowRef.current = event.source as Window;
 				targetOriginRef.current = event.origin === 'null' ? '*' : event.origin;
@@ -198,29 +193,26 @@ export const useProviderPlugin = ({
 
 			switch (action.slice(PLUGIN_NS.length + 1)) {
 				case 'ready':
-					// The capability announcement, and a fresh start: a plugin says it once per page, so a provider
-					// page that reloaded is a new call session whose old roster describes nobody.
+					// Said once per page, so a reload is a new session whose old roster describes nobody.
 					setFeatures(toFeatures(data.features));
 					setSelf(undefined);
 					setParticipants(NO_PARTICIPANTS);
 
-					// The plugin has no idea what this page is showing, and its control renders before it hears.
-					// This is the one message that has to be answered, and both answers are part of it.
+					// The plugin's control renders before it hears anything, so this is the one message that must
+					// be answered.
 					postToPlugin('chat-state', { active: chatVisibleRef.current });
 					postToPlugin('participants-state', { active: participantsVisibleRef.current });
 					postToPlugin('chat-unread', { unread: hasUnreadRef.current });
 					break;
 
 				case 'connected':
-					// Past the provider's own prejoin screen and into the call, which is also when the controls
-					// that speak this protocol appear.
+					// Past the prejoin screen and into the call, which is when the controls appear.
 					wasConnectedRef.current = true;
 					break;
 
 				case 'disconnected':
-					// Only a deliberate leave, and only from someone who had actually joined. An involuntary
-					// drop is the provider's own to recover — its page offers to reconnect, and closing this
-					// window out from under that would turn a blip into a departure.
+					// Only a deliberate leave from someone who joined: an involuntary drop is the provider's to
+					// recover, and closing the window under it turns a blip into a departure.
 					if (wasConnectedRef.current && data.userInitiated === true) {
 						wasConnectedRef.current = false;
 						onLeaveRef.current();
@@ -228,13 +220,11 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'toggle-participants':
-					// Same shape as the chat's: the panel moves, and the effect below reports where it ended up.
 					onToggleParticipantsRef.current(data.active === true);
 					break;
 
 				case 'toggle-chat':
-					// The provider's chat control was used. Nothing is answered here: the panel moves, and the
-					// effect below reports where it ended up — the same report every other way of moving it makes.
+					// Nothing is answered here: the panel moves, and the effect below reports where it ended up.
 					onToggleChatRef.current(data.active === true);
 					break;
 
@@ -243,7 +233,7 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'roster':
-					// The whole list every time, so this replaces rather than merges — whoever is not in it left.
+					// The whole list every time: whoever is not in it left.
 					setParticipants(Array.isArray(data.participants) ? data.participants.flatMap((entry) => toParticipant(entry) ?? []) : []);
 					break;
 			}
@@ -253,8 +243,7 @@ export const useProviderPlugin = ({
 		return () => window.removeEventListener('message', handleMessage);
 	}, [conferenceUrl, postToPlugin]);
 
-	// Pushed rather than answered, so every way of opening and closing the chat keeps the provider's control
-	// honest: this page's own toggle in the top bar, the panel's close button, and the provider's control itself.
+	// Pushed rather than answered, so every way of moving the panel keeps the provider's control honest.
 	useEffect(() => {
 		postToPlugin('chat-state', { active: chatVisible });
 	}, [chatVisible, postToPlugin]);

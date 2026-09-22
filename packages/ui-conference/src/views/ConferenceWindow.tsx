@@ -42,19 +42,18 @@ const ConferenceWindow = () => {
 	const chatVisible = activePanel === 'chat';
 
 	const togglePanel = useCallback(
-		(target: ConferencePanel) => {
-			// A thread is shown in the chat panel, so any click that leaves the chat closed takes the thread with
-			// it — including switching straight to the members panel.
-			const chatStaysOpen = target === 'chat' && activePanel !== 'chat';
-
-			setActivePanel(activePanel === target ? undefined : target);
-
-			if (!chatStaysOpen) {
-				thread.close();
-			}
-		},
-		[activePanel, setActivePanel, thread],
+		(target: ConferencePanel) => setActivePanel(activePanel === target ? undefined : target),
+		[activePanel, setActivePanel],
 	);
+
+	// A thread is shown inside the chat panel, so it goes when the chat does. Keyed on the panel rather than on
+	// the click because the provider's own chat button reaches `panel.set` directly, and a thread left behind by
+	// that route came back the next time the chat was opened.
+	useEffect(() => {
+		if (!chatVisible) {
+			thread.close();
+		}
+	}, [chatVisible, thread]);
 
 	// Stable: it is a context value the chat panel reads, and rebuilding it re-renders the product's whole room.
 	const closeChat = useMemo(() => ({ close: () => togglePanel('chat') }), [togglePanel]);

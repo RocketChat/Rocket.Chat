@@ -53,14 +53,10 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 
 	const items: GenericMenuItemProps[] = [];
 
-	// Not on your own row. The only mute this protocol carries is the conference's — it stops the call carrying
-	// you, and leaves your microphone running, your camera on and the provider's own buttons where they were.
-	// Those buttons are the ones that reach your devices, they are in this same window, and the plugin API has
-	// nothing that reaches them. Offering a control that looks like the one a few pixels away and does something
-	// else is worse than offering none.
+	// Not on your own row: the only mute this protocol carries is the conference's, which leaves your own
+	// microphone running. The provider's buttons a few pixels away are the ones that reach your devices.
 	if (!isSelf && offers('mute')) {
-		// The conference's own mute, which is the only one a host can undo — someone who muted themselves in
-		// their own client stays muted whatever is asked here.
+		// The conference's own mute, the only one a host can undo: a self-mute stays whatever is asked here.
 		items.push({
 			id: 'mute',
 			icon: participant.isMuted ? 'mic' : 'mic-off',
@@ -69,8 +65,7 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 		});
 	}
 
-	// The provider has no flag of its own for a camera, so this rides on the one for a microphone: both are the
-	// conference silencing a device of theirs, and Pexip gates them together.
+	// No flag of its own for a camera, so it rides on the microphone's: Pexip gates them together.
 	if (!isSelf && offers('mute-video')) {
 		items.push({
 			id: 'mute-video',
@@ -89,8 +84,7 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 		});
 	}
 
-	// A hand is the participant's own signal, so the label follows theirs rather than asking them to guess: on
-	// your own row it is putting your hand up, and on somebody else's it is taking theirs down.
+	// A hand is the participant's own signal, so the label follows theirs rather than asking them to guess.
 	if (offers('raise-hand')) {
 		items.push({
 			id: 'raise-hand',
@@ -110,8 +104,7 @@ const CallParticipantControls = ({ name, participant, isSelf = false, features, 
 	}
 
 	if (offers('disconnect')) {
-		// Hanging up on yourself is leaving, and calling it what it is matters most on the one row where the
-		// reader might otherwise think it happens to someone else.
+		// Hanging up on yourself is leaving, and the label says so.
 		items.push({
 			id: 'disconnect',
 			icon: 'phone-off',
