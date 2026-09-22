@@ -155,6 +155,8 @@
   "ABAC_Room_Attribute": "Room Attribute",
   "ABAC_Room_Attributes": "Room Attributes",
   "ABAC_Room_created": "Access to {{roomName}} is now restricted to attribute-compliant users",
+  "ABAC_Room_locked_member": "ABAC-managed workspace. An administrator needs to set this room's attributes to unlock it.",
+  "ABAC_Room_locked_public": "ABAC-managed workspace. Public channels stay locked whatever attributes they carry. An administrator needs to make this channel private before it can be unlocked.",
   "ABAC_room_membership": "Room membership",
   "ABAC_Room_removed": "Room {{roomName}} removed from ABAC management",
   "ABAC_Room_to_be_managed": "Room to be ABAC-managed",
