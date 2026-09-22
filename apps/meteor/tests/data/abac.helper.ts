@@ -10,11 +10,15 @@ export const addAbacAttributesToUserDirectly = async (userId: string, abacAttrib
 	const connection = await MongoClient.connect(URL_MONGODB);
 
 	try {
-		await connection.db().collection('users').updateOne(
+		const result = await connection.db().collection('users').updateOne(
 			// @ts-expect-error - collection types for _id
 			{ _id: userId },
 			{ $set: { abacAttributes } },
 		);
+
+		if (result.matchedCount === 0) {
+			throw new Error(`addAbacAttributesToUserDirectly: no user matched ${userId}`);
+		}
 	} finally {
 		await connection.close();
 	}
