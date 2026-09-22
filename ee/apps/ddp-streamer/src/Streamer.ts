@@ -40,12 +40,13 @@ export const createStreamAdapter = (server: Server) =>
 				return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
 			}
 
+			// Frame once and write the raw frame to every socket instead of paying for encoding per subscriber.
 			const options = {
-				fin: true, // sending a single fragment message
-				rsv1: false, // don"t set rsv1 bit (no compression)
-				opcode: 1, // opcode for a text frame
-				mask: false, // set false for client-side
-				readOnly: false, // the data can be modified as needed
+				fin: true,
+				rsv1: false,
+				opcode: 1,
+				mask: false,
+				readOnly: false,
 			};
 
 			const data = {
@@ -54,8 +55,6 @@ export const createStreamAdapter = (server: Server) =>
 			};
 
 			for (const { subscription } of subscriptions) {
-				// if the connection state is not open anymore, it somehow got to a weird state,
-				// we'll emit close so it can clean up the weird state, and so we stop emitting to it
 				if (subscription.client.ws.readyState !== WebSocket.OPEN) {
 					subscription.stop();
 					subscription.client.ws.close();
@@ -85,7 +84,6 @@ export const createStreamAdapter = (server: Server) =>
 					if (error.code === 'ERR_STREAM_DESTROYED') {
 						console.warn('Trying to send data to destroyed stream, closing connection.');
 
-						// if we still tried to send data to a destroyed stream, we'll try again to close the connection
 						if (subscription.client.ws.readyState !== WebSocket.OPEN) {
 							subscription.stop();
 							subscription.client.ws.close();

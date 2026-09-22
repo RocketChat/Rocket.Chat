@@ -37,10 +37,9 @@ export function registerAccountMethods(server: Server): void {
 			this.userToken = undefined;
 			this.userId = undefined;
 
-			// Close connection after return success to the method call.
-			// This ensures all the subscriptions will be closed, meteor makes it manually
-			// here https://github.com/meteor/meteor/blob/2377ebe879d9b965d699f599392d4e8047eb7d78/packages/ddp-server/livedata_server.js#L781
-			// re doing the default subscriptions.
+			// Meteor tears down every subscription after a logout result so the client re-subscribes to the defaults;
+			// closing the socket after the result is sent gives the same effect:
+			// https://github.com/meteor/meteor/blob/2377ebe879d9b965d699f599392d4e8047eb7d78/packages/ddp-server/livedata_server.js#L781
 			setTimeout(() => {
 				this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 			}, 1);

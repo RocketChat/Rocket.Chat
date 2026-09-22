@@ -35,14 +35,12 @@ export class Publication extends EventEmitter implements IPublication {
 		return this._session === null;
 	}
 
-	// Required by IPublication; no publication or rule shipped to ddp-streamer calls it.
 	error(_error: Error): void {
-		// noop
+		// Publications here report failures by throwing, which Server.subscribe turns into a nosub.
 	}
 
-	// Dispatch is serialised per client with no blocking to release, so there is nothing to unblock.
 	unblock(): void {
-		// noop
+		// Dispatch is already serialised per client, so there is no block to release.
 	}
 
 	ready(): void {
