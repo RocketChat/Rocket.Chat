@@ -1,0 +1,50 @@
+ee/packages/federation-matrix/src/helpers/getActivityDisplayName.spec.ts
+  s_7b900f2f0ab73f::t_daed4720f6896e 3-5,8,10,14,30,34-61
+  s_7b900f2f0ab73f::t_ab50dfba924d03 1,6-7,9,11-13,15-29,31-33
+  s_7b900f2f0ab73f::t_27a88ae0aba628 2
+ee/packages/federation-matrix/src/helpers/getActivityDisplayName.ts
+  s_7b900f2f0ab73f::t_e3e36a7a849503 1-10
+ee/packages/federation-matrix/tests/helper/ddp-listener.ts
+  s_7b900f2f0ab73f::t_93284a427e57dc 21-22
+  s_7b900f2f0ab73f::t_e5b3b804095aab 157-172
+  s_7b900f2f0ab73f::t_eb6bba5f1711de 6-7
+  s_7b900f2f0ab73f::t_cf307ba67ae349 156
+ee/packages/federation-matrix/tests/end-to-end/typing.spec.ts
+  s_7b900f2f0ab73f::t_83b83a8298941e 16
+  s_7b900f2f0ab73f::t_d5319db6389a4f 250-255,263,269
+  s_7b900f2f0ab73f::t_b22d0fc0458390 169
+  s_7b900f2f0ab73f::t_b2174a99e1b59b 51-58,60-63,69-75
+  s_7b900f2f0ab73f::t_3d13d2e7b9b6ad 119-120
+  s_7b900f2f0ab73f::t_31b71a5d7c37af 248-249,256-262,264-268,270-271
+  s_7b900f2f0ab73f::t_d214a1f6afaec9 59,64-68,76-85
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_7b900f2f0ab73f::t_444bdd3a8341ef 22
+  s_7b900f2f0ab73f::t_71e829d9705995 346-353
+ee/packages/federation-matrix/src/events/edu.ts
+  s_7b900f2f0ab73f::t_3f5cdd4b1e3087 28-33,35
+  h_4c386397e672f4 20
+  s_7b900f2f0ab73f::t_a0060bf6deb0cc 7
+  s_7b900f2f0ab73f::t_ec84b04c1473aa 21-27
+  s_7b900f2f0ab73f::t_07f33a5a33bc5e 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c18fa53eef3959e13fabff51f703231ed3d01cbc",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_7b900f2f0ab73f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3e679d82-7efb-4b4b-913c-4d227d2f97ef",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

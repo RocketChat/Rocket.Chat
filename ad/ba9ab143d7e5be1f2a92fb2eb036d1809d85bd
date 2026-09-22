@@ -1,0 +1,21 @@
+ee/packages/federation-matrix/tests/end-to-end/typing.spec.ts
+  s_a3837ea77d1ff6::t_d42cdec6527329 66-70
+ee/packages/federation-matrix/tests/helper/ddp-listener.ts
+  s_a3837ea77d1ff6::t_9b31b3c0541ea7 173-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "adba9ab143d7e5be1f2a92fb2eb036d1809d85bd",
+  "prompts": {},
+  "sessions": {
+    "s_a3837ea77d1ff6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a012a5a7-6886-41d1-aa41-969f474f57a0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
