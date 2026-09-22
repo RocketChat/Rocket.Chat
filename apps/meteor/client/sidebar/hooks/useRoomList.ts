@@ -16,7 +16,7 @@ import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 import { getGroupRooms } from '../lib/groupRooms';
 import type { GroupUnreadInfo } from '../lib/unreadRooms';
-import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../lib/unreadRooms';
+import { buildUnreadInfo } from '../lib/unreadRooms';
 
 const query = { open: { $ne: false } };
 

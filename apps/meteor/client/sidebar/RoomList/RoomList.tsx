@@ -8,6 +8,7 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
+import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
@@ -29,6 +30,7 @@ const RoomList = () => {
 	const { groups } = useRoomList({ collapsedGroups });
 	const moveCategory = useMoveCategoryPosition();
 	const openedRoom = useOpenedRoom() ?? '';
+	const formatTime = useShortTimeAgo();
 	const {
 		viewMode: sidebarViewMode,
 		extended,
@@ -47,8 +49,9 @@ const RoomList = () => {
 			sidebarViewMode,
 			isAnonymous,
 			userId,
+			formatTime,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
+		[avatarTemplate, extended, formatTime, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);

@@ -17,6 +17,7 @@ export type RoomListRowProps = {
 		t: TFunction;
 		SidebarItemTemplate: SidebarItemTemplate;
 		AvatarTemplate: SidebarRoomAvatar | null;
+		formatTime: (time: string | Date | number) => string;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
@@ -26,7 +27,7 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId, formatTime } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -55,6 +56,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			room={item}
 			extended={extended}
 			SidebarItemTemplate={SidebarItemTemplate}
+			formatTime={formatTime}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 			userId={userId}

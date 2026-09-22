@@ -13,7 +13,6 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
-import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 export type ExtendedProps = {
 	icon?: ReactNode;
@@ -21,7 +20,7 @@ export type ExtendedProps = {
 	avatar?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
-	time?: any;
+	timeLabel?: string;
 	menu?: () => ReactNode;
 	subtitle?: ReactNode;
 	badges?: ReactNode;
@@ -38,7 +37,7 @@ const Extended = ({
 	avatar,
 	actions,
 	href,
-	time,
+	timeLabel,
 	menu,
 	menuOptions: _menuOptions,
 	subtitle = '',
@@ -49,7 +48,6 @@ const Extended = ({
 	selected,
 	...props
 }: ExtendedProps) => {
-	const formatDate = useShortTimeAgo();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
@@ -59,7 +57,7 @@ const Extended = ({
 				<SidebarItemRow>
 					{icon}
 					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
+					{timeLabel && <SidebarItemTimestamp>{timeLabel}</SidebarItemTimestamp>}
 				</SidebarItemRow>
 				<SidebarItemRow>
 					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>

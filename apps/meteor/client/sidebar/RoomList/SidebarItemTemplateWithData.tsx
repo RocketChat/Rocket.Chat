@@ -29,7 +29,7 @@ type RoomListRowProps = {
 			avatar: ReactNode;
 			actions: ReactNode;
 			href: string;
-			time?: Date;
+			timeLabel?: string;
 			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
@@ -42,6 +42,7 @@ type RoomListRowProps = {
 		} & AllHTMLAttributes<HTMLElement>
 	>;
 	AvatarTemplate: SidebarRoomAvatar | null;
+	formatTime: (time: string | Date | number) => string;
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
@@ -72,6 +73,7 @@ const SidebarItemTemplateWithData = ({
 	isAnonymous,
 	videoConfActions,
 	userId,
+	formatTime,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
@@ -127,7 +129,7 @@ const SidebarItemTemplateWithData = ({
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
-			time={lastMessage?.ts}
+			timeLabel={lastMessage?.ts ? formatTime(lastMessage.ts) : undefined}
 			subtitle={subtitle}
 			icon={icon}
 			titleIcon={titleIcon}
