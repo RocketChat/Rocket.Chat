@@ -20,6 +20,16 @@ This is the contract-first model of oRPC (`oc` plus `implement`), built in-house
 top of the JSON-RPC envelope from
 [ADR 0004](../../adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md).
 
+Four more parts copy oRPC:
+
+- **Declared errors.** A procedure can list the errors that it throws, each with a `data` type.
+- **One middleware signature.** A middleware gets the context, the path, the procedure, the input
+  and `next`. It applies to all procedures, to one domain or to one procedure.
+- **`call` apart from `dispatch`.** `call` runs one procedure and throws. `dispatch` converts
+  between the JSON-RPC envelope and `call`.
+- **A local client.** `createLocalClient` calls the handlers in the same process, with the same
+  type as the remote client. A test can run the real accessors against the real handlers.
+
 ## Why the ADR 0006 shape is wrong
 
 ADR 0006 keeps the wire method `bridges:{getXBridge}:{do*}` and adds an invoker table keyed by
@@ -50,8 +60,10 @@ handler.** Nothing is derived from a name at runtime.
 | Piece | Location | Imported by |
 | --- | --- | --- |
 | Contract builders — `request`, `notification`, `type<T>`, `shaped<T>` | `protocol/src/rpc/contract.ts` | the contract modules |
-| The app→host contract — paths, kinds, Zod input schemas, output types | `protocol/src/contracts/appToHost/` | host, value import; `base-runtime`, `import type` only |
-| `implement` and the dispatcher | `protocol/src/rpc/server.ts` | host, value import |
+| The app→host contract — paths, kinds, Zod input schemas, output types, declared errors | `protocol/src/contracts/appToHost/` | host, value import; `base-runtime`, `import type` only |
+| `ProcedureError` and `isProcedureError` | `protocol/src/rpc/errors.ts` — zero dependencies | `rpc/server.ts`, `rpc/client.ts` |
+| `implement`, middleware, `call` and `dispatch` | `protocol/src/rpc/server.ts` | host, value import |
+| `createLocalClient` | `protocol/src/rpc/local.ts` | tests only |
 | The client | `protocol/src/rpc/client.ts` — zero dependencies | `base-runtime`, value import |
 | The implementation — one handler per procedure, plus middleware | `src/server/runtime/appToHost/` | the controller |
 | The client instance | `base-runtime/src/lib/host.ts` | the accessors |
@@ -111,6 +123,46 @@ export type AppToHostContract = typeof appToHostContract;
   signature says `Promise<IMessage>` but returns `undefined` when a permission check fails.
 - **A procedure path is not a bridge name.** The contract does not mention bridges at all. The
   handler for `message.addReaction` decides which bridge method it calls.
+
+### Declared errors
+
+A procedure can declare the errors that its handler throws on purpose. This is the error map of
+oRPC (`oc.errors({ … })`), on the error taxonomy of ADR 0006 decision 6. The example shows a
+possible later form of `room.getById`, not the form of the first migration:
+
+```ts
+// protocol/src/contracts/appToHost/room.ts
+export const room = {
+	getById: request({
+		input: z.strictObject({ roomId: z.string() }),
+		output: type<IRoom>(),
+		errors: {
+			ROOM_NOT_FOUND: type<{ roomId: string }>(),
+		},
+	}),
+};
+```
+
+- **An error has a name and a `data` type.** The name is unique inside the procedure. The `data`
+  type is a phantom, as the output is. The host sends it, so it is not validated (ADR 0006
+  decision 10).
+- **All declared errors share one wire code, `-32001`.** The envelope is
+  `{ code: -32001, message, data: { name: 'ROOM_NOT_FOUND', data: { roomId } } }`. This adds one code
+  to the closed enum of decision 6. The names stay in the contract, not in the enum.
+- **The handler throws with a typed constructor.** The handler options include `errors`, one
+  constructor for each declared name: `throw errors.ROOM_NOT_FOUND({ roomId })`. A name that the
+  procedure does not declare is a compile error.
+- **The client narrows with `isProcedureError`.** `isProcedureError(e, 'room.getById', 'ROOM_NOT_FOUND')`
+  types `e.data` as `{ roomId: string }`. A promise rejection has no type in TypeScript, so a guard
+  is the only way to type it.
+- **The errors field is optional.** A procedure without it throws only the codes of decision 6.
+- **The first migration declares no errors.** Each bridge method keeps its current contract. For
+  example, `message.create` keeps `output: type<string | undefined>()` for a failed permission check.
+  A move from `undefined` to a declared error changes what the accessor sees, so it is a separate
+  change for each procedure, after the migration.
+- **App code does not see the declared errors yet.** `mainLoop.handleResponse` drops `code` and
+  `data` (ADR 0006 follow-up 4). Only the accessors in `base-runtime` can read them until that
+  follow-up lands.
 
 ### Paths and field names
 
@@ -199,6 +251,11 @@ export const appToHost = implement(appToHostContract, {
   procedure, types `input` with `z.infer` from the schema, and checks the handler return type
   against the declared output. A missing key, an extra key or a wrong return type is a compile error in
   `typecheck:default`.
+- **A handler gets `{ ctx, input, errors, path }`.** `errors` holds the constructors for the
+  declared errors of the procedure. `path` is the dotted path.
+- `Handlers<>` stays a mapped type. The implementer tree of oRPC
+  (`implement(contract).$context<Ctx>()`, then `.use(…).handler(…)` on each leaf) is not copied.
+  See *Rejected alternatives*.
 - **The handler calls the `do*` method**, so the permission checks in the bridge base classes stay
   in force.
 - The first migration binds one procedure to one bridge method. Nothing in the contract requires
@@ -212,23 +269,51 @@ implementation serves every subprocess, so the flattening runs once per host pro
 
 The wire method is the dotted path verbatim. The dispatcher never splits it.
 
+The implementation has two entry points, as oRPC separates `call` from its transport adapters.
+`call` knows procedures and knows nothing about JSON-RPC. `dispatch` knows JSON-RPC and uses `call`.
+
 ```ts
-// in protocol/src/rpc/server.ts, called by the controller for every inbound request or notification
-const proc = registry.get(message.method);
-if (!proc) return error(-32601);                                       // unknown procedure
-if (proc.kind !== kindOf(message)) return error(-32600);               // request vs notification
-const parsed = proc.input.safeParse(message.params);
-if (!parsed.success) return error(-32602, parsed.error.issues);
-try {
-	const value = await proc.run({ ctx, input: parsed.data });         // middleware, then handler
-	return proc.kind === 'request' ? success(message.id, value ?? null) : undefined;
-} catch (e) {
-	return error(codeFor(e), dataFor(e));                              // -32070 passes through; else -32000
+// in protocol/src/rpc/server.ts
+
+// Runs one procedure. Throws on every failure.
+async call(path, params: unknown, ctx) {
+	const proc = registry.get(path);
+	if (!proc) throw new UnknownProcedureError(path);
+	const parsed = proc.input.safeParse(params);
+	if (!parsed.success) throw new InputError(parsed.error.issues);
+	return proc.run({ ctx, input: parsed.data, errors: proc.errors, path }); // middleware, then handler
+}
+
+// Called by the controller for every inbound request or notification.
+async dispatch(message, ctx) {
+	const proc = registry.get(message.method);
+	if (proc && proc.kind !== kindOf(message)) return error(-32600);        // request vs notification
+	try {
+		const value = await this.call(message.method, message.params, ctx);
+		return kindOf(message) === 'request' ? success(message.id, value ?? null) : undefined;
+	} catch (e) {
+		return error(codeFor(e), dataFor(e));
+	}
 }
 ```
 
+`codeFor` is the only place that maps an error to a wire code:
+
+| Thrown error | Code | `data` |
+| --- | --- | --- |
+| `UnknownProcedureError` | `-32601` | the path |
+| `InputError` | `-32602` | the Zod issues |
+| `ProcedureError` (a declared error) | `-32001` | `{ name, data }` |
+| an error with `code === -32070` | `-32070` | passes through |
+| anything else | `-32000` | the decision 6 shape |
+
+- **The kind check stays in `dispatch`.** The kind is a property of the envelope. A local call has
+  no envelope.
+- **A test calls `call` directly.** It then checks a handler, its middleware and its validation
+  without an envelope. A test calls `dispatch` to check the codes.
+
 `handleBridgeMessage`, the `bridges:` prefix check and the `switch` over notification names in
-`handleIncomingMessage` all go. The controller calls the dispatcher and sends what it returns.
+`handleIncomingMessage` all go. The controller calls `dispatch` and sends what it returns.
 
 ### Context and caller identity
 
@@ -274,11 +359,35 @@ report: ({ input, ctx }) =>
 A middleware wraps a handler. It replaces the cross-cutting logic that `handleBridgeMessage` keeps
 inline today. Middleware is host behavior, so it lives in the implementation, not in the contract.
 
+The signature follows oRPC middleware, without the context extension:
+
+```ts
+type Middleware<Ctx> = (options: {
+	ctx: Ctx;
+	path: string;
+	procedure: Procedure;
+	input: unknown; // already validated
+	next: () => Promise<unknown>;
+}) => Promise<unknown>;
+```
+
+- **A middleware applies at one of three levels.** `implement(contract, handlers, { use: [m] })`
+  applies `m` to every procedure. `use(m, domainHandlers)` applies it to one domain.
+  `use(m, handler)` applies it to one procedure.
+- **The order is fixed.** The `implement` level runs first, then the domain level, then the
+  procedure level, then the handler. Input validation runs before all middleware.
+- **A middleware can skip the handler.** It returns a value without a call to `next`.
+- **A middleware cannot change `ctx`.** oRPC lets a middleware extend the context with
+  `next({ context })`. The handlers are one line each, so this proposal leaves that out.
+
+The two middlewares of the first migration:
+
 - **Restart suppression.** `AppResourceBridge.REGISTRATION_METHODS` and the
-  `this.state === 'restarting'` check move into one `skipWhileRestarting` middleware. Each of the
-  eight registration handlers declares it: `provideSlashCommand: skipWhileRestarting(handler)`.
-  The guarded set is then visible on the handlers, and the name-keyed `Set` goes away.
-- **Debug logs** move to a middleware that `implement` applies to every handler.
+  `this.state === 'restarting'` check move into one `skipWhileRestarting` middleware:
+  `({ ctx, next }) => (ctx.isRestarting() ? undefined : next())`. Each of the eight registration
+  handlers declares it: `provideSlashCommand: use(skipWhileRestarting, handler)`. The guarded set is
+  then visible on the handlers, and the name-keyed `Set` goes away.
+- **Debug logs** move to a middleware at the `implement` level. It reads `path` from its options.
 
 ### The client
 
@@ -301,7 +410,34 @@ await this.host.request('message.addReaction', { messageId, userId, reaction });
 - The client is a plain function with a path argument, not a `Proxy`.
 - Accessors take a `HostClient` instead of `senderFn`. `createRecordingSender` wraps the transport
   under the client, so the existing tests keep their shape.
-- `formatErrorResponse` moves into the client, where `bridgeCall` applies it today.
+- `formatErrorResponse` moves into the client, where `bridgeCall` applies it today. The client
+  rebuilds a `-32001` response as a `ProcedureError`, so `isProcedureError` works on it.
+
+### The local client
+
+`createLocalClient(implementation, ctx)` returns a `Client<C>` that calls `call` in the same
+process. It is the in-process client of oRPC (`createRouterClient`), on the in-house client type.
+
+```ts
+// packages/apps/tests/… — an accessor test on the real handlers
+const bridges = new TestBridges();
+const host = createLocalClient(appToHost, { appId: 'app1', bridges, … });
+
+await new ModifyCreator(host).finish(messageBuilder);
+
+assert.equal(bridges.getMessageBridge().created.length, 1);
+```
+
+- **It has the same type as the remote client.** An accessor takes a `HostClient` and cannot tell
+  the two apart.
+- **It runs the full host path**: validation, middleware and the handler. It skips only the
+  envelope, the serialization and the transport.
+- **A test checks both sides of a domain in one process.** An input that the accessor builds and
+  the schema rejects fails the test. A handler that calls the wrong bridge method fails the test.
+- **It does not replace the round-trip test of ADR 0006 decision 17.** That test still covers the
+  serialization and the subprocess.
+- **It lives in `rpc/local.ts`, and only tests import it.** It imports `rpc/server.ts`, so it loads
+  Zod.
 
 ### Schema library
 
@@ -342,7 +478,9 @@ This example follows one procedure through the contract, the host and the runtim
 packages/apps/protocol/src/
 ├── rpc/
 │   ├── contract.ts          request(), notification(), type<T>(), shaped<T>()   — Zod, host only
-│   ├── server.ts            implement(), Handlers<>, the dispatcher             — Zod, host only
+│   ├── errors.ts            ProcedureError, isProcedureError()                  — zero deps
+│   ├── server.ts            implement(), Handlers<>, call(), dispatch()         — Zod, host only
+│   ├── local.ts             createLocalClient()                                 — Zod, tests only
 │   └── client.ts            createClient(), Client<>                            — zero deps, runtime
 └── contracts/
     └── appToHost/
@@ -477,13 +615,14 @@ bridge and method names as strings.
   That removes one round trip, but it moves logic across the boundary, so this proposal does not do
   it.
 - **A procedure with no input takes `{}`.** Every input is an object. The client can make `input`
-  optional when the schema has no fields; PR 5 decides this.
+  optional when the schema has no fields; PR 5a decides this.
 
 ## What changes in ADR 0006
 
 | Decision | Outcome |
 | --- | --- |
-| 1–6, 8, 10, 13, 15 | **Kept.** Placement, serialization, framing, errors, control frames, validation posture, no codegen and the listener table do not depend on the dispatch shape. Decision 10 keeps its asymmetry; only the validator changes, from AJV to Zod |
+| 1–5, 8, 10, 13, 15 | **Kept.** Placement, serialization, framing, control frames, validation posture, no codegen and the listener table do not depend on the dispatch shape. Decision 10 keeps its asymmetry; only the validator changes, from AJV to Zod |
+| 6 — error taxonomy | **Extended.** The closed enum gains `-32001` for a declared error, with `data: { name, data }`. The names of the declared errors live in the contract, not in the enum |
 | 11 — TypeBox and AJV | **Replaced** by Zod, validated with `safeParse`. See *Schema library* above |
 | 7 — per-entry `kind` | **Replaced** by the `request()` / `notification()` builders. The error codes for an unknown path and for the wrong kind stay |
 | 9 — method grammar | **Kept for host→app.** The `bridges:{getXBridge}:{do*}` exemption is **deleted**: app→host methods become dotted procedure paths |
@@ -505,11 +644,30 @@ The ADR 0006 end state holds unchanged: `base-runtime` imports nothing from the 
     and the host would have to import `base-runtime` types, which ADR 0001 forbids. A contract in
     `protocol/` serves both directions.
   - It moves the schemas out of `protocol/`, against ADR 0006 decision 12, for no gain.
-- **The `@trpc/server` / `@trpc/client` or oRPC libraries.** tRPC documents `strict: true` as a
-  requirement, and the host and `base-runtime` compile `strict: false`. Both libraries have their
-  own wire format and error model, which would replace the JSON-RPC envelope that ADR 0004 just
-  built. The in-house machinery needs only the builders, `implement`, the dispatcher and a typed
-  client, and it compiles `strict: true` inside `protocol/`.
+- **The `@trpc/server` / `@trpc/client` libraries.** tRPC documents `strict: true` as a
+  requirement, and the host and `base-runtime` compile `strict: false`. tRPC also has its own wire
+  format and error model, which would replace the JSON-RPC envelope that ADR 0004 just built.
+- **The oRPC libraries** (`@orpc/contract` and `@orpc/server`, 1.15.3). A probe shows that
+  `strict: false` and the JSON-RPC envelope do not block them: exhaustiveness holds under
+  `strict: false`, and `call()` needs no transport. They were rejected for other reasons:
+  - `@orpc/contract` alone gives only the builders, which are about 60 lines here. `implement`,
+    middleware and `call` are in `@orpc/server`, which pulls 10 `@orpc/*` packages, including the
+    fetch, node, fastify and AWS Lambda adapters.
+  - It has no notification kind, no check for closed inputs and no `shaped<T>()`. These stay
+    in-house anyway.
+  - A validation failure throws `ORPCError('BAD_REQUEST')`, and `dispatch` must convert it to
+    `-32602`.
+  - With `skipLibCheck: false`, `tsc` fails on the missing `@opentelemetry/api` declarations.
+  - Its client type is a nested proxy, not a path function.
+  - A 1.x library with v2 changes announced in its types puts all 122 handlers on its upgrade path.
+- **The oRPC implementer tree** (`implement(contract).$context<Ctx>()`, then `.use().handler()` on
+  each leaf). It is the most complex type in oRPC, and a missing handler gives a long
+  `Lazyable<Procedure<…>>` error. The mapped `Handlers<>` type gives the same checks with a shorter
+  error.
+- **Context extension in middleware** (`next({ context })`). Each handler is one line, so a
+  narrowed context gains nothing.
+- **Host behavior in procedure meta** (`meta: { skipWhileRestarting: true }`). The contract then
+  states host behavior. The *Middleware* rule keeps host behavior in the implementation.
 - **TypeBox with AJV** (ADR 0006 decision 11). Its reasons were a conversion step and a JSON
   Schema draft mismatch, which exist only if Zod feeds AJV, and a speed gap, which is too small to
   matter here (see *Schema library*). It would add TypeBox as a new direct dependency, next to the
@@ -534,11 +692,17 @@ The ADR 0006 end state holds unchanged: `base-runtime` imports nothing from the 
   type-only. The `apps-engine` declarations compile in `protocol/` under `strict: true`: a probe
   that imports `IMessage`, `IRoom`, `IUser`, `IHttpResponse` and `ILivechatRoom` by their
   `definition/*` subpaths type-checks with `skipLibCheck` on and off.
+- **Declared errors add type complexity.** `Handlers<>`, the `errors` constructors and
+  `isProcedureError` all read the error map. A procedure without an error map must cost nothing, and
+  the PR 5a type tests must cover that.
+- **The local client can hide a serialization bug.** It passes objects by reference, so a `Date` or
+  a class instance survives it and does not survive the wire. The decision 17 round-trip test stays
+  the check for that.
 - **`shaped<T>()` is an unchecked cast on the field schemas.** It checks the key names, not the
   schema of each field. A reviewer must compare the listed fields with `T`.
 - **Output types versus the wire.** The sanitizer drops functions and `App` instances, and
   structured clone drops class prototypes. The client should type the output as `Wire<T>`, a mapped
-  type that removes function members, instead of `T`. PR 5 decides this.
+  type that removes function members, instead of `T`. PR 5a decides this.
 
 ## Sequence
 
@@ -551,12 +715,13 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 | 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | Unchanged |
 | 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | Unchanged |
 | 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | Unchanged |
-| 5 | **RPC machinery** in `protocol/src/rpc/`: `Handlers`, `implement`, middleware, the dispatcher, the client and `Wire<T>`. Tested against a toy contract only. No wire change | New. The contract builders in `rpc/contract.ts` landed ahead of this PR |
+| 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | New. The contract builders in `rpc/contract.ts` landed ahead of this PR |
+| 5b | **Test harness**: `createLocalClient`, and a sender wrapper that validates each recorded call against the contract schema. Tested against the toy contract of 5a | New |
 | 6 | **Contract, implementation and switch-over.** The controller calls the dispatcher first. A `bridges:*` method falls back to the legacy `handleBridgeMessage`. The `runtime.*` notifications and two small domains (`email`, `role`) migrate end to end: contract, handlers and accessors, with the `'APP_ID'` sentinel removed at those call sites | New |
 | 7 | Migrate `message`, `room`, `user`, `livechat` — 61 of the 122 emitted methods. Near-identical entries; review is for data, not mechanism | New |
 | 8 | Migrate the remaining 15 domains — 58 methods, including `appResource` with `skipWhileRestarting` | New |
 | 9 | Delete the legacy path: `handleBridgeMessage`, `bridgeCall`, `BridgeName`, `REGISTRATION_METHODS`, the `bridges:` prefix and every `'APP_ID'` literal. From this PR on, the 30 undeclared `do*` methods are unreachable | New — the security change lands here |
-| 10 | Host→app method flattening (ADR 0006 decision 9) | Unchanged; independent of 5–9 |
+| 10 | Host→app method flattening (ADR 0006 decision 9) | Unchanged; independent of 5a–9 |
 | 11 | Listener injection table replacing substring matching, plus the arity assertion | Unchanged |
 
 ### Two things the sequence depends on
