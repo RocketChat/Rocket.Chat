@@ -8,7 +8,6 @@ export enum AbacErrorCode {
 	DuplicateAttributeKey = 'error-duplicate-attribute-key',
 	AttributeDefinitionNotFound = 'error-attribute-definition-not-found',
 	RoomNotFound = 'error-room-not-found',
-	CannotConvertDefaultRoomToAbac = 'error-cannot-convert-default-room-to-abac',
 	AbacUnsupportedObjectType = 'error-abac-unsupported-object-type',
 	AbacUnsupportedOperation = 'error-abac-unsupported-operation',
 	OnlyCompliantCanBeAddedToRoom = 'error-only-compliant-users-can-be-added-to-abac-rooms',
@@ -71,12 +70,6 @@ export class AbacAttributeDefinitionNotFoundError extends AbacError {
 export class AbacRoomNotFoundError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.RoomNotFound, details);
-	}
-}
-
-export class AbacCannotConvertDefaultRoomToAbacError extends AbacError {
-	constructor(details?: unknown) {
-		super(AbacErrorCode.CannotConvertDefaultRoomToAbac, details);
 	}
 }
 
