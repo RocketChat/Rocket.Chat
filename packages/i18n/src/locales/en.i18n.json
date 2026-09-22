@@ -6150,10 +6150,6 @@
     "one": "Show all {{count}} call",
     "other": "Show all {{count}} calls"
   },
-  "Show_all_count_new": {
-    "one": "Show all ({{count}} new)",
-    "other": "Show all ({{count}} new)"
-  },
   "Show_Avatars": "Show avatars",
   "Show_call_here": "Show call here",
   "Show_chat": "Show chat",
