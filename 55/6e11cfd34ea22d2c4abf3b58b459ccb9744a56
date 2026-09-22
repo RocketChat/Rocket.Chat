@@ -1,0 +1,14 @@
+packages/streamer/src/streamer.module.ts
+  h_4c386397e672f4 256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "556e11cfd34ea22d2c4abf3b58b459ccb9744a56",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
