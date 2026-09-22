@@ -16,6 +16,14 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
 }
+/* popups built on Tile (composer slash/emoji/mention popups) paint their
+   section header with surface-tint, i.e. the opaque anchor — a solid strip
+   inside the frosted pane. Inside a tile the anchor becomes a light black
+   veil instead: the header still reads as a recessed band, and the blur
+   shows through the whole popup. */
+.rcx-tile {
+	--rcx-color-surface-tint: rgba(0, 0, 0, 0.2);
+}
 /* modals are large reading surfaces over unpredictable content — steadier
    ground than the transient menus/popovers */
 .rcx-modal {
