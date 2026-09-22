@@ -335,6 +335,7 @@ export const getMatrixTransactionsRoutes = () => {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
 						429: isErrorResponseProps,
+						500: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -356,7 +357,7 @@ export const getMatrixTransactionsRoutes = () => {
 						}
 
 						return {
-							statusCode: 400,
+							statusCode: 500,
 							body: {
 								errcode: 'M_UNKNOWN',
 								error: 'Failed to process transaction',
