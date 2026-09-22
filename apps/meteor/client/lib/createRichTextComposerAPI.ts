@@ -1,3 +1,4 @@
+import type { ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
 import type { Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/tools';
 import type { RefObject } from 'react';
@@ -17,6 +18,7 @@ export const createRichTextComposerAPI = (
 	parseOptions: Options,
 	composerRef: RefObject<HTMLElement | null>,
 	{ rid, tmid }: { rid: string; tmid?: string },
+	markupContext: ComposerMarkupContextValue = {},
 ): ComposerAPI => {
 	const focus = (): void => {
 		input.focus();
@@ -61,7 +63,7 @@ export const createRichTextComposerAPI = (
 		// leave `clear()` with a composer that is no longer empty.
 		if (input.innerText !== '') {
 			const { selectionStart: caretStart, selectionEnd: caretEnd } = getSelectionRange(input);
-			renderComposerContent(input, parseOptions, { selectionStart: caretStart, selectionEnd: caretEnd });
+			renderComposerContent(input, parseOptions, { selectionStart: caretStart, selectionEnd: caretEnd }, markupContext);
 		}
 
 		triggerEvent(input, 'input');
@@ -70,7 +72,7 @@ export const createRichTextComposerAPI = (
 		!skipFocus && focus();
 	};
 
-	const renderer = createComposerRenderer(input, parseOptions);
+	const renderer = createComposerRenderer(input, parseOptions, markupContext);
 
 	const core = createComposerAPICore({
 		input,
@@ -117,7 +119,7 @@ export const createRichTextComposerAPI = (
 
 			if (selectedText.includes('\n') || !document.execCommand?.('insertText', false, selectedText)) {
 				input.innerText = initText.slice(0, unwrapStart) + selectedText + finalText.slice(endPattern.length);
-				renderComposerContent(input, parseOptions, { selectionStart: unwrapStart, selectionEnd: unwrapEnd });
+				renderComposerContent(input, parseOptions, { selectionStart: unwrapStart, selectionEnd: unwrapEnd }, markupContext);
 			}
 
 			focus();
@@ -144,7 +146,7 @@ export const createRichTextComposerAPI = (
 		// re-render the markup ourselves.
 		if (replacement.includes('\n') || !document.execCommand?.('insertText', false, replacement)) {
 			input.innerText = initText + replacement + finalText;
-			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd }, markupContext);
 		}
 
 		focus();
@@ -172,7 +174,7 @@ export const createRichTextComposerAPI = (
 
 		if (!inserted || input.innerText !== expected) {
 			input.innerText = expected;
-			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd }, markupContext);
 		}
 
 		setSelectionRange(input, newStart, newEnd);
@@ -200,7 +202,7 @@ export const createRichTextComposerAPI = (
 	const replyWith = async (text: string): Promise<void> => {
 		setText(text);
 		const end = input.innerText.length;
-		renderComposerContent(input, parseOptions, { selectionStart: end, selectionEnd: end });
+		renderComposerContent(input, parseOptions, { selectionStart: end, selectionEnd: end }, markupContext);
 	};
 
 	return {
