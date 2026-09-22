@@ -51,6 +51,8 @@ const privateWithAttributes = { _id: 'p2', t: 'p', abacAttributes: [{ key: 'dept
 
 const user = { _id: 'u1', username: 'user.one' } as IUser;
 
+const lockContext = { enforcementOn: true, requiredAttributeKeys: [] };
+
 const next = async (rooms: IRoom[]): Promise<IRoom[]> => rooms;
 
 const run = (rooms: IRoom[], actor: IUser = user): Promise<IRoom[]> => filterDefaultChannels(next, rooms, actor);
@@ -69,7 +71,7 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 
 		settingsMock.get.withArgs('ABAC_Enabled').returns(true);
 		licenseMock.hasModule.withArgs('abac').returns(true);
-		getRoomAbacLockContextMock.returns({ enforcementOn: true, requiredAttributeKeys: [] });
+		getRoomAbacLockContextMock.returns(lockContext);
 		isRoomAbacLockedMock.callsFake((room: IRoom) => room.t !== 'p' || !room.abacAttributes?.length);
 		isUserAllowedInRoomMock.resolves(true);
 		ldapMock.syncUsersAbacAttributesByIds.resolves();
@@ -92,8 +94,10 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		expect(isUserAllowedInRoomMock.called).to.be.false;
 	});
 
-	it('should skip the rooms enforcement locks', async () => {
+	it('should skip the rooms enforcement locks, resolving the workspace policy once', async () => {
 		expect(idsOf(await run([publicRoom, privateWithoutAttributes, privateWithAttributes]))).to.deep.equal(['p2']);
+		expect(getRoomAbacLockContextMock.calledOnce).to.be.true;
+		expect(isRoomAbacLockedMock.alwaysCalledWith(sinon.match.any, lockContext)).to.be.true;
 	});
 
 	it('should not sync attributes when no remaining room carries any', async () => {
@@ -131,5 +135,6 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		isUserAllowedInRoomMock.callsFake(async (_user: IUser, room: IRoom) => room._id !== 'p2');
 
 		expect(idsOf(await run([privateWithoutAttributes, privateWithAttributes]))).to.deep.equal(['p1']);
+		expect(isUserAllowedInRoomMock.alwaysCalledWith(user, sinon.match.any, lockContext)).to.be.true;
 	});
 });
