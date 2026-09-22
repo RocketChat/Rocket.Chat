@@ -112,6 +112,34 @@ export type AppToHostContract = typeof appToHostContract;
 - **A procedure path is not a bridge name.** The contract does not mention bridges at all. The
   handler for `message.addReaction` decides which bridge method it calls.
 
+### Paths and field names
+
+The first migration derives every path and every field name from the bridge method by one rule. A
+reviewer can then map each procedure back to one bridge method without a lookup table.
+
+- **The domain** is the getter name without `get` and `Bridge`, in camelCase:
+  `getLivechatBridge` → `livechat`. A leading acronym goes to lower case: `getOAuthAppsBridge` →
+  `oauthApps`.
+- **The procedure** is the method name without `do`, in camelCase: `doAddReaction` →
+  `message.addReaction`.
+- **A field** has the name of the parameter in the bridge method signature in
+  `packages/apps/src/server/bridges/`. An optional parameter becomes an optional field.
+- **The caller-identity `appId` parameter has no field.** The handler supplies it from `ctx.appId`.
+- **An `appId` parameter that the app supplies becomes `targetAppId`.** This applies to the three
+  `moderation` procedures and to `user.deleteUsersCreatedByApp`. So no input schema declares a field
+  named `appId`, and an `appId` key in `params` always fails validation.
+
+Two bridge methods do not follow the naming of the others. Their procedures get a corrected name:
+
+| Bridge method | Procedure |
+| --- | --- |
+| `getOAuthAppsBridge:doGetByid` | `oauthApps.getById` |
+| `getLivechatBridge:do_fetchLivechatRoomMessages` | `livechat.fetchLivechatRoomMessages` |
+
+The rule gives 122 distinct paths for the 122 emitted pairs. A better name than the rule gives, for
+a path or for a field, is a separate change after the migration. For example, `uid` in
+`user.getUserUnreadMessageCount` becomes `userId` only in that later change.
+
 ### Domain objects in the input: `shaped<T>()`
 
 Some procedures take a whole Apps-Engine object: `message.create` takes an `IMessage`, and
@@ -234,11 +262,11 @@ call: ({ ctx, input }) => ctx.bridges.getHttpBridge().doCall({ ...input, appId: 
 
 // app-supplied argument — a named input field, so the capability is explicit in the contract
 report: request({
-	input: z.strictObject({ messageId: z.string(), description: z.string(), userId: z.string(), reportedAppId: z.string() }),
+	input: z.strictObject({ messageId: z.string(), description: z.string(), userId: z.string(), targetAppId: z.string() }),
 	output: type<void>(),
 }),
 report: ({ input, ctx }) =>
-	ctx.bridges.getModerationBridge().doReport(input.messageId, input.description, input.userId, input.reportedAppId),
+	ctx.bridges.getModerationBridge().doReport(input.messageId, input.description, input.userId, input.targetAppId),
 ```
 
 ### Middleware
