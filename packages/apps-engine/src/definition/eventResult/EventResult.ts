@@ -1,5 +1,7 @@
 /**
  * Reserved discriminator stamped by the `EventResult.*` factories below.
+ *
+ * @internal The host reads this brand; an App never needs it.
  */
 export const EVENT_RESULT_KIND = 'EventResult';
 
@@ -29,7 +31,11 @@ type Marker = { '@kind': typeof EVENT_RESULT_KIND };
 /** Key of the phantom on `PatchEventResult` — see the type for what it is for. */
 declare const PATCH_PHANTOM_KEY: '__patchedType';
 
-/** The phantom key's type, so a caller can name it without reaching for the declaration. */
+/**
+ * The phantom key's type, so a caller can name it without reaching for the declaration.
+ *
+ * @internal The host strips this key; an App never names it.
+ */
 export type PatchPhantomKey = typeof PATCH_PHANTOM_KEY;
 
 /** A message the workspace translates, so the reader sees it in their own language. */

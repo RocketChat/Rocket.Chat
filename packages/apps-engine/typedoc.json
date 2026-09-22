@@ -4,11 +4,11 @@
     "entryPointStrategy": "expand",
     "entryPoints": ["./src/definition"],
     "excludePrivate": true,
+    "excludeInternal": true,
     "out": "docs",
     "gitRevision": "master",
     "intentionallyNotExported": [
         "src/definition/eventResult/EventResult.ts:Marker",
-        "src/definition/eventResult/EventResult.ts:PATCH_PHANTOM_KEY",
         "src/definition/livechat/ILivechatRoom.ts:IOmnichannelSourceApp",
         "src/definition/mediaCalls/helpers.ts:WithCall",
         "src/definition/mediaCalls/helpers.ts:EndedCall",
