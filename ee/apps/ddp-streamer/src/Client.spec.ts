@@ -7,7 +7,7 @@ import WebSocket from 'ws';
 
 import { Client } from './Client';
 import { Server } from './Server';
-import { SERVER_ID } from './codec';
+import { SERVER_ID, preframe } from './codec';
 import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
 import { ConnectionLifecycle } from './lifecycle';
 
@@ -29,6 +29,7 @@ function makeSocket(readyState: number = WebSocket.OPEN) {
 		readyState,
 		send: jest.fn<void, [string]>(),
 		close: jest.fn<void, [number?, string?]>(),
+		_sender: { sendFrame: jest.fn<void, [Buffer[], (err?: Error) => void]>((_frame, cb) => cb()) },
 	});
 
 	return socket as typeof socket & WebSocket;
@@ -246,6 +247,34 @@ describe('Client', () => {
 
 			expect(ws.send).not.toHaveBeenCalled();
 			expect(ws.close).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('pre-framed sends', () => {
+		const frames = preframe('{"msg":"changed"}');
+
+		it('writes the raw frame for websocket clients', async () => {
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
+
+			await client.sendFrames(frames);
+
+			expect(ws._sender.sendFrame).toHaveBeenCalledWith(frames.raw, expect.any(Function));
+		});
+
+		it('writes the SockJS frame for SockJS clients', async () => {
+			const client = new Client(server, lifecycle, ws, true, makeRequest('/sockjs/1/a/websocket'));
+
+			await client.sendFrames(frames);
+
+			expect(ws._sender.sendFrame).toHaveBeenCalledWith(frames.sockjs, expect.any(Function));
+		});
+
+		it('rejects with the error the socket reports', async () => {
+			const failure = Object.assign(new Error('destroyed'), { code: 'ERR_STREAM_DESTROYED' });
+			ws._sender.sendFrame.mockImplementation((_frame, cb) => cb(failure));
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
+
+			await expect(client.sendFrames(frames)).rejects.toBe(failure);
 		});
 	});
 
