@@ -185,7 +185,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 					{data.type !== 'direct' &&
 						(joinedUsers.length ? (
 							<>
-								<VideoConfMessageUserStack users={joinedUsers} />
+								<VideoConfMessageUserStack users={joinedUsers} showAvatars={Boolean(displayAvatars)} showRealName={showRealName} />
 								<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 							</>
 						) : (
@@ -230,7 +230,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				</VideoConfMessageButton>
 				{Boolean(joinedUsers.length) && (
 					<>
-						<VideoConfMessageUserStack users={joinedUsers} />
+						<VideoConfMessageUserStack users={joinedUsers} showAvatars={Boolean(displayAvatars)} showRealName={showRealName} />
 						<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 					</>
 				)}
