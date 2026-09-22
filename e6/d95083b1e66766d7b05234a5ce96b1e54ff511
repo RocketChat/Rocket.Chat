@@ -1,0 +1,27 @@
+ee/apps/ddp-streamer/src/configureServer.spec.ts
+  s_6a07e872e1831e::t_0d6bb92ef87b30 1,3-79
+  s_6a07e872e1831e::t_8181d43f36ded0 2
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_efdb458ec1d689 46,51
+  s_6a07e872e1831e::t_5c0810e5dac69d 13
+.changeset/ddp-streamer-login-service-mirror.md
+  s_6a07e872e1831e::t_8c55ecce8c2cec 1-5
+ee/apps/ddp-streamer/src/configureServer.ts
+  s_6a07e872e1831e::t_07ffbc5528606d 12,22-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e6d95083b1e66766d7b05234a5ce96b1e54ff511",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
