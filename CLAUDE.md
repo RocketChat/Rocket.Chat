@@ -24,6 +24,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
 - [docs/anchor-navigation.md](docs/anchor-navigation.md) — deep-linking to a field via URL hash fragments
