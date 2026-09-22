@@ -253,7 +253,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 				try {
 					StreamerCentral.emit('publish', name, eventName, args, this.userId);
 				} catch (err) {
-					SystemLogger.error({ msg: 'Error emitting publish event', name, eventName, err });
+					logger.error({ msg: 'Error emitting publish event', name, eventName, err });
 				}
 
 				__emit(eventName, ...args);
