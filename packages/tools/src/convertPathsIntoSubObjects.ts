@@ -1,5 +1,11 @@
 const DANGEROUS_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
 
+/**
+ * Converts a flat object with dot-delimited property paths into a deeply nested object hierarchy.
+ *
+ * @param object - The flat object containing dot-notation paths as keys.
+ * @returns A new deeply nested object with reconstructed hierarchy.
+ */
 export function convertPathsIntoSubObjects(object: Record<string, any>): Record<string, any> {
 	const newObject: Record<string, any> = {};
 
@@ -21,10 +27,6 @@ export function convertPathsIntoSubObjects(object: Record<string, any>): Record<
 		let current = newObject;
 
 		const finalProperty = keyProperties.pop() as string;
-
-		if (DANGEROUS_PROPERTIES.has(finalProperty)) {
-			continue;
-		}
 
 		for (const property of keyProperties) {
 			if (!(property in current) || typeof current[property] !== 'object' || current[property] === null) {

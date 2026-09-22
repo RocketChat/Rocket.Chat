@@ -81,4 +81,20 @@ describe('convertPathsIntoSubObjects', () => {
 
 		expect(restored).toEqual(original);
 	});
+
+	it('should properly merge nested sub-objects', () => {
+		const input = {
+			'config.network.ip': '127.0.0.1',
+			'config.network': { port: 8080 },
+		};
+
+		expect(convertPathsIntoSubObjects(input)).toEqual({
+			config: {
+				network: {
+					ip: '127.0.0.1',
+					port: 8080,
+				},
+			},
+		});
+	});
 });

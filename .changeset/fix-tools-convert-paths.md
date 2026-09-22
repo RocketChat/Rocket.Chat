@@ -2,4 +2,4 @@
 "@rocket.chat/tools": patch
 ---
 
-fix(tools): preserve 0 and empty string values and prevent prototype pollution in convertPathsIntoSubObjects
+Fixes data loss for zero and empty string values and prevents prototype pollution when converting dot-notated paths into nested objects
