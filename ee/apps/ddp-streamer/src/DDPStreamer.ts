@@ -10,7 +10,7 @@ import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
 import { Client, clientMap } from './Client';
-import { events, server } from './configureServer';
+import { server, updateLoginServiceConfiguration } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
@@ -43,14 +43,12 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 			if (clientAction === 'removed') {
-				events.emit('meteor.loginServiceConfiguration', 'removed', {
-					_id: id,
-				});
+				updateLoginServiceConfiguration('removed', { _id: id });
 				return;
 			}
 
 			if (data) {
-				events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
+				updateLoginServiceConfiguration(clientAction === 'inserted' ? 'added' : 'changed', data);
 			}
 		});
 
