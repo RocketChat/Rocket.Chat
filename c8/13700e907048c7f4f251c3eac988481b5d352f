@@ -1,0 +1,21 @@
+packages/rest-typings/src/v1/users/UsersListParamsGET.ts
+  s_d2d9ee37d80481::t_fc2a01a20e3393 8
+  s_d2d9ee37d80481::t_403aff94968332 9,22
+  s_d2d9ee37d80481::t_fe1a37f08def60 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c813700e907048c7f4f251c3eac988481b5d352f",
+  "prompts": {},
+  "sessions": {
+    "s_d2d9ee37d80481": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4489598-8e02-4a87-8bbf-53585969c0ef",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
