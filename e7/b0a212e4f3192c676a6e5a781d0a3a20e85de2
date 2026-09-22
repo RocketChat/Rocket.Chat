@@ -1,0 +1,28 @@
+apps/meteor/client/meteor/overrides/ddpOverREST.ts
+  s_6a07e872e1831e::t_113d486bd2191c 18-19
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_e4a923a1dd0b7e 151
+ee/apps/ddp-streamer/src/Publication.ts
+  s_6a07e872e1831e::t_684b9b77314121 38
+ee/apps/ddp-streamer/src/lib/MirroredCollection.ts
+  s_6a07e872e1831e::t_0baf5faa58bcd1 7-8
+ee/apps/ddp-streamer/src/codec.ts
+  s_6a07e872e1831e::t_6c2548a82f0d46 1
+  s_6a07e872e1831e::t_b0f6401c960c5e 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e7b0a212e4f3192c676a6e5a781d0a3a20e85de2",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
