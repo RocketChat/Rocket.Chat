@@ -1,5 +1,5 @@
+import type { EmojiPackages } from '../emoji';
 import { getEmojiConfig } from './getEmojiConfig';
-import type { EmojiPackages } from '../../../lib/emoji';
 
 const buildEmojiPackages = (ascii: boolean): EmojiPackages =>
 	({

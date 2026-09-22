@@ -1,5 +1,5 @@
-import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
-import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
+import { getEmojiConfig } from '../../../../lib/emoji-native/getEmojiConfig';
+import { legacyEmojioneMap } from '../../../../lib/emoji-native/legacyEmojioneMap';
 import { emoji } from '../../messaging/emoji';
 
 const config = getEmojiConfig(emoji);
