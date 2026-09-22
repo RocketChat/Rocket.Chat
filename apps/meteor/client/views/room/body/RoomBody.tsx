@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRole, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -23,6 +23,7 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
+import { useCanPreviewRoom } from '../hooks/useCanPreviewRoom';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
@@ -74,27 +75,7 @@ const RoomBody = () => {
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
-
-	const canPreviewChannelRoom = usePermission('preview-c-room');
-
-	const subscribed = !!subscription;
-
-	const canPreview = useMemo(() => {
-		if (room && room.t !== 'c') {
-			return true;
-		}
-
-		if (allowAnonymousRead === true) {
-			return true;
-		}
-
-		if (canPreviewChannelRoom) {
-			return true;
-		}
-
-		return subscribed;
-	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
+	const canPreview = useCanPreviewRoom(room, subscription);
 
 	const {
 		handleUnreadBarJumpToButtonClick,
