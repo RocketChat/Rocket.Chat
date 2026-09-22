@@ -9,7 +9,7 @@ import { Autoupdate } from './lib/Autoupdate';
 
 export const server = new Server();
 
-export const events = new EventEmitter();
+const events = new EventEmitter();
 
 const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfiguration';
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
@@ -19,6 +19,17 @@ MeteorService.getLoginServiceConfiguration()
 	.then((records = []) => records.forEach((record) => loginServices.set(record._id, record)))
 	.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
+/** Keeps the mirrored login service configuration current and forwards the change to every active subscriber. */
+export function updateLoginServiceConfiguration(action: 'added' | 'changed' | 'removed', record: Record<string, any>): void {
+	if (action === 'removed') {
+		loginServices.delete(record._id);
+	} else {
+		loginServices.set(record._id, record);
+	}
+
+	events.emit(loginServiceConfigurationPublication, action, record);
+}
+
 server.publish(loginServiceConfigurationPublication, async function () {
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
 
@@ -26,11 +37,9 @@ server.publish(loginServiceConfigurationPublication, async function () {
 		switch (action) {
 			case 'added':
 			case 'changed':
-				loginServices.set(record._id, record);
 				this[action](loginServiceConfigurationCollection, record._id, record);
 				break;
 			case 'removed':
-				loginServices.delete(record._id);
 				this[action](loginServiceConfigurationCollection, record._id);
 		}
 	};

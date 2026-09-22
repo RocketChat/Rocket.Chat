@@ -146,11 +146,18 @@ export class Client extends EventEmitter {
 	}
 
 	async callMethod(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.call(this, packet)).catch();
+		this.enqueue(() => server.call(this, packet));
 	}
 
 	async callSubscribe(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.subscribe(this, packet)).catch();
+		this.enqueue(() => server.subscribe(this, packet));
+	}
+
+	// A rejected task must not poison the chain, or every later message from this client would be dropped.
+	private enqueue(task: () => Promise<void>): void {
+		this.chain = this.chain.then(task).catch((err) => {
+			console.error('Error processing DDP message:', err);
+		});
 	}
 
 	process(action: string, packet: IPacket): void {
