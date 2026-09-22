@@ -1,4 +1,4 @@
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from './sidebarGroups';
 
 export type ReorderableGroup = { key: string };
 

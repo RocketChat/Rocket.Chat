@@ -1,6 +1,6 @@
 import { canMoveGroup } from './reorderableGroups';
 
-jest.mock('../hooks/useCategoryList', () => ({
+jest.mock('./sidebarGroups', () => ({
 	SIDEBAR_DYNAMIC_GROUP_KEYS: ['Unread', 'Favorites'],
 }));
 

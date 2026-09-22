@@ -14,6 +14,7 @@ import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichan
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import { getGroupRooms } from '../lib/groupRooms';
 import type { GroupUnreadInfo } from '../lib/unreadRooms';
 import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../lib/unreadRooms';
 
@@ -112,16 +113,13 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
-				// A collapsed group still shows the room currently open, so the user can locate themselves in the
-				// sidebar, plus its unread rooms when "Show unreads" is enabled.
-				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
-				let displayRooms = collapsed ? allRooms.filter(isVisibleWhileCollapsed) : allRooms;
-
-				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
-				// configured sort (activity / a-z) it already has from the subscription query.
-				if (keepUnreadsOnTop) {
-					displayRooms = [...displayRooms.filter(isUnreadRoom), ...displayRooms.filter((room) => !isUnreadRoom(room))];
-				}
+				const { visible: displayRooms, hidden: countedOnlyRooms } = getGroupRooms({
+					rooms: allRooms,
+					collapsed,
+					showUnreads,
+					keepUnreadsOnTop,
+					openedRoom,
+				});
 
 				return {
 					key,
@@ -135,7 +133,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					// The header total badge only accounts for what the collapsed group hides. Rooms kept visible
 					// while collapsed — the open one, and the unread ones when "Show unreads" is on — carry their
 					// own counters, so counting them here as well would duplicate them.
-					unreadInfo: collapsed ? buildUnreadInfo(allRooms.filter((room) => !isVisibleWhileCollapsed(room))) : emptyUnreadInfo(),
+					unreadInfo: buildUnreadInfo(countedOnlyRooms),
 					empty: allRooms.length === 0,
 				};
 			};

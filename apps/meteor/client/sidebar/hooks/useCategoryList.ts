@@ -5,7 +5,10 @@ import { useMemo } from 'react';
 import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../lib/sidebarGroups';
 import { isUnreadRoom } from '../lib/unreadRooms';
+
+export { SIDEBAR_DYNAMIC_GROUP_KEYS };
 
 type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
@@ -43,14 +46,6 @@ const filterSystemCategories = (categories: readonly string[], options: FilterSy
 		}
 	});
 };
-
-export const SIDEBAR_DYNAMIC_GROUP_KEYS: readonly string[] = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-];
 
 export const mergeWithSectionsOrder = (explicitIds: string[], sectionsOrder: readonly string[]): string[] => {
 	const merged = [...explicitIds];
