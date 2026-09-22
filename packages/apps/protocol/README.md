@@ -1,18 +1,21 @@
 # `@rocket.chat/apps` — host↔subprocess protocol
 
 The wire format spoken between the host controller (`packages/apps/src/server/runtime/`) and the app
-subprocess (`packages/apps/base-runtime/`, run by `node-runtime`).
+subprocess (`packages/apps/base-runtime/`, run by `node-runtime`), and the contract that declares
+every app→host call.
 
 - **Decisions and rationale:** [ADR 0006](../../../docs/adr/0006-apps-subprocess-protocol.md),
   building on [ADR 0005](../../../docs/adr/0005-ipc-channel-transport.md) for the transport and
   [ADR 0004](../../../docs/adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md) for the
   envelope
-- **Delivery plan:** [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
+- **App→host contract and delivery plan:**
+  [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md).
+  It replaces the app→host half of ADR 0006: decisions 7, 11, 12, 14 and 16, and part of 17
 
-> **Status: the project is wired, and has one module.** `src/index.ts` is the barrel every module
-> under [Layout](#layout) re-exports through. Only `rpc/contract.ts` exists yet. The wire below is what the
-> two sides speak today, in `src/server/runtime/` and `base-runtime/`; everything marked ⏳ arrives
-> with a PR from the delivery plan.
+> **Status: the project is wired, and has one module.** Only `rpc/contract.ts` exists: the
+> `request`, `notification`, `type<T>` and `shaped<T>` builders, without the `errors` field. The
+> wire below is what the two sides speak today, in `src/server/runtime/` and `base-runtime/`.
+> Everything marked ⏳ arrives with a PR from the delivery plan.
 
 ## Channels
 
@@ -58,11 +61,14 @@ HOST ──request──▶ APP
   _zPING                                      bare string, liveness (10s, 1s timeout, 4 misses → restart)
 
 APP ──request──▶ HOST
-  bridges:{getXBridge}:{do*}                  152 methods over 29 bridges — the only app-originated
-                                              request category
+  today   bridges:{getXBridge}:{do*}          positional params with an 'APP_ID' sentinel;
+                                              reaches 152 methods over 29 bridges
+  ⏳      {domain}.{procedure}                one named object as params; 122 procedures
+                                              over 21 domains, declared in the contract
 
 APP ──notification──▶ HOST
-  ready | log | unhandledRejection | uncaughtException
+  today   ready | log | unhandledRejection | uncaughtException
+  ⏳      runtime.{ready|log|unhandledRejection|uncaughtException}
 
 APP ──out-of-band──▶ HOST
   _zPONG                                      bare string
@@ -81,10 +87,13 @@ EVERY MESSAGE
 Method names are a **closed set**. Variable segments — command names, API paths, provider ids,
 processor ids — live in `params`, never in the name, so nothing app-supplied is interpolated into a
 dispatch key. (`api:call` also folds `httpMethod` into params, because an API path may itself contain
-`:`.) `bridges:{getXBridge}:{do*}` is exempt: both segments are already closed sets, so it is a
-template in syntax only.
+`:`.)
 
-⏳ The exact member names for the five flattened families are fixed in PR 4.
+- **Host→app** keeps the `{category}:{member}` grammar of ADR 0006 decision 9. ⏳ The exact member
+  names for the five flattened families are fixed in PR 10.
+- **App→host** uses ⏳ the dotted procedure path of the contract, for example `message.addReaction`.
+  The wire method is the path verbatim. The host looks it up in one map and never splits it. The
+  `bridges:{getXBridge}:{do*}` exemption goes away.
 
 ### Direction asymmetries
 
@@ -93,16 +102,77 @@ Two, both deliberate:
 - **Only app→host responses carry the `{ value, logs? }` envelope.** Host→app responses carry the raw
   value. Only the subprocess produces app logs.
 - **Only app→host params are validated.** The subprocess is untrusted, and its payloads are ids and
-  scalars — cheap to check. Host→app payloads are hydrated domain objects, self-sent, and covered by
+  scalars — cheap to check. ⏳ The host validates them with Zod `safeParse` against the contract.
+  Host→app payloads, and the outputs and error `data` of the contract, are self-sent and covered by
   types alone.
 
 ### Caller identity
 
-⏳ The app id **never crosses the wire**. Each bridge contract entry carries a typed invoker that
-calls the real bridge method with the connection-known app id supplied by the host. Where an appId is
-genuinely an app-supplied *argument* rather than caller identity — `ModerationBridge.doReport`,
-`doDismissReportsBy*`, `UserBridge.doDeleteUsersCreatedByApp` — the invoker forwards it from the wire,
-and that is visible in the entry.
+⏳ The app id **never crosses the wire**. The controller builds one `HostContext` per subprocess, and
+each handler takes the caller identity from `ctx.appId`. The `'APP_ID'` sentinel goes away.
+
+- **No input schema declares a field named `appId`.** Every input is a `z.strictObject`, so an
+  `appId` key in `params` fails validation with `-32602`.
+- **An app id that the app supplies as an argument is a `targetAppId` field.** This applies to the
+  three `moderation` procedures and to `user.deleteUsersCreatedByApp`. The capability is then
+  explicit in the contract.
+- **A nested app id is added by the handler.** For example, `http.call` spreads `ctx.appId` into the
+  request object.
+
+## The app→host contract
+
+⏳ `contracts/hostContract/` declares each procedure explicitly. The host implements the contract, and
+the subprocess calls it through a client typed from the contract. A bridge method with no procedure
+cannot be reached. The [proposal](../../../docs/proposals/apps-runtime-sdk-ipc/README.md) has the
+full design and a worked example.
+
+```ts
+export const message = {
+	addReaction: request({
+		input: z.strictObject({ messageId: z.string(), userId: z.string(), reaction: ReactionSchema }),
+		output: type<void>(),
+	}),
+};
+```
+
+- **A procedure has a path, a kind, an input schema and an output type.** `request(…)` expects a
+  response. `notification(…)` does not, and its output is `void`.
+- **The input is one named object, closed with `z.strictObject`.** `request` and `notification`
+  throw at module load on any other schema.
+- **`type<T>()` is a phantom.** It carries the output type and has no runtime content.
+- **`shaped<T>()` checks a domain object only on the fields that the call depends on**, and types it
+  as the full Apps-Engine interface. The converters validate the rest. A field that the host uses
+  for routing, for an authorization decision or in a query must be listed.
+- **⏳ A procedure can declare errors**, each with a name and a `data` type. The handler throws
+  `errors.NAME(data)`, and the client narrows with `isProcedureError(e, path, name)`.
+
+### Paths and field names
+
+The first migration derives every path and every field from the bridge method by one rule:
+
+- **The domain** is the getter name without `get` and `Bridge`, in camelCase: `getLivechatBridge` →
+  `livechat`, `getOAuthAppsBridge` → `oauthApps`.
+- **The procedure** is the method name without `do`, in camelCase: `doAddReaction` →
+  `message.addReaction`.
+- **A field** has the name of the bridge method parameter. An optional parameter becomes an
+  optional field. The caller-identity `appId` parameter has no field.
+
+Two methods get a corrected name: `doGetByid` → `oauthApps.getById`, and
+`do_fetchLivechatRoomMessages` → `livechat.fetchLivechatRoomMessages`.
+
+### Error codes
+
+⏳ `dispatch` maps each thrown error to one wire code. `call` runs one procedure and throws; it knows
+nothing about JSON-RPC.
+
+| Thrown error | Code | `data` |
+| --- | --- | --- |
+| unknown path | `-32601` | the path |
+| request sent as a notification, or the reverse | `-32600` | — |
+| `InputError` | `-32602` | the Zod issues |
+| `ProcedureError` (a declared error) | `-32001` | `{ name, data }` |
+| an error with `code === -32070` | `-32070` | passes through |
+| anything else | `-32000` | the ADR 0006 decision 6 shape |
 
 ## Layout
 
@@ -121,12 +191,17 @@ src/
 │   ├── jsonrpc.ts  envelopes, factories, guards — moved from src/lib
 │   └── errors.ts   closed code enum + declared data shapes
 ├── rpc/
-│   └── contract.ts request(), notification(), type<T>(), shaped<T>() — Zod, host only
+│   ├── contract.ts request(), notification(), type<T>(), shaped<T>()   — Zod, host only
+│   ├── errors.ts   ProcedureError, isProcedureError()                  — zero deps
+│   ├── server.ts   implement(), Handlers<>, middleware, call(), dispatch() — Zod, host only
+│   ├── local.ts    createLocalClient()                                 — Zod, tests only
+│   └── client.ts   createClient(), Client<>                            — zero deps, runtime
 └── contracts/
     ├── methods.ts  closed host→app method set, kind, arity
-    └── bridges/
-        ├── names.ts    plain string constants — both sides value-import
-        └── schemas.ts  TypeBox — host value-imports, runtime `import type` only
+    └── hostContract/
+        ├── index.ts    hostContract and type HostContract
+        ├── shared.ts   Ref and other small reusable schemas
+        └── <domain>.ts one module per domain: message, room, livechat, runtime, …
 ```
 
 Three pieces are written and live elsewhere. The JSON-RPC envelope is in
@@ -136,12 +211,22 @@ sanitizer is in `packages/apps/src/lib/IpcSanitizer.ts`, and the secure-fields m
 `packages/apps/src/lib/SecureFields.ts`; `base-runtime` value-imports both straight from that same
 compiled `dist`.
 
+Two pieces of the design live outside this project:
+
+| Piece | Location |
+| --- | --- |
+| The implementation — one handler per procedure, plus middleware | `src/server/runtime/hostContract/` |
+| The client instance that the accessors call | `base-runtime/src/lib/host.ts` |
+
 Constraints on what may live here:
 
-- **This project builds first**, so it cannot import `AppBridges`. The invoker table binding the wire
-  to the host's bridges lives in `src/server/runtime/`, not here.
-- **`schemas.ts` is `import type`-only from the runtime.** Not a hard constraint: the subprocess
-  resolves `node_modules` the way the host does. It is a weight choice. The subprocess validates
-  nothing, because AJV runs host-side, so TypeBox would buy it nothing and cost it start-up time.
+- **This project builds first**, so it cannot import `AppBridges`. The contract knows nothing about
+  bridges. The handlers that bind a procedure to a bridge method live in `src/server/runtime/`.
+- **Zod stays out of the subprocess.** `base-runtime` imports the contract with `import type` only,
+  and imports `rpc/client.ts` by its subpath, not through the `src/index.ts` barrel. `rpc/client.ts`
+  and `rpc/errors.ts` must not import Zod, `rpc/server.ts` or the contract values.
+- **Host behavior stays out of the contract.** Restart suppression and debug logs are middleware in
+  the implementation, not procedure metadata.
 
-Everything here compiles `strict: true`, unlike the host and `base-runtime`.
+Everything here compiles `strict: true`, unlike the host and `base-runtime`. So the contract can
+state `IMessage | undefined` where the bridge signature says `Promise<IMessage>`.
