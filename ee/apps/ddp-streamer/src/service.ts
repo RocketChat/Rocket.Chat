@@ -25,6 +25,7 @@ void (async () => {
 	const { Server } = await import('./Server');
 	const { createStreamAdapter } = await import('./Streamer');
 	const { ConnectionLifecycle } = await import('./lifecycle');
+	const { ConnectionRegistry } = await import('./ConnectionRegistry');
 	const { registerAccountMethods } = await import('./methods/accounts');
 	const { registerPresenceMethods } = await import('./methods/presence');
 	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');
@@ -32,6 +33,7 @@ void (async () => {
 
 	const server = new Server();
 	const lifecycle = new ConnectionLifecycle();
+	const registry = new ConnectionRegistry(lifecycle);
 
 	registerLoginServiceConfigurationPublication(server);
 	registerAutoupdatePublication(server);
@@ -46,7 +48,7 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, lifecycle, notifications));
+	api.registerService(new DDPStreamer(server, lifecycle, registry, notifications));
 
 	await api.start();
 })();

@@ -4,6 +4,7 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
+import { ConnectionRegistry } from './ConnectionRegistry';
 import { DDPStreamer } from './DDPStreamer';
 import { Server } from './Server';
 import { createStreamAdapter } from './Streamer';
@@ -60,12 +61,13 @@ function makeMetrics(): jest.Mocked<IServiceMetrics> {
 
 function makeService() {
 	const lifecycle = new ConnectionLifecycle();
-	const service = new DDPStreamer(server, lifecycle, notifications);
+	const registry = new ConnectionRegistry(lifecycle);
+	const service = new DDPStreamer(server, lifecycle, registry, notifications);
 	const api = { broadcast: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<IApiService>;
 	service.setApi(api);
 	const metrics = makeMetrics();
 
-	return { lifecycle, service, api, metrics };
+	return { lifecycle, registry, service, api, metrics };
 }
 
 async function createService() {
@@ -93,7 +95,8 @@ describe('DDPStreamer lifecycle handling', () => {
 		await service.created();
 
 		expect(metrics.register).not.toHaveBeenCalled();
-		expect(lifecycle.events()).toEqual([]);
+		expect(lifecycle.has('loggedIn')).toBe(false);
+		expect(lifecycle.has('loggedOut')).toBe(false);
 	});
 
 	it('registers the subscription histogram and the connection gauges', async () => {
@@ -114,6 +117,41 @@ describe('DDPStreamer lifecycle handling', () => {
 
 		expect(metrics.increment).toHaveBeenCalledWith('users_connected', { nodeID: 'node1' }, 1);
 		expect(api.broadcast).toHaveBeenCalledWith('socket.connected', client.connection);
+	});
+
+	it('reports the number of clients still connected when one disconnects', async () => {
+		const { lifecycle } = await createService();
+		const [first, second] = [makeClient(), makeClient()];
+		lifecycle.emit('connected', first);
+		lifecycle.emit('connected', second);
+
+		lifecycle.emit('disconnected', first);
+
+		expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(1);
+	});
+
+	describe('on user.forceLogout', () => {
+		it('closes only the named session when one is given', async () => {
+			const { service, registry } = await createService();
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			service.emit('user.forceLogout', 'user1', 'session1');
+
+			expect(closeSession).toHaveBeenCalledWith('session1');
+			expect(closeForUser).not.toHaveBeenCalled();
+		});
+
+		it('closes every session of the user otherwise', async () => {
+			const { service, registry } = await createService();
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			service.emit('user.forceLogout', 'user1');
+
+			expect(closeForUser).toHaveBeenCalledWith('user1');
+			expect(closeSession).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('on login', () => {

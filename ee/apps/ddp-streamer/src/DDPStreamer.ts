@@ -9,7 +9,8 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
-import { Client, clientMap } from './Client';
+import { Client } from './Client';
+import type { ConnectionRegistry } from './ConnectionRegistry';
 import type { Server } from './Server';
 import { Autoupdate } from './lib/Autoupdate';
 import type { ConnectionLifecycle } from './lifecycle';
@@ -17,6 +18,8 @@ import { proxy } from './proxy';
 import { seedLoginServiceConfiguration, updateLoginServiceConfiguration } from './publications/loginServiceConfiguration';
 
 const { PORT = 4000 } = process.env;
+
+const CONNECTION_COUNT_REPORT_INTERVAL_MS = 30_000;
 
 // This process never populated the monolith settings cache the listeners used to read,
 // so every lookup already resolved to undefined here. Kept explicit until a reader backed
@@ -33,6 +36,7 @@ export class DDPStreamer extends ServiceClass {
 	constructor(
 		private readonly server: Server,
 		private readonly lifecycle: ConnectionLifecycle,
+		private readonly registry: ConnectionRegistry,
 		notifications: NotificationsModule,
 	) {
 		super();
@@ -58,34 +62,11 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
-			this.wss?.clients.forEach((ws) => {
-				const client = clientMap.get(ws);
-				if (sessionId) {
-					if (client?.connection.id === sessionId) {
-						ws.close();
-					}
-					return;
-				}
-				if (client?.userId === uid) {
-					// Graceful close: lets the WS lib flush queued frames (including
-					// the `notify-user/<uid>/force_logout` stream message that the
-					// monolith listener at apps/meteor/server/modules/listeners/listeners.module.ts:49
-					// just enqueued) before the socket goes down. Previously this was
-					// `ws.terminate()`, which sends a TCP RST immediately and drops
-					// the queued frames — clients depending on the stream message
-					// (useForceLogout hook → Accounts._unstoreLoginToken + setUserId(null))
-					// then never see the cleanup, leaving stale credentials in
-					// localStorage. Falls back to terminate() after a short grace
-					// period for unresponsive sockets.
-					ws.close();
-					const guard = setTimeout(() => {
-						if (ws.readyState !== ws.CLOSED) {
-							ws.terminate();
-						}
-					}, 5000);
-					ws.once('close', () => clearTimeout(guard));
-				}
-			});
+			if (sessionId) {
+				this.registry.closeSession(sessionId);
+				return;
+			}
+			this.registry.closeForUser(uid);
 		});
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
@@ -103,10 +84,9 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 
-	// update connections count every 30 seconds
 	updateConnections = throttle(() => {
-		void InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
-	}, 30000);
+		void InstanceStatus.updateConnections(this.registry.size);
+	}, CONNECTION_COUNT_REPORT_INTERVAL_MS);
 
 	override async created(): Promise<void> {
 		if (!this.context) {
@@ -300,9 +280,7 @@ export class DDPStreamer extends ServiceClass {
 	}
 
 	override async stopped(): Promise<void> {
-		this.wss?.clients.forEach(function (client) {
-			client.terminate();
-		});
+		this.registry.terminateAll();
 
 		this.app?.server?.close();
 		this.wss?.close();
