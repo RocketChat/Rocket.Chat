@@ -331,6 +331,13 @@ export default [
 		},
 	},
 	{
+		// `use` is the RPC middleware helper of `protocol/`, not the React hook. The package has no React.
+		files: ['packages/apps/**/*'],
+		rules: {
+			'react-hooks/rules-of-hooks': 'off',
+		},
+	},
+	{
 		files: ['packages/apps-engine/tests/**/*', 'packages/apps/tests/**/*'],
 		rules: {
 			'@typescript-eslint/no-non-null-assertion': 'off',
