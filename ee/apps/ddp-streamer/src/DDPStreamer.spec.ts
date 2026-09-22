@@ -17,6 +17,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Presence: {
 		newConnection: jest.fn().mockResolvedValue(undefined),
 		removeConnection: jest.fn().mockResolvedValue(undefined),
+		updateConnection: jest.fn().mockResolvedValue(undefined),
 	},
 }));
 
@@ -158,6 +159,27 @@ describe('DDPStreamer lifecycle handling', () => {
 			expect([...mirrors.clientVersions.entries()]).toEqual([
 				['web.browser', { version: 'v2', versionRefreshable: 'r2', versionNonRefreshable: 'n2', versionHmr: 2 }],
 			]);
+		});
+	});
+
+	describe('on activity', () => {
+		it('refreshes presence for a logged in client', async () => {
+			const { lifecycle } = await createService();
+			const client = makeClient();
+
+			lifecycle.emit('activity', client);
+
+			expect(Presence.updateConnection).toHaveBeenCalledWith('user1', 'connection1');
+		});
+
+		it('ignores anonymous clients', async () => {
+			const { lifecycle } = await createService();
+			const client = makeClient();
+			client.userId = undefined;
+
+			lifecycle.emit('activity', client);
+
+			expect(Presence.updateConnection).not.toHaveBeenCalled();
 		});
 	});
 

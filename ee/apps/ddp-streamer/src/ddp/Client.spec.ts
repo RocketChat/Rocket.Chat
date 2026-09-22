@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
-import { MeteorError, Presence } from '@rocket.chat/core-services';
+import { MeteorError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
@@ -10,13 +10,6 @@ import { Server } from './Server';
 import { SERVER_ID, preframe } from './codec';
 import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
 import { ConnectionLifecycle } from './lifecycle';
-
-jest.mock('@rocket.chat/core-services', () => ({
-	...jest.requireActual('@rocket.chat/core-services'),
-	Presence: {
-		updateConnection: jest.fn().mockResolvedValue(undefined),
-	},
-}));
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({
@@ -278,25 +271,19 @@ describe('Client', () => {
 		});
 	});
 
-	describe('presence heartbeat', () => {
-		it('reports a burst of messages from a logged in client as a single activity update', () => {
+	describe('activity', () => {
+		// Underscore's throttle reads the real clock, so only the collapsing of a burst is observable under fake timers.
+		it('reports a burst of messages as a single activity event carrying the client', () => {
+			const activity = jest.fn();
+			lifecycle.on('activity', activity);
 			const client = new Client(server, lifecycle, ws, false, makeRequest());
-			client.userId = 'user1';
 
 			receive(ws, { msg: 'connect' });
 			receive(ws, { msg: 'ping' });
 			receive(ws, { msg: 'ping' });
 
-			expect(Presence.updateConnection).toHaveBeenCalledTimes(1);
-			expect(Presence.updateConnection).toHaveBeenCalledWith('user1', client.connection.id);
-		});
-
-		it('does not report activity for anonymous clients', () => {
-			new Client(server, lifecycle, ws, false, makeRequest());
-
-			receive(ws, { msg: 'connect' });
-
-			expect(Presence.updateConnection).not.toHaveBeenCalled();
+			expect(activity).toHaveBeenCalledTimes(1);
+			expect(activity).toHaveBeenCalledWith(client);
 		});
 	});
 

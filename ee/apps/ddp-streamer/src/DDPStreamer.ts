@@ -174,6 +174,15 @@ export class DDPStreamer extends ServiceClass {
 			}
 			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
+
+		this.lifecycle.on('activity', ({ userId, connection }) => {
+			if (!userId) {
+				return;
+			}
+			void Presence.updateConnection(userId, connection.id).catch((err) => {
+				console.error('Error updating connection presence:', err);
+			});
+		});
 	}
 
 	private async onLoggedIn(client: Client, nodeID: string): Promise<void> {
