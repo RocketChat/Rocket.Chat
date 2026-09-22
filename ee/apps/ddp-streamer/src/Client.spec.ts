@@ -198,6 +198,21 @@ describe('Client', () => {
 			expect(order).toEqual(['start m1', 'end m1', 'sub s1', 'start m2', 'end m2']);
 		});
 
+		it('logs a rejected call and keeps dispatching the messages that follow it', async () => {
+			const failure = new Error('socket write failed');
+			const call = jest.spyOn(server, 'call').mockRejectedValueOnce(failure).mockResolvedValue();
+			const subscribe = jest.spyOn(server, 'subscribe').mockResolvedValue();
+
+			receive(ws, { msg: 'method', id: 'm1', method: 'failing' });
+			receive(ws, { msg: 'sub', id: 's1', name: 'messages' });
+			receive(ws, { msg: 'method', id: 'm2', method: 'next' });
+			await jest.runAllTimersAsync();
+
+			expect(call).toHaveBeenCalledTimes(2);
+			expect(subscribe).toHaveBeenCalledTimes(1);
+			expect(consoleError).toHaveBeenCalledWith('Error processing DDP message:', failure);
+		});
+
 		it.each([
 			['method without name', { msg: 'method', id: 'm1' }],
 			['method without id', { msg: 'method', method: 'save' }],
