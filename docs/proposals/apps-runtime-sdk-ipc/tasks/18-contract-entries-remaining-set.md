@@ -12,25 +12,32 @@ in task 14, and the idiom landed in task 16.
 
 ## The remaining set
 
-35 `(getter, do*)` pairs have no accessor traffic today. They send nothing, so no sentinel has to
-be removed with them.
+28 `(getter, do*)` pairs have no accessor traffic today, over 13 bridges. They send nothing, so no
+sentinel has to be removed with them.
 
-| Bridge | Entries |
-| --- | --- |
-| `getCommandBridge` | 6 |
-| `getAppActivationBridge` | 5 |
-| `getVideoConferenceBridge` | 3 |
-| `getSchedulerBridge` | 3 |
-| `getOutboundMessageBridge` | 3 |
-| `getLivechatBridge` | 3 |
-| `getRoomBridge` | 2 |
-| `getInternalBridge` | 2 |
-| `getApiBridge` | 2 |
-| `getUserBridge`, `getUiInteractionBridge`, `getServerSettingBridge`, `getPersistenceBridge`, `getOAuthAppsBridge`, `getAppDetailChangesBridge` | 1 each |
+| Bridge | Entries | Methods |
+| --- | --- | --- |
+| `getCommandBridge` | 6 | `doRegisterCommand`, `doUnregisterCommand`, `doEnableCommand`, `doDisableCommand`, `doModifyCommand`, `doDoesCommandExist` |
+| `getAppActivationBridge` | 5 | `doAppAdded`, `doAppRemoved`, `doAppUpdated`, `doAppStatusChanged`, `doActionsChanged` |
+| `getOutboundMessageBridge` | 3 | `doRegisterPhoneProvider`, `doRegisterEmailProvider`, `doUnRegisterProvider` |
+| `getApiBridge` | 2 | `doRegisterApi`, `doUnregisterApis` |
+| `getInternalBridge` | 2 | `doGetUsernamesOfRoomByIdSync`, `doGetWorkspacePublicKey` |
+| `getLivechatBridge` | 2 | `doGetMessageById`, `doUpdateMessage` |
+| `getVideoConferenceBridge` | 2 | `doRegisterProvider`, `doUnRegisterProvider` |
+| `getAppDetailChangesBridge` | 1 | `doOnAppSettingsChange` |
+| `getOAuthAppsBridge` | 1 | `doPurge` |
+| `getPersistenceBridge` | 1 | `doPurge` |
+| `getSchedulerBridge` | 1 | `doRegisterProcessors` |
+| `getServerSettingBridge` | 1 | `doGetAll` |
+| `getUserBridge` | 1 | `doRemove` |
 
-Six of those getters have no traffic at all. Their entries are schema-only: declared and
-typechecked, never validated against real traffic. Task 15's coverage report names them on every
-run.
+Five getters have no traffic at all — `getApiBridge`, `getAppActivationBridge`,
+`getAppDetailChangesBridge`, `getCommandBridge`, `getOutboundMessageBridge`. Their entries are
+schema-only: declared and typechecked, never validated against real traffic. Task 15's coverage
+report names them on every run.
+
+`getRoomBridge`, `getRoleBridge`, `getThreadBridge` and `getUiInteractionBridge` are **not** here.
+Accessors emit every `do*` those four declare, so task 16 covers them in full.
 
 ## Why `Required` comes last
 
@@ -39,7 +46,7 @@ only reason tasks 16 and 18 are separable; without it they are one 149-entry cha
 
 ## Steps
 
-1. Write the 35 entries. Follow the idiom task 16 established.
+1. Write the 28 entries. Follow the idiom task 16 established.
 2. Flip the table type from `Partial<Record<BridgeMethodKey, Entry>>` to
    `Record<BridgeMethodKey, Entry>`.
 3. Delete the fallback branch in `handleBridgeMessage`.
@@ -55,9 +62,9 @@ only reason tasks 16 and 18 are separable; without it they are one 149-entry cha
       proves it; delete the probe before the PR lands.
 - [ ] `git grep "APP_ID"` matches nothing in `packages/apps`, docs excepted.
 - [ ] `handleBridgeMessage` has no fallback path, and an unknown key yields `-32601`.
-- [ ] Task 15's coverage report still lists 35 un-exercised names, which is now the expected state
+- [ ] Task 15's coverage report still lists 28 un-exercised names, which is now the expected state
       rather than a gap to close.
 
 ## Size
 
-35 entries, ~200 lines. ~20 lines deleted.
+28 entries, ~170 lines. ~20 lines deleted.

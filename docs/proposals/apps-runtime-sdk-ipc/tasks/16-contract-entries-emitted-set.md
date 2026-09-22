@@ -16,38 +16,40 @@ and the set with no traffic goes to task 18.
 
 ## The measurement, and a correction to the plan
 
-The plan says "the ~30 methods accessors actually emit" against "the remaining ~120". The
-measurement inverts the ratio.
+The plan first said "the ~30 methods accessors actually emit" against "the remaining ~120". The
+measurement inverts the ratio, and [../README.md](../README.md) now carries the corrected
+figures.
 
 | Quantity | Count |
 | --- | --- |
 | Reachable `(getter, do*)` pairs | 149 |
-| Pairs an accessor emits | **114** |
-| Emitted pairs that send `'APP_ID'` | **108** |
+| Pairs an accessor emits | **121** |
+| Emitted pairs that send `'APP_ID'` | **115** |
 | Emitted pairs that send no sentinel | 6 |
-| Pairs with no traffic | 35 |
+| Pairs with no traffic | 28 |
 
-The split criterion in the plan still holds. Its arithmetic does not. This task carries 114
+The split criterion in the plan still holds. Its arithmetic does not. This task carries 121
 entries, not 30.
 
 ## Sub-batches
 
-114 entries in one PR is not reviewable. The `Partial` table type makes any prefix independently
+121 entries in one PR is not reviewable. The `Partial` table type makes any prefix independently
 green, so split at bridge boundaries. Suggested batches, largest first:
 
 | Batch | Bridges | Entries |
 | --- | --- | --- |
-| a | `getLivechatBridge` | 20 |
-| b | `getRoomBridge` | 16 |
+| a | `getLivechatBridge` | 21 |
+| b | `getRoomBridge` | 18 |
 | c | `getAppResourceBridge` | 15 |
 | d | `getUserBridge` | 12 |
 | e | `getMessageBridge`, `getPersistenceBridge` | 17 |
 | f | `getServerSettingBridge`, `getOAuthAppsBridge`, `getEnvironmentalVariableBridge` | 14 |
-| g | the remaining 11 bridges, 1 to 3 entries each | 20 |
+| g | the remaining 12 bridges, 1 to 4 entries each | 24 |
 
-Batch g covers `getUploadBridge`, `getModerationBridge`, `getContactBridge`,
-`getVideoConferenceBridge`, `getSchedulerBridge`, `getRoleBridge`, `getThreadBridge`,
-`getInternalBridge`, `getHttpBridge`, `getEmailBridge`, `getCloudWorkspaceBridge`.
+Batch g covers `getSchedulerBridge` (4), `getUploadBridge`, `getModerationBridge`,
+`getContactBridge`, `getVideoConferenceBridge` (3 each), `getRoleBridge` (2), and
+`getThreadBridge`, `getInternalBridge`, `getHttpBridge`, `getEmailBridge`,
+`getCloudWorkspaceBridge`, `getUiInteractionBridge` (1 each).
 
 Take batch g first. It covers the three identity buckets and the widest variety of param shapes, so
 it settles the entry idiom before the bulk batches copy it.
@@ -58,8 +60,8 @@ it settles the entry idiom before the bulk batches copy it.
 2. Write the invoker thunk. Decide the identity bucket per method and state it in a comment when it
    is not caller identity.
 3. Delete the `'APP_ID'` argument from every `bridgeCall` at that bridge's accessor sites.
-4. Update the accessor tests that assert the emitted params. At least
-   `accessors/environment/tests/environment.test.ts` asserts `'APP_ID'` in 6 cases.
+4. Update the accessor tests that assert the emitted params. `base-runtime/src` holds 78 `'APP_ID'`
+   occurrences under `tests/`, including 5 in `accessors/environment/tests/environment.test.ts`.
 5. Confirm that the round-trip test from task 15 now exercises those keys.
 
 ## Identity buckets to get right
@@ -77,13 +79,14 @@ Delete that comment with the entry that fixes the cause.
 
 ## Done when
 
-- [ ] Every one of the 114 emitted pairs has a table entry.
+- [ ] Every one of the 121 emitted pairs has a table entry.
 - [ ] `git grep "'APP_ID'"` matches nothing in `base-runtime/src`, tests included.
 - [ ] The three app-supplied-appId methods still forward the wire value, and a test proves an app
       can still report a message that belongs to another app.
-- [ ] Task 15's coverage report lists 35 un-exercised names, and no fewer.
+- [ ] Task 15's coverage report lists 28 un-exercised names, and no fewer.
 - [ ] The table is still typed `Partial`. The fallback still exists.
 
 ## Size
 
-114 entries. ~700 lines, mostly near-identical. Plus ~108 call-site edits in `base-runtime`.
+121 entries. ~750 lines, mostly near-identical. Plus 149 sentinel-argument deletions across 37
+accessor files, and 78 more in their tests.

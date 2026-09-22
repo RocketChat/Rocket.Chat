@@ -32,7 +32,7 @@ it, or declare both. Say which in the PR.
 
 ## Steps
 
-1. Enumerate every method name the host emits. `git grep -nE "method: \`?'?(app|api|slashcommand|videoconference|scheduler|outboundCommunication):"` finds the seven emit sites.
+1. Enumerate every method name the host emits. `git grep -nE "method: \`?'?(app|api|slashcommand|videoconference|scheduler|outboundCommunication):"` finds 11 lines: the five keyed families in `src/server/managers/`, the `app:${method}` template at `ProxiedApp.ts:68`, and five literal `app:*` sites in `BaseRuntimeSubprocessController.ts`.
 2. Write `methods.ts` as a `const` object keyed by method name, with `{ kind, arity }` per entry.
 3. Derive a `HostToAppMethod` union from the keys.
 4. Add the five keyed families as placeholders. Task 12 fixes their member names.

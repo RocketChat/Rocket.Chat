@@ -22,6 +22,7 @@ resolves it.
 | `packages/apps/src/lib/SecureFields.ts` | deleted, moved to `protocol/src/serialization/secureFields.ts` |
 | `apps/meteor/app/apps/server/converters/codecs/rooms.ts:2` | import path |
 | `packages/apps/base-runtime/src/lib/secureFields.ts:1,2,7` | import path, three statements |
+| `packages/apps/tests/server/runtime/SecureFieldsIpcCompatibility.test.ts:9` | import path |
 
 The moved module exports `kSecureFields`, `WithSecureFields`, `secureFieldsMapper` and
 `hasSecureFields`.
@@ -33,16 +34,18 @@ The moved module exports `kSecureFields`, `WithSecureFields`, `secureFieldsMappe
    `unknown`, which `strict` rejects; narrow it explicitly.
 3. Repoint `rooms.ts` from `@rocket.chat/apps/dist/lib/SecureFields` to the protocol path.
 4. Repoint the three statements in `base-runtime/src/lib/secureFields.ts`.
-5. Delete nothing else. The walk, the tests and `applySecureFields` stay where they are.
+5. Repoint `SecureFieldsIpcCompatibility.test.ts`, which imports the module by relative path.
+6. Delete nothing else. The walk, the tests and `applySecureFields` stay where they are.
 
 ## Done when
 
 - [ ] `git grep "lib/SecureFields"` matches nothing.
 - [ ] `base-runtime/src/lib/secureFields.ts` makes no `@rocket.chat/apps/dist` import.
-- [ ] `secureFields.test.ts` and `SecureFieldsIpcCompatibility.test.ts` pass unchanged.
+- [ ] `secureFields.test.ts` passes unchanged. `SecureFieldsIpcCompatibility.test.ts` passes with
+      its import path repointed and nothing else changed.
 - [ ] `apps/meteor` typechecks.
 - [ ] `yarn typecheck:protocol` passes with `strict: true`.
 
 ## Size
 
-~25 lines moved. 4 import statements repointed. The `strict` pass is the only real work.
+~20 lines moved. 5 import statements repointed. The `strict` pass is the only real work.
