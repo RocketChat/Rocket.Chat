@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import type { IPublication } from '@rocket.chat/streamer';
 
 import type { Client } from './Client';
-import type { Server } from './Server';
+import { encodeAdded, encodeChanged, encodeNosub, encodeReady, encodeRemoved } from './codec';
 import type { IPacket } from './types/IPacket';
 
 export class Publication extends EventEmitter implements IPublication {
@@ -14,7 +14,6 @@ export class Publication extends EventEmitter implements IPublication {
 	constructor(
 		public client: Client,
 		private packet: IPacket,
-		private server: Server,
 	) {
 		super();
 		this.packet = packet;
@@ -44,11 +43,11 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	ready(): void {
-		return this.server.ready(this.client, this.packet);
+		return this.client.send(encodeReady(this.packet.id));
 	}
 
 	stop(): void {
-		this.server.nosub(this.client, this.packet);
+		this.client.send(encodeNosub(this.packet.id));
 		this.emit('stop', this.client, this.packet);
 	}
 
@@ -57,15 +56,15 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	added(collection: string, id: string, fields: any): void {
-		this.server.added(this.client, collection, id, fields);
+		this.client.send(encodeAdded(collection, id, fields));
 	}
 
 	changed(collection: string, id: string, fields: any): void {
-		this.server.changed(this.client, collection, id, fields);
+		this.client.send(encodeChanged(collection, id, fields));
 	}
 
 	removed(collection: string, id: string): void {
-		this.server.removed(this.client, collection, id);
+		this.client.send(encodeRemoved(collection, id));
 	}
 
 	get userId() {

@@ -6,7 +6,8 @@ import ejson from 'ejson';
 import WebSocket from 'ws';
 
 import { Client } from './Client';
-import { SERVER_ID, Server } from './Server';
+import { Server } from './Server';
+import { SERVER_ID } from './codec';
 import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
 import { ConnectionLifecycle } from './lifecycle';
 

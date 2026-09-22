@@ -1,10 +1,9 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { MeteorError, MeteorService } from '@rocket.chat/core-services';
-import ejson from 'ejson';
 import WebSocket from 'ws';
 
 import { Publication } from './Publication';
-import { SERVER_ID, Server } from './Server';
+import { Server } from './Server';
 import { makeClient, makePacket, makeSubscription, sentPackets } from './__tests__/helpers';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -21,124 +20,6 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 const mockCallMethodWithToken = jest.mocked(MeteorService.callMethodWithToken);
-
-describe('Server.call', () => {
-	let server: Server;
-
-	beforeEach(() => {
-		jest.clearAllMocks();
-		mockCallMethodWithToken.mockReset();
-		server = new Server();
-	});
-
-	describe('when the method is delegated to MeteorService', () => {
-		it('returns the result value from MeteorService', async () => {
-			mockCallMethodWithToken.mockResolvedValue({ result: 'some-value' });
-			const client = makeClient();
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('someMethod'));
-
-			expect(resultSpy).toHaveBeenCalledWith(client, expect.objectContaining({ id: 'test-id' }), 'some-value');
-		});
-
-		it('does not return an error when the method returns void', async () => {
-			mockCallMethodWithToken.mockResolvedValue({ result: undefined });
-			const client = makeClient();
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('setAvatarFromService'));
-
-			expect(resultSpy).toHaveBeenCalledWith(client, expect.objectContaining({ id: 'test-id' }), undefined);
-		});
-
-		it('calls result with an error when MeteorService throws', async () => {
-			mockCallMethodWithToken.mockRejectedValue(new Error('boom'));
-			const client = makeClient();
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('someMethod'));
-
-			expect(resultSpy).toHaveBeenCalledWith(client, expect.objectContaining({ id: 'test-id' }), null, expect.any(Error));
-		});
-	});
-
-	describe('when the method is registered locally', () => {
-		it('returns the result value from the local method', async () => {
-			server.methods({ localMethod: async () => 'local-result' });
-			const client = makeClient();
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('localMethod'));
-
-			expect(resultSpy).toHaveBeenCalledWith(client, expect.objectContaining({ id: 'test-id' }), 'local-result');
-		});
-
-		it('does not return an error when the local method returns void', async () => {
-			server.methods({ voidMethod: async () => undefined });
-			const client = makeClient();
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('voidMethod'));
-
-			expect(resultSpy).toHaveBeenCalledWith(client, expect.objectContaining({ id: 'test-id' }), undefined);
-		});
-	});
-
-	describe('when the client WebSocket is not open', () => {
-		it('does nothing', async () => {
-			const client = makeClient(WebSocket.CLOSED);
-			const resultSpy = jest.spyOn(server, 'result');
-
-			await server.call(client, makePacket('anyMethod'));
-
-			expect(resultSpy).not.toHaveBeenCalled();
-			expect(mockCallMethodWithToken).not.toHaveBeenCalled();
-		});
-	});
-});
-
-describe('Server packet codec', () => {
-	const server = new Server();
-
-	it('parses a standard EJSON packet including extended values', () => {
-		expect(server.parse(Buffer.from('{"msg":"method","id":"m1","method":"save","params":[{"$date":0}]}'), false)).toEqual({
-			msg: 'method',
-			id: 'm1',
-			method: 'save',
-			params: [new Date(0)],
-		});
-	});
-
-	it('selects and decodes only the first payload in an array-wrapped packet', () => {
-		const data = JSON.stringify(['{"msg":"sub","id":"s1","name":"messages","params":[{"$date":0}]}', 'invalid ignored payload']);
-
-		expect(server.parse(data, false)).toEqual({ msg: 'sub', id: 's1', name: 'messages', params: [new Date(0)] });
-	});
-
-	it('rejects binary messages with the expected Meteor error', () => {
-		const parseBinary = () => server.parse(Buffer.from('{"msg":"ping"}'), true);
-
-		expect(parseBinary).toThrow(MeteorError);
-		expect(parseBinary).toThrow(expect.objectContaining({ error: 500, reason: 'Binary data not supported' }));
-	});
-
-	it.each(['not JSON', '[', '[]', '["not JSON"]'])('rejects invalid payload %s', (payload) => {
-		expect(() => server.parse(payload, false)).toThrow();
-	});
-
-	it('serializes responses as EJSON with DDP field names', () => {
-		expect(JSON.parse(server.serialize({ msg: 'result', id: 'm1', result: { createdAt: new Date(0) } }))).toEqual({
-			msg: 'result',
-			id: 'm1',
-			result: { createdAt: { $date: 0 } },
-		});
-	});
-
-	it('serializes the server identification packet', () => {
-		expect(ejson.parse(SERVER_ID)).toEqual({ msg: 'server_id', server_id: '0' });
-	});
-});
 
 describe('Server method contracts', () => {
 	let server: Server;
@@ -208,6 +89,17 @@ describe('Server method contracts', () => {
 		await server.call(client, makePacket('save'));
 
 		expect(method).toHaveBeenCalledTimes(1);
+		expect(sentPackets(client)).toEqual([
+			{ msg: 'result', id: 'test-id' },
+			{ msg: 'updated', methods: ['test-id'] },
+		]);
+	});
+
+	it('sends result and updated when a Meteor method returns void', async () => {
+		mockCallMethodWithToken.mockResolvedValue({ result: undefined });
+
+		await server.call(client, makePacket('setAvatarFromService'));
+
 		expect(sentPackets(client)).toEqual([
 			{ msg: 'result', id: 'test-id' },
 			{ msg: 'updated', methods: ['test-id'] },
@@ -376,63 +268,5 @@ describe('Server subscriptions', () => {
 		await subscription;
 		expect(end).toHaveBeenCalledTimes(1);
 		expect(client.send).not.toHaveBeenCalled();
-	});
-});
-
-describe('Server protocol responses', () => {
-	let server: Server;
-	let client: ReturnType<typeof makeClient>;
-
-	beforeEach(() => {
-		server = new Server();
-		client = makeClient();
-	});
-
-	it('sends result before updated using the request ID and EJSON values', () => {
-		server.result(client, makePacket('save', 'm1'), { date: new Date(0) });
-
-		expect(sentPackets(client)).toEqual([
-			{ msg: 'result', id: 'm1', result: { date: new Date(0) } },
-			{ msg: 'updated', methods: ['m1'] },
-		]);
-	});
-
-	it('sends nosub without an error for a normal unsubscribe', () => {
-		server.nosub(client, makeSubscription());
-
-		expect(sentPackets(client)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
-	});
-
-	it.each(['result', 'nosub'] as const)('serializes Meteor errors in %s messages', (response) => {
-		const error = new MeteorError(403, 'Forbidden', { permission: 'view-room' });
-		if (response === 'result') {
-			server.result(client, makePacket('save'), undefined, error);
-		} else {
-			server.nosub(client, makeSubscription(), error);
-		}
-
-		expect(sentPackets(client)[0]).toEqual({
-			msg: response,
-			id: 'test-id',
-			error: {
-				isClientSafe: true,
-				errorType: 'Meteor.Error',
-				error: 403,
-				reason: 'Forbidden',
-				message: 'Forbidden [403]',
-				details: { permission: 'view-room' },
-			},
-		});
-	});
-
-	it.each(['result', 'nosub'] as const)('serializes enumerable properties of non-DDP errors in %s messages', (response) => {
-		const error = Object.assign(new Error('non-enumerable message'), { code: 'transport-error' });
-		if (response === 'result') {
-			server.result(client, makePacket('save'), undefined, error);
-		} else {
-			server.nosub(client, makeSubscription(), error);
-		}
-
-		expect(sentPackets(client)[0]).toEqual({ msg: response, id: 'test-id', error: { code: 'transport-error' } });
 	});
 });

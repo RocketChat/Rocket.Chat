@@ -1,16 +1,13 @@
 import { Publication } from './Publication';
-import { Server } from './Server';
 import { makeClient, makeSubscription, sentPackets } from './__tests__/helpers';
 
 describe('Publication', () => {
 	let client: ReturnType<typeof makeClient>;
-	let server: Server;
 	let publication: Publication;
 
 	beforeEach(() => {
 		client = makeClient();
-		server = new Server();
-		publication = new Publication(client, makeSubscription(), server);
+		publication = new Publication(client, makeSubscription());
 	});
 
 	it('registers itself under the subscription ID', () => {
@@ -18,7 +15,7 @@ describe('Publication', () => {
 	});
 
 	it('removes only its own subscription and sends nosub on explicit stop', () => {
-		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' }, server);
+		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' });
 
 		publication.stop();
 
@@ -28,7 +25,7 @@ describe('Publication', () => {
 	});
 
 	it('cleans up all publications when the client disconnects', () => {
-		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' }, server);
+		const other = new Publication(client, { ...makeSubscription(), id: 'other-id' });
 		const onStop = jest.fn();
 		const onOtherStop = jest.fn();
 		publication.onStop(onStop);
@@ -84,7 +81,7 @@ describe('Publication', () => {
 
 	it('allows a session without an authenticated user', () => {
 		client.userId = undefined;
-		const anonymous = new Publication(client, { ...makeSubscription(), id: 'anonymous' }, server);
+		const anonymous = new Publication(client, { ...makeSubscription(), id: 'anonymous' });
 
 		expect(anonymous.userId).toBeNull();
 		expect(anonymous._session?.userId).toBeUndefined();

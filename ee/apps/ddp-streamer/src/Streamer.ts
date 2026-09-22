@@ -4,7 +4,7 @@ import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat
 import WebSocket from 'ws';
 
 import type { Server } from './Server';
-import { DDP_EVENTS } from './constants';
+import { encodeChanged, preframe } from './codec';
 import { isEmpty } from './lib/utils';
 
 export const createStreamAdapter = (server: Server) =>
@@ -18,15 +18,7 @@ export const createStreamAdapter = (server: Server) =>
 		}
 
 		changedPayload(collection: string, id: string, fields: Record<string, any>): string | false {
-			return (
-				!isEmpty(fields) &&
-				server.serialize({
-					[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
-					[DDP_EVENTS.COLLECTION]: collection,
-					[DDP_EVENTS.ID]: id,
-					[DDP_EVENTS.FIELDS]: fields,
-				})
-			);
+			return !isEmpty(fields) && encodeChanged(collection, id, fields);
 		}
 
 		override async sendToManySubscriptions(
@@ -40,19 +32,7 @@ export const createStreamAdapter = (server: Server) =>
 				return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
 			}
 
-			// Frame once and write the raw frame to every socket instead of paying for encoding per subscriber.
-			const options = {
-				fin: true,
-				rsv1: false,
-				opcode: 1,
-				mask: false,
-				readOnly: false,
-			};
-
-			const data = {
-				meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(`a${JSON.stringify([getMsg])}`), options))],
-				normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
-			};
+			const data = preframe(getMsg);
 
 			for (const { subscription } of subscriptions) {
 				if (subscription.client.ws.readyState !== WebSocket.OPEN) {

@@ -8,7 +8,7 @@ import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
 import type { Server } from './Server';
-import { SERVER_ID } from './Server';
+import { SERVER_ID, SOCKJS_OPEN_FRAME, decode, encodeConnected, encodePing, encodePong, wrapForSockJs } from './codec';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import { getClientAddress } from './lib/clientAddress';
 import type { ConnectionLifecycle } from './lifecycle';
@@ -86,16 +86,15 @@ export class Client extends EventEmitter {
 			if (msg !== DDP_EVENTS.CONNECT) {
 				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 			}
-			return this.send(this.server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }));
+			return this.send(encodeConnected(this.session));
 		});
 
 		this.send(SERVER_ID);
 	}
 
 	greeting(): void {
-		// no greeting by default
 		if (this.meteorClient) {
-			return this.ws.send('o');
+			return this.ws.send(SOCKJS_OPEN_FRAME);
 		}
 	}
 
@@ -155,11 +154,11 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(this.server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
+		this.send(encodePing(id));
 	}
 
 	pong(id?: string): void {
-		this.send(this.server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }));
+		this.send(encodePong(id));
 	}
 
 	handleIdle = (): void => {
@@ -174,7 +173,7 @@ export class Client extends EventEmitter {
 
 	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
-			const packet = this.server.parse(payload, isBinary);
+			const packet = decode(payload, isBinary);
 			this.updatePresence();
 			this.emit('message', packet);
 			this.process(packet.msg, packet);
@@ -186,7 +185,7 @@ export class Client extends EventEmitter {
 
 	encodePayload(payload: string): string {
 		if (this.meteorClient) {
-			return `a${JSON.stringify([payload])}`;
+			return wrapForSockJs(payload);
 		}
 		return payload;
 	}

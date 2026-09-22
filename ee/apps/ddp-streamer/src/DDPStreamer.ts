@@ -12,6 +12,7 @@ import WebSocket from 'ws';
 import { Client } from './Client';
 import type { ConnectionRegistry } from './ConnectionRegistry';
 import type { Server } from './Server';
+import { encodeAdded } from './codec';
 import { Autoupdate } from './lib/Autoupdate';
 import type { ConnectionLifecycle } from './lifecycle';
 import { proxy } from './proxy';
@@ -224,7 +225,7 @@ export class DDPStreamer extends ServiceClass {
 		}
 
 		// using setImmediate here so login's method result is sent before we send the user data
-		setImmediate(async () => this.server.added(client, 'users', userId, loggedUser));
+		setImmediate(() => client.send(encodeAdded('users', userId, loggedUser)));
 	}
 
 	override async started(): Promise<void> {

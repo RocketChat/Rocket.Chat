@@ -1,13 +1,12 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
-import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import { MeteorService, MeteorError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
-import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
 import type { Client } from './Client';
 import { Publication } from './Publication';
-import { DDP_EVENTS } from './constants';
+import { encodeNosub, encodeResult, encodeUpdated } from './codec';
 import type { IPacket } from './types/IPacket';
 
 const logger = new Logger('DDP-Streamer');
@@ -30,8 +29,6 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	return new MeteorError(500, 'Internal server error');
 };
 
-export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
-
 export class Server {
 	private _subscriptions = new Map<string, SubscriptionFn>();
 
@@ -40,18 +37,6 @@ export class Server {
 	private metrics?: IServiceMetrics;
 
 	public readonly id = uuidv1();
-
-	serialize = ejson.stringify;
-
-	parse = (data: WebSocket.Data, isBinary: boolean): IPacket => {
-		if (isBinary) {
-			throw new MeteorError(500, 'Binary data not supported');
-		}
-		const packet = data.toString();
-
-		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
-		return ejson.parse(payload);
-	};
 
 	setMetrics(metrics: IServiceMetrics): void {
 		this.metrics = metrics;
@@ -66,7 +51,7 @@ export class Server {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
 				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
-				return this.result(client, packet, result.result);
+				return this.sendResult(client, packet, result.result);
 			}
 
 			const fn = this._methods.get(packet.method);
@@ -75,9 +60,9 @@ export class Server {
 			}
 
 			const result = await fn.apply(client, packet.params);
-			return this.result(client, packet, result);
+			return this.sendResult(client, packet, result);
 		} catch (err: unknown) {
-			return this.result(client, packet, null, handleInternalException(err, 'Method call error'));
+			return this.sendResult(client, packet, null, handleInternalException(err, 'Method call error'));
 		}
 	}
 
@@ -106,13 +91,13 @@ export class Server {
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
 
-			const publication = new Publication(client, packet, this);
+			const publication = new Publication(client, packet);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 
 			end?.();
 		} catch (err: unknown) {
-			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
+			return client.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
 		}
 	}
 
@@ -123,71 +108,8 @@ export class Server {
 		this._subscriptions.set(name, fn);
 	}
 
-	result(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
-		client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
-				id,
-				...(result && { result }),
-				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
-			}),
-		);
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.UPDATED,
-				[DDP_EVENTS.METHODS]: [id],
-			}),
-		);
-	}
-
-	nosub(client: Client, { id }: IPacket, error?: Error | MeteorError): void {
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.NO_SUBSCRIBE,
-				id,
-				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
-			}),
-		);
-	}
-
-	ready(client: Client, packet: IPacket): void {
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.READY,
-				[DDP_EVENTS.SUBSCRIPTIONS]: [packet.id],
-			}),
-		);
-	}
-
-	added(client: Client, collection: string, id: string, fields: any): void {
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.ADDED,
-				[DDP_EVENTS.COLLECTION]: collection,
-				[DDP_EVENTS.ID]: id,
-				[DDP_EVENTS.FIELDS]: fields,
-			}),
-		);
-	}
-
-	changed(client: Client, collection: string, id: string, fields: any): void {
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
-				[DDP_EVENTS.COLLECTION]: collection,
-				[DDP_EVENTS.ID]: id,
-				[DDP_EVENTS.FIELDS]: fields,
-			}),
-		);
-	}
-
-	removed(client: Client, collection: string, id: string): void {
-		return client.send(
-			this.serialize({
-				[DDP_EVENTS.MSG]: DDP_EVENTS.REMOVED,
-				[DDP_EVENTS.COLLECTION]: collection,
-				[DDP_EVENTS.ID]: id,
-			}),
-		);
+	private sendResult(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
+		client.send(encodeResult(id, result, error));
+		return client.send(encodeUpdated(id));
 	}
 }
