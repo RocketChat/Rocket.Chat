@@ -20,15 +20,31 @@ void (async () => {
 	);
 
 	// need to import service after models are registered
-	const { NotificationsModule } = await import('@rocket.chat/streamer');
+	const { NotificationsModule, StreamerCentral } = await import('@rocket.chat/streamer');
 	const { DDPStreamer } = await import('./DDPStreamer');
-	const { Stream } = await import('./Streamer');
+	const { Server } = await import('./Server');
+	const { createStreamAdapter } = await import('./Streamer');
+	const { registerAccountMethods } = await import('./methods/accounts');
+	const { registerPresenceMethods } = await import('./methods/presence');
+	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');
+	const { registerAutoupdatePublication } = await import('./publications/autoupdate');
 
-	const notifications = new NotificationsModule(Stream);
+	const server = new Server();
+
+	registerLoginServiceConfigurationPublication(server);
+	registerAutoupdatePublication(server);
+	registerAccountMethods(server);
+	registerPresenceMethods(server);
+
+	StreamerCentral.on('broadcast', (name, eventName, args) => {
+		void api.broadcast('stream', [name, eventName, args]);
+	});
+
+	const notifications = new NotificationsModule(createStreamAdapter(server));
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(notifications));
+	api.registerService(new DDPStreamer(server, notifications));
 
 	await api.start();
 })();

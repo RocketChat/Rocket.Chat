@@ -10,10 +10,11 @@ import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
 import { Client, clientMap } from './Client';
-import { server, updateLoginServiceConfiguration } from './configureServer';
+import type { Server } from './Server';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
+import { seedLoginServiceConfiguration, updateLoginServiceConfiguration } from './publications/loginServiceConfiguration';
 
 const { PORT = 4000 } = process.env;
 
@@ -29,7 +30,10 @@ export class DDPStreamer extends ServiceClass {
 
 	private wss?: WebSocket.Server;
 
-	constructor(notifications: NotificationsModule) {
+	constructor(
+		private readonly server: Server,
+		notifications: NotificationsModule,
+	) {
 		super();
 
 		new ListenersModule(this, notifications, noSettings);
@@ -141,6 +145,8 @@ export class DDPStreamer extends ServiceClass {
 			description: 'Users logged by streamer',
 		});
 
+		const { server } = this;
+
 		server.setMetrics(metrics);
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
@@ -251,6 +257,10 @@ export class DDPStreamer extends ServiceClass {
 	}
 
 	override async started(): Promise<void> {
+		void MeteorService.getLoginServiceConfiguration()
+			.then((records = []) => seedLoginServiceConfiguration(records))
+			.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
+
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
 		try {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
@@ -290,7 +300,7 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss = new WebSocket.Server({ server: this.app.server });
 
-			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+			this.wss.on('connection', (ws, req) => new Client(this.server, ws, req.url !== '/websocket', req));
 
 			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {

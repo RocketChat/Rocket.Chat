@@ -5,7 +5,7 @@ import ejson from 'ejson';
 import WebSocket from 'ws';
 
 import { Client } from './Client';
-import { server } from './configureServer';
+import { Server } from './Server';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -42,6 +42,7 @@ function receive(ws: ReturnType<typeof makeSocket>, packet: object): void {
 }
 
 describe('Client dispatch', () => {
+	const server = new Server();
 	let ws: ReturnType<typeof makeSocket>;
 	let consoleError: jest.SpyInstance;
 
@@ -49,7 +50,7 @@ describe('Client dispatch', () => {
 		jest.restoreAllMocks();
 		consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		ws = makeSocket();
-		new Client(ws, false, makeRequest());
+		new Client(server, ws, false, makeRequest());
 		receive(ws, { msg: 'connect', version: '1', support: ['1'] });
 	});
 
