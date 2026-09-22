@@ -28,6 +28,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
+import { resolveRoomCreation } from '../../../lib/rooms/roomCreationRules';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 type CreateTeamModalInputs = {
@@ -100,33 +101,35 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, encrypted } = watch();
+	const roomCreationPolicy = {
+		e2eEnabled: Boolean(e2eEnabled),
+		e2eEnforcedForPrivate,
+		canSetReadOnly,
+	};
 
+	const { room, editable } = resolveRoomCreation(watch(), roomCreationPolicy);
+	const { isPrivate, broadcast, readOnly, encrypted } = room;
+
+	// Encryption only means something for a private room; once the room is not one, the choice is dropped.
 	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		} else if (e2eEnforcedForPrivate) {
-			setValue('encrypted', true);
-		}
+		setValue('encrypted', room.encrypted);
+	}, [room.encrypted, setValue]);
 
-		setValue('readOnly', broadcast);
-	}, [watch, setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
+	// Broadcast carries read only with it.
+	useEffect(() => {
+		setValue('readOnly', room.broadcast);
+	}, [room.broadcast, setValue]);
 
-	const readOnlyDisabled = broadcast || !canSetReadOnly;
-	const canChangeEncrypted = isPrivate && e2eEnabled && !e2eEnforcedForPrivate;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateTeam = async ({
-		name,
-		members,
-		isPrivate,
-		readOnly,
-		topic,
-		broadcast,
-		encrypted,
-	}: CreateTeamModalInputs): Promise<void> => {
+	const handleCreateTeam = async (draft: CreateTeamModalInputs): Promise<void> => {
+		const { name, members, topic } = draft;
+		const {
+			room: { isPrivate, readOnly, broadcast, encrypted },
+		} = resolveRoomCreation(draft, roomCreationPolicy);
+
 		const params = {
 			name,
 			members,
@@ -243,8 +246,8 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 									<Controller
 										control={control}
 										name='encrypted'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch disabled={!canChangeEncrypted} onChange={onChange} checked={value} ref={ref} />
+										render={({ field: { onChange, ref } }) => (
+											<ToggleSwitch disabled={!editable.encrypted} onChange={onChange} checked={encrypted} ref={ref} />
 										)}
 									/>
 								</FieldRow>
@@ -256,8 +259,8 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 									<Controller
 										control={control}
 										name='readOnly'
-										render={({ field: { onChange, value, ref } }) => (
-											<ToggleSwitch disabled={readOnlyDisabled} onChange={onChange} checked={value} ref={ref} />
+										render={({ field: { onChange, ref } }) => (
+											<ToggleSwitch disabled={!editable.readOnly} onChange={onChange} checked={readOnly} ref={ref} />
 										)}
 									/>
 								</FieldRow>
