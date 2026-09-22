@@ -65,7 +65,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 	const clearDefaultFlag = async (roomIds: string[]): Promise<void> => {
 		await Promise.all(
-			roomIds.filter(Boolean).map((rid) => request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, default: false })),
+			roomIds
+				.filter(Boolean)
+				.map((rid) => request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, default: false }).expect(200)),
 		);
 	};
 
