@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useDebouncedCallback, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
@@ -161,28 +161,26 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		});
 	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround, hasPreviousPage]);
 
-	const interactionRef = useSafeRefCallback(
-		useCallback((element: HTMLDivElement) => {
-			const markInteracted = () => {
+	const interactionRef = useCallback((element: HTMLDivElement) => {
+		const markInteracted = () => {
+			userInteractedRef.current = true;
+		};
+		const handleKeydown = (e: KeyboardEvent) => {
+			if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
 				userInteractedRef.current = true;
-			};
-			const handleKeydown = (e: KeyboardEvent) => {
-				if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
-					userInteractedRef.current = true;
-				}
-			};
-			const parent = element.parentElement;
+			}
+		};
+		const parent = element.parentElement;
 
-			parent?.addEventListener('pointerdown', markInteracted);
-			element.addEventListener('wheel', markInteracted, { passive: true });
-			element.addEventListener('keydown', handleKeydown);
-			return () => {
-				parent?.removeEventListener('pointerdown', markInteracted);
-				element.removeEventListener('wheel', markInteracted);
-				element.removeEventListener('keydown', handleKeydown);
-			};
-		}, []),
-	);
+		parent?.addEventListener('pointerdown', markInteracted);
+		element.addEventListener('wheel', markInteracted, { passive: true });
+		element.addEventListener('keydown', handleKeydown);
+		return () => {
+			parent?.removeEventListener('pointerdown', markInteracted);
+			element.removeEventListener('wheel', markInteracted);
+			element.removeEventListener('keydown', handleKeydown);
+		};
+	}, []);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef, interactionRef);
 

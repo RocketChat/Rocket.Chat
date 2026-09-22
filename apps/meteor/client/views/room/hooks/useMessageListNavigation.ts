@@ -16,19 +16,15 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 	const roomFocusManager = useFocusManager();
 
 	const messageListRef = useCallback(
-		(node: HTMLElement | null) => {
+		(node: HTMLElement) => {
 			let lastMessageFocused: HTMLElement | null = null;
 			let initialFocus = true;
-
-			if (!node) {
-				return;
-			}
 
 			const massageListFocusManager = createFocusManager({
 				current: node,
 			});
 
-			node.addEventListener('keydown', (e) => {
+			const onKeyDown = (e: KeyboardEvent) => {
 				if (!e.target) {
 					return;
 				}
@@ -66,46 +62,48 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 					lastMessageFocused = document.activeElement as HTMLElement;
 				}
-			});
+			};
 
-			node.addEventListener(
-				'blur',
-				(e) => {
-					if (
-						!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
-						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
-					) {
-						return;
-					}
+			const onBlur = (e: FocusEvent) => {
+				if (
+					!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
+					!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
+				) {
+					return;
+				}
 
-					if (!e.currentTarget.contains(e.relatedTarget) && !lastMessageFocused) {
-						lastMessageFocused = e.target as HTMLElement;
-					}
-				},
-				{ capture: true },
-			);
+				if (!e.currentTarget.contains(e.relatedTarget) && !lastMessageFocused) {
+					lastMessageFocused = e.target as HTMLElement;
+				}
+			};
 
-			node.addEventListener(
-				'focus',
-				(e) => {
-					const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
-						return;
-					}
+			const onFocus = (e: FocusEvent) => {
+				const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
+				if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					return;
+				}
 
-					if (initialFocus) {
-						massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
-						lastMessageFocused = document.activeElement as HTMLElement;
-						initialFocus = false;
-						return;
-					}
+				if (initialFocus) {
+					massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
+					lastMessageFocused = document.activeElement as HTMLElement;
+					initialFocus = false;
+					return;
+				}
 
-					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
-						lastMessageFocused?.focus();
-					}
-				},
-				{ capture: true },
-			);
+				if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
+					lastMessageFocused?.focus();
+				}
+			};
+
+			node.addEventListener('keydown', onKeyDown);
+			node.addEventListener('blur', onBlur, { capture: true });
+			node.addEventListener('focus', onFocus, { capture: true });
+
+			return () => {
+				node.removeEventListener('keydown', onKeyDown);
+				node.removeEventListener('blur', onBlur, { capture: true });
+				node.removeEventListener('focus', onFocus, { capture: true });
+			};
 		},
 		[roomFocusManager],
 	);

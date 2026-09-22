@@ -13,14 +13,10 @@ export const useSidebarListNavigation = () => {
 	const sidebarListFocusManager = useFocusManager();
 
 	const sidebarListRef = useCallback(
-		(node: HTMLElement | null) => {
+		(node: HTMLElement) => {
 			let lastItemFocused: HTMLElement | null = null;
 
-			if (!node) {
-				return;
-			}
-
-			node.addEventListener('keydown', (e) => {
+			const onKeyDown = (e: KeyboardEvent) => {
 				if (!e.target) {
 					return;
 				}
@@ -62,39 +58,41 @@ export const useSidebarListNavigation = () => {
 
 					lastItemFocused = document.activeElement as HTMLElement;
 				}
-			});
+			};
 
-			node.addEventListener(
-				'blur',
-				(e) => {
-					if (
-						!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
-						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
-					) {
-						return;
-					}
+			const onBlur = (e: FocusEvent) => {
+				if (
+					!(e.relatedTarget as HTMLElement)?.matches(':focus-visible') ||
+					!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
+				) {
+					return;
+				}
 
-					if (!e.currentTarget.contains(e.relatedTarget) && !lastItemFocused) {
-						lastItemFocused = e.target as HTMLElement;
-					}
-				},
-				{ capture: true },
-			);
+				if (!e.currentTarget.contains(e.relatedTarget) && !lastItemFocused) {
+					lastItemFocused = e.target as HTMLElement;
+				}
+			};
 
-			node.addEventListener(
-				'focus',
-				(e) => {
-					const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
-						return;
-					}
+			const onFocus = (e: FocusEvent) => {
+				const triggeredByKeyboard = (e.target as HTMLElement)?.matches(':focus-visible');
+				if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					return;
+				}
 
-					if (lastItemFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
-						lastItemFocused?.focus();
-					}
-				},
-				{ capture: true },
-			);
+				if (lastItemFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
+					lastItemFocused?.focus();
+				}
+			};
+
+			node.addEventListener('keydown', onKeyDown);
+			node.addEventListener('blur', onBlur, { capture: true });
+			node.addEventListener('focus', onFocus, { capture: true });
+
+			return () => {
+				node.removeEventListener('keydown', onKeyDown);
+				node.removeEventListener('blur', onBlur, { capture: true });
+				node.removeEventListener('focus', onFocus, { capture: true });
+			};
 		},
 		[sidebarListFocusManager],
 	);

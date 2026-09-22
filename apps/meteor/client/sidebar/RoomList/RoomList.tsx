@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +7,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
@@ -78,7 +78,7 @@ const RoomList = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const ref = useMergedRefs(preventDefaultRef, shortcutOpenMenuRef);
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>

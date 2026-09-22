@@ -35,54 +35,51 @@ A callback ref removes both problems by construction: React calls it with the no
 
 ## The shape
 
-Build the callback ref with `useSafeRefCallback` from `@rocket.chat/fuselage-hooks`, wrapping a `useCallback`. Create the resource inside, and return its teardown:
+Build the callback ref with a plain `useCallback`. Create the resource inside, and return its teardown — React 19 runs the returned function when the node is detached, [instead of calling the ref with `null`](https://react.dev/blog/2024/12/05/react-19#cleanup-functions-for-refs):
 
 ```ts
-import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 
 export const usePreventDefault = (): RefCallback<HTMLElement> =>
-	useSafeRefCallback(
-		useCallback((node: HTMLElement) => {
-			const stopPropagation: EventListener = (e) => {
-				/* … */
-			};
+	useCallback((node: HTMLElement) => {
+		const stopPropagation: EventListener = (e) => {
+			/* … */
+		};
 
-			node.addEventListener('click', stopPropagation);
+		node.addEventListener('click', stopPropagation);
 
-			return () => node.removeEventListener('click', stopPropagation);
-		}, []),
-	);
+		return () => node.removeEventListener('click', stopPropagation);
+	}, []);
 ```
 
-There is **no `useEffect`**. The listener is registered when the node is assigned and released from the cleanup, so it exists exactly as long as the element does. There is also no internal ref holding the node and no `null` check — the node arrives as an argument and is never `null` inside the callback.
+There is **no `useEffect`**. The listener is registered when the node is assigned and released from the cleanup, so it exists exactly as long as the element does. There is also no internal ref holding the node and no `null` check — once a ref returns a cleanup, React never calls it with `null`, so the node is never `null` inside the callback.
 
 Keep the callback's dependencies stable, since each new identity re-runs the teardown and binds again. Wrap incoming callbacks in `useStableCallback` rather than listing them as dependencies.
 
-## Handle `null`, do not return a cleanup to React
-
-React 19 lets a ref callback return its own cleanup function. **Do not rely on that here.** `useMergedRefs` does not forward the value a merged ref returns, so a cleanup written in that style is silently dropped whenever the ref is combined with another one.
-
-`useSafeRefCallback` uses the other convention: it stores the cleanup itself and runs it when React calls the ref with `null`. `useMergedRefs` does propagate `null`, so hooks built this way compose correctly. That is the whole reason to prefer it.
+`useSafeRefCallback` from `@rocket.chat/fuselage-hooks` predates this and emulates it by storing the cleanup and running it on `null`. Do not use it for new code.
 
 ## Combining refs at the call site
 
-When several hooks need the same element, or the element is also needed as an object ref, merge at the call site with `useMergedRefs`:
+When several hooks need the same element, or the element is also needed as an object ref, merge at the call site with `useMergedRefsV2` (`client/hooks/useMergedRefsV2.ts`):
 
 ```tsx
 const preventDefaultRef = usePreventDefault();
 const shortcutOpenMenuRef = useShortcutOpenMenu();
-const ref = useMergedRefs(resizeObserverRef, preventDefaultRef, shortcutOpenMenuRef);
+const ref = useMergedRefsV2(resizeObserverRef, preventDefaultRef, shortcutOpenMenuRef);
 
 return <Box ref={ref} />;
 ```
+
+**Do not merge these refs with `useMergedRefs` from `@rocket.chat/fuselage-hooks`.** It discards the value each ref returns and calls every ref with `null` instead, so a ref written in the shape above never tears down and receives a `null` node it does not expect. `useMergedRefsV2` forwards each cleanup to React, and also tears down when it is itself called with `null` — which is what happens when the merged ref reaches a Fuselage component that merges refs internally, such as `TextInput` (through `InputBox`), `CheckBox`, `AutoComplete`, `MultiSelect` or the selects.
+
+The same applies to a component that forwards a ref to a node it only knows later and attaches it by hand: call the ref, and keep what it returns as the cleanup, as `CustomVirtuaScrollbars` does.
 
 A hook must not accept a ref just to write the node into it — that is the call site's job, and doing it in both places duplicates the same assignment.
 
 ## Reference implementation
 
-`client/views/room/hooks/useIsVisible.ts` is the canonical example: it takes no argument, returns `[ref, isVisible]` as a tuple, creates its `IntersectionObserver` inside the callback and disconnects it in the cleanup, and states its return type without a cast.
+`client/views/room/hooks/useIsVisible.ts` is the canonical example: it takes no argument, returns `[ref, isVisible]` as a tuple, creates its `IntersectionObserver` inside the callback and disconnects it in the cleanup it returns, and states its return type without a cast.
 
 ## When this does not apply
 
