@@ -1,4 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -120,7 +121,6 @@ const MessageBoxBase = ({
 					suspended={popup.suspended}
 				/>
 			)}
-			{hint}
 			<MessageBoxHint
 				isEditing={isEditing}
 				e2eEnabled={e2eEnabled}
@@ -176,7 +176,10 @@ const MessageBoxBase = ({
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
-			<ComposerUserActionIndicator rid={rid} tmid={tmid} />
+			<Box display='flex' alignItems='center' justifyContent='space-between'>
+				<ComposerUserActionIndicator rid={rid} tmid={tmid} />
+				{hint}
+			</Box>
 		</>
 	);
 };
