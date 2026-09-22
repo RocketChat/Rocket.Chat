@@ -63,6 +63,12 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 	const v1 = '/api/v1';
 
+	const clearDefaultFlag = async (roomIds: string[]): Promise<void> => {
+		await Promise.all(
+			roomIds.filter(Boolean).map((rid) => request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, default: false })),
+		);
+	};
+
 	describe('Permission & Authentication', () => {
 		it('GET /api/v1/abac/attributes should return 401 when not authenticated', async () => {
 			await request.get(`${v1}/abac/attributes`).expect(401);
@@ -912,6 +918,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		after(async () => {
+			// Assigning attributes evicts the attribute-less admin, so the deletions below can fail
+			// silently. Clearing the flag first keeps a room that survives out of every new user's
+			// auto-join.
+			await clearDefaultFlag([privateDefaultRoomId, mainRoomIdSaveSettings]);
+
 			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
 			await deleteTeam(credentials, teamName);
 			await deleteTeam(credentials, teamNameMainRoom);
@@ -1019,6 +1030,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		after(async () => {
+			await clearDefaultFlag([abacRoomId]);
+
 			if (skippedRoomId) {
 				await deleteRoom({ type: 'p', roomId: skippedRoomId });
 			}
@@ -2345,7 +2358,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(200);
 		});
 
-		it('should NOT list a default private room even if attempt to add attribute fails', async () => {
+		it('should list a default private room that carries attributes', async () => {
 			const defaultRoomId = (await createRoom({ type: 'p', name: `abac-list-default-${Date.now()}` })).body.group._id;
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: true }).expect(200);
 			const defKey = `list_def_attr_${Date.now()}`;
@@ -2358,10 +2371,10 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.post(`${v1}/abac/rooms/${defaultRoomId}/attributes/${defKey}`)
 				.set(credentials)
 				.send({ values: ['one'] })
-				.expect(400);
+				.expect(200);
 			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
 			const ids = res.body.rooms.map((r: any) => r._id);
-			expect(ids).to.not.include(defaultRoomId);
+			expect(ids).to.include(defaultRoomId);
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: false }).expect(200);
 			await deleteRoom({ type: 'p', roomId: defaultRoomId });
 		});
