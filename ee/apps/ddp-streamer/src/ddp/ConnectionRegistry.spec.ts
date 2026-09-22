@@ -51,7 +51,7 @@ describe('ConnectionRegistry', () => {
 			lifecycle.emit('connected', sameUser);
 
 			registry.closeSession('s1');
-			jest.advanceTimersByTime(10_000);
+			jest.runAllTimers();
 
 			expect(target.ws.close).toHaveBeenCalledTimes(1);
 			expect(target.ws.terminate).not.toHaveBeenCalled();
