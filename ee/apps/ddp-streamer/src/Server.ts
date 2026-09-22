@@ -125,10 +125,6 @@ export class Server extends EventEmitter {
 		this._subscriptions.set(name, fn);
 	}
 
-	stream(stream: string, fn: SubscriptionFn): void {
-		return this.publish(`stream-${stream}`, fn);
-	}
-
 	result(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
 		client.send(
 			this.serialize({

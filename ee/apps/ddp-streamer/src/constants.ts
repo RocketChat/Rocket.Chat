@@ -1,8 +1,3 @@
-export const STREAMER_EVENTS = {
-	STREAM: 'stream',
-	USER_CHANGED: 'user-changed',
-};
-
 export const DDP_EVENTS = {
 	ID: 'id',
 	FIELDS: 'fields',

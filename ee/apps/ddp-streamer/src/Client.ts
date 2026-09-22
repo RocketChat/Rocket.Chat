@@ -26,8 +26,6 @@ export class Client extends EventEmitter {
 
 	public connection: ISocketConnection;
 
-	public wait = false;
-
 	public userId?: string;
 
 	public userToken?: string;
@@ -181,9 +179,6 @@ export class Client extends EventEmitter {
 			const packet = this.server.parse(payload, isBinary);
 			this.updatePresence();
 			this.emit('message', packet);
-			if (this.wait) {
-				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
-			}
 			this.process(packet.msg, packet);
 		} catch (err) {
 			console.error(err);

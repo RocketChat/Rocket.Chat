@@ -108,13 +108,10 @@ describe('Publication', () => {
 		]);
 	});
 
-	it('rejects the unsupported error operation', () => {
-		expect(() => publication.error(new Error('failure'))).toThrow('Method not implemented.');
+	it('accepts the error and unblock operations without sending anything', () => {
+		expect(() => publication.error(new Error('failure'))).not.toThrow();
+		expect(() => publication.unblock()).not.toThrow();
 		expect(client.send).not.toHaveBeenCalled();
-	});
-
-	it('rejects the unsupported unblock operation', () => {
-		expect(() => publication.unblock()).toThrow('Method not implemented.');
-		expect(client.send).not.toHaveBeenCalled();
+		expect(client.subscriptions.get('test-id')).toBe(publication);
 	});
 });

@@ -35,12 +35,14 @@ export class Publication extends EventEmitter implements IPublication {
 		return this._session === null;
 	}
 
+	// Required by IPublication; no publication or rule shipped to ddp-streamer calls it.
 	error(_error: Error): void {
-		throw new Error('Method not implemented.');
+		// noop
 	}
 
+	// Dispatch is serialised per client with no blocking to release, so there is nothing to unblock.
 	unblock(): void {
-		throw new Error('Method not implemented.');
+		// noop
 	}
 
 	ready(): void {

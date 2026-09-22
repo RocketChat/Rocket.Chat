@@ -295,16 +295,6 @@ describe('Server subscriptions', () => {
 		expect(replacement).not.toHaveBeenCalled();
 	});
 
-	it('registers a stream under the stream-prefixed publication name', async () => {
-		const handler = jest.fn();
-		server.stream('room-messages', handler);
-
-		await server.subscribe(client, makeSubscription('stream-room-messages'));
-
-		expect(handler).toHaveBeenCalledWith('room1', { useCollection: true });
-		expect(client.subscriptions.has('test-id')).toBe(true);
-	});
-
 	it('ignores disconnected clients before executing or registering a publication', async () => {
 		const handler = jest.fn();
 		server.publish('messages', handler);

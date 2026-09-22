@@ -6,29 +6,25 @@ import { DDP_EVENTS, WS_ERRORS } from '../constants';
 export function registerAccountMethods(server: Server): void {
 	server.methods({
 		async login({ resume }: { resume: string }) {
-			try {
-				const result = await Account.login({ resume });
-				if (!result) {
-					throw new MeteorError(403, "You've been logged out by the server. Please log in again");
-				}
-
-				this.userId = result.uid;
-				this.userToken = result.hashedToken;
-				this.connection.loginToken = result.hashedToken;
-
-				this.emit(DDP_EVENTS.LOGGED);
-
-				server.emit(DDP_EVENTS.LOGGED, this);
-
-				return {
-					id: result.uid,
-					token: result.token,
-					tokenExpires: result.tokenExpires,
-					type: result.type,
-				};
-			} catch (error) {
-				throw error;
+			const result = await Account.login({ resume });
+			if (!result) {
+				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
 			}
+
+			this.userId = result.uid;
+			this.userToken = result.hashedToken;
+			this.connection.loginToken = result.hashedToken;
+
+			this.emit(DDP_EVENTS.LOGGED);
+
+			server.emit(DDP_EVENTS.LOGGED, this);
+
+			return {
+				id: result.uid,
+				token: result.token,
+				tokenExpires: result.tokenExpires,
+				type: result.type,
+			};
 		},
 		async logout() {
 			if (this.userToken && this.userId) {
