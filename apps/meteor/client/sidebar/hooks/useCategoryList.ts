@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import { isUnreadRoom } from '../lib/unreadRooms';
 
 type FilterSystemCategoriesOptions = {
 	showOmnichannel: boolean;
@@ -100,9 +101,6 @@ export const filterGroupVisibility = <T>(
 
 	return filteredGroups;
 };
-
-const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
 export const getRoomCategory = (
 	room: SubscriptionWithRoom,
