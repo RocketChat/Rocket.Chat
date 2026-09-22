@@ -11,18 +11,12 @@ import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useSidebarPresentation } from '../hooks/useSidebarPresentation';
-
-const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
-	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
-	if (direction === 'down') return index + 1 < groups.length;
-	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
-};
+import { canMoveGroup } from '../lib/reorderableGroups';
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
