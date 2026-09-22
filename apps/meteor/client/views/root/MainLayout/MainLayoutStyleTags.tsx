@@ -26,6 +26,12 @@ const darkAlphaShellBase = `#rocket-chat.menu-nav {
    backgroundColor prop's css-in-js rule (also !important) regardless of
    stylesheet order */
 :root {
+	/* legacy account/admin sidebar portal (.flex-nav) is an opaque slide-over
+	   that defaults to a hard-coded light gray; the sidebar veil nested inside
+	   it is not enough to hide that. Paint it with the anchor instead: it
+	   keeps covering the room list underneath, re-tints with the anchor, and
+	   the nested 4.5% veil lands on T1 exactly like the main sidebar. */
+	--flex-nav-background: var(--rcx-color-surface-tint);
 	/* fill-led fields (design memo): inputs are recessed wells cut into the
 	   surface — T-1 (#101113) is the single sanctioned tone below the
 	   anchor, reserved for form-field fills. Strokes are decorative
