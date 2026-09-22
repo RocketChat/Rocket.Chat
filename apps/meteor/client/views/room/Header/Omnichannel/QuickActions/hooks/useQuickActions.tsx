@@ -21,6 +21,7 @@ import { quickActionHooks } from '../../../../../../ui';
 import { useForwardChat } from '../../../../../omnichannel/hooks/useForwardChat';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
+import { buildCloseChatRequest } from '../../../../../omnichannel/lib/closeChat';
 import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
@@ -149,20 +150,7 @@ export const useQuickActions = (): {
 			requestData?: { email: string; subject: string },
 		) => {
 			try {
-				await closeChat({
-					rid,
-					...(comment && { comment }),
-					...(tags && { tags }),
-					...(preferences?.omnichannelTranscriptPDF && { generateTranscriptPdf: true }),
-					...(preferences?.omnichannelTranscriptEmail && requestData
-						? {
-								transcriptEmail: {
-									sendToVisitor: preferences?.omnichannelTranscriptEmail,
-									requestData,
-								},
-							}
-						: { transcriptEmail: { sendToVisitor: false } }),
-				});
+				await closeChat(buildCloseChatRequest({ rid, comment, tags, preferences, requestData }));
 				discardForRoom(rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
