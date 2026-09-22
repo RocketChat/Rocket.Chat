@@ -1,0 +1,45 @@
+ee/apps/ddp-streamer/src/Client.spec.ts
+  s_6a07e872e1831e::t_727d6f2446d477 9-10
+ee/apps/ddp-streamer/src/Server.ts
+  s_6a07e872e1831e::t_4d057c71c7785c 2,9,54,63,65,94,100,111-113
+ee/apps/ddp-streamer/src/Server.spec.ts
+  s_6a07e872e1831e::t_57e2fbb2a65460 6
+  s_6a07e872e1831e::t_48488cf26c6a35 98-108
+ee/apps/ddp-streamer/src/Publication.ts
+  s_6a07e872e1831e::t_595afd800384f2 6,46,50,59,63,67
+ee/apps/ddp-streamer/src/Streamer.ts
+  s_6a07e872e1831e::t_145a7faff0a3d3 7
+  s_6a07e872e1831e::t_cf22a5ab0f767c 21
+  s_6a07e872e1831e::t_225e9a912283f4 35
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_9cc476df6438c6 228
+  s_6a07e872e1831e::t_534c7e86b4e152 15
+ee/apps/ddp-streamer/src/Publication.spec.ts
+  s_6a07e872e1831e::t_4e9a8ab054dfae 18,28,84
+  s_6a07e872e1831e::t_87fd412e25382c 10
+ee/apps/ddp-streamer/src/Client.ts
+  s_6a07e872e1831e::t_674b5eaa89fdc2 11
+  s_6a07e872e1831e::t_7517c7c3e2716d 97
+  s_6a07e872e1831e::t_141abea8058dfc 169
+  s_6a07e872e1831e::t_56ab1a63469009 181
+  s_6a07e872e1831e::t_a8d0d4b82049a0 89
+  s_6a07e872e1831e::t_a1c8e95d1fe30b 150,154
+ee/apps/ddp-streamer/src/codec.ts
+  s_6a07e872e1831e::t_9afb7336c0e22c 1-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ac0a0109d311b72193adc74ce520f457f3912aa0",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
