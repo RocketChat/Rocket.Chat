@@ -1,19 +1,25 @@
 import type { CallHistoryDirection, CallHistoryItemState, ICallHistoryItem } from '../mediaCalls/ICallHistoryItem';
 
+/** Narrows a call history search. An entry has to match every filter given. */
 export interface ICallHistorySearchFilters {
 	/** Matches the contact's name, username or extension */
 	searchTerm?: string;
 	direction?: CallHistoryDirection;
+	/** Matches an entry in any one of these states. */
 	inStates?: Array<CallHistoryItemState>;
 }
 
+/** Which slice of the matching entries to return. */
 export interface ICallHistorySearchPagination {
 	/** How many entries to return. Defaults to 50, capped at 100. */
 	count?: number;
+	/** How many entries to skip. Defaults to 0. */
 	offset?: number;
+	/** Keyed by the entry's own fields. Defaults to `{ ts: -1 }`, newest first. */
 	sort?: Record<string, 1 | -1>;
 }
 
+/** One page of a call history search. */
 export interface ICallHistorySearchResult {
 	items: Array<ICallHistoryItem>;
 	/** How many entries match the filters, ignoring the pagination */
