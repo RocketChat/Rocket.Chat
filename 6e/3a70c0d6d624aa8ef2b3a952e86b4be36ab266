@@ -1,0 +1,80 @@
+ee/apps/ddp-streamer/src/__tests__/helpers.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 6-7
+  s_6a07e872e1831e::t_c17d9bb78ea109 8
+ee/apps/ddp-streamer/src/ddp/codec.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-129
+ee/apps/ddp-streamer/src/publications/mirroredCollection.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1
+ee/apps/ddp-streamer/src/ddp/Client.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-366
+ee/apps/ddp-streamer/src/ddp/constants.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-43
+ee/apps/ddp-streamer/src/methods/accounts.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 3-5
+ee/apps/ddp-streamer/src/ddp/Server.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-272
+ee/apps/ddp-streamer/src/ddp/clientAddress.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-32
+ee/apps/ddp-streamer/src/ddp/Publication.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-114
+ee/apps/ddp-streamer/src/ddp/IPacket.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-9
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 14-19
+ee/apps/ddp-streamer/src/ddp/Publication.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-72
+ee/apps/ddp-streamer/src/ddp/codec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-93
+ee/apps/ddp-streamer/src/ddp/clientAddress.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-54
+ee/apps/ddp-streamer/src/ddp/ConnectionRegistry.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-113
+ee/apps/ddp-streamer/src/streams/StreamAdapter.spec.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-136
+ee/apps/ddp-streamer/src/ddp/lifecycle.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-13
+ee/apps/ddp-streamer/src/streams/StreamAdapter.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-71
+ee/apps/ddp-streamer/src/service.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 25-28
+ee/apps/ddp-streamer/src/ddp/constants.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-40
+ee/apps/ddp-streamer/src/ddp/Client.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-208
+ee/apps/ddp-streamer/src/ddp/ConnectionRegistry.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-55
+ee/apps/ddp-streamer/src/ddp/Server.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 1-114
+ee/apps/ddp-streamer/src/methods/presence.ts
+  s_6a07e872e1831e::t_9b6b44b6d10c3b 4
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_6a07e872e1831e::t_4a5742c2474b6c 9-11,13
+ee/apps/ddp-streamer/src/methods/accounts.spec.ts
+  s_6a07e872e1831e::t_b62b6b0ac8abb6 4-7
+ee/apps/ddp-streamer/src/publications/autoupdate.spec.ts
+  s_6a07e872e1831e::t_1a153084e9f193 3
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_6a07e872e1831e::t_b0c563e1354d37 4
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.spec.ts
+  s_6a07e872e1831e::t_795296975f6e84 3
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.ts
+  s_6a07e872e1831e::t_21ad99acf6b4a2 4
+ee/apps/ddp-streamer/src/publications/mirroredCollection.spec.ts
+  s_6a07e872e1831e::t_46661220effbdc 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6e3a70c0d6d624aa8ef2b3a952e86b4be36ab266",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
