@@ -9,6 +9,7 @@ import { DDPStreamer } from './DDPStreamer';
 import { Server } from './Server';
 import { createStreamAdapter } from './Streamer';
 import { makeClient, sentPackets } from './__tests__/helpers';
+import { MirroredCollection } from './lib/MirroredCollection';
 import { ConnectionLifecycle } from './lifecycle';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -62,12 +63,13 @@ function makeMetrics(): jest.Mocked<IServiceMetrics> {
 function makeService() {
 	const lifecycle = new ConnectionLifecycle();
 	const registry = new ConnectionRegistry(lifecycle);
-	const service = new DDPStreamer(server, lifecycle, registry, notifications);
+	const mirrors = { loginServices: new MirroredCollection<any>(), clientVersions: new MirroredCollection<any>() };
+	const service = new DDPStreamer(server, lifecycle, registry, mirrors, notifications);
 	const api = { broadcast: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<IApiService>;
 	service.setApi(api);
 	const metrics = makeMetrics();
 
-	return { lifecycle, registry, service, api, metrics };
+	return { lifecycle, registry, mirrors, service, api, metrics };
 }
 
 async function createService() {
@@ -128,6 +130,35 @@ describe('DDPStreamer lifecycle handling', () => {
 		lifecycle.emit('disconnected', first);
 
 		expect(InstanceStatus.updateConnections).toHaveBeenCalledWith(1);
+	});
+
+	describe('mirrors fed by broker events', () => {
+		it('applies login service configuration changes to the mirror', () => {
+			const { service, mirrors } = makeService();
+			const record = { _id: 'google', service: 'google', clientId: 'x' };
+
+			service.emit('watch.loginServiceConfiguration', { clientAction: 'inserted', id: 'google', data: record });
+			expect([...mirrors.loginServices.entries()]).toEqual([['google', record]]);
+
+			service.emit('watch.loginServiceConfiguration', { clientAction: 'removed', id: 'google' });
+			expect([...mirrors.loginServices.entries()]).toEqual([]);
+		});
+
+		it('stores client versions by architecture without repeating the id in the record', () => {
+			const { service, mirrors } = makeService();
+
+			service.emit('meteor.clientVersionUpdated', {
+				_id: 'web.browser',
+				version: 'v2',
+				versionRefreshable: 'r2',
+				versionNonRefreshable: 'n2',
+				versionHmr: 2,
+			});
+
+			expect([...mirrors.clientVersions.entries()]).toEqual([
+				['web.browser', { version: 'v2', versionRefreshable: 'r2', versionNonRefreshable: 'n2', versionHmr: 2 }],
+			]);
+		});
 	});
 
 	describe('on user.forceLogout', () => {

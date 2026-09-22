@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 
+import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer';
@@ -13,10 +15,10 @@ import { Client } from './Client';
 import type { ConnectionRegistry } from './ConnectionRegistry';
 import type { Server } from './Server';
 import { encodeAdded } from './codec';
-import { Autoupdate } from './lib/Autoupdate';
+import type { MirroredCollection } from './lib/MirroredCollection';
 import type { ConnectionLifecycle } from './lifecycle';
 import { proxy } from './proxy';
-import { seedLoginServiceConfiguration, updateLoginServiceConfiguration } from './publications/loginServiceConfiguration';
+import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;
 
@@ -26,6 +28,11 @@ const CONNECTION_COUNT_REPORT_INTERVAL_MS = 30_000;
 // so every lookup already resolved to undefined here. Kept explicit until a reader backed
 // by Settings.get + onSettingChanged replaces it.
 const noSettings: SettingsReader = { get: () => undefined };
+
+export type Mirrors = {
+	loginServices: MirroredCollection<Partial<LoginServiceConfiguration>>;
+	clientVersions: MirroredCollection<ClientVersion>;
+};
 
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
@@ -38,6 +45,7 @@ export class DDPStreamer extends ServiceClass {
 		private readonly server: Server,
 		private readonly lifecycle: ConnectionLifecycle,
 		private readonly registry: ConnectionRegistry,
+		private readonly mirrors: Mirrors,
 		notifications: NotificationsModule,
 	) {
 		super();
@@ -53,12 +61,12 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 			if (clientAction === 'removed') {
-				updateLoginServiceConfiguration('removed', { _id: id });
+				this.mirrors.loginServices.remove(id);
 				return;
 			}
 
 			if (data) {
-				updateLoginServiceConfiguration(clientAction === 'inserted' ? 'added' : 'changed', data);
+				this.mirrors.loginServices.set(id, data);
 			}
 		});
 
@@ -70,8 +78,8 @@ export class DDPStreamer extends ServiceClass {
 			this.registry.closeForUser(uid);
 		});
 
-		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
-			Autoupdate.updateVersion(versions);
+		this.onEvent('meteor.clientVersionUpdated', (record): void => {
+			this.setClientVersion(record);
 		});
 
 		// The publication user cache lives inside the NotificationsModule process. In a
@@ -228,9 +236,14 @@ export class DDPStreamer extends ServiceClass {
 		setImmediate(() => client.send(encodeAdded('users', userId, loggedUser)));
 	}
 
+	// The architecture is the DDP document id, so it is not repeated in the fields, matching Meteor's autoupdate collection.
+	private setClientVersion({ _id, ...version }: AutoUpdateRecord): void {
+		this.mirrors.clientVersions.set(_id, version);
+	}
+
 	override async started(): Promise<void> {
 		void MeteorService.getLoginServiceConfiguration()
-			.then((records = []) => seedLoginServiceConfiguration(records))
+			.then((records = []) => records.forEach((record) => this.mirrors.loginServices.set(record._id, record)))
 			.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
@@ -238,7 +251,7 @@ export class DDPStreamer extends ServiceClass {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
 
 			Object.keys(versions || {}).forEach((key) => {
-				Autoupdate.updateVersion(versions[key]);
+				this.setClientVersion(versions[key]);
 			});
 
 			this.app = polka()

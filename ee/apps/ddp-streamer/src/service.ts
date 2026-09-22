@@ -35,8 +35,10 @@ void (async () => {
 	const lifecycle = new ConnectionLifecycle();
 	const registry = new ConnectionRegistry(lifecycle);
 
-	registerLoginServiceConfigurationPublication(server);
-	registerAutoupdatePublication(server);
+	const mirrors = {
+		loginServices: registerLoginServiceConfigurationPublication(server),
+		clientVersions: registerAutoupdatePublication(server),
+	};
 	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
 
@@ -48,7 +50,7 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, lifecycle, registry, notifications));
+	api.registerService(new DDPStreamer(server, lifecycle, registry, mirrors, notifications));
 
 	await api.start();
 })();
