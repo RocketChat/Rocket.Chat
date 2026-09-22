@@ -29,6 +29,8 @@ import type { Document, FindOptions, Filter } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { filterDefaultChannelsForUser } from '../../lib/rooms/filterDefaultChannelsForUser';
+import { filterUsersAllowedInRoom } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
@@ -476,7 +478,17 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				{ _id: { $ne: room.u._id } },
 			);
 
+			const allowed = await filterUsersAllowedInRoom(
+				teamMembers.records.map(({ user: member }) => member),
+				room,
+			);
+			const allowedIds = new Set(allowed.map(({ _id }) => _id));
+
 			for await (const m of teamMembers.records) {
+				if (!allowedIds.has(m.user._id)) {
+					continue;
+				}
+
 				if (await addUserToRoom(room._id, m.user, user)) {
 					room.usersCount++;
 				}
@@ -976,9 +988,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const defaultRooms = await Rooms.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
-		for (const room of defaultRooms) {
+		for (const user of users) {
+			const joinable = await filterDefaultChannelsForUser(defaultRooms, user);
+
 			// at this point, users are already part of the team so we won't check for membership
-			await Promise.all(users.map((user) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));
+			await Promise.all(joinable.map((room) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));
 		}
 	}
 
