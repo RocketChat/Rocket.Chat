@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { readFile } from 'node:fs/promises';
 
+import { JsonRpcError, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
@@ -8,7 +9,6 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions';

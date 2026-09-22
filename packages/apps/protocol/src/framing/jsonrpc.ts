@@ -4,8 +4,7 @@
  * This is a purpose-built, dependency-free replacement for `jsonrpc-lite`. We
  * only need to build the handful of message shapes that cross the process
  * boundary between the Apps-Engine host and the app subprocess. Both sides
- * share this module: the host imports it directly, the app runtime through
- * `base-runtime/src/lib/jsonrpc`.
+ * import this one module, from the compiled `protocol/dist`.
  *
  * Every message also carries an optional `meta` bag, analogous to HTTP headers
  * (see {@link JsonRpcMeta}).

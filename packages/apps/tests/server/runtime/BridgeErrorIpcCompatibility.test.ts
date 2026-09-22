@@ -8,7 +8,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import AdmZip from 'adm-zip';
 
-import * as jsonrpc from '../../../src/lib/jsonrpc';
+import * as jsonrpc from '../../../protocol/src/framing/jsonrpc';
 import type { AppManager } from '../../../src/server/AppManager';
 import {
 	CommandAlreadyExistsError,

@@ -1,8 +1,8 @@
+import { JsonRpcError, SERVER_ERROR, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
