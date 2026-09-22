@@ -25,9 +25,6 @@ describe('protocol constants', () => {
 			SUBSCRIPTIONS: 'subs',
 			NO_SUBSCRIBE: 'nosub',
 			UNSUBSCRIBE: 'unsub',
-			DISCONNECTED: 'disconnected',
-			LOGGED: 'logged',
-			LOGGEDOUT: 'loggedout',
 		});
 	});
 

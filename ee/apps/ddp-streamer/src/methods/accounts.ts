@@ -1,9 +1,10 @@
 import { Account, MeteorError } from '@rocket.chat/core-services';
 
 import type { Server } from '../Server';
-import { DDP_EVENTS, WS_ERRORS } from '../constants';
+import { WS_ERRORS } from '../constants';
+import type { ConnectionLifecycle } from '../lifecycle';
 
-export function registerAccountMethods(server: Server): void {
+export function registerAccountMethods(server: Server, lifecycle: ConnectionLifecycle): void {
 	server.methods({
 		async login({ resume }: { resume: string }) {
 			const result = await Account.login({ resume });
@@ -15,9 +16,7 @@ export function registerAccountMethods(server: Server): void {
 			this.userToken = result.hashedToken;
 			this.connection.loginToken = result.hashedToken;
 
-			this.emit(DDP_EVENTS.LOGGED);
-
-			server.emit(DDP_EVENTS.LOGGED, this);
+			lifecycle.emit('loggedIn', this);
 
 			return {
 				id: result.uid,
@@ -31,8 +30,7 @@ export function registerAccountMethods(server: Server): void {
 				await Account.logout({ userId: this.userId, token: this.userToken });
 			}
 
-			this.emit(DDP_EVENTS.LOGGEDOUT);
-			server.emit(DDP_EVENTS.LOGGEDOUT, this);
+			lifecycle.emit('loggedOut', this);
 
 			this.userToken = undefined;
 			this.userId = undefined;

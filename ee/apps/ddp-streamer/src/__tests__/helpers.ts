@@ -9,7 +9,7 @@ import type { IPacket } from '../types/IPacket';
 
 export function makeClient(readyState: number = WebSocket.OPEN) {
 	const client = Object.assign(new EventEmitter(), {
-		ws: { readyState },
+		ws: { readyState, close: jest.fn<void, [number?, string?]>() },
 		userId: 'user1' as string | undefined,
 		userToken: 'token1',
 		connection: { id: 'connection1' },

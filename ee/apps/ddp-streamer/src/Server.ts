@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events';
-
 import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
@@ -34,7 +32,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 
 export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 
-export class Server extends EventEmitter {
+export class Server {
 	private _subscriptions = new Map<string, SubscriptionFn>();
 
 	private _methods = new Map<string, MethodFn>();

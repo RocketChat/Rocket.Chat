@@ -11,6 +11,7 @@ import type { Server } from './Server';
 import { SERVER_ID } from './Server';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import { getClientAddress } from './lib/clientAddress';
+import type { ConnectionLifecycle } from './lifecycle';
 import type { IPacket } from './types/IPacket';
 
 export const clientMap = new WeakMap<WebSocket, Client>();
@@ -44,6 +45,7 @@ export class Client extends EventEmitter {
 
 	constructor(
 		private readonly server: Server,
+		private readonly lifecycle: ConnectionLifecycle,
 		public ws: WebSocket,
 		public meteorClient: boolean,
 		req: IncomingMessage,
@@ -63,7 +65,7 @@ export class Client extends EventEmitter {
 		this.renewTimeout(TIMEOUT / 1000);
 		this.ws.on('message', this.handler);
 		this.ws.on('close', (...args) => {
-			this.server.emit(DDP_EVENTS.DISCONNECTED, this);
+			this.lifecycle.emit('disconnected', this);
 			this.emit('close', ...args);
 			this.subscriptions.clear();
 			clearTimeout(this.timeout);
@@ -78,7 +80,7 @@ export class Client extends EventEmitter {
 
 		this.greeting();
 
-		this.server.emit(DDP_EVENTS.CONNECTED, this);
+		this.lifecycle.emit('connected', this);
 
 		this.ws.on('message', () => this.renewTimeout(TIMEOUT));
 

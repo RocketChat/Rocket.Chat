@@ -11,8 +11,8 @@ import WebSocket from 'ws';
 
 import { Client, clientMap } from './Client';
 import type { Server } from './Server';
-import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
+import type { ConnectionLifecycle } from './lifecycle';
 import { proxy } from './proxy';
 import { seedLoginServiceConfiguration, updateLoginServiceConfiguration } from './publications/loginServiceConfiguration';
 
@@ -32,6 +32,7 @@ export class DDPStreamer extends ServiceClass {
 
 	constructor(
 		private readonly server: Server,
+		private readonly lifecycle: ConnectionLifecycle,
 		notifications: NotificationsModule,
 	) {
 		super();
@@ -145,92 +146,23 @@ export class DDPStreamer extends ServiceClass {
 			description: 'Users logged by streamer',
 		});
 
-		const { server } = this;
+		this.server.setMetrics(metrics);
 
-		server.setMetrics(metrics);
-
-		server.on(DDP_EVENTS.CONNECTED, () => {
+		this.lifecycle.on('connected', ({ connection }) => {
 			metrics.increment('users_connected', { nodeID }, 1);
+			void this.api?.broadcast('socket.connected', connection);
 		});
 
-		server.on(DDP_EVENTS.LOGGED, () => {
+		this.lifecycle.on('loggedIn', (client) => {
 			metrics.increment('users_logged', { nodeID }, 1);
+			void this.onLoggedIn(client, nodeID);
 		});
 
-		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
-			metrics.decrement('users_connected', { nodeID }, 1);
-			if (userId) {
-				metrics.decrement('users_logged', { nodeID }, 1);
-			}
-		});
-
-		async function sendUserData(client: Client, userId: string) {
-			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
-			const loggedUser = await Users.findOneById(userId, {
-				projection: {
-					'name': 1,
-					'username': 1,
-					'nickname': 1,
-					'emails': 1,
-					'status': 1,
-					'statusDefault': 1,
-					'statusText': 1,
-					'statusConnection': 1,
-					'bio': 1,
-					'avatarOrigin': 1,
-					'utcOffset': 1,
-					'language': 1,
-					'settings': 1,
-					'enableAutoAway': 1,
-					'idleTimeLimit': 1,
-					'roles': 1,
-					'active': 1,
-					'defaultRoom': 1,
-					'customFields': 1,
-					'requirePasswordChange': 1,
-					'requirePasswordChangeReason': 1,
-					'statusLivechat': 1,
-					'banners': 1,
-					'oauth.authorizedClients': 1,
-					'_updatedAt': 1,
-					'avatarETag': 1,
-					'openBusinessHours': 1,
-					'services.totp.enabled': 1,
-					'services.email2fa.enabled': 1,
-				},
-			});
-			if (!loggedUser) {
-				return;
-			}
-
-			// using setImmediate here so login's method result is sent before we send the user data
-			setImmediate(async () => server.added(client, 'users', userId, loggedUser));
-		}
-		server.on(DDP_EVENTS.LOGGED, async (info: Client) => {
-			const { userId, connection } = info;
-
-			if (!userId) {
-				throw new Error('User not logged in');
-			}
-
-			await Presence.newConnection(userId, connection.id, nodeID);
+		this.lifecycle.on('loggedOut', ({ userId, connection }) => {
+			// Anonymous clients can call logout; the event type predates that and its consumer already tolerates a missing userId.
+			void this.api?.broadcast('accounts.logout', { userId: userId as string, connection });
 
 			this.updateConnections();
-
-			// mimic Meteor's default publication that sends user data after login
-			await sendUserData(info, userId);
-
-			server.emit('presence', { userId, connection });
-
-			void this.api?.broadcast('accounts.login', { userId, connection });
-		});
-
-		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
-			const { userId, connection } = info;
-
-			void this.api?.broadcast('accounts.logout', { userId, connection });
-
-			void this.updateConnections();
 
 			if (!userId) {
 				return;
@@ -238,8 +170,11 @@ export class DDPStreamer extends ServiceClass {
 			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
-		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
-			const { userId, connection } = info;
+		this.lifecycle.on('disconnected', ({ userId, connection }) => {
+			metrics.decrement('users_connected', { nodeID }, 1);
+			if (userId) {
+				metrics.decrement('users_logged', { nodeID }, 1);
+			}
 
 			void this.api?.broadcast('socket.disconnected', connection);
 
@@ -250,10 +185,66 @@ export class DDPStreamer extends ServiceClass {
 			}
 			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
+	}
 
-		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			void this.api?.broadcast('socket.connected', connection);
+	private async onLoggedIn(client: Client, nodeID: string): Promise<void> {
+		const { userId, connection } = client;
+
+		if (!userId) {
+			throw new Error('User not logged in');
+		}
+
+		await Presence.newConnection(userId, connection.id, nodeID);
+
+		this.updateConnections();
+
+		// mimic Meteor's default publication that sends user data after login
+		await this.sendUserData(client, userId);
+
+		void this.api?.broadcast('accounts.login', { userId, connection });
+	}
+
+	private async sendUserData(client: Client, userId: string): Promise<void> {
+		// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
+		const loggedUser = await Users.findOneById(userId, {
+			projection: {
+				'name': 1,
+				'username': 1,
+				'nickname': 1,
+				'emails': 1,
+				'status': 1,
+				'statusDefault': 1,
+				'statusText': 1,
+				'statusConnection': 1,
+				'bio': 1,
+				'avatarOrigin': 1,
+				'utcOffset': 1,
+				'language': 1,
+				'settings': 1,
+				'enableAutoAway': 1,
+				'idleTimeLimit': 1,
+				'roles': 1,
+				'active': 1,
+				'defaultRoom': 1,
+				'customFields': 1,
+				'requirePasswordChange': 1,
+				'requirePasswordChangeReason': 1,
+				'statusLivechat': 1,
+				'banners': 1,
+				'oauth.authorizedClients': 1,
+				'_updatedAt': 1,
+				'avatarETag': 1,
+				'openBusinessHours': 1,
+				'services.totp.enabled': 1,
+				'services.email2fa.enabled': 1,
+			},
 		});
+		if (!loggedUser) {
+			return;
+		}
+
+		// using setImmediate here so login's method result is sent before we send the user data
+		setImmediate(async () => this.server.added(client, 'users', userId, loggedUser));
 	}
 
 	override async started(): Promise<void> {
@@ -300,7 +291,7 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss = new WebSocket.Server({ server: this.app.server });
 
-			this.wss.on('connection', (ws, req) => new Client(this.server, ws, req.url !== '/websocket', req));
+			this.wss.on('connection', (ws, req) => new Client(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
 
 			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {

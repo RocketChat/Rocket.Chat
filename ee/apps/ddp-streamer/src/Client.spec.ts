@@ -7,7 +7,8 @@ import WebSocket from 'ws';
 
 import { Client } from './Client';
 import { SERVER_ID, Server } from './Server';
-import { DDP_EVENTS, TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
+import { TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
+import { ConnectionLifecycle } from './lifecycle';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -50,6 +51,7 @@ function sentPackets(ws: ReturnType<typeof makeSocket>) {
 
 describe('Client', () => {
 	let server: Server;
+	let lifecycle: ConnectionLifecycle;
 	let ws: ReturnType<typeof makeSocket>;
 	let consoleError: jest.SpyInstance;
 
@@ -58,6 +60,7 @@ describe('Client', () => {
 		jest.clearAllMocks();
 		consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		server = new Server();
+		lifecycle = new ConnectionLifecycle();
 		ws = makeSocket();
 	});
 
@@ -67,24 +70,24 @@ describe('Client', () => {
 	});
 
 	describe('handshake', () => {
-		it('sends the server id and announces the connection to the server without any greeting for websocket clients', () => {
+		it('sends the server id and announces the connection without any greeting for websocket clients', () => {
 			const connected = jest.fn();
-			server.on(DDP_EVENTS.CONNECTED, connected);
+			lifecycle.on('connected', connected);
 
-			const client = new Client(server, ws, false, makeRequest());
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
 
 			expect(ws.send.mock.calls).toEqual([[SERVER_ID]]);
 			expect(connected).toHaveBeenCalledWith(client);
 		});
 
 		it('greets SockJS clients with "o" and wraps every payload in a SockJS frame', () => {
-			new Client(server, ws, true, makeRequest('/sockjs/123/abc/websocket'));
+			new Client(server, lifecycle, ws, true, makeRequest('/sockjs/123/abc/websocket'));
 
 			expect(ws.send.mock.calls).toEqual([['o'], [`a${JSON.stringify([SERVER_ID])}`]]);
 		});
 
 		it('describes the connection with the session id, server instance id and request data', () => {
-			const client = new Client(server, ws, false, makeRequest());
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
 
 			expect(client.connection).toEqual({
 				id: client.session,
@@ -96,7 +99,7 @@ describe('Client', () => {
 		});
 
 		it('replies with connected and the session id to a connect message', () => {
-			const client = new Client(server, ws, false, makeRequest());
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect', version: '1', support: ['1'] });
 
@@ -104,7 +107,7 @@ describe('Client', () => {
 		});
 
 		it('closes with a protocol error when the first message is not connect', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'ping' });
 
@@ -112,7 +115,7 @@ describe('Client', () => {
 		});
 
 		it('closes with unsupported data when a message cannot be parsed', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, 'not json');
 
@@ -121,7 +124,7 @@ describe('Client', () => {
 		});
 
 		it('closes with unsupported data when a binary message arrives', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect' }, true);
 
@@ -130,7 +133,7 @@ describe('Client', () => {
 		});
 
 		it('closes with a protocol error when the socket errors', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 
 			ws.emit('error', new Error('boom'));
 
@@ -143,7 +146,7 @@ describe('Client', () => {
 		let client: Client;
 
 		beforeEach(() => {
-			client = new Client(server, ws, false, makeRequest());
+			client = new Client(server, lifecycle, ws, false, makeRequest());
 			receive(ws, { msg: 'connect' });
 			ws.send.mockClear();
 		});
@@ -232,7 +235,7 @@ describe('Client', () => {
 
 	describe('presence heartbeat', () => {
 		it('reports a burst of messages from a logged in client as a single activity update', () => {
-			const client = new Client(server, ws, false, makeRequest());
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
 			client.userId = 'user1';
 
 			receive(ws, { msg: 'connect' });
@@ -244,7 +247,7 @@ describe('Client', () => {
 		});
 
 		it('does not report activity for anonymous clients', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 
 			receive(ws, { msg: 'connect' });
 
@@ -254,7 +257,7 @@ describe('Client', () => {
 
 	describe('idle timeout', () => {
 		it('pings after the initial grace period and closes when the client stays silent', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 			ws.send.mockClear();
 
 			jest.advanceTimersByTime(TIMEOUT / 1000);
@@ -268,7 +271,7 @@ describe('Client', () => {
 		});
 
 		it('restarts the idle timer whenever a message arrives', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 			receive(ws, { msg: 'connect' });
 			ws.send.mockClear();
 
@@ -291,8 +294,8 @@ describe('Client', () => {
 	describe('close', () => {
 		it('announces the disconnection, runs onClose callbacks, and clears subscriptions', () => {
 			const disconnected = jest.fn();
-			server.on(DDP_EVENTS.DISCONNECTED, disconnected);
-			const client = new Client(server, ws, false, makeRequest());
+			lifecycle.on('disconnected', disconnected);
+			const client = new Client(server, lifecycle, ws, false, makeRequest());
 			const onClose = jest.fn();
 			client.connection.onClose(onClose);
 			client.subscriptions.set('s1', { stop: jest.fn() });
@@ -305,7 +308,7 @@ describe('Client', () => {
 		});
 
 		it('stops the idle timer once the socket is closed', () => {
-			new Client(server, ws, false, makeRequest());
+			new Client(server, lifecycle, ws, false, makeRequest());
 			ws.send.mockClear();
 
 			ws.emit('close');

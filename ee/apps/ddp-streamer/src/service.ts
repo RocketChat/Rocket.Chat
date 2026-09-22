@@ -24,16 +24,18 @@ void (async () => {
 	const { DDPStreamer } = await import('./DDPStreamer');
 	const { Server } = await import('./Server');
 	const { createStreamAdapter } = await import('./Streamer');
+	const { ConnectionLifecycle } = await import('./lifecycle');
 	const { registerAccountMethods } = await import('./methods/accounts');
 	const { registerPresenceMethods } = await import('./methods/presence');
 	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');
 	const { registerAutoupdatePublication } = await import('./publications/autoupdate');
 
 	const server = new Server();
+	const lifecycle = new ConnectionLifecycle();
 
 	registerLoginServiceConfigurationPublication(server);
 	registerAutoupdatePublication(server);
-	registerAccountMethods(server);
+	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
 
 	StreamerCentral.on('broadcast', (name, eventName, args) => {
@@ -44,7 +46,7 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, notifications));
+	api.registerService(new DDPStreamer(server, lifecycle, notifications));
 
 	await api.start();
 })();

@@ -22,9 +22,6 @@ export const DDP_EVENTS = {
 	SUBSCRIPTIONS: 'subs',
 	NO_SUBSCRIBE: 'nosub',
 	UNSUBSCRIBE: 'unsub',
-	DISCONNECTED: 'disconnected',
-	LOGGED: 'logged',
-	LOGGEDOUT: 'loggedout',
 };
 
 export const WS_ERRORS = {
