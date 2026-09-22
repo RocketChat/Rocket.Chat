@@ -1,0 +1,40 @@
+ee/apps/ddp-streamer/src/Client.ts
+  s_6a07e872e1831e::t_68e09029f385f0 10,13,48,50,68,83,91,107,111,155,159,174
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_deb68d160c38e6 13,17,33-36,50,55,148-149,260-263,303
+ee/apps/ddp-streamer/src/Streamer.ts
+  s_6a07e872e1831e::t_2db0169e7c7c82 2,6,10-14,16-18,20-29,32-41,43-49,51-54,56-63,65-67,69-71,73-82,84-86,88-92,94,98
+ee/apps/ddp-streamer/src/lib/clientAddress.ts
+  s_6a07e872e1831e::t_ca673d367f0f2a 1-45
+ee/apps/ddp-streamer/src/methods/accounts.ts
+  s_6a07e872e1831e::t_c9647cb3173e91 1-53
+ee/apps/ddp-streamer/src/methods/presence.ts
+  s_6a07e872e1831e::t_5cfb8bee995fff 1,4,6-11,13-37
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_6a07e872e1831e::t_da54591ee50c5c 1-25
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.ts
+  s_6a07e872e1831e::t_250e6fc2687899 1-46
+ee/apps/ddp-streamer/src/service.ts
+  s_6a07e872e1831e::t_fbc2b3c46b6c07 23,25-30,32-43,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "131c19fb6357f1f753671d5dc17e9840842baae2",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
