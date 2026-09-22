@@ -157,38 +157,49 @@ test.describe.serial('feature preview', () => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
-			await poHomeTeam.gotoGroup(sidepanelTeam);
+			const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
+			const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
 
-			await poHomeTeam.headerToolbar.openTeamChannels();
-			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+			try {
+				await test.step('add the channel to the team', async () => {
+					await poHomeTeam.gotoGroup(sidepanelTeam);
+					await poHomeTeam.headerToolbar.openTeamChannels();
+					await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+				});
 
-			const sidepanelTeamItem = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
-			const targetChannelItem = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+				await test.step('send a message in the channel, then a newer one in the team', async () => {
+					await childChannelLink.click();
+					await expect(page).toHaveURL(`/channel/${targetChannel}`);
+					await poHomeTeam.content.sendMessage('hello channel');
 
-			await targetChannelItem.click();
-			expect(page.url()).toContain(`/channel/${targetChannel}`);
-			await poHomeTeam.content.sendMessage('hello channel');
+					await expect(async () => {
+						await teamMainRoomLink.focus();
+						await teamMainRoomLink.click();
+						await expect(page).toHaveURL(`/group/${sidepanelTeam}`, { timeout: 1000 });
+					}).toPass();
+					await poHomeTeam.content.sendMessage('hello team');
+				});
 
-			await expect(async () => {
-				await sidepanelTeamItem.focus();
-				await sidepanelTeamItem.click();
-				expect(page.url()).toContain(`/group/${sidepanelTeam}`);
-			}).toPass();
-			await poHomeTeam.content.sendMessage('hello team');
+				await test.step('open the team filter on the sidepanel', async () => {
+					await poHomeTeam.sidebar.getFilterItemByName(sidepanelTeam).click();
+					await expect(poHomeTeam.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+				});
 
-			await poHomeTeam.sidebar.getFilterItemByName(sidepanelTeam).click();
-			await expect(poHomeTeam.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+				await test.step('send a thread message in the channel from another user', async () => {
+					await user1Channel.gotoChannel(targetChannel);
+					await user1Channel.content.openReplyInThread();
+					await user1Channel.content.toggleAlsoSendThreadToChannel(false);
+					await user1Channel.content.sendMessageInThread('hello thread');
+				});
 
-			await user1Channel.gotoChannel(targetChannel);
-			await user1Channel.content.openReplyInThread();
-			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
-			await user1Channel.content.sendMessageInThread('hello thread');
-
-			await expect(targetChannelItem.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
-			await expect(sidepanelTeamItem.locator('..')).toHaveAttribute('data-item-index', '0');
-			await expect(targetChannelItem.locator('..')).toHaveAttribute('data-item-index', '1');
-
-			await user1Page.close();
+				await test.step('team main room should stay above the channel with newer unread activity', async () => {
+					await expect(childChannelLink.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
+					await expect(teamMainRoomLink.locator('..')).toHaveAttribute('data-item-index', '0');
+					await expect(childChannelLink.locator('..')).toHaveAttribute('data-item-index', '1');
+				});
+			} finally {
+				await user1Page.close();
+			}
 		});
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
