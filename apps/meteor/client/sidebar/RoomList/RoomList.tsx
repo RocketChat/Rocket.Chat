@@ -27,7 +27,7 @@ const RoomList = () => {
 	const groups = useRoomListGroups();
 	const { toggle: handleClick, onKeyDown: handleKeyDown } = useRoomListCollapse();
 	const { moveCategory } = useRoomListActions();
-	const { userId, isAnonymous, openedRoom, isPriorityEnabled, formatTime } = useRoomListViewer();
+	const { userId, isAnonymous, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime } = useRoomListViewer();
 	const {
 		viewMode: sidebarViewMode,
 		extended,
@@ -78,6 +78,7 @@ const RoomList = () => {
 				renderGroup={(group, index) => (
 					<RoomListCollapser
 						group={group}
+						canCustomiseGroups={canCustomiseGroups}
 						canMoveUp={canMoveGroup(groups, index, 'up')}
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}

@@ -2,6 +2,7 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
@@ -18,6 +19,7 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 	const openedRoom = useOpenedRoom() ?? '';
 	const formatTime = useShortTimeAgo();
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
+	const { data: canCustomiseGroups = false } = useHasLicenseModule('experimental-enterprise-features');
 	const presentation = useSidebarPresentation();
 	const moveCategory = useMoveCategoryPosition();
 
@@ -29,10 +31,22 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 			groups,
 			presentation,
 			collapse: { keys: collapsedGroups, toggle: handleClick, onKeyDown: handleKeyDown },
-			viewer: { userId, isAnonymous: !userId, openedRoom, isPriorityEnabled, formatTime },
+			viewer: { userId, isAnonymous: !userId, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime },
 			actions: { moveCategory },
 		}),
-		[groups, presentation, collapsedGroups, handleClick, handleKeyDown, userId, openedRoom, isPriorityEnabled, formatTime, moveCategory],
+		[
+			groups,
+			presentation,
+			collapsedGroups,
+			handleClick,
+			handleKeyDown,
+			userId,
+			openedRoom,
+			isPriorityEnabled,
+			canCustomiseGroups,
+			formatTime,
+			moveCategory,
+		],
 	);
 
 	return <RoomListContext.Provider value={value}>{children}</RoomListContext.Provider>;

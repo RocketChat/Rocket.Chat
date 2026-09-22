@@ -16,6 +16,8 @@ export type RoomListViewer = {
 	isAnonymous: boolean;
 	openedRoom: string;
 	isPriorityEnabled: boolean;
+	/** Whether this workspace lets its readers arrange their own groups. */
+	canCustomiseGroups: boolean;
 	formatTime: (time: string | Date | number) => string;
 };
 
@@ -53,7 +55,7 @@ export const defaultRoomListContextValue: RoomListContextValue = {
 		AvatarTemplate: null,
 	},
 	collapse: { keys: [], toggle: () => undefined, onKeyDown: () => undefined },
-	viewer: { isAnonymous: true, openedRoom: '', isPriorityEnabled: false, formatTime: () => '' },
+	viewer: { isAnonymous: true, openedRoom: '', isPriorityEnabled: false, canCustomiseGroups: false, formatTime: () => '' },
 	actions: { moveCategory: async () => undefined },
 };
 

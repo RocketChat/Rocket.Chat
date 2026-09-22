@@ -3,26 +3,33 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
-import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
+import type { SidebarRoomListGroup } from '../lib/sidebarGroups';
 
 type RoomListCollapserProps = {
 	group: SidebarRoomListGroup;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
+	canCustomiseGroups: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
 
-const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({
+	group,
+	canMoveUp,
+	canMoveDown,
+	canCustomiseGroups,
+	onMoveUp,
+	onMoveDown,
+	...props
+}: RoomListCollapserProps) => {
 	const { t } = useTranslation();
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
 	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
@@ -44,7 +51,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
 			menu={
-				hasLicenseModule ? (
+				canCustomiseGroups ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
