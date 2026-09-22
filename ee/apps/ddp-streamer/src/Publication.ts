@@ -35,7 +35,7 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	error(_error: Error): void {
-		// Publications here report failures by throwing, which Server.subscribe turns into a nosub.
+		// Unused here: publications signal failure by throwing.
 	}
 
 	unblock(): void {

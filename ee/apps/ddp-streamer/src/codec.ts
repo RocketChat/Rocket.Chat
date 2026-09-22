@@ -1,5 +1,4 @@
-import type { MeteorError } from '@rocket.chat/core-services';
-import { MeteorError as MeteorErrorClass, isMeteorError } from '@rocket.chat/core-services';
+import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
@@ -15,7 +14,7 @@ const serialize = ejson.stringify;
 /** Decodes an incoming DDP message, unwrapping the SockJS array envelope when present. */
 export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
 	if (isBinary) {
-		throw new MeteorErrorClass(500, 'Binary data not supported');
+		throw new MeteorError(500, 'Binary data not supported');
 	}
 	const packet = data.toString();
 

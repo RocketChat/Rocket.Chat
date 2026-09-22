@@ -148,7 +148,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.lifecycle.on('loggedOut', ({ userId, connection }) => {
-			// Anonymous clients can call logout; the event type predates that and its consumer already tolerates a missing userId.
+			// Anonymous clients can call logout, so userId may be undefined here although the event type says string.
 			void this.api?.broadcast('accounts.logout', { userId: userId as string, connection });
 
 			this.updateConnections();

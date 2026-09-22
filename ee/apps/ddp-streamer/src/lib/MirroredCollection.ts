@@ -4,7 +4,8 @@ export type MirroredCollectionChange<T> = { action: 'added' | 'changed'; id: str
 
 /**
  * An in-memory copy of a collection whose source of truth lives in another process. Consumers replay the current
- * records and then follow the changes; a change is reported only when it alters the copy.
+ * records and then follow the changes. Every set is reported, as added or changed depending on whether the id was
+ * already held; removing an id that is not held reports nothing.
  */
 export class MirroredCollection<T> {
 	private readonly records = new Map<string, T>();
