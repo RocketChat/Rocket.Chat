@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
+import { EMAIL_PATTERN } from './lib/emailPattern';
 
 export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
 
@@ -58,7 +59,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 								{...register('email', {
 									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+										value: EMAIL_PATTERN,
 										message: t('registration.page.resetPassword.errors.invalidEmail'),
 									},
 								})}
