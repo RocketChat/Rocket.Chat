@@ -1,6 +1,6 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
 
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
 export class ImporterProgress implements IImportProgress {
 	public key: string;
