@@ -1,5 +1,5 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
-import { MeteorService, MeteorError } from '@rocket.chat/core-services';
+import { MeteorError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
@@ -15,6 +15,13 @@ type SubscriptionFn = (this: Publication, eventName: string, options: object) =>
 type MethodFn = (this: Client, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
+};
+
+/** Resolves a method call that no local method handles, with the caller's credentials. */
+export type RemoteMethodCall = (client: Client, method: string, params: any[]) => Promise<unknown>;
+
+const noRemoteMethods: RemoteMethodCall = async (_client, method) => {
+	throw new MeteorError(404, `Method '${method}' not found`);
 };
 
 const handleInternalException = (err: unknown, msg: string): MeteorError => {
@@ -38,6 +45,8 @@ export class Server {
 
 	public readonly id = uuidv1();
 
+	constructor(private readonly callRemoteMethod: RemoteMethodCall = noRemoteMethods) {}
+
 	setMetrics(metrics: IServiceMetrics): void {
 		this.metrics = metrics;
 	}
@@ -48,10 +57,8 @@ export class Server {
 			return;
 		}
 		try {
-			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
-				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
-				return this.sendResult(client, packet, result.result);
+				return this.sendResult(client, packet, await this.callRemoteMethod(client, packet.method, packet.params));
 			}
 
 			const fn = this._methods.get(packet.method);

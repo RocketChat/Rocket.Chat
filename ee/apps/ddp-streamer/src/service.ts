@@ -27,11 +27,12 @@ void (async () => {
 	const { ConnectionLifecycle } = await import('./ddp/lifecycle');
 	const { ConnectionRegistry } = await import('./ddp/ConnectionRegistry');
 	const { registerAccountMethods } = await import('./methods/accounts');
+	const { callMeteorMethod } = await import('./methods/meteorFallback');
 	const { registerPresenceMethods } = await import('./methods/presence');
 	const { registerLoginServiceConfigurationPublication } = await import('./publications/loginServiceConfiguration');
 	const { registerAutoupdatePublication } = await import('./publications/autoupdate');
 
-	const server = new Server();
+	const server = new Server(callMeteorMethod);
 	const lifecycle = new ConnectionLifecycle();
 	const registry = new ConnectionRegistry(lifecycle);
 

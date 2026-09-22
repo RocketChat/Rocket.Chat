@@ -5,6 +5,7 @@ import WebSocket from 'ws';
 import { Publication } from './Publication';
 import { Server } from './Server';
 import { makeClient, makePacket, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { callMeteorMethod } from '../methods/meteorFallback';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -28,7 +29,7 @@ describe('Server method contracts', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockCallMethodWithToken.mockReset();
-		server = new Server();
+		server = new Server(callMeteorMethod);
 		client = makeClient();
 	});
 
