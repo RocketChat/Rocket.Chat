@@ -18,6 +18,7 @@ export type RoomListRowProps = {
 		SidebarItemTemplate: SidebarItemTemplate;
 		AvatarTemplate: SidebarRoomAvatar | null;
 		formatTime: (time: string | Date | number) => string;
+		isPriorityEnabled: boolean;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
@@ -27,7 +28,7 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId, formatTime } = data;
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId, formatTime, isPriorityEnabled } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -57,6 +58,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			extended={extended}
 			SidebarItemTemplate={SidebarItemTemplate}
 			formatTime={formatTime}
+			isPriorityEnabled={isPriorityEnabled}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 			userId={userId}

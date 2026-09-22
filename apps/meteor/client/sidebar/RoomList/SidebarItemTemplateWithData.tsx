@@ -15,7 +15,6 @@ import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
-import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
@@ -45,6 +44,7 @@ type RoomListRowProps = {
 	>;
 	AvatarTemplate: SidebarRoomAvatar | null;
 	formatTime: (time: string | Date | number) => string;
+	isPriorityEnabled: boolean;
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
@@ -76,6 +76,7 @@ const SidebarItemTemplateWithData = ({
 	videoConfActions,
 	userId,
 	formatTime,
+	isPriorityEnabled,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
@@ -112,7 +113,6 @@ const SidebarItemTemplateWithData = ({
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
-	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const message = extended && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
@@ -185,6 +185,8 @@ const keys: (keyof RoomListRowProps)[] = [
 	't',
 	'sidebarViewMode',
 	'videoConfActions',
+	'formatTime',
+	'isPriorityEnabled',
 ];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
