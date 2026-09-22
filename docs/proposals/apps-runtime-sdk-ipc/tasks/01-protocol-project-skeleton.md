@@ -31,8 +31,8 @@ module moves into it.
    `../tsconfig.json`, because the parent sets `strict: false`. Set `rootDir: ./src`,
    `outDir: ./dist`, `module`/`moduleResolution` `nodenext`, `declaration: true`, `strict: true`.
 2. Add `build:protocol` and `typecheck:protocol` scripts.
-3. Put `build:protocol` first in `build`, ahead of `build:default`. Put `typecheck:protocol` first
-   in `typecheck`.
+3. Put `build:protocol` ahead of `build:default` in `build`. Leave `build:clean` first, because it
+   deletes `protocol/dist`. Put `typecheck:protocol` first in `typecheck`.
 4. Add `protocol/dist` to `build:clean`.
 5. Add `protocol/` to the `files` array of `package.json`.
 6. Add `protocol/**` to the `outputs` array of `turbo.json`.

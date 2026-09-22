@@ -6,7 +6,7 @@
 
 Move `packages/apps/src/lib/jsonrpc.ts` to `protocol/src/framing/jsonrpc.ts`. Delete
 `packages/apps/base-runtime/src/lib/jsonrpc.ts`, the shim that re-exports the host's compiled
-`dist`. Repoint the 23 importing modules. Change no behavior.
+`dist`. Repoint the 26 importing modules. Change no behavior.
 
 This is a pure move. ADR 0004 already built the surface — the envelope types, the four factories,
 the type guards, `JsonRpcError` and the `meta` property. Review it by shape-diff.
@@ -22,9 +22,11 @@ two.
 
 | Side | Modules that import the surface |
 | --- | --- |
-| `base-runtime/src` | 19, including 8 test files |
+| `base-runtime/src` | 23, including 9 test files |
 | `src/server/runtime` | 2 — `BaseRuntimeSubprocessController.ts`, `ProcessMessenger.ts` |
-| `tests/` | 2 |
+| `tests/` | 1 — `server/runtime/BaseRuntimeSubprocessController.test.ts` |
+
+The count excludes the two `jsonrpc.ts` modules themselves.
 
 `base-runtime` imports it as `./lib/jsonrpc` or `../../lib/jsonrpc`; the host imports it as
 `../../../lib/jsonrpc`. Both become the protocol path.
@@ -39,7 +41,8 @@ two.
 4. Repoint every importer. Run `yarn typecheck` on all four projects to find the ones a grep misses.
 5. Move `base-runtime/src/lib/tests/jsonrpc.test.ts` next to the module, or repoint its import.
 6. Update ADR 0004's reference index, which points at `packages/apps/src/lib/jsonrpc.ts`. Change
-   that entry and nothing else in ADR 0004.
+   that entry and nothing else in ADR 0004. Its codec entry no longer names a file; the
+   codec-removal commit already fixed it.
 
 ## Done when
 
@@ -48,8 +51,8 @@ two.
       both deleted.
 - [ ] `yarn typecheck:base-runtime` passes on a tree where `dist/` does not exist.
 - [ ] Every existing JSON-RPC test passes unchanged.
-- [ ] ADR 0004's reference index points at the new path.
+- [ ] ADR 0004's reference index points at the new path, and names no deleted file.
 
 ## Size
 
-~270 lines moved. 23 import statements repointed. No behavior change.
+~270 lines moved. 26 import statements repointed. No behavior change.

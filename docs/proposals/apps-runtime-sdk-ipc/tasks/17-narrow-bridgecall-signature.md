@@ -31,9 +31,9 @@ fails to compile.
 
 | File | Change |
 | --- | --- |
-| `protocol/src/contracts/bridges/names.ts` | grows from 22 names to a bridge→methods map, 149 pairs |
+| `protocol/src/contracts/bridges/names.ts` | grows from the 26 names task 04 left to a bridge→methods map, 149 pairs |
 | `base-runtime/src/lib/bridges/bridgeCall.ts` | `method` narrows; the function becomes generic over `BridgeName` |
-| 39 accessor files | no change expected; any that fails typecheck names a method the host does not have |
+| 38 accessor files | no change expected; any that fails typecheck names a method the host does not have |
 
 ## Steps
 
@@ -48,7 +48,7 @@ fails to compile.
 - [ ] An accessor that calls `'doNotAThing'` fails `typecheck:base-runtime`.
 - [ ] An accessor that calls a method on the wrong bridge fails `typecheck:base-runtime`.
 - [ ] `names.ts` imports nothing.
-- [ ] All 151 existing `bridgeCall` sites typecheck, or every exception is recorded.
+- [ ] All 150 existing `bridgeCall` sites typecheck, or every exception is recorded.
 
 ## Size
 

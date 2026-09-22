@@ -42,15 +42,14 @@ Only part of the declared surface has real traffic. The test must assert the exe
 the declared set and print the un-exercised names. An un-exercised entry is schema-only: declared
 and typechecked, never validated against real traffic.
 
-Measured today: accessors emit **114** of the **149** reachable `(getter, do*)` pairs. **35** pairs
-have no traffic. Six getters have none at all — `getApiBridge`, `getAppActivationBridge`,
-`getAppDetailChangesBridge`, `getCommandBridge`, `getOutboundMessageBridge`,
-`getUiInteractionBridge`.
+Measured today: accessors emit **121** of the **149** reachable `(getter, do*)` pairs. **28** pairs
+have no traffic. Five getters have none at all — `getApiBridge`, `getAppActivationBridge`,
+`getAppDetailChangesBridge`, `getCommandBridge`, `getOutboundMessageBridge`.
 
 ## Steps
 
 1. Build the harness: recording sender, sanitizer, structured clone, AJV, stub bridge.
-2. Enumerate the accessor classes. 39 files in `base-runtime/src` make a `bridgeCall`, over 151
+2. Enumerate the accessor classes. 38 files in `base-runtime/src` make a `bridgeCall`, over 150
    call sites. 37 of them sit under `lib/accessors/`; `lib/roomFactory.ts` is the other.
 3. Run every accessor method, assert the three properties, and collect the exercised keys.
 4. Print the declared-minus-exercised set at the end of the run.
@@ -61,7 +60,8 @@ have no traffic. Six getters have none at all — `getApiBridge`, `getAppActivat
 - [ ] The test drives every accessor method that makes a `bridgeCall`.
 - [ ] It fails when an accessor sends a param the schema rejects.
 - [ ] It fails when a thunk passes the wrong arity to the stub.
-- [ ] It prints the un-exercised declared names, and the count matches the coverage gap.
+- [ ] It prints the un-exercised declared names. The count is 28 until task 18 lands, and stays 28
+      after it.
 - [ ] A `Buffer` param survives the round trip byte for byte.
 - [ ] A function param does not throw, because the sanitizer removed it first.
 

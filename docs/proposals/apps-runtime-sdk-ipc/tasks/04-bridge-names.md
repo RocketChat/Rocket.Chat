@@ -14,13 +14,18 @@ value-import it.
 host declares 28 getters on `AppBridges`, plus `AppResourceBridge` off that surface. The two sets
 disagree, and nothing checks them against each other.
 
-Two getters expose no `do*` method: `getListenerBridge` and `getInternalFederationBridge`. Decide
-whether the union includes them. The recommendation is to exclude them, because no `bridges:*`
-request can reach a bridge with no `do*`.
+Three getters expose no `do*` method: `getListenerBridge`, `getInternalFederationBridge` and
+`getExperimentalBridge`. `ExperimentalBridge` is an empty abstract class; `IListenerBridge` and
+`IInternalFederationBridge` declare no `do*`. Decide whether the union includes them. The
+recommendation is to exclude all three, because no `bridges:*` request can reach a bridge with no
+`do*`.
+
+`bridgeCall.ts` lists `getExperimentalBridge` in its union today. Dropping it is a deliberate
+removal, so record it with the delta in step 4.
 
 ## Steps
 
-1. Enumerate the getters of `AppBridges`, add `getAppResourceBridge`, and drop the two with no
+1. Enumerate the getters of `AppBridges`, add `getAppResourceBridge`, and drop the three with no
    `do*`.
 2. Write `names.ts` with a `const` array and a `BridgeName` union derived from it.
 3. Repoint `bridgeCall.ts` at the new union and delete its local copy.
@@ -32,12 +37,12 @@ request can reach a bridge with no `do*`.
 - [ ] `names.ts` imports nothing.
 - [ ] `bridgeCall.ts` declares no `BridgeName` of its own.
 - [ ] The set in `names.ts` matches the getters of `AppBridges` plus `AppResourceBridge`, minus the
-      two with no `do*`. A comment states that rule.
+      three with no `do*`. That leaves 26 names. A comment states the rule.
 - [ ] `yarn typecheck:base-runtime` passes with no new errors.
 
 ## Size
 
-~40 lines added, ~24 deleted.
+~40 lines added, ~25 deleted.
 
 ## Follow-on
 
