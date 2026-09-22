@@ -15,6 +15,17 @@ describe('request', () => {
 		assert.strictEqual(procedure.input, input);
 	});
 
+	it('keeps the errors it declares', () => {
+		const errors = { ROOM_NOT_FOUND: type<{ roomId: string }>() };
+		const procedure = request({ input: z.strictObject({}), output: type<void>(), errors });
+
+		assert.strictEqual(procedure.errors, errors);
+	});
+
+	it('declares no errors when it lists none', () => {
+		assert.deepStrictEqual(request({ input: z.strictObject({}), output: type<void>() }).errors, {});
+	});
+
 	it('rejects an input that strips unknown keys', () => {
 		assert.throws(() => request({ input: z.object({ messageId: z.string() }), output: type<void>() }), TypeError);
 	});
@@ -35,6 +46,7 @@ describe('notification', () => {
 
 		assert.strictEqual(procedure.kind, 'notification');
 		assert.strictEqual(procedure.input, input);
+		assert.deepStrictEqual(procedure.errors, {});
 	});
 
 	it('rejects an input that strips unknown keys', () => {
