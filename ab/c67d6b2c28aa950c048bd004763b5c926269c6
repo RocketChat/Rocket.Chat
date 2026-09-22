@@ -1,0 +1,35 @@
+ee/apps/ddp-streamer/src/ConnectionRegistry.ts
+  s_6a07e872e1831e::t_b6f3976d13ab30 1-55
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_6a07e872e1831e::t_b9632d92135b30 64-65,70
+  s_6a07e872e1831e::t_d337c3c0b43415 7
+  s_6a07e872e1831e::t_e69ea8df3fb33b 98-99
+  s_6a07e872e1831e::t_19f3023f685494 122-156
+ee/apps/ddp-streamer/src/service.ts
+  s_6a07e872e1831e::t_bbe1359deefbbd 28
+  s_6a07e872e1831e::t_178eff6a44b898 36
+  s_6a07e872e1831e::t_0fd0aec4f9d98e 51
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_1e39e666148b04 12-13
+  s_6a07e872e1831e::t_0aa6caf7acd674 39
+  s_6a07e872e1831e::t_3659e03dce7a36 65-69
+  s_6a07e872e1831e::t_3d2ad5f472d504 88-89
+  s_6a07e872e1831e::t_952d666b9cb0c0 22-23
+  s_6a07e872e1831e::t_914297290552b0 283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "abc67d6b2c28aa950c048bd004763b5c926269c6",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
