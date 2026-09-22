@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,26 +11,17 @@ import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import { useSidebarPresentation } from '../hooks/useSidebarPresentation';
 
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
 	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
 	if (direction === 'down') return index + 1 < groups.length;
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
-};
-
-type SidebarViewMode = 'extended' | 'medium' | 'condensed';
-
-const sidebarRowHeight: Record<SidebarViewMode, number> = {
-	condensed: 28,
-	medium: 36,
-	extended: 48,
 };
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
@@ -43,13 +34,15 @@ const RoomList = () => {
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups } = useRoomList({ collapsedGroups });
 	const moveCategory = useMoveCategoryPosition();
-	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
-	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
-
-	const extended = sidebarViewMode === 'extended';
+	const {
+		viewMode: sidebarViewMode,
+		extended,
+		rowHeight,
+		ItemTemplate: sideBarItemTemplate,
+		AvatarTemplate: avatarTemplate,
+	} = useSidebarPresentation();
+	const bufferSize = rowHeight * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 	const itemData = useMemo(
 		() => ({
 			extended,

@@ -16,7 +16,7 @@ import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMe
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -41,7 +41,7 @@ type RoomListRowProps = {
 			is?: string;
 		} & AllHTMLAttributes<HTMLElement>
 	>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+	AvatarTemplate: SidebarRoomAvatar | null;
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;

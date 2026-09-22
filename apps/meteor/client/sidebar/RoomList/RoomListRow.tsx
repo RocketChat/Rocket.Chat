@@ -9,15 +9,14 @@ import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import type { SidebarItemTemplate, SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
 
 export type RoomListRowProps = {
 	data: {
 		extended: boolean;
 		t: TFunction;
-		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
-		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+		SidebarItemTemplate: SidebarItemTemplate;
+		AvatarTemplate: SidebarRoomAvatar | null;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
