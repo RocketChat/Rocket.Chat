@@ -9,9 +9,10 @@ subprocess (`packages/apps/base-runtime/`, run by `node-runtime`).
   envelope
 - **Delivery plan:** [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
-> **Status: not built yet.** This directory holds only this README. The wire below is what the two
-> sides speak today, in `src/server/runtime/` and `base-runtime/`; everything marked ⏳ arrives with
-> a PR from the delivery plan.
+> **Status: the project is wired, and empty.** `src/index.ts` is the barrel every module under
+> [Layout](#layout) will re-export through; no module has moved in yet. The wire below is what the
+> two sides speak today, in `src/server/runtime/` and `base-runtime/`; everything marked ⏳ arrives
+> with a PR from the delivery plan.
 
 ## Channels
 
