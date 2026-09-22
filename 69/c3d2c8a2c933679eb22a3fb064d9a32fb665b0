@@ -1,0 +1,29 @@
+apps/meteor/server/hooks/messages/propagateDiscussionMetadata.ts
+  s_a8f36f59d98e53::t_ea2b055d1347f5 41-42
+packages/models/src/updater.ts
+  s_a8f36f59d98e53::t_8dd08e98073c90 47,49-54
+  s_a8f36f59d98e53::t_0d7e66a990776c 48
+packages/model-typings/src/updater.ts
+  s_a8f36f59d98e53::t_25332c859e904f 9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "69c3d2c8a2c933679eb22a3fb064d9a32fb665b0",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_a8f36f59d98e53": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "84df3faf-bb20-4fa1-b9ea-9868e4e6b79b",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}

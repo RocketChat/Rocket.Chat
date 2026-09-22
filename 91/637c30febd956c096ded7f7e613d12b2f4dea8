@@ -1,0 +1,26 @@
+packages/models/src/models/setUpdatedAt.spec.ts
+  s_a8f36f59d98e53::t_3b7e00e9ff791b 1-61
+packages/models/src/models/setUpdatedAt.ts
+  s_a8f36f59d98e53::t_87ca8de76e5dbf 2-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "91637c30febd956c096ded7f7e613d12b2f4dea8",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_a8f36f59d98e53": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "84df3faf-bb20-4fa1-b9ea-9868e4e6b79b",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
