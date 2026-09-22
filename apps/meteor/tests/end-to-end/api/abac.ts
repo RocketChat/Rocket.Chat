@@ -743,7 +743,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('Default and Team Default Room Restrictions', () => {
+	describe('Default and Team Default Room ABAC Attributes', () => {
 		let privateDefaultRoomId: string;
 		let teamId: string;
 		let teamPrivateRoomId: string;
@@ -928,12 +928,15 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('ABAC Managed Room Default Conversion Restrictions', () => {
+	describe('ABAC Managed Room Default Conversion', () => {
 		const conversionAttrKey = `conversion_test_${Date.now()}`;
 		const teamName = `abac-conversion-team-${Date.now()}`;
 		let abacRoomId: string;
 		let teamIdForConversion: string;
 		let teamRoomId: string;
+		let skippedRoomId: string;
+		let noAttrUser: IUser;
+		let lateNoAttrUser: IUser;
 
 		before(async () => {
 			await request
@@ -975,6 +978,15 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		after(async () => {
+			if (skippedRoomId) {
+				await deleteRoom({ type: 'p', roomId: skippedRoomId });
+			}
+			if (noAttrUser) {
+				await deleteUser(noAttrUser);
+			}
+			if (lateNoAttrUser) {
+				await deleteUser(lateNoAttrUser);
+			}
 			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
 		});
 
@@ -999,6 +1011,52 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
 					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should skip team members that do not carry the room attributes instead of failing the conversion', async () => {
+			noAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: noAttrUser._id, roles: ['member'] }] })
+				.expect(200);
+
+			const skippedRoom = await createRoom({
+				type: 'p',
+				name: `abac-skipped-member-room-${Date.now()}`,
+				extraData: { teamId: teamIdForConversion },
+			});
+			skippedRoomId = skippedRoom.body.group._id;
+
+			await request
+				.post(`${v1}/abac/rooms/${skippedRoomId}/attributes/${conversionAttrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ roomId: skippedRoomId, isDefault: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should add a member to the team even when a team default room refuses them', async () => {
+			lateNoAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: lateNoAttrUser._id, roles: ['member'] }] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
 				});
 		});
 	});
