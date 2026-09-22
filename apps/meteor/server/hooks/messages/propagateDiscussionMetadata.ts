@@ -38,9 +38,8 @@ callbacks.add(
 			return message;
 		}
 
-		const { $inc, $set } = roomUpdater?.getRawUpdateFilter() ?? {};
-		const countDelta = typeof $inc?.msgs === 'number' ? $inc.msgs : 0;
-		const lm = $set?.lm instanceof Date ? $set.lm : room.lm;
+		const countDelta = roomUpdater?.getInc('msgs') ?? 0;
+		const lm = roomUpdater?.getSet('lm') ?? room.lm;
 
 		await incrementAndNotifyParentRoomWithParentMessage({ ...room, lm }, message.t, countDelta);
 
