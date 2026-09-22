@@ -98,10 +98,6 @@ jest.mock('../categories/hooks/useMoveCategoryPosition', () => ({
 	useMoveCategoryPosition: () => mockMoveCategory,
 }));
 
-jest.mock('../hooks/useAvatarTemplate', () => ({
-	useAvatarTemplate: () => 'AvatarTemplate',
-}));
-
 jest.mock('../hooks/useCategoryList', () => ({
 	SIDEBAR_DYNAMIC_GROUP_KEYS: ['Unread', 'Favorites'],
 }));
@@ -128,10 +124,6 @@ jest.mock('../hooks/useRoomList', () => ({
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: (ref: unknown) => mockUseShortcutOpenMenu(ref),
-}));
-
-jest.mock('../hooks/useTemplateByViewMode', () => ({
-	useTemplateByViewMode: () => 'SidebarItemTemplate',
 }));
 
 jest.mock('./RoomListCollapser', () => ({
