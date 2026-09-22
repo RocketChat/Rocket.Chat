@@ -3,10 +3,11 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import {
 	VideoConfPopupBackdrop,
+	VideoConfPopupSkeleton,
+	useVideoConfIncomingCalls,
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
-	useVideoConfIncomingCalls,
-	VideoConfPopupSkeleton,
+	useVideoConfWindowEnabled,
 } from '@rocket.chat/ui-video-conf';
 import { lazy, Suspense, useEffect, useMemo } from 'react';
 
@@ -22,12 +23,19 @@ const VideoConfPopups = ({ children }: VideoConfPopupsProps) => {
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
 
+	// An incoming call is listed with the others — docked in the sidebar, or behind the navbar button — instead of
+	// taking over the screen. The ring still sounds; it just no longer demands an answer before anything else can
+	// happen. Without that list there is nowhere else for a call to be announced, so the popup stays.
+	const listedInsteadOfPopped = useVideoConfWindowEnabled();
+
 	const popups = useMemo(
 		() =>
-			incomingCalls
-				.filter((incomingCall) => !incomingCall.dismissed)
-				.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
-		[incomingCalls],
+			listedInsteadOfPopped
+				? []
+				: incomingCalls
+						.filter((incomingCall) => !incomingCall.dismissed)
+						.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
+		[incomingCalls, listedInsteadOfPopped],
 	);
 
 	useEffect(() => {

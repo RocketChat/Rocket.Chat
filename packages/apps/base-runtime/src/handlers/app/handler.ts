@@ -1,6 +1,3 @@
-import type { Defined } from 'jsonrpc-lite';
-import { JsonRpcError } from 'jsonrpc-lite';
-
 import handleConstructApp from './construct';
 import handleGetStatus from './handleGetStatus';
 import handleInitialize from './handleInitialize';
@@ -13,6 +10,7 @@ import handleOnUninstall from './handleOnUninstall';
 import handleOnUpdate from './handleOnUpdate';
 import handleSetStatus from './handleSetStatus';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { isOneOf } from '../lib/assertions';
 import handleListener from '../listener/handler';
@@ -94,13 +92,22 @@ export default async function handleApp(request: RequestContext): Promise<Define
 		}
 
 		if (typeof result === 'undefined') {
-			throw new JsonRpcError(`Unknown method "${appMethod}"`, -32601);
+			throw new JsonRpcError(`Unknown method "${appMethod}"`, METHOD_NOT_FOUND);
 		}
 
 		return await result.then(formatResult);
 	} catch (e: unknown) {
+		// `JsonRpcError` is deliberately not an `Error` subclass (see `lib/jsonrpc.ts`), so
+		// it has to be recognized before the native `Error` check below. Without this branch
+		// the `METHOD_NOT_FOUND` thrown above falls through to `SERVER_ERROR` and loses its
+		// code, which the host branches on. Every sub-handler catches its own errors today,
+		// so this branch also keeps the code of any payload one of them starts to reject with.
+		if (e instanceof JsonRpcError) {
+			return e;
+		}
+
 		if (!(e instanceof Error)) {
-			return new JsonRpcError('Unknown error', -32000, e);
+			return new JsonRpcError('Unknown error', SERVER_ERROR, e);
 		}
 
 		if ((e.cause as string)?.includes('invalid_param_type')) {
@@ -111,6 +118,6 @@ export default async function handleApp(request: RequestContext): Promise<Define
 			return JsonRpcError.internalError({ message: 'App unavailable' });
 		}
 
-		return new JsonRpcError(e.message, -32000, e);
+		return new JsonRpcError(e.message, SERVER_ERROR, e);
 	}
 }

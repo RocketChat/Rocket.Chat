@@ -9,14 +9,13 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
+	const useHandleChange = (value: 'extended' | 'condensed'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarViewMode: value } }), [value]);
 
-	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
+	const sidebarViewMode = useUserPreference<'extended' | 'condensed'>('sidebarViewMode', 'condensed');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
 
 	const setToExtended = useHandleChange('extended');
-	const setToMedium = useHandleChange('medium');
 	const setToCondensed = useHandleChange('condensed');
 
 	const handleChangeSidebarDisplayAvatar = useCallback(
@@ -27,24 +26,17 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	return [
 		{
 			id: 'extended',
-			content: t('Extended'),
+			content: t('Detailed'),
 			icon: 'extended-view',
 			onClick: setToExtended,
 			addon: <RadioButton checked={sidebarViewMode === 'extended'} onChange={() => undefined} />,
 		},
 		{
-			id: 'medium',
-			content: t('Medium'),
-			icon: 'medium-view',
-			onClick: setToMedium,
-			addon: <RadioButton checked={sidebarViewMode === 'medium'} onChange={() => undefined} />,
-		},
-		{
 			id: 'condensed',
-			content: t('Condensed'),
+			content: t('Compact'),
 			icon: 'condensed-view',
 			onClick: setToCondensed,
-			addon: <RadioButton checked={sidebarViewMode === 'condensed'} onChange={() => undefined} />,
+			addon: <RadioButton checked={sidebarViewMode !== 'extended'} onChange={() => undefined} />,
 		},
 		{
 			id: 'avatars',

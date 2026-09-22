@@ -39,23 +39,18 @@ type RoomListRowProps = {
 			unread?: boolean;
 			selected?: boolean;
 			is?: string;
-			indent?: boolean;
 		} & AllHTMLAttributes<HTMLElement>
 	>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 	openedRoom?: string;
-	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 	userId?: string;
-
 	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
-
 	selected?: boolean;
-
-	sidebarViewMode?: unknown;
+	sidebarViewMode?: 'extended' | 'condensed';
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
@@ -118,7 +113,6 @@ const SidebarItemTemplateWithData = ({
 		<SidebarItemTemplate
 			is='a'
 			id={id}
-			indent
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
