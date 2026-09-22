@@ -21,6 +21,7 @@
 		"@rocket.chat/federation-sdk": "0.7.0",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/icons": "^0.50.0",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
