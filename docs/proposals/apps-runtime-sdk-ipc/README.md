@@ -551,7 +551,7 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 | 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | Unchanged |
 | 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | Unchanged |
 | 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | Unchanged |
-| 5 | **RPC machinery** in `protocol/src/rpc/`: the contract builders, `Handlers`, `implement`, middleware, the dispatcher, the client and `Wire<T>`. Tested against a toy contract only. No wire change | New |
+| 5 | **RPC machinery** in `protocol/src/rpc/`: `Handlers`, `implement`, middleware, the dispatcher, the client and `Wire<T>`. Tested against a toy contract only. No wire change | New. The contract builders in `rpc/contract.ts` landed ahead of this PR |
 | 6 | **Contract, implementation and switch-over.** The controller calls the dispatcher first. A `bridges:*` method falls back to the legacy `handleBridgeMessage`. The `runtime.*` notifications and two small domains (`email`, `role`) migrate end to end: contract, handlers and accessors, with the `'APP_ID'` sentinel removed at those call sites | New |
 | 7 | Migrate `message`, `room`, `user`, `livechat` — 61 of the 122 emitted methods. Near-identical entries; review is for data, not mechanism | New |
 | 8 | Migrate the remaining 15 domains — 58 methods, including `appResource` with `skipWhileRestarting` | New |

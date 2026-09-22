@@ -9,8 +9,8 @@ subprocess (`packages/apps/base-runtime/`, run by `node-runtime`).
   envelope
 - **Delivery plan:** [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
-> **Status: the project is wired, and empty.** `src/index.ts` is the barrel every module under
-> [Layout](#layout) will re-export through; no module has moved in yet. The wire below is what the
+> **Status: the project is wired, and has one module.** `src/index.ts` is the barrel every module
+> under [Layout](#layout) re-exports through. Only `rpc/contract.ts` exists yet. The wire below is what the
 > two sides speak today, in `src/server/runtime/` and `base-runtime/`; everything marked ⏳ arrives
 > with a PR from the delivery plan.
 
@@ -106,7 +106,8 @@ and that is visible in the entry.
 
 ## Layout
 
-None of this exists yet. The tree is the target, and where each piece lives today is under it.
+Only `rpc/contract.ts` exists yet. The tree is the target, and where each piece lives today is under
+it.
 
 ```text
 src/
@@ -119,6 +120,8 @@ src/
 │   ├── control.ts  _zPING / _zPONG + isControlFrame                     (zero deps)
 │   ├── jsonrpc.ts  envelopes, factories, guards — moved from src/lib
 │   └── errors.ts   closed code enum + declared data shapes
+├── rpc/
+│   └── contract.ts request(), notification(), type<T>(), shaped<T>() — Zod, host only
 └── contracts/
     ├── methods.ts  closed host→app method set, kind, arity
     └── bridges/
