@@ -5239,7 +5239,7 @@
   "Start_of_conversation": "Start samtalen",
   "Start_video_call": "Start videosamtale",
   "Start_video_conference": "Start videokonferanse?",
-  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Start med <code class=\"inline\" >%s</code>for bruker eller <code class=\"inline\" >%s</code>for kanal. Eksempel: <code class=\"inline\" >%s</code>eller <code class=\"inline\" >%s</code>",
+  "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s": "Start med <code>@</code> for bruker eller <code>#</code> for kanal. Eksempel: <code>@john</code> eller <code>#general</code>",
   "start-discussion_description": "Tillatelse til å starte en diskusjon",
   "start-discussion-other-user_description": "Tillatelse til å starte en diskusjon, som gir tillatelse til brukeren til å opprette en diskusjon fra en melding sendt av en annen bruker også",
   "Started": "Startet",
