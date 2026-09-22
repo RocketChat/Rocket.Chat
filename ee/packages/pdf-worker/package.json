@@ -40,7 +40,7 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.5",
 		"buffer": "~6.0.3",
-		"emojibase": "^16.0.0",
+		"emojibase": "^17.0.0",
 		"eslint": "~9.39.5",
 		"i18next": "~26.4.2",
 		"jest": "~30.2.0",
