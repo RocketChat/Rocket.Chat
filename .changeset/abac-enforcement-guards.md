@@ -8,6 +8,6 @@ Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all works
 
 New members are only added to the default channels they are cleared for. A default channel that requires attributes is joined only by people who hold them, and a locked one is skipped, so if the only default channel is public then new members land in no channel at all.
 
-Default channels can now require attributes, which was not previously allowed.
+Default channels can now require attributes, which was not previously allowed. Marking a team channel as a team default adds the team members who hold its attributes and leaves out the ones who do not, instead of failing.
 
 Removing the ABAC license turns both settings off, so a workspace is never left with rooms nobody can unlock.
