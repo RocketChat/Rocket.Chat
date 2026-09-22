@@ -8,9 +8,9 @@ every app→host call.
   building on [ADR 0005](../../../docs/adr/0005-ipc-channel-transport.md) for the transport and
   [ADR 0004](../../../docs/adr/0004-in-house-jsonrpc-types-plain-msgpack-envelopes.md) for the
   envelope
-- **App→host contract and delivery plan:**
-  [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md).
-  It replaces the app→host half of ADR 0006: decisions 7, 11, 12, 14 and 16, and part of 17
+- **App→host contract:** ADR 0006, decisions 18–23
+- **Design detail and delivery plan:**
+  [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
 > **Status: the project is wired, and has one module.** Only `rpc/contract.ts` exists: the
 > `request`, `notification`, `type<T>` and `shaped<T>` builders, without the `errors` field. The
@@ -123,7 +123,7 @@ each handler takes the caller identity from `ctx.appId`. The `'APP_ID'` sentinel
 
 ⏳ `contracts/hostContract/` declares each procedure explicitly. The host implements the contract, and
 the subprocess calls it through a client typed from the contract. A bridge method with no procedure
-cannot be reached. The [proposal](../../../docs/proposals/apps-runtime-sdk-ipc/README.md) has the
+cannot be reached. The [delivery plan](../../../docs/proposals/apps-runtime-sdk-ipc/README.md) has the
 full design and a worked example.
 
 ```ts

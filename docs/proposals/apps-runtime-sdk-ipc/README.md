@@ -1,9 +1,9 @@
-# Proposal: a contract for app→host calls, implemented by the host
+# Delivery plan: a contract for app→host calls, implemented by the host
 
-**Status: proposal.** This document replaces the app→host half of
-[ADR 0006](../../adr/0006-apps-subprocess-protocol.md): decisions 7, 11, 12, 14 and 16 and part
-of decision 17. The rest of ADR 0006 stays as written. When this proposal is accepted, ADR 0006 is
-amended to match, and this document goes back to a delivery plan only.
+**Status: delivery plan.** The decisions live in
+[ADR 0006](../../adr/0006-apps-subprocess-protocol.md); decisions 18–23 cover the app→host
+contract. This document holds the design detail that the implementation needs, a worked example,
+and the PR sequence.
 
 ## TL;DR
 
@@ -30,29 +30,6 @@ Four more parts copy oRPC:
 - **A local client.** `createLocalClient` calls the handlers in the same process, with the same
   type as the remote client. A test can run the real accessors against the real handlers.
 
-## Why the ADR 0006 shape is wrong
-
-ADR 0006 keeps the wire method `bridges:{getXBridge}:{do*}` and adds an invoker table keyed by
-`'getXBridge:doY'`. That key is still the name of a bridge getter plus the name of a bridge method.
-The table type is derived from `AppBridges` with a mapped type, so the bridge class shape stays the
-wire shape. Three problems follow.
-
-1. **The reachable surface is whatever the bridges declare, not what the runtime needs.** Today
-   `handleBridgeMessage` resolves `this.bridges[bridgeName]` and then `bridgeInstance[bridgeMethod]`.
-   That reaches 152 `do*` methods on 28 getters plus `AppResourceBridge`. The accessors in
-   `base-runtime` emit 122 of them, on 21 bridges. The other 30 are reachable from the untrusted
-   subprocess only because they exist. Some of them are host-internal, for example
-   `getAppActivationBridge:doActionsChanged`, which has no permission check. ADR 0006 decision 16
-   makes an entry for every `do*` a compile requirement, so it keeps all 152 reachable by design.
-2. **The binding is implicit.** A reviewer cannot read one file and see the full app→host surface.
-   The surface is the union of 29 bridge classes, filtered by a `do` prefix rule.
-3. **The two sides share names, not a contract.** Decision 12 adds `names.ts`, a list of string
-   constants that both sides import. That list repeats the bridge names a second time. It does not
-   give the runtime the input or the output type of a call, so `bridgeCall<T>` keeps its casts.
-
-The rule for this redesign: **every app→host method is declared explicitly and bound to a host
-handler.** Nothing is derived from a name at runtime.
-
 ## Design
 
 ### The pieces and where they live
@@ -70,7 +47,7 @@ handler.** Nothing is derived from a name at runtime.
 
 `protocol/` owns the machinery and the contract. The contract knows nothing about bridges, so
 `protocol/` still builds first. The implementation references `AppBridges`, so it lives in the host
-project, where the ADR 0006 invoker table was going to live.
+project.
 
 `base-runtime` gets the full contract from `protocol/` and nothing from the host project. The client
 module must not import `rpc/server.ts` or the contract values, and the runtime imports the client by
@@ -110,13 +87,13 @@ export type HostContract = typeof hostContract;
 ```
 
 - **The input is one named object, not a positional tuple.** JSON-RPC 2.0 allows `params` as an
-  object. Named fields make each schema readable, and they remove the positional problem that ADR
-  0006 decision 14 solved with thunks.
+  object. Named fields make each schema readable, and they remove the positional problem of caller
+  identity (ADR 0006 decision 14).
 - **Every input schema is closed** (`z.strictObject`, never `z.object`). `z.object` removes an
   unknown key without an error. With `z.strictObject`, an `appId` key that the procedure does not
   declare fails validation with `-32602`.
 - **The builder sets the kind.** `request(…)` expects a response. `notification(…)` does not, and
-  its output is `void`. This replaces the per-entry `kind` field of decision 7.
+  its output is `void` (ADR 0006 decision 7).
 - **`type<T>()` is a phantom.** It carries the output type and has no runtime content. Outputs are
   not validated, because host→app traffic is self-sent (ADR 0006 decision 10).
 - **The contract compiles `strict: true`.** It can state `IMessage | undefined` where the bridge
@@ -147,8 +124,8 @@ export const room = {
   type is a phantom, as the output is. The host sends it, so it is not validated (ADR 0006
   decision 10).
 - **All declared errors share one wire code, `-32001`.** The envelope is
-  `{ code: -32001, message, data: { name: 'ROOM_NOT_FOUND', data: { roomId } } }`. This adds one code
-  to the closed enum of decision 6. The names stay in the contract, not in the enum.
+  `{ code: -32001, message, data: { name: 'ROOM_NOT_FOUND', data: { roomId } } }`. This code is part of the
+  closed enum of ADR 0006 decision 6. The names stay in the contract, not in the enum.
 - **The handler throws with a typed constructor.** The handler options include `errors`, one
   constructor for each declared name: `throw errors.ROOM_NOT_FOUND({ roomId })`. A name that the
   procedure does not declare is a compile error.
@@ -332,7 +309,7 @@ type HostContext = {
 `HostContext` is a host type. The contract does not know it, so `Handlers` takes it as a parameter.
 
 Caller identity comes only from `ctx.appId`. It never crosses the wire, and the `'APP_ID'` sentinel
-goes away. The three cases of ADR 0006 decision 14 stay. The contract shows which inputs carry an
+goes away. ADR 0006 decision 14 names three cases. The contract shows which inputs carry an
 app id, and the handler shows where the caller identity goes. Each pair below is the contract entry,
 then its handler:
 
@@ -378,7 +355,7 @@ type Middleware<Ctx> = (options: {
   procedure level, then the handler. Input validation runs before all middleware.
 - **A middleware can skip the handler.** It returns a value without a call to `next`.
 - **A middleware cannot change `ctx`.** oRPC lets a middleware extend the context with
-  `next({ context })`. The handlers are one line each, so this proposal leaves that out.
+  `next({ context })`. The handlers are one line each, so this plan leaves that out.
 
 The two middlewares of the first migration:
 
@@ -463,8 +440,8 @@ Two measurements back this choice. The scripts and the steps to run them are in
 | Inference with `strict: false`, Zod 4.3.6 and TypeBox 0.34.33 | Both keep a required field required. A missing field is a compile error with `strict: true` and with `strict: false` |
 | Validation of an `addReaction` input, Node, 2 million iterations | AJV compiled 17.6 ns, Zod `safeParse` 48.6 ns, `structuredClone` of the same request 1782 ns |
 
-Zod adds about 30 ns to a bridge call whose serialization alone costs about 1.8 µs. That removes the
-performance reason that ADR 0006 decision 11 gave for AJV.
+Zod adds about 30 ns to a bridge call whose serialization alone costs about 1.8 µs. The speed gap
+does not justify AJV (ADR 0006 decision 11).
 
 ## Worked example: `message.create`
 
@@ -612,26 +589,10 @@ bridge and method names as strings.
   `message` domain (PR 7), not in the mechanism PR.
 - **The fallback to the app user stays in the runtime.** The handler could set the sender to the app
   user when the message has none, because a procedure does not have to match one bridge method.
-  That removes one round trip, but it moves logic across the boundary, so this proposal does not do
+  That removes one round trip, but it moves logic across the boundary, so this plan does not do
   it.
 - **A procedure with no input takes `{}`.** Every input is an object. The client can make `input`
   optional when the schema has no fields; PR 5a decides this.
-
-## What changes in ADR 0006
-
-| Decision | Outcome |
-| --- | --- |
-| 1–5, 8, 10, 13, 15 | **Kept.** Placement, serialization, framing, control frames, validation posture, no codegen and the listener table do not depend on the dispatch shape. Decision 10 keeps its asymmetry; only the validator changes, from AJV to Zod |
-| 6 — error taxonomy | **Extended.** The closed enum gains `-32001` for a declared error, with `data: { name, data }`. The names of the declared errors live in the contract, not in the enum |
-| 11 — TypeBox and AJV | **Replaced** by Zod, validated with `safeParse`. See *Schema library* above |
-| 7 — per-entry `kind` | **Replaced** by the `request()` / `notification()` builders. The error codes for an unknown path and for the wrong kind stay |
-| 9 — method grammar | **Kept for host→app.** The `bridges:{getXBridge}:{do*}` exemption is **deleted**: app→host methods become dotted procedure paths |
-| 12 — `names.ts` / `schemas.ts` | **Reshaped.** No `names.ts`. `schemas.ts` becomes the contract modules, which add the kind and the output type to each schema. The host value-imports them, and the runtime imports them with `import type` only, as before |
-| 14 — invoker thunks | **Replaced** by handlers that read `ctx.appId`. Same guarantees, one mechanism |
-| 16 — exhaustive `Record<BridgeMethodKey, Entry>` | **Replaced.** Exhaustiveness is checked against the contract, not against `AppBridges`. The contract is the surface; a bridge method with no procedure is unreachable. The runtime side is still a compile error for an unknown path |
-| 17 — round-trip contract test | **Kept, with one change.** The coverage report compares the contract paths with the emitted paths. A contract path that no accessor emits is dead surface, and the test fails on it unless the procedure is on an explicit allowlist |
-
-The ADR 0006 end state holds unchanged: `base-runtime` imports nothing from the host project.
 
 ## Rejected alternatives
 
@@ -668,10 +629,9 @@ The ADR 0006 end state holds unchanged: `base-runtime` imports nothing from the 
   narrowed context gains nothing.
 - **Host behavior in procedure meta** (`meta: { skipWhileRestarting: true }`). The contract then
   states host behavior. The *Middleware* rule keeps host behavior in the implementation.
-- **TypeBox with AJV** (ADR 0006 decision 11). Its reasons were a conversion step and a JSON
-  Schema draft mismatch, which exist only if Zod feeds AJV, and a speed gap, which is too small to
-  matter here (see *Schema library*). It would add TypeBox as a new direct dependency, next to the
-  Zod that the apps code already uses.
+- **TypeBox with AJV.** It avoids a conversion step and a JSON Schema draft mismatch, which exist
+  only if Zod feeds AJV. Its speed gain over Zod is too small to matter (see *Schema library*). It
+  would add TypeBox as a new direct dependency, next to the Zod that the apps code already uses.
 - **A `Proxy` client** (`host.message.addReaction(input)`). It rebuilds the dotted path from
   property access at runtime. It is sugar, and it can come later without a wire change.
 - **An exhaustiveness check against `AppBridges`.** It is the property that keeps the 30 unused
@@ -708,21 +668,21 @@ The ADR 0006 end state holds unchanged: `base-runtime` imports nothing from the 
 
 No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 
-| # | Content | Status |
-| --- | --- | --- |
-| 0 | `protocol/` skeleton: the fourth tsc project, `build:protocol` first, `strict: true` | **Landed** (`4845e40665`) |
-| 1 | Control frames into `protocol/framing/`. `names.ts` is no longer part of this PR | Unchanged from ADR 0006 decision 8 |
-| 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | Unchanged |
-| 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | Unchanged |
-| 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | Unchanged |
-| 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | New. The contract builders in `rpc/contract.ts` landed ahead of this PR |
-| 5b | **Test harness**: `createLocalClient`, and a sender wrapper that validates each recorded call against the contract schema. Tested against the toy contract of 5a | New |
-| 6 | **Contract, implementation and switch-over.** The controller calls the dispatcher first. A `bridges:*` method falls back to the legacy `handleBridgeMessage`. The `runtime.*` notifications and two small domains (`email`, `role`) migrate end to end: contract, handlers and accessors, with the `'APP_ID'` sentinel removed at those call sites | New |
-| 7 | Migrate `message`, `room`, `user`, `livechat` — 61 of the 122 emitted methods. Near-identical entries; review is for data, not mechanism | New |
-| 8 | Migrate the remaining 15 domains — 58 methods, including `appResource` with `skipWhileRestarting` | New |
-| 9 | Delete the legacy path: `handleBridgeMessage`, `bridgeCall`, `BridgeName`, `REGISTRATION_METHODS`, the `bridges:` prefix and every `'APP_ID'` literal. From this PR on, the 30 undeclared `do*` methods are unreachable | New — the security change lands here |
-| 10 | Host→app method flattening (ADR 0006 decision 9) | Unchanged; independent of 5a–9 |
-| 11 | Listener injection table replacing substring matching, plus the arity assertion | Unchanged |
+| # | Content | ADR 0006 | Status |
+| --- | --- | --- | --- |
+| 0 | `protocol/` skeleton: the fourth tsc project, `build:protocol` first, `strict: true` | 2 | **Landed** (`4845e40665`) |
+| 1 | Control frames into `protocol/framing/` | 8 | Open |
+| 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | 3 | Open |
+| 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | 4 | Open |
+| 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | 6 | Open |
+| 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | 18, 20–23 | Open. The contract builders in `rpc/contract.ts` landed ahead of this PR |
+| 5b | **Test harness**: `createLocalClient`, and a sender wrapper that validates each recorded call against the contract schema. Tested against the toy contract of 5a | 23 | Open |
+| 6 | **Contract, implementation and switch-over.** The controller calls the dispatcher first. A `bridges:*` method falls back to the legacy `handleBridgeMessage`. The `runtime.*` notifications and two small domains (`email`, `role`) migrate end to end: contract, handlers and accessors, with the `'APP_ID'` sentinel removed at those call sites | 7, 14, 18, 19 | Open |
+| 7 | Migrate `message`, `room`, `user`, `livechat` — 61 of the 122 emitted methods. Near-identical entries; review is for data, not mechanism | 18, 19 | Open |
+| 8 | Migrate the remaining 15 domains — 58 methods, including `appResource` with `skipWhileRestarting` | 19, 22 | Open |
+| 9 | Delete the legacy path: `handleBridgeMessage`, `bridgeCall`, `BridgeName`, `REGISTRATION_METHODS`, the `bridges:` prefix and every `'APP_ID'` literal. From this PR on, the 30 undeclared `do*` methods are unreachable | 16 | Open — the security change lands here |
+| 10 | Host→app method flattening. Independent of 5a–9 | 9 | Open |
+| 11 | Listener injection table replacing substring matching, plus the arity assertion | 15 | Open |
 
 ### Two things the sequence depends on
 
@@ -752,4 +712,4 @@ possible without either side importing the other.
   accessor needs one later, it gets a procedure in the PR that adds the accessor.
 - **App→host notifications:** `ready`, `log`, `unhandledRejection`, `uncaughtException`,
   as `runtime.*` procedures; and `_zPONG`, which stays a bare control frame.
-- **Host→app:** unchanged by this proposal — see PR 10 and *Not scheduled*.
+- **Host→app:** unchanged by this plan — see PR 10 and *Not scheduled*.

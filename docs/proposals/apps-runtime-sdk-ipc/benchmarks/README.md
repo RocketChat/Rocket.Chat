@@ -1,7 +1,7 @@
 # Schema measurements and probes
 
 The scripts behind the *Schema library* and the *`shaped<T>()`* sections of the
-[proposal](../README.md). They resolve
+[delivery plan](../README.md). They resolve
 `zod`, `@sinclair/typebox` and `ajv` from the monorepo root `node_modules`, so run `yarn` at the root
 first.
 
