@@ -170,6 +170,10 @@ export class DDPListener {
 		return [...this.userActivities];
 	}
 
+	clearActivities(): void {
+		this.userActivities = [];
+	}
+
 	/**
 	 * Disconnect from DDP server
 	 */

@@ -63,6 +63,11 @@ const namesake = {
 		);
 
 	const expectLocalTypingIndicator = async (expectedName: string) => {
+		// the subscription outlives every test, and the name each event carries is resolved from
+		// UI_Use_Real_Name as the server emits it, so events captured under the previous setting would
+		// otherwise satisfy this assertion without a fresh indicator ever arriving
+		ddp.clearActivities();
+
 		await retry(
 			`waiting for the local client to see "${expectedName}" typing`,
 			async () => {
