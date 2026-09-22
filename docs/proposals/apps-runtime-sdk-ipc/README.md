@@ -310,7 +310,7 @@ JSON Schema step.
 
 - **One schema library for the apps code.** The converter codecs in
   `apps/meteor/app/apps/server/converters/` and the schemas in `core-typings` already use Zod.
-  `packages/apps` adds Zod `~4.3.6` to its manifest; the monorepo already has it.
+  `packages/apps` declares Zod `~4.3.6`, the version that `apps/meteor` and `core-typings` use.
 - **The handler gets a clean copy.** `safeParse` returns a new object with only the declared keys.
 - **Zod stays in the host.** The runtime imports the contract with `import type` only, so the
   subprocess does not load Zod.
