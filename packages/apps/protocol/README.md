@@ -12,11 +12,11 @@ every app→host call.
 - **Design detail and delivery plan:**
   [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
-> **Status: the project is wired, and has two modules.** `framing/jsonrpc.ts` holds the JSON-RPC
-> envelope, and `rpc/contract.ts` holds the `request`, `notification`, `type<T>` and `shaped<T>`
-> builders, without the `errors` field. The wire below is what the two sides speak today, in
-> `src/server/runtime/` and `base-runtime/`. Everything marked ⏳ arrives with a PR from the delivery
-> plan.
+> **Status: the envelope and the RPC machinery exist, and nothing calls the machinery yet.**
+> `framing/jsonrpc.ts` holds the JSON-RPC envelope. `rpc/` holds the contract builders, the declared
+> errors, the server and the client, tested against a toy contract. There is no contract yet. The wire
+> below is what the two sides speak today, in `src/server/runtime/` and `base-runtime/`. Everything
+> marked ⏳ arrives with a PR from the delivery plan.
 
 ## Channels
 
@@ -144,8 +144,30 @@ export const message = {
 - **`shaped<T>()` checks a domain object only on the fields that the call depends on**, and types it
   as the full Apps-Engine interface. The converters validate the rest. A field that the host uses
   for routing, for an authorization decision or in a query must be listed.
-- **⏳ A procedure can declare errors**, each with a name and a `data` type. The handler throws
-  `errors.NAME(data)`, and the client narrows with `isProcedureError(e, path, name)`.
+- **A procedure can declare errors**, each with a name and a `data` type. The handler throws
+  `errors.NAME(data)`, and the client narrows with `isProcedureError(e, path, name)`. A rejection has
+  no type, so each side builds that guard for its contract: `createErrorGuard<HostContract>()`.
+
+## The RPC machinery
+
+- **`implement(contract, handlers, { use })`** binds one handler to each procedure, at module load.
+  `Handlers<D, Ctx>` types one domain. A missing handler, an extra handler, a wrong input or a wrong
+  output is a compile error, with `strict: true` and with `strict: false`.
+- **A middleware** wraps a handler. It applies to every procedure (`use` in the `implement`
+  options), to one domain (`use(m, domainHandlers)`) or to one procedure (`use(m, handler)`), in
+  that order. It gets the validated input, and it can skip the handler.
+- **`call(path, params, ctx)`** runs one procedure and throws. **`dispatch(message, ctx)`** answers
+  one envelope. A request always gets a response. A notification gets none, and its failure rejects,
+  so the controller logs it.
+- **`createClient<C>(transport)`** gives `request(path, params)` and `notify(path, params)`. A
+  procedure whose fields are all optional takes no params argument. A request resolves to `Wire<T>`:
+  the declared output without its function members, because the sanitizer and structured clone drop
+  them.
+- **The client rebuilds a `-32001` response as a `ProcedureError`**, but only when the transport
+  rejects with the error response. `mainLoop.handleResponse` rejects with `new Error(message)`
+  today, so the switch-over must pass the response through.
+- **The client imports no Zod.** It imports only types from the contract, and a test checks that
+  loading it does not load Zod.
 
 ### Paths and field names
 
@@ -163,7 +185,7 @@ Two methods get a corrected name: `doGetByid` → `oauthApps.getById`, and
 
 ### Error codes
 
-⏳ `dispatch` maps each thrown error to one wire code. `call` runs one procedure and throws; it knows
+`dispatch` maps each thrown error to one wire code. `call` runs one procedure and throws; it knows
 nothing about JSON-RPC.
 
 | Thrown error | Code | `data` |
@@ -173,12 +195,15 @@ nothing about JSON-RPC.
 | `InputError` | `-32602` | the Zod issues |
 | `ProcedureError` (a declared error) | `-32001` | `{ name, data }` |
 | an error with `code === -32070` | `-32070` | passes through |
-| anything else | `-32000` | the ADR 0006 decision 6 shape |
+| anything else | `-32000` | none, until PR 4 declares the shape |
+
+`-32001` and `-32070` are constants in `rpc/` until the closed enum of PR 4 lands in
+`framing/errors.ts`.
 
 ## Layout
 
-Only `framing/jsonrpc.ts` and `rpc/contract.ts` exist yet. The tree is the target, and where each
-piece lives today is under it.
+Only `framing/jsonrpc.ts` and `rpc/`, without `local.ts`, exist yet. The tree is the target, and
+where each piece lives today is under it.
 
 ```text
 src/
@@ -193,7 +218,7 @@ src/
 │   └── errors.ts   closed code enum + declared data shapes
 ├── rpc/
 │   ├── contract.ts request(), notification(), type<T>(), shaped<T>()   — Zod, host only
-│   ├── errors.ts   ProcedureError, isProcedureError()                  — zero deps
+│   ├── errors.ts   ProcedureError, createErrorGuard()                  — zero deps
 │   ├── server.ts   implement(), Handlers<>, middleware, call(), dispatch() — Zod, host only
 │   ├── local.ts    createLocalClient()                                 — Zod, tests only
 │   └── client.ts   createClient(), Client<>                            — zero deps, runtime

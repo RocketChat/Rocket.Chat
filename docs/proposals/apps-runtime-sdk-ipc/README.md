@@ -38,7 +38,7 @@ Four more parts copy oRPC:
 | --- | --- | --- |
 | Contract builders — `request`, `notification`, `type<T>`, `shaped<T>` | `protocol/src/rpc/contract.ts` | the contract modules |
 | The app→host contract — paths, kinds, Zod input schemas, output types, declared errors | `protocol/src/contracts/hostContract/` | host, value import; `base-runtime`, `import type` only |
-| `ProcedureError` and `isProcedureError` | `protocol/src/rpc/errors.ts` — zero dependencies | `rpc/server.ts`, `rpc/client.ts` |
+| `ProcedureError` and `createErrorGuard`, which builds `isProcedureError` | `protocol/src/rpc/errors.ts` — zero dependencies | `rpc/server.ts`, `rpc/client.ts` |
 | `implement`, middleware, `call` and `dispatch` | `protocol/src/rpc/server.ts` | host, value import |
 | `createLocalClient` | `protocol/src/rpc/local.ts` | tests only |
 | The client | `protocol/src/rpc/client.ts` — zero dependencies | `base-runtime`, value import |
@@ -455,7 +455,7 @@ This example follows one procedure through the contract, the host and the runtim
 packages/apps/protocol/src/
 ├── rpc/
 │   ├── contract.ts          request(), notification(), type<T>(), shaped<T>()   — Zod, host only
-│   ├── errors.ts            ProcedureError, isProcedureError()                  — zero deps
+│   ├── errors.ts            ProcedureError, createErrorGuard()                  — zero deps
 │   ├── server.ts            implement(), Handlers<>, call(), dispatch()         — Zod, host only
 │   ├── local.ts             createLocalClient()                                 — Zod, tests only
 │   └── client.ts            createClient(), Client<>                            — zero deps, runtime
@@ -592,7 +592,8 @@ bridge and method names as strings.
   That removes one round trip, but it moves logic across the boundary, so this plan does not do
   it.
 - **A procedure with no input takes `{}`.** Every input is an object. The client can make `input`
-  optional when the schema has no fields; PR 5a decides this.
+  optional when the schema has no fields. PR 5a does this: a procedure whose fields are all
+  optional takes no params argument.
 
 ## Rejected alternatives
 
@@ -662,7 +663,7 @@ bridge and method names as strings.
   schema of each field. A reviewer must compare the listed fields with `T`.
 - **Output types versus the wire.** The sanitizer drops functions and `App` instances, and
   structured clone drops class prototypes. The client should type the output as `Wire<T>`, a mapped
-  type that removes function members, instead of `T`. PR 5a decides this.
+  type that removes function members, instead of `T`. PR 5a does this.
 
 ## Sequence
 
@@ -675,7 +676,7 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 | 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | 3 | Open |
 | 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | 4 | **Landed** |
 | 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | 6 | Open |
-| 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | 18, 20–23 | Open. The contract builders in `rpc/contract.ts` landed ahead of this PR |
+| 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | 18, 20–23 | **Landed**, after PR 3 |
 | 5b | **Test harness**: `createLocalClient`, and a sender wrapper that validates each recorded call against the contract schema. Tested against the toy contract of 5a | 23 | Open |
 | 6 | **Contract, implementation and switch-over.** The controller calls the dispatcher first. A `bridges:*` method falls back to the legacy `handleBridgeMessage`. The `runtime.*` notifications and two small domains (`email`, `role`) migrate end to end: contract, handlers and accessors, with the `'APP_ID'` sentinel removed at those call sites | 7, 14, 18, 19 | Open |
 | 7 | Migrate `message`, `room`, `user`, `livechat` — 61 of the 122 emitted methods. Near-identical entries; review is for data, not mechanism | 18, 19 | Open |
