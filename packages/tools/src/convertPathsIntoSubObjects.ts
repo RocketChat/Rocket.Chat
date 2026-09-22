@@ -3,6 +3,9 @@ const DANGEROUS_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
 /**
  * Converts a flat object with dot-delimited property paths into a deeply nested object hierarchy.
  *
+ * Keys containing dangerous properties (`__proto__`, `constructor`, or `prototype`) in any path
+ * segment are skipped to protect against prototype pollution attacks.
+ *
  * @param object - The flat object containing dot-notation paths as keys.
  * @returns A new deeply nested object with reconstructed hierarchy.
  */
