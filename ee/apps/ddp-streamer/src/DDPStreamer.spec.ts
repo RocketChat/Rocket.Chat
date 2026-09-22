@@ -87,6 +87,12 @@ async function flushImmediates(): Promise<void> {
 	await new Promise(setImmediate);
 }
 
+async function flushMicrotasks(): Promise<void> {
+	for (let hop = 0; hop < 10; hop++) {
+		await Promise.resolve();
+	}
+}
+
 describe('DDPStreamer lifecycle handling', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -219,6 +225,9 @@ describe('DDPStreamer lifecycle handling', () => {
 
 			expect(metrics.increment).toHaveBeenCalledWith('users_logged', { nodeID: 'node1' }, 1);
 			expect(Presence.newConnection).toHaveBeenCalledWith('user1', 'connection1', 'node1');
+
+			// The method result goes out a few microtasks after loggedIn, so the user document must wait for the next macrotask.
+			await flushMicrotasks();
 			expect(session.send).not.toHaveBeenCalled();
 
 			await flushImmediates();
