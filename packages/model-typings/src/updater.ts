@@ -6,6 +6,8 @@ export interface Updater<T extends { _id: string }> {
 	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
 	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
 	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: ArrayElementType<AddToSetProps<T>[K]>): Updater<T>;
+	getSet<K extends keyof SetProps<T>>(key: K): SetProps<T>[K] | undefined;
+	getInc<K extends keyof IncProps<T>>(key: K): number | undefined;
 	hasChanges(): boolean;
 	getUpdateFilter(): UpdateFilter<T>;
 	getRawUpdateFilter(): UpdateFilter<T>;
