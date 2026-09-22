@@ -12,18 +12,24 @@ import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerSelectMessages from './ComposerSelectMessages';
+import { useComposerActions } from './hooks/useComposerActions';
 import { useComposerState } from './hooks/useComposerState';
 
-const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
+type ComposerContainerProps = Omit<ComposerMessageProps, 'actions'> & {
+	onSend?: () => void;
+};
+
+const ComposerContainer = ({ children, onSend, ...props }: ComposerContainerProps) => {
 	const state = useComposerState(props.subscription);
+	const actions = useComposerActions({ tmid: props.tmid, onSend });
 
 	switch (state.kind) {
 		case 'airGappedRestricted':
 			return <ComposerAirGappedRestricted />;
 		case 'omnichannel':
-			return <ComposerOmnichannel {...props} />;
+			return <ComposerOmnichannel {...props} actions={actions} />;
 		case 'federation':
-			return <ComposerFederation blocked={state.blocked} {...props} />;
+			return <ComposerFederation blocked={state.blocked} {...props} actions={actions} />;
 		case 'anonymous':
 			return <ComposerAnonymous />;
 		case 'readOnly':
@@ -42,7 +48,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 			return (
 				<>
 					{children}
-					<ComposerMessage {...props} />
+					<ComposerMessage {...props} actions={actions} />
 				</>
 			);
 	}
