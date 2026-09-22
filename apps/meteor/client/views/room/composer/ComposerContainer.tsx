@@ -2,6 +2,7 @@ import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rock
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
+import ComposerAbacLocked from './ComposerAbacLocked';
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
@@ -20,6 +21,7 @@ import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 import { useIsSelecting } from '../MessageList/contexts/SelectedMessagesContext';
+import { useIsRoomAbacLocked } from '../hooks/useIsRoomAbacLocked';
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const room = useRoom();
@@ -32,6 +34,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 	const isArchived = useMessageComposerIsArchived(room, props.subscription);
 	const isReadOnly = useMessageComposerIsReadOnly(room);
+	const isAbacLocked = useIsRoomAbacLocked(room);
 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);
@@ -62,6 +65,10 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 
 	if (isArchived) {
 		return <ComposerArchived />;
+	}
+
+	if (isAbacLocked) {
+		return <ComposerAbacLocked />;
 	}
 
 	if (mustJoinWithCode) {
