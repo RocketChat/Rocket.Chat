@@ -18,6 +18,7 @@ import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';
+import { useForwardChat } from '../../../../../omnichannel/hooks/useForwardChat';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
 import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
@@ -47,6 +48,9 @@ export const useQuickActions = (): {
 	const rid = room._id;
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
+
+	const forwardChat = useForwardChat(room);
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
@@ -229,7 +233,9 @@ export const useQuickActions = (): {
 				);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal room={room} onCancel={closeModal} />);
+				setModal(
+					<ForwardChatModal room={room} showIdleAgents={idleAgentsAllowedForForwarding} onForward={forwardChat} onCancel={closeModal} />,
+				);
 				break;
 			case QuickActionsEnum.CloseChat:
 				const email = await getVisitorEmail();
