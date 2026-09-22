@@ -26,7 +26,7 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck:types": "tsc -p tsconfig-types-test.json",
+		"typecheck:types": "tsc -p tsconfig-types-test.json && tsc -p protocol/tsconfig-types-test.json",
 		"typecheck": "run-s typecheck:protocol typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
