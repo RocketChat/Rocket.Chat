@@ -1,0 +1,36 @@
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.spec.ts
+  s_9e9eccc389a342::t_a4569e1d2d11fe 1-40,42-53,56-78,91-99
+  s_9e9eccc389a342::t_65fd0317b5645f 54-55
+  s_9e9eccc389a342::t_888464490f183b 79-90
+.changeset/perky-hairs-sort.md
+  s_9e9eccc389a342::t_019e0bdc7cb442 1,3
+  s_9e9eccc389a342::t_0d378db10a419b 2,4-5
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_9e9eccc389a342::t_472d885803bd32 4,43,60,74
+  s_9e9eccc389a342::t_eeed1ba5e8c77d 41-42
+  h_a14d455b9c5e4f 61
+apps/meteor/tests/end-to-end/api/direct-message.ts
+  s_9e9eccc389a342::t_b501a080691c80 1220-1224,1226-1230,1232-1277
+  s_9e9eccc389a342::t_ef3e99428d3d3e 1225,1231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bada3caf52133040dce8e2b1db543d5f077d67fd",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9e9eccc389a342": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dcc369d0-1228-4eaf-ab55-d53eaa5f94d8",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
