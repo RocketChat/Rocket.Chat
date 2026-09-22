@@ -1,4 +1,4 @@
-import { isErrorObject } from '../jsonrpc';
+import { isErrorObject } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 
 export const formatErrorResponse = (error: any): Error => {
 	if (isErrorObject(error) || typeof error?.error?.message === 'string') {

@@ -1,3 +1,5 @@
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import handleConstructApp from './construct';
 import handleGetStatus from './handleGetStatus';
 import handleInitialize from './handleInitialize';
@@ -10,7 +12,6 @@ import handleOnUninstall from './handleOnUninstall';
 import handleOnUpdate from './handleOnUpdate';
 import handleSetStatus from './handleSetStatus';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
-import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { isOneOf } from '../lib/assertions';
 import handleListener from '../listener/handler';
@@ -97,7 +98,7 @@ export default async function handleApp(request: RequestContext): Promise<Define
 
 		return await result.then(formatResult);
 	} catch (e: unknown) {
-		// `JsonRpcError` is deliberately not an `Error` subclass (see `lib/jsonrpc.ts`), so
+		// `JsonRpcError` is deliberately not an `Error` subclass (see `framing/jsonrpc.ts`), so
 		// it has to be recognized before the native `Error` check below. Without this branch
 		// the `METHOD_NOT_FOUND` thrown above falls through to `SERVER_ERROR` and loses its
 		// code, which the host branches on. Every sub-handler catches its own errors today,

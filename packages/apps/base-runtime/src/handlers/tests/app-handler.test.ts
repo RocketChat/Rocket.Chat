@@ -1,8 +1,9 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
+import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError, METHOD_NOT_FOUND, SERVER_ERROR } from '../../lib/jsonrpc';
 import handleApp from '../app/handler';
 import { createMockApp, createMockRequest } from './helpers/mod';
 

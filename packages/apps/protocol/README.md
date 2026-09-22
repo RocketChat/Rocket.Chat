@@ -12,10 +12,11 @@ every app→host call.
 - **Design detail and delivery plan:**
   [`docs/proposals/apps-runtime-sdk-ipc`](../../../docs/proposals/apps-runtime-sdk-ipc/README.md)
 
-> **Status: the project is wired, and has one module.** Only `rpc/contract.ts` exists: the
-> `request`, `notification`, `type<T>` and `shaped<T>` builders, without the `errors` field. The
-> wire below is what the two sides speak today, in `src/server/runtime/` and `base-runtime/`.
-> Everything marked ⏳ arrives with a PR from the delivery plan.
+> **Status: the project is wired, and has two modules.** `framing/jsonrpc.ts` holds the JSON-RPC
+> envelope, and `rpc/contract.ts` holds the `request`, `notification`, `type<T>` and `shaped<T>`
+> builders, without the `errors` field. The wire below is what the two sides speak today, in
+> `src/server/runtime/` and `base-runtime/`. Everything marked ⏳ arrives with a PR from the delivery
+> plan.
 
 ## Channels
 
@@ -176,8 +177,8 @@ nothing about JSON-RPC.
 
 ## Layout
 
-Only `rpc/contract.ts` exists yet. The tree is the target, and where each piece lives today is under
-it.
+Only `framing/jsonrpc.ts` and `rpc/contract.ts` exist yet. The tree is the target, and where each
+piece lives today is under it.
 
 ```text
 src/
@@ -204,12 +205,10 @@ src/
         └── <domain>.ts one module per domain: message, room, livechat, runtime, …
 ```
 
-Three pieces are written and live elsewhere. The JSON-RPC envelope is in
-`packages/apps/src/lib/jsonrpc.ts`, which ADR 0004 wrote and which `base-runtime` reads through a
-shim that re-exports the host's compiled `dist` — moving it here is what retires that shim. The
-sanitizer is in `packages/apps/src/lib/IpcSanitizer.ts`, and the secure-fields marker in
-`packages/apps/src/lib/SecureFields.ts`; `base-runtime` value-imports both straight from that same
-compiled `dist`.
+Two pieces are written and live elsewhere. The sanitizer is in
+`packages/apps/src/lib/IpcSanitizer.ts`, and the secure-fields marker in
+`packages/apps/src/lib/SecureFields.ts`; `base-runtime` value-imports both from the host's compiled
+`dist`.
 
 Two pieces of the design live outside this project:
 

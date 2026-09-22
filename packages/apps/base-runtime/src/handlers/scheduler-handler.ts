@@ -1,9 +1,9 @@
+import { JsonRpcError, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapAppForRequest } from '../lib/wrapAppForRequest';
 import { assertAppAvailable } from './lib/assertions';

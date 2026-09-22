@@ -153,7 +153,8 @@ lost the measurement; `ExtensionCodec` is.
 
 ### This decision
 
-- Types, factories, and guards: `packages/apps/src/lib/jsonrpc.ts`
+- Types, factories, and guards: `packages/apps/protocol/src/framing/jsonrpc.ts`, moved from
+  `packages/apps/src/lib/jsonrpc.ts` by [ADR 0006](0006-apps-subprocess-protocol.md) decision 4
 - Codec: both `codec.ts` files are deleted. [ADR 0005](0005-ipc-channel-transport.md) replaced
   msgpack with the IPC channel's structured clone, so the envelope no longer has a codec.
 - Host dispatch: `packages/apps/src/server/runtime/base/BaseRuntimeSubprocessController.ts`;

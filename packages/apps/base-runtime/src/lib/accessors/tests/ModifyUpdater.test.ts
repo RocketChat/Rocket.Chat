@@ -1,12 +1,12 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
+import jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import jsonrpc from '../../jsonrpc';
 import type { RoomBuilder } from '../builders/RoomBuilder';
 import { ModifyUpdater } from '../modify/ModifyUpdater';
 

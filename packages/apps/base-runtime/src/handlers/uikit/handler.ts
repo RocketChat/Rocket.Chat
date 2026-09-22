@@ -1,3 +1,4 @@
+import { JsonRpcError, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type {
 	IUIKitBlockIncomingInteraction,
@@ -16,7 +17,6 @@ import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/d
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
-import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 import { isOneOf } from '../lib/assertions';

@@ -1,12 +1,12 @@
 import * as assert from 'node:assert';
 import { beforeEach, describe, it, mock } from 'node:test';
 
+import { JsonRpcError } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpointInfo, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError } from '../../lib/jsonrpc';
 import apiHandler from '../api-handler';
 import { createMockRequest } from './helpers/mod';
 

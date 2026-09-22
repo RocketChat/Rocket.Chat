@@ -673,7 +673,7 @@ No PR mixes a pure refactor with a behavior change. Each PR is green on its own.
 | 0 | `protocol/` skeleton: the fourth tsc project, `build:protocol` first, `strict: true` | 2 | **Landed** (`4845e40665`) |
 | 1 | Control frames into `protocol/framing/` | 8 | Open |
 | 2 | Serialization move: `SecureFields` and `IpcSanitizer` into `protocol/`, plus the `apps/meteor` import fix | 3 | Open |
-| 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | 4 | Open |
+| 3 | JSON-RPC surface: move `src/lib/jsonrpc.ts` into `protocol/framing/`, delete the `dist` shim. Pure move | 4 | **Landed** |
 | 4 | Error taxonomy: closed enum, `1000` retired in favor of `-32601` / `-32602`, declared `data` shapes | 6 | Open |
 | 5a | **RPC machinery** in `protocol/src/rpc/`: the `errors` field on the builders, `ProcedureError`, `Handlers`, `implement`, middleware, `call`, `dispatch` with `codeFor`, the client with `isProcedureError`, and `Wire<T>`. Tested against a toy contract only. No wire change | 18, 20–23 | Open. The contract builders in `rpc/contract.ts` landed ahead of this PR |
 | 5b | **Test harness**: `createLocalClient`, and a sender wrapper that validates each recorded call against the contract schema. Tested against the toy contract of 5a | 23 | Open |
