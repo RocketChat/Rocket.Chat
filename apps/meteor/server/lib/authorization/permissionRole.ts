@@ -4,7 +4,7 @@ import { Permissions, Roles } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './hasPermission';
-import { CONSTANTS } from '../../../app/authorization/lib';
+import { CONSTANTS } from '../../../lib/authorization';
 import { notifyOnPermissionChangedById } from '../notifyListener';
 
 export const addPermissionToRoleMethod = async (uid: string, permissionId: string, role: string): Promise<void> => {

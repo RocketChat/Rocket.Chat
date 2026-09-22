@@ -1,5 +1,5 @@
-import type { AuthorizationDeps } from '../../../app/authorization/lib/createAuthorizationFunctions';
-import { createAuthorizationFunctions } from '../../../app/authorization/lib/createAuthorizationFunctions';
+import type { AuthorizationDeps } from '../../../lib/authorization/createAuthorizationFunctions';
+import { createAuthorizationFunctions } from '../../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../../stores';
 import { userIdStore } from '../user';
