@@ -9,7 +9,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import type { CallHistoryTab } from './CallHistoryPageLayout';
 import CallHistoryPageLayout from './CallHistoryPageLayout';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
@@ -70,7 +71,12 @@ type UserInfoTab = {
 
 type Tab = DetailsTab | UserInfoTab;
 
-const CallHistoryPage = () => {
+type CallHistoryPageProps = {
+	tab: CallHistoryTab;
+	onChangeTab: (tab: CallHistoryTab) => void;
+};
+
+const CallHistoryPage = ({ tab: currentTab, onChangeTab }: CallHistoryPageProps) => {
 	const { t } = useTranslation();
 	const [tab, setTab] = useState<Tab | null>(null);
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
@@ -173,7 +179,7 @@ const CallHistoryPage = () => {
 
 	if (isPending) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<MediaCallHistoryTable sort={sortProps}>
 					<GenericTableLoadingRow cols={5} />
 					<GenericTableLoadingRow cols={5} />
@@ -187,7 +193,7 @@ const CallHistoryPage = () => {
 
 	if (error) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<GenericNoResults
 					icon='warning'
 					title={t('Something_went_wrong')}
@@ -200,7 +206,12 @@ const CallHistoryPage = () => {
 	}
 
 	return (
-		<CallHistoryPageLayout filterProps={filterProps} contextualBar={contextualBar}>
+		<CallHistoryPageLayout
+			filters={<CallHistoryPageFilters {...filterProps} />}
+			contextualBar={contextualBar}
+			tab={currentTab}
+			onChangeTab={onChangeTab}
+		>
 			{!tableData || (tableData.length === 0 && <GenericNoResults />)}
 			{tableData && tableData.length > 0 && (
 				<MediaCallHistoryTable sort={sortProps}>
