@@ -5,7 +5,7 @@ import type { EmojiEntry } from './generateEmojiData';
 import { getEmojiData } from './generateEmojiData';
 import { legacyEmojioneMap } from './legacyEmojioneMap';
 import { shortnameToUnicode } from './shortnameToUnicode';
-import type { EmojiPackages } from '../../emoji/lib/rocketchat';
+import type { EmojiPackages } from '../../../lib/emoji';
 
 const emojiCategories = [
 	{ key: 'people', i18n: 'Smileys_and_People' },
