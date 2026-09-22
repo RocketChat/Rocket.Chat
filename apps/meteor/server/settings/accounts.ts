@@ -556,16 +556,20 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Theme_Appearence',
 			});
-			await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'condensed', {
+			await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 				type: 'select',
 				values: [
 					{
 						key: 'extended',
-						i18nLabel: 'Detailed',
+						i18nLabel: 'Extended',
+					},
+					{
+						key: 'medium',
+						i18nLabel: 'Medium',
 					},
 					{
 						key: 'condensed',
-						i18nLabel: 'Compact',
+						i18nLabel: 'Condensed',
 					},
 				],
 				public: true,
