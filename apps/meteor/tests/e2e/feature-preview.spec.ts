@@ -176,13 +176,17 @@ test.describe.serial('feature preview', () => {
 			}).toPass();
 			await poHomeTeam.content.sendMessage('hello team');
 
+			await poHomeTeam.sidebar.getFilterItemByName(sidepanelTeam).click();
+			await expect(poHomeTeam.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+
 			await user1Channel.gotoChannel(targetChannel);
 			await user1Channel.content.openReplyInThread();
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('hello thread');
 
-			const item = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
-			await expect(item.locator('..')).toHaveAttribute('data-item-index', '1');
+			await expect(targetChannelItem.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
+			await expect(sidepanelTeamItem.locator('..')).toHaveAttribute('data-item-index', '0');
+			await expect(targetChannelItem.locator('..')).toHaveAttribute('data-item-index', '1');
 
 			await user1Page.close();
 		});
