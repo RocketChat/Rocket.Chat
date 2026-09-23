@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { APIRequestContext, Browser, Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
+import { BASE_API_URL, IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
@@ -14,6 +14,31 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.user1.state });
 
 type Session = { page: Page; poHomeChannel: HomeChannel };
+
+type JoinableCall = { callId: string; name: string; joined: boolean };
+
+const asUser = (user: IUserState) => ({ 'X-Auth-Token': user.data.loginToken, 'X-User-Id': user.data._id });
+
+/** The calls `user` would be offered in the navbar right now — what the ongoing-calls button counts. */
+const listJoinableCalls = async (request: APIRequestContext, user: IUserState): Promise<JoinableCall[]> => {
+	const response = await request.get(`${BASE_API_URL}/video-conference.joinable`, { headers: asUser(user) });
+	expect(response.status()).toBe(200);
+
+	const { calls } = (await response.json()) as { calls: JoinableCall[] };
+	return calls;
+};
+
+/** Takes `user` out of a call on the server, whatever state their call window was left in. */
+const leaveCallAs = async (request: APIRequestContext, user: IUserState, callId: string): Promise<void> => {
+	const response = await request.post(`${BASE_API_URL}/video-conference.leave`, { headers: asUser(user), data: { callId } });
+	expect(response.status()).toBe(200);
+};
+
+/**
+ * Every user this suite puts in a call. Nothing else runs against the workspace at the same time
+ * (`workers: 1`), so whatever they are offered after a test is something that test left behind.
+ */
+const callers = [Users.user1, Users.user2, Users.user3];
 
 /**
  * How light one of a page's palette tokens is, 0 to 1.
@@ -58,8 +83,10 @@ const rootTokenLuminance = async (page: Page, token: string): Promise<number> =>
  *   rather than merely descriptive because these tests run alongside each other: it means one test cannot
  *   mistake another test's call for its own.
  * - **A call drops out of the joinable list the moment its last participant leaves** (`listJoinableCalls` skips
- *   calls nobody is in), so closing the call windows a test opened is enough cleanup for the next one — the
+ *   calls nobody is in), so closing the call windows a test opened is the cleanup for the next one — the
  *   ten-second empty-call grace only governs when the conference is *ended*, not when it stops being offered.
+ *   Closing reports the leave on a best-effort basis, though, so `afterEach` waits until nobody is offered a
+ *   call, and fails the case that left one behind rather than the cases that trip over it.
  * - **A conference in a channel rings nobody** on this branch (`ee/server/configuration/videoConference.ts`
  *   registers ringing for DMs and group DMs only), so the other side discovers it through the list's own
  *   twenty-second poll. Those assertions carry an explicit timeout, which is a wait on a condition rather than
@@ -90,7 +117,7 @@ test.describe('video conference call window', () => {
 		await page.goto('/home');
 	});
 
-	test.afterEach(async ({ api, page }) => {
+	test.afterEach(async ({ api, page, request }) => {
 		// The aux contexts go first, and whole: closing a context takes the call windows opened inside it with it,
 		// and each of those reports its user leaving on the way out. That is what keeps a call from being offered
 		// to the next test.
@@ -107,6 +134,35 @@ test.describe('video conference call window', () => {
 
 		await Promise.all(disposableChannels.map((name) => deleteChannel(api, name)));
 		disposableChannels = [];
+
+		// Closing a window only *asks* for the leave: it is a best-effort `keepalive` request, and a window that is
+		// closed before it has worked out how far its user got sends none. A leave that is lost keeps the call
+		// offered to everyone in its room, and every later case that expects an empty ongoing-calls list fails on
+		// it. So the leaves are waited for, and a call nobody left is cleared here and charged to the case that
+		// opened it.
+		const leftovers = async () =>
+			(await Promise.all(callers.map(async (user) => ({ user, calls: await listJoinableCalls(request, user) })))).filter(
+				({ calls }) => calls.length > 0,
+			);
+
+		await expect
+			.poll(async () => (await leftovers()).length, { timeout: 10_000 })
+			.toBe(0)
+			.catch(() => undefined);
+
+		const leaked = await leftovers();
+		if (!leaked.length) {
+			return;
+		}
+
+		await Promise.all(
+			leaked.flatMap(({ user, calls }) => calls.filter(({ joined }) => joined).map(({ callId }) => leaveCallAs(request, user, callId))),
+		);
+
+		const report = leaked.map(
+			({ user, calls }) => `${user.data.username}: ${calls.map(({ callId, name }) => `${name} (${callId})`).join(', ')}`,
+		);
+		throw new Error(`This case left calls running after its windows closed; they have been cleared through the API.\n${report.join('\n')}`);
 	});
 
 	const openSessionAs = async (browser: Browser, user: IUserState): Promise<Session> => {
@@ -206,7 +262,7 @@ test.describe('video conference call window', () => {
 	});
 
 	// Qase case 11, and the half of case 49 that can be asserted from outside the window.
-	test('should create the conference when the preflight is confirmed and settle the window on it', async ({ page }) => {
+	test('should create the conference when the preflight is confirmed and settle the window on it', async ({ page, request }) => {
 		await poHomeChannel.navbar.openChat('user2');
 
 		const conferencesBefore = await poHomeChannel.content.videoConfMessageBlock.count();
@@ -239,6 +295,11 @@ test.describe('video conference call window', () => {
 			await expect(callWindow.page).toHaveURL(conferenceUrl);
 			await expect(poHomeChannel.content.videoConfMessageBlock).toHaveCount(conferencesBefore + 1);
 		});
+
+		// The reload is where this case gives up the one exit the others rely on: the leave the first page sent on
+		// its way out can be lost with it, and the reloaded window has not joined, so closing it may report nothing.
+		// user1 is taken out of the call explicitly instead, or it stays offered to user2 for the rest of the file.
+		await leaveCallAs(request, Users.user1, new URL(conferenceUrl).pathname.split('/').pop() as string);
 	});
 
 	// Qase case 12, and case 41's "a call to offer is what puts the button there".
