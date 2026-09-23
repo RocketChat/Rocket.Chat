@@ -99,7 +99,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
-	phones: data?.phones ?? (data?.phone ? [{ number: data.phone }] : []),
+	phones: data?.phones ?? [],
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
