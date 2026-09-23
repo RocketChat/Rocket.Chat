@@ -63,7 +63,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			utcOffset,
 			lastLogin,
 			customFields,
-			phone,
 			phones,
 			nickname,
 			createdAt,
@@ -71,9 +70,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			sipExtension,
 			federated,
 		} = data.user;
-
-		const phonesFallback = phone ? [{ number: phone }] : undefined;
-		const normalizedPhones = phones ?? phonesFallback;
 
 		return {
 			_id,
@@ -87,7 +83,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phoneNumbers: normalizedPhones?.length ? <UserInfoPhoneNumberList phones={normalizedPhones} /> : undefined,
+			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
