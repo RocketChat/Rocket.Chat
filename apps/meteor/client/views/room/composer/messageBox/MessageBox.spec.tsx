@@ -107,4 +107,44 @@ describe('MessageBox drafts', () => {
 		expect(endpointHandler).toHaveBeenCalledTimes(1);
 		expect(endpointHandler).not.toHaveBeenCalledWith(expect.objectContaining({ draft: '' }));
 	});
+
+	it('should not persist what is typed while a send is still in flight', async () => {
+		const user = userEvent.setup();
+		const endpointHandler = jest.fn(() => null);
+
+		(useRoomSubscription as jest.Mock).mockReturnValue({ rid: 'rid', draft: 'message A' });
+
+		let resolveSend: (() => void) | undefined;
+		const onSend = jest.fn(() => {
+			chat.composer?.clear();
+
+			return new Promise<void>((resolve) => {
+				resolveSend = () => resolve();
+			});
+		});
+
+		const { chat } = renderMessageBox(onSend, endpointHandler);
+
+		const composer = screen.getByRole('textbox', { name: 'Message #general' });
+
+		// Send the stored draft and keep its response pending.
+		// eslint-disable-next-line testing-library/prefer-user-event
+		fireEvent.keyDown(composer, { key: 'Enter', which: 13, keyCode: 13 });
+		await waitFor(() => expect(onSend).toHaveBeenCalledWith(expect.objectContaining({ value: 'message A' })));
+
+		// The sent draft is discarded right away, without waiting for the response.
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: '' }));
+
+		// Type again, still in the same room, while the send is in flight.
+		await user.type(composer, 'draft B');
+		await waitFor(() => expect(localStorage.getItem('messagebox_rid')).toBe('draft B'));
+
+		await act(async () => {
+			resolveSend?.();
+		});
+
+		// Staying in the room keeps the new text local only.
+		expect(endpointHandler).toHaveBeenCalledTimes(1);
+		expect(endpointHandler).not.toHaveBeenCalledWith(expect.objectContaining({ draft: 'draft B' }));
+	});
 });

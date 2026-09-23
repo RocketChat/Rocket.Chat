@@ -1,6 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { millisecondsToMinutes } from 'date-fns';
+import { millisecondsToMinutes } from 'date-fns/millisecondsToMinutes';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 

@@ -1,6 +1,5 @@
+import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import type { IPermission, IRole, IUser } from '@rocket.chat/core-typings';
-
-import { AuthorizationUtils } from './AuthorizationUtils';
 
 export type AuthorizationDeps = {
 	/** The currently logged-in user id, or undefined. */

@@ -1,5 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
-
 import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
@@ -94,17 +92,3 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 			});
 	};
 };
-
-export const callLoginMethod = (options: Omit<Accounts.LoginMethodOptions, 'userCallback'>) =>
-	new Promise<void>((resolve, reject) => {
-		Accounts.callLoginMethod({
-			...options,
-			userCallback: (error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			},
-		});
-	});

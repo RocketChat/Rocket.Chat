@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
@@ -13,6 +14,7 @@ import {
 	createTargetDiscussion,
 	deleteRoom,
 } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -25,6 +27,8 @@ test.describe.serial('feature preview', () => {
 	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
+
+	preserveSettings(['Accounts_AllowFeaturePreview']);
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
@@ -42,7 +46,6 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 		await setUserPreferences(api, {
@@ -151,38 +154,60 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeTeam.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
-		test('should keep the main room on the top even if child has unread messages', async ({ page, browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
-			const user1Channel = new HomeChannel(user1Page);
+		test.describe('team and channels sorting', () => {
+			let user1Page: Page;
 
-			await poHomeTeam.gotoGroup(sidepanelTeam);
+			test.beforeEach(async ({ browser }) => {
+				user1Page = await browser.newPage({ storageState: Users.user1.state });
+			});
 
-			await poHomeTeam.headerToolbar.openTeamChannels();
-			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+			test.afterEach(async () => {
+				await user1Page.close();
+			});
 
-			const sidepanelTeamItem = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
-			const targetChannelItem = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+			test('should keep the main room on the top even if child has unread messages', async ({ page }) => {
+				const user1Channel = new HomeChannel(user1Page);
 
-			await targetChannelItem.click();
-			expect(page.url()).toContain(`/channel/${targetChannel}`);
-			await poHomeTeam.content.sendMessage('hello channel');
+				const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
+				const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
 
-			await expect(async () => {
-				await sidepanelTeamItem.focus();
-				await sidepanelTeamItem.click();
-				expect(page.url()).toContain(`/group/${sidepanelTeam}`);
-			}).toPass();
-			await poHomeTeam.content.sendMessage('hello team');
+				await test.step('add the channel to the team', async () => {
+					await poHomeTeam.gotoGroup(sidepanelTeam);
+					await poHomeTeam.headerToolbar.openTeamChannels();
+					await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+				});
 
-			await user1Channel.gotoChannel(targetChannel);
-			await user1Channel.content.openReplyInThread();
-			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
-			await user1Channel.content.sendMessageInThread('hello thread');
+				await test.step('send a message in the channel, then a newer one in the team', async () => {
+					await childChannelLink.click();
+					await expect(page).toHaveURL(`/channel/${targetChannel}`);
+					await poHomeTeam.content.sendMessage('hello channel');
 
-			const item = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
-			await expect(item.locator('..')).toHaveAttribute('data-item-index', '1');
+					await expect(async () => {
+						await teamMainRoomLink.focus();
+						await teamMainRoomLink.click();
+						await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
+					}).toPass();
+					await poHomeTeam.content.sendMessage('hello team');
+				});
 
-			await user1Page.close();
+				await test.step('open the team filter on the sidepanel', async () => {
+					await poHomeTeam.sidebar.getFilterItemByName(sidepanelTeam).click();
+					await expect(poHomeTeam.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+				});
+
+				await test.step('send a thread message in the channel from another user', async () => {
+					await user1Channel.gotoChannel(targetChannel);
+					await user1Channel.content.openReplyInThread();
+					await user1Channel.content.toggleAlsoSendThreadToChannel(false);
+					await user1Channel.content.sendMessageInThread('hello thread');
+				});
+
+				await test.step('team main room should stay above the channel with newer unread activity', async () => {
+					await expect(childChannelLink.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
+					await expect(teamMainRoomLink.locator('..')).toHaveAttribute('data-item-index', '0');
+					await expect(childChannelLink.locator('..')).toHaveAttribute('data-item-index', '1');
+				});
+			});
 		});
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {

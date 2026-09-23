@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
+import { getLoginWithMethod } from '../../../meteor/accounts';
 import type { LoginMethods } from '../AuthenticationProvider';
 
 export function useLDAPAndCrowdCollisionWarning() {
@@ -17,7 +17,7 @@ export function useLDAPAndCrowdCollisionWarning() {
 			}
 			console.log('Both LDAP and Crowd are enabled. Please disable one of them.');
 		}
-		if (!Meteor[loginMethod]) {
+		if (!getLoginWithMethod(loginMethod)) {
 			if (process.env.NODE_ENV === 'development') {
 				throw new Error(`Meteor.${loginMethod} is not defined`);
 			}

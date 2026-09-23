@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useStableCallback, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -18,6 +18,7 @@ import { handleSelectionWrapping } from './wrapSelection';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -30,7 +31,6 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
-import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const { target } = event;
@@ -98,17 +98,20 @@ const MessageBox = ({
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
-			if (node === null && chat.composer) {
-				flushDraft();
-				return chat.setComposerAPI();
+			if (!chat.composer) {
+				chat.setComposerAPI(
+					createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }),
+				);
 			}
 
-			if (chat.composer) {
-				return;
-			}
-			chat.setComposerAPI(
-				createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }),
-			);
+			return () => {
+				if (!chat.composer) {
+					return;
+				}
+
+				flushDraft();
+				chat.setComposerAPI();
+			};
 		},
 		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
 	);
@@ -136,26 +139,20 @@ const MessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useStableCallback(async () => {
+	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
 
-		const { composer } = chat;
-		const text = composer?.text ?? '';
+		const text = chat.composer?.text ?? '';
 		popup.clear();
+		flushDraft('');
 
 		void onSend?.({
 			value: text,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
-		}).then(() => {
-			if (!composer) {
-				return;
-			}
-
-			flushDraft(composer.text);
 		});
 	});
 
@@ -268,7 +265,7 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
+	const { autoGrowRef, textAreaStyle } = useAutoGrow(isRecordingAudio);
 
 	const federationMatrixEnabled = useIsFederationEnabled();
 
@@ -346,35 +343,31 @@ const MessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLTextAreaElement) => {
-				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-				node.addEventListener('keydown', eventHandler);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-				return () => {
-					node.removeEventListener('keydown', eventHandler);
-				};
-			},
-			[keyboardEventHandler],
-		),
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		},
+		[keyboardEventHandler],
 	);
 
-	const beforeInputHandlerCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLTextAreaElement) => {
-				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
-				node.addEventListener('beforeinput', eventHandler);
+	const beforeInputHandlerCallbackRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
+			node.addEventListener('beforeinput', eventHandler);
 
-				return () => {
-					node.removeEventListener('beforeinput', eventHandler);
-				};
-			},
-			[chat],
-		),
+			return () => {
+				node.removeEventListener('beforeinput', eventHandler);
+			};
+		},
+		[chat],
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(
+	const mergedRefs = useMergedRefsV2(
 		popup.callbackRef,
 		textareaRef,
 		autoGrowRef,

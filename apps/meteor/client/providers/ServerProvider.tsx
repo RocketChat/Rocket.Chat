@@ -11,7 +11,6 @@ import type {
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
@@ -20,6 +19,12 @@ import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
+import {
+	type ConnectionStatus,
+	disconnect as disconnectMeteor,
+	getConnectionStatus,
+	reconnect as reconnectMeteor,
+} from '../meteor/connection';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -34,31 +39,33 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	keys,
 	params,
 	signal,
+	keepalive,
 }: {
 	method: TMethod;
 	pathPattern: TPathPattern;
 	keys: UrlParams<TPathPattern>;
 	params: OperationParams<TMethod, TPathPattern>;
 	signal?: AbortSignal;
+	keepalive?: boolean;
 }): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 	switch (method) {
 		case 'GET':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.get(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'POST':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.post(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'PUT':
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
+			return sdk.rest.put(compiledPath, params as never, { signal, keepalive }) as never;
 
 		case 'DELETE':
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
-			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
+			return sdk.rest.delete(compiledPath, params as any, { signal, keepalive }) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');
@@ -88,26 +95,26 @@ const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName:
 
 const disconnect = sdkTransportEnabled
 	? () => {
-			Meteor.disconnect();
+			disconnectMeteor();
 			try {
 				getDdpSdk().connection.close();
 			} catch {
 				// no-op — DDPSDK may not be connected yet
 			}
 		}
-	: () => Meteor.disconnect();
+	: () => disconnectMeteor();
 
 const reconnect = sdkTransportEnabled
 	? () => {
-			Meteor.reconnect();
+			reconnectMeteor();
 			// ensureConnectedAndAuthenticated handles both 'connect' and loginWithToken,
 			// so reconnecting here also re-establishes the DDPSDK session with the
 			// same token Meteor resumes with.
 			void ensureConnectedAndAuthenticated();
 		}
-	: () => Meteor.reconnect();
+	: () => reconnectMeteor();
 
-type CombinedStatus = ReturnType<typeof Meteor.status>;
+type CombinedStatus = ConnectionStatus;
 
 const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedStatus => {
 	const retry = { retryCount: meteor.retryCount, retryTime: meteor.retryTime };
@@ -137,8 +144,8 @@ const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedS
 // `sdk.connection.on('connection')`, so the same subscription works in both
 // modes.
 const computeStatus: () => CombinedStatus = sdkTransportEnabled
-	? () => sdkStatusToMeteor(getDdpSdk().connection.status, Meteor.status())
-	: () => ({ ...Meteor.status() });
+	? () => sdkStatusToMeteor(getDdpSdk().connection.status, getConnectionStatus())
+	: () => getConnectionStatus();
 
 const isStatusEqual = (a: CombinedStatus, b: CombinedStatus): boolean =>
 	a.status === b.status && a.connected === b.connected && a.retryCount === b.retryCount && a.retryTime === b.retryTime;

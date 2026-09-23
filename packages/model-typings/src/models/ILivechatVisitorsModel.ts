@@ -48,11 +48,15 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		options?: O,
 	): Promise<FindPaginated<FindCursor<DocumentWithProjection<T, O>>>>;
 
-	findOneByEmailAndPhoneAndCustomField(
+	findOneByEmailAndPhoneAndCustomField<
+		T extends Document = ILivechatVisitor,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		email: string | null | undefined,
 		phone: string | null | undefined,
 		customFields?: { [key: string]: RegExp },
-	): Promise<ILivechatVisitor | null>;
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 

@@ -39,7 +39,6 @@ type RoomListRowProps = {
 			unread?: boolean;
 			selected?: boolean;
 			is?: string;
-			indent?: boolean;
 		} & AllHTMLAttributes<HTMLElement>
 	>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
@@ -118,7 +117,6 @@ const SidebarItemTemplateWithData = ({
 		<SidebarItemTemplate
 			is='a'
 			id={id}
-			indent
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
