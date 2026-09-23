@@ -11,7 +11,7 @@ import { LivechatContacts } from '@rocket.chat/models';
 import type { ClientSession, UpdateFilter } from 'mongodb';
 
 import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
-import { isSameChannel } from '../../../../app/livechat/lib/isSameChannel';
+import { isSameChannel } from '../../../../lib/livechat/isSameChannel';
 
 type ManagerValue = { id: string } | { username: string };
 type ContactFields = {
