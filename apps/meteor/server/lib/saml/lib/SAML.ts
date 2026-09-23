@@ -10,7 +10,7 @@ import { Meteor } from 'meteor/meteor';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
 import { getSAMLEnvelope } from './getSAMLEnvelope';
-import { i18n } from '../../../../app/utils/lib/i18n';
+import { i18n } from '../../../../lib/i18n';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
