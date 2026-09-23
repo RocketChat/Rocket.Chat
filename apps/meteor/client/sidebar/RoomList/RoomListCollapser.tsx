@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
+import { getUnreadDisplay } from '../lib/unreadDisplay';
 import type { SidebarRoomListGroup } from '../lib/sidebarGroups';
 
 type RoomListCollapserProps = {
@@ -32,7 +32,7 @@ const RoomListCollapser = ({
 	const { t } = useTranslation();
 	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
-	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = getUnreadDisplay(group.unreadInfo, t);
 
 	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
 

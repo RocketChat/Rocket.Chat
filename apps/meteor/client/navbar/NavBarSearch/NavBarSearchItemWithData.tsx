@@ -8,7 +8,7 @@ import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import { getUnreadDisplay } from '../../sidebar/lib/unreadDisplay';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 
 export type NavBarSearchItemWithDataProps = {
@@ -23,7 +23,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const { unreadTitle, unreadVariant, unreadCount, showUnread, highlightUnread: highlighted } = getUnreadDisplay(room, t);
 
 	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
 
@@ -39,6 +39,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 				<SidebarItemBadges
 					room={room}
 					roomTitle={title}
+					unread={{ show: showUnread, title: unreadTitle, total: unreadCount.total, variant: unreadVariant }}
 					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
 					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
 				/>

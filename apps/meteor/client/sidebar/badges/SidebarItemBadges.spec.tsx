@@ -16,10 +16,13 @@ describe('SidebarItemBadges', () => {
 		})
 		.build();
 
+	const noUnread = { show: false, title: '', total: 0, variant: 'secondary' } as const;
+
 	// The badges the product owns arrive as slots, so the application wires them exactly as it does in the sidebar.
-	const renderBadges = (props: SidebarItemBadgesProps) =>
+	const renderBadges = (props: Omit<SidebarItemBadgesProps, 'unread'> & Partial<Pick<SidebarItemBadgesProps, 'unread'>>) =>
 		render(
 			<SidebarItemBadges
+				unread={noUnread}
 				renderOmnichannelBadges={() => <i role='status' aria-label='OmnichannelBadges' />}
 				renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
 				{...props}
@@ -32,7 +35,11 @@ describe('SidebarItemBadges', () => {
 	});
 
 	it('should render UnreadBadge when there are unread messages', () => {
-		renderBadges({ room: createFakeSubscription({ unread: 1, userMentions: 1, groupMentions: 0 }), roomTitle: 'Test Room' });
+		renderBadges({
+			room: createFakeSubscription({ unread: 1, userMentions: 1, groupMentions: 0 }),
+			roomTitle: 'Test Room',
+			unread: { show: true, title: '1 mention', total: 1, variant: 'danger' },
+		});
 
 		expect(screen.getByRole('status', { name: '1 mention from Test Room' })).toBeInTheDocument();
 	});
@@ -74,7 +81,7 @@ describe('SidebarItemBadges', () => {
 	});
 
 	it('draws nothing for a badge the application did not supply', () => {
-		render(<SidebarItemBadges room={createFakeSubscription({ t: 'l' })} />, { wrapper: appRoot });
+		render(<SidebarItemBadges room={createFakeSubscription({ t: 'l' })} unread={noUnread} />, { wrapper: appRoot });
 
 		expect(screen.queryByRole('status', { name: 'OmnichannelBadges' })).not.toBeInTheDocument();
 	});
