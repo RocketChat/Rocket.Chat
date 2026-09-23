@@ -7,6 +7,7 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
+import { itemTemplateByViewMode, roomAvatarForViewMode } from '../Item/templates';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import {
 	useRoomListActions,
@@ -30,13 +31,9 @@ const RoomList = () => {
 	const { moveCategory } = useRoomListActions();
 	const ringingCalls = useRoomListRingingCalls();
 	const { userId, isAnonymous, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime } = useRoomListViewer();
-	const {
-		viewMode: sidebarViewMode,
-		extended,
-		rowHeight,
-		ItemTemplate: sideBarItemTemplate,
-		AvatarTemplate: avatarTemplate,
-	} = useRoomListPresentation();
+	const { viewMode: sidebarViewMode, extended, showAvatar, rowHeight } = useRoomListPresentation();
+	const sideBarItemTemplate = itemTemplateByViewMode[sidebarViewMode];
+	const avatarTemplate = useMemo(() => (showAvatar ? roomAvatarForViewMode(sidebarViewMode) : null), [showAvatar, sidebarViewMode]);
 	const bufferSize = rowHeight * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 	const itemData = useMemo(
 		() => ({

@@ -3,8 +3,8 @@ import type { TFunction } from 'i18next';
 import { memo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
+import type { SidebarItemTemplate, SidebarRoomAvatar } from '../Item/templates';
 import type { RoomListCallActions } from '../contexts/RoomListContext';
-import type { SidebarItemTemplate, SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
 
 export type RoomListRowProps = {
 	data: {

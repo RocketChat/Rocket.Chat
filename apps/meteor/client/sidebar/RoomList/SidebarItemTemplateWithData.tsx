@@ -1,4 +1,3 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
@@ -8,17 +7,12 @@ import { memo, useMemo } from 'react';
 
 import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
-import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
-import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
-import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
+import type { SidebarRoomAvatar } from '../Item/templates';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import type { SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
+import { useRoomListItem } from '../hooks/useRoomListItem';
 import { hasRoomChanged } from '../lib/sidebarRowChanges';
 
 type RoomListRowProps = {
@@ -81,13 +75,17 @@ const SidebarItemTemplateWithData = ({
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
-	const title = roomCoordinator.getRoomName(room.t, room) || '';
-
-	const dmUserId = getUidDirectMessage(room, userId);
-	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
-
-	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const {
+		href,
+		title,
+		ariaLabel,
+		dmStatusTooltipHandlers,
+		isQueued,
+		draftHint,
+		messagePreviewHtml,
+		unread: unreadInfo,
+	} = useRoomListItem(room, { userId, t, extended });
+	const { highlighted } = unreadInfo;
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
@@ -98,9 +96,7 @@ const SidebarItemTemplateWithData = ({
 		/>
 	);
 
-	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
-	) : undefined;
+	const titleIcon = draftHint ? <Icon name='pencil' size='x12' title={draftHint} /> : undefined;
 
 	const actions = useMemo(
 		() =>
@@ -113,10 +109,9 @@ const SidebarItemTemplateWithData = ({
 		[videoConfActions],
 	);
 
-	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
-
-	const message = extended && getMessagePreview(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = messagePreviewHtml ? (
+		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: messagePreviewHtml }} />
+	) : null;
 
 	return (
 		<SidebarItemTemplate
@@ -130,7 +125,7 @@ const SidebarItemTemplateWithData = ({
 			onClick={(): void => {
 				if (!selected) sidebar.toggle();
 			}}
-			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			aria-label={ariaLabel}
 			title={title}
 			timeLabel={lastMessage?.ts ? formatTime(lastMessage.ts) : undefined}
 			subtitle={subtitle}
@@ -152,7 +147,7 @@ const SidebarItemTemplateWithData = ({
 					? () => (
 							<RoomMenu
 								alert={alert}
-								threadUnread={unreadCount.threads > 0}
+								threadUnread={unreadInfo.threads > 0}
 								rid={rid}
 								unread={!!unread}
 								roomOpen={selected}

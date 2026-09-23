@@ -1,8 +1,8 @@
 import type { KeyboardEvent, ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { SidebarPresentation } from '../hooks/useSidebarPresentation';
 import type { SidebarRoomListGroup } from '../lib/sidebarGroups';
+import type { SidebarPresentation } from '../lib/sidebarPresentation';
 
 export type RoomListCollapse = {
 	keys: string[];
@@ -55,8 +55,6 @@ export const defaultRoomListSettings: RoomListSettings = {
 		extended: true,
 		showAvatar: true,
 		rowHeight: 48,
-		ItemTemplate: (() => null) as unknown as SidebarPresentation['ItemTemplate'],
-		AvatarTemplate: null,
 	},
 	collapse: { keys: [], toggle: () => undefined, onKeyDown: () => undefined },
 	viewer: { isAnonymous: true, openedRoom: '', isPriorityEnabled: false, canCustomiseGroups: false, formatTime: () => '' },
