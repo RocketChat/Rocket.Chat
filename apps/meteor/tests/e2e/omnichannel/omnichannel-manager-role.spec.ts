@@ -104,14 +104,14 @@ test.describe('OC - Manager Role', () => {
 
 	test('OC - Manager Role - Basic permissions', async () => {
 		await test.step('expect agent to not have access to omnichannel administration', async () => {
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact Center')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact center')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Analytics')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time Monitoring')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time monitoring')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Agents')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Departments')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business Hours')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business hours')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Reports')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned Responses')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned responses')).toBeVisible();
 		});
 	});
 
@@ -136,7 +136,7 @@ test.describe('OC - Manager Role', () => {
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
-				`Chat On Hold: The chat was manually placed On Hold by ${MANAGER}`,
+				`Chat on hold: The chat was manually placed on hold by ${MANAGER}`,
 			);
 			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnResume).toBeVisible();

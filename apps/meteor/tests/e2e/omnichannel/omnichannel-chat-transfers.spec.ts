@@ -236,7 +236,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname).click();
 			await expect(
 				agentB.poHomeOmnichannel.content.findSystemMessage(
-					`New Chat Transfer: user3 transferred the chat to user2 with a comment: any_comment`,
+					`New chat transfer: user3 transferred the chat to user2 with a comment: any_comment`,
 				),
 			).toBeVisible();
 			await expect(agentB.poHomeOmnichannel.content.findSystemMessage('left the channel')).toBeVisible();
@@ -280,7 +280,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 			await agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname).click();
 			await expect(
 				agentC.poHomeOmnichannel.content.findSystemMessage(
-					`New Chat Transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,
+					`New chat transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,
 				),
 			).toBeVisible();
 			await expect(agentC.poHomeOmnichannel.content.findSystemMessage('left the channel')).toBeVisible();
@@ -459,7 +459,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname).click();
 			await expect(
 				agentB.poHomeOmnichannel.content.findSystemMessage(
-					`New Chat Transfer: user3 transferred the chat to user2 with a comment: any_comment`,
+					`New chat transfer: user3 transferred the chat to user2 with a comment: any_comment`,
 				),
 			).toBeVisible();
 			await expect(agentB.poHomeOmnichannel.content.findSystemMessage('left the channel')).toBeVisible();
@@ -503,7 +503,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 			await agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname).click();
 			await expect(
 				agentC.poHomeOmnichannel.content.findSystemMessage(
-					`New Chat Transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,
+					`New chat transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,
 				),
 			).toBeVisible();
 			await expect(agentC.poHomeOmnichannel.content.findSystemMessage('left the channel')).toBeVisible();
