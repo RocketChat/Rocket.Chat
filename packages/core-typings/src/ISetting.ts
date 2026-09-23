@@ -34,6 +34,14 @@ type EnableQuery = string | { _id: string; value: any } | { _id: string; value: 
 export type SettingValidationRule = {
 	query: Record<string, unknown>;
 	appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
+	/**
+	 * Declares that the settings this rule references are allowed not to exist, which is the case
+	 * for a rule gating on an edition-only setting. Affects reporting only: an unresolvable
+	 * reference still leaves the rule inapplicable either way, but without this it is reported as a
+	 * broken declaration, since a mistyped id is indistinguishable from a setting another edition
+	 * owns.
+	 */
+	referencesMayBeAbsent?: boolean;
 };
 
 type SettingValidation = SettingValidationRule[] | string;
