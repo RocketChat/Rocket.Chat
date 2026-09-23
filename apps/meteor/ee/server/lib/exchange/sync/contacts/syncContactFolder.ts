@@ -6,7 +6,7 @@ import { deleteContactAvatars, saveContactAvatar } from './contactAvatars';
 import { normalizeE164 } from './normalizeE164';
 import { settings } from '../../../../../../server/settings';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
-import type { ExchangeContactPhoto, ExchangeContactUpsert } from '../../definition/types';
+import type { ExchangeContactUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubForLog, scrubText } from '../../scrub';
@@ -104,10 +104,18 @@ const syncAvatars = async (
 	folderId: string,
 	externalIds: string[],
 ): Promise<void> => {
-	const photos: ExchangeContactPhoto[] = await provider.getContactsPhotos(mailbox, externalIds);
+	const withPhoto = new Set<string>();
 
-	for (const photo of photos) {
+	// Written as they arrive rather than collected first, so only the provider's current batch is in memory.
+	for await (const photo of provider.getContactPhotos(mailbox, externalIds)) {
 		await saveContactAvatar(uid, folderId, photo);
+		withPhoto.add(photo.externalId);
+	}
+
+	const withoutPhoto = externalIds.filter((externalId) => !withPhoto.has(externalId));
+
+	if (withoutPhoto.length) {
+		await deleteContactAvatars(uid, folderId, { in: withoutPhoto });
 	}
 };
 

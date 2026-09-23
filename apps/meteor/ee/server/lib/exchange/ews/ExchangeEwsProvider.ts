@@ -1,33 +1,64 @@
 import type { IEwsTransport } from './IEwsTransport';
-import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
-import { findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
+import {
+	allByTag,
+	attributeOf,
+	dictionaryEntries,
+	firstByTag,
+	MESSAGES_NS,
+	parseEwsDateTime,
+	parseEwsResponse,
+	textOf,
+	TYPES_NS,
+} from './parseResponse';
+import {
+	DEFAULT_CONTACT_FOLDER_ID,
+	findContactFoldersRequest,
+	findItemCalendarViewRequest,
+	getAttachmentsRequest,
+	getContactAttachmentIdsRequest,
+	getContactItemsRequest,
+	getItemRequest,
+	resolveNamesRequest,
+	syncContactFolderItemsRequest,
+	syncFolderItemsRequest,
+} from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type {
 	ContactFolder,
 	DateRange,
 	ExchangeContact,
+	ExchangeContactEmail,
+	ExchangeContactPhone,
 	ExchangeContactPhoto,
+	ExchangeContactUpsert,
 	ExchangeEvent,
 	ExchangeProviderCapabilities,
 	Page,
 } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
+import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
+
+const PHONE_LABELS: Record<string, string> = {
+	MobilePhone: 'mobile',
+	BusinessPhone: 'business',
+	BusinessPhone2: 'business',
+	HomePhone: 'home',
+	HomePhone2: 'home',
+};
+
+/** How many photos one `GetAttachment` may carry. Capped to 20 for simetry with the Graph implementation.*/
+const PHOTO_BATCH_SIZE = 20;
+
+/** How many contacts one `GetItem` is asked about. Higher than a photo batch because it carries no bytes. */
+const PHOTO_LOOKUP_BATCH_SIZE = 100;
+
+const CONTACT_FOLDER_CLASS = 'IPF.Contact';
+
+/** At 100 folders a page, far past any real address book. A backstop against a server that never says it is done. */
+const MAX_FOLDER_PAGES = 50;
 
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
-
-export const parseEwsDateTime = (value: string | undefined): Date | undefined => {
-	if (!value) {
-		return undefined;
-	}
-
-	// We ask for UTC through `TimeZoneContext`, so a value arriving without a zone is still UTC. Reading it
-	// as local time would shift the event by the host offset, silently
-	const hasZone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value);
-	const parsed = new Date(hasZone ? value : `${value}Z`);
-
-	return Number.isNaN(parsed.getTime()) ? undefined : parsed;
-};
 
 export class ExchangeEwsProvider implements IExchangeProvider {
 	public readonly id = 'ews' as const;
@@ -134,15 +165,201 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		};
 	}
 
-	public async listContactFolders(_mailbox: string): Promise<ContactFolder[]> {
-		return [];
+	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
+		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
+		let offset = 0;
+
+		for (let page = 0; page < MAX_FOLDER_PAGES; page++) {
+			const doc = parseEwsResponse(await this.transport.post(findContactFoldersRequest(mailbox, offset)));
+			const root = firstByTag(doc, MESSAGES_NS, 'RootFolder');
+			const found = allByTag(doc, TYPES_NS, 'ContactsFolder');
+
+			for (const node of found) {
+				const id = attributeOf(node, 'FolderId', 'Id');
+
+				if (!id) {
+					logger.warn({ msg: 'Skipping EWS contact folder without an id' });
+					continue;
+				}
+
+				if (textOf(firstByTag(node, TYPES_NS, 'FolderClass')) !== CONTACT_FOLDER_CLASS) {
+					continue;
+				}
+
+				folders.push({ id, displayName: textOf(firstByTag(node, TYPES_NS, 'DisplayName')) ?? '' });
+			}
+
+			if (root?.getAttribute('IncludesLastFolderInRange') !== 'false' || !found.length) {
+				return folders;
+			}
+
+			offset = Number(root.getAttribute('IndexedPagingOffset')) || offset + found.length;
+		}
+
+		logger.error({ msg: 'EWS contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
+
+		return folders;
 	}
 
-	public async listContacts(_mailbox: string, _folderId: string, _cursor?: string): Promise<Page<ExchangeContact>> {
-		return { items: [], cursor: '', hasMore: true, isCompleteSnapshot: false };
+	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
+		const doc = parseEwsResponse(await this.transport.post(syncContactFolderItemsRequest(mailbox, folderId, cursor)));
+
+		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
+		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
+		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
+
+		const removals: ExchangeContact[] = allByTag(doc, TYPES_NS, 'Delete')
+			.map((node) => attributeOf(node, 'ItemId', 'Id'))
+			.filter((externalId): externalId is string => Boolean(externalId))
+			.map((externalId) => ({ kind: 'deleted', externalId, folderId }));
+
+		const changedIds = ['Create', 'Update']
+			.flatMap((tag) => allByTag(doc, TYPES_NS, tag))
+			.map((node) => attributeOf(node, 'ItemId', 'Id'))
+			.filter((id): id is string => Boolean(id));
+
+		const upserts = changedIds.length ? await this.loadContacts(mailbox, folderId, changedIds) : [];
+
+		return {
+			items: [...upserts, ...removals],
+			cursor: syncState,
+			hasMore: !includesLastItem,
+			// Never a complete read: what is gone arrives as a deletion rather than by being absent.
+			isCompleteSnapshot: false,
+		};
 	}
 
-	public async getContactsPhotos(_mailbox: string, _externalIds: string[]): Promise<ExchangeContactPhoto[]> {
-		return [{ data: new Uint8Array(), contentType: '', externalId: '' }];
+	/** The delta only carries ids, so the fields come from a second call. */
+	private async loadContacts(mailbox: string, folderId: string, itemIds: string[]): Promise<ExchangeContact[]> {
+		const doc = parseEwsResponse(await this.transport.post(getContactItemsRequest(mailbox, itemIds)));
+
+		return allByTag(doc, TYPES_NS, 'Contact')
+			.map((node) => this.toExchangeContact(node, folderId))
+			.filter((contact): contact is ExchangeContactUpsert => contact !== undefined);
+	}
+
+	private toExchangeContact(node: Element, folderId: string): ExchangeContactUpsert | undefined {
+		const externalId = attributeOf(node, 'ItemId', 'Id');
+
+		if (!externalId) {
+			logger.warn({ msg: 'Skipping EWS contact without an id' });
+			return undefined;
+		}
+
+		const givenName = textOf(firstByTag(node, TYPES_NS, 'GivenName'));
+		const surname = textOf(firstByTag(node, TYPES_NS, 'Surname'));
+		const companyName = textOf(firstByTag(node, TYPES_NS, 'CompanyName'));
+		const officeLocation = textOf(firstByTag(node, TYPES_NS, 'OfficeLocation'));
+
+		const categoriesNode = firstByTag(node, TYPES_NS, 'Categories');
+		const categories = categoriesNode
+			? allByTag(categoriesNode, TYPES_NS, 'String')
+					.map((entry) => textOf(entry))
+					.filter((category): category is string => Boolean(category))
+			: [];
+
+		const emails: ExchangeContactEmail[] = dictionaryEntries(node, 'EmailAddresses').map(({ value }) => ({ address: value }));
+
+		const phones: ExchangeContactPhone[] = dictionaryEntries(node, 'PhoneNumbers').map(({ key, value }) => ({
+			raw: value,
+			...(PHONE_LABELS[key] && { label: PHONE_LABELS[key] }),
+		}));
+
+		const fullName = [givenName, surname].filter(Boolean).join(' ');
+		const displayName = textOf(firstByTag(node, TYPES_NS, 'DisplayName')) || fullName || emails[0]?.address || phones[0]?.raw;
+
+		if (!displayName) {
+			logger.warn({ msg: 'Skipping EWS contact with nothing to resolve it by', externalId });
+			return undefined;
+		}
+
+		return {
+			kind: 'upsert',
+			externalId,
+			folderId,
+			displayName,
+			...(givenName && { givenName }),
+			...(surname && { surname }),
+			...(companyName && { companyName }),
+			...(officeLocation && { officeLocation }),
+			emails,
+			phones,
+			categories,
+		};
+	}
+
+	/** It takes two calls: one to learn which contacts carry one and what its attachment id is, another to read the bytes. */
+	public async *getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
+		for (let i = 0; i < externalIds.length; i += PHOTO_LOOKUP_BATCH_SIZE) {
+			const owners = await this.findPhotoAttachments(mailbox, externalIds.slice(i, i + PHOTO_LOOKUP_BATCH_SIZE));
+			const attachmentIds = [...owners.keys()];
+
+			for (let j = 0; j < attachmentIds.length; j += PHOTO_BATCH_SIZE) {
+				yield* await this.readPhotos(mailbox, attachmentIds.slice(j, j + PHOTO_BATCH_SIZE), owners);
+			}
+		}
+	}
+
+	private async findPhotoAttachments(mailbox: string, externalIds: string[]): Promise<Map<string, string>> {
+		const doc = parseEwsResponse(await this.transport.post(getContactAttachmentIdsRequest(mailbox, externalIds)));
+
+		const owners = new Map<string, string>();
+
+		for (const contact of allByTag(doc, TYPES_NS, 'Contact')) {
+			const externalId = attributeOf(contact, 'ItemId', 'Id');
+
+			if (!externalId) {
+				continue;
+			}
+
+			for (const attachment of allByTag(contact, TYPES_NS, 'FileAttachment')) {
+				// A contact can carry ordinary attachments too, and only one of them is the picture.
+				if (textOf(firstByTag(attachment, TYPES_NS, 'IsContactPhoto')) !== 'true') {
+					continue;
+				}
+
+				const attachmentId = attributeOf(attachment, 'AttachmentId', 'Id');
+
+				if (attachmentId) {
+					owners.set(attachmentId, externalId);
+				}
+			}
+		}
+
+		return owners;
+	}
+
+	private async readPhotos(mailbox: string, attachmentIds: string[], owners: Map<string, string>): Promise<ExchangeContactPhoto[]> {
+		const doc = parseEwsResponse(await this.transport.post(getAttachmentsRequest(mailbox, attachmentIds)));
+		const photos: ExchangeContactPhoto[] = [];
+
+		for (const attachment of allByTag(doc, TYPES_NS, 'FileAttachment')) {
+			const attachmentId = attributeOf(attachment, 'AttachmentId', 'Id');
+			const externalId = attachmentId && owners.get(attachmentId);
+			const content = textOf(firstByTag(attachment, TYPES_NS, 'Content'));
+
+			if (!externalId || !content) {
+				continue;
+			}
+
+			const data = new Uint8Array(Buffer.from(content, 'base64'));
+
+			if (!data.byteLength) {
+				continue;
+			}
+
+			if (data.byteLength > MAX_CONTACT_PHOTO_BYTES) {
+				logger.warn({ msg: 'Skipping an EWS contact photo above the size cap', externalId, bytes: data.byteLength });
+				continue;
+			}
+
+			photos.push({
+				data,
+				contentType: textOf(firstByTag(attachment, TYPES_NS, 'ContentType')) ?? 'image/jpeg',
+				externalId,
+			});
+		}
+
+		return photos;
 	}
 }

@@ -112,3 +112,118 @@ export const findItemCalendarViewRequest = (mailbox: string, start: Date, end: D
 function toEwsDateTime(date: Date): string {
 	return `${date.toISOString().replace(/\.\d{3}Z$/, 'Z')}`;
 }
+
+export const DEFAULT_CONTACT_FOLDER_ID = 'contacts';
+
+// The Contacts root is addressed by its distinguished name, every other folder by its opaque id.
+const contactFolderId = (folderId: string): string =>
+	folderId === DEFAULT_CONTACT_FOLDER_ID
+		? `<t:DistinguishedFolderId Id="${DEFAULT_CONTACT_FOLDER_ID}"/>`
+		: `<t:FolderId Id="${escapeXml(folderId)}"/>`;
+
+/* Deep, because a user can nest contact folders, and the root is added by the caller. `offset` walks the pages */
+export const findContactFoldersRequest = (mailbox: string, offset = 0, maxEntries = 100): string =>
+	envelope(
+		[
+			'<m:FindFolder Traversal="Deep">',
+			'<m:FolderShape><t:BaseShape>IdOnly</t:BaseShape>',
+			'<t:AdditionalProperties><t:FieldURI FieldURI="folder:DisplayName"/><t:FieldURI FieldURI="folder:FolderClass"/></t:AdditionalProperties>',
+			'</m:FolderShape>',
+			`<m:IndexedPageFolderView MaxEntriesReturned="${maxEntries}" Offset="${offset}" BasePoint="Beginning"/>`,
+			`<m:ParentFolderIds><t:DistinguishedFolderId Id="${DEFAULT_CONTACT_FOLDER_ID}"/></m:ParentFolderIds>`,
+			'</m:FindFolder>',
+		].join(''),
+		mailbox,
+	);
+
+export const syncContactFolderItemsRequest = (mailbox: string, folderId: string, syncState?: string, maxChanges = 100): string =>
+	envelope(
+		[
+			'<m:SyncFolderItems>',
+			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape></m:ItemShape>',
+			`<m:SyncFolderId>${contactFolderId(folderId)}</m:SyncFolderId>`,
+			syncState ? `<m:SyncState>${escapeXml(syncState)}</m:SyncState>` : '',
+			`<m:MaxChangesReturned>${maxChanges}</m:MaxChangesReturned>`,
+			'<m:SyncScope>NormalItems</m:SyncScope>',
+			'</m:SyncFolderItems>',
+		].join(''),
+		mailbox,
+	);
+
+const PHONE_KEYS = [
+	'AssistantPhone',
+	'BusinessFax',
+	'BusinessPhone',
+	'BusinessPhone2',
+	'Callback',
+	'CarPhone',
+	'CompanyMainPhone',
+	'HomeFax',
+	'HomePhone',
+	'HomePhone2',
+	'Isdn',
+	'MobilePhone',
+	'OtherFax',
+	'OtherTelephone',
+	'Pager',
+	'PrimaryPhone',
+	'RadioPhone',
+	'Telex',
+	'TtyTddPhone',
+];
+
+const EMAIL_KEYS = ['EmailAddress1', 'EmailAddress2', 'EmailAddress3'];
+
+export const getContactItemsRequest = (mailbox: string, itemIds: string[]): string =>
+	envelope(
+		[
+			'<m:GetItem>',
+			'<m:ItemShape>',
+			'<t:BaseShape>IdOnly</t:BaseShape>',
+			'<t:AdditionalProperties>',
+			'<t:FieldURI FieldURI="contacts:DisplayName"/>',
+			'<t:FieldURI FieldURI="contacts:GivenName"/>',
+			'<t:FieldURI FieldURI="contacts:Surname"/>',
+			'<t:FieldURI FieldURI="contacts:CompanyName"/>',
+			'<t:FieldURI FieldURI="contacts:OfficeLocation"/>',
+			'<t:FieldURI FieldURI="item:Categories"/>',
+			EMAIL_KEYS.map((key) => `<t:IndexedFieldURI FieldURI="contacts:EmailAddress" FieldIndex="${key}"/>`).join(''),
+			PHONE_KEYS.map((key) => `<t:IndexedFieldURI FieldURI="contacts:PhoneNumber" FieldIndex="${key}"/>`).join(''),
+			'</t:AdditionalProperties>',
+			'</m:ItemShape>',
+			'<m:ItemIds>',
+			itemIds.map((id) => `<t:ItemId Id="${escapeXml(id)}"/>`).join(''),
+			'</m:ItemIds>',
+			'</m:GetItem>',
+		].join(''),
+		mailbox,
+	);
+
+export const getContactAttachmentIdsRequest = (mailbox: string, itemIds: string[]): string =>
+	envelope(
+		[
+			'<m:GetItem>',
+			'<m:ItemShape>',
+			'<t:BaseShape>IdOnly</t:BaseShape>',
+			'<t:AdditionalProperties><t:FieldURI FieldURI="item:Attachments"/></t:AdditionalProperties>',
+			'</m:ItemShape>',
+			'<m:ItemIds>',
+			itemIds.map((id) => `<t:ItemId Id="${escapeXml(id)}"/>`).join(''),
+			'</m:ItemIds>',
+			'</m:GetItem>',
+		].join(''),
+		mailbox,
+	);
+
+export const getAttachmentsRequest = (mailbox: string, attachmentIds: string[]): string =>
+	envelope(
+		[
+			'<m:GetAttachment>',
+			'<m:AttachmentShape><t:IncludeMimeContent>false</t:IncludeMimeContent></m:AttachmentShape>',
+			'<m:AttachmentIds>',
+			attachmentIds.map((id) => `<t:AttachmentId Id="${escapeXml(id)}"/>`).join(''),
+			'</m:AttachmentIds>',
+			'</m:GetAttachment>',
+		].join(''),
+		mailbox,
+	);

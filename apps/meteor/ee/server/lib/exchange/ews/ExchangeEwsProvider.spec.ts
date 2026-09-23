@@ -1,5 +1,6 @@
-import { ExchangeEwsProvider, parseEwsDateTime } from './ExchangeEwsProvider';
+import { ExchangeEwsProvider } from './ExchangeEwsProvider';
 import type { IEwsTransport } from './IEwsTransport';
+import { parseEwsDateTime } from './parseResponse';
 
 const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';

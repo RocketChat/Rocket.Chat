@@ -33,6 +33,7 @@ const DEFAULT_CONTACT_FOLDER_ID = 'default';
 const CONTACT_FIELDS =
 	'id,displayName,givenName,surname,companyName,emailAddresses,mobilePhone,businessPhones,homePhones,categories,officeLocation';
 
+/** Graph's own ceiling, not a tuning knob: a `$batch` carrying more than 20 requests is rejected */
 const GRAPH_BATCH_SIZE = 20;
 
 type GraphDateTimeTimeZone = {
@@ -231,16 +232,12 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
 	}
 
-	public async getContactsPhotos(mailbox: string, externalIds: string[]): Promise<ExchangeContactPhoto[]> {
-		if (!externalIds.length) {
-			return [];
-		}
-
-		const photos: ExchangeContactPhoto[] = [];
+	public async *getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
 		const batchUrl = `${this.graphHost}/${GRAPH_API_VERSION}/$batch`;
 
 		for (let i = 0; i < externalIds.length; i += GRAPH_BATCH_SIZE) {
 			const chunk = externalIds.slice(i, i + GRAPH_BATCH_SIZE);
+			const batch: ExchangeContactPhoto[] = [];
 
 			const batchPayload = {
 				requests: chunk.map((externalId) => ({
@@ -275,7 +272,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 					const contentType = res.headers?.['Content-Type'] ?? res.headers?.['content-type'] ?? 'image/jpeg';
 
-					photos.push({
+					batch.push({
 						externalId: res.id,
 						data,
 						contentType,
@@ -284,9 +281,9 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			} catch (error) {
 				logger.error({ msg: 'Failed to fetch contact photos batch from Graph', mailbox, error });
 			}
-		}
 
-		return photos;
+			yield* batch;
+		}
 	}
 
 	private contactsDeltaUrl(mailbox: string, folderId: string): string {

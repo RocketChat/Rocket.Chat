@@ -24,5 +24,6 @@ export interface IExchangeProvider {
 	/** Per folder, because both providers scope the contact delta token to one. */
 	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
 
-	getContactsPhotos(mailbox: string, externalIds: string[]): Promise<ExchangeContactPhoto[]>;
+	/** Streamed, because a folder's worth of images held at once runs to hundreds of megabytes. */
+	getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto>;
 }
