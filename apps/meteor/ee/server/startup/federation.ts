@@ -51,15 +51,19 @@ export const startFederationService = async (): Promise<void> => {
 	await registerFederationRoutes();
 
 	// TODO move to service/setup?
-	StreamerCentral.on('broadcast', (name, eventName, args) => {
-		if (!serviceEnabled) {
+	StreamerCentral.on('publish', (name, eventName, args, uid) => {
+		if (!serviceEnabled || !uid) {
 			return;
 		}
 
 		if (name === 'notify-room' && eventName.endsWith('user-activity')) {
 			const [rid] = eventName.split('/');
-			const [user, activity] = args;
-			void FederationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
+			const [, activities] = args;
+			const isTyping = Array.isArray(activities) && activities.includes('user-typing');
+
+			FederationMatrixService.notifyUserTyping(rid, uid, isTyping).catch((err) => {
+				logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+			});
 		}
 	});
 
