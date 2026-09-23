@@ -33,6 +33,9 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
+		"@rocket.chat/css-in-js": "workspace:~",
+		"@rocket.chat/css-supports": "workspace:~",
+		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
 		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"browserslist": "^4.28.7",
