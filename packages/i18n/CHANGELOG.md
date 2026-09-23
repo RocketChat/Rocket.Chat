@@ -1,5 +1,45 @@
 # @rocket.chat/i18n
 
+## 4.1.0-rc.0
+
+### Minor Changes
+
+- ([#41020](https://github.com/RocketChat/Rocket.Chat/pull/41020)) Adds a **Realtime Message Composer**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Message → **Realtime message composer**). While the feature preview is off, the message composer keeps its current plain-text behavior.
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#42102](https://github.com/RocketChat/Rocket.Chat/pull/42102)) Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#41088](https://github.com/RocketChat/Rocket.Chat/pull/41088)) Adds a configurable **Room Toolbox Layout**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Room → **Room Toolbox Layout**). While the feature preview is off, the room header toolbox keeps its current behavior and the setting has no effect.
+
+  Admins can define the layout through the new workspace setting **Room Toolbox Layout** (`Room_Toolbox_Layout`) under **Admin → Settings → Layout → Room Header**, which is itself only shown when **Feature Preview** is enabled for the workspace. The setting value is validated against a JSON schema when saved, so a malformed configuration is rejected with an error instead of being silently ignored
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- ([#41548](https://github.com/RocketChat/Rocket.Chat/pull/41548)) Improves performance of several hot code paths without changing behavior: generates random IDs with a single `crypto.randomBytes` call instead of one per character, caches constant regular expressions used by the markdown/mention/autotranslate parsers instead of recompiling them for every message, skips the channel-mention database query for messages without channel mentions, deduplicates the room member count query when a message contains both `@all` and `@here`, and replaces linear array scans and spread-accumulators with Map/Set lookups in API response shaping (files, DM members, directory search and team listing).
+
 ## 4.0.0
 
 ### Minor Changes
@@ -25,8 +65,8 @@
 - ([#41673](https://github.com/RocketChat/Rocket.Chat/pull/41673)) Fixes the messages count displayed on a discussion taking into account system messages which are hidden inside of it, making the count higher than the number of messages actually visible after opening the discussion. The count now excludes every system message type hidden either globally or on the discussion itself. A hint was also added to the `Hide system messages` option of the room edit panel clarifying that the hidden messages are not included in the count.
 
 - <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/tools@0.4.0
+
   </details>
 
 ## 4.0.0-rc.1
@@ -58,8 +98,8 @@
 - ([#41673](https://github.com/RocketChat/Rocket.Chat/pull/41673)) Fixes the messages count displayed on a discussion taking into account system messages which are hidden inside of it, making the count higher than the number of messages actually visible after opening the discussion. The count now excludes every system message type hidden either globally or on the discussion itself. A hint was also added to the `Hide system messages` option of the room edit panel clarifying that the hidden messages are not included in the count.
 
 - <details><summary>Updated dependencies [742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/tools@0.4.0-rc.0
+
   </details>
 
 ## 3.3.0
@@ -71,7 +111,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -100,7 +139,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -180,7 +218,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -226,8 +263,8 @@
 - ([#39985](https://github.com/RocketChat/Rocket.Chat/pull/39985)) Adds error feedback when clicking on a mentioned room you don't have access to
 
 - <details><summary>Updated dependencies [95a82f72dd45fc51d54bb1beed295315facf9109]:</summary>
-
   - @rocket.chat/tools@0.3.0
+
   </details>
 
 ## 3.0.0-rc.0
@@ -245,8 +282,8 @@
 - ([#39985](https://github.com/RocketChat/Rocket.Chat/pull/39985)) Adds error feedback when clicking on a mentioned room you don't have access to
 
 - <details><summary>Updated dependencies [95a82f72dd45fc51d54bb1beed295315facf9109]:</summary>
-
   - @rocket.chat/tools@0.3.0-rc.0
+
   </details>
 
 ## 2.2.0
@@ -270,8 +307,8 @@
 - ([#39461](https://github.com/RocketChat/Rocket.Chat/pull/39461)) Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
 
 - <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
-
   - @rocket.chat/tools@0.2.5
+
   </details>
 
 ## 2.2.0-rc.0
@@ -293,8 +330,8 @@
 - ([#39461](https://github.com/RocketChat/Rocket.Chat/pull/39461)) Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
 
 - <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
-
   - @rocket.chat/tools@0.2.5-rc.0
+
   </details>
 
 ## 2.1.0
@@ -354,8 +391,8 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4
+
   </details>
 
 ## 2.0.0-rc.0
@@ -387,8 +424,8 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4-rc.0
+
   </details>
 
 ## 1.13.0
@@ -520,8 +557,8 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3
+
   </details>
 
 ## 1.9.0-rc.0
@@ -543,8 +580,8 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3-rc.0
+
   </details>
 
 ## 1.8.0

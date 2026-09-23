@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/storybook-dark-mode",
-	"version": "4.2.1",
+	"version": "4.3.0-rc.0",
 	"description": "Toggle between light and dark mode in Storybook (Rocket.Chat fork)",
 	"repository": {
 		"type": "git",

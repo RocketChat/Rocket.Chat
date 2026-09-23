@@ -1,5 +1,11 @@
 # @rocket.chat/desktop-api
 
+## 1.4.0-rc.0
+
+### Minor Changes
+
+- ([#40915](https://github.com/RocketChat/Rocket.Chat/pull/40915)) Desktop markdown attachments now open in the desktop document viewer directly instead of relying on download interception
+
 ## 1.3.0
 
 ### Minor Changes
@@ -9,7 +15,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -32,7 +37,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -57,7 +61,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
