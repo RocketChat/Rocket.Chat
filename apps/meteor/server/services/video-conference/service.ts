@@ -1955,14 +1955,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],
 		mode: VideoConferenceChatAccessMode,
+		users?: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']> {
 		const {
 			access: { rid, membersWithoutAccess, canInvite },
-			usernamesWithoutAccess: usernames,
+			usernamesWithoutAccess,
 		} = await this.resolveChatAccess(uid, callId);
-		if (!membersWithoutAccess.length) {
+
+		// Named outright, these are people being brought into the conversation rather than members who cannot
+		// read it — so there is nothing to work out, and no reason to stop when everyone can already read it.
+		if (!users && !membersWithoutAccess.length) {
 			return rid;
 		}
+
+		const usernames = users ?? usernamesWithoutAccess;
 
 		const resolved = resolveChatAccessMode({ mode, canInvite });
 		if (!resolved) {
@@ -2110,6 +2116,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return name.includes('[date]') ? name.replace('[date]', date) : `${date} ${name}`;
 	}
 
+	/** Who is in a room: a DM lists them on the room itself, everything else has to be read from subscriptions. */
+	private async getUsernamesFromRoom(room: Pick<IRoom, '_id' | 't' | 'usernames'>): Promise<NonNullable<IUser['username']>[]> {
+		if (room.t === 'd') {
+			return room.usernames || [];
+		}
+
+		return (await Subscriptions.findByRoomIdWhenUsernameExists(room._id, { projection: { 'u.username': 1 } }).toArray())
+			.map((subscription) => subscription.u.username)
+			.filter((username): username is string => !!username);
+	}
+
 	/**
 	 * Moves the conference's chat to a discussion off its room, so it continues without exposing the parent
 	 * room's history to the people being added.
@@ -2148,13 +2165,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Not the conference's `users`: that holds only people who joined the call, which is not the room's
 		// membership.
-		const existingMembers =
-			baseRoom.t === 'd'
-				? baseRoom.usernames || []
-				: (await Subscriptions.findByRoomIdWhenUsernameExists(baseRoom._id, { projection: { 'u.username': 1 } }).toArray())
-						.map((subscription) => subscription.u.username)
-						.filter((username): username is string => !!username);
-		const members = [...new Set([...existingMembers, ...usernames])].filter(Boolean);
+		const existingMembers = await this.getUsernamesFromRoom(baseRoom);
+
+		// When the chat has moved before, the room it started in is read as well. Somebody who joined that room
+		// since the first fork is part of the conversation and would otherwise be left behind by the second.
+		const originalRoom =
+			baseRoom._id === call.rid
+				? null
+				: await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames'>>(call.rid, { projection: { t: 1, usernames: 1 } });
+		const originalMembers = originalRoom ? await this.getUsernamesFromRoom(originalRoom) : [];
+
+		const members = [...new Set([...originalMembers, ...existingMembers, ...usernames])].filter(Boolean);
 
 		const name = this.getDiscussionDisplayName();
 
