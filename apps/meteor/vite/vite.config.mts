@@ -49,6 +49,33 @@ const rocketchatInfo = (): Plugin => {
 	};
 };
 
+// Swaps the modules that wrap Meteor's client runtime for their implementations in vite/native.
+const nativeModules = (): Plugin => {
+	const replacements = new Map(
+		Object.entries({
+			'client/meteor/accounts.ts': 'accounts.ts',
+			'client/meteor/connection.ts': 'connection.ts',
+			'client/meteor/overrides/index.ts': 'overrides.ts',
+			'client/meteor/login/index.ts': 'login.ts',
+			'client/lib/sdk/meteorBackedSdk.ts': 'meteorBackedSdk.ts',
+			'client/lib/sdk/sdkTransportEnabled.ts': 'sdkTransportEnabled.ts',
+			'client/lib/sdk/ddpProtocol.ts': 'ddpProtocol.ts',
+			'client/lib/customOAuth/CustomOAuth.ts': 'CustomOAuth.ts',
+		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
+	);
+
+	return {
+		name: 'rocketchat-native-modules',
+		enforce: 'pre',
+		async resolveId(source, importer, options) {
+			if (!importer || !(source.startsWith('.') || source.startsWith('/'))) return null;
+
+			const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
+			return (resolved && replacements.get(resolved.id.split('?')[0])) ?? null;
+		},
+	};
+};
+
 // In dev the page is served by Vite instead of the Meteor server, which would otherwise inject this global.
 const devRuntimeConfig = (): Plugin => ({
 	name: 'rocketchat-dev-runtime-config',
@@ -63,7 +90,7 @@ const devRuntimeConfig = (): Plugin => ({
 });
 
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
-const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3000';
+const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
 const serverRoutes = [
 	'/api',
 	'/_oauth',
@@ -90,6 +117,7 @@ const serverRoutes = [
 // Workspace packages are linked, so the dev server serves them as source and does not convert their CommonJS
 // dist to ESM unless they are listed here. The production build handles the interop on its own.
 const prebundledWorkspaceDeps = [
+	'@rocket.chat/ai-search',
 	'@rocket.chat/api-client',
 	'@rocket.chat/apps-engine/definition/AppStatus',
 	'@rocket.chat/apps-engine/definition/ui',
@@ -108,6 +136,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/fuselage-toastbar',
 	'@rocket.chat/fuselage-ui-kit',
 	'@rocket.chat/gazzodown',
+	'@rocket.chat/gazzodown-alt',
 	'@rocket.chat/i18n',
 	'@rocket.chat/layout',
 	'@rocket.chat/message-parser',
@@ -121,6 +150,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-avatar',
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
+	'@rocket.chat/ui-conference',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
 	'@rocket.chat/ui-video-conf',
@@ -131,7 +161,7 @@ const prebundledWorkspaceDeps = [
 export default defineConfig({
 	root: here,
 	publicDir: join(appRoot, 'public'),
-	plugins: [react(), rocketchatInfo(), devRuntimeConfig()],
+	plugins: [react(), rocketchatInfo(), nativeModules(), devRuntimeConfig()],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },
@@ -156,7 +186,9 @@ export default defineConfig({
 		include: prebundledWorkspaceDeps,
 	},
 	server: {
-		port: Number(process.env.PORT) || 4000,
+		port: Number(process.env.PORT) || 3000,
+		// Same default as the Meteor server this replaces in dev.
+		host: process.env.BIND_IP || '0.0.0.0',
 		strictPort: true,
 		proxy: {
 			...Object.fromEntries(serverRoutes.map((route) => [route, { target: serverUrl, changeOrigin: true }])),

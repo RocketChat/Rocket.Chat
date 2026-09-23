@@ -13,7 +13,7 @@ const unavailable = (name: string): any => {
 	const warn = () => {
 		if (warned.has(name)) return;
 		warned.add(name);
-		console.warn(`[vite] ${name} is not available outside the Meteor build`);
+		console.warn(`[vite] ${name} is not available outside the Meteor build`, new Error().stack);
 	};
 
 	const proxy: any = new Proxy(inert, {
