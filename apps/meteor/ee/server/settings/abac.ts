@@ -38,6 +38,18 @@ export function addSettings(): Promise<void> {
 					i18nDescription: 'ABAC_Enforce_All_Rooms_Description',
 					enableQuery: abacEnabledQuery,
 				});
+				// ABAC-P4/D10 — holds what `Discussion_enabled` was worth before enforcement took it
+				// over, so switching enforcement off puts the workspace back where it was rather
+				// than at the setting's default. `''` means no override is in effect. Hidden, so it
+				// is never published to a client and `/v1/settings` neither reads nor writes it:
+				// only `discussionEnforcementOverride` may touch it.
+				await this.add('ABAC_Discussion_Enabled_Restore', '', {
+					type: 'string',
+					public: false,
+					hidden: true,
+					invalidValue: '',
+					section: 'ABAC',
+				});
 				await this.add('ABAC_PDP_Type', 'local', {
 					type: 'select',
 					public: true,

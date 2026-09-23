@@ -17,9 +17,13 @@ const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
 	isRecord(rule.query) &&
+	(rule.referencesMayBeAbsent === undefined || typeof rule.referencesMayBeAbsent === 'boolean') &&
 	(rule.appliesWhen === undefined ||
 		isAppliesWhenCondition(rule.appliesWhen) ||
-		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.every(isAppliesWhenCondition)));
+		// An empty array is rejected rather than read as "applies always": `every` passes vacuously
+		// on it, so a rule that lost its conditions would start refusing saves it was written to
+		// leave alone. Omitting `appliesWhen` is how a rule says it is unconditional.
+		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.length > 0 && rule.appliesWhen.every(isAppliesWhenCondition)));
 
 const isValidationRuleArray = (value: unknown): value is SettingValidationRule[] => Array.isArray(value) && value.every(isValidationRule);
 
@@ -108,7 +112,13 @@ const evaluateSettingValidationRule = (
 
 	const unknownReferences = Object.keys(references).filter((id) => references[id] === undefined);
 	if (unknownReferences.length) {
-		logger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
+		// A rule that declares the absence is gating on a setting another edition owns, so there is
+		// nothing to report. Anything else is a broken declaration that silently stops the rule ever
+		// applying, which is worth an error precisely because the save still succeeds.
+		if (!rule.referencesMayBeAbsent) {
+			logger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
+		}
+
 		return true;
 	}
 
