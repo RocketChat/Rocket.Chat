@@ -241,10 +241,6 @@ export interface IUser extends IRocketChatRecord {
 	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	/**
-	 * @deprecated Use `phones` instead.
-	 */
-	phone?: string;
 	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
