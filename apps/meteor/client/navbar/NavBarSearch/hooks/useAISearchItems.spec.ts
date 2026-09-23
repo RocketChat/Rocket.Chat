@@ -1,4 +1,5 @@
-import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, AI_SEARCH_PAGE_SIZE, emptySearchFilters } from '@rocket.chat/ai-search';
+import type { AppliedFilter, SearchFilterKey } from '@rocket.chat/ai-search';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, AI_SEARCH_PAGE_SIZE, createAppliedFilter } from '@rocket.chat/ai-search';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
@@ -13,6 +14,16 @@ jest.mock('@rocket.chat/fuselage-hooks', () => ({
 	...jest.requireActual('@rocket.chat/fuselage-hooks'),
 	useDebouncedValue: (value: unknown) => mockDebounce(value),
 }));
+
+const appliedFilter = (key: SearchFilterKey, value: string): AppliedFilter => {
+	const filter = createAppliedFilter(key, value);
+
+	if (!filter) {
+		throw new Error(`Expected ${key}:${value} to be a valid filter`);
+	}
+
+	return filter;
+};
 
 type AutocompleteUser = {
 	_id: string;
@@ -66,10 +77,7 @@ describe('useAISearchItems', () => {
 	describe('when AI search is inactive', () => {
 		it('passes the filter text through untouched and yields no items', async () => {
 			const { wrapper, aiSearchHandler, usersAutocompleteHandler } = setup();
-			const { result } = renderHook(
-				() => useAISearchItems('in:general deploy', { ...emptySearchFilters(), roomNames: ['support'] }, false),
-				{ wrapper },
-			);
+			const { result } = renderHook(() => useAISearchItems('in:general deploy', [appliedFilter('in', 'support')], false), { wrapper });
 
 			await act(async () => undefined);
 
@@ -97,7 +105,7 @@ describe('useAISearchItems', () => {
 			const intelligent = [{ _id: 'msg-1', msgId: 'msg-1', text: 'Deployment failed' }];
 			const { wrapper, aiSearchHandler } = setup({ intelligent });
 			const { result } = renderHook(
-				() => useAISearchItems('in:general from:john after:2026-01-01 before:2026-02-01 deploy failed', emptySearchFilters(), true),
+				() => useAISearchItems('in:general from:john after:2026-01-01 before:2026-02-01 deploy failed', [], true),
 				{ wrapper },
 			);
 
@@ -123,7 +131,7 @@ describe('useAISearchItems', () => {
 				() =>
 					useAISearchItems(
 						'in:general hello',
-						{ ...emptySearchFilters(), roomNames: ['support'], fromUsernames: ['jane'], startDate: '2026-05-01' },
+						[appliedFilter('in', 'support'), appliedFilter('from', 'jane'), appliedFilter('after', '2026-05-01')],
 						true,
 					),
 				{ wrapper },
@@ -140,9 +148,25 @@ describe('useAISearchItems', () => {
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 		});
 
+		it('sends the resolved room id when the filter came from a suggestion', async () => {
+			const { wrapper, aiSearchHandler } = setup();
+			const { result } = renderHook(
+				() => useAISearchItems('hello', [{ ...appliedFilter('in', 'general'), meta: { rid: 'rid-general' } }], true),
+				{ wrapper },
+			);
+
+			await waitFor(() => expect(aiSearchHandler).toHaveBeenCalled());
+			expect(aiSearchHandler).toHaveBeenCalledWith({
+				query: 'hello',
+				intelligentCount: AI_SEARCH_PAGE_SIZE,
+				rids: 'rid-general',
+			});
+			await waitFor(() => expect(result.current.isFetching).toBe(false));
+		});
+
 		it('does not hit ai.search when only filter tokens are present', async () => {
 			const { wrapper, aiSearchHandler } = setup();
-			const { result } = renderHook(() => useAISearchItems('in:general ', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('in:general ', [], true), { wrapper });
 
 			await act(async () => undefined);
 
@@ -155,7 +179,7 @@ describe('useAISearchItems', () => {
 			mockDebounce = () => 'stale';
 			const intelligent = [{ _id: 'msg-1', text: 'Old result' }];
 			const { wrapper, aiSearchHandler } = setup({ intelligent });
-			const { result } = renderHook(() => useAISearchItems('deploy', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('deploy', [], true), { wrapper });
 
 			await waitFor(() => expect(aiSearchHandler).toHaveBeenCalledWith(expect.objectContaining({ query: 'stale' })));
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -168,7 +192,7 @@ describe('useAISearchItems', () => {
 		it('suggests rooms while an in: token is being typed', async () => {
 			const subscriptions = [createFakeSubscription({ rid: 'rid-general', name: 'general', fname: 'General', t: 'c' })];
 			const { wrapper, aiSearchHandler } = setup({ subscriptions });
-			const { result } = renderHook(() => useAISearchItems('in:gen', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('in:gen', [], true), { wrapper });
 
 			await act(async () => undefined);
 
@@ -177,13 +201,27 @@ describe('useAISearchItems', () => {
 			expect(result.current.data.filterSuggestions).toEqual([
 				{
 					key: 'in-rid-general',
+					filterKey: 'in',
 					group: 'rooms',
 					title: '#General',
 					description: 'Search in this room',
-					value: 'in:general ',
+					value: 'general',
 					icon: 'hash',
+					meta: { rid: 'rid-general' },
 				},
 			]);
+		});
+
+		it('lists recent rooms as soon as an empty in: token is started', async () => {
+			const subscriptions = [createFakeSubscription({ rid: 'rid-general', name: 'general', fname: 'General', t: 'c' })];
+			const { wrapper } = setup({ subscriptions });
+			const { result } = renderHook(() => useAISearchItems('in:', [], true), { wrapper });
+
+			await act(async () => undefined);
+
+			expect(result.current.data.draft).toEqual({ key: 'in', value: '' });
+			expect(result.current.data.filterSuggestions).toHaveLength(1);
+			expect(result.current.data.filterSuggestions[0]).toEqual(expect.objectContaining({ filterKey: 'in', value: 'general' }));
 		});
 
 		it('caps room suggestions at the configured limit', async () => {
@@ -191,7 +229,7 @@ describe('useAISearchItems', () => {
 				createFakeSubscription({ rid: `rid-${index}`, name: `general-${index}`, t: 'c' }),
 			);
 			const { wrapper } = setup({ subscriptions });
-			const { result } = renderHook(() => useAISearchItems('in:gen', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('in:gen', [], true), { wrapper });
 
 			await act(async () => undefined);
 
@@ -201,7 +239,7 @@ describe('useAISearchItems', () => {
 		it('does not suggest rooms without an active in: token', async () => {
 			const subscriptions = [createFakeSubscription({ rid: 'rid-general', name: 'general', t: 'c' })];
 			const { wrapper } = setup({ subscriptions });
-			const { result } = renderHook(() => useAISearchItems('general stuff', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('general stuff', [], true), { wrapper });
 
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -221,24 +259,26 @@ describe('useAISearchItems', () => {
 
 		it('suggests usernames from users.autocomplete while a from: token is active', async () => {
 			const { wrapper, usersAutocompleteHandler } = setup({ users: [john] });
-			const { result } = renderHook(() => useAISearchItems('from:jo', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('from:jo', [], true), { wrapper });
 
 			await waitFor(() =>
 				expect(result.current.data.filterSuggestions).toEqual([
 					{
 						key: 'from-user-1',
+						filterKey: 'from',
 						group: 'users',
 						title: '@john',
 						description: 'John Doe',
-						value: 'from:john ',
+						value: 'john',
 						icon: 'user',
 					},
 					{
 						key: 'from-current',
+						filterKey: 'from',
 						group: 'users',
 						title: 'from:jo',
 						description: 'Search messages from this username',
-						value: 'from:jo ',
+						value: 'jo',
 						icon: 'user',
 					},
 				]),
@@ -251,7 +291,7 @@ describe('useAISearchItems', () => {
 		it('withholds username suggestions while the debounced from: value lags behind', async () => {
 			mockDebounce = (value) => (value === 'jo' ? '' : value);
 			const { wrapper, usersAutocompleteHandler } = setup({ users: [john] });
-			const { result } = renderHook(() => useAISearchItems('from:jo', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('from:jo', [], true), { wrapper });
 
 			await waitFor(() => expect(usersAutocompleteHandler).toHaveBeenCalled());
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -259,10 +299,11 @@ describe('useAISearchItems', () => {
 			expect(result.current.data.filterSuggestions).toEqual([
 				{
 					key: 'from-current',
+					filterKey: 'from',
 					group: 'users',
 					title: 'from:jo',
 					description: 'Search messages from this username',
-					value: 'from:jo ',
+					value: 'jo',
 					icon: 'user',
 				},
 			]);
@@ -281,7 +322,7 @@ describe('useAISearchItems', () => {
 
 		it('offers date suggestions for a trailing after: token', async () => {
 			const { wrapper } = setup();
-			const { result } = renderHook(() => useAISearchItems('after:', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('after:', [], true), { wrapper });
 
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -294,26 +335,29 @@ describe('useAISearchItems', () => {
 			expect(result.current.data.filterSuggestions).toEqual([
 				{
 					key: `after-${formatDate(today)}`,
+					filterKey: 'after',
 					group: 'dates',
 					title: `after:${formatDate(today)}`,
 					description: 'Today',
-					value: `after:${formatDate(today)} `,
+					value: formatDate(today),
 					icon: 'calendar',
 				},
 				{
 					key: `after-${formatDate(yesterday)}`,
+					filterKey: 'after',
 					group: 'dates',
 					title: `after:${formatDate(yesterday)}`,
 					description: 'Yesterday',
-					value: `after:${formatDate(yesterday)} `,
+					value: formatDate(yesterday),
 					icon: 'calendar',
 				},
 				{
 					key: `after-${formatDate(lastWeek)}`,
+					filterKey: 'after',
 					group: 'dates',
 					title: `after:${formatDate(lastWeek)}`,
 					description: 'Last 7 days',
-					value: `after:${formatDate(lastWeek)} `,
+					value: formatDate(lastWeek),
 					icon: 'calendar',
 				},
 			]);
@@ -321,7 +365,7 @@ describe('useAISearchItems', () => {
 
 		it('offers date suggestions for a trailing before: token', async () => {
 			const { wrapper } = setup();
-			const { result } = renderHook(() => useAISearchItems('before:', emptySearchFilters(), true), { wrapper });
+			const { result } = renderHook(() => useAISearchItems('before:', [], true), { wrapper });
 
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 

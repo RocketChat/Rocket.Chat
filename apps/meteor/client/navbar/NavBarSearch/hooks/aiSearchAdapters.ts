@@ -8,5 +8,5 @@ export const buildUsernameAutocompleteQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions: {}, exceptions: [] }) });
 
-export const getRoomLookupQuery = (roomLookupText: string): ReturnType<typeof buildRoomSearchQuery> | typeof emptySubscriptionQuery =>
-	roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptySubscriptionQuery;
+export const getRoomLookupQuery = (roomLookupText: string): ReturnType<typeof buildRoomSearchQuery> | Record<string, never> =>
+	roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : {};

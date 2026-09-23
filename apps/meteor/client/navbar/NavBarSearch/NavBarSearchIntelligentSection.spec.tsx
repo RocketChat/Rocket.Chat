@@ -1,4 +1,4 @@
-import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { createAppliedFilter, type AppliedFilter, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
@@ -16,7 +16,7 @@ const SearchFormProvider = ({ children }: { children: ReactNode }) => {
 	const methods = useForm<NavBarSearchFormValues>({
 		defaultValues: {
 			filterText: 'deployment errors',
-			appliedFilters: { ...emptySearchFilters(), roomNames: ['general'] },
+			filters: [createAppliedFilter('in', 'general') as AppliedFilter],
 		},
 	});
 

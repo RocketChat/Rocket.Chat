@@ -1,15 +1,10 @@
-import {
-	emptySearchFilters,
-	mergeSearchFilters,
-	parseSearchFilterText,
-	type NavBarSearchFormValues,
-	type SearchFilterSuggestion,
-} from '@rocket.chat/ai-search';
+import type { SearchFilterGroup, SearchFilterSuggestion } from '@rocket.chat/ai-search';
 import { Box, Icon, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactElement } from 'react';
-import { useCallback, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useSearchFilters } from './hooks/useSearchFilters';
 
 const filterSuggestionGroupLabels = {
 	rooms: 'Search_filter_rooms',
@@ -21,13 +16,13 @@ export type NavBarSearchFilterSuggestionsProps = {
 	suggestions: SearchFilterSuggestion[];
 };
 
-const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] => {
-	const grouped: Record<SearchFilterSuggestion['group'], SearchFilterSuggestion[]> = { rooms: [], users: [], dates: [] };
+const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchFilterGroup, SearchFilterSuggestion[]][] => {
+	const grouped: Record<SearchFilterGroup, SearchFilterSuggestion[]> = { rooms: [], users: [], dates: [] };
 	for (const suggestion of suggestions) {
 		grouped[suggestion.group].push(suggestion);
 	}
 
-	const groups: [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] = [];
+	const groups: [SearchFilterGroup, SearchFilterSuggestion[]][] = [];
 	for (const group of ['rooms', 'users', 'dates'] as const) {
 		if (grouped[group].length > 0) {
 			groups.push([group, grouped[group]]);
@@ -39,21 +34,14 @@ const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchF
 
 const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSuggestionsProps): ReactElement | null => {
 	const { t } = useTranslation();
-	const { getValues, setFocus, setValue } = useFormContext<NavBarSearchFormValues>();
+	const { acceptSuggestion } = useSearchFilters();
 	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(suggestions), [suggestions]);
 
-	const handleFilterSuggestion = useCallback(
-		(event: MouseEvent, value: string) => {
-			event.preventDefault();
-			event.stopPropagation();
-			const { searchText, filters } = parseSearchFilterText(value);
-			const appliedFilters = getValues('appliedFilters') ?? emptySearchFilters();
-			setValue('appliedFilters', mergeSearchFilters(appliedFilters, filters), { shouldDirty: true });
-			setValue('filterText', searchText, { shouldDirty: true });
-			setFocus('filterText');
-		},
-		[getValues, setFocus, setValue],
-	);
+	const handleFilterSuggestion = (event: MouseEvent, suggestion: SearchFilterSuggestion) => {
+		event.preventDefault();
+		event.stopPropagation();
+		acceptSuggestion(suggestion);
+	};
 
 	if (!filterSuggestionGroups.length) {
 		return null;
@@ -67,7 +55,7 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 						{t(filterSuggestionGroupLabels[group])}
 					</Box>
 					{groupSuggestions.map((item) => (
-						<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
+						<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item)}>
 							<SidebarItemIcon icon={<Icon name={item.icon} size='x16' />} />
 							<SidebarItemTitle>{item.title}</SidebarItemTitle>
 							<Box color='hint' fontScale='c1' flexShrink={0}>
