@@ -1,0 +1,31 @@
+ee/apps/account-service/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 39
+ee/apps/ddp-streamer/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 41
+ee/apps/omnichannel-transcript/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 45
+ee/apps/presence-service/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 38
+ee/apps/queue-worker/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 39
+apps/meteor/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 264
+ee/apps/authorization-service/package.json
+  s_a3d0eb8bd3caff::t_2c1551a7f77a9b 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b2ccb7be40e6e0a3a93441494209e48ca11f715f",
+  "prompts": {},
+  "sessions": {
+    "s_a3d0eb8bd3caff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7dca468-7cff-4f29-878e-3e0b0f3b6d9b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
