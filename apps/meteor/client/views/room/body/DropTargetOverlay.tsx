@@ -46,7 +46,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 				try {
 					const response = await fetch(src);
 					const data = await response.blob();
-					const extension = (await import('../../../../app/utils/lib/mimeTypes')).mime.extension(data.type);
+					const extension = (await import('../../../../lib/mimeTypes')).mime.extension(data.type);
 					const filename = `File - ${formatDateAndTime(new Date())}.${extension}`;
 					const file = new File([data], filename, { type: data.type });
 					files.push(file);

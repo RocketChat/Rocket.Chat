@@ -17,7 +17,7 @@ import { ImportDataConverter } from './ImportDataConverter';
 import type { ConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../../../lib/importer/ImporterProgressStep';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../notifyListener';
 import type { ImporterInfo } from '../definitions/ImporterInfo';

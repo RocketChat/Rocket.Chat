@@ -45,7 +45,7 @@ export const useFileUploadDropTarget = (): readonly [
 	);
 
 	const onFileDrop = useStableCallback(async (files: File[]) => {
-		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
+		const { getMimeType } = await import('../../../../../lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<string> = new Set();

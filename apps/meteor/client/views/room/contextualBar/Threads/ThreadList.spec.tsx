@@ -14,7 +14,7 @@ jest.mock('../../contexts/RoomContext', () => ({
 }));
 
 // TODO: Create a function to mock the lib/i18n to be used with mockAppRoot
-jest.mock('../../../../../app/utils/lib/i18n', () => ({
+jest.mock('../../../../../lib/i18n', () => ({
 	t: (key: string) => key,
 }));
 

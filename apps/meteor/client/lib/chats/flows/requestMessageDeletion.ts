@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { imperativeModal } from '@rocket.chat/ui-client';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import DeleteMessageConfirmModal from '../../../views/room/modals/DeleteMessageConfirmModal';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
