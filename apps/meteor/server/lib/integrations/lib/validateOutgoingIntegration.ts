@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { compileIntegrationScript } from './compileIntegrationScript';
 import { isScriptEngineFrozen } from './validateScriptEngine';
-import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
+import { outgoingEvents } from '../../../../lib/integrations/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../authorization/hasPermission';
 
