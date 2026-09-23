@@ -37,7 +37,7 @@ import { getContactVerificationStatistics } from './getContactVerificationStatis
 import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
 import { getMatrixFederationStatistics } from '../../../services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { settings } from '../../../settings';

@@ -6,7 +6,7 @@ import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import AppErrorPage from './AppErrorPage';
-import { Info } from '../../../app/utils/rocketchat.info';
+import { Info } from '../../../rocketchat.info';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
