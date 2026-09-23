@@ -33,6 +33,7 @@
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
+		"dev:next": "vite --config vite/vite.config.mts",
 		"docker:start": "docker-compose up",
 		"dsv": "meteor npm run dev",
 		"eslint": "NODE_OPTIONS=\"--max-old-space-size=8192\" eslint --cache",

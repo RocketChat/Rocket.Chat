@@ -49,10 +49,89 @@ const rocketchatInfo = (): Plugin => {
 	};
 };
 
+// In dev the page is served by Vite instead of the Meteor server, which would otherwise inject this global.
+const devRuntimeConfig = (): Plugin => ({
+	name: 'rocketchat-dev-runtime-config',
+	apply: 'serve',
+	transformIndexHtml: () => [
+		{
+			tag: 'script',
+			children: `window.__meteor_runtime_config__ = { ROOT_URL: window.location.origin + '/', ROOT_URL_PATH_PREFIX: '' };`,
+			injectTo: 'head-prepend',
+		},
+	],
+});
+
+// Routes the running Rocket.Chat server answers; everything else is served by Vite.
+const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3000';
+const serverRoutes = [
+	'/api',
+	'/_oauth',
+	'/_saml',
+	'/_cas',
+	'/_accounts',
+	'/_timesync',
+	'/i18n',
+	'/avatar',
+	'/emoji-custom',
+	'/custom-sounds',
+	'/file-upload',
+	'/file-decrypt',
+	'/ufs',
+	'/data-export',
+	'/assets',
+	'/livechat',
+	'/theme.css',
+	'/robots.txt',
+	'^/css-theme',
+	'^/scripts_',
+];
+
+// Workspace packages are linked, so the dev server serves them as source and does not convert their CommonJS
+// dist to ESM unless they are listed here. The production build handles the interop on its own.
+const prebundledWorkspaceDeps = [
+	'@rocket.chat/api-client',
+	'@rocket.chat/apps-engine/definition/AppStatus',
+	'@rocket.chat/apps-engine/definition/ui',
+	'@rocket.chat/apps/dist/client/AppClientManager',
+	'@rocket.chat/apps/dist/client/AppsEngineUIHost',
+	'@rocket.chat/authorization/dist/AuthorizationUtils',
+	'@rocket.chat/base64',
+	'@rocket.chat/core-typings',
+	'@rocket.chat/css-in-js',
+	'@rocket.chat/ddp-client',
+	'@rocket.chat/emitter',
+	'@rocket.chat/favicon',
+	'@rocket.chat/fuselage',
+	'@rocket.chat/fuselage-forms',
+	'@rocket.chat/fuselage-hooks',
+	'@rocket.chat/fuselage-toastbar',
+	'@rocket.chat/fuselage-ui-kit',
+	'@rocket.chat/gazzodown',
+	'@rocket.chat/i18n',
+	'@rocket.chat/layout',
+	'@rocket.chat/message-parser',
+	'@rocket.chat/message-types',
+	'@rocket.chat/mongo-adapter',
+	'@rocket.chat/random',
+	'@rocket.chat/rest-typings',
+	'@rocket.chat/sha256',
+	'@rocket.chat/styled',
+	'@rocket.chat/tools',
+	'@rocket.chat/ui-avatar',
+	'@rocket.chat/ui-client',
+	'@rocket.chat/ui-composer',
+	'@rocket.chat/ui-contexts',
+	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-video-conf',
+	'@rocket.chat/ui-voip',
+	'@rocket.chat/web-ui-registration',
+];
+
 export default defineConfig({
 	root: here,
 	publicDir: join(appRoot, 'public'),
-	plugins: [react(), rocketchatInfo()],
+	plugins: [react(), rocketchatInfo(), devRuntimeConfig()],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },
@@ -71,6 +150,18 @@ export default defineConfig({
 	css: {
 		postcss: {
 			plugins: [postcssEasyImport(), postcssCustomProperties({ preserve: true }), postcssMediaMinmax(), postcssNested(), autoprefixer()],
+		},
+	},
+	optimizeDeps: {
+		include: prebundledWorkspaceDeps,
+	},
+	server: {
+		port: Number(process.env.PORT) || 4000,
+		strictPort: true,
+		proxy: {
+			...Object.fromEntries(serverRoutes.map((route) => [route, { target: serverUrl, changeOrigin: true }])),
+			'/websocket': { target: serverUrl, changeOrigin: true, ws: true },
+			'/sockjs': { target: serverUrl, changeOrigin: true, ws: true },
 		},
 	},
 	build: {
