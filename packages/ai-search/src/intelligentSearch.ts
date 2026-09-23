@@ -1,4 +1,4 @@
-import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
+import { CLASSIFICATION_SEARCH_TYPE, MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -310,9 +310,11 @@ export const searchIntelligentPipeline = async ({
 			body: JSON.stringify({
 				query: formattedQuery,
 				type: searchType,
+				// classification.search_type selects how classifications resolve against the pipeline's
+				// hierarchy, not which retriever runs - that is the top-level `type`
 				classification: {
 					classifications,
-					search_type: mode === 'keyword' ? 1 : 2,
+					search_type: CLASSIFICATION_SEARCH_TYPE,
 				},
 				filters: pipelineFilters,
 				params: {

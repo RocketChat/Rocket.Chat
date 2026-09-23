@@ -394,7 +394,7 @@ describe('AI Search intelligent search helpers', () => {
 				type: 'search',
 				classification: {
 					classifications: ['user'],
-					search_type: 1,
+					search_type: 2,
 				},
 				filters: { room_id: { $in: ['r1'] } },
 				params: {
