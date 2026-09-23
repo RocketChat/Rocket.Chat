@@ -359,3 +359,85 @@ describe('VideoConferenceRaw.createGroup', () => {
 		expect(doc.discussionRid).toBe('discussion-1');
 	});
 });
+
+describe('VideoConferenceRaw.findPaginatedByRoomId', () => {
+	const setupAggregation = () => {
+		const aggregate = jest.fn().mockReturnValue({});
+		const countDocuments = jest.fn().mockResolvedValue(0);
+		const model = new VideoConferenceRaw({ collection: () => ({}) } as never);
+		Object.defineProperty(model, 'col', { value: { aggregate, countDocuments } });
+
+		return { model, aggregate, countDocuments };
+	};
+
+	const stageNames = (pipeline: object[]) => pipeline.map((stage) => Object.keys(stage)[0]);
+
+	// A discussion has to resolve the conference it belongs to: its members may have no access to the parent
+	// room the call started in, so matching on `rid` alone would hide their own call from them.
+	it('should match conferences started in the room and those whose discussion is the room', async () => {
+		const { model, aggregate, countDocuments } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1');
+
+		const expected = { $or: [{ rid: 'room-1' }, { discussionRid: 'room-1' }] };
+		expect(aggregate.mock.calls[0][0][0]).toEqual({ $match: expected });
+		expect(countDocuments.mock.calls[0][0]).toEqual(expected);
+	});
+
+	/**
+	 * The whole reason this is an aggregation and still cheap.
+	 *
+	 * `$match`/`$sort`/`$skip`/`$limit` are pushed into the query layer, so `{ rid, createdAt }` and
+	 * `{ discussionRid, createdAt }` serve the `$or` as an index-ordered merge and the lookup runs over one
+	 * page. Moving `$lookup` above the paging stages would join the room's entire call history instead.
+	 */
+	it('should page before joining the discussion room, not after', async () => {
+		const { model, aggregate } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1', { offset: 25, count: 25 });
+
+		const stages = stageNames(aggregate.mock.calls[0][0]);
+		expect(stages).toEqual(['$match', '$sort', '$skip', '$limit', '$lookup', '$addFields', '$project']);
+	});
+
+	// `$skip: 0` is a stage that does nothing, and `$limit: 0` is one that returns nothing.
+	it('should omit the paging stages entirely when it has no offset or count', async () => {
+		const { model, aggregate } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1');
+
+		const stages = stageNames(aggregate.mock.calls[0][0]);
+		expect(stages).not.toContain('$skip');
+		expect(stages).not.toContain('$limit');
+	});
+
+	it('should sort newest first', async () => {
+		const { model, aggregate } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1');
+
+		expect(aggregate.mock.calls[0][0][1]).toEqual({ $sort: { createdAt: -1 } });
+	});
+
+	// `providerData` can hold provider credentials, and the joined room is scaffolding for the two fields
+	// lifted out of it — neither belongs in what the list hands back.
+	it('should drop providerData and the joined room from the result', async () => {
+		const { model, aggregate } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1');
+
+		const pipeline = aggregate.mock.calls[0][0];
+		expect(pipeline[pipeline.length - 1]).toEqual({ $project: { providerData: 0, discussionRoom: 0 } });
+	});
+
+	it('should take the discussion title from fname, falling back to name', async () => {
+		const { model, aggregate } = setupAggregation();
+
+		model.findPaginatedByRoomId('room-1');
+
+		const [{ $addFields }] = aggregate.mock.calls[0][0].filter((stage: Record<string, unknown>) => '$addFields' in stage);
+		expect($addFields.discussionTitle).toEqual({
+			$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+		});
+	});
+});

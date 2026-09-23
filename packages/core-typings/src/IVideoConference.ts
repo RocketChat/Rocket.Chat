@@ -232,6 +232,18 @@ type InternalVideoConference = IVoIPVideoConference;
 
 export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
+/**
+ * A conference, with the chat it moved to described well enough to list it.
+ *
+ * The call history names a conference after its discussion rather than after whoever started it, so the two
+ * fields the list needs are resolved alongside the conference instead of by a second read per row. Absent when
+ * the conference has no discussion, or when the room it points at is gone.
+ */
+export type VideoConferenceWithDiscussion = VideoConference & {
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
+};
+
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
 export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {
