@@ -154,7 +154,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeTeam.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
-		test.describe('with another user', () => {
+		test.describe('team and channels sorting', () => {
 			let user1Page: Page;
 
 			test.beforeEach(async ({ browser }) => {
