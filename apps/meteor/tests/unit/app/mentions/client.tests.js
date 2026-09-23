@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../lib/MentionsParser';
 
 let mentionsParser;
 beforeEach(() => {
