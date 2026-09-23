@@ -2,8 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/tools';
 import type { TFunction } from 'i18next';
 
-import { filterMarkdown } from '../../../../app/markdown/lib/parser/filtered/filtered';
 import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
+import { filterMarkdown } from '../../../../lib/markdown/parser/filtered/filtered';
 
 export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
