@@ -4,7 +4,13 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import {
+	getSettingValueById,
+	removePermissionFromAllRoles,
+	restorePermissionToRoles,
+	updatePermission,
+	updateSetting,
+} from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - triggers', () => {
@@ -298,12 +304,17 @@ describe('LIVECHAT - triggers', () => {
 	(IS_EE ? describe : describe.skip)('POST livechat/triggers/external-service/test', () => {
 		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
 
-		before(() => updateSetting('SSRF_Allowlist', new URL(webhookUrl).hostname));
+		let previousSsrfAllowlist: Awaited<ReturnType<typeof getSettingValueById>>;
+
+		before(async () => {
+			previousSsrfAllowlist = await getSettingValueById('SSRF_Allowlist');
+			await updateSetting('SSRF_Allowlist', new URL(webhookUrl).hostname);
+		});
 
 		after(() =>
 			Promise.all([
 				updateSetting('Livechat_secret_token', ''),
-				updateSetting('SSRF_Allowlist', ''),
+				updateSetting('SSRF_Allowlist', previousSsrfAllowlist ?? ''),
 				restorePermissionToRoles('view-livechat-manager'),
 			]),
 		);
@@ -374,6 +385,21 @@ describe('LIVECHAT - triggers', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'error-invalid-external-service-response');
 					expect(res.body).to.have.property('response').to.be.a('string');
+				});
+		});
+		it('should block requests to non-allowlisted internal addresses (SSRF)', async () => {
+			await updateSetting('Livechat_secret_token', 'test');
+
+			await request
+				.post(api('livechat/triggers/external-service/test'))
+				.set(credentials)
+				// loopback: always resolves to a private IP and is never in the suite's SSRF_Allowlist
+				.send({ webhookUrl: 'http://127.0.0.1/status/200', timeout: 5000, fallbackMessage: 'test', extraData: [] })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-invalid-external-service-response');
+					expect(res.body).to.have.property('response', 'error-ssrf-validation-failed');
 				});
 		});
 		it('should return error when webhook times out', async () => {
