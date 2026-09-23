@@ -1,9 +1,10 @@
-import { emptySearchFilters, serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { serializeSearchQuery } from '@rocket.chat/ai-search';
 import { Box, Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItem from './NavBarSearchItem';
@@ -18,14 +19,15 @@ export type NavBarSearchIntelligentSectionProps = {
 const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSearchIntelligentSectionProps): ReactElement | null => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { watch } = useFormContext<NavBarSearchFormValues>();
-	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
+	const { control } = useFormContext<NavBarSearchFormValues>();
+	const filterText = useWatch({ control, name: 'filterText' }) ?? '';
+	const filters = useWatch({ control, name: 'filters' }) ?? [];
 
 	if (!items.length) {
 		return null;
 	}
 
-	const query = serializeSearchQuery(filterText, appliedFilters);
+	const query = serializeSearchQuery({ text: filterText, filters });
 	const searchHref = router.buildRoutePath({
 		name: 'search',
 		search: query ? { q: query } : {},

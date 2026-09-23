@@ -1,4 +1,4 @@
-import { AI_SEARCH_RESULTS_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, parseSearchFilterText } from '@rocket.chat/ai-search';
+import { AI_SEARCH_RESULTS_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, parseSearchInput, toAISearchParams } from '@rocket.chat/ai-search';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -8,27 +8,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 export const useAISearchResults = (queryParam: string, enabled: boolean) => {
 	const aiSearch = useEndpoint('GET', '/v1/ai.search');
 	const [resultCount, setResultCount] = useState(AI_SEARCH_RESULTS_PAGE_SIZE);
-	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
-	const query = useDebouncedValue(parsedSearch.searchText.trim(), 300);
-	const { filters } = parsedSearch;
+	const { text, filters } = useMemo(() => parseSearchInput(queryParam), [queryParam]);
+	const query = useDebouncedValue(text.trim(), 300);
+	const searchParams = useMemo(() => toAISearchParams({ text: query, filters }), [filters, query]);
 
 	useEffect(() => {
 		setResultCount(AI_SEARCH_RESULTS_PAGE_SIZE);
 	}, [queryParam]);
 
 	const result = useQuery({
-		queryKey: ['search/intelligent/page', query, filters, resultCount],
+		queryKey: ['search/intelligent/page', searchParams, resultCount],
 		queryFn: () =>
 			aiSearch({
-				query,
+				...searchParams,
 				intelligentCount: Math.min(resultCount + 1, MAX_INTELLIGENT_SEARCH_RESULTS),
-				roomNames: filters.roomNames.join(','),
-				fromUsernames: filters.fromUsernames.join(','),
-				startDate: filters.startDate,
-				endDate: filters.endDate,
 			}),
 		enabled: Boolean(query && enabled),
-		placeholderData: (previousData, previousQuery) => (previousQuery?.queryKey[1] === query ? previousData : undefined),
+		placeholderData: (previousData, previousQuery) =>
+			(previousQuery?.queryKey[1] as { query?: string } | undefined)?.query === query ? previousData : undefined,
 	});
 
 	const intelligent = useMemo<AISearchResult[]>(

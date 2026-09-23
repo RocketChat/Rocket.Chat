@@ -13,9 +13,7 @@ jest.mock('./hooks/useNavBarAISearch', () => ({
 	useNavBarAISearch: () => ({
 		aiSearchActive: false,
 		canSearchWithAIFromTopBar: true,
-		appliedFilterChips: [],
 		aiSearchButtonTooltip: 'Search with AI',
-		handleRemoveFilter: jest.fn(),
 		handleToggleAISearch: jest.fn(),
 	}),
 }));
