@@ -6,7 +6,7 @@ type AgentType = {
 	status: string;
 	emails: [{ address: string }];
 	username: string;
-	phone: [{ phoneNumber: string }];
+	phones?: { number: string; label?: string }[];
 	customFields: { phone: string };
 };
 
@@ -21,7 +21,7 @@ export const formatAgent = (agent: AgentType) => {
 		status: agent.status,
 		email: agent.emails?.[0]?.address,
 		username: agent.username,
-		phone: agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
+		phone: agent.phones?.[0]?.number || agent.customFields?.phone,
 		avatar: agent.username
 			? {
 					description: agent.username,

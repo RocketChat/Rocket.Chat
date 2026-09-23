@@ -29,7 +29,7 @@ export const useAgentSection = ({ onSelect }: UseAgentSectionProps) => {
 			onClick: () => onSelect(user.name || user._id),
 		};
 
-		const primaryPhone = user.phones?.[0]?.number ?? user.phone ?? '';
+		const primaryPhone = user.phones?.[0]?.number ?? '';
 
 		const phoneItem = {
 			id: `${user._id}.phone`,
