@@ -1,0 +1,20 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_be4edfb521966b::t_8f0364eb2a67c9 1610-1627,1629-1635,1637-1639,1641-1652,1654-1716
+  s_be4edfb521966b::t_e62a597b1ebc5c 1640,1653
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2b8695be8a105429954c6bcd1356ec2d1cf8a34e",
+  "prompts": {},
+  "sessions": {
+    "s_be4edfb521966b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c25b941c-3d30-4008-934e-b55858c60777",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
