@@ -1,6 +1,6 @@
 import os from 'os';
 
-import { MeteorService, api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
@@ -37,7 +37,7 @@ void (async () => {
 
 	const collections = {
 		loginServices: registerLoginServiceConfigurationPublication(server),
-		clientVersions: registerAutoupdatePublication(server, () => MeteorService.getAutoUpdateClientVersions()),
+		clientVersions: registerAutoupdatePublication(server),
 	};
 	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
@@ -50,7 +50,8 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications));
+	// the client versions a subscriber is served come from MeteorService
+	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications), ['meteor']);
 
 	await api.start();
 })();

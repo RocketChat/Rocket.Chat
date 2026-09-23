@@ -18,7 +18,7 @@ import { encodeAdded } from './ddp/codec';
 import type { ConnectionLifecycle } from './ddp/lifecycle';
 import { proxy } from './http/proxy';
 import type { MeteorCollection } from './lib/MeteorCollection';
-import type { ClientVersions } from './publications/autoupdate';
+import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;
 
@@ -31,7 +31,7 @@ const noSettings: SettingsReader = { get: () => undefined };
 
 export type MeteorCollections = {
 	loginServices: MeteorCollection<Partial<LoginServiceConfiguration>>;
-	clientVersions: ClientVersions;
+	clientVersions: MeteorCollection<ClientVersion>;
 };
 
 export class DDPStreamer extends ServiceClass {
@@ -288,11 +288,11 @@ export class DDPStreamer extends ServiceClass {
 
 		void InstanceStatus.registerInstance('ddp-streamer', {});
 
-		// deliberately last and non fatal: the client versions come from the monolith,
-		// which may still be booting, and nothing here may stop the socket server from
-		// listening - traefik routes /websocket to it, so a process that is up but not
-		// listening takes down every realtime feature
-		await this.collections.clientVersions.prime().catch((err) => console.error('DDPStreamer could not load client versions', err));
+		// deliberately last and non fatal: traefik routes /websocket to this process, so
+		// one that is up but not listening takes down every realtime feature
+		await MeteorService.getAutoUpdateClientVersions()
+			.then((versions) => Object.values(versions ?? {}).forEach((version) => this.setClientVersion(version)))
+			.catch((err) => console.error('DDPStreamer could not load client versions', err));
 	}
 
 	override async stopped(): Promise<void> {

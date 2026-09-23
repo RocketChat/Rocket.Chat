@@ -168,44 +168,47 @@ surfaced to the caller unchanged.
 > `isNatsError` is declared by the nats typings but is not exported at runtime, so
 > the check uses `NatsError` itself.
 
-#### 3. Service dependencies are not honoured, lifecycle failures are not fatal
+#### 3. Services wait for their dependencies, lifecycle failures are not fatal
 
-The implicit `settings` + `license` dependency is a distributed boot barrier: it
-couples every service's startup to the monolith's, and the
-`name === 'settings' ? [] : …` special case exists because the dependency graph is
-not actually acyclic. `NatsBroker` does not implement it. Instead:
+Every service depends on `settings` and `license` (`settings` itself excluded, as
+under Moleculer), plus whatever it passes to `api.registerService`:
+omnichannel-transcript waits for `queue-worker`, and ddp-streamer for `meteor`,
+which serves the client versions it publishes. Services rely on this without
+saying so — a standalone service reads settings in `started()`, which only works
+because `started()` runs once the settings service is reachable. `NatsBroker`
+originally ignored dependencies, so those reads lost the race with the monolith.
+It now reproduces Moleculer's `waitForServices`:
 
-- A service that fails `created()` or `started()` is logged and left running.
-  Endpoints are registered before any hook runs, so it still answers with whatever
-  defaults it holds. Previously the rejection propagated out of `api.start()`, and
-  the unhandled rejection killed the container silently, taking every other service
-  hosted in the same process with it.
-- Services that read configuration at boot now do it on first use, through
-  `primeOnce` (`packages/tools/src/primeOnce.ts`), which memoises the result but
-  not a failure — so a service that came up before the one it reads from
-  configures itself on first use rather than staying on defaults. This applies to
-  `Account`, `OmnichannelTranscript`, `AbacService` and ddp-streamer's
-  `Autoupdate`.
+- A service is registered — endpoints, event subscriptions, local routing and
+  discovery — only once every dependency is available, and its hooks run after
+  that. An unregistered service is invisible to discovery, so waiting is
+  transitive: nothing sees `license` before `license` has seen `settings`.
+- A dependency in the same process is noticed as soon as it registers. A remote
+  one is looked for through discovery every second, Moleculer's
+  `dependencyInterval`.
+- `start()` resolves once every service has registered, so `api.start()`, and the
+  health endpoints the standalone services open after it, wait as well.
+- It waits forever by default, like Moleculer's `dependencyTimeout: 0`. The
+  constructor's `dependencyTimeout` bounds the wait, after which `start()` rejects
+  naming each service and what it was missing. Tests set it so that a dependency
+  that is never met fails in milliseconds instead of hanging.
 
-Two lessons from getting this wrong, both worth applying to any service that is
-adapted next:
+A service that fails `created()` or `started()` is logged and left running.
+Endpoints are registered before any hook runs, so it still answers with whatever
+defaults it holds. Previously the rejection propagated out of `api.start()`, and
+the unhandled rejection killed the container silently, taking every other service
+hosted in the same process with it. Moleculer is no stricter: the lifecycle
+wrapper in `MoleculerBroker.ts` drops the hook's promise, so it never awaits
+`started()` or sees it reject.
 
-- **Prime at the chokepoint, not at the entry point you happened to look at.**
-  `AbacService` was primed on its two decision paths, which left five room
-  attribute mutators reading a null `this.pdp` and answering 400
-  `error-pdp-unavailable`. Priming inside `ensurePdpAvailable`, which all of them
-  already call, covers them in one place.
+One lesson from the adaptation, worth applying to any service that is adapted
+next:
+
 - **Never let a boot read gate the thing the service exists to do.** ddp-streamer
   fetched client versions and then created its socket server inside the same
   `try`, so one 503 left the process up but not listening, and every realtime
   feature disappeared. Bring the server up first; load configuration last and
   non fatally.
-
-`AbacService` keeps its `started()` as an eager attempt, because selecting the PDP
-is real initialisation rather than cache priming, and primes again on the decision
-paths if that attempt failed. Its priming only fills in values that are still
-unknown and leaves an already chosen PDP alone: settings events arrive
-independently of the read, so whatever they delivered is newer.
 
 #### 4. Streams are chunked over a dedicated subject
 
@@ -259,8 +262,8 @@ Lifecycle hooks, remote handlers and locally dispatched calls now all run inside
 The same `created()` also gave up when the broker exposed no metrics, which
 `NatsBroker` does not. Metrics registration is now conditional rather than a guard
 clause in front of the DDP handlers — a second instance of the same mistake as
-[priming at boot](#3-service-dependencies-are-not-honoured-lifecycle-failures-are-not-fatal): an optional concern
-was gating the thing the service exists to do.
+[gating the socket server on a boot read](#3-services-wait-for-their-dependencies-lifecycle-failures-are-not-fatal): an
+optional concern was gating the thing the service exists to do.
 
 **Tracing is still missing.** `LocalBroker` and `MoleculerBroker` wrap handlers in a
 tracer span as well; `NatsBroker` does not.

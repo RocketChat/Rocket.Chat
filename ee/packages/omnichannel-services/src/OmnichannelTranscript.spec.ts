@@ -59,7 +59,6 @@ jest.mock('@rocket.chat/tools', () => ({
 	guessTimezone: jest.fn().mockReturnValue('UTC'),
 	guessTimezoneFromOffset: jest.fn().mockReturnValue('UTC'),
 	streamToBuffer: jest.fn().mockResolvedValue(Buffer.from('')),
-	primeOnce: jest.requireActual('@rocket.chat/tools').primeOnce,
 }));
 
 describe('OmnichannelTranscript', () => {

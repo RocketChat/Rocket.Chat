@@ -23,10 +23,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	License: {
 		hasModule: async () => true,
 	},
-	Settings: {
-		// the service primes its configuration before touching the PDP
-		get: jest.fn().mockResolvedValue(undefined),
-	},
 	Authorization: {
 		hasPermission: async () => false,
 	},
