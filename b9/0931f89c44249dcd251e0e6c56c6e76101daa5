@@ -1,0 +1,21 @@
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_91fdd0b12a50c8::t_563b412c1861b4 1622-1624
+apps/meteor/tests/end-to-end/api/abac.ts
+  s_91fdd0b12a50c8::t_767ed0a4e8f9b3 3125-3126,3128-3139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b90931f89c44249dcd251e0e6c56c6e76101daa5",
+  "prompts": {},
+  "sessions": {
+    "s_91fdd0b12a50c8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "65d4303d-3cff-49db-bd64-e0ece0afa7d0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
