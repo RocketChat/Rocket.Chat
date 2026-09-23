@@ -21,6 +21,11 @@ export type RoomListViewer = {
 	formatTime: (time: string | Date | number) => string;
 };
 
+export type RoomListCallActions = {
+	acceptCall: () => void;
+	rejectCall: () => void;
+};
+
 export type RoomListActions = {
 	moveCategory: (currentKeys: string[], key: string, direction: 'up' | 'down') => Promise<void>;
 };
@@ -34,6 +39,8 @@ export type RoomListSettings = {
 	collapse: RoomListCollapse;
 	viewer: RoomListViewer;
 	actions: RoomListActions;
+	/** The rooms whose ringing call this list is the place to answer, by room id. Empty when it is not. */
+	ringingCalls: ReadonlyMap<string, RoomListCallActions>;
 };
 
 /**
@@ -54,6 +61,7 @@ export const defaultRoomListSettings: RoomListSettings = {
 	collapse: { keys: [], toggle: () => undefined, onKeyDown: () => undefined },
 	viewer: { isAnonymous: true, openedRoom: '', isPriorityEnabled: false, canCustomiseGroups: false, formatTime: () => '' },
 	actions: { moveCategory: async () => undefined },
+	ringingCalls: new Map(),
 };
 
 const RoomListSettingsContext = createContext<RoomListSettings>(defaultRoomListSettings);
@@ -83,3 +91,4 @@ export const useRoomListPresentation = (): SidebarPresentation => useContext(Roo
 export const useRoomListCollapse = (): RoomListCollapse => useContext(RoomListSettingsContext).collapse;
 export const useRoomListViewer = (): RoomListViewer => useContext(RoomListSettingsContext).viewer;
 export const useRoomListActions = (): RoomListActions => useContext(RoomListSettingsContext).actions;
+export const useRoomListRingingCalls = (): ReadonlyMap<string, RoomListCallActions> => useContext(RoomListSettingsContext).ringingCalls;

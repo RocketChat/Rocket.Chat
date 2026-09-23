@@ -169,7 +169,6 @@ const SidebarItemTemplateWithData = ({
 	);
 };
 
-
 const keys: (keyof RoomListRowProps)[] = [
 	'id',
 	'style',

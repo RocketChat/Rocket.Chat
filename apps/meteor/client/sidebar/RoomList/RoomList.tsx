@@ -13,6 +13,7 @@ import {
 	useRoomListCollapse,
 	useRoomListGroups,
 	useRoomListPresentation,
+	useRoomListRingingCalls,
 	useRoomListViewer,
 } from '../contexts/RoomListContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -27,6 +28,7 @@ const RoomList = () => {
 	const groups = useRoomListGroups();
 	const { toggle: handleClick, onKeyDown: handleKeyDown } = useRoomListCollapse();
 	const { moveCategory } = useRoomListActions();
+	const ringingCalls = useRoomListRingingCalls();
 	const { userId, isAnonymous, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime } = useRoomListViewer();
 	const {
 		viewMode: sidebarViewMode,
@@ -89,7 +91,7 @@ const RoomList = () => {
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
+						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
 					</RoomListRowWrapper>
 				)}
 			/>

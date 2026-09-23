@@ -1,4 +1,10 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
+import {
+	useVideoConfAcceptCall,
+	useVideoConfIncomingCalls,
+	useVideoConfRejectIncomingCall,
+	useVideoConfWindowEnabled,
+} from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
@@ -7,7 +13,7 @@ import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
-import type { RoomListSettings } from '../contexts/RoomListContext';
+import type { RoomListCallActions, RoomListSettings } from '../contexts/RoomListContext';
 import { RoomListContextProvider } from '../contexts/RoomListContext';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useRoomList } from '../hooks/useRoomList';
@@ -23,6 +29,23 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 	const presentation = useSidebarPresentation();
 	const moveCategory = useMoveCategoryPosition();
 
+	const acceptCall = useVideoConfAcceptCall();
+	const rejectCall = useVideoConfRejectIncomingCall();
+	const incomingCalls = useVideoConfIncomingCalls();
+	const conferenceWindowEnabled = useVideoConfWindowEnabled();
+
+	// With the call window, a ringing call is answered from the list of the calls already running rather than
+	// from the row for its room — so no row is offered the call.
+	const ringingCalls = useMemo<ReadonlyMap<string, RoomListCallActions>>(() => {
+		if (conferenceWindowEnabled) {
+			return new Map();
+		}
+
+		return new Map(
+			incomingCalls.map((call) => [call.rid, { acceptCall: () => acceptCall(call.callId), rejectCall: () => rejectCall(call.callId) }]),
+		);
+	}, [incomingCalls, conferenceWindowEnabled, acceptCall, rejectCall]);
+
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups } = useRoomList({ collapsedGroups });
 
@@ -34,6 +57,7 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 			collapse: { keys: collapsedGroups, toggle: handleClick, onKeyDown: handleKeyDown },
 			viewer: { userId, isAnonymous: !userId, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime },
 			actions: { moveCategory },
+			ringingCalls,
 		}),
 		[
 			presentation,
@@ -46,6 +70,7 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 			canCustomiseGroups,
 			formatTime,
 			moveCategory,
+			ringingCalls,
 		],
 	);
 
