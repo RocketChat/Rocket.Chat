@@ -1,6 +1,6 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';

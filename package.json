@@ -232,7 +232,7 @@
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
-			"apps/meteor/app/utils/rocketchat.info"
+			"apps/meteor/rocketchat.info"
 		]
 	}
 }

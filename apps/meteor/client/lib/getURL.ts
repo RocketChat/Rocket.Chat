@@ -1,7 +1,7 @@
 import { getRootUrlPathPrefix } from './meteorRuntimeConfig';
 import { settings } from './settings';
-import { Info } from '../../app/utils/rocketchat.info';
 import { getURLWithoutSettings } from '../../lib/getURL';
+import { Info } from '../../rocketchat.info';
 
 export const getURL = function (
 	path: string,

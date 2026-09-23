@@ -10,7 +10,7 @@ import gcStats from 'prometheus-gc-stats';
 import _ from 'underscore';
 
 import { metrics } from './metrics';
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 import { settings } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
 import { getControl } from '../../migrations';
