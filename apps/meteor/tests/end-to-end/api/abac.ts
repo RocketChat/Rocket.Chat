@@ -3096,7 +3096,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let roomOwner: IUser;
 		let roomOwnerCredentials: Credentials;
 		let adminReadableRoom: IRoom;
-		let abacAttributeId: string;
 		const abacKey = `rooms_info_abac_${Date.now()}`;
 
 		before(async () => {
@@ -3113,24 +3112,21 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.set(credentials)
 				.send({ key: abacKey, values: ['secret'] })
 				.expect(200);
-
-			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key: abacKey }).expect(200);
-			const attribute = (res.body.attributes as { _id: string; key: string }[]).find(({ key }) => key === abacKey);
-			if (!attribute) {
-				throw new Error(`ABAC attribute ${abacKey} was not created`);
-			}
-			abacAttributeId = attribute._id;
 		});
 
-		// Each step is guarded so that a failure in `before` still resets ABAC_Enabled for the
-		// suites that run next.
+		// Each step is guarded, and the attribute definition is looked up here rather than in
+		// `before`, so that any failure in `before` still cleans up and resets ABAC_Enabled.
 		after(async () => {
 			if (adminReadableRoom) {
 				await request.delete(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes`).set(credentials);
 			}
-			if (abacAttributeId) {
-				await request.delete(`${v1}/abac/attributes/${abacAttributeId}`).set(credentials);
+
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key: abacKey });
+			const attribute = (res.body.attributes as { _id: string; key: string }[] | undefined)?.find(({ key }) => key === abacKey);
+			if (attribute) {
+				await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials);
 			}
+
 			if (adminReadableRoom) {
 				await deleteRoom({ type: 'p', roomId: adminReadableRoom._id });
 			}
