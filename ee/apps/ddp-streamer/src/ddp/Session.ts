@@ -1,64 +1,22 @@
 import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
-import { Presence } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
-import { SERVER_ID } from './Server';
-import { server } from './configureServer';
+import type { IPacket } from './IPacket';
+import type { Server } from './Server';
+import { getClientAddress } from './clientAddress';
+import type { FanOutFrames } from './codec';
+import { SERVER_ID, SOCKJS_OPEN_FRAME, decode, encodeConnected, encodePing, encodePong, wrapForSockJs } from './codec';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
-import type { IPacket } from './types/IPacket';
+import type { ConnectionLifecycle } from './lifecycle';
 
-// TODO why localhost not as 127.0.0.1?
-// based on Meteor's implementation (link)
-const getClientAddress = (req: IncomingMessage): string | undefined => {
-	// For the reported client address for a connection to be correct,
-	// the developer must set the HTTP_FORWARDED_COUNT environment
-	// variable to an integer representing the number of hops they
-	// expect in the `x-forwarded-for` header. E.g., set to "1" if the
-	// server is behind one proxy.
-	//
-	// This could be computed once at startup instead of every time.
-	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT || '') || 0;
+type WebSocketWithSender = { _sender: { sendFrame(frame: Buffer[], cb: (err?: Error) => void): void } };
 
-	if (httpForwardedCount === 0) {
-		return req.socket.remoteAddress;
-	}
-
-	const forwardedFor =
-		(req.headers['x-forwarded-for'] && Array.isArray(req.headers['x-forwarded-for'])
-			? req.headers['x-forwarded-for'][0]
-			: req.headers['x-forwarded-for']) || '';
-	if (!forwardedFor) {
-		return;
-	}
-	const forwardedForClean = forwardedFor
-		.trim()
-		.split(',')
-		.map((ip) => ip.trim());
-
-	// Typically the first value in the `x-forwarded-for` header is
-	// the original IP address of the client connecting to the first
-	// proxy.  However, the end user can easily spoof the header, in
-	// which case the first value(s) will be the fake IP address from
-	// the user pretending to be a proxy reporting the original IP
-	// address value.  By counting HTTP_FORWARDED_COUNT back from the
-	// end of the list, we ensure that we get the IP address being
-	// reported by *our* first proxy.
-
-	if (httpForwardedCount < 0 || httpForwardedCount > forwardedForClean.length) {
-		return;
-	}
-
-	return forwardedForClean[forwardedForClean.length - httpForwardedCount];
-};
-
-export const clientMap = new WeakMap<WebSocket, Client>();
-
-export class Client extends EventEmitter {
+export class Session extends EventEmitter {
 	private chain = Promise.resolve();
 
 	protected timeout: NodeJS.Timeout;
@@ -69,27 +27,17 @@ export class Client extends EventEmitter {
 
 	public connection: ISocketConnection;
 
-	public wait = false;
-
 	public userId?: string;
 
 	public userToken?: string;
 
-	private updatePresence = throttle(
-		() => {
-			if (this.userId) {
-				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-					console.error('Error updating connection presence:', err);
-				});
-			}
-		},
-		TIMEOUT,
-		{ leading: true, trailing: false },
-	);
+	private reportActivity = throttle(() => this.lifecycle.emit('activity', this), TIMEOUT, { leading: true, trailing: false });
 
 	constructor(
+		private readonly server: Server,
+		private readonly lifecycle: ConnectionLifecycle,
 		public ws: WebSocket,
-		public meteorClient = false,
+		public meteorClient: boolean,
 		req: IncomingMessage,
 	) {
 		super();
@@ -107,7 +55,7 @@ export class Client extends EventEmitter {
 		this.renewTimeout(TIMEOUT / 1000);
 		this.ws.on('message', this.handler);
 		this.ws.on('close', (...args) => {
-			server.emit(DDP_EVENTS.DISCONNECTED, this);
+			this.lifecycle.emit('disconnected', this);
 			this.emit('close', ...args);
 			this.subscriptions.clear();
 			clearTimeout(this.timeout);
@@ -122,7 +70,7 @@ export class Client extends EventEmitter {
 
 		this.greeting();
 
-		server.emit(DDP_EVENTS.CONNECTED, this);
+		this.lifecycle.emit('connected', this);
 
 		this.ws.on('message', () => this.renewTimeout(TIMEOUT));
 
@@ -130,27 +78,24 @@ export class Client extends EventEmitter {
 			if (msg !== DDP_EVENTS.CONNECT) {
 				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 			}
-			return this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }));
+			return this.send(encodeConnected(this.session));
 		});
 
 		this.send(SERVER_ID);
-
-		clientMap.set(ws, this);
 	}
 
 	greeting(): void {
-		// no greeting by default
 		if (this.meteorClient) {
-			return this.ws.send('o');
+			return this.ws.send(SOCKJS_OPEN_FRAME);
 		}
 	}
 
 	async callMethod(packet: IPacket): Promise<void> {
-		this.enqueue(() => server.call(this, packet));
+		this.enqueue(() => this.server.call(this, packet));
 	}
 
 	async callSubscribe(packet: IPacket): Promise<void> {
-		this.enqueue(() => server.subscribe(this, packet));
+		this.enqueue(() => this.server.subscribe(this, packet));
 	}
 
 	// A rejected task must not poison the chain, or every later message from this client would be dropped.
@@ -201,11 +146,11 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
+		this.send(encodePing(id));
 	}
 
 	pong(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }));
+		this.send(encodePong(id));
 	}
 
 	handleIdle = (): void => {
@@ -220,12 +165,9 @@ export class Client extends EventEmitter {
 
 	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
-			const packet = server.parse(payload, isBinary);
-			this.updatePresence();
+			const packet = decode(payload, isBinary);
+			this.reportActivity();
 			this.emit('message', packet);
-			if (this.wait) {
-				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
-			}
 			this.process(packet.msg, packet);
 		} catch (err) {
 			console.error(err);
@@ -235,12 +177,22 @@ export class Client extends EventEmitter {
 
 	encodePayload(payload: string): string {
 		if (this.meteorClient) {
-			return `a${JSON.stringify([payload])}`;
+			return wrapForSockJs(payload);
 		}
 		return payload;
 	}
 
 	send(payload: string): void {
 		return this.ws.send(this.encodePayload(payload));
+	}
+
+	/** Writes a message the codec framed once, picking the frame for this session's transport. */
+	sendFrames(frames: FanOutFrames): Promise<void> {
+		return new Promise((resolve, reject) => {
+			// ws.send would frame the payload again, which is what the shared frame exists to avoid.
+			(this.ws as unknown as WebSocketWithSender)._sender.sendFrame(frames[this.meteorClient ? 'sockjs' : 'raw'], (err) =>
+				err ? reject(err) : resolve(),
+			);
+		});
 	}
 }

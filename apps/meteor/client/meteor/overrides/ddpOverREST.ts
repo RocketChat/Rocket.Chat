@@ -15,8 +15,8 @@ const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 	}
 
 	// In microservices CI, ddp-streamer-service registers `login`, `logout`,
-	// `setUserStatus`, and `UserPresence:*` as native methods (configureServer.ts
-	// in ee/apps/ddp-streamer); every other method delegates to the Meteor
+	// `setUserStatus`, and `UserPresence:*` as native methods (see
+	// ee/apps/ddp-streamer/src/methods/); every other method delegates to the Meteor
 	// service via callMethodWithToken (extra hop). Bypassing these to Meteor's
 	// own WS routes them straight to ddp-streamer for the fast path; routing
 	// them through REST would wedge them on the slow rocketchat-main path

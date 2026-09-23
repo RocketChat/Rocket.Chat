@@ -1,8 +1,3 @@
-export const STREAMER_EVENTS = {
-	STREAM: 'stream',
-	USER_CHANGED: 'user-changed',
-};
-
 export const DDP_EVENTS = {
 	ID: 'id',
 	FIELDS: 'fields',
@@ -27,9 +22,6 @@ export const DDP_EVENTS = {
 	SUBSCRIPTIONS: 'subs',
 	NO_SUBSCRIBE: 'nosub',
 	UNSUBSCRIBE: 'unsub',
-	DISCONNECTED: 'disconnected',
-	LOGGED: 'logged',
-	LOGGEDOUT: 'loggedout',
 };
 
 export const WS_ERRORS = {

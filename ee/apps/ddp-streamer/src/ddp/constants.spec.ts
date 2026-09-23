@@ -1,10 +1,6 @@
-import { DDP_EVENTS, STREAMER_EVENTS, TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
+import { DDP_EVENTS, TIMEOUT, WS_ERRORS, WS_ERRORS_MESSAGES } from './constants';
 
 describe('protocol constants', () => {
-	it('preserves streamer event names', () => {
-		expect(STREAMER_EVENTS).toEqual({ STREAM: 'stream', USER_CHANGED: 'user-changed' });
-	});
-
 	it('preserves DDP message and field names', () => {
 		expect(DDP_EVENTS).toEqual({
 			ID: 'id',
@@ -29,9 +25,6 @@ describe('protocol constants', () => {
 			SUBSCRIPTIONS: 'subs',
 			NO_SUBSCRIBE: 'nosub',
 			UNSUBSCRIBE: 'unsub',
-			DISCONNECTED: 'disconnected',
-			LOGGED: 'logged',
-			LOGGEDOUT: 'loggedout',
 		});
 	});
 

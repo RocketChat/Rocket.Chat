@@ -2,9 +2,9 @@ import { EventEmitter } from 'events';
 
 import type { IPublication } from '@rocket.chat/streamer';
 
-import type { Client } from './Client';
-import type { Server } from './Server';
-import type { IPacket } from './types/IPacket';
+import type { IPacket } from './IPacket';
+import type { Session } from './Session';
+import { encodeAdded, encodeChanged, encodeNosub, encodeReady, encodeRemoved } from './codec';
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];
@@ -12,9 +12,8 @@ export class Publication extends EventEmitter implements IPublication {
 	connection: IPublication['connection'];
 
 	constructor(
-		public client: Client,
+		public client: Session,
 		private packet: IPacket,
-		private server: Server,
 	) {
 		super();
 		this.packet = packet;
@@ -36,19 +35,19 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	error(_error: Error): void {
-		throw new Error('Method not implemented.');
+		// Unused here: publications signal failure by throwing.
 	}
 
 	unblock(): void {
-		throw new Error('Method not implemented.');
+		// Dispatch is already serialised per client, so there is no block to release.
 	}
 
 	ready(): void {
-		return this.server.ready(this.client, this.packet);
+		return this.client.send(encodeReady(this.packet.id));
 	}
 
 	stop(): void {
-		this.server.nosub(this.client, this.packet);
+		this.client.send(encodeNosub(this.packet.id));
 		this.emit('stop', this.client, this.packet);
 	}
 
@@ -57,15 +56,15 @@ export class Publication extends EventEmitter implements IPublication {
 	}
 
 	added(collection: string, id: string, fields: any): void {
-		this.server.added(this.client, collection, id, fields);
+		this.client.send(encodeAdded(collection, id, fields));
 	}
 
 	changed(collection: string, id: string, fields: any): void {
-		this.server.changed(this.client, collection, id, fields);
+		this.client.send(encodeChanged(collection, id, fields));
 	}
 
 	removed(collection: string, id: string): void {
-		this.server.removed(this.client, collection, id);
+		this.client.send(encodeRemoved(collection, id));
 	}
 
 	get userId() {
