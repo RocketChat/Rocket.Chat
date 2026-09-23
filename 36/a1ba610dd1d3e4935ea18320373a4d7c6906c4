@@ -1,0 +1,25 @@
+.changeset/quiet-users-search.md
+  s_be4edfb521966b::t_99ab8dddf556f6 1-6
+apps/meteor/server/api/v1/users.ts
+  s_be4edfb521966b::t_99ab8dddf556f6 708-711
+apps/meteor/tests/end-to-end/api/users.ts
+  s_be4edfb521966b::t_99ab8dddf556f6 2093-2167
+packages/rest-typings/src/v1/users/UsersListParamsGET.ts
+  s_be4edfb521966b::t_99ab8dddf556f6 8,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "36a1ba610dd1d3e4935ea18320373a4d7c6906c4",
+  "prompts": {},
+  "sessions": {
+    "s_be4edfb521966b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c25b941c-3d30-4008-934e-b55858c60777",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
