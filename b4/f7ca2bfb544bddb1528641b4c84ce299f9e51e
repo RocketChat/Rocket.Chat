@@ -1,0 +1,13 @@
+apps/meteor/server/api/lib/queryFiltersStatus.ts
+  ai_agent 1-11
+apps/meteor/server/api/lib/queryFiltersStatus.spec.ts
+  ai_agent 1-33
+apps/meteor/server/api/v1/users.ts
+  ai_agent 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b4f7ca2bfb544bddb1528641b4c84ce299f9e51e",
+  "prompts": {}
+}
