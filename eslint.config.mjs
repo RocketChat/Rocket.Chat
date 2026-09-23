@@ -12,6 +12,10 @@ export default [
 			'apps/meteor/**/imports',
 			'apps/meteor/**/packages',
 			'apps/meteor/.meteor/**',
+			// vite-only code, excluded from the Meteor app tsconfig (not lintable by the project service)
+			'apps/meteor/src/**',
+			'apps/meteor/vite/**',
+			'apps/meteor/vite.config.mts',
 		],
 	},
 	{

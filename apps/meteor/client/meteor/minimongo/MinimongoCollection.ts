@@ -1,4 +1,3 @@
-import { Mongo } from 'meteor/mongo';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { LocalCollection } from './LocalCollection';
@@ -8,9 +7,12 @@ import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore'
 /**
  * Implements a minimal version of a MongoDB collection using Zustand for state management.
  *
- * It's a middle layer between the Mongo.Collection and Zustand aiming for complete migration to Zustand.
+ * It's a middle layer between Meteor-style collection consumers and Zustand aiming for
+ * complete migration to Zustand. It intentionally does not extend Mongo.Collection: it is
+ * never named, never replicated over DDP, and nothing calls the inherited query/mutator
+ * API — the Zustand LocalCollection below is the only backing store.
  */
-export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
+export class MinimongoCollection<T extends { _id: string }> {
 	private pendingRecomputations = new Set<Query<T>>();
 
 	recomputeAll() {
@@ -61,9 +63,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		 * queries that depend on the changed documents.
 		 */
 		public readonly use: UseBoundStore<StoreApi<IDocumentMapStore<T>>>,
-	) {
-		super(null);
-	}
+	) {}
 
 	/**
 	 * Returns the Zustand store state that holds the records of the collection.

@@ -45,6 +45,11 @@
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**",
+		// vite-only code, not part of the Meteor build (typechecked separately)
+		"./src/**",
+		"./vite/**",
+		"./vite.config.mts",
+		// "./ee/server/services/**"
 	],
 	"ts-node": {
 		"files": false,
