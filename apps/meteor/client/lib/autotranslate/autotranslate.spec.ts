@@ -11,7 +11,6 @@ import { userIdStore } from '../user';
 
 jest.mock('../SDKClient', () => ({
 	sdk: {
-		call: jest.fn(),
 		rest: { get: jest.fn() },
 	},
 }));
@@ -49,13 +48,26 @@ const signInAs = ({ language }: { language?: string } = {}) => {
 	userIdStore.setState(USER_ID);
 };
 
+const mockAutoTranslateEndpoints = ({
+	providers = {},
+	languages = [],
+}: {
+	providers?: Record<string, { name: string; displayName: string }>;
+	languages?: Pick<ISupportedLanguage, 'language' | 'name'>[];
+} = {}) => {
+	asMock(sdk.rest.get).mockImplementation(async (path: string) => {
+		if (path === '/v1/autotranslate.getProviderUiMetadata') return { providers };
+		if (path === '/v1/autotranslate.getSupportedLanguages') return { languages };
+		throw new Error(`unexpected request to ${path}`);
+	});
+};
+
 describe('AutoTranslate', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 
 		asMock(settings.observe).mockReturnValue(jest.fn());
-		asMock(sdk.call).mockResolvedValue({});
-		asMock(sdk.rest.get).mockResolvedValue({ languages: [] });
+		mockAutoTranslateEndpoints();
 
 		Messages.state.replaceAll([]);
 		Subscriptions.state.replaceAll([]);
@@ -214,12 +226,15 @@ describe('AutoTranslate', () => {
 
 		it('should load provider metadata and supported languages when enabled, signed in and permitted', async () => {
 			enableAutoTranslate();
-			asMock(sdk.call).mockResolvedValue({ google: { name: 'google', displayName: 'Google' } });
-			asMock(sdk.rest.get).mockResolvedValue({ languages: [{ language: 'fr', name: 'French' }] });
+			mockAutoTranslateEndpoints({
+				providers: { google: { name: 'google', displayName: 'Google' } },
+				languages: [{ language: 'fr', name: 'French' }],
+			});
 
 			AutoTranslate.init();
 			await flushPromises();
 
+			expect(sdk.rest.get).toHaveBeenCalledWith('/v1/autotranslate.getProviderUiMetadata');
 			expect(AutoTranslate.providersMetadata).toEqual({ google: { name: 'google', displayName: 'Google' } });
 			expect(AutoTranslate.supportedLanguages).toEqual([{ language: 'fr', name: 'French' }]);
 			expect(AutoTranslate.initialized).toBe(true);
@@ -240,7 +255,7 @@ describe('AutoTranslate', () => {
 
 			AutoTranslate.init();
 
-			expect(sdk.call).not.toHaveBeenCalled();
+			expect(sdk.rest.get).not.toHaveBeenCalled();
 		});
 
 		it('should not request providers when there is no signed-in user', () => {
@@ -250,7 +265,7 @@ describe('AutoTranslate', () => {
 
 			AutoTranslate.init();
 
-			expect(sdk.call).not.toHaveBeenCalled();
+			expect(sdk.rest.get).not.toHaveBeenCalled();
 		});
 
 		it('should not request providers when the user lacks the auto-translate permission', () => {
@@ -260,12 +275,11 @@ describe('AutoTranslate', () => {
 
 			AutoTranslate.init();
 
-			expect(sdk.call).not.toHaveBeenCalled();
+			expect(sdk.rest.get).not.toHaveBeenCalled();
 		});
 
 		it('should not throw and should keep defaults when loading providers fails', async () => {
 			enableAutoTranslate();
-			asMock(sdk.call).mockRejectedValue(new Error('autotranslate disabled'));
 			asMock(sdk.rest.get).mockRejectedValue(new Error('autotranslate disabled'));
 			const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 

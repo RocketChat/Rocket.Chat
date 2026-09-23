@@ -1,9 +1,10 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { GenericMenuItem } from '@rocket.chat/ui-client';
+import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryModals } from './hooks/useCategoryModals';
@@ -110,6 +111,7 @@ const CategoryMenu = ({
 			onClick: handleToggleShowUnreads,
 			addon: <ToggleSwitch disabled={disableAlwaysDisplay} checked={!disableAlwaysDisplay && showUnreads} onChange={() => undefined} />,
 			disabled: disableAlwaysDisplay,
+			tooltip: disableAlwaysDisplay ? t('Disabled_by_unread_group_see_display_options') : undefined,
 		},
 		{
 			id: 'keep-unreads-on-top',
@@ -118,15 +120,14 @@ const CategoryMenu = ({
 			onClick: handleToggleKeepUnreadsOnTop,
 			addon: <ToggleSwitch disabled={sidebarShowUnread} checked={!sidebarShowUnread && keepUnreadsOnTop} onChange={() => undefined} />,
 			disabled: sidebarShowUnread,
+			tooltip: sidebarShowUnread ? t('Disabled_by_unread_group_see_display_options') : undefined,
 		},
 	];
 
 	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
-	const handleAction = (key: string | number) => {
-		const item = allItems.find((item) => item.id === String(key));
-		item?.onClick?.();
-	};
+
+	const handleAction = useHandleMenuAction(allItems);
 
 	return (
 		<Menu
@@ -182,4 +183,4 @@ const CategoryMenu = ({
 	);
 };
 
-export default CategoryMenu;
+export default memo(CategoryMenu);

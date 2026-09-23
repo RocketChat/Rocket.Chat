@@ -23,11 +23,6 @@ const TimestampSchema = {
 	description: 'Unix timestamp in milliseconds',
 };
 
-const ServerNameSchema = {
-	type: 'string',
-	description: 'Matrix server name',
-};
-
 const QueryProfileQuerySchema = {
 	type: 'object',
 	properties: {
@@ -202,7 +197,6 @@ const MakeJoinResponseSchema = {
 					const: 'm.room.member',
 				},
 				origin_server_ts: TimestampSchema,
-				origin: ServerNameSchema,
 				depth: {
 					type: 'number',
 					description: 'Depth of the event in the DAG',
@@ -246,7 +240,7 @@ const MakeJoinResponseSchema = {
 					nullable: true,
 				},
 			},
-			required: ['content', 'room_id', 'sender', 'state_key', 'type', 'origin_server_ts', 'origin'],
+			required: ['content', 'room_id', 'sender', 'state_key', 'type', 'origin_server_ts'],
 		},
 	},
 	required: ['room_version', 'event'],

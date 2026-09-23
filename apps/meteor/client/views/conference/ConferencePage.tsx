@@ -3,6 +3,7 @@ import { useRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import ConferencePageError from './ConferencePageError';
+import { asCallUrl } from '../../lib/utils/asCallUrl';
 import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
 
@@ -29,7 +30,14 @@ const ConferencePage = () => {
 			return;
 		}
 
-		handleOpenCall(callUrl);
+		// Only an address is opened; anything else is simply not opened. Either way this page has done its job
+		// and sends the user home, which is what it has always done once the call is out of its hands — an error
+		// screen here would be a new answer to a question that already had one.
+		// The address arrives in a query parameter, so it is only as trustworthy as the link that opened this
+		// page — and `asCallUrl` is the same gate the in-product path uses.
+		if (asCallUrl(callUrl)) {
+			handleOpenCall(callUrl);
+		}
 
 		defaultRoute.push();
 	}, [setModal, defaultRoute, callUrl, handleOpenCall, userDisplayName]);

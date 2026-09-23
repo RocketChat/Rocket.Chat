@@ -180,6 +180,9 @@ export class MockedAppRootBuilder {
 	};
 
 	private videoConf: ContextType<typeof VideoConfContext> = {
+		// Overwritten in `build`, from whatever `withSetting` was told, so a spec turns the call window on the
+		// same way it turns on any other setting.
+		conferenceWindowEnabled: false,
 		// `empty` rather than a fresh array: `useSyncExternalStore` compares snapshots by identity, and a new one
 		// every read is an endless re-render.
 		queryIncomingCalls: () => [() => () => undefined, () => empty as unknown as DirectCallData[]],
@@ -774,6 +777,13 @@ export class MockedAppRootBuilder {
 			authentication,
 			toastMessages,
 		} = this;
+
+		// The call window is gated on a setting, but every site that changes with it reads the answer off this
+		// context — so a spec that says `withSetting` gets the behaviour it asked for without also knowing that.
+		if (videoConf) {
+			const [, getConferenceWindowSetting] = settings.querySetting('VideoConf_Conference_Window_Enabled');
+			videoConf.conferenceWindowEnabled = Boolean(getConferenceWindowSetting()?.value);
+		}
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {

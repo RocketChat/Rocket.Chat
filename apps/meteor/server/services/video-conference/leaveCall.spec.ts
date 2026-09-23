@@ -3,7 +3,16 @@ import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { buildDirectCall, buildGroupCall, buildMember, cloneFixture, createService, providerCapabilities, resetAll } from './testHarness';
+import {
+	buildDirectCall,
+	buildGroupCall,
+	buildMember,
+	cloneFixture,
+	createService,
+	providerCapabilities,
+	resetAll,
+	settingValues,
+} from './testHarness';
 import { EMPTY_CALL_GRACE_MS } from '../../../lib/videoConference/constants';
 
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
@@ -95,11 +104,13 @@ describe('VideoConfService.leaveCall', () => {
 		);
 		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture(fixture));
 		providerCapabilities.current = undefined;
+		delete settingValues.VideoConf_Conference_Window_Enabled;
 	});
 
 	afterEach(() => {
 		clock.restore();
 		providerCapabilities.current = undefined;
+		delete settingValues.VideoConf_Conference_Window_Enabled;
 	});
 
 	// The reported bug: leaving the last-standing spot in a call must end it and leave every member a
@@ -230,6 +241,49 @@ describe('VideoConfService.leaveCall', () => {
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(endNotifiedUserIds()).to.include('invited');
+	});
+
+	// A provider runs the call at a page of its own, but the window listing it is ours: the ongoing-calls button
+	// refreshes on this broadcast and on nothing else, so a call that ended without one stays in the list — on
+	// every screen — until something unrelated happens to ask the server again.
+	it('tells the room the call ended for a URL provider held in our call window', async () => {
+		settingValues.VideoConf_Conference_Window_Enabled = true;
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(endNotifiedUserIds()).to.include('other');
+	});
+
+	it('tells the members of a URL provider call, who may have no subscription to the room', async () => {
+		settingValues.VideoConf_Conference_Window_Enabled = true;
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'invited', joined: false })]);
+
+		await leaveAndSettle('creator');
+
+		expect(endNotifiedUserIds()).to.include('invited');
+	});
+
+	// The other half of the same list: a member who left is no longer in the call, and their own other windows
+	// are what carry the ongoing-calls button showing it.
+	it("tells a URL provider call's leaver about their own leave, and still not the room", async () => {
+		settingValues.VideoConf_Conference_Window_Enabled = true;
+		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'leaver' })]);
+
+		await service.leaveCall('leaver', 'call1');
+
+		expect(endNotifiedUserIds()).to.deep.equal(['leaver']);
+	});
+
+	// Without the window a URL provider's call is the one it always was, and nothing of ours is listing it.
+	it('says nothing room-wide for a URL provider without the call window', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await leaveAndSettle('creator');
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+		expect(endNotifiedUserIds()).to.be.empty;
 	});
 });
 

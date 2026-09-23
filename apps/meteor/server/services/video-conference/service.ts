@@ -532,13 +532,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		if (this.isEmbeddedProvider(call.providerName)) {
+		// The ongoing-calls list is refreshed by this broadcast and nothing else: a call that ends without one
+		// stays listed.
+		if (this.runsInOurCallWindow(call.providerName)) {
 			await this.notifyCallAndRoomUsers(call, 'end', {
 				callId: call._id,
 				rid: call.rid,
 				uid: call.createdBy._id,
 			});
+		}
 
+		if (this.isEmbeddedProvider(call.providerName)) {
 			// Ending the call ends it for whoever was still in it, and each of them is owed their status back. Nobody
 			// else reports their departure: the call is over, so there is no leave left to arrive. Only embedded joins
 			// claim busy in the first place, so only they have anything to give back.
@@ -636,6 +640,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		return message._id;
+	}
+
+	/**
+	 * Whether this call happens inside a window of ours, rather than being handed off to a page we don't run.
+	 *
+	 * True for a provider that renders inside Rocket.Chat, and true for *any* provider once the conference window
+	 * is enabled — an iframed provider renders inside our page, so our code is alive there either way.
+	 */
+	private runsInOurCallWindow(providerName: string): boolean {
+		return (
+			videoConfProviders.getProviderCapabilities(providerName)?.embedded === true ||
+			settings.get<boolean>('VideoConf_Conference_Window_Enabled') === true
+		);
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
@@ -821,9 +838,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const isEmbedded = this.isEmbeddedProvider(providerName);
 
-		// Embedded only: a non-embedded callee has always entered `users` by answering, and adding them earlier
-		// would rewrite the call history their clients build from it.
-		if (isEmbedded) {
+		// Being called makes you a member, so "still ringing" can be told from "nobody was called" and a missed
+		// call leaves a history entry. Only where the ring waits for the caller: a callee rung at creation has
+		// always entered `users` by answering, and doing it earlier rewrites the history clients build from it.
+		if (this.runsInOurCallWindow(providerName)) {
 			await this.addAbsentMember(callId, calleeId);
 		}
 
@@ -865,9 +883,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}, 40000);
 
-		// A non-embedded call rings the callee's phone now, at creation, as it always has. Embedded calls hold
-		// the push back until the caller actually enters the call — see `ringCalleeOnCallerArrival`.
-		if (!isEmbedded) {
+		// Where the ring waits for the caller, so does the push — `ringCalleeOnCallerArrival` sends it, and
+		// pushing here as well buzzes the callee twice for one call.
+		if (!this.runsInOurCallWindow(providerName)) {
 			await this.sendPushNotification(call, calleeId);
 		}
 
@@ -1007,19 +1025,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
+		// Arriving changes which calls are worth offering, so it is announced to the room and to the arriver's
+		// own other sessions — which is what stops the app behind the call window offering them another.
+		if (user && this.runsInOurCallWindow(call.providerName)) {
+			await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
+				callId: call._id,
+				rid: call.rid,
+				uid: call.createdBy._id,
+			});
+
+			this.notifyUser(user._id, 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
+
 		// Embedded providers (LiveKit) don't return a URL — the client mounts the call inline via the embedded
 		// provider's React tree, so the empty string is what tells it there is nothing to open. The roster
 		// entry is the `onJoinVideoConference` callback's doing, fired above for every provider alike.
 		if (this.isEmbeddedProvider(call.providerName)) {
-			if (user) {
-				await this.notifyUsersOfRoom(call.rid, user._id, 'started', {
-					callId: call._id,
-					rid: call.rid,
-					uid: call.createdBy._id,
-				});
-
-				this.notifyUser(user._id, 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
-			}
 			return '';
 		}
 
@@ -1245,6 +1266,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 		this.notifyConferenceUpdate(call._id);
+		// And the room, as every other change to the roster does, so the call's message block keeps its count.
+		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		// In a call is busy, for as long as it lasts. Embedded only: the claim is released by leaving, by the
 		// heartbeat sweep or by the call ending, and a non-embedded call has none of those — the claim would
@@ -1259,14 +1282,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.autoFollowCallThread(call, _id);
 
 		if (call.type === 'direct') {
-			// The ring-on-arrival dance belongs to the embedded flow, where the caller sits on a preflight screen
-			// first; a non-embedded direct call already rang its callee (and pushed) when it was created.
-			const rang = isEmbedded ? await this.ringCalleeOnCallerArrival(call, _id) : false;
+			// Asked of the call rather than of the setting, so an admin toggling the window mid-call cannot decide
+			// differently than its creation did.
+			const rang = call.status === VideoConferenceStatus.CALLING ? await this.ringCalleeOnCallerArrival(call, _id) : false;
 
 			return this.updateDirectCall(call, _id, { pushed: rang });
 		}
-
-		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
 	/**
@@ -1479,6 +1500,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
 		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
 		this.notifyConferenceUpdate(callId);
+		this.notifyVideoConfUpdate(rid, callId);
 
 		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
 		// reaches someone who isn't looking at the app.
@@ -1540,11 +1562,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
 
-		if (this.isEmbeddedProvider(call.providerName)) {
-			// The leaver's own devices only. A room-wide 'end' here would dismiss everyone else's ringing popup
-			// while the call still runs; that one belongs to `endCall`.
+		// The leaver's own devices only: a room-wide 'end' would dismiss everyone else's popup mid-call.
+		if (this.runsInOurCallWindow(call.providerName)) {
 			this.notifyUser(uid, 'end', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
 
+		if (this.isEmbeddedProvider(call.providerName)) {
 			// Out of the call, so back to whatever status they had before it. Only embedded joins claim busy,
 			// so only they have a claim to end.
 			await this.releaseBusyForCall(uid);
@@ -1626,9 +1649,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async expirePresenceLeases(now = new Date()): Promise<void> {
 		for await (const call of VideoConferenceModel.findActiveWithMembers()) {
 			try {
-				// A non-embedded call never heartbeats, so every lease on one reads as expired. Sweeping those would
-				// end a live call after three minutes; the 24-hour TTL cron has them.
-				if (!this.isEmbeddedProvider(call.providerName)) {
+				// The provider's capability, deliberately, and not `runsInOurCallWindow`: the setting says what a
+				// call opened *now* would do, and the sweep meets calls opened before it — one created while the
+				// window was off never heartbeats, so reading the setting here would end a call still running in
+				// Jitsi three minutes after an admin toggled it. See [the feature
+				// doc](../../../../../docs/features/video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call).
+				if (!videoConfProviders.getProviderCapabilities(call.providerName)?.embedded) {
 					continue;
 				}
 
@@ -1876,10 +1902,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	/**
 	 * Where a call's persistent chat lives.
 	 *
-	 * The setting behind it is registered by the call window. Unregistered, this answers `main_room`.
+	 * Only the call window gives a mode other than `main_room` anything to mean — a thread off the call message
+	 * is what its chat panel is built around — so with the window off this answers `main_room` whatever the
+	 * setting was left at.
 	 */
 	private getPersistentChatMode(): 'thread' | 'main_room' {
-		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'main_room';
+		if (!settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
+			return 'main_room';
+		}
+
+		return (settings.get<string>('VideoConf_Persistent_Chat_Mode') as 'thread' | 'main_room') || 'thread';
 	}
 
 	/**

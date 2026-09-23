@@ -72,6 +72,8 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				style={{
 					display: 'block',
 					whiteSpace: 'pre-wrap',
+					wordBreak: 'normal',
+					overflowWrap: 'break-word',
 					cursor: disabled ? 'default' : 'text',
 					overflowY: 'scroll',
 				}}

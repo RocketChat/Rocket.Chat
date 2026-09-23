@@ -8,6 +8,10 @@ import type {
 	ConferenceSlots,
 	ConferenceViewer,
 } from './definitions';
+import type { ProviderPluginControls } from '../lib/providerPlugin';
+
+/** What the window can show beside the call. */
+export type ConferencePanel = 'members' | 'chat';
 
 /**
  * One call, as the window that shows it needs to know it.
@@ -25,6 +29,26 @@ export type ConferenceContextValue = {
 	slots: ConferenceSlots;
 	/** What the workspace and this reader's preferences have settled, read once rather than per component. */
 	viewer: ConferenceViewer;
+	/**
+	 * Which panel is open beside the call, when the application needs a say in which one.
+	 *
+	 * Optional, and the window keeps its own without it: what is open beside a call is the window's own business
+	 * almost always. A provider whose page carries its own chat or participants button is the exception — the
+	 * button is outside this window and has to open a panel inside it — so whoever hears that button holds the
+	 * state instead. Same reason `thread` is here.
+	 */
+	panel?: {
+		active?: ConferencePanel;
+		set: (panel: ConferencePanel | undefined) => void;
+	};
+	/**
+	 * What the provider itself says about the call, when a plugin in its page is speaking.
+	 *
+	 * Absent for a provider without one, which is the call this window has always shown: our own members, and
+	 * nothing to press on them. Handed in rather than reached for, like everything else here — the frame it
+	 * arrives through is the application's, and only the application can hear it.
+	 */
+	provider?: ProviderPluginControls;
 	/**
 	 * Which thread is open over the chat, rather than the thread itself — it is shown inside the room's own
 	 * provider, which is the application's. Kept here because navigation can open one too, and that arrives from
@@ -101,3 +125,5 @@ export const useConferenceActions = (): ConferenceActions => useContext(Conferen
 export const useConferenceSlots = (): ConferenceSlots => useContext(ConferenceContext).slots;
 
 export const useConferenceViewer = (): ConferenceViewer => useContext(ConferenceContext).viewer;
+
+export const useConferenceProvider = (): ProviderPluginControls | undefined => useContext(ConferenceContext).provider;
