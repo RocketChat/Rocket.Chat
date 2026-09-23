@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { filterMarkdown } from '../../../../../../app/markdown/lib/parser/filtered/filtered';
-import { MentionsParser } from '../../../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../../../lib/MentionsParser';
 import { emojiParser } from '../../../../../lib/emoji/emojiParser';
 
 export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) => {
