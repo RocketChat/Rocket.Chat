@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../client/lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem, setStoredItem } from '../../client/lib/sdk/storage';
 import { userIdStore } from '../../client/lib/user';
+import { callMethod } from '../../client/meteor/connection';
 
 type LoginResult = { id: string; token: string; tokenExpires?: Date | { $date: number } };
 
@@ -60,8 +61,16 @@ export const callLoginMethod = async ({
 }): Promise<void> => {
 	loggingIn.setState(true);
 	try {
+		const [credentials] = methodArguments as [{ resume?: string } | undefined];
+		// ddp-streamer only accepts resume logins on the socket, so credentials go through the REST method bridge and
+		// the token it returns authenticates the socket.
+		const resumeToken = credentials?.resume ?? ((await callMethod(methodName, ...methodArguments)) as LoginResult | undefined)?.token;
+		if (!resumeToken) {
+			throw new Error(`No result from call to ${methodName}`);
+		}
+
 		await waitForConnection();
-		const result = (await getDdpSdk().client.callAsyncWithOptions(methodName, { wait: true }, ...methodArguments)) as LoginResult;
+		const result = (await getDdpSdk().client.callAsyncWithOptions('login', { wait: true }, { resume: resumeToken })) as LoginResult;
 		if (!result?.id || !result.token) {
 			throw new Error(`No result from call to ${methodName}`);
 		}
