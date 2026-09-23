@@ -7,8 +7,8 @@ import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
-import type { RoomListContextValue } from '../contexts/RoomListContext';
-import { RoomListContext } from '../contexts/RoomListContext';
+import type { RoomListSettings } from '../contexts/RoomListContext';
+import { RoomListContextProvider } from '../contexts/RoomListContext';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useRoomList } from '../hooks/useRoomList';
 import { useSidebarPresentation } from '../hooks/useSidebarPresentation';
@@ -26,16 +26,16 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups } = useRoomList({ collapsedGroups });
 
-	const value = useMemo<RoomListContextValue>(
+	// Memoised apart from the groups, which change as messages arrive; settling them together would
+	// redraw everyone reading any part of this for something only the list cares about.
+	const settings = useMemo<RoomListSettings>(
 		() => ({
-			groups,
 			presentation,
 			collapse: { keys: collapsedGroups, toggle: handleClick, onKeyDown: handleKeyDown },
 			viewer: { userId, isAnonymous: !userId, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime },
 			actions: { moveCategory },
 		}),
 		[
-			groups,
 			presentation,
 			collapsedGroups,
 			handleClick,
@@ -49,7 +49,11 @@ const RoomListProvider = ({ children }: { children: ReactNode }) => {
 		],
 	);
 
-	return <RoomListContext.Provider value={value}>{children}</RoomListContext.Provider>;
+	return (
+		<RoomListContextProvider settings={settings} groups={groups}>
+			{children}
+		</RoomListContextProvider>
+	);
 };
 
 export default RoomListProvider;

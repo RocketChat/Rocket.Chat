@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
-import { RoomListContext, defaultRoomListContextValue } from '../contexts/RoomListContext';
+import { RoomListContextProvider, defaultRoomListSettings } from '../contexts/RoomListContext';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const mockCollapsedGroups: string[] = [];
@@ -129,17 +129,17 @@ const appRoot = mockAppRoot().withJohnDoe().build();
 // The list is driven entirely from its context — which is what a second sidebar would supply too.
 const renderRoomList = () =>
 	render(
-		<RoomListContext.Provider
-			value={{
-				...defaultRoomListContextValue,
-				groups,
+		<RoomListContextProvider
+			groups={groups}
+			settings={{
+				...defaultRoomListSettings,
 				collapse: { keys: mockCollapsedGroups, toggle: mockHandleClick, onKeyDown: mockHandleKeyDown },
-				viewer: { ...defaultRoomListContextValue.viewer, openedRoom: 'GENERAL', isAnonymous: false },
+				viewer: { ...defaultRoomListSettings.viewer, openedRoom: 'GENERAL', isAnonymous: false },
 				actions: { moveCategory: mockMoveCategory },
 			}}
 		>
 			<RoomList />
-		</RoomListContext.Provider>,
+		</RoomListContextProvider>,
 		{ wrapper: appRoot },
 	);
 

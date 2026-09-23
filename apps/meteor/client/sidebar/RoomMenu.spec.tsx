@@ -4,8 +4,10 @@ import { QueryClient } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement } from 'react';
 
 import RoomMenu from './RoomMenu';
+import { RoomListContextProvider, defaultRoomListSettings } from './contexts/RoomListContext';
 import { createFakeLicenseInfo, createFakeSubscription } from '../../tests/mocks/data';
 
 jest.mock('../../client/lib/rooms/roomCoordinator', () => ({
@@ -49,6 +51,16 @@ const buildBase = () =>
 		.withPermission('leave-c')
 		.withPermission('leave-p');
 
+// Whether this reader may arrange their own groups is an answer the list hands down, so a test states it.
+const inRoomList = (ui: ReactElement, canCustomiseGroups = false) => (
+	<RoomListContextProvider
+		groups={[]}
+		settings={{ ...defaultRoomListSettings, viewer: { ...defaultRoomListSettings.viewer, canCustomiseGroups } }}
+	>
+		{ui}
+	</RoomListContextProvider>
+);
+
 const renderOptions = {
 	wrapper: buildBase().build(),
 };
@@ -66,7 +78,7 @@ const enterpriseRenderOptions = {
 };
 
 it('should display Hide, Mark Unread, Leave and Favorite toggle for regular rooms without enterprise', async () => {
-	render(<RoomMenu {...defaultProps} />, renderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} />), renderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
@@ -78,7 +90,7 @@ it('should display Hide, Mark Unread, Leave and Favorite toggle for regular room
 });
 
 it('should display Hide, Mark Unread, Leave and Move to for regular rooms with enterprise', async () => {
-	render(<RoomMenu {...defaultProps} />, enterpriseRenderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} />, true), enterpriseRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 
@@ -90,7 +102,7 @@ it('should display Hide, Mark Unread, Leave and Move to for regular rooms with e
 });
 
 it('should reveal Favorites and New category inside the "Move to" submenu for enterprise rooms', async () => {
-	render(<RoomMenu {...defaultProps} />, enterpriseRenderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} />, true), enterpriseRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
@@ -117,7 +129,7 @@ const enterpriseCategoryRenderOptions = {
 };
 
 it('shows "Remove from Favorites" in the Move to submenu when the room is in favorites', async () => {
-	render(<RoomMenu {...defaultProps} />, enterpriseFavoriteRenderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} />, true), enterpriseFavoriteRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
@@ -126,7 +138,7 @@ it('shows "Remove from Favorites" in the Move to submenu when the room is in fav
 });
 
 it('shows "Remove from Design" in the Move to submenu when the room is in a custom category', async () => {
-	render(<RoomMenu {...defaultProps} />, enterpriseCategoryRenderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} />, true), enterpriseCategoryRenderOptions);
 
 	await userEvent.click(screen.queryByRole('button') as HTMLElement);
 	await userEvent.hover(await screen.findByRole('menuitem', { name: 'Move to' }));
@@ -135,7 +147,7 @@ it('shows "Remove from Design" in the Move to submenu when the room is in a cust
 });
 
 it('should display only mark unread and favorite for omnichannel rooms', async () => {
-	render(<RoomMenu {...defaultProps} type='l' />, renderOptions);
+	render(inRoomList(<RoomMenu {...defaultProps} type='l' />), renderOptions);
 
 	const menu = screen.queryByRole('button');
 	await userEvent.click(menu as HTMLElement);
