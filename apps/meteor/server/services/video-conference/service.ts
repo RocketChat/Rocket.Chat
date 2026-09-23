@@ -81,6 +81,14 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
 
+// temp fix for DMV project: skip Discussions when starting new conferences from rocket.chat
+//
+// Only auto-creation. Forking on demand — `share-chat`, when members cannot read the chat — is untouched, and
+// so is thread mode: `VideoConf_Persistent_Chat_Mode` is unregistered today, but once it is, setting it to
+// 'thread' gives conferences a persistent chat again with this still `true`. Widen this to
+// `isPersistentChatEnabled` if that is ever the intent; it is deliberately narrow so removing it is one revert.
+const SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES = true;
+
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
 
@@ -851,7 +859,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addAbsentMember(callId, calleeId);
 		}
 
-		await this.maybeCreateDiscussion(callId, user);
+		if (!SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES) {
+			await this.maybeCreateDiscussion(callId, user);
+		}
 
 		const call = (await this.getUnfiltered(callId)) as IDirectVideoConference | null;
 		if (!call) {
@@ -1037,7 +1047,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runNewVideoConferenceEvent(callId);
 
-		await this.maybeCreateDiscussion(callId, user);
+		if (!SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES) {
+			await this.maybeCreateDiscussion(callId, user);
+		}
 
 		const call = (await this.getUnfiltered(callId)) as IGroupVideoConference | null;
 		if (!call) {
