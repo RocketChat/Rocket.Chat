@@ -7,15 +7,17 @@ import {
 	positiveOrDisabled,
 	notGreaterThanSetting,
 	notLowerThanSetting,
+	mustBeDisabledWhileSettingsAreEnabled,
 } from '../../../../server/settings/functions/validationRuleBuilders';
 
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
+const loggerErrorMock = sinon.stub();
 
 const { validateSettingRules, SettingValidationError } = p.noCallThru().load('../../../../server/lib/settingValidationRules.ts', {
 	'@rocket.chat/logger': {
 		Logger: class {
-			error = (): undefined => undefined;
+			error = loggerErrorMock;
 		},
 	},
 	'../settings': { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } },
@@ -30,6 +32,7 @@ describe('validateSettingRules', () => {
 	beforeEach(() => {
 		settingsGetMock.reset();
 		settingsGetSettingMock.reset();
+		loggerErrorMock.reset();
 
 		settingsGetSettingMock.callsFake((_id: string) => ({
 			_id,
@@ -120,7 +123,7 @@ describe('validateSettingRules', () => {
 		expect(() => validateSettingRules([{ _id: 'Some_Unrelated_Setting', value: 10 }])).to.not.throw();
 	});
 
-	it('passes a rule referencing a setting that does not exist', () => {
+	it('passes a rule referencing a setting that does not exist, and reports the broken declaration', () => {
 		settingsGetSettingMock.withArgs('Ref_Setting').returns({
 			_id: 'Ref_Setting',
 			type: 'int',
@@ -128,6 +131,28 @@ describe('validateSettingRules', () => {
 		});
 
 		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: 999 }])).to.not.throw();
+		expect(loggerErrorMock.calledOnce).to.be.true;
+	});
+
+	it('stays quiet about an absent reference the rule declared it may have', () => {
+		settingsGetSettingMock.withArgs('Ref_Setting').returns({
+			_id: 'Ref_Setting',
+			type: 'int',
+			validation: '[{"query":{"value":{"$lte":{"$setting":"Missing_Setting"}}},"referencesMayBeAbsent":true}]',
+		});
+
+		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: 999 }])).to.not.throw();
+		expect(loggerErrorMock.called).to.be.false;
+	});
+
+	it('rejects a declaration whose referencesMayBeAbsent is not a boolean', () => {
+		settingsGetSettingMock.withArgs('Ref_Setting').returns({
+			_id: 'Ref_Setting',
+			type: 'int',
+			validation: '[{"query":{"value":false},"appliesWhen":[{"_id":"Gate","value":true}],"referencesMayBeAbsent":"yes"}]',
+		});
+
+		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: true }])).to.not.throw();
 	});
 
 	it('skips malformed persisted rules instead of crashing the save', () => {
@@ -148,6 +173,69 @@ describe('validateSettingRules', () => {
 		settingsGetMock.withArgs('Accounts_Password_Policy_MaxLength').returns(10);
 
 		expect(() => validateSettingRules([{ _id: 'Accounts_Password_Policy_MinLength', value: 5.5 }])).to.not.throw();
+	});
+
+	describe('a rule gated on more than one setting', () => {
+		beforeEach(() => {
+			settingsGetSettingMock.withArgs('Discussion_enabled').returns({
+				_id: 'Discussion_enabled',
+				type: 'boolean',
+				validation: JSON.stringify([mustBeDisabledWhileSettingsAreEnabled('ABAC_Enabled', 'ABAC_Enforce_All_Rooms')]),
+			});
+		});
+
+		const gates = (abacEnabled: unknown, enforceAllRooms: unknown) => {
+			settingsGetMock.withArgs('ABAC_Enabled').returns(abacEnabled);
+			settingsGetMock.withArgs('ABAC_Enforce_All_Rooms').returns(enforceAllRooms);
+		};
+
+		it('refuses the save only while every gate is on', () => {
+			gates(true, true);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.throw('Discussion_enabled_Invalid');
+		});
+
+		it('allows the save while one gate is off', () => {
+			gates(true, false);
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+
+			gates(false, true);
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+		});
+
+		it('allows the value the rule holds the setting at', () => {
+			gates(true, true);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: false }])).to.not.throw();
+		});
+
+		it('reads a gate turned off in the same batch, not the stored value', () => {
+			gates(true, true);
+
+			expect(() =>
+				validateSettingRules([
+					{ _id: 'ABAC_Enforce_All_Rooms', value: false },
+					{ _id: 'Discussion_enabled', value: true },
+				]),
+			).to.not.throw();
+		});
+
+		it('passes in an edition where the gates were never registered, without reporting it', () => {
+			gates(undefined, undefined);
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+			expect(loggerErrorMock.called).to.be.false;
+		});
+
+		it('skips a persisted rule whose conditions are an empty array rather than applying it always', () => {
+			settingsGetSettingMock.withArgs('Discussion_enabled').returns({
+				_id: 'Discussion_enabled',
+				type: 'boolean',
+				validation: '[{"query":{"value":false},"appliesWhen":[]}]',
+			});
+
+			expect(() => validateSettingRules([{ _id: 'Discussion_enabled', value: true }])).to.not.throw();
+		});
 	});
 
 	describe('JSON settings with a schema', () => {
