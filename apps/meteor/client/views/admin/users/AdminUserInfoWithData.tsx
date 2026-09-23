@@ -54,7 +54,6 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			avatarETag,
 			name,
 			username,
-			phone,
 			phones,
 			createdAt,
 			roles = [],
@@ -71,9 +70,6 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			abacAttributes,
 		} = data.user;
 
-		const phonesFallback = phone ? [{ number: phone }] : undefined;
-		const normalizedPhones = phones ?? phonesFallback;
-
 		return {
 			avatarETag,
 			name,
@@ -82,7 +78,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phones: normalizedPhones,
+			phones,
 			utcOffset,
 			customFields: {
 				...data.user.customFields,
