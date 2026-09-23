@@ -63,4 +63,9 @@ export interface IVideoConfService {
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
+	/** The room a conference created without anybody picking one should hang off, or `null` if none is set. */
+	getRidForExternalConference(): Promise<IRoom['_id'] | null>;
+	makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string>;
+	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
+	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']>;
 }
