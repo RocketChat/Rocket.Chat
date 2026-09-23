@@ -21,7 +21,11 @@ export const itemTemplateByViewMode: Record<SidebarViewMode, SidebarItemTemplate
 
 const avatarSizeByViewMode = { condensed: 'x20', medium: 'x28', extended: 'x36' } as const;
 
-export const roomAvatarForViewMode =
-	(viewMode: SidebarViewMode): SidebarRoomAvatar =>
-	(room) =>
+export const roomAvatarForViewMode = (viewMode: SidebarViewMode): SidebarRoomAvatar => {
+	const SidebarRoomAvatarForViewMode: SidebarRoomAvatar = (room) =>
 		createElement(RoomAvatar, { size: avatarSizeByViewMode[viewMode], room: { ...room, _id: room.rid || room._id, type: room.t } });
+
+	SidebarRoomAvatarForViewMode.displayName = `SidebarRoomAvatar(${viewMode})`;
+
+	return SidebarRoomAvatarForViewMode;
+};
