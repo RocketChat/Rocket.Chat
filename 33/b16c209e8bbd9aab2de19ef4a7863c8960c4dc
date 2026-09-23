@@ -1,0 +1,33 @@
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_6a07e872e1831e::t_ad5af2b727c535 1,3-5,7,9,11-14
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.spec.ts
+  s_6a07e872e1831e::t_802d76445987df 2,12-16,18,21-27
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.ts
+  s_6a07e872e1831e::t_f84f9eb103b67e 4-5,7-10
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_6a07e872e1831e::t_574e4e90c4f57d 12,66-67,72,135-163
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_05e9c185365935 3,5,18,21,32-36,48,64,69,81-82,239-243,246,254
+ee/apps/ddp-streamer/src/lib/MirroredCollection.ts
+  s_6a07e872e1831e::t_710587b495ea5f 1,3,5-10,12,14-17,20-28,31-34
+ee/apps/ddp-streamer/src/publications/mirroredCollection.ts
+  s_6a07e872e1831e::t_a89123d068121d 1-23
+ee/apps/ddp-streamer/src/service.ts
+  s_6a07e872e1831e::t_f2b0574b4fefc8 38-41,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "33b16c209e8bbd9aab2de19ef4a7863c8960c4dc",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

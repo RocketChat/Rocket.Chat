@@ -1,0 +1,31 @@
+ee/apps/ddp-streamer/src/service.ts
+  s_6a07e872e1831e::t_907f94752c361a 35
+  s_6a07e872e1831e::t_96d7d0c84c303c 30
+ee/apps/ddp-streamer/src/methods/meteorFallback.ts
+  s_6a07e872e1831e::t_bb900aa3b4e8dc 1-9
+ee/apps/ddp-streamer/src/ddp/Server.spec.ts
+  s_6a07e872e1831e::t_00a8d5785b4f07 8
+  s_6a07e872e1831e::t_853bb8f5c988c4 32
+ee/apps/ddp-streamer/src/ddp/Server.ts
+  s_6a07e872e1831e::t_086dfe04de6fb0 20-26
+  s_6a07e872e1831e::t_9fe7dc4aeed705 61
+  s_6a07e872e1831e::t_bd5d6c7581d1b5 2
+  s_6a07e872e1831e::t_084cb9565da40f 48
+  s_6a07e872e1831e::t_cc9fdca35fffbb 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ef6be52ffee972345d10e3eac55470ebd72125bd",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

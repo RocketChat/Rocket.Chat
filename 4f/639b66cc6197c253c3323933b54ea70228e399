@@ -1,0 +1,22 @@
+ee/apps/ddp-streamer/src/publications/loginServiceConfiguration.spec.ts
+  s_6a07e872e1831e::t_994724ce554276 1-80
+  s_6a07e872e1831e::t_0d47a5763cbea4 81
+ee/apps/ddp-streamer/src/Client.spec.ts
+  s_6a07e872e1831e::t_4fbae293da6f28 201-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4f639b66cc6197c253c3323933b54ea70228e399",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

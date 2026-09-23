@@ -1,0 +1,30 @@
+ee/apps/ddp-streamer/src/ddp/lifecycle.ts
+  s_6a07e872e1831e::t_066d4a1bfa83f6 10-11,14
+ee/apps/ddp-streamer/src/ddp/Client.ts
+  s_6a07e872e1831e::t_9a9f058740828c 34
+  s_6a07e872e1831e::t_a4cd9642992bf6 169
+ee/apps/ddp-streamer/src/ddp/Client.spec.ts
+  s_6a07e872e1831e::t_ffb1fb0646009f 4
+  s_6a07e872e1831e::t_46f82e4a9a57cc 274-278,285-286
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_6a07e872e1831e::t_b4aff57a2ee1a3 20
+  s_6a07e872e1831e::t_9d55d247308e8c 165-185
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_6a07e872e1831e::t_c3ea640e1741d0 177-185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "74a37808a4ec17644e6f0cce59cffb6f23b1ea6e",
+  "prompts": {},
+  "sessions": {
+    "s_6a07e872e1831e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b6763ab1-6bb0-45f6-8fa7-9a84f178b208",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
