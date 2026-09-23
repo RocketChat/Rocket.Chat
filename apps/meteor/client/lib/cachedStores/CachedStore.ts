@@ -2,7 +2,6 @@ import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
-import { Meteor } from 'meteor/meteor';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
@@ -10,6 +9,7 @@ import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { hasPendingMethods } from '../../meteor/connection';
 import { sdk } from '../SDKClient';
 import { getDdpSdk } from '../sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem } from '../sdk/storage';
@@ -240,7 +240,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	protected async sync() {
-		if (!this.updatedAt || this.updatedAt.getTime() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+		if (!this.updatedAt || this.updatedAt.getTime() === 0 || hasPendingMethods()) {
 			return false;
 		}
 

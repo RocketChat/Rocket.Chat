@@ -1,8 +1,7 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/tools';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
+import type { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
@@ -11,51 +10,20 @@ import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils'
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
+import {
+	callLoginMethod,
+	getLoginWithMethod,
+	isLoggingIn as getLoggingInSnapshot,
+	loginWithToken,
+	setConnectionUserId,
+	subscribeLoggingIn,
+} from '../../meteor/accounts';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
 export type AuthenticationProviderProps = {
 	children: ReactNode;
 };
-
-const callLoginMethod = (
-	options: { loginToken?: string; token?: string; iframe?: boolean },
-	userCallback: ((err?: any) => void) | undefined,
-) => {
-	Accounts.callLoginMethod({
-		methodArguments: [options],
-		userCallback,
-	});
-};
-
-// Bridge Accounts.loggingIn() — Meteor's Tracker-reactive flag — into a
-// non-reactive subscribe/getSnapshot pair for useSyncExternalStore. We hook
-// `_setLoggingIn` (Meteor's internal flip, also accessed in
-// apps/meteor/client/meteor/overrides/killMeteorStream.ts) to fan out
-// transitions without entering a Tracker computation.
-const loggingInListeners = new Set<() => void>();
-let loggingInBridgeInstalled = false;
-const installLoggingInBridge = (): void => {
-	if (loggingInBridgeInstalled) return;
-	loggingInBridgeInstalled = true;
-	const wrap = Accounts as unknown as { _setLoggingIn?: (v: boolean) => void };
-	const original = wrap._setLoggingIn;
-	if (typeof original !== 'function') return;
-	wrap._setLoggingIn = function (this: typeof Accounts, v: boolean) {
-		original.call(this, v);
-		loggingInListeners.forEach((cb) => cb());
-	};
-};
-
-const subscribeLoggingIn = (cb: () => void): (() => void) => {
-	installLoggingInBridge();
-	loggingInListeners.add(cb);
-	return () => {
-		loggingInListeners.delete(cb);
-	};
-};
-
-const getLoggingInSnapshot = (): boolean => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
@@ -71,19 +39,18 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 		(): ContextType<typeof AuthenticationContext> => ({
 			isLoggingIn,
 			loginWithToken: (token: string, callback): Promise<void> =>
-				new Promise((resolve, reject) =>
-					Meteor.loginWithToken(token, (err) => {
-						if (err) {
-							console.error(err);
-							callback?.(err);
-							return reject(err);
-						}
-						resolve(undefined);
-					}),
-				),
+				loginWithToken(token).catch((err) => {
+					console.error(err);
+					callback?.(err);
+					throw err;
+				}),
 			loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string): Promise<void> =>
 				new Promise((resolve, reject) => {
-					Meteor[loginMethod](user, password, (error) => {
+					const method = getLoginWithMethod(loginMethod);
+					if (!method) {
+						throw new Error(`Meteor.${loginMethod} is not defined`);
+					}
+					method(user, password, (error?: unknown) => {
 						if (error) {
 							reject(error);
 							return;
@@ -102,7 +69,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 
 				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
 
-				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService];
+				const method = getLoginWithMethod(loginWithService);
 
 				if (!method) {
 					return () => Promise.reject(new Error('Login method not found'));
@@ -121,34 +88,19 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 			},
 			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
 				const methodName = `loginWith${capitalizeService(service, true)}`;
-				const method = (Meteor as any)[methodName] as
-					((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void) | undefined;
-				if (!method) {
-					return;
-				}
-				method.call(Meteor, options, callback);
+				getLoginWithMethod(methodName)?.(options, callback);
 			},
 			loginWithIframe: (token: string, callback) =>
-				new Promise<void>((resolve, reject) => {
-					callLoginMethod({ iframe: true, token }, (error) => {
-						if (error) {
-							console.error(error);
-							callback?.(error);
-							return reject(error);
-						}
-						resolve();
-					});
+				callLoginMethod({ methodArguments: [{ iframe: true, token }] }).catch((error) => {
+					console.error(error);
+					callback?.(error);
+					throw error;
 				}),
 			loginWithTokenRoute: (token: string, callback) =>
-				new Promise<void>((resolve, reject) => {
-					callLoginMethod({ token }, (error) => {
-						if (error) {
-							console.error(error);
-							callback?.(error);
-							return reject(error);
-						}
-						resolve();
-					});
+				callLoginMethod({ methodArguments: [{ token }] }).catch((error) => {
+					console.error(error);
+					callback?.(error);
+					throw error;
 				}),
 			getLoginToken: () => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN),
 			wipeLocalAuth: () => {
@@ -156,7 +108,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 				removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
 				try {
-					Meteor.connection.setUserId(null);
+					setConnectionUserId(null);
 				} catch {
 					// ignore
 				}
