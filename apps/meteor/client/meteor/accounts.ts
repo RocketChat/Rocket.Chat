@@ -32,6 +32,10 @@ export const loginWithToken = (token: string) =>
 
 type LoginWithFn = (...args: any[]) => void;
 
+export const registerLoginWithMethod = (name: `loginWith${string}`, method: LoginWithFn): void => {
+	(Meteor as unknown as Record<string, unknown>)[name] = method;
+};
+
 /** Resolves a `Meteor.loginWith<Service>` method registered by client/meteor/login */
 export const getLoginWithMethod = (name: string): LoginWithFn | undefined => {
 	const method = (Meteor as unknown as Record<string, unknown>)[name];
