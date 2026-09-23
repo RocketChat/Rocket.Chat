@@ -1,0 +1,19 @@
+apps/meteor/tests/end-to-end/api/channels.ts
+  s_91fdd0b12a50c8::t_51a410150ef03e 418-431,466-479
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "9b135453a776abf23d39108e5b9767292ea0faef",
+  "prompts": {},
+  "sessions": {
+    "s_91fdd0b12a50c8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "65d4303d-3cff-49db-bd64-e0ece0afa7d0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
