@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
@@ -80,14 +80,9 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => 
 		queryFn: async () => findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) }),
 	});
 
-	useEffect(() => {
-		if (isSuccess) {
-			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
-		}
-	}, [dispatchToastMessage, isSuccess, t]);
-
 	const handleGenerateLink = useStableCallback((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
+		dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
 	});
 
 	if (isError) {
