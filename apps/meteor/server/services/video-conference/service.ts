@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
@@ -837,6 +839,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			providerName,
 		});
 
+		await this.maybeAddSipAliasToCall(callId, providerName);
+
 		await this.runNewVideoConferenceEvent(callId);
 
 		const isEmbedded = this.isEmbeddedProvider(providerName);
@@ -928,6 +932,87 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await subscriptions.forEach((subscription) => this.notifyUser(subscription.u._id, action, params));
 	}
 
+	/**
+	 * A fresh eight-digit alias, never starting with a zero.
+	 *
+	 * Rejection-sampled rather than taken modulo the byte: 256 divides by neither 9 nor 10, so `value % 10`
+	 * would make the low digits measurably likelier than the high ones. An alias is short and dialling one
+	 * reaches a live conference, so an occasional discarded byte is worth not skewing the space.
+	 */
+	private makeSipAlias(): string {
+		const result: number[] = [];
+		const buffer = new Uint8Array(16);
+		crypto.getRandomValues(buffer);
+
+		let bufferIndex = 0;
+
+		const nextByte = (): number => {
+			if (bufferIndex >= buffer.length) {
+				crypto.getRandomValues(buffer);
+				bufferIndex = 0;
+			}
+			return buffer[bufferIndex++];
+		};
+
+		// 252 is the largest multiple of 9 at or below 256; anything above it is discarded rather than folded in.
+		while (result.length === 0) {
+			const value = nextByte();
+			if (value < 252) {
+				result.push((value % 9) + 1);
+			}
+		}
+
+		// 250 is the same bound for 10, the remaining digits being allowed to be zero.
+		while (result.length < 8) {
+			const value = nextByte();
+			if (value < 250) {
+				result.push(value % 10);
+			}
+		}
+
+		return result.join('');
+	}
+
+	/**
+	 * Gives a call an alias, trying again on collision.
+	 *
+	 * The index is unique, so a number already in use comes back as a write error rather than quietly
+	 * overwriting somebody else's conference — which is what makes retrying the whole of the collision
+	 * handling. Giving up is not fatal: the call runs, it just cannot be dialled into.
+	 */
+	private async addSipAlias(callId: string, attempt = 0): Promise<string | null> {
+		const alias = this.makeSipAlias();
+
+		try {
+			await VideoConferenceModel.setSipAliasById(callId, alias);
+			return alias;
+		} catch (err) {
+			if (err && typeof err === 'object' && err instanceof Error && err.message.includes('E11000')) {
+				if (attempt >= 20) {
+					logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', err });
+					return null;
+				}
+				return this.addSipAlias(callId, attempt + 1);
+			}
+
+			logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+			return null;
+		}
+	}
+
+	/** Only the internal Pexip provider can be dialled into, and only while the workspace asks for aliases. */
+	private async maybeAddSipAliasToCall(callId: string, providerName: string): Promise<void> {
+		if (providerName !== 'core.pexip') {
+			return;
+		}
+
+		if (!settings.get('Pexip_Integration_SIP_AddAlias')) {
+			return;
+		}
+
+		await this.addSipAlias(callId);
+	}
+
 	private async startGroup(
 		providerName: string,
 		user: IUser,
@@ -947,6 +1032,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			providerName,
 		});
+
+		await this.maybeAddSipAliasToCall(callId, providerName);
 
 		await this.runNewVideoConferenceEvent(callId);
 
