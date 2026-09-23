@@ -9,7 +9,7 @@ import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
 const SidebarFooterDefault = () => {
 	const theme = useThemeMode();
-	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
+	const logo = useSetting(theme === 'dark' || theme === 'dark-alpha' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
 
 	const dangerousLogo = useMemo(() => ({ __html: DOMPurify.sanitize(logo) }), [logo]);
 

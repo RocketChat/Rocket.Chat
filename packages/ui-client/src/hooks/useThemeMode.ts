@@ -7,7 +7,11 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
  */
 export const useThemeMode = () => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
-	const isDarkMode = useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark');
+	const isDarkMode = useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark' || themeMode === 'dark-alpha');
+
+	if (themeMode === 'dark-alpha') {
+		return 'dark-alpha';
+	}
 
 	if (isDarkMode) {
 		return 'dark';

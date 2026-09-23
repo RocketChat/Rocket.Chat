@@ -58,6 +58,17 @@ describe('useThemeMode', () => {
 		expect(mockUseDarkMode).toHaveBeenCalledWith(false);
 	});
 
+	it('should resolve to "dark-alpha" when mode is "dark-alpha"', () => {
+		mockUseDarkMode.mockReturnValue(true);
+
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark-alpha').build(),
+		});
+
+		expect(result.current).toBe('dark-alpha');
+		expect(mockUseDarkMode).toHaveBeenCalledWith(true);
+	});
+
 	it('should resolve to "high-contrast" when mode is "high-contrast"', () => {
 		mockUseDarkMode.mockReturnValue(false);
 

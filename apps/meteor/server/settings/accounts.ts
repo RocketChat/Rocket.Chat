@@ -552,6 +552,10 @@ export const createAccountSettings = () =>
 						key: 'dark',
 						i18nLabel: 'Theme_dark',
 					},
+					{
+						key: 'dark-alpha',
+						i18nLabel: 'Theme_dark_alpha',
+					},
 				],
 				public: true,
 				i18nLabel: 'Theme_Appearence',
