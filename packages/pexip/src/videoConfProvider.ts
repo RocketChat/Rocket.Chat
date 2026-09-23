@@ -1,5 +1,6 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import type { VideoConference, AtLeast, IRoom, IVideoConferenceUser } from '@rocket.chat/core-typings';
+import type { VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import type { VideoConference, AtLeast, IRoom, IVideoConferenceUser, RequiredField } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import type { Pexip } from './Pexip';
@@ -111,14 +112,43 @@ export class PexipVideoConfProvider {
 		return url;
 	}
 
-	public async customizeUrl(call: VideoConference, user: IVideoConferenceUser | undefined): Promise<string> {
+	/**
+	 * The address this particular person should open, from the conference's own.
+	 *
+	 * Built through `URL` rather than by appending: the call's url is whatever the workspace's meeting-url
+	 * setting produced, so whether it already carries a query is not ours to assume — and a display name is
+	 * user input that has to be encoded rather than concatenated.
+	 */
+	public async customizeUrl(
+		call: RequiredField<VideoConference, 'url'>,
+		user: IVideoConferenceUser | undefined,
+		options?: VideoConferenceJoinOptions,
+	): Promise<string> {
 		const pin = await this.getPinForUser(call, user);
 
-		const { url } = call;
+		const url = new URL(call.url);
 
-		const nameSuffix = user?.name ? `&name=${user.name}` : '';
+		if (user?.name) {
+			url.searchParams.set('name', user.name);
+		}
 
-		return `${url}&pin=${pin}${nameSuffix}`;
+		// Only an explicit `false` mutes: the caller saying nothing about a device is not the same as the caller
+		// asking for it to be off.
+		if (options?.mic === false) {
+			url.searchParams.set('muteMicrophone', 'true');
+		}
+
+		if (options?.cam === false) {
+			url.searchParams.set('muteCamera', 'true');
+		}
+
+		url.searchParams.set('pin', pin);
+
+		return url.toString();
+	}
+
+	public async onUserJoin(_call: VideoConference, _user?: IVideoConferenceUser): Promise<void> {
+		// Nothing to do: Pexip learns about arrivals from its own event sink rather than from us.
 	}
 
 	public async onNewVideoConference(call: VideoConference): Promise<void> {
