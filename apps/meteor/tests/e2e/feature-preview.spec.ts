@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
@@ -153,14 +154,23 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeTeam.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
-		test('should keep the main room on the top even if child has unread messages', async ({ page, browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
-			const user1Channel = new HomeChannel(user1Page);
+		test.describe('with another user', () => {
+			let user1Page: Page;
 
-			const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
-			const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+			test.beforeEach(async ({ browser }) => {
+				user1Page = await browser.newPage({ storageState: Users.user1.state });
+			});
 
-			try {
+			test.afterEach(async () => {
+				await user1Page.close();
+			});
+
+			test('should keep the main room on the top even if child has unread messages', async ({ page }) => {
+				const user1Channel = new HomeChannel(user1Page);
+
+				const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
+				const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+
 				await test.step('add the channel to the team', async () => {
 					await poHomeTeam.gotoGroup(sidepanelTeam);
 					await poHomeTeam.headerToolbar.openTeamChannels();
@@ -197,9 +207,7 @@ test.describe.serial('feature preview', () => {
 					await expect(teamMainRoomLink.locator('..')).toHaveAttribute('data-item-index', '0');
 					await expect(childChannelLink.locator('..')).toHaveAttribute('data-item-index', '1');
 				});
-			} finally {
-				await user1Page.close();
-			}
+			});
 		});
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
