@@ -19,6 +19,7 @@ import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { SidebarRoomAvatar } from '../hooks/useSidebarPresentation';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
+import { hasRoomChanged } from '../lib/sidebarRowChanges';
 
 type RoomListRowProps = {
 	extended: boolean;
@@ -168,12 +169,6 @@ const SidebarItemTemplateWithData = ({
 	);
 };
 
-function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
-	if (!a || !b) {
-		return a !== b;
-	}
-	return new Date(a).toISOString() !== new Date(b).toISOString();
-}
 
 const keys: (keyof RoomListRowProps)[] = [
 	'id',
@@ -189,50 +184,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'isPriorityEnabled',
 ];
 
-export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
-	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
-		return false;
-	}
-
-	if (prevProps.room === nextProps.room) {
-		return true;
-	}
-
-	if (prevProps.room._id !== nextProps.room._id) {
-		return false;
-	}
-	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
-		return false;
-	}
-	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
-		return false;
-	}
-	if (prevProps.room.lastMessage?.msg !== nextProps.room.lastMessage?.msg) {
-		return false;
-	}
-	if (prevProps.room.alert !== nextProps.room.alert) {
-		return false;
-	}
-	if (prevProps.room.draft !== nextProps.room.draft) {
-		return false;
-	}
-	if (prevProps.room.threadDrafts !== nextProps.room.threadDrafts) {
-		return false;
-	}
-	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
-		return false;
-	}
-	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
-		return false;
-	}
-
-	if (
-		isOmnichannelRoom(prevProps.room) &&
-		isOmnichannelRoom(nextProps.room) &&
-		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
-	) {
-		return false;
-	}
-
-	return true;
-});
+export default memo(
+	SidebarItemTemplateWithData,
+	(prevProps, nextProps) => !keys.some((key) => prevProps[key] !== nextProps[key]) && !hasRoomChanged(prevProps.room, nextProps.room),
+);
