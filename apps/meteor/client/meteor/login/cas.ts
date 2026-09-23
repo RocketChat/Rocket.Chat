@@ -1,7 +1,7 @@
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
-import { callLoginMethod } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod } from '../accounts';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
