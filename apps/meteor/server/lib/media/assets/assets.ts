@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import sharp from 'sharp';
 
-import { getExtension } from '../../../../app/utils/lib/mimeTypes';
+import { getExtension } from '../../../../lib/mimeTypes';
 import { settings, settingsRegistry } from '../../../settings';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../notifyListener';

@@ -33,7 +33,7 @@ import { getRequiredDepartment } from './departmentsLib';
 import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
-import { i18n } from '../../../app/utils/lib/i18n';
+import { i18n } from '../../../lib/i18n';
 import { trim } from '../../../lib/utils/stringUtils';
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';

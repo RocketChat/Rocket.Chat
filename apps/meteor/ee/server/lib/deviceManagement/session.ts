@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { UAParserDesktop, UAParserMobile } from '../../../../server/lib/statistics/lib/UAParserCustom';
 import { getUserPreference } from '../../../../server/lib/utils/lib/getUserPreference';
