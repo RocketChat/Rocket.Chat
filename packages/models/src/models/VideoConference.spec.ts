@@ -10,6 +10,9 @@ jest.mock('./BaseRaw', () => ({
 }));
 
 // eslint-disable-next-line import-x/first -- must be registered before the module under test is loaded
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+
+// eslint-disable-next-line import-x/first -- must be registered before the module under test is loaded
 import { VideoConferenceRaw } from './VideoConference';
 
 const member = { _id: 'user-1', username: 'user.one', name: 'User One', avatarETag: 'etag' };
@@ -227,5 +230,132 @@ describe('VideoConferenceRaw.setUserDeclinedById', () => {
 		await model.setUserDeclinedById('call-1', 'user-1');
 
 		expect(Object.keys(updateOne.mock.calls[0][1].$set)).not.toContain('users.$[user].joined');
+	});
+});
+
+describe('VideoConferenceRaw SIP alias', () => {
+	// The alias is released so its (eight-digit) space can be reused, and every write that finishes a call has
+	// to do it — a call left holding an alias keeps a number nobody can dial back out of the pool.
+	it.each([
+		{ label: 'expired', status: VideoConferenceStatus.EXPIRED },
+		{ label: 'ended', status: VideoConferenceStatus.ENDED },
+		{ label: 'declined', status: VideoConferenceStatus.DECLINED },
+	])('should release the alias when setStatusById marks the call $label', async ({ status }) => {
+		const { model, updateOne } = setupModel();
+
+		await model.setStatusById('call-1', status);
+
+		expect(updateOne.mock.calls[0][1]).toEqual({ $set: { status }, $unset: { sipAlias: true } });
+	});
+
+	it.each([
+		{ label: 'calling', status: VideoConferenceStatus.CALLING },
+		{ label: 'started', status: VideoConferenceStatus.STARTED },
+	])('should keep the alias when setStatusById marks the call $label', async ({ status }) => {
+		const { model, updateOne } = setupModel();
+
+		await model.setStatusById('call-1', status);
+
+		expect(updateOne.mock.calls[0][1]).not.toHaveProperty('$unset');
+	});
+
+	it('should release the alias when setDataById carries a finishing status', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setDataById('call-1', { status: VideoConferenceStatus.ENDED, endedAt: new Date() });
+
+		expect(updateOne.mock.calls[0][1].$unset).toEqual({ sipAlias: true });
+	});
+
+	// A partial update that names no status says nothing about whether the call is over, so it must leave the
+	// alias alone rather than reading "no status" as "not finished" either way.
+	it('should leave the alias alone when setDataById carries no status', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setDataById('call-1', { ringing: false });
+
+		expect(updateOne.mock.calls[0][1]).not.toHaveProperty('$unset');
+	});
+
+	it('should release the alias when the call is ended', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setEndedById('call-1');
+
+		expect(updateOne.mock.calls[0][1].$unset).toEqual({ sipAlias: true });
+	});
+
+	it('should look an alias up scoped by provider, since it is only unique within one', async () => {
+		const { model } = setupModel();
+		const findOne = jest.fn().mockResolvedValue(null);
+		Object.defineProperty(model, 'findOne', { value: findOne });
+
+		await model.findOneByProviderNameAndSipAlias('core.pexip', '12345678');
+
+		expect(findOne.mock.calls[0][0]).toEqual({ providerName: 'core.pexip', sipAlias: '12345678' });
+	});
+
+	// A SIP participant event carries the alias it dialled and nothing else, so the count is addressed by it.
+	it('should count a SIP participant by alias and hand back the updated call', async () => {
+		const { model, findOneAndUpdate } = setupModel();
+
+		await model.increaseSipParticipantCount('12345678');
+
+		const [query, update, options] = findOneAndUpdate.mock.calls[0];
+		expect(query).toEqual({ sipAlias: '12345678' });
+		expect(update).toEqual({ $inc: { sipParticipantCount: 1 } });
+		expect(options).toEqual({ returnDocument: 'after' });
+	});
+
+	it('should count a WebRTC participant by call id', async () => {
+		const { model, findOneAndUpdate } = setupModel();
+
+		await model.increaseWebRTCParticipantCount('call-1');
+
+		const [query, update] = findOneAndUpdate.mock.calls[0];
+		expect(query).toEqual({ _id: 'call-1' });
+		expect(update).toEqual({ $inc: { webrtcParticipantCount: 1 } });
+	});
+});
+
+describe('VideoConferenceRaw.createGroup', () => {
+	// The alias index is partial on the field existing, and the driver writes an explicit `undefined` as
+	// `null` — which exists. Assigning it unconditionally would collide every aliasless conference with the last.
+	it('should omit sipAlias and discussionRid entirely when it has neither', async () => {
+		const { model } = setupModel();
+		const insertOne = jest.fn().mockResolvedValue({ insertedId: 'call-1' });
+		Object.defineProperty(model, 'insertOne', { value: insertOne });
+
+		await model.createGroup({
+			rid: 'room-1',
+			title: 'Call',
+			createdBy: member,
+			providerName: 'core.pexip',
+			ringing: false,
+		});
+
+		const [doc] = insertOne.mock.calls[0];
+		expect(doc).not.toHaveProperty('sipAlias');
+		expect(doc).not.toHaveProperty('discussionRid');
+	});
+
+	it('should carry sipAlias and discussionRid when given', async () => {
+		const { model } = setupModel();
+		const insertOne = jest.fn().mockResolvedValue({ insertedId: 'call-1' });
+		Object.defineProperty(model, 'insertOne', { value: insertOne });
+
+		await model.createGroup({
+			rid: 'room-1',
+			title: 'Call',
+			createdBy: member,
+			providerName: 'core.pexip',
+			ringing: false,
+			sipAlias: '12345678',
+			discussionRid: 'discussion-1',
+		});
+
+		const [doc] = insertOne.mock.calls[0];
+		expect(doc.sipAlias).toBe('12345678');
+		expect(doc.discussionRid).toBe('discussion-1');
 	});
 });
