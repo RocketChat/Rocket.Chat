@@ -151,6 +151,8 @@ describe('validateSettingRules', () => {
 			type: 'int',
 			validation: '[{"query":{"value":false},"appliesWhen":[{"_id":"Gate","value":true}],"referencesMayBeAbsent":"yes"}]',
 		});
+		// the gate holds, so a rule that survived the shape check would refuse this save
+		settingsGetMock.withArgs('Gate').returns(true);
 
 		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: true }])).to.not.throw();
 	});
