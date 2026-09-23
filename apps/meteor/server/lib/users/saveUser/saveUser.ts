@@ -195,14 +195,6 @@ const _saveUser = (session?: ClientSession) =>
 			} else {
 				updater.set('phones', userData.phones);
 			}
-
-			// TODO: 9.0 - migrate `phone` to `phones`
-			updater.unset('phone');
-			unset.phone = 1;
-
-			if (isBroken) {
-				throw new Error("IUser['phone'] is deprecated and should be migrated to IUser['phones']");
-			}
 		}
 
 		if (typeof userData.verified === 'boolean') {
