@@ -10,7 +10,6 @@ import { ConnectionRegistry } from './ddp/ConnectionRegistry';
 import { Server } from './ddp/Server';
 import { ConnectionLifecycle } from './ddp/lifecycle';
 import { MeteorCollection } from './lib/MeteorCollection';
-import { ClientVersions } from './publications/autoupdate';
 import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -65,7 +64,7 @@ function makeMetrics(): jest.Mocked<IServiceMetrics> {
 function makeService() {
 	const lifecycle = new ConnectionLifecycle();
 	const registry = new ConnectionRegistry(lifecycle);
-	const collections = { loginServices: new MeteorCollection<any>(), clientVersions: new ClientVersions(jest.fn()) };
+	const collections = { loginServices: new MeteorCollection<any>(), clientVersions: new MeteorCollection<any>() };
 	const service = new DDPStreamer(server, lifecycle, registry, collections, notifications);
 	const api = { broadcast: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<IApiService>;
 	service.setApi(api);
