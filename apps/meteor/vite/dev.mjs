@@ -17,9 +17,20 @@ const serverUrl = remoteServerUrl || `http://localhost:${meteorPort}`;
 
 const viteBin = join(dirname(require.resolve('vite/package.json')), 'bin/vite.js');
 
+const isWindows = process.platform === 'win32';
+
 // Each child leads its own process group so stopping it also stops what it spawned (Meteor's app and mongod).
+// Windows has no process groups; there the tree is stopped with taskkill instead.
 const run = (command, args, env) =>
-	spawn(command, args, { cwd: appRoot, stdio: 'inherit', detached: true, env: { ...process.env, ...env } });
+	spawn(command, args, { cwd: appRoot, stdio: 'inherit', detached: !isWindows, shell: isWindows, env: { ...process.env, ...env } });
+
+const stopTree = (child) => {
+	if (isWindows) {
+		spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+		return;
+	}
+	process.kill(-child.pid, 'SIGTERM');
+};
 
 const children = [
 	!remoteServerUrl &&
@@ -37,7 +48,7 @@ const stopAll = (code = 0) => {
 	process.exitCode = code;
 	for (const child of children) {
 		try {
-			process.kill(-child.pid, 'SIGTERM');
+			stopTree(child);
 		} catch {
 			// already gone
 		}
@@ -45,7 +56,7 @@ const stopAll = (code = 0) => {
 };
 
 for (const child of children) {
-	child.on('exit', (code) => stopAll(code ?? 0));
+	child.on('exit', (code, signal) => stopAll(code ?? (signal ? 1 : 0)));
 }
 
 process.on('SIGINT', () => stopAll());

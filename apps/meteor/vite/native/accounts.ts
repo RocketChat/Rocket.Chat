@@ -17,11 +17,19 @@ const waitForConnection = async (): Promise<void> => {
 	const { connection } = getDdpSdk();
 	if (connection.status === 'connected') return;
 
-	await new Promise<void>((resolve) => {
+	await new Promise<void>((resolve, reject) => {
 		const stop = connection.on('connected', () => {
 			stop();
 			resolve();
 		});
+
+		// A socket that already gave up would never emit `connected` again on its own; fail the login instead of hanging.
+		if (connection.status !== 'connecting' && connection.status !== 'reconnecting') {
+			connection.connect().catch((error) => {
+				stop();
+				reject(error);
+			});
+		}
 	});
 };
 

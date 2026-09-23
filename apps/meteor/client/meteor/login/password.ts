@@ -41,8 +41,9 @@ export const loginWithPasswordAndTOTP = (
 	}).then(
 		() => callback?.(undefined),
 		(error) => {
-			callback?.(error);
-			throw error;
+			// Callers that pass a callback (overrideLoginMethod) drop the promise, so it must not reject for them.
+			if (!callback) throw error;
+			callback(error);
 		},
 	);
 

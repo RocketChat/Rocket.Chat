@@ -47,6 +47,7 @@
 		"./public/**",
 		// Node-side build tooling that resolves packages through `exports`, which this app config does not.
 		"./vite/vite.config.mts",
+		"./vite/postcss-plugins.d.ts",
 	],
 	"ts-node": {
 		"files": false,

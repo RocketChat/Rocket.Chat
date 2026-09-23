@@ -3,7 +3,7 @@ import { Random } from '@rocket.chat/random';
 
 import { APIClient } from '../../client/lib/RestApiClient';
 import { parseDDP, stringifyDDP } from '../../client/lib/sdk/ddpProtocol';
-import { ensureConnectedAndAuthenticated, getDdpSdk } from '../../client/lib/sdk/ddpSdk';
+import { getDdpSdk } from '../../client/lib/sdk/ddpSdk';
 import { getUserId } from '../../client/lib/user';
 import type { ConnectionStatus } from '../../client/meteor/connection';
 
@@ -28,11 +28,10 @@ const toConnectionStatus = (status: string): ConnectionStatus => {
 
 export const getConnectionStatus = (): ConnectionStatus => toConnectionStatus(getDdpSdk().connection.status);
 
-export const disconnect = (): void => getDdpSdk().connection.close();
+// There is no Meteor connection here; ServerProvider already closes and reconnects DDPSDK itself.
+export const disconnect = (): void => undefined;
 
-export const reconnect = (): void => {
-	void ensureConnectedAndAuthenticated();
-};
+export const reconnect = (): void => undefined;
 
 // Deployments behind ddp-streamer only answer these over the socket; every other method goes through the
 // REST method bridge, which is also how the Meteor build routes them (client/meteor/overrides/ddpOverREST).
@@ -72,14 +71,22 @@ const callOverREST = async (method: string, params: unknown[]): Promise<any> => 
 	return unwrapMethodResult(body.message);
 };
 
-export const callMethod = (method: string, ...args: unknown[]): Promise<any> =>
-	isSocketMethod(method, args) ? getDdpSdk().client.callAsync(method, ...args) : callOverREST(method, args);
+let pendingMethods = 0;
+
+export const callMethod = async (method: string, ...args: unknown[]): Promise<any> => {
+	pendingMethods++;
+	try {
+		return await (isSocketMethod(method, args) ? getDdpSdk().client.callAsync(method, ...args) : callOverREST(method, args));
+	} finally {
+		pendingMethods--;
+	}
+};
 
 export const callMethodWithoutResult = (method: string, ...args: unknown[]): void => {
 	void callMethod(method, ...args).catch((error) => console.warn(`[connection] ${method} failed`, error));
 };
 
-export const hasPendingMethods = (): boolean => false;
+export const hasPendingMethods = (): boolean => pendingMethods !== 0;
 
 // Frames only reach DDPSDK's own listeners; there is no second socket to tap.
 export const onRawMessage = (_listener: (rawMessage: string) => void): void => undefined;
