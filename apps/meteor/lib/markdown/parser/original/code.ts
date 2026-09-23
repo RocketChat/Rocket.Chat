@@ -7,19 +7,19 @@ import { unescapeHTML } from '@rocket.chat/tools';
 import { addAsToken } from './token';
 import hljs, { register } from '../../hljs';
 
-const inlinecode = (message) => {
+const inlinecode = (message: any) => {
 	// Support `text`
-	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) =>
+	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match: string, p1: string, p2: string) =>
 		addAsToken(
 			message,
-			`<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${p1}</code></span><span class=\"copyonly\">\`</span>${p2}`,
+			`<span class="copyonly">\`</span><span><code class="code-colors inline">${p1}</code></span><span class="copyonly">\`</span>${p2}`,
 			'inlinecode',
 			{ noHtml: match },
 		),
 	);
 };
 
-const codeblocks = (message) => {
+const codeblocks = (message: any) => {
 	// Count occurencies of ```
 	const count = (message.html.match(/```/gm) || []).length;
 
@@ -48,7 +48,7 @@ const codeblocks = (message) => {
 				const result = (() => {
 					if (lang) {
 						try {
-							register(lang);
+							void register(lang);
 							return hljs.highlight(lang, code);
 						} catch (error) {
 							console.error(error);
@@ -77,7 +77,7 @@ const codeblocks = (message) => {
 	}
 };
 
-export const code = (message) => {
+export const code = (message: any) => {
 	if (message.html?.trim()) {
 		codeblocks(message);
 		inlinecode(message);
