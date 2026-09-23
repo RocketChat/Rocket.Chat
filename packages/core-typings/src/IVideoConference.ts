@@ -151,6 +151,9 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	/** Participants that have connected over WebRTC, counted from the provider's participant events. */
 	webrtcParticipantCount?: number;
+
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
 }
 
 export interface IDirectVideoConference extends IVideoConference {
