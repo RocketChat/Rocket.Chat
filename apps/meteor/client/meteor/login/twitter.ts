@@ -29,13 +29,6 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 			options?.redirectUrl,
 		)}`;
 
-		if (Meteor.isCordova) {
-			loginPath += '&cordova=true';
-			if (/Android/i.test(navigator.userAgent)) {
-				loginPath += '&android=true';
-			}
-		}
-
 		// Support additional, permitted parameters
 		if (options) {
 			const hasOwn = Object.prototype.hasOwnProperty;
