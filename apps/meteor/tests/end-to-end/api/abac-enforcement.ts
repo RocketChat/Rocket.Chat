@@ -6,7 +6,7 @@ import { before, after, describe, it } from 'mocha';
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
-import { updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -269,6 +269,65 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(false);
 			await deleteRoom({ type: 'p', roomId });
 			await setEnforcement(true);
+		});
+	});
+
+	describe('the Discussion_enabled override (D10)', () => {
+		const saveDiscussionEnabled = (value: boolean) => request.post(api('settings/Discussion_enabled')).set(credentials).send({ value });
+
+		after(async () => {
+			await setEnforcement(false);
+			await updateSetting('Discussion_enabled', true);
+		});
+
+		it('holds the setting at false for as long as enforcement lasts', async () => {
+			await setEnforcement(true);
+
+			expect(await getSettingValueById('Discussion_enabled')).to.be.false;
+		});
+
+		it('refuses an attempt to turn it back on under live enforcement', async () => {
+			await saveDiscussionEnabled(true)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Discussion_enabled_Invalid');
+				});
+
+			expect(await getSettingValueById('Discussion_enabled')).to.be.false;
+		});
+
+		it('gives the setting back on switch-off', async () => {
+			await setEnforcement(false);
+
+			expect(await getSettingValueById('Discussion_enabled')).to.be.true;
+		});
+
+		it('gives back the value the workspace had, not the default', async () => {
+			await updateSetting('Discussion_enabled', false);
+
+			await setEnforcement(true);
+			expect(await getSettingValueById('Discussion_enabled')).to.be.false;
+
+			await setEnforcement(false);
+			expect(await getSettingValueById('Discussion_enabled')).to.be.false;
+		});
+
+		it('allows the setting to be saved once enforcement is off again', async () => {
+			await saveDiscussionEnabled(true).expect(200);
+
+			expect(await getSettingValueById('Discussion_enabled')).to.be.true;
+		});
+
+		it('never exposes the captured value over the settings endpoint', async () => {
+			await setEnforcement(true);
+
+			await request.get(api('settings/ABAC_Discussion_Enabled_Restore')).set(credentials).expect(400);
+
+			// an unregistered setting answers with the same 400, so the capture is shown to be there
+			// by spending it
+			await setEnforcement(false);
+			expect(await getSettingValueById('Discussion_enabled')).to.be.true;
 		});
 	});
 

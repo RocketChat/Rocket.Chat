@@ -1,4 +1,5 @@
 import { registerEEBroker } from './ee/server';
+import { restoreDiscussionEnabledWithoutLicense } from './ee/server/lib/abac/discussionEnforcementOverride';
 import { enforceFipsLicense } from './ee/server/lib/license/enforceFipsLicense';
 import { startLicense } from './ee/server/lib/license/startup';
 import { startFederationService as startFederationMatrixService } from './ee/server/startup/federation';
@@ -9,6 +10,7 @@ const loadBeforeLicense = async () => {
 
 const loadAfterLicense = async () => {
 	await startFederationMatrixService();
+	await restoreDiscussionEnabledWithoutLicense();
 };
 
 export const startRocketChat = async () => {
