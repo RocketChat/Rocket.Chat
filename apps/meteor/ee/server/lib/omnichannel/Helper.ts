@@ -21,7 +21,7 @@ import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
-import { getOmniChatSortQuery } from '../../../../app/livechat/lib/inquiries';
+import { getOmniChatSortQuery } from '../../../../lib/livechat/inquiries';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { getInquirySortMechanismSetting } from '../../../../server/lib/omnichannel/settings';
 import { settings } from '../../../../server/settings';
