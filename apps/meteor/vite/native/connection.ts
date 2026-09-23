@@ -43,17 +43,33 @@ const isSocketMethod = (method: string, args: unknown[]): boolean =>
 	method.startsWith('stream-') ||
 	(method === 'login' && Boolean((args[0] as { resume?: string } | undefined)?.resume));
 
-const callOverREST = async (method: string, params: unknown[]): Promise<any> => {
-	const endpoint = !getUserId() || method === 'login' ? 'method.callAnon' : 'method.call';
-	const { message } = (await APIClient.post(`/v1/${endpoint}/${encodeURIComponent(method.replace(/\//g, ':'))}` as any, {
-		message: stringifyDDP({ msg: 'method', id: Random.id(), method, params }),
-	})) as { message: string };
-
+const unwrapMethodResult = (message: string): unknown => {
 	const response = parseDDP(message) as { error?: unknown; result?: unknown };
 	if (response.error) {
 		throw response.error;
 	}
 	return response.result;
+};
+
+const callOverREST = async (method: string, params: unknown[]): Promise<any> => {
+	const endpoint = !getUserId() || method === 'login' ? 'method.callAnon' : 'method.call';
+
+	let body: { message?: unknown };
+	try {
+		body = await APIClient.post(`/v1/${endpoint}/${encodeURIComponent(method.replace(/\//g, ':'))}` as any, {
+			message: stringifyDDP({ msg: 'method', id: Random.id(), method, params }),
+		});
+	} catch (error) {
+		// Method errors (e.g. totp-required) come back as a 400 whose body still carries the DDP result frame.
+		const message = (error as { message?: unknown })?.message;
+		if (typeof message !== 'string' || !message.startsWith('{')) throw error;
+		body = { message };
+	}
+
+	if (typeof body.message !== 'string') {
+		throw body;
+	}
+	return unwrapMethodResult(body.message);
 };
 
 export const callMethod = (method: string, ...args: unknown[]): Promise<any> =>
