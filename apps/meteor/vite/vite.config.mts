@@ -114,6 +114,15 @@ const serverRoutes = [
 	'^/scripts_',
 ];
 
+// Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
+const proxyTo = (options: { ws?: boolean } = {}) => ({
+	target: serverUrl,
+	changeOrigin: true,
+	secure: true,
+	cookieDomainRewrite: '',
+	...options,
+});
+
 // Workspace packages are linked, so the dev server serves them as source and does not convert their CommonJS
 // dist to ESM unless they are listed here. The production build handles the interop on its own.
 const prebundledWorkspaceDeps = [
@@ -191,9 +200,9 @@ export default defineConfig({
 		host: process.env.BIND_IP || '0.0.0.0',
 		strictPort: true,
 		proxy: {
-			...Object.fromEntries(serverRoutes.map((route) => [route, { target: serverUrl, changeOrigin: true }])),
-			'/websocket': { target: serverUrl, changeOrigin: true, ws: true },
-			'/sockjs': { target: serverUrl, changeOrigin: true, ws: true },
+			...Object.fromEntries(serverRoutes.map((route) => [route, proxyTo()])),
+			'/websocket': proxyTo({ ws: true }),
+			'/sockjs': proxyTo({ ws: true }),
 		},
 	},
 	build: {
