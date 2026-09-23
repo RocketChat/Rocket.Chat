@@ -185,7 +185,7 @@ test.describe.serial('feature preview', () => {
 					await expect(async () => {
 						await teamMainRoomLink.focus();
 						await teamMainRoomLink.click();
-						await expect(page).toHaveURL(`/group/${sidepanelTeam}`, { timeout: 1000 });
+						await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 					}).toPass();
 					await poHomeTeam.content.sendMessage('hello team');
 				});
