@@ -1,0 +1,22 @@
+apps/meteor/tests/end-to-end/api/abac.ts
+  s_91fdd0b12a50c8::t_c04f80d3404484 3094-3106,3109,3115-3116,3119,3136-3156,3123,3129
+  s_91fdd0b12a50c8::t_19162c773c4e2a 3107-3108,3110-3114
+  s_91fdd0b12a50c8::t_767ed0a4e8f9b3 3120-3122,3128,3130-3135
+  s_91fdd0b12a50c8::t_f65c70d5e69f91 3117-3118,3124-3127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dc85fc9a298d7ce759d5f72e2cce85ad9320f1e9",
+  "prompts": {},
+  "sessions": {
+    "s_91fdd0b12a50c8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "65d4303d-3cff-49db-bd64-e0ece0afa7d0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
