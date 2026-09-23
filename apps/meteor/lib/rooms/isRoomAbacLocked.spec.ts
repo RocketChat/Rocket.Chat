@@ -40,10 +40,6 @@ describe('room types', () => {
 		expect(isRoomAbacLocked({ ...room({ t: 'p' }), teamMain: true } as AbacLockableRoom, enforcing())).to.be.true;
 	});
 
-	it('should lock a pre-existing discussion, which is a channel carrying prid', () => {
-		expect(isRoomAbacLocked({ ...room({ t: 'p' }), prid: 'parent' } as AbacLockableRoom, enforcing())).to.be.true;
-	});
-
 	it('should never lock a direct message', () => {
 		expect(isRoomAbacLocked(room({ t: 'd' }), enforcing(['nationality']))).to.be.false;
 	});
@@ -58,6 +54,36 @@ describe('room types', () => {
 
 	it('should lock a room whose federated flag is explicitly false', () => {
 		expect(isRoomAbacLocked(room({ t: 'c', federated: false }), enforcing())).to.be.true;
+	});
+});
+
+describe('discussions', () => {
+	const discussion = (overrides: Partial<AbacLockableRoom> = {}): AbacLockableRoom => room({ prid: 'parent', ...overrides });
+
+	it('should lock a discussion carrying no attributes', () => {
+		expect(isRoomAbacLocked(discussion(), enforcing())).to.be.true;
+	});
+
+	it('should lock a discussion even when it carries every required attribute', () => {
+		const context = enforcing(['clearance']);
+
+		expect(isRoomAbacLocked(discussion({ abacAttributes: [attribute('clearance')] }), context)).to.be.true;
+	});
+
+	it('should lock a discussion when nothing is required at all', () => {
+		expect(isRoomAbacLocked(discussion({ abacAttributes: [attribute('clearance')] }), enforcing())).to.be.true;
+	});
+
+	it('should not lock a discussion with enforcement off', () => {
+		expect(isRoomAbacLocked(discussion(), notEnforcing())).to.be.false;
+	});
+
+	it('should lock a public discussion, which the public rule would also have locked', () => {
+		expect(isRoomAbacLocked(discussion({ t: 'c' }), enforcing())).to.be.true;
+	});
+
+	it('should not lock a federated discussion', () => {
+		expect(isRoomAbacLocked(discussion({ federated: true }), enforcing())).to.be.false;
 	});
 });
 
