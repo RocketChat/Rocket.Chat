@@ -1,3 +1,4 @@
+import { JsonRpcError, SERVER_ERROR, type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
@@ -5,7 +6,6 @@ import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashco
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import type { AppAccessors } from '../lib/accessors/mod';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
-import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import createRoom from '../lib/roomFactory';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';

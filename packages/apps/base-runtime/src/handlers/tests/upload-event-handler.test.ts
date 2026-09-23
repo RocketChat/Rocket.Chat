@@ -6,13 +6,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
+import { JsonRpcError } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
 import { createMockRequest } from './helpers/mod';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { JsonRpcError } from '../../lib/jsonrpc';
 import handleUploadEvents from '../app/handleUploadEvents';
 import { Errors } from '../lib/assertions';
 

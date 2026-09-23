@@ -1,12 +1,13 @@
 import process from 'node:process';
 
+import { JsonRpcError, isNotificationObject, type SuccessObject } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import apiHandler from './handlers/api-handler';
 import handleApp from './handlers/app/handler';
 import outboundMessageHandler from './handlers/outboundcomms-handler';
 import handleScheduler from './handlers/scheduler-handler';
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
-import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
 import type { RequestContext } from './lib/requestContext';

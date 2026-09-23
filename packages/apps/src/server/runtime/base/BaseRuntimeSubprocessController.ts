@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
+import * as jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
@@ -10,7 +11,6 @@ import debugFactory from 'debug';
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
-import * as jsonrpc from '../../../lib/jsonrpc';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import { AppResourceBridge } from '../../bridges/AppResourceBridge';

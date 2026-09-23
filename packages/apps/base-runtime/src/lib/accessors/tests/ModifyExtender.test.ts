@@ -1,8 +1,9 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
+import jsonrpc from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
-import jsonrpc from '../../jsonrpc';
 import { ModifyExtender } from '../modify/ModifyExtender';
 
 describe('ModifyExtender', () => {

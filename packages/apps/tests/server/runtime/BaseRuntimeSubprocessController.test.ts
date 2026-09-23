@@ -7,7 +7,7 @@ import { describe, it, afterEach, mock, before, after } from 'node:test';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { isSuccessObject, request } from '../../../src/lib/jsonrpc';
+import { isSuccessObject, request } from '../../../protocol/src/framing/jsonrpc';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppApiManager } from '../../../src/server/managers';

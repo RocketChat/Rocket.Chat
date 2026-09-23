@@ -1,8 +1,9 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it } from 'node:test';
 
+import jsonrpc, { type Defined } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import jsonrpc, { type Defined } from '../../lib/jsonrpc';
 import { Logger } from '../../lib/logger';
 import type { RequestContext } from '../../lib/requestContext';
 import handleUIKitInteraction, {

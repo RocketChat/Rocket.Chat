@@ -1,8 +1,9 @@
 import type { ChildProcess } from 'node:child_process';
 
+import type { JsonRpc } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import type { COMMAND_PING } from './LivenessManager';
 import { sanitizeForIpc } from '../../../lib/IpcSanitizer';
-import type { JsonRpc } from '../../../lib/jsonrpc';
 
 type Message = JsonRpc | typeof COMMAND_PING;
 
