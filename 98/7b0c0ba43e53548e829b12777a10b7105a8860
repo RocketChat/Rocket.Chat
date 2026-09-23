@@ -1,0 +1,23 @@
+.changeset/channel-directory-missing-last-message-ts.md
+  s_cf2aa433fe8f3d::t_c914f8c97bbd3d 1-5
+apps/meteor/client/views/directory/tabs/channels/ChannelsTable/ChannelsTableRow.spec.tsx
+  s_cf2aa433fe8f3d::t_8f08f375d908d4 47-49
+  s_cf2aa433fe8f3d::t_34333ceefcfe02 51
+  s_cf2aa433fe8f3d::t_254bca767f7dd1 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "987b0c0ba43e53548e829b12777a10b7105a8860",
+  "prompts": {},
+  "sessions": {
+    "s_cf2aa433fe8f3d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e41997fa-add6-4468-a988-8a9b77c4189b",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
