@@ -135,6 +135,22 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+
+	/**
+	 * A short numeric address a SIP endpoint can dial to reach this conference, given out while
+	 * `Pexip_Integration_SIP_AddAlias` is on.
+	 *
+	 * Unique among the conferences that currently hold one, not across all of history: the space is only eight
+	 * digits, so an alias is released when the call reaches a terminal status and handed out again later.
+	 * Nothing may treat it as a stable identifier for a call that has ended.
+	 */
+	sipAlias?: string;
+
+	/** Endpoints that have dialled in over SIP, counted from the provider's participant events. */
+	sipParticipantCount?: number;
+
+	/** Participants that have connected over WebRTC, counted from the provider's participant events. */
+	webrtcParticipantCount?: number;
 }
 
 export interface IDirectVideoConference extends IVideoConference {
