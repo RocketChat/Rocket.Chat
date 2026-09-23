@@ -16,9 +16,16 @@ const mocks = {
 	},
 };
 
-export const { Markdown, filterMarkdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } = proxyquire
+export const { Markdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } = proxyquire
 	.noCallThru()
 	.load('../../../../app/markdown/lib/markdown', mocks) as typeof import('../../../../app/markdown/lib/markdown');
+
+export const { filterMarkdown } = proxyquire
+	.noCallThru()
+	.load(
+		'../../../../app/markdown/lib/parser/filtered/filtered',
+		mocks,
+	) as typeof import('../../../../app/markdown/lib/parser/filtered/filtered');
 
 export const { original } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/original/original', mocks) as {
 	original: (message: ParsedMessage, options?: MarkdownOptions) => ParsedMessage;
