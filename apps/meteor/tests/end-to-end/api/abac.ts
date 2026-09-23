@@ -3122,11 +3122,21 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			abacAttributeId = attribute._id;
 		});
 
+		// Each step is guarded so that a failure in `before` still resets ABAC_Enabled for the
+		// suites that run next.
 		after(async () => {
-			await request.delete(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes`).set(credentials);
-			await request.delete(`${v1}/abac/attributes/${abacAttributeId}`).set(credentials);
-			await deleteRoom({ type: 'p', roomId: adminReadableRoom._id });
-			await deleteUser(roomOwner);
+			if (adminReadableRoom) {
+				await request.delete(`${v1}/abac/rooms/${adminReadableRoom._id}/attributes`).set(credentials);
+			}
+			if (abacAttributeId) {
+				await request.delete(`${v1}/abac/attributes/${abacAttributeId}`).set(credentials);
+			}
+			if (adminReadableRoom) {
+				await deleteRoom({ type: 'p', roomId: adminReadableRoom._id });
+			}
+			if (roomOwner) {
+				await deleteUser(roomOwner);
+			}
 			await updateSetting('ABAC_Enabled', false);
 		});
 

@@ -1629,7 +1629,9 @@ describe('[Rooms]', () => {
 			let ownerTeamChannel: IRoom;
 
 			before(async () => {
-				await restorePermissionToRoles('view-room-administration');
+				// Earlier specs in the run leave `edit-room` in an arbitrary state, and the
+				// fixture below edits rooms, so pin both permissions instead of inheriting them.
+				await Promise.all([restorePermissionToRoles('view-room-administration'), restorePermissionToRoles('edit-room')]);
 
 				[owner, outsider] = await Promise.all([createUser(), createUser()]);
 				[ownerCredentials, outsiderCredentials] = await Promise.all([login(owner.username, password), login(outsider.username, password)]);
@@ -1643,8 +1645,6 @@ describe('[Rooms]', () => {
 				ownerTeamChannel = (await createRoom({ type: 'c', name: `rooms.info.admin.channel.${Date.now()}`, credentials: ownerCredentials }))
 					.body.channel;
 
-				// Set as the admin: earlier specs in this run leave `edit-room` granted to the
-				// admin role alone, so the room owner cannot save its settings here.
 				await request
 					.post(api('channels.setJoinCode'))
 					.set(credentials)
