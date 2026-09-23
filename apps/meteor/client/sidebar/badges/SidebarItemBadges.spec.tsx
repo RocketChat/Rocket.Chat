@@ -16,7 +16,7 @@ describe('SidebarItemBadges', () => {
 		})
 		.build();
 
-	const noUnread = { show: false, title: '', total: 0, variant: 'secondary' } as const;
+	const noUnread = { show: false, title: '', label: '', total: 0, variant: 'secondary' } as const;
 
 	// The badges the product owns arrive as slots, so the application wires them exactly as it does in the sidebar.
 	const renderBadges = (props: Omit<SidebarItemBadgesProps, 'unread'> & Partial<Pick<SidebarItemBadgesProps, 'unread'>>) =>
@@ -37,15 +37,14 @@ describe('SidebarItemBadges', () => {
 	it('should render UnreadBadge when there are unread messages', () => {
 		renderBadges({
 			room: createFakeSubscription({ unread: 1, userMentions: 1, groupMentions: 0 }),
-			roomTitle: 'Test Room',
-			unread: { show: true, title: '1 mention', total: 1, variant: 'danger' },
+			unread: { show: true, title: '1 mention', label: '1 mention from Test Room', total: 1, variant: 'danger' },
 		});
 
 		expect(screen.getByRole('status', { name: '1 mention from Test Room' })).toBeInTheDocument();
 	});
 
 	it('should not render UnreadBadge when there are no unread messages', () => {
-		renderBadges({ room: createFakeSubscription({ unread: 0, userMentions: 0, groupMentions: 0 }), roomTitle: 'Test Room' });
+		renderBadges({ room: createFakeSubscription({ unread: 0, userMentions: 0, groupMentions: 0 }) });
 
 		expect(screen.queryByRole('status', { name: 'Test Room' })).not.toBeInTheDocument();
 	});

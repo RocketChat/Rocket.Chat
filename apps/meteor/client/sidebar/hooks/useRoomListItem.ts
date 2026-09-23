@@ -29,6 +29,8 @@ export type RoomListItem = {
 		total: number;
 		threads: number;
 		variant: UnreadVariant;
+		/** The unread state said in full, room name included, for whatever announces it. */
+		label: string;
 		/** Whether the row as a whole should stand out, which is more than having a number on it. */
 		highlighted: boolean;
 	};
@@ -50,13 +52,15 @@ export const useRoomListItem = (
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread } = getUnreadDisplay(room, t);
 
+	const unreadLabel = t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title });
+
 	const draft = getSubscriptionDraft(room);
 	const preview = extended ? getMessagePreview(room, room.lastMessage, t) : undefined;
 
 	return {
 		href,
 		title,
-		ariaLabel: showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title,
+		ariaLabel: showUnread ? unreadLabel : title,
 		dmUserId,
 		dmStatusTooltipHandlers,
 		isQueued: isOmnichannelRoom(room) && room.status === 'queued',
@@ -68,6 +72,7 @@ export const useRoomListItem = (
 			total: unreadCount.total,
 			threads: unreadCount.threads,
 			variant: unreadVariant,
+			label: unreadLabel,
 			highlighted: highlightUnread,
 		},
 	};

@@ -135,7 +135,6 @@ const SidebarItemTemplateWithData = ({
 			badges={
 				<SidebarItemBadges
 					room={room}
-					roomTitle={title}
 					unread={unreadInfo}
 					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
 					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}

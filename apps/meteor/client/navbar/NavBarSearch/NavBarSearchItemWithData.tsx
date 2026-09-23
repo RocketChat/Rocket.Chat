@@ -25,6 +25,8 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 
 	const { unreadTitle, unreadVariant, unreadCount, showUnread, highlightUnread: highlighted } = getUnreadDisplay(room, t);
 
+	const unreadLabel = t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title });
+
 	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
 
 	return (
@@ -32,14 +34,13 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			{...props}
 			unread={highlighted}
 			href={href}
-			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			aria-label={showUnread ? unreadLabel : title}
 			title={title}
 			icon={icon}
 			badges={
 				<SidebarItemBadges
 					room={room}
-					roomTitle={title}
-					unread={{ show: showUnread, title: unreadTitle, total: unreadCount.total, variant: unreadVariant }}
+					unread={{ show: showUnread, title: unreadTitle, label: unreadLabel, total: unreadCount.total, variant: unreadVariant }}
 					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
 					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
 				/>
