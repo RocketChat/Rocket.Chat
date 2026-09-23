@@ -17,11 +17,16 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 export type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
-	aiSearchActive: boolean;
-	handleToggleAISearch: () => void;
+	aiSearchActive?: boolean;
+	handleToggleAISearch?: () => void;
 };
 
-const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive, handleToggleAISearch }: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({
+	state,
+	overlayProps,
+	aiSearchActive = false,
+	handleToggleAISearch = () => null,
+}: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
