@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, type BuildEnvironmentOptions } from 'vite';
 import istanbul from 'vite-plugin-istanbul';
 
-import info from './vite/plugins/info';
-import meteor from './vite/plugins/meteor';
-import nginx from './vite/plugins/nginx';
+import info from './vite/plugins/info/index.ts';
+import meteor from './vite/plugins/meteor/index.ts';
+import nginx from './vite/plugins/nginx/index.ts';
 
 process.env.TEST_MODE ??= process.env.VITE_TEST_MODE;
 process.env.E2E_COVERAGE ??= process.env.VITE_E2E_COVERAGE;

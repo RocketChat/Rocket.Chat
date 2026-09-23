@@ -4,7 +4,7 @@ import { promisify } from 'node:util';
 
 import type { Plugin } from 'vite';
 
-import type { ResolvedPluginOptions } from './shared/config';
+import type { ResolvedPluginOptions } from './shared/config.ts';
 
 const execAsync = promisify(exec);
 

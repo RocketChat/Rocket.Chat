@@ -1,7 +1,7 @@
 import { exactRegex, makeIdFiltersToMatchWithQuery } from '@rolldown/pluginutils';
 import type { Plugin } from 'vite';
 
-import { loadInfo } from './lib/generate';
+import { loadInfo } from './lib/generate.ts';
 
 export default function infoPlugin(): Plugin {
 	const rocketchatInfoId = 'rocketchat.info';
