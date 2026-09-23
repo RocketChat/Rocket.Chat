@@ -1,7 +1,7 @@
 import type { AtLeast, FileAttachmentProps, IE2EEMessage, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
 import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { sdk } from '../../SDKClient';
 import { e2e } from '../../e2ee/rocketchat.e2e';

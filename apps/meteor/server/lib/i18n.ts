@@ -1,7 +1,7 @@
 import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 
-import { i18n } from '../../app/utils/lib/i18n';
+import { i18n } from '../../lib/i18n';
 
 // Meteor bundler is incredible (derogatory)
 // eslint-disable-next-line no-constant-condition

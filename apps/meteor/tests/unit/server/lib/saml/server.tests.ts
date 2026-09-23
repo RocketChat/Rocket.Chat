@@ -1226,7 +1226,7 @@ describe('SAML', () => {
 				'../../users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
 				'../../users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
 				'../../../settings': { settings: { get: sinon.stub() } },
-				'../../../../app/utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
+				'../../../../lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
 			}).SAML;
 
 		const service = { ...serviceProviderOptions } as any;

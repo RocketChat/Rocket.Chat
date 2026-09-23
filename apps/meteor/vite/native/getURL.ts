@@ -1,7 +1,7 @@
-import { getURLWithoutSettings } from '../../app/utils/lib/getURL';
 import { Info } from '../../app/utils/rocketchat.info';
 import { getRootUrlPathPrefix } from '../../client/lib/meteorRuntimeConfig';
 import { settings } from '../../client/lib/settings';
+import { getURLWithoutSettings } from '../../lib/getURL';
 
 // The standalone client proxies every server route through its own origin; full URLs built on the server's
 // Site_Url would bypass that proxy and reach the server without the session cookies set on this origin.
