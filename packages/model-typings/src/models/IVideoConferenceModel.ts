@@ -31,7 +31,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	createGroup({
 		providerName,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string>;
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'sipAlias' | 'discussionRid'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -44,7 +45,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		options?: UpdateOptions,
 	): Promise<UpdateResult>;
 
-	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void>;
+	setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void>;
 
 	setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }, endedAt?: Date): Promise<void>;
 
@@ -96,4 +97,18 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
+
+	setSipAliasById(callId: string, sipAlias: string): Promise<void>;
+
+	unsetSipAliasById(callId: string): Promise<void>;
+
+	findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null>;
+
+	increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null>;
+
+	increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null>;
 }
