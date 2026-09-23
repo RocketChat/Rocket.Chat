@@ -16,6 +16,7 @@ import type {
 	LivechatInstructions,
 	AtLeast,
 	IGroupVideoConference,
+	IVideoConference,
 	IVideoConferenceUser,
 	IMessage,
 	IStats,
@@ -2304,6 +2305,103 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
+	/**
+	 * The room a conference nobody picked a room for should hang off.
+	 *
+	 * Someone dialling an alias that does not exist yet has no room in mind, so the workspace names one in
+	 * advance. `roomPick` stores an array of room references; the first usable one wins.
+	 */
+	public async getRidForExternalConference(): Promise<IRoom['_id'] | null> {
+		const settingValue = settings.get('Pexip_Integration_PersistentChat_ExternalRoom');
+		if (!Array.isArray(settingValue) || !settingValue.length) {
+			return null;
+		}
+
+		for (const value of settingValue) {
+			if (!value || typeof value !== 'object' || !value._id) {
+				continue;
+			}
+
+			return value._id;
+		}
+
+		return null;
+	}
+
+	/** Where to send someone to take part in a conference from inside Rocket.Chat. */
+	public async makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string> {
+		const baseUrl = settings.get<string>('Site_Url');
+
+		return `${baseUrl}/conference/${conferenceId}`;
+	}
+
+	/** Failing to subscribe somebody must not keep them out of the call, so this reports rather than throws. */
+	private async addUserToConferenceDiscussion(conference: Pick<IVideoConference, 'discussionRid'>, uid: IUser['_id']): Promise<void> {
+		if (!conference.discussionRid) {
+			return;
+		}
+
+		const { discussionRid } = conference;
+
+		try {
+			await Room.addUserToRoom(discussionRid, { _id: uid });
+		} catch (err) {
+			logger.error({ msg: `Failed to add user to conference's discussion`, discussionRid, uid, err });
+		}
+	}
+
+	/**
+	 * The conference a dialled alias stands for, creating it if this is the first person to ask.
+	 *
+	 * An alias can be handed out before the conference behind it exists — a scheduled invitation carries the
+	 * number, and whoever dials first brings the call into being. So this is both "join" and "create", and
+	 * everyone after the first is simply subscribed to the chat that is already there.
+	 */
+	public async initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']> {
+		if (!settings.get('Pexip_Integration_Enabled') || !settings.get('Pexip_Integration_SIP_AddAlias')) {
+			throw new Error('feature-disabled');
+		}
+
+		const providerName = 'core.pexip';
+
+		const existing = await VideoConferenceModel.findOneByProviderNameAndSipAlias(providerName, sipAlias, {
+			projection: { discussionRid: 1 },
+		});
+
+		if (existing) {
+			await this.addUserToConferenceDiscussion(existing, uid);
+			return existing._id;
+		}
+
+		const rid = await this.getRidForExternalConference();
+		if (!rid) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
+		// Before the conference, not after: `createGroup` takes the discussion, so the chat has to exist first.
+		const discussionRid = await this.createDiscussionForConferenceData(this.getDiscussionDisplayName(), rid, user);
+
+		return VideoConferenceModel.createGroup({
+			rid,
+			createdBy: {
+				_id: uid,
+				name: user.name as string,
+				username: user.username as string,
+			},
+			// TODO: custom title
+			title: sipAlias,
+			providerName,
+			// No `ringing`: nobody is being asked to answer — whoever dials the alias arrives of their own accord.
+			sipAlias,
+			discussionRid,
+		});
+	}
+
 	private async getRoomForDiscussion(
 		baseRoom: IRoom['_id'],
 		childRoomIds: IRoom['_id'][] = [],
@@ -2331,18 +2429,31 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call: AtLeast<VideoConference, '_id' | 'rid' | 'createdBy'>,
 		createdBy?: IUser,
 	): Promise<void> {
-		const room = await this.getRoomForDiscussion(call.rid);
-
-		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
 		const user = call.createdBy._id === createdBy?._id ? createdBy : await Users.findOneById(call.createdBy._id);
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
+		const discussionRid = await this.createDiscussionForConferenceData(name, call.rid, user);
+
+		return this.assignDiscussionToConference(call._id, discussionRid);
+	}
+
+	/**
+	 * The discussion itself, off whatever room the given one hangs from, and nothing else.
+	 *
+	 * Separate from `createDiscussionForConference` because a conference reached over SIP has its chat created
+	 * *before* the conference record exists — the alias is dialled first and the conference is built around it.
+	 */
+	private async createDiscussionForConferenceData(name: string, rid: IRoom['_id'], createdBy: IUser): Promise<IRoom['_id']> {
+		const room = await this.getRoomForDiscussion(rid);
+
+		const type = await roomCoordinator.getRoomDirectives(room.t).getDiscussionType(room);
+
 		const discussion = await createRoom(
 			type,
 			Random.id(),
-			user,
+			createdBy,
 			[],
 			false,
 			false,
@@ -2352,14 +2463,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				encrypted: false,
 			},
 			{
-				creator: user._id,
+				creator: createdBy._id,
 				subscriptionExtra: {
 					open: false,
 				},
 			},
 		);
 
-		return this.assignDiscussionToConference(call._id, discussion._id);
+		return discussion._id;
 	}
 
 	public async assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void> {
