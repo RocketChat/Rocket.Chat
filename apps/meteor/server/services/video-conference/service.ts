@@ -17,6 +17,7 @@ import type {
 	AtLeast,
 	IGroupVideoConference,
 	IVideoConference,
+	RequiredField,
 	IVideoConferenceUser,
 	IMessage,
 	IStats,
@@ -1118,7 +1119,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async joinCall(
+	public async joinCall(
 		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
@@ -1229,6 +1230,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return 'Rocket.Chat';
 	}
 
+	/** Narrows the call for a provider that takes a url, after `getUrl` has made sure there is one. */
+	private requireCallUrl(call: ExternalVideoConference): asserts call is RequiredField<ExternalVideoConference, 'url'> {
+		if (!call.url) {
+			throw new Error('Call url is missing');
+		}
+	}
+
 	private async getUrl(
 		call: ExternalVideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
@@ -1242,6 +1250,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			call.url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
+		this.requireCallUrl(call);
 
 		const userData = user && {
 			_id: user._id,
@@ -1254,7 +1263,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
 		if (provider) {
 			// TODO: compensate for the call title?
-			return provider.customizeUrl(call, userData);
+			// The internal provider is handed the join options too: which devices the caller chose is part of the
+			// address they open, and dropping them here silently ignored the choice.
+			return provider.customizeUrl(call, userData, options);
 		}
 
 		const callData: VideoConfDataExtended = {
@@ -1352,7 +1363,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
 		if (provider) {
-			return;
+			return provider.onUserJoin(call, user);
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);
