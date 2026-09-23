@@ -14,9 +14,8 @@ export type LoginWithExternalServiceOptions = {
 /* eslint-enable @typescript-eslint/no-wrapper-object-types */
 
 export interface IOAuthProvider {
-	readonly name: string;
 	requestCredential(
-		options: LoginWithExternalServiceOptions | undefined,
+		options: LoginWithExternalServiceOptions,
 		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
 	): void;
 }

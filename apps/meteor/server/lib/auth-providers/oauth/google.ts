@@ -5,10 +5,11 @@ import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
-async function getIdentity(accessToken) {
+async function getIdentity(accessToken: string) {
 	try {
 		const request = await fetch('https://www.googleapis.com/oauth2/v1/userinfo', {
 			params: { access_token: accessToken },
+			ignoreSsrfValidation: true,
 		});
 
 		if (!request.ok) {
@@ -17,16 +18,17 @@ async function getIdentity(accessToken) {
 
 		return request.json();
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Google. ${err.message}`), {
-			response: err.message,
+		throw _.extend(new Error(`Failed to fetch identity from Google. ${(err as Error).message}`), {
+			response: (err as Error).message,
 		});
 	}
 }
 
-async function getScopes(accessToken) {
+async function getScopes(accessToken: string) {
 	try {
 		const request = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo', {
 			params: { access_token: accessToken },
+			ignoreSsrfValidation: true,
 		});
 
 		if (!request.ok) {
@@ -35,8 +37,8 @@ async function getScopes(accessToken) {
 
 		return (await request.json()).scope.split(' ');
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch tokeninfo from Google. ${err.message}`), {
-			response: err.message,
+		throw _.extend(new Error(`Failed to fetch tokeninfo from Google. ${(err as Error).message}`), {
+			response: (err as Error).message,
 		});
 	}
 }
@@ -50,15 +52,23 @@ registerAccessTokenService('google', async (options) => {
 			expiresIn: Match.Integer,
 			scope: Match.Maybe(String),
 			identity: Match.Maybe(Object),
+			scopes: Match.Maybe([String]),
+			refreshToken: Match.Maybe(String),
 		}),
 	);
 
 	const identity = await getIdentity(options.accessToken);
 
-	const serviceData = {
+	const serviceData: {
+		accessToken: string;
+		idToken: string;
+		expiresAt: number;
+		scope: string[];
+		refreshToken?: string;
+	} = {
 		accessToken: options.accessToken,
 		idToken: options.idToken,
-		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
+		expiresAt: Date.now() + 1000 * options.expiresIn,
 		scope: options.scopes || (await getScopes(options.accessToken)),
 	};
 
