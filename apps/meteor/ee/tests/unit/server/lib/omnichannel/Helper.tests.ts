@@ -14,7 +14,7 @@ const mocks = {
 	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./QueueInactivityMonitor': { stop: sinon.stub() },
 	'../../../../server/lib/omnichannel/settings': { getInquirySortMechanismSetting: sinon.stub() },
-	'../../../../app/livechat/lib/inquiries': { getOmniChatSortQuery: sinon.stub() },
+	'../../../../lib/livechat/inquiries': { getOmniChatSortQuery: sinon.stub() },
 	'../../../../server/settings': { settings: { get: settingGetMock } },
 	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
 };
