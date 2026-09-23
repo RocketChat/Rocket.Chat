@@ -1,0 +1,27 @@
+.changeset/silly-clouds-hear.md
+  s_2851edcb818458::t_1db5cbd36136ba 1-6
+apps/meteor/server/api/v1/users.ts
+  s_2851edcb818458::t_1db5cbd36136ba 678-682,727-732,764-767
+packages/rest-typings/src/v1/users/UsersListParamsGET.ts
+  s_2851edcb818458::t_1db5cbd36136ba 8-9,21-22
+apps/meteor/tests/end-to-end/api/users.ts
+  s_2851edcb818458::t_1db5cbd36136ba 1986-2082
+packages/rest-typings/src/v1/users.ts
+  s_2851edcb818458::t_1db5cbd36136ba 159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ad2f004cc0035f2b9d7423e099eadb201af5198a",
+  "prompts": {},
+  "sessions": {
+    "s_2851edcb818458": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a8663e84-9051-4ae6-8a7f-0183e86b79c3",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
