@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
-import { getUnreadDisplay } from '../lib/unreadDisplay';
 import type { SidebarRoomListGroup } from '../lib/sidebarGroups';
+import { getUnreadDisplay } from '../lib/unreadDisplay';
 
 type RoomListCollapserProps = {
 	group: SidebarRoomListGroup;
