@@ -5,7 +5,7 @@ import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessor
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { censorUrl } from '@rocket.chat/tools';
 
-import { settings } from '../../../../server/settings';
+import { settings } from '../../../settings';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -97,7 +97,7 @@ export class AppHttpBridge extends HttpBridge {
 			url: info.url,
 			method: info.method,
 			statusCode: response.status,
-			headers: Object.fromEntries(response.headers as unknown as any),
+			headers: Object.fromEntries(response.headers),
 		};
 
 		const body = Buffer.from(await response.arrayBuffer());

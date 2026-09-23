@@ -270,7 +270,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			Object.assign(newMessage, message._unmappedProperties_);
 		}
 
-		return newMessage as unknown as Partial<IMessage>;
+		return newMessage;
 	}
 
 	_convertAppAttachments(attachments: any) {

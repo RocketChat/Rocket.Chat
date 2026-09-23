@@ -270,7 +270,7 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 		Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	return newRoom as unknown as Partial<IRoom>;
+	return newRoom;
 }
 
 /**

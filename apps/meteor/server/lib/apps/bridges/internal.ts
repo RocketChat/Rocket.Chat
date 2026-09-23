@@ -4,7 +4,7 @@ import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 
-import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { deasyncPromise } from '../../../deasync/deasync';
 
 export class AppInternalBridge extends InternalBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

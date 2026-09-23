@@ -202,8 +202,6 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			},
 		} as const;
 
-		return Promise.all(
-			attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)),
-		) as unknown as Promise<NonNullable<IAppsMessage['attachments']>>;
+		return Promise.all(attachments.map(async (attachment) => mappedDecodeAsync(attachment, map as unknown as AsyncFieldMap)));
 	}
 }

@@ -16,18 +16,18 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 
-import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { callbacks } from '../../../../server/lib/callbacks';
-import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
-import { setCustomFields } from '../../../../server/lib/omnichannel/custom-fields';
-import { getRoomMessages } from '../../../../server/lib/omnichannel/getRoomMessages';
-import type { ILivechatMessage } from '../../../../server/lib/omnichannel/localTypes';
-import { updateMessage, sendMessage } from '../../../../server/lib/omnichannel/messages';
-import { resolveVisitor } from '../../../../server/lib/omnichannel/resolveVisitor';
-import { createRoom } from '../../../../server/lib/omnichannel/rooms';
-import { online } from '../../../../server/lib/omnichannel/service-status';
-import { transfer } from '../../../../server/lib/omnichannel/transfer';
-import { settings } from '../../../../server/settings';
+import { deasyncPromise } from '../../../deasync/deasync';
+import { settings } from '../../../settings';
+import { callbacks } from '../../callbacks';
+import { closeRoom } from '../../omnichannel/closeRoom';
+import { setCustomFields } from '../../omnichannel/custom-fields';
+import { getRoomMessages } from '../../omnichannel/getRoomMessages';
+import type { ILivechatMessage } from '../../omnichannel/localTypes';
+import { updateMessage, sendMessage } from '../../omnichannel/messages';
+import { resolveVisitor } from '../../omnichannel/resolveVisitor';
+import { createRoom } from '../../omnichannel/rooms';
+import { online } from '../../omnichannel/service-status';
+import { transfer } from '../../omnichannel/transfer';
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {

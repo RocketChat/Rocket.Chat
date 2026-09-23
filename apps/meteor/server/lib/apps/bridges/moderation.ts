@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { ModerationReports } from '@rocket.chat/models';
 
-import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { reportMessage } from '../../moderation/reportMessage';
 
 export class AppModerationBridge extends ModerationBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

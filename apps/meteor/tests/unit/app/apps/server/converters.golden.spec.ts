@@ -1,17 +1,17 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { AppContactsConverter } from '../../../../../app/apps/server/converters/contacts';
-import { AppDepartmentsConverter } from '../../../../../app/apps/server/converters/departments';
-import { AppMessagesConverter } from '../../../../../app/apps/server/converters/messages';
-import { AppRolesConverter } from '../../../../../app/apps/server/converters/roles';
-import { AppRoomsConverter } from '../../../../../app/apps/server/converters/rooms';
-import { AppSettingsConverter } from '../../../../../app/apps/server/converters/settings';
-import { AppThreadsConverter } from '../../../../../app/apps/server/converters/threads';
-import { AppUploadsConverter } from '../../../../../app/apps/server/converters/uploads';
-import { AppUsersConverter } from '../../../../../app/apps/server/converters/users';
-import { AppVideoConferencesConverter } from '../../../../../app/apps/server/converters/videoConferences';
-import { AppVisitorsConverter } from '../../../../../app/apps/server/converters/visitors';
+import { AppContactsConverter } from '../../../../../server/lib/apps/converters/contacts';
+import { AppDepartmentsConverter } from '../../../../../server/lib/apps/converters/departments';
+import { AppMessagesConverter } from '../../../../../server/lib/apps/converters/messages';
+import { AppRolesConverter } from '../../../../../server/lib/apps/converters/roles';
+import { AppRoomsConverter } from '../../../../../server/lib/apps/converters/rooms';
+import { AppSettingsConverter } from '../../../../../server/lib/apps/converters/settings';
+import { AppThreadsConverter } from '../../../../../server/lib/apps/converters/threads';
+import { AppUploadsConverter } from '../../../../../server/lib/apps/converters/uploads';
+import { AppUsersConverter } from '../../../../../server/lib/apps/converters/users';
+import { AppVideoConferencesConverter } from '../../../../../server/lib/apps/converters/videoConferences';
+import { AppVisitorsConverter } from '../../../../../server/lib/apps/converters/visitors';
 
 /*
  * Golden snapshots of the converters' deterministic transform methods, captured from the

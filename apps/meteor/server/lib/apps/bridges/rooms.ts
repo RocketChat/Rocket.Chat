@@ -9,13 +9,13 @@ import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
-import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
-import { deleteRoom } from '../../../../server/lib/rooms/deleteRoom';
-import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
-import { createDirectMessage } from '../../../../server/meteor-methods/messages/createDirectMessage';
-import { createDiscussion } from '../../../../server/meteor-methods/messages/createDiscussion';
-import { createChannelMethod } from '../../../../server/meteor-methods/rooms/createChannel';
-import { createPrivateGroupMethod } from '../../../../server/meteor-methods/rooms/createPrivateGroup';
+import { createDirectMessage } from '../../../meteor-methods/messages/createDirectMessage';
+import { createDiscussion } from '../../../meteor-methods/messages/createDiscussion';
+import { createChannelMethod } from '../../../meteor-methods/rooms/createChannel';
+import { createPrivateGroupMethod } from '../../../meteor-methods/rooms/createPrivateGroup';
+import { addUserToRoom } from '../../rooms/addUserToRoom';
+import { deleteRoom } from '../../rooms/deleteRoom';
+import { removeUserFromRoom } from '../../rooms/removeUserFromRoom';
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,

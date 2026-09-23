@@ -3,8 +3,8 @@ import type { ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { AppSettingsConverter } from '../../../../../app/apps/server/converters/settings';
-import { AppUsersConverter } from '../../../../../app/apps/server/converters/users';
+import { AppSettingsConverter } from '../../../../../server/lib/apps/converters/settings';
+import { AppUsersConverter } from '../../../../../server/lib/apps/converters/users';
 
 const orch: any = {};
 

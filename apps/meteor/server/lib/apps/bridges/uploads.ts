@@ -4,9 +4,9 @@ import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
 import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
-import { FileUpload } from '../../../../server/lib/media/file-upload';
-import { sendFileMessage } from '../../../../server/meteor-methods/messages/sendFileMessage';
-import { sendFileLivechatMessage } from '../../../../server/meteor-methods/omnichannel/sendFileLivechatMessage';
+import { sendFileMessage } from '../../../meteor-methods/messages/sendFileMessage';
+import { sendFileLivechatMessage } from '../../../meteor-methods/omnichannel/sendFileLivechatMessage';
+import { FileUpload } from '../../media/file-upload';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {

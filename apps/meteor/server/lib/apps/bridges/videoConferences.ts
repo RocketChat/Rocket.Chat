@@ -4,8 +4,7 @@ import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/vid
 import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import { VideoConf } from '@rocket.chat/core-services';
 
-import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
-import type { AppVideoConferencesConverter } from '../converters/videoConferences';
+import { videoConfProviders } from '../../videoConfProviders';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -39,7 +38,7 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 			throw new Error('A video conference must exist to update.');
 		}
 
-		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
+		const data = this.orch.getConverters()?.get('videoConferences')?.convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
 		for (const { _id, ts } of data.users) {

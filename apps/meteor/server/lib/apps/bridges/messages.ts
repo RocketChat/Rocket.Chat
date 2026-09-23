@@ -7,11 +7,11 @@ import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 
-import { deleteMessage } from '../../../../server/lib/messages/deleteMessage';
-import { updateMessage } from '../../../../server/lib/messages/updateMessage';
-import { executeSetReaction } from '../../../../server/lib/messaging/reactions/setReaction';
-import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
-import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
+import { executeSendMessage } from '../../../meteor-methods/messages/sendMessage';
+import { deleteMessage } from '../../messages/deleteMessage';
+import { updateMessage } from '../../messages/updateMessage';
+import { executeSetReaction } from '../../messaging/reactions/setReaction';
+import notifications from '../../notifications/core/lib/Notifications';
 
 export class AppMessageBridge extends MessageBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

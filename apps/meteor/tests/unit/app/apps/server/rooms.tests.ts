@@ -9,7 +9,7 @@ import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 
-const { AppRoomsConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/rooms', {
+const { AppRoomsConverter } = proxyquire.noCallThru().load('../../../../../server/lib/apps/converters/rooms', {
 	'@rocket.chat/random': {
 		Random: {
 			id: () => 1,

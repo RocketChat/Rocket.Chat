@@ -6,7 +6,7 @@ import type {
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication';
 
-import { getOutboundService } from '../../../../server/lib/omnichannel/outboundcommunication';
+import { getOutboundService } from '../../omnichannel/outboundcommunication';
 
 export class OutboundCommunicationBridge extends OutboundMessageBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
