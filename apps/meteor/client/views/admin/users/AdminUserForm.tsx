@@ -86,7 +86,7 @@ const getInitialValue = ({
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
-	phones: data?.phones ?? (data?.phone ? [{ number: data.phone }] : []),
+	phones: data?.phones ?? [],
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
