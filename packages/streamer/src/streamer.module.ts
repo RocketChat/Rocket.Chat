@@ -251,9 +251,9 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 				}
 
 				try {
-					StreamerCentral.emit('publish', name, eventName, args, this.userId);
+					__emit('_afterWrite', eventName, args, this.userId);
 				} catch (err) {
-					logger.error({ msg: 'Error emitting publish event', name, eventName, err });
+					logger.error({ msg: 'Error handling a client write', name, eventName, err });
 				}
 
 				__emit(eventName, ...args);

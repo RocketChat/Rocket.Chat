@@ -1,7 +1,8 @@
 import os from 'os';
 
-import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { api, FederationMatrix, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { NotificationsModule } from '@rocket.chat/streamer';
@@ -17,6 +18,8 @@ import { registerPresenceMethods } from './methods/presence';
 import { registerAutoupdatePublication } from './publications/autoupdate';
 import { registerLoginServiceConfigurationPublication } from './publications/loginServiceConfiguration';
 import { createStreamAdapter } from './streams/StreamAdapter';
+
+const logger = new Logger('DDP-Streamer');
 
 void (async () => {
 	const { db, client } = await getConnection();
@@ -43,6 +46,12 @@ void (async () => {
 	registerPresenceMethods(server);
 
 	const notifications = new NotificationsModule(createStreamAdapter(server), { originId: InstanceStatus.id() });
+
+	notifications.onUserActivity(({ rid, uid, activities }) => {
+		FederationMatrix.notifyUserTyping(rid, uid, activities.includes('user-typing')).catch((err) => {
+			logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+		});
+	});
 
 	notifications.configure();
 
