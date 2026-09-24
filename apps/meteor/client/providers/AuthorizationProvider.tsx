@@ -3,8 +3,8 @@ import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { createAuthorizationFunctions } from '../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../cachedStores';
+import { createAuthorizationFunctions } from '../lib/createAuthorizationFunctions';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
 
 // Only the slice of IUser that the authorization helpers actually read.

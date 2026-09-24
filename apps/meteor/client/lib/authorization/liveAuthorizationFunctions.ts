@@ -1,7 +1,7 @@
-import type { AuthorizationDeps } from '../../../lib/authorization/createAuthorizationFunctions';
-import { createAuthorizationFunctions } from '../../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../../stores';
+import type { AuthorizationDeps } from '../createAuthorizationFunctions';
+import { createAuthorizationFunctions } from '../createAuthorizationFunctions';
 import { userIdStore } from '../user';
 
 // Bind the pure factory to live zustand store accessors. Each accessor reads
