@@ -1,0 +1,79 @@
+ee/apps/ddp-streamer/src/service.ts
+  s_11832e90ae9d55::t_dff2d4ae619099 53-54
+  s_11832e90ae9d55::t_710d5825609bd8 3
+  s_11832e90ae9d55::t_a5d18729553bee 40
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_11832e90ae9d55::t_c9fb69f0c46583 21
+  s_11832e90ae9d55::t_fbdb87cb571138 34
+  s_11832e90ae9d55::t_e7872cac9c099d 291-295
+ee/packages/omnichannel-services/src/OmnichannelTranscript.ts
+  s_11832e90ae9d55::t_064421323f87c0 19,83-84,103
+ee/packages/network-broker/src/NatsBroker.test.ts
+  s_11832e90ae9d55::t_e4431aed7f8269 232
+  s_11832e90ae9d55::t_7634baec43bf42 134-141,147-152,203,310,319
+  s_11832e90ae9d55::t_383bbecff35fc6 536,539,545-546,550-551,553-555
+  s_11832e90ae9d55::t_4449667428c886 448-452
+  s_11832e90ae9d55::t_09f3f49374ba12 123
+  s_11832e90ae9d55::t_aaf7c7b6d976ab 113,384,404,420
+  s_11832e90ae9d55::t_775b88c9bb8a9e 355-356
+  s_11832e90ae9d55::t_b4d020748a9f65 83-91,97-105
+  s_11832e90ae9d55::t_0f9a49c8e218d2 92-94
+  s_11832e90ae9d55::t_cde8bde154b608 388
+  s_11832e90ae9d55::t_a1b7cc972da427 435,441-443,445-446,453-455,457-461,465-467,469-473,475,477-482,484-488,490-494,496,498,508-521,523-535,537-538,540-544,547-549,552,556-559,561-563,565-569,571,573-576
+  s_11832e90ae9d55::t_e7dd801413eb14 407
+  s_11832e90ae9d55::t_613774853c607f 436-440,444,447,456,462-464,468,474,476,483,489,495,497,499-507,522,560,564,570,572
+  s_11832e90ae9d55::t_da0c6f71e7e6c9 249
+  s_11832e90ae9d55::t_3745c85e1b47a9 425
+  s_11832e90ae9d55::t_69b53babf7ccaf 106
+docs/service-brokers.md
+  s_11832e90ae9d55::t_47188032b057fe 265-266
+  s_11832e90ae9d55::t_05535d048fbf11 171-206
+ee/packages/abac/src/index.ts
+  s_11832e90ae9d55::t_064421323f87c0 18,84,263-266,272-274,276-278,281-282,738-742
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_11832e90ae9d55::t_8e51f0734d075b 11-13
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_11832e90ae9d55::t_0bf407e98034e7 67
+ee/apps/account-service/src/Account.ts
+  s_11832e90ae9d55::t_064421323f87c0 3,11,25,34-38
+  s_11832e90ae9d55::t_8919e2ea3292c0 39
+ee/packages/network-broker/src/NatsBroker.ts
+  s_11832e90ae9d55::t_5fbafbc2d75263 403
+  s_11832e90ae9d55::t_f06a807e67b17f 55-60
+  s_11832e90ae9d55::t_131f6c72cc80f9 204-206,212-226,228-231,235,237-249,257-292,304-312
+  s_11832e90ae9d55::t_194a7433b5879a 227
+  s_11832e90ae9d55::t_39d3fe03bc7829 232-234
+  s_11832e90ae9d55::t_3bcedccf80e488 188
+  s_11832e90ae9d55::t_bb185f396cf8f3 89
+  s_11832e90ae9d55::t_65717d39ade5ef 250-256
+  s_11832e90ae9d55::t_c2c73a196b8f1d 236
+  s_11832e90ae9d55::t_4e9ff01f2d1f5c 169-173,177
+  s_11832e90ae9d55::t_9924350747f607 575
+  s_11832e90ae9d55::t_fb0e51964d9e5e 401-402
+  s_11832e90ae9d55::t_5fcf57e4c2eb7d 163-164
+  s_11832e90ae9d55::t_7c962ff54dac34 159-162
+  s_11832e90ae9d55::t_b93f9634b2c327 400,404
+  s_11832e90ae9d55::t_65f2e7f5fc78fa 88,90-91
+  s_11832e90ae9d55::t_f6fc66eb9cdc31 294-303
+  s_11832e90ae9d55::t_7f1ae7aeb5a35a 293
+ee/apps/ddp-streamer/src/publications/autoupdate.spec.ts
+  s_11832e90ae9d55::t_4f9adf6331d432 14-15,25
+ee/apps/ddp-streamer/src/publications/meteorCollection.ts
+  s_11832e90ae9d55::t_1f337975161981 4,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "77b0c3231c6749500852c3f1a65dc4ffece10c20",
+  "prompts": {},
+  "sessions": {
+    "s_11832e90ae9d55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1a2b566-d81b-4e26-97c7-922fda177251",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
