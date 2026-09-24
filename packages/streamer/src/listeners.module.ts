@@ -48,6 +48,8 @@ export class ListenersModule {
 
 		const logger = new Logger('ListenersModule');
 
+		service.onEvent('stream', (relayed) => notifications.deliverRelayed(relayed));
+
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
 		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));
 

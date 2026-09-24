@@ -3,7 +3,17 @@ import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
 
-import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
+import type {
+	IPublication,
+	Rule,
+	Connection,
+	DDPSubscription,
+	IStreamer,
+	IRules,
+	StreamerOptions,
+	StreamRelay,
+	TransformMessage,
+} from './types';
 
 const logger = new Logger('Streamer');
 
@@ -32,14 +42,17 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 
 	private _allowEmit: IRules = {};
 
+	private readonly relay?: StreamRelay;
+
 	constructor(
 		public name: string,
-		{ retransmit = true, retransmitToSelf = false }: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
+		{ retransmit = true, retransmitToSelf = false, relay }: StreamerOptions = {},
 	) {
 		super();
 
 		this.retransmit = retransmit;
 		this.retransmitToSelf = retransmitToSelf;
+		this.relay = relay;
 
 		this.iniPublication();
 		// DDPStreamer doesn't have this
@@ -262,7 +275,7 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 
 	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
 		if (broadcast === true) {
-			StreamerCentral.emit('broadcast', this.name, eventName, args);
+			this.relay?.(this.name, eventName, args);
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);

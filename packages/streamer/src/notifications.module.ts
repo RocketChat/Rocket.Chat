@@ -1,4 +1,5 @@
-import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import { api, Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import type { RelayedStreamEvent } from '@rocket.chat/core-services';
 import type {
 	IImportProgress,
 	ISubscription,
@@ -15,9 +16,14 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor } from './types';
+import type { IStreamer, IStreamerConstructor, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
+
+export type NotificationsModuleOptions = {
+	/** Identifies this process among every process that hosts the same streams. */
+	originId: string;
+};
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -60,7 +66,20 @@ export class NotificationsModule {
 
 	private readonly streams = new Map<string, IStreamer<StreamNames>>();
 
-	constructor(private Streamer: IStreamerConstructor) {
+	private readonly originId: string;
+
+	private readonly relay: StreamRelay = (stream, eventName, args) => {
+		api.broadcast('stream', { stream, eventName, args, origin: this.originId }).catch((err) => {
+			logger.error({ msg: 'Failed to relay stream event', stream, eventName, err });
+		});
+	};
+
+	constructor(
+		private Streamer: IStreamerConstructor,
+		{ originId }: NotificationsModuleOptions,
+	) {
+		this.originId = originId;
+
 		this.streamAll = this.createStream('notify-all');
 		this.streamLogged = this.createStream('notify-logged');
 		this.streamRoom = this.createStream('notify-room');
@@ -74,7 +93,7 @@ export class NotificationsModule {
 		this.streamLivechatRoom = this.createStream('livechat-room');
 		this.streamLivechatQueueData = this.createStream('livechat-inquiry-queue-observer');
 		this.streamRoomData = this.createStream('room-data');
-		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, 'user-presence'));
+		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, 'user-presence', { relay: this.relay }));
 		this.streamRoomMessage = this.createStream('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
@@ -108,7 +127,7 @@ export class NotificationsModule {
 	}
 
 	private createStream<N extends StreamNames>(name: N, options?: { retransmit?: boolean }): IStreamer<N> {
-		return this.register(new this.Streamer(name, options));
+		return this.register(new this.Streamer(name, { ...options, relay: this.relay }));
 	}
 
 	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
@@ -118,6 +137,15 @@ export class NotificationsModule {
 
 	getStream(name: string): IStreamer<StreamNames> | undefined {
 		return this.streams.get(name);
+	}
+
+	/** Delivers an emit relayed from another process to this process's subscribers. */
+	deliverRelayed({ stream, eventName, args, origin }: RelayedStreamEvent): void {
+		if (origin === this.originId) {
+			return;
+		}
+
+		this.streams.get(stream)?._emit(eventName, args, undefined, false);
 	}
 
 	configure(): void {

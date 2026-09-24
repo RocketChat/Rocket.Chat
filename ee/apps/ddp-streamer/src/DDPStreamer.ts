@@ -46,16 +46,11 @@ export class DDPStreamer extends ServiceClass {
 		private readonly lifecycle: ConnectionLifecycle,
 		private readonly registry: ConnectionRegistry,
 		private readonly collections: MeteorCollections,
-		private readonly notifications: NotificationsModule,
+		notifications: NotificationsModule,
 	) {
 		super();
 
 		new ListenersModule(this, notifications, noSettings);
-
-		// TODO this is triggered by local events too, need to find a way to ignore if it's local
-		this.onEvent('stream', ([streamer, eventName, args]): void => {
-			this.notifications.getStream(streamer)?._emit(eventName, args, undefined, false);
-		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 			if (clientAction === 'removed') {
