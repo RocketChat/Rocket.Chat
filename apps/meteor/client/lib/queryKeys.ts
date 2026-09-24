@@ -201,6 +201,8 @@ export const videoConferenceQueryKeys = {
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
 	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
+	/** Keyed by the number dialled, since the conference it stands for may not exist yet. */
+	scheduled: (sipAlias: string) => [...videoConferenceQueryKeys.all, 'scheduled', sipAlias] as const,
 } as const;
 
 export const messagesQueryKeys = {
