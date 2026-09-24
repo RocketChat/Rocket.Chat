@@ -2538,7 +2538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.6":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.6":
   version: 7.26.10
   resolution: "@babel/runtime@npm:7.26.10"
   dependencies:
@@ -10804,12 +10804,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:^0.37.3, @rocket.chat/onboarding-ui@npm:~0.37.3":
-  version: 0.37.3
-  resolution: "@rocket.chat/onboarding-ui@npm:0.37.3"
+"@rocket.chat/onboarding-ui@npm:^0.37.3, @rocket.chat/onboarding-ui@npm:~0.37.3, @rocket.chat/onboarding-ui@workspace:packages/onboarding-ui":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/onboarding-ui@workspace:packages/onboarding-ui"
   dependencies:
-    i18next: "npm:~23.4.9"
+    "@rocket.chat/fuselage": "npm:^0.92.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
+    "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
+    "@rocket.chat/icons": "npm:^0.50.0"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/layout": "npm:~0.36.3"
+    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
+    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@testing-library/dom": "npm:~10.4.1"
+    "@testing-library/react": "npm:~16.3.3"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.5"
+    countries-list: "npm:^3.4.1"
+    eslint: "npm:~9.39.5"
+    i18next: "npm:~26.4.2"
+    jest: "npm:~30.2.0"
+    jest-environment-jsdom: "npm:~30.2.0"
+    prettier: "npm:~3.9.6"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
+    react-i18next: "npm:~17.0.14"
+    storybook: "npm:~9.1.20"
+    ts-jest: "npm:~29.4.12"
+    typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -10820,9 +10846,8 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/7ba5cb2cdbbe1ad52069ea267a0806d665cb3db15bab50842cffae22a562716e75b5c353fa495d038449753679bee892d9feeeee902cfb67dcc7d324a750d518
-  languageName: node
-  linkType: hard
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/passport-x@workspace:packages/passport-x, @rocket.chat/passport-x@workspace:~":
   version: 0.0.0-use.local
@@ -11149,7 +11174,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
+"@rocket.chat/storybook-dark-mode@npm:~4.2.1, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode"
   dependencies:
@@ -19895,6 +19920,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"countries-list@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "countries-list@npm:3.4.1"
+  checksum: 10/3fca137016bea979974b36743730facb074cb0ac3efa271dccc1f5f1bc137a04f916506bb54a62fe92338cf4edb673b56a668ad565edd92618b0b3926a3675ae
+  languageName: node
+  linkType: hard
+
 "crc-32@npm:^1.2.0":
   version: 1.2.2
   resolution: "crc-32@npm:1.2.2"
@@ -25057,15 +25089,6 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.23.2"
   checksum: 10/e4cfb143bdb6fd343f68749a40cf562aa47f11c7af0243c0533868ae097912c3ddd6c384eb4116d1fced024a91279424abd8c2d1f694bbf304c42ebe3968ecca
-  languageName: node
-  linkType: hard
-
-"i18next@npm:~23.4.9":
-  version: 23.4.9
-  resolution: "i18next@npm:23.4.9"
-  dependencies:
-    "@babel/runtime": "npm:^7.22.5"
-  checksum: 10/2f9de44e9771c1df97b10ecec25e429b530e6bfbb388e4adfa01c360217db04d29c7c19868fd7be9973abfecfb7ea2d146b2682f00dd41db5fb75a139db2ac38
   languageName: node
   linkType: hard
 
@@ -35288,7 +35311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^9.1.20":
+"storybook@npm:^9.1.20, storybook@npm:~9.1.20":
   version: 9.1.20
   resolution: "storybook@npm:9.1.20"
   dependencies:
