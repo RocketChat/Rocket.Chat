@@ -6,6 +6,7 @@ import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
+import { LocalServiceRegistry } from './lib/LocalServiceRegistry';
 import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
@@ -19,7 +20,7 @@ const TIMEOUT = INTERVAL * 10;
 export class LocalBroker implements IBroker {
 	private started = false;
 
-	private methods = new Map<string, (...params: any) => any>();
+	private registry = new LocalServiceRegistry();
 
 	private events = new EventEmitter();
 
@@ -45,7 +46,7 @@ export class LocalBroker implements IBroker {
 						requestID: 'ctx.requestID',
 						broker: this,
 					},
-					(): any => this.methods.get(method)?.(...data),
+					(): any => this.registry.resolve(method)?.(data),
 				);
 			},
 			injectCurrentContext(),
@@ -57,18 +58,7 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-
-			this.methods.delete(`${namespace}.${method}`);
-		}
+		this.registry.remove(instance);
 		instance.removeAllListeners();
 		await instance.stopped();
 
@@ -98,18 +88,7 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-			const i = instance as any;
-			this.methods.set(`${serviceName}.${method}`, i[method].bind(i));
-		}
+		this.registry.add(instance);
 
 		this.services.set(serviceName, { instance, dependencies, isStarted: false });
 		this.registerPendingServices(Array.from(new Set([serviceName, ...dependencies])));

@@ -1,6 +1,6 @@
 import Stream from 'node:stream';
 
-import { asyncLocalStorage } from '@rocket.chat/core-services';
+import { asyncLocalStorage, getInstanceMethods } from '@rocket.chat/core-services';
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
@@ -19,7 +19,7 @@ const lifecycle: { [k: string]: string } = {
 	stopped: 'stopped',
 };
 
-export class NetworkBroker implements IBroker {
+export class MoleculerBroker implements IBroker {
 	private broker: ServiceBroker;
 
 	private started: Promise<boolean> = Promise.resolve(false);
@@ -78,11 +78,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
-		const methods = (
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
-		).filter((name) => name !== 'constructor');
+		const methods = getInstanceMethods(instance);
 
 		const serviceInstance = instance as any;
 
