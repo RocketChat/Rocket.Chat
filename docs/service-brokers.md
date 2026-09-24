@@ -53,9 +53,10 @@ dependencies have started, and rejects after ten seconds with the names still
 pending. This is why a service can safely read settings in `started()` in the
 monolith.
 
-**Events.** `broadcast()` emits locally and then re-emits on a `broadcast` channel.
-The monolith subscribes to that channel with `onBroadcast` and forwards it to
-`StreamerCentral`, which is how an event reaches other instances.
+**Events.** `broadcast()` emits to this process's listeners and hands the event to
+the cluster transport, if one is installed. `broadcastLocal()` and
+`broadcastToServices()` never leave the process. See
+[Events across instances](#events-across-instances).
 
 ## MoleculerBroker
 
@@ -92,6 +93,85 @@ handler reassembles `{ streamParam, details }` on the far side. This exists for
 > target service is not in `$node.services`, `call()` **returns** an `Error`
 > instead of throwing it. Callers that only `await` the result get an `Error`
 > object as their value.
+
+## Events across instances
+
+A broker event is the only way a real-time update crosses a process boundary. Client
+updates ride on it too: a stream emit that must reach clients connected to other
+processes is relayed as the event `stream`.
+
+### What each call reaches
+
+| deployment                         | `broadcast`                          | `broadcastLocal` | `broadcastToServices`                | carried by                        |
+| ---------------------------------- | ------------------------------------ | ---------------- | ------------------------------------ | --------------------------------- |
+| single monolith                    | this process                         | this process     | this process, every listener         | —                                 |
+| enterprise multi-instance monolith | every instance                       | this process     | this process, every listener         | `InstanceService` (matrix broker) |
+| microservices                      | every node, **including the sender** | this node        | every instance of the named services | the Moleculer transporter         |
+
+### The cluster transport
+
+`LocalBroker` knows nothing about other instances. `setClusterTransport()` installs
+whatever carries `broadcast()` onwards. In an enterprise multi-instance monolith that is
+`InstanceService` (`apps/meteor/ee/server/local-services/instance/service.ts`). It:
+
+- installs itself only with the `scalability` license module, at start or when the
+  license arrives. Without it, the instances of a multi-instance monolith do not see
+  each other's events.
+- sends each event on its own Moleculer broker as the `matrix` service's `event`
+  event, `{ event, args }`, serialised with EJSON. Peers are found over TCP through the
+  `InstanceStatus` collection, or over NATS with `TRANSPORTER=monolith+nats://…`.
+- delivers what it receives with `broadcastLocal()`, ignoring its own node.
+- sends nothing while the `Troubleshoot_Disable_Instance_Broadcast` setting is on.
+
+In microservices mode the monolith runs `MoleculerBroker`, which reaches every node
+already, and `InstanceService` is not registered.
+
+### Stream relays
+
+`Streamer.emit()` delivers to this process's subscribers, then relays the emit as the
+broker event `stream`:
+
+```ts
+{ stream: 'notify-room', eventName: 'room1/user-activity', args: [...], origin: InstanceStatus.id() }
+```
+
+Every process that hosts a `NotificationsModule` receives it through `ListenersModule`, the
+monolith and every ddp-streamer alike, and hands it to
+`NotificationsModule.deliverRelayed()`. That delivers to its own subscribers, unless
+`origin` is itself. The origin check is what keeps the sender from delivering twice:
+Moleculer's broadcast reaches the sender too, and so does `LocalBroker`'s.
+
+A client's write to a stream (the `stream-<name>` DDP method) is relayed the same way when
+the stream retransmits.
+
+### Emitting in reaction to a broker event
+
+Every instance already receives a broker event. A listener that turns one into a client
+update must deliver to this instance only, with `emitWithoutBroadcast()` or a
+`notify…InThisInstance()` helper. Otherwise each instance relays it again and clients get
+it once per instance. `ListenersModule` does this for every event it handles.
+
+Code that is _not_ reacting to a broker event, such as a Meteor method, a REST handler or
+a callback, uses `emit()`, so its update reaches clients connected anywhere. In
+microservices mode that is every client: none connect to the monolith.
+
+### Reacting to a client's write on the server
+
+Some client writes need a server-side reaction, such as forwarding typing to federation.
+These are typed hooks on `NotificationsModule` (`onUserActivity()`), registered in every
+process that hosts client connections. The hook makes a **service call**, never a
+broadcast: a broadcast reaches every instance of the consumer, and a call reaches one.
+Never listen on the stream itself for this. A stream listener only fires in the process
+that received the write.
+
+### Delivery
+
+At most once and fire and forget: no acknowledgement, retry or replay. Order is what the
+transport gives between two nodes, the same for stream relays and other events because
+they share it. A process that starts late misses what was sent before it joined.
+
+The design and the alternatives that were rejected are recorded in
+[ADR 0005](adr/0005-stream-fan-out-rides-the-service-broker.md).
 
 ## What crosses a process boundary
 
