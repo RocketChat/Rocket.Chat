@@ -7,9 +7,6 @@ export type Options = {
 
 const store = new WeakMap<MemoizableFunction<unknown, unknown, unknown>, Map<unknown, unknown>>();
 
-const isCachedValue = <A, R>(cachedValue: R | undefined, arg: A, cache: Map<A, R>): cachedValue is R =>
-	cache.has(arg) && cache.get(arg) === cachedValue;
-
 export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Options): MemoizedFunction<T, A, R> => {
 	const cache = new Map<A, R>();
 	const cacheTimers = new Map<A, ReturnType<typeof setTimeout>>();
@@ -20,9 +17,7 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 			cacheTimers.delete(arg);
 		};
 
-		const cachedValue = cache.get(arg);
-
-		if (isCachedValue(cachedValue, arg, cache)) {
+		if (cache.has(arg)) {
 			const oldTimer = cacheTimers.get(arg);
 			if (oldTimer) {
 				clearTimeout(oldTimer);
@@ -33,7 +28,7 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 				cacheTimers.set(arg, timer);
 			}
 
-			return cachedValue;
+			return cache.get(arg) as R;
 		}
 
 		const result = fn.call(this, arg);
