@@ -29,6 +29,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -52,7 +53,6 @@ import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
 import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
-import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
 import { isAdminHidingAllowed, isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';

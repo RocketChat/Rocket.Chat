@@ -1,5 +1,6 @@
+import { hiddenIds } from '@rocket.chat/streamer';
+
 import { StatusVisibilityService } from './service';
-import { hiddenIds } from '../../lib/statusVisibility/presenceScope';
 
 const settingValues: Record<string, unknown> = {};
 const broadcast = jest.fn();

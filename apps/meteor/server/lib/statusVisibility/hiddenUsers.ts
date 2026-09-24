@@ -1,9 +1,8 @@
 import type { PresenceScope } from '@rocket.chat/core-services';
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { statusVisibilityGate } from '@rocket.chat/streamer';
+import { statusVisibilityGate, NOTHING_HIDDEN, isHiddenFor, scopeHidesAnyone } from '@rocket.chat/streamer';
 
-import { NOTHING_HIDDEN, isHiddenFor, scopeHidesAnyone } from './presenceScope';
 import { redactStatus } from './redactStatus';
 import { isAdminHidingAllowed } from './settings';
 import { settings } from '../../settings';

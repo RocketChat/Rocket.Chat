@@ -1,9 +1,9 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { isHiddenFor } from '@rocket.chat/streamer';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
-import { isHiddenFor } from '../../lib/statusVisibility/presenceScope';
 import { getStatusText } from '../../lib/users/getStatusText';
 
 declare module '@rocket.chat/ddp-client' {
