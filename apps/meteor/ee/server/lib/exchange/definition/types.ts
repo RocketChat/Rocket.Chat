@@ -15,9 +15,10 @@ export type Page<T> = {
 	cursor?: string;
 	hasMore: boolean;
 	/**
-	 * How much of the window `items` covers. `full` is everything in it, so whatever is stored inside that
-	 * window and absent from it has been removed. `delta` is only what changed, deletions included.
-	 * `partial` is a `full` the provider could not finish, which is never safe to reconcile against.
+	 * How much of the scope `items` covers, the scope being the time window for events and the folder for
+	 * contacts. `full` is everything in it, so whatever is stored and absent from it has been removed.
+	 * `delta` is only what changed, deletions included. `partial` is a `full` the provider could not finish,
+	 * which is never safe to reconcile against.
 	 */
 	coverage: 'full' | 'delta' | 'partial';
 };

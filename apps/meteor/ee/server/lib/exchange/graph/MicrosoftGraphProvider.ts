@@ -93,8 +93,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			// A `nextLink` resumes this round, a `deltaLink` opens the next one. Both come back as the cursor.
 			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
 			hasMore: Boolean(nextLink),
-			// Graph only ever answers with what changed, so a full read is the caller's own doing, not a claim
-			// any single page can make.
 			coverage: 'delta',
 		};
 	}

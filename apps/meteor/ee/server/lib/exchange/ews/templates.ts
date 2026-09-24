@@ -95,9 +95,9 @@ export const resolveNamesRequest = (mailbox: string): string =>
  * Exchange expands a recurring series into its occurrences server side, which is what keeps recurrence
  * patterns and their originating timezones out of our code. `IdOnly` because FindItem never returns a
  * body: detail comes from the GetItem that follows.
+ * 1000 is what Exchange's default throttling policy allows a Find to hold; asking for more has no effect,
+ * and an admin who lowered it gets a truncated page back, which is why this pages either way.
  */
-// 1000 is what Exchange's default throttling policy allows a Find to hold; asking for more has no effect,
-// and an admin who lowered it gets a truncated page back, which is why this pages either way.
 export const findItemCalendarViewRequest = (mailbox: string, start: Date, end: Date, maxEntries = 1000): string =>
 	envelope(
 		[
