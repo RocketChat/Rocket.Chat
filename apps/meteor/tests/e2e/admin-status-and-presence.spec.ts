@@ -12,7 +12,7 @@ import { expect, test } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser, loginTestUser } from './utils/user-helpers';
 
-test.describe('Admin > Status and presence > User status', () => {
+test.describe('Admin > Status and presence > Managed users', () => {
 	test.skip(!IS_EE);
 	test.use({ storageState: Users.admin.state });
 
@@ -53,9 +53,9 @@ test.describe('Admin > Status and presence > User status', () => {
 		const { listbox } = admin;
 		const row = admin.rowOf(hiddenUser.data.name || hiddenUser.data.username);
 
-		await test.step('open Status and presence > User status', async () => {
+		await test.step('open Status and presence > Managed users', async () => {
 			await admin.goto();
-			await admin.openUserStatusTab();
+			await admin.openManagedUsersTab();
 		});
 
 		await test.step('create a rule hiding the user from the blocked viewer', async () => {
@@ -83,15 +83,15 @@ test.describe('Admin > Status and presence > User status', () => {
 			await expect.poll(async () => getUserStatusAsViewer(asControlViewer, hiddenUser.data.username)).toBe('online');
 		});
 
-		await test.step('the admin removes the rule through the confirmation modal', async () => {
+		await test.step('the admin resets the rule through the confirmation modal', async () => {
 			await row.click();
 
 			const editDialog = admin.editor;
 			await expect(editDialog).toBeVisible();
-			await editDialog.getByRole('button', { name: 'Remove user status settings', exact: true }).click();
+			await editDialog.getByRole('button', { name: 'Reset user status settings', exact: true }).click();
 
-			const confirmModal = page.getByRole('dialog', { name: 'Remove user status settings' });
-			await confirmModal.getByRole('button', { name: 'Remove', exact: true }).click();
+			const confirmModal = page.getByRole('dialog', { name: 'Reset user status settings' });
+			await confirmModal.getByRole('button', { name: 'Reset', exact: true }).click();
 
 			await expect(confirmModal).not.toBeVisible();
 			await expect(editDialog).not.toBeVisible();

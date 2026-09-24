@@ -1,6 +1,5 @@
-import { AccordionItem, Callout, FieldGroup } from '@rocket.chat/fuselage';
+import { AccordionItem, FieldGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import Setting from '../settings/Setting';
 import SettingsGroupPage from '../settings/SettingsGroupPage';
@@ -19,21 +18,16 @@ export type SettingsTabProps = {
 	headerButtons?: ReactNode;
 };
 
-const SettingsTab = ({ settingIds, tabs, headerButtons }: SettingsTabProps) => {
-	const { t } = useTranslation();
-
-	return (
-		<SettingsGroupPage _id='Accounts' i18nLabel='Status_and_presence' tabs={tabs} headerButtons={headerButtons}>
-			<AccordionItem noncollapsible title=''>
-				<FieldGroup>
-					{settingIds.map((settingId) => (
-						<Setting key={settingId} settingId={settingId} />
-					))}
-					<Callout icon='info-circled'>{t('Admins_cannot_see_concealed_presence')}</Callout>
-				</FieldGroup>
-			</AccordionItem>
-		</SettingsGroupPage>
-	);
-};
+const SettingsTab = ({ settingIds, tabs, headerButtons }: SettingsTabProps) => (
+	<SettingsGroupPage _id='Accounts' i18nLabel='Status_and_presence' tabs={tabs} headerButtons={headerButtons}>
+		<AccordionItem noncollapsible title=''>
+			<FieldGroup>
+				{settingIds.map((settingId) => (
+					<Setting key={settingId} settingId={settingId} />
+				))}
+			</FieldGroup>
+		</AccordionItem>
+	</SettingsGroupPage>
+);
 
 export default SettingsTab;

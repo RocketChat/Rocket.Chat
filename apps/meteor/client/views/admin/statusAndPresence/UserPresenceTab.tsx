@@ -43,6 +43,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='presence'>{t('Status')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='hiddenFrom'>{t('Hidden_from')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='actions' width='x48' />
 		</>
 	);
 
@@ -53,14 +54,14 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 			</FilterByText>
 			{isError && <GenericError icon='circle-exclamation' buttonAction={() => refetch()} />}
 			{isSuccess && data.users.length === 0 && (
-				<GenericNoResults title={t('No_user_status_settings')} description={t('No_user_status_settings_description')} />
+				<GenericNoResults icon='user' title={t('No_user_status_settings')} description={t('No_user_status_settings_description')} />
 			)}
 			{(isLoading || (isSuccess && data.users.length > 0)) && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{isLoading && <GenericTableLoadingTable headerCells={3} />}
+							{isLoading && <GenericTableLoadingTable headerCells={4} />}
 							{isSuccess && data.users.map((user) => <UserPresenceTabRow key={user._id} user={user} onClick={onEdit} />)}
 						</GenericTableBody>
 					</GenericTable>

@@ -77,7 +77,7 @@ describe('UserPresenceEditorForm', () => {
 		await userEvent.click(screen.getByRole('button', { name: 'Remove_user_status_settings' }));
 
 		const dialog = await screen.findByRole('dialog', { name: 'Remove_user_status_settings' });
-		await userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }));
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Reset' }));
 
 		await waitFor(() =>
 			expect(updateUser).toHaveBeenCalledWith({

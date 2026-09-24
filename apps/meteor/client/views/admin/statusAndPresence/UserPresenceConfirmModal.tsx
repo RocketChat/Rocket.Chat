@@ -1,17 +1,19 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { GenericModalProps } from '@rocket.chat/ui-client';
 import { GenericModal } from '@rocket.chat/ui-client';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 export type UserPresenceConfirmModalProps = {
 	title: string;
-	description: string;
+	description: ReactNode;
 	confirmText: string;
-	variant?: 'danger';
+	icon?: GenericModalProps['icon'];
 	onConfirm: () => Promise<boolean>;
 	onClose: () => void;
 };
 
-const UserPresenceConfirmModal = ({ title, description, confirmText, variant, onConfirm, onClose }: UserPresenceConfirmModalProps) => {
+const UserPresenceConfirmModal = ({ title, description, confirmText, icon, onConfirm, onClose }: UserPresenceConfirmModalProps) => {
 	const [confirming, setConfirming] = useState(false);
 
 	const handleConfirm = useStableCallback(async () => {
@@ -27,7 +29,7 @@ const UserPresenceConfirmModal = ({ title, description, confirmText, variant, on
 
 	return (
 		<GenericModal
-			variant={variant}
+			icon={icon}
 			title={title}
 			confirmText={confirmText}
 			confirmLoading={confirming}
