@@ -1,5 +1,12 @@
 import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage, IUser } from '@rocket.chat/core-typings';
+import type { UserCardContextValue } from '@rocket.chat/ui-contexts';
+
+/** Who a message is shown as written by: its author with any name or username changed since it was sent */
+export type MessageAuthor = IMessage['u'];
+
+/** Opens the card of a user mentioned by a message row, and the attributes its trigger carries */
+export type MessageListUserCard = Pick<UserCardContextValue, 'openUserCard' | 'triggerProps'>;
 
 /** What every rendered message needs to know about the person looking at it */
 export type MessageListViewer = {
@@ -106,6 +113,11 @@ export const denyingMessageActionsPolicy: MessageActionsPolicy = {
 
 const noop = () => undefined;
 const resolved = () => Promise.resolve();
+
+export const inertMessageListUserCard: MessageListUserCard = {
+	openUserCard: noop,
+	triggerProps: {},
+};
 
 export const inertMessageActions: MessageActions = {
 	pin: noop,

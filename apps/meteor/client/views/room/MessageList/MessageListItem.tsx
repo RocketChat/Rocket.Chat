@@ -3,6 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageAuthor } from './hooks/useMessageAuthor';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
@@ -35,6 +36,7 @@ export const MessageListItem = ({
 	const formatDate = useMessageListFormatDate();
 
 	const ref = useDateRef();
+	const author = useMessageAuthor(message);
 
 	const newDay = isMessageNewDay(message, previous);
 	const showDivider = newDay || showUnreadDivider;
@@ -73,6 +75,7 @@ export const MessageListItem = ({
 			{visible && (
 				<RoomMessage
 					message={message}
+					author={author}
 					showUserAvatar={showUserAvatar}
 					sequential={shouldShowAsSequential}
 					unread={unread}
@@ -94,7 +97,7 @@ export const MessageListItem = ({
 					/>
 				</div>
 			)}
-			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
+			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} author={author} />}
 		</>
 	);
 };

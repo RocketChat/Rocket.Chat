@@ -1,5 +1,5 @@
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
@@ -64,6 +64,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		[showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled],
 	);
 	const viewer = useMessageListViewerValue();
+	const { openUserCard, triggerProps } = useUserCard();
+	const userCard = useMemo(() => ({ openUserCard, triggerProps }), [openUserCard, triggerProps]);
 	const actionsPolicy = useMessageActionsPolicyValue(room);
 	const actions = useMessageActionsValue(autoTranslateOptions);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
@@ -137,6 +139,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatTime,
 			formatDate,
 			viewer,
+			subscription,
+			userCard,
 			actionsPolicy,
 			actions,
 		}),
@@ -167,6 +171,8 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatTime,
 			formatDate,
 			viewer,
+			subscription,
+			userCard,
 			actionsPolicy,
 			actions,
 		],

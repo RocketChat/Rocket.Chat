@@ -2,7 +2,6 @@ import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typin
 import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,23 +14,27 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
-import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import {
+	useMessageListOembedEnabled,
+	useMessageListReadReceipts,
+	useMessageListSubscription,
+	useMessageListViewer,
+} from '../../list/MessageListContext';
+import type { MessageAuthor } from '../../list/messageListContract';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
+	author?: MessageAuthor;
 };
 
-const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
+const ThreadMessageContent = ({ message, author = message.u }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
-	const { enabled: oembedEnabled } = useOembedLayout();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
+	const oembedEnabled = useMessageListOembedEnabled();
+	const subscription = useMessageListSubscription();
 	const broadcast = subscription?.broadcast ?? false;
-	const uid = useUserId();
+	const { uid } = useMessageListViewer();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
-	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 
 	const { t } = useTranslation();
 
@@ -100,8 +103,8 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 
 			{normalizedMessage.location && <Location location={normalizedMessage.location} />}
 
-			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
-				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
+			{broadcast && !!author.username && normalizedMessage.u._id !== uid && (
+				<BroadcastMetrics username={author.username} message={normalizedMessage} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}

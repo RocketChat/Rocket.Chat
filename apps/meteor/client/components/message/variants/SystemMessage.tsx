@@ -16,7 +16,6 @@ import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,22 +30,25 @@ import {
 	useMessageListShowUsername,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListUserCard,
 	useMessageListViewer,
 } from '../list/MessageListContext';
+import type { MessageAuthor } from '../list/messageListContract';
 
 export type SystemMessageProps = {
 	message: IMessage;
+	author?: MessageAuthor;
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
 
-const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
+const SystemMessage = ({ message, author = message.u, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { triggerProps, openUserCard } = useMessageListUserCard();
 
 	const showRealName = useMessageListShowRealName();
-	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
+	const user = author;
 	const normalizedUsername = normalizeUsername(user.username);
 	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;

@@ -2,7 +2,7 @@ import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserCard } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -13,7 +13,8 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
-import { useMessageListViewer } from '../list/MessageListContext';
+import { useMessageListUserCard, useMessageListViewer } from '../list/MessageListContext';
+import type { MessageAuthor } from '../list/messageListContract';
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -21,15 +22,16 @@ export type ThreadMessageProps = {
 	sequential: boolean;
 	showUserAvatar: boolean;
 	ignoredUser?: boolean;
+	author?: MessageAuthor;
 };
 
-const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
+const ThreadMessage = ({ message, author, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const { uid } = useMessageListViewer();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = ignoredUser && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, triggerProps } = useMessageListUserCard();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -66,12 +68,12 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 			</MessageLeftContainer>
 
 			<MessageContainer>
-				{!sequential && <MessageHeader message={message} />}
+				{!sequential && <MessageHeader message={message} author={author} />}
 
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<ThreadMessageContent message={message} />
+					<ThreadMessageContent message={message} author={author} />
 				)}
 			</MessageContainer>
 			{!message.private && message.e2e !== 'pending' && <MessageToolbarHolder message={message} context={messageContext} />}

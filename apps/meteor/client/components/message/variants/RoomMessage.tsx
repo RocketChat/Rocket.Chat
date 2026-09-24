@@ -2,7 +2,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,10 +16,12 @@ import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListReadReceipts, useMessageListViewer } from '../list/MessageListContext';
+import { useMessageListReadReceipts, useMessageListUserCard, useMessageListViewer } from '../list/MessageListContext';
+import type { MessageAuthor } from '../list/messageListContract';
 
 export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
+	author?: MessageAuthor;
 	showUserAvatar: boolean;
 	sequential: boolean;
 	unread: boolean;
@@ -57,6 +58,7 @@ const getAriaLabelledBy = ({
 
 const RoomMessage = ({
 	message,
+	author,
 	showUserAvatar,
 	sequential,
 	all,
@@ -72,7 +74,7 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, triggerProps } = useMessageListUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -130,11 +132,11 @@ const RoomMessage = ({
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
-				{!sequential && <MessageHeader message={message} />}
+				{!sequential && <MessageHeader message={message} author={author} />}
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<RoomMessageContent message={message} author={author} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

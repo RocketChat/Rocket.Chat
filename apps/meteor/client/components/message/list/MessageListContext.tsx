@@ -1,9 +1,14 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { MessageActions, MessageActionsPolicy, MessageListViewer } from './messageListContract';
-import { defaultMessageListViewer, denyingMessageActionsPolicy, inertMessageActions } from './messageListContract';
+import type { MessageActions, MessageActionsPolicy, MessageListUserCard, MessageListViewer } from './messageListContract';
+import {
+	defaultMessageListViewer,
+	denyingMessageActionsPolicy,
+	inertMessageActions,
+	inertMessageListUserCard,
+} from './messageListContract';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
 import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import type { useFormatTime } from '../../../hooks/useFormatTime';
@@ -46,6 +51,8 @@ export type MessageListContextValue = {
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
 	viewer: MessageListViewer;
+	subscription: ISubscription | undefined;
+	userCard: MessageListUserCard;
 	actionsPolicy: MessageActionsPolicy;
 	actions: MessageActions;
 };
@@ -80,6 +87,8 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatTime: () => '',
 	formatDate: () => '',
 	viewer: defaultMessageListViewer,
+	subscription: undefined,
+	userCard: inertMessageListUserCard,
 	actionsPolicy: denyingMessageActionsPolicy,
 	actions: inertMessageActions,
 };
@@ -129,3 +138,7 @@ export const useMessageListFormatDate = (): MessageListContextValue['formatDate'
 export const useMessageListViewer = (): MessageListViewer => useContext(MessageListContext).viewer;
 export const useMessageActionsPolicy = (): MessageActionsPolicy => useContext(MessageListContext).actionsPolicy;
 export const useMessageActions = (): MessageActions => useContext(MessageListContext).actions;
+
+export const useMessageListSubscription = () => useContext(MessageListContext).subscription;
+
+export const useMessageListUserCard = () => useContext(MessageListContext).userCard;

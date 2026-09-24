@@ -134,7 +134,7 @@ export const useThreadMainMessageQuery = (
 
 							if (new Date(old.ts).getTime() <= new Date(until).getTime()) {
 								const { unread: _, ...rest } = old;
-								return rest as IThreadMainMessage;
+								return rest;
 							}
 
 							return old;

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import { useMessageAuthor } from '../../../MessageList/hooks/useMessageAuthor';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useDateRef } from '../../../providers/DateListProvider';
@@ -30,6 +31,7 @@ export const ThreadMessageItem = ({
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const ref = useDateRef();
+	const author = useMessageAuthor(message);
 
 	const newDay = isMessageNewDay(message, previous);
 
@@ -62,10 +64,11 @@ export const ThreadMessageItem = ({
 				</Box>
 			)}
 			{system ? (
-				<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+				<SystemMessage message={message} author={author} showUserAvatar={showUserAvatar} />
 			) : (
 				<ThreadMessage
 					message={message}
+					author={author}
 					sequential={shouldShowAsSequential}
 					unread={firstUnread}
 					showUserAvatar={showUserAvatar}
