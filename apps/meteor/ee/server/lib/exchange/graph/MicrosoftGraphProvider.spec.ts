@@ -177,43 +177,34 @@ describe('MicrosoftGraphProvider', () => {
 			expect(page.items[0].externalId).toBe('z');
 		});
 
-		it('walks the nextLink pages itself so one call is one whole answer', async () => {
+		it('hands an unfinished round back as the cursor, so the caller resumes it rather than reopening it', async () => {
 			mockTokenThen(
 				graphResponse({
 					'value': [{ id: 'a', start: { dateTime: '2026-08-21T10:00:00' } }],
 					'@odata.nextLink': 'https://graph.microsoft.com/page2',
 				}),
-				graphResponse({
-					'value': [{ id: 'b', start: { dateTime: '2026-08-21T11:00:00' } }],
-					'@odata.deltaLink': 'https://graph.microsoft.com/delta',
-				}),
 			);
 
 			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
 
-			expect(serverFetch.mock.calls[2][0]).toBe('https://graph.microsoft.com/page2');
-			expect(page.items.map(({ externalId }) => externalId)).toEqual(['a', 'b']);
-			expect(page).toMatchObject({ cursor: 'https://graph.microsoft.com/delta', hasMore: false });
+			expect(page.items.map(({ externalId }) => externalId)).toEqual(['a']);
+			expect(page).toMatchObject({ cursor: 'https://graph.microsoft.com/page2', hasMore: true });
 		});
 
-		it('calls a no-cursor read complete for the window, which is what lets the caller prune', async () => {
+		it('resumes from the nextLink it was given instead of opening a new delta', async () => {
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
+
+			await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow, 'https://graph.microsoft.com/page2');
+
+			expect(serverFetch.mock.calls[1][0]).toBe('https://graph.microsoft.com/page2');
+		});
+
+		it('never claims a page is the whole window: Graph only ever answers with what changed', async () => {
 			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
 
 			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
 
-			expect(page.isCompleteForWindow).toBe(true);
-		});
-
-		it('never calls a resumed delta complete: it carries changes, not the window', async () => {
-			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
-
-			const page = await new MicrosoftGraphProvider(config).listEvents(
-				'user@contoso.com',
-				timeWindow,
-				'https://graph.microsoft.com/v1.0/users/u/calendarView/delta?$deltatoken=abc',
-			);
-
-			expect(page.isCompleteForWindow).toBe(false);
+			expect(page).toMatchObject({ coverage: 'delta', hasMore: false, cursor: 'https://graph.microsoft.com/delta' });
 		});
 	});
 
