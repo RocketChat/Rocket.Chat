@@ -5587,7 +5587,7 @@
   "Remove_RocketChat_Watermark_InfoText": "Watermark is automatically removed when a paid license is active.",
   "Remove_someone_from_room": "Remove someone from the room",
   "Remove_user_status_settings": "Replace user status settings",
-  "Remove_user_status_settings_description": "<bold>{{name}}</bold>’s status will reset to the workspace default.",
+  "Remove_user_status_settings_description": "<bold>{{name}}’s</bold> status will reset to the workspace default.",
   "remove-canned-responses": "Remove canned responses",
   "remove-canned-responses_description": "Permission to remove canned responses",
   "remove-closed-livechat-room": "Remove closed omnichannel room",
