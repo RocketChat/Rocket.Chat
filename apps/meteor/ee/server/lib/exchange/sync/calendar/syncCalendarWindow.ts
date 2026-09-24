@@ -8,7 +8,8 @@ import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubForLog, scrubText } from '../../scrub';
-import { MAX_PAGES } from '../limits';
+
+export const MAX_EVENT_PAGES = 50;
 
 const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 
@@ -50,7 +51,7 @@ const toCalendarEvent = (uid: IUser['_id'], event: ExchangeEventUpsert): Omit<In
 /**
  * Deletion works differently per provider and the difference cannot be flattened: Graph reports removals
  * explicitly, EWS reports them only by not returning an event in a complete window snapshot. `page`
- * carries `isCompleteSnapshot` to say which it gave us, and only a complete set may prune.
+ * carries `coverage` to say which it gave us, and only a full read may prune.
  */
 type Collected = {
 	upserts: Map<string, ExchangeEventUpsert>;
@@ -71,6 +72,7 @@ const collectPages = async (
 	let keepExternalIds: string[] | undefined;
 	let cursor = startCursor;
 	let pages = 0;
+	let partial = false;
 
 	for (;;) {
 		const page = await provider.listEvents(mailbox, timeWindow, cursor);
@@ -93,13 +95,22 @@ const collectPages = async (
 		}
 
 		// Each complete page is an independent full-window snapshot, so the newest one supersedes any earlier one
-		if (page.isCompleteSnapshot) {
+		if (page.coverage === 'full') {
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
+		partial = partial || page.coverage === 'partial';
 		cursor = page.cursor;
 
-		if (!page.hasMore || !page.cursor || pages >= MAX_PAGES) {
+		if (!page.hasMore) {
+			// Having reached the end of a read that started from scratch, what we hold is the whole window
+			const readEverything = !startCursor && !partial;
+
+			return { upserts, removals, keepExternalIds: keepExternalIds ?? (readEverything ? [...upserts.keys()] : undefined), cursor };
+		}
+
+		if (!page.cursor || pages >= MAX_EVENT_PAGES) {
+			logger.warn({ msg: 'Exchange calendar read stopped before the provider was done', mailbox, pages, missingCursor: !page.cursor });
 			return { upserts, removals, keepExternalIds, cursor };
 		}
 	}

@@ -1,9 +1,8 @@
-import { syncCalendarWindow } from './syncCalendarWindow';
+import { MAX_EVENT_PAGES, syncCalendarWindow } from './syncCalendarWindow';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../../definition/types';
 import type { ExchangeErrorCode } from '../../errors';
 import { ExchangeError } from '../../errors';
-import { MAX_PAGES } from '../limits';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();
@@ -54,7 +53,7 @@ const deletion = (externalId: string): ExchangeEvent => ({ kind: 'deleted', exte
 const page = (items: ExchangeEvent[], over: Partial<Page<ExchangeEvent>> = {}): Page<ExchangeEvent> => ({
 	items,
 	hasMore: false,
-	isCompleteSnapshot: false,
+	coverage: 'delta',
 	...over,
 });
 
@@ -62,11 +61,11 @@ const capabilities = () => ({
 	supportsWebhooks: false,
 });
 
-const providerReturning = (...pages: Page<ExchangeEvent>[]): IExchangeProvider => {
+const providerReturning = (id: string, ...pages: Page<ExchangeEvent>[]): IExchangeProvider => {
 	const queue = [...pages];
 
 	return {
-		id: 'ews',
+		id,
 		capabilities: capabilities(),
 		testConnection: jest.fn(),
 		listEvents: jest.fn(async () => queue.shift() ?? page([])),
@@ -98,7 +97,7 @@ describe('syncCalendarWindow', () => {
 
 	describe('resolving upserts against removals', () => {
 		it('lets a later upsert win over an earlier deletion of the same event', async () => {
-			const provider = providerReturning(page([deletion('A')], { hasMore: true, cursor: 'c1' }), page([upsert('A')]));
+			const provider = providerReturning('ews', page([deletion('A')], { hasMore: true, cursor: 'c1' }), page([upsert('A')]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -107,7 +106,7 @@ describe('syncCalendarWindow', () => {
 		});
 
 		it('lets a later deletion win over an earlier upsert of the same event', async () => {
-			const provider = providerReturning(page([upsert('A')], { hasMore: true, cursor: 'c1' }), page([deletion('A')]));
+			const provider = providerReturning('ews', page([upsert('A')], { hasMore: true, cursor: 'c1' }), page([deletion('A')]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -116,7 +115,7 @@ describe('syncCalendarWindow', () => {
 		});
 
 		it('treats a cancelled event as a removal rather than importing it', async () => {
-			const provider = providerReturning(page([upsert('A', { isCancelled: true }), upsert('B')]));
+			const provider = providerReturning('ews', page([upsert('A', { isCancelled: true }), upsert('B')]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -126,8 +125,32 @@ describe('syncCalendarWindow', () => {
 	});
 
 	describe('deciding what may be pruned', () => {
-		it('never prunes when no page claimed to be complete', async () => {
-			const provider = providerReturning(page([upsert('A')]));
+		it('prunes against everything a read from scratch collected, which no single page can claim on its own', async () => {
+			const provider = providerReturning('ews', page([upsert('A')], { hasMore: true, cursor: 'c1' }), page([upsert('B')]));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedWindow).toHaveBeenCalledWith(UID, timeWindow, ['A', 'B'], { deferSideEffects: true });
+		});
+
+		it('never prunes when a provider came up short, because the collection is missing events it still holds', async () => {
+			const provider = providerReturning('ews', page([upsert('A')], { coverage: 'partial' }));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedWindow).not.toHaveBeenCalled();
+		});
+
+		it('never prunes a delta resumed from a stored cursor, which carries changes rather than the window', async () => {
+			findOneByUserId.mockResolvedValue({
+				cursor: 'saved',
+				mailbox: MAILBOX,
+				provider: 'graph',
+				syncWindowDays: 2,
+				windowStart: timeWindow.start,
+			});
+
+			const provider = providerReturning('graph', page([upsert('A')]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -137,8 +160,9 @@ describe('syncCalendarWindow', () => {
 		it('prunes against the newest complete page, not the union of every page', async () => {
 			// Each complete page is an independent snapshot, so B disappearing from the second one is a removal
 			const provider = providerReturning(
-				page([upsert('A'), upsert('B')], { hasMore: true, cursor: 'c1', isCompleteSnapshot: true }),
-				page([upsert('A')], { isCompleteSnapshot: true }),
+				'ews',
+				page([upsert('A'), upsert('B')], { hasMore: true, cursor: 'c1', coverage: 'full' }),
+				page([upsert('A')], { coverage: 'full' }),
 			);
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
@@ -147,7 +171,7 @@ describe('syncCalendarWindow', () => {
 		});
 
 		it('prunes after the upserts landed, so it cannot remove what this run is reviving', async () => {
-			const provider = providerReturning(page([upsert('A')], { isCompleteSnapshot: true }));
+			const provider = providerReturning('ews', page([upsert('A')], { coverage: 'full' }));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -182,7 +206,7 @@ describe('syncCalendarWindow', () => {
 
 		it('resumes from the cursor when the whole identity matches', async () => {
 			findOneByUserId.mockResolvedValue(stored);
-			const provider = providerReturning(page([]));
+			const provider = providerReturning('ews', page([]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -195,7 +219,7 @@ describe('syncCalendarWindow', () => {
 			['there is no cursor', { cursor: undefined }],
 		])('starts over when %s', async (_label, difference) => {
 			findOneByUserId.mockResolvedValue({ ...stored, ...difference });
-			const provider = providerReturning(page([]));
+			const provider = providerReturning('ews', page([]));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -225,7 +249,7 @@ describe('syncCalendarWindow', () => {
 		});
 
 		it('stores the identity of the window it just read, not the one it resumed from', async () => {
-			const provider = providerReturning(page([], { cursor: 'fresh' }));
+			const provider = providerReturning('ews', page([], { cursor: 'fresh' }));
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
@@ -291,7 +315,7 @@ describe('syncCalendarWindow', () => {
 			importMany.mockResolvedValue(batch({ changed: true, upserted: 1 }));
 			deleteImported.mockRejectedValue(new ExchangeError('unexpected-response', 'x'));
 
-			const provider = providerReturning(page([upsert('A'), deletion('B')]));
+			const provider = providerReturning('ews', page([upsert('A'), deletion('B')]));
 			const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 			expect(outcome).toMatchObject({ failed: true, changed: true });
@@ -299,17 +323,17 @@ describe('syncCalendarWindow', () => {
 	});
 
 	it('stops paging rather than following a provider that never says it is done', async () => {
-		const pages: Page<ExchangeEvent>[] = Array.from({ length: MAX_PAGES }, () => page([], { hasMore: true, cursor: 'endless' }));
+		const pages: Page<ExchangeEvent>[] = Array.from({ length: MAX_EVENT_PAGES }, () => page([], { hasMore: true, cursor: 'endless' }));
 
-		const provider = providerReturning(...pages);
+		const provider = providerReturning('ews', ...pages);
 		await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
-		expect(provider.listEvents).toHaveBeenCalledTimes(MAX_PAGES);
+		expect(provider.listEvents).toHaveBeenCalledTimes(MAX_EVENT_PAGES);
 	});
 
 	it('reports removedEvents when the prune removed something, which is what may end a busy claim', async () => {
 		pruneImportedWindow.mockResolvedValue(batch({ changed: true, deleted: 2 }));
-		const provider = providerReturning(page([upsert('A')], { isCompleteSnapshot: true }));
+		const provider = providerReturning('ews', page([upsert('A')], { coverage: 'full' }));
 
 		const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 

@@ -15,11 +15,12 @@ export type Page<T> = {
 	cursor?: string;
 	hasMore: boolean;
 	/**
-	 * True when `items` is the complete set for whatever scope was asked about, so anything stored in that
-	 * scope and absent from it has been removed. The scope is the time window for events and the folder for
-	 * contacts. False when `items` carries only what changed, deletions included.
+	 * How much of the scope `items` covers, the scope being the time window for events and the folder for
+	 * contacts. `full` is everything in it, so whatever is stored and absent from it has been removed.
+	 * `delta` is only what changed, deletions included. `partial` is a `full` the provider could not finish,
+	 * which is never safe to reconcile against.
 	 */
-	isCompleteSnapshot: boolean;
+	coverage: 'full' | 'delta' | 'partial';
 };
 
 export type ExchangeEventDeletion = {

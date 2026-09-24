@@ -10,7 +10,8 @@ import type { ExchangeContactUpsert } from '../../definition/types';
 import { isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubForLog, scrubText } from '../../scrub';
-import { MAX_PAGES } from '../limits';
+
+const MAX_CONTACT_PAGES = 50;
 
 const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 
@@ -63,6 +64,7 @@ const collectPages = async (
 	let keepExternalIds: string[] | undefined;
 	let cursor = startCursor;
 	let pages = 0;
+	let partial = false;
 
 	for (;;) {
 		const page = await provider.listContacts(mailbox, folderId, cursor);
@@ -85,13 +87,28 @@ const collectPages = async (
 		}
 
 		// Each complete page is an independent full read of the folder, so the newest one supersedes any earlier one
-		if (page.isCompleteSnapshot) {
+		if (page.coverage === 'full') {
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
+		partial = partial || page.coverage === 'partial';
 		cursor = page.cursor;
 
-		if (!page.hasMore || !page.cursor || pages >= MAX_PAGES) {
+		if (!page.hasMore) {
+			// Having reached the end of a read that started from scratch, what we hold is the whole folder
+			const readEverything = !startCursor && !partial;
+
+			return { upserts, removals, keepExternalIds: keepExternalIds ?? (readEverything ? [...upserts.keys()] : undefined), cursor };
+		}
+
+		if (!page.cursor || pages >= MAX_CONTACT_PAGES) {
+			logger.warn({
+				msg: 'Exchange contact folder read stopped before the provider was done',
+				mailbox,
+				folderId,
+				pages,
+				missingCursor: !page.cursor,
+			});
 			return { upserts, removals, keepExternalIds, cursor };
 		}
 	}

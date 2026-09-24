@@ -22,11 +22,14 @@ import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
 
-// One window's worth of `@odata.nextLink` hops. A mailbox needing more is not one this can reconcile
-const MAX_DELTA_PAGES = 50;
-
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
+
+/** Pinned rather than left to Graph, so the page cap below is worth a number we know. Matches EWS. */
+const CONTACT_FOLDER_PAGE_SIZE = 100;
+
+/** At 100 folders a page, far past any real address book. A backstop, not a working limit. */
+const MAX_FOLDER_PAGES = 50;
 
 const DEFAULT_CONTACT_FOLDER_ID = 'default';
 
@@ -144,37 +147,30 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
-		const fullRead = !cursor;
-		const items: ExchangeEvent[] = [];
+		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow), {
+			headers: { Prefer: PREFER_UTC },
+		});
 
-		let url = cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow);
+		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
+		const nextLink = asString(payload['@odata.nextLink']);
 
-		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
-			const payload = await this.requestJson<GraphDeltaResponse>(url, { headers: { Prefer: PREFER_UTC } });
-
-			const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
-			items.push(...raw.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined));
-
-			const nextLink = asString(payload['@odata.nextLink']);
-
-			if (!nextLink) {
-				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteSnapshot: fullRead };
-			}
-
-			url = nextLink;
-		}
-
-		logger.warn({ msg: 'Graph calendar view paged out before the window was fully read', pages: MAX_DELTA_PAGES });
-
-		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
+		return {
+			items: raw.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined),
+			// A `nextLink` resumes this round, a `deltaLink` opens the next one. Both come back as the cursor.
+			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
+			hasMore: Boolean(nextLink),
+			coverage: 'delta',
+		};
 	}
 
 	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
 		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
 
-		let url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}/contactFolders?$select=id,displayName`;
+		let url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(
+			mailbox,
+		)}/contactFolders?$select=id,displayName&$top=${CONTACT_FOLDER_PAGE_SIZE}`;
 
-		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
+		for (let page = 0; page < MAX_FOLDER_PAGES; page++) {
 			const payload = await this.requestJson<GraphDeltaResponse>(url);
 			const raw = Array.isArray(payload.value) ? (payload.value as GraphContactFolder[]) : [];
 
@@ -204,32 +200,19 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	}
 
 	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
-		const items: ExchangeContact[] = [];
+		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.contactsDeltaUrl(mailbox, folderId));
 
-		let url = cursor ?? this.contactsDeltaUrl(mailbox, folderId);
+		const raw = Array.isArray(payload.value) ? (payload.value as GraphContact[]) : [];
+		const nextLink = asString(payload['@odata.nextLink']);
 
-		for (let page = 0; page < MAX_DELTA_PAGES; page++) {
-			const payload = await this.requestJson<GraphDeltaResponse>(url);
-
-			const raw = Array.isArray(payload.value) ? (payload.value as GraphContact[]) : [];
-			items.push(
-				...raw
-					.map((contact) => this.toExchangeContact(contact, folderId))
-					.filter((contact): contact is ExchangeContact => contact !== undefined),
-			);
-
-			const nextLink = asString(payload['@odata.nextLink']);
-
-			if (!nextLink) {
-				return { items, cursor: asString(payload['@odata.deltaLink']), hasMore: false, isCompleteSnapshot: !cursor };
-			}
-
-			url = nextLink;
-		}
-
-		logger.warn({ msg: 'Graph contact folder paged out before it was fully read', folderId, pages: MAX_DELTA_PAGES });
-
-		return { items, cursor: url, hasMore: true, isCompleteSnapshot: false };
+		return {
+			items: raw
+				.map((contact) => this.toExchangeContact(contact, folderId))
+				.filter((contact): contact is ExchangeContact => contact !== undefined),
+			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
+			hasMore: Boolean(nextLink),
+			coverage: 'delta',
+		};
 	}
 
 	public async *getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {

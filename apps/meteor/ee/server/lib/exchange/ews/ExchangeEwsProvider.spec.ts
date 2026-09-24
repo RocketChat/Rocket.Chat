@@ -158,7 +158,7 @@ describe('ExchangeEwsProvider', () => {
 			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
 			// The delete record is never surfaced: the caller removes what is absent from a complete set.
-			expect(page.isCompleteSnapshot).toBe(true);
+			expect(page.coverage).toBe('full');
 			expect(page.items.map((event) => event?.externalId)).toEqual(['STILL-THERE']);
 		});
 
@@ -169,7 +169,7 @@ describe('ExchangeEwsProvider', () => {
 
 			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
-			expect(page).toMatchObject({ items: [], cursor: 'S1', isCompleteSnapshot: false });
+			expect(page).toMatchObject({ items: [], cursor: 'S1', coverage: 'delta' });
 			// Just the probe. An empty delta must not cost a window fetch.
 			expect(transport.sent).toHaveLength(1);
 		});
