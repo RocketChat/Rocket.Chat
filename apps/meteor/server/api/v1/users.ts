@@ -44,7 +44,7 @@ import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
 import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
@@ -831,7 +831,14 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
-		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
+		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason, statusManagement } = this.queryParams;
+
+		if (
+			statusManagement &&
+			!(isAdminHidingAllowed() && (await hasAllPermissionAsync(this.userId, ['edit-other-user-info', 'view-full-other-user-info'])))
+		) {
+			return API.v1.forbidden();
+		}
 
 		const result = await findPaginatedUsersByStatus({
 			uid: this.userId,
@@ -844,6 +851,7 @@ API.v1.get(
 			hasLoggedIn,
 			type,
 			inactiveReason,
+			statusManagement,
 		});
 
 		const hidden = await getUsersHiddenFrom(this.userId);

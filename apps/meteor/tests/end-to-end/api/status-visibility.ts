@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType, UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, afterEach, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { api, credentials, getCredentials, request } from '../../data/api-data';
@@ -686,6 +686,50 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('[/users.listByStatus] statusManagement', () => {
+		const setPresenceDisabledByAdmin = (userId: string, presenceDisabledByAdmin: boolean) =>
+			request.post(api('users.update')).set(credentials).send({ userId, data: { presenceDisabledByAdmin } }).expect(200);
+
+		afterEach(async () => {
+			await setAdminDenied(hider._id, []).expect(200);
+			await setPresenceDisabledByAdmin(viewer._id, false);
+		});
+
+		const isListedAs = async (statusManagement: 'default' | 'managed', username: string) => {
+			const { body } = await request
+				.get(api('users.listByStatus'))
+				.set(credentials)
+				.query({ statusManagement, searchTerm: username })
+				.expect(200);
+
+			return usernamesOf(body.users).includes(username);
+		};
+
+		it('should refuse the filter to a user who cannot both edit and view the full info of other users', async () => {
+			await request.get(api('users.listByStatus')).set(bystanderCredentials).query({ statusManagement: 'managed' }).expect(403);
+		});
+
+		it('should list a user hidden by an admin only as managed', async () => {
+			await setAdminDenied(hider._id, [bystander.username]).expect(200);
+
+			expect(await isListedAs('managed', hider.username)).to.be.true;
+			expect(await isListedAs('default', hider.username)).to.be.false;
+			expect(await isListedAs('managed', viewer.username)).to.be.false;
+			expect(await isListedAs('default', viewer.username)).to.be.true;
+		});
+
+		it('should list a user whose status an admin turned off as managed', async () => {
+			await setPresenceDisabledByAdmin(viewer._id, true);
+
+			expect(await isListedAs('managed', viewer.username)).to.be.true;
+		});
+
+		it('should list a user who only hides their own status as default', async () => {
+			expect(await isListedAs('default', hider.username)).to.be.true;
+			expect(await isListedAs('managed', hider.username)).to.be.false;
+		});
+	});
+
 	describe('[Accounts_StatusVisibility_Admin_Enabled]', () => {
 		before(async () => {
 			await setUserStatus(hiderCredentials, UserStatus.ONLINE);
@@ -700,6 +744,10 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('should ignore a stored admin rule while the feature is off', async () => {
 			expect(await statusSeenBy(viewerCredentials, hider._id)).to.be.equal(UserStatus.ONLINE);
+		});
+
+		it('should refuse the status management filter while the feature is off', async () => {
+			await request.get(api('users.listByStatus')).set(credentials).query({ statusManagement: 'managed' }).expect(403);
 		});
 
 		it('should list nobody while the feature is off', async () => {
