@@ -1,7 +1,8 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import PinMessageModal from '../../../views/room/modals/PinMessageModal';
 import { usePinMessageMutation } from '../hooks/usePinMessageMutation';
@@ -10,10 +11,11 @@ export const usePinMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
+	const policy = useMessageActionsPolicy();
 	const setModal = useSetModal();
 
-	const allowPinning = useSetting('Message_AllowPinning');
-	const hasPermission = usePermission('pin-message', room._id);
+	const { allowPinning } = policy.settings;
+	const hasPermission = policy.permissions.pinMessage;
 	const { mutateAsync: pinMessage } = usePinMessageMutation();
 
 	if (!allowPinning || isOmnichannelRoom(room) || !hasPermission || message.pinned || !subscription) {

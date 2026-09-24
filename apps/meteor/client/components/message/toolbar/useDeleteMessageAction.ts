@@ -1,8 +1,8 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../../views/room/contexts/ChatContext';
@@ -11,7 +11,8 @@ export const useDeleteMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
 	const chat = useChat();
 
 	const { data: condition = false } = useQuery({

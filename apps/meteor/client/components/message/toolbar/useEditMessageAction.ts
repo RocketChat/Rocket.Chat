@@ -1,8 +1,8 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
@@ -10,12 +10,13 @@ export const useEditMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
 	const chat = useChat();
-	const isEditAllowed = useSetting('Message_AllowEditing', true);
-	const canEditMessage = usePermission('edit-message', message.rid);
-	const blockEditInMinutes = useSetting('Message_AllowEditing_BlockEditInMinutes', 0);
-	const canBypassBlockTimeLimit = usePermission('bypass-time-limit-edit-and-delete', message.rid);
+	const isEditAllowed = policy.settings.allowEditing ?? true;
+	const canEditMessage = policy.permissions.editMessage;
+	const blockEditInMinutes = policy.settings.blockEditInMinutes ?? 0;
+	const canBypassBlockTimeLimit = policy.permissions.bypassEditTimeLimit;
 
 	if (!subscription) {
 		return null;

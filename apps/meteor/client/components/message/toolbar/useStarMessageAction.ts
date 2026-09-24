@@ -1,13 +1,14 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useStarMessageMutation } from '../hooks/useStarMessageMutation';
 
 export const useStarMessageAction = (message: IMessage, { room }: { room: IRoom }): MessageActionConfig | null => {
-	const user = useUser();
-	const allowStarring = useSetting('Message_AllowStarring', true);
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
+	const allowStarring = policy.settings.allowStarring ?? true;
 
 	const { mutateAsync: starMessage } = useStarMessageMutation();
 

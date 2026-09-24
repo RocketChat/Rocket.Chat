@@ -6,6 +6,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ElementType } from 'react';
 import { memo, useRef } from 'react';
 
+import { MessageActionsPolicyProvider, useOptionalMessageActionsPolicy } from './MessageActionsPolicy';
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import DefaultItems from './items/DefaultItems';
@@ -76,7 +77,9 @@ const MessageToolbar = ({ message, messageContext, room, subscription, onChangeM
 
 	const MessageToolbarItems = itemsByContext[context];
 
-	return (
+	const policy = useOptionalMessageActionsPolicy();
+
+	const toolbar = (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
 			<MessageToolbarItems message={message} room={room} subscription={subscription} />
 			<MessageToolbarStarsActionMenu message={message} context={context} onChangeMenuVisibility={onChangeMenuVisibility} />
@@ -89,6 +92,9 @@ const MessageToolbar = ({ message, messageContext, room, subscription, onChangeM
 			/>
 		</FuselageMessageToolbar>
 	);
+
+	// Message lists read the policy once for the room; a toolbar rendered outside one reads it for itself.
+	return policy ? toolbar : <MessageActionsPolicyProvider room={room}>{toolbar}</MessageActionsPolicyProvider>;
 };
 
 export default memo(MessageToolbar);

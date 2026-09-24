@@ -1,6 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
+import type { ComponentType, ReactNode } from 'react';
+import { createElement } from 'react';
 
+import { MessageActionsPolicyProvider } from './MessageActionsPolicy';
 import { useReplyInDMAction } from './useReplyInDMAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -40,6 +43,11 @@ const subscription = createFakeSubscription({
 	t: 'c',
 });
 
+const withActionsPolicy =
+	(appRoot: ComponentType<{ children: ReactNode }>) =>
+	({ children }: { children: ReactNode }) =>
+		createElement(appRoot, null, createElement(MessageActionsPolicyProvider, { room, children }));
+
 afterEach(() => {
 	jest.clearAllMocks();
 });
@@ -52,7 +60,9 @@ describe('useReplyInDMAction', () => {
 		});
 
 		const { result } = renderHook(() => useReplyInDMAction(message, { room, subscription }), {
-			wrapper: mockAppRoot().withUser(currentUser).withPermission('create-d').withRouter({ getSearchParameters }).build(),
+			wrapper: withActionsPolicy(
+				mockAppRoot().withUser(currentUser).withPermission('create-d').withRouter({ getSearchParameters }).build(),
+			),
 		});
 
 		expect(result.current).not.toBeNull();
@@ -78,7 +88,7 @@ describe('useReplyInDMAction', () => {
 		const dmSubscription = createFakeSubscription({ t: 'd' });
 
 		const { result } = renderHook(() => useReplyInDMAction(message, { room: dmRoom, subscription: dmSubscription }), {
-			wrapper: mockAppRoot().withUser(currentUser).withPermission('create-d').build(),
+			wrapper: withActionsPolicy(mockAppRoot().withUser(currentUser).withPermission('create-d').build()),
 		});
 
 		expect(result.current).toBeNull();

@@ -1,7 +1,8 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import { t } from '../../../../app/utils/lib/i18n';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
 import { Messages } from '../../../stores';
@@ -11,8 +12,9 @@ export const useFollowMessageAction = (
 	message: IMessage,
 	{ room, context }: { room: IRoom; context: MessageActionContext },
 ): MessageActionConfig | null => {
-	const user = useUser();
-	const threadsEnabled = useSetting('Threads_enabled');
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
+	const { threadsEnabled } = policy.settings;
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

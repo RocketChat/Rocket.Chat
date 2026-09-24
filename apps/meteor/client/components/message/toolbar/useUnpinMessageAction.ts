@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useUnpinMessageMutation } from '../hooks/useUnpinMessageMutation';
 
@@ -9,8 +9,9 @@ export const useUnpinMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const allowPinning = useSetting('Message_AllowPinning');
-	const hasPermission = usePermission('pin-message', room._id);
+	const policy = useMessageActionsPolicy();
+	const { allowPinning } = policy.settings;
+	const hasPermission = policy.permissions.pinMessage;
 
 	const { mutate: unpinMessage } = useUnpinMessageMutation();
 

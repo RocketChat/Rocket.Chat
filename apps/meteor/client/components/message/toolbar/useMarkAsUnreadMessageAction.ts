@@ -1,7 +1,8 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
-import { useRouter, useUser } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { useMarkAsUnreadMutation } from '../hooks/useMarkAsUnreadMutation';
 
@@ -9,7 +10,8 @@ export const useMarkAsUnreadMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
 	const { mutateAsync: markAsUnread } = useMarkAsUnreadMutation();
 
 	const router = useRouter();

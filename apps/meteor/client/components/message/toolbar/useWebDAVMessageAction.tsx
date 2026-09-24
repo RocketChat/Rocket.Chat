@@ -1,6 +1,7 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { getURL } from '../../../lib/getURL';
@@ -10,7 +11,8 @@ export const useWebDAVMessageAction = (
 	message: IMessage,
 	{ subscription }: { subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const enabled = useSetting('Webdav_Integration_Enabled', false);
+	const policy = useMessageActionsPolicy();
+	const enabled = policy.settings.webdavEnabled ?? false;
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
 

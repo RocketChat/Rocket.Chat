@@ -1,6 +1,7 @@
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useSetModal, useUser } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ReportMessageModal from '../../../views/room/modals/ReportMessageModal';
@@ -16,7 +17,8 @@ export const useReportMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
 	const setModal = useSetModal();
 
 	const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);

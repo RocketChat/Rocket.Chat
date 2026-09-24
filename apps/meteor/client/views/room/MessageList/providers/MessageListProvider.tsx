@@ -6,6 +6,7 @@ import { useMemo, memo } from 'react';
 import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
+import { MessageActionsPolicyProvider } from '../../../../components/message/toolbar/MessageActionsPolicy';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -160,7 +161,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
 			<MessageListContext.Provider value={context}>
-				<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
+				<GazzodownEnvironmentProvider>
+					<MessageActionsPolicyProvider room={room}>{children}</MessageActionsPolicyProvider>
+				</GazzodownEnvironmentProvider>
 			</MessageListContext.Provider>
 		</AttachmentProvider>
 	);

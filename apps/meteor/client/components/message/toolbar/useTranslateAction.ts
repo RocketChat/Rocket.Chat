@@ -1,7 +1,8 @@
 import type { IMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
-import { useEndpoint, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { AutoTranslate } from '../../../lib/autotranslate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -12,9 +13,10 @@ export const useTranslateAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
-	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled', false);
-	const canAutoTranslate = usePermission('auto-translate');
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
+	const autoTranslateEnabled = policy.settings.autoTranslateEnabled ?? false;
+	const canAutoTranslate = policy.permissions.autoTranslate;
 	const translateMessage = useEndpoint('POST', '/v1/autotranslate.translateMessage');
 
 	const language = useMemo(

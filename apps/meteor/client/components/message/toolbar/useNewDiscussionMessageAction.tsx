@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { usePermission, useSetModal, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 
+import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import CreateDiscussion from '../../CreateDiscussion';
@@ -9,13 +10,14 @@ export const useNewDiscussionMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const user = useUser();
-	const enabled = useSetting('Discussion_enabled', false);
+	const policy = useMessageActionsPolicy();
+	const { user } = policy;
+	const enabled = policy.settings.discussionEnabled ?? false;
 
 	const setModal = useSetModal();
 
-	const canStartDiscussion = usePermission('start-discussion', room._id);
-	const canStartDiscussionOtherUser = usePermission('start-discussion-other-user', room._id);
+	const canStartDiscussion = policy.permissions.startDiscussion;
+	const canStartDiscussionOtherUser = policy.permissions.startDiscussionOtherUser;
 
 	if (!enabled) {
 		return null;

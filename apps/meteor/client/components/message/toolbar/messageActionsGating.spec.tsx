@@ -1,7 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
+import { MessageActionsPolicyProvider } from './MessageActionsPolicy';
 import { useEditMessageAction } from './useEditMessageAction';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
@@ -33,7 +35,16 @@ const othersMessage = createFakeMessage({ _id: 'others', rid: 'room-id', u: some
 
 type Builder = ReturnType<typeof mockAppRoot>;
 
-const renderAction = <T,>(useAction: () => T, builder: Builder) => renderHook(useAction, { wrapper: builder.build() }).result.current;
+const renderAction = <T,>(useAction: () => T, builder: Builder) => {
+	const AppRoot = builder.build();
+	const wrapper = ({ children }: { children: ReactNode }) => (
+		<AppRoot>
+			<MessageActionsPolicyProvider room={room}>{children}</MessageActionsPolicyProvider>
+		</AppRoot>
+	);
+
+	return renderHook(useAction, { wrapper }).result.current;
+};
 
 const withViewer = () => mockAppRoot().withUser(viewer);
 
