@@ -52,7 +52,6 @@ export default defineConfig({
 		terser({
 			compress: true,
 			mangle: true,
-			module: true,
 			output: {
 				comments: false,
 			},
