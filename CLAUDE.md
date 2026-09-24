@@ -46,6 +46,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Testing
 
+- [docs/testing-strategy.md](docs/testing-strategy.md) — which layer a test belongs in: unit, client component, package integration, API or Playwright
 - [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 
 ### Other
