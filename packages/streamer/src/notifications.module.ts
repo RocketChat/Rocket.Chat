@@ -62,8 +62,6 @@ export class NotificationsModule {
 
 	public readonly streamRoomData: IStreamer<'room-data'>;
 
-	public readonly streamLocal: IStreamer<'local'>;
-
 	public readonly streamPresence: IStreamer<'user-presence'>;
 
 	public readonly streamVideoConference: IStreamer<'video-conference'>;
@@ -127,7 +125,6 @@ export class NotificationsModule {
 		});
 
 		this.streamUser = this.createStream('notify-user');
-		this.streamLocal = this.createStream('local');
 		this.streamVideoConference = this.createStream('video-conference');
 	}
 
@@ -391,7 +388,6 @@ export class NotificationsModule {
 		this.streamImporters.allowEmit('all');
 		this.streamImporters.allowWrite('none');
 
-		this.streamApps.serverOnly = true;
 		this.streamApps.allowRead('all');
 		this.streamApps.allowEmit('all');
 		this.streamApps.allowWrite('none');
@@ -551,11 +547,6 @@ export class NotificationsModule {
 
 			return Authorization.canAccessConference(call, user._id);
 		});
-
-		this.streamLocal.serverOnly = true;
-		this.streamLocal.allowRead('none');
-		this.streamLocal.allowEmit('all');
-		this.streamLocal.allowWrite('none');
 
 		this.streamPresence.allowRead('logged');
 		this.streamPresence.allowWrite('none');
