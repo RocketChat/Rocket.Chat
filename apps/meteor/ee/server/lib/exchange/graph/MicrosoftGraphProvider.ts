@@ -64,7 +64,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	public readonly id = 'graph' as const;
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
-		supportsWebhooks: false,
+		supportsWebhooks: true,
 	};
 
 	private readonly tokenClient: GraphTokenClient;
