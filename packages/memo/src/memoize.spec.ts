@@ -69,9 +69,15 @@ describe('clear', () => {
 });
 
 describe('timeout', () => {
-	it('should not let a timer from before a clear expire values cached after it', () => {
+	beforeEach(() => {
 		jest.useFakeTimers();
+	});
 
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('should not let a timer from before a clear expire values cached after it', () => {
 		const fn = jest.fn((i: number) => i + 1);
 		const memoized = memoize(fn, { maxAge: 3000 });
 
@@ -86,8 +92,6 @@ describe('timeout', () => {
 	});
 
 	it('should memoize a function that takes one parameter and clear after x ms', () => {
-		jest.useFakeTimers();
-
 		const fn = jest.fn((i: number) => i + 1);
 		const memoized = jest.fn(memoize(fn, { maxAge: 3000 }));
 
@@ -108,8 +112,6 @@ describe('timeout', () => {
 	});
 
 	it('should memoize a function caching for two parameters and clearing both after x ms each one', () => {
-		jest.useFakeTimers();
-
 		const fn = jest.fn((i: number) => i + 1);
 		const memoized = jest.fn(memoize(fn, { maxAge: 3000 }));
 
