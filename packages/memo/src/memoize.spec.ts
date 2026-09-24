@@ -33,6 +33,16 @@ it('should memoize a function that takes one parameter', () => {
 	expect(memoized).toHaveNthReturnedWith(3, 3);
 });
 
+it('should memoize a function that returns NaN', () => {
+	const fn = jest.fn(() => NaN);
+	const memoized = memoize(fn);
+
+	memoized(undefined);
+	memoized(undefined);
+
+	expect(fn).toHaveBeenCalledTimes(1);
+});
+
 describe('clear', () => {
 	it('should discard cached values of a memoized function', () => {
 		const fn = jest.fn(() => 'foo');
