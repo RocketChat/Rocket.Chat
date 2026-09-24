@@ -1,34 +1,24 @@
 import type { IEwsTransport } from './IEwsTransport';
-import { allByTag, firstByTag, MESSAGES_NS, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
+import { allByTag, firstByTag, MESSAGES_NS, parseEwsDateTime, parseEwsResponse, textOf, TYPES_NS } from './parseResponse';
 import { findItemCalendarViewRequest, getItemRequest, resolveNamesRequest, syncFolderItemsRequest } from './templates';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 
+/** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
+const MAX_CALENDAR_VIEW_PAGES = 50;
+
+/** How many items one `GetItem` is asked for, matching the delta's own page size. */
+const EVENT_BATCH_SIZE = 100;
+
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
-
-export const parseEwsDateTime = (value: string | undefined): Date | undefined => {
-	if (!value) {
-		return undefined;
-	}
-
-	// We ask for UTC through `TimeZoneContext`, so a value arriving without a zone is still UTC. Reading it
-	// as local time would shift the event by the host offset, silently
-	const hasZone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value);
-	const parsed = new Date(hasZone ? value : `${value}Z`);
-
-	return Number.isNaN(parsed.getTime()) ? undefined : parsed;
-};
 
 export class ExchangeEwsProvider implements IExchangeProvider {
 	public readonly id = 'ews' as const;
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
-		supportsDelta: true,
 		supportsWebhooks: false,
-		supportsContacts: false,
-		cursorIsWindowScoped: false,
 	};
 
 	private readonly transport: IEwsTransport;
@@ -63,14 +53,17 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
 
 		if (!changed) {
-			return { items: [], cursor: syncState, hasMore: !includesLastItem, isCompleteForWindow: false };
+			return { items: [], cursor: syncState, hasMore: !includesLastItem, coverage: 'delta' };
 		}
 
+		const { events, complete } = await this.snapshotWindow(mailbox, timeWindow);
+
 		return {
-			items: await this.snapshotWindow(mailbox, timeWindow),
+			items: events,
 			cursor: syncState,
 			hasMore: !includesLastItem,
-			isCompleteForWindow: true,
+			// Calling a short read full is what would delete the events we failed to read.
+			coverage: complete ? 'full' : 'partial',
 		};
 	}
 
@@ -80,23 +73,67 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	 * from a series is not reported at all. So once anything was modified, Exchange expands the whole window
 	 * and the caller reconciles against a complete set, which is what the desktop integration has always done.
 	 */
-	private async snapshotWindow(mailbox: string, timeWindow: DateRange): Promise<ExchangeEvent[]> {
-		const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, timeWindow.start, timeWindow.end)));
+	private async snapshotWindow(mailbox: string, timeWindow: DateRange): Promise<{ events: ExchangeEvent[]; complete: boolean }> {
+		const ids = new Set<string>();
+		let { start } = timeWindow;
+		let complete = false;
 
-		const ids = allByTag(doc, TYPES_NS, 'CalendarItem')
-			.map((node) => firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id') ?? undefined)
-			.filter((id): id is string => Boolean(id));
+		for (let page = 0; page < MAX_CALENDAR_VIEW_PAGES; page++) {
+			const doc = parseEwsResponse(await this.transport.post(findItemCalendarViewRequest(mailbox, start, timeWindow.end)));
+			const root = firstByTag(doc, MESSAGES_NS, 'RootFolder');
+			const nodes = allByTag(doc, TYPES_NS, 'CalendarItem');
 
-		return ids.length ? this.loadItems(mailbox, ids) : [];
+			for (const node of nodes) {
+				const id = firstByTag(node, TYPES_NS, 'ItemId')?.getAttribute('Id');
+
+				if (id) {
+					ids.add(id);
+				}
+			}
+
+			// Anything other than an explicit "there is more" ends the walk, so a response we cannot read
+			// stops us rather than spinning against the server.
+			if (root?.getAttribute('IncludesLastItemInRange') !== 'false') {
+				complete = true;
+				break;
+			}
+
+			// `CalendarView` is sorted by start and has no offset, so the next page reopens the window at the
+			// last occurrence seen. Anything sharing that instant comes back and collapses on the id set, which
+			// is the safe direction to round: skipping it would lose an event.
+			const last = nodes[nodes.length - 1];
+			const next = last && parseEwsDateTime(textOf(firstByTag(last, TYPES_NS, 'Start')));
+
+			if (!next || next.getTime() <= start.getTime()) {
+				break;
+			}
+
+			start = next;
+		}
+
+		if (!complete) {
+			logger.warn({ msg: 'EWS calendar window was read only in part, so nothing will be pruned from it', mailbox });
+		}
+
+		return { events: await this.loadEvents(mailbox, [...ids]), complete };
 	}
 
-	private async loadItems(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
-		const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds)));
+	/** Chunked because the window is no longer bounded by one page, and these items carry their bodies. */
+	private async loadEvents(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
+		const events: ExchangeEvent[] = [];
 
-		return allByTag(doc, TYPES_NS, 'CalendarItem')
-			.filter((node) => textOf(firstByTag(node, TYPES_NS, 'CalendarItemType')) !== 'RecurringMaster')
-			.map((node) => this.toExchangeEvent(node))
-			.filter((event): event is ExchangeEvent => event !== undefined);
+		for (let i = 0; i < itemIds.length; i += EVENT_BATCH_SIZE) {
+			const doc = parseEwsResponse(await this.transport.post(getItemRequest(mailbox, itemIds.slice(i, i + EVENT_BATCH_SIZE))));
+
+			events.push(
+				...allByTag(doc, TYPES_NS, 'CalendarItem')
+					.filter((node) => textOf(firstByTag(node, TYPES_NS, 'CalendarItemType')) !== 'RecurringMaster')
+					.map((node) => this.toExchangeEvent(node))
+					.filter((event): event is ExchangeEvent => event !== undefined),
+			);
+		}
+
+		return events;
 	}
 
 	private toExchangeEvent(node: Element): ExchangeEvent | undefined {
