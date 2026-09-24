@@ -11,12 +11,11 @@ const maxSamples = 1152;
 let samplesMono: Int16Array;
 let dataBuffer: Int8Array[];
 
-function convertBuffer(arrayBuffer: Float32Array): Int16Array {
-	const input = new Float32Array(arrayBuffer);
-	const output = new Int16Array(arrayBuffer.length);
+function convertBuffer(samples: Float32Array): Int16Array {
+	const output = new Int16Array(samples.length);
 
-	for (let i = 0; i < input.length; i++) {
-		const s = Math.max(-1, Math.min(1, input[i]));
+	for (let i = 0; i < samples.length; i++) {
+		const s = Math.max(-1, Math.min(1, samples[i]));
 		output[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
 	}
 
