@@ -1,11 +1,9 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
-import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { roomFields } from '../../../../lib/publishFields';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
@@ -14,6 +12,7 @@ import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { Rooms, Subscriptions } from '../../../stores';
+import { openRoomRetryDelay, retryOpeningRoomUnless, storeOpenedRoom } from '../lib/openRoomQuery';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -109,17 +108,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
-			unsetKeys.forEach((key) => {
-				delete roomData[key];
-			});
-			Rooms.state.store(roomData);
-
-			const room = Rooms.state.get(roomData._id);
-
-			if (!room) {
-				throw new TypeError('room is undefined');
-			}
+			const room = storeOpenedRoom(roomData);
 
 			const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));
 
@@ -149,16 +138,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			return { rid: room._id };
 		},
-		retry: (failureCount, error) => {
-			const unrecoverableErrors = [RoomNotFoundError, OldUrlRoomError, NotAuthorizedError, NotSubscribedToRoomError];
-
-			if (unrecoverableErrors.some((e) => error instanceof e)) {
-				return false;
-			}
-
-			return failureCount < 4;
-		},
-		retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
+		retry: retryOpeningRoomUnless([RoomNotFoundError, OldUrlRoomError, NotAuthorizedError, NotSubscribedToRoomError]),
+		retryDelay: openRoomRetryDelay,
 	});
 
 	const queryClient = useQueryClient();

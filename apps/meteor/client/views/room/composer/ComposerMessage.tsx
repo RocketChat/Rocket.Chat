@@ -42,16 +42,10 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 	return (
 		<FeaturePreview feature='realtimeMessageComposer'>
 			<FeaturePreviewOff>
-				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
 			</FeaturePreviewOff>
 			<FeaturePreviewOn>
-				<RichTextMessageBox
-					key={tmid ? `${room._id}-${tmid}` : room._id}
-					tmid={tmid}
-					{...composerProps}
-					showFormattingTips={true}
-					{...props}
-				/>
+				<RichTextMessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
 			</FeaturePreviewOn>
 		</FeaturePreview>
 	);

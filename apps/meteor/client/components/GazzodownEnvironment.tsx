@@ -16,7 +16,7 @@ export type GazzodownEnvironment = {
 	convertAsciiToEmoji: boolean | undefined;
 	useEmoji: boolean | undefined;
 	useRealName: boolean;
-	ownUserId: string | null;
+	ownUserId: ReturnType<typeof useUserId>;
 	showMentionSymbol: boolean;
 	isMobile: boolean;
 	triggerProps: ReturnType<typeof useUserCard>['triggerProps'];

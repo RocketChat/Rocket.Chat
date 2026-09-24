@@ -1,14 +1,13 @@
-import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-import { useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
 import { useOpenRoom } from './hooks/useOpenRoom';
-import { SubscriptionsCachedStore } from '../../cachedStores';
+import { useRoomSubscriptionUpdates } from './hooks/useRoomSubscriptionUpdates';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
@@ -28,24 +27,8 @@ type RoomOpenerProps = {
 
 const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
-	const uid = useUserId();
-	const subscribeToNotifyUser = useStream('notify-user');
 
-	const rid = data?.rid;
-
-	useEffect(() => {
-		if (!uid || !rid) {
-			return;
-		}
-
-		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
-			if (sub.rid !== rid || event === 'removed') {
-				return;
-			}
-
-			SubscriptionsCachedStore.upsertSubscription(sub as ISubscription);
-		});
-	}, [rid, subscribeToNotifyUser, uid]);
+	useRoomSubscriptionUpdates(data?.rid);
 
 	const { t } = useTranslation();
 

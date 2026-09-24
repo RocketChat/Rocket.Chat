@@ -1,17 +1,10 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
-import { useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useRoomSubscriptionQuery } from './useRoomSubscriptionQuery';
 import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
-
-/**
- * Whether a subscription change is one to apply here: this room's, and not its removal — a removed subscription
- * is the room going away from under them, not an update to fold in.
- */
-export const shouldApplySubscriptionChange = (event: string, subRid: string | undefined, rid: string): boolean =>
-	event !== 'removed' && subRid === rid;
+import { useRoomSubscriptionUpdates } from '../../room/hooks/useRoomSubscriptionUpdates';
 
 /**
  * Keeps the user's subscription to the conference's chat in the store, and keeps it current.
@@ -23,7 +16,6 @@ export const shouldApplySubscriptionChange = (event: string, subRid: string | un
  */
 export const useConferenceSubscription = (rid: string | undefined): void => {
 	const uid = useUserId();
-	const subscribeToNotifyUser = useStream('notify-user');
 
 	const { data } = useRoomSubscriptionQuery(uid ? rid : undefined);
 
@@ -49,17 +41,5 @@ export const useConferenceSubscription = (rid: string | undefined): void => {
 		}
 	}, [data]);
 
-	useEffect(() => {
-		if (!uid || !rid) {
-			return;
-		}
-
-		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
-			if (!shouldApplySubscriptionChange(event, sub?.rid, rid)) {
-				return;
-			}
-
-			SubscriptionsCachedStore.upsertSubscription(sub as ISubscription);
-		});
-	}, [rid, subscribeToNotifyUser, uid]);
+	useRoomSubscriptionUpdates(rid);
 };

@@ -1,11 +1,9 @@
 import { isPublicRoom, type IRoom } from '@rocket.chat/core-typings';
-import { getObjectKeys } from '@rocket.chat/tools';
 import { useEndpoint, usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { roomFields } from '../../../../lib/publishFields';
 import { SubscriptionsCachedStore } from '../../../cachedStores';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -16,6 +14,7 @@ import { isRefusal } from '../../../lib/utils/isRefusal';
 import { mapRoomFromApi } from '../../../lib/utils/mapRoomFromApi';
 import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms, Subscriptions } from '../../../stores';
+import { openRoomRetryDelay, retryOpeningRoomUnless, storeOpenedRoom } from '../lib/openRoomQuery';
 
 /**
  * Whether this room's type is looked up by id rather than by name.
@@ -92,16 +91,7 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 				throw new RoomNotFoundError(undefined, { rid });
 			}
 
-			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
-			unsetKeys.forEach((key) => {
-				delete roomData[key];
-			});
-			Rooms.state.store(roomData);
-
-			const room = Rooms.state.get(roomData._id);
-			if (!room) {
-				throw new TypeError('room is undefined');
-			}
+			const room = storeOpenedRoom(roomData);
 
 			// Subscriptions.state may be empty when used without a pre-populating parent (e.g. the conference
 			// chat panel). Fetch the subscription as a fallback so openRoom.mutateAsync is not silently skipped.
@@ -142,13 +132,7 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 		},
 		// The same shape as `useOpenRoom`'s: the answers about the room itself are final, and everything else is
 		// the server not having answered — which is worth asking again before the panel says the room is gone.
-		retry: (failureCount, error) => {
-			if (error instanceof RoomNotFoundError || error instanceof NotSubscribedToRoomError) {
-				return false;
-			}
-
-			return failureCount < 4;
-		},
-		retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
+		retry: retryOpeningRoomUnless([RoomNotFoundError, NotSubscribedToRoomError]),
+		retryDelay: openRoomRetryDelay,
 	});
 }

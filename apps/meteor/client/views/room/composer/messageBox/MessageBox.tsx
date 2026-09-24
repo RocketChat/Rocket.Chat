@@ -50,8 +50,6 @@ export type MessageBoxProps = {
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
-	showFormattingTips: boolean;
-	isEmbedded?: boolean;
 	threadExists?: boolean;
 };
 

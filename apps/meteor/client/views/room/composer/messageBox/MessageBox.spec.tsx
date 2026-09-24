@@ -41,7 +41,7 @@ const renderMessageBox = (onSend: jest.Mock, endpointHandler: jest.Mock) => {
 
 	(useChat as jest.Mock).mockReturnValue(chat);
 
-	const view = render(<MessageBox showFormattingTips={false} onSend={onSend} />, {
+	const view = render(<MessageBox onSend={onSend} />, {
 		wrapper: mockAppRoot().withUserPreference('sendOnEnter', 'normal').withEndpoint('POST', '/v1/rooms.saveDraft', endpointHandler).build(),
 	});
 

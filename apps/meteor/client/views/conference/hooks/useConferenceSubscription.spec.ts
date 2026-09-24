@@ -2,8 +2,9 @@ import type { StreamControllerRef } from '@rocket.chat/mock-providers';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { shouldApplySubscriptionChange, useConferenceSubscription } from './useConferenceSubscription';
+import { useConferenceSubscription } from './useConferenceSubscription';
 import { SubscriptionsCachedStore } from '../../../cachedStores';
+import { shouldApplySubscriptionChange } from '../../room/lib/shouldApplySubscriptionChange';
 
 const rid = 'room-id';
 
