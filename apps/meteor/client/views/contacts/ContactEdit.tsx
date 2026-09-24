@@ -65,7 +65,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 
 	const save = useMutation({
 		mutationFn: async ({ givenName, surname, displayName, emails, phones, companyName }: ContactForm) => {
-			// A label with nothing to label is not a contact detail, so the empty rows go before the body is built.
 			const filledEmails = emails
 				.filter(({ address }) => address.trim())
 				.map(({ address, label }) => ({ address: address.trim(), ...(label.trim() && { label: label.trim() }) }));
@@ -98,8 +97,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 
 			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
 
-			// The form and the detail share one panel, so handing the new contact over is what replaces it.
-			// Closing as well would take the caller's own panel down with this one.
 			if (created && onSaved) {
 				onSaved(created);
 				return;
@@ -149,6 +146,8 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 								<TextInput {...register(`emails.${index}.address`)} />
 								{emailFields.fields.length > 1 && (
 									<IconButton
+										secondary
+										marginInlineStart={4}
 										icon='trash'
 										aria-label={t('Remove_email')}
 										title={t('Remove_email')}
@@ -164,15 +163,17 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					))}
 
 					<Field>
-						<Button
-							small
-							icon='plus'
-							type='button'
-							disabled={emailFields.fields.length >= MAX_ENTRIES}
-							onClick={() => emailFields.append({ address: '', label: '' })}
-						>
-							{t('Add_email')}
-						</Button>
+						<Box display='flex'>
+							<Button
+								small
+								icon='plus'
+								type='button'
+								disabled={emailFields.fields.length >= MAX_ENTRIES}
+								onClick={() => emailFields.append({ address: '', label: '' })}
+							>
+								{t('Add_email')}
+							</Button>
+						</Box>
 					</Field>
 
 					<Divider />
@@ -184,6 +185,8 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 								<TextInput {...register(`phones.${index}.raw`)} />
 								{phoneFields.fields.length > 1 && (
 									<IconButton
+										secondary
+										marginInlineStart={4}
 										icon='trash'
 										aria-label={t('Remove_phone')}
 										title={t('Remove_phone')}
@@ -199,15 +202,17 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					))}
 
 					<Field>
-						<Button
-							small
-							icon='plus'
-							type='button'
-							disabled={phoneFields.fields.length >= MAX_ENTRIES}
-							onClick={() => phoneFields.append({ raw: '', label: '' })}
-						>
-							{t('Add_phone')}
-						</Button>
+						<Box display='flex'>
+							<Button
+								small
+								icon='plus'
+								type='button'
+								disabled={phoneFields.fields.length >= MAX_ENTRIES}
+								onClick={() => phoneFields.append({ raw: '', label: '' })}
+							>
+								{t('Add_phone')}
+							</Button>
+						</Box>
 					</Field>
 
 					<Divider />

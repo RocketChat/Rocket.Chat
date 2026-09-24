@@ -1,4 +1,5 @@
 import type { IContact } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Contacts } from '@rocket.chat/models';
 import {
 	isContactsCreateProps,
@@ -71,15 +72,22 @@ API.v1.get(
 			return API.v1.failure('error-invalid-sort-keys');
 		}
 
-		const { cursor, totalCount } = Contacts.findPaginatedByUserId(userId, text, {
-			sort: sort ?? { displayName: 1 },
-			skip: offset,
-			limit: count,
-		});
+		const licensed = License.hasModule('outlook-calendar');
+
+		const { cursor, totalCount } = Contacts.findPaginatedByUserId(
+			userId,
+			text,
+			{
+				sort: sort ?? { displayName: 1 },
+				skip: offset,
+				limit: count,
+			},
+			licensed ? undefined : 'local',
+		);
 
 		const [items, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const syncedTotal = await Contacts.countImportedByUserId(userId);
+		const syncedTotal = licensed ? await Contacts.countImportedByUserId(userId) : 0;
 
 		return API.v1.success({ items, count: items.length, offset, total, syncedTotal });
 	},

@@ -44,8 +44,9 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		uid: IUser['_id'],
 		text: string | undefined,
 		options: FindOptions<IContact>,
+		source?: IContact['source'],
 	): FindPaginated<FindCursor<IContact>> {
-		const query: Filter<IContact> = { uid };
+		const query: Filter<IContact> = { uid, ...(source && { source }) };
 
 		if (text) {
 			const pattern = { $regex: escapeRegExp(text), $options: 'i' };
