@@ -89,6 +89,25 @@ describe('`once` method', () => {
 		expect(handler).toHaveBeenCalledTimes(1);
 	});
 
+	it('should keep `once` and `on` registrations of the same handler on different events independent', () => {
+		emitter.on('test', handler);
+		emitter.once('test2', handler);
+		times(2, () => emitter.emit('test'));
+		times(2, () => emitter.emit('test2'));
+		expect(handler).toHaveBeenCalledTimes(3);
+		expect(emitter.has('test')).toBe(true);
+		expect(emitter.has('test2')).toBe(false);
+	});
+
+	it('should keep `once` registration after removing an `on` registration of the same handler on another event', () => {
+		emitter.on('test', handler);
+		emitter.once('test2', handler);
+		emitter.off('test', handler);
+		times(2, () => emitter.emit('test2'));
+		expect(handler).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test2')).toBe(false);
+	});
+
 	it('should remove `test` handler even if it throws', () => {
 		const throwing = jest.fn(() => {
 			throw new Error('boom');
