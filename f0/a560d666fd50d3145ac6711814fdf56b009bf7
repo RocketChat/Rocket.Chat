@@ -1,0 +1,48 @@
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_a3d0eb8bd3caff::t_b18c702420fa60 298
+  s_a3d0eb8bd3caff::t_8417f1c2cccff7 109,114,123
+  s_11832e90ae9d55::t_c9fb69f0c46583 21
+  s_11832e90ae9d55::t_fbdb87cb571138 34
+ee/apps/ddp-streamer/src/service.ts
+  s_11832e90ae9d55::t_710d5825609bd8 3
+  s_11832e90ae9d55::t_a5d18729553bee 40
+ee/packages/omnichannel-services/src/OmnichannelTranscript.ts
+  s_11832e90ae9d55::t_064421323f87c0 19,83-84,103
+ee/packages/abac/src/index.ts
+  s_11832e90ae9d55::t_064421323f87c0 18,84,263-266,272-274,276-278,281-282,738-742
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_11832e90ae9d55::t_8e51f0734d075b 11-13
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_11832e90ae9d55::t_0bf407e98034e7 67
+ee/apps/account-service/src/Account.ts
+  s_11832e90ae9d55::t_064421323f87c0 3,11,25,34-38
+  s_11832e90ae9d55::t_8919e2ea3292c0 39
+ee/apps/ddp-streamer/src/publications/autoupdate.spec.ts
+  s_11832e90ae9d55::t_4f9adf6331d432 14-15,25
+ee/apps/ddp-streamer/src/publications/meteorCollection.ts
+  s_11832e90ae9d55::t_1f337975161981 4,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f0a560d666fd50d3145ac6711814fdf56b009bf7",
+  "prompts": {},
+  "sessions": {
+    "s_11832e90ae9d55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1a2b566-d81b-4e26-97c7-922fda177251",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_a3d0eb8bd3caff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7dca468-7cff-4f29-878e-3e0b0f3b6d9b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
