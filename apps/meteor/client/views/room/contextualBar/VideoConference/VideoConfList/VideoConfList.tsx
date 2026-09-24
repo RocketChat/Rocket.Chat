@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
+import type { VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
@@ -11,16 +11,19 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
+import { VideoConfSectionDivider } from './VideoConfSectionDivider';
+import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
-	videoConfs: VideoConference[];
+	videoConfs: VideoConferenceWithDiscussion[];
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
@@ -34,11 +37,25 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 		debounceDelay: 200,
 	});
 
+	// A call still running is something to walk into; one that ended is something to read. Empty runs are left
+	// out rather than drawn as a heading with nothing under it.
+	const { groups, flatItems } = useMemo(() => {
+		const ongoingCalls = videoConfs.filter((call) => !call.endedAt);
+		const pastCalls = videoConfs.filter((call) => call.endedAt);
+
+		const groups = [
+			...(ongoingCalls.length ? [{ titleKey: 'Ongoing_calls' as const, count: ongoingCalls.length, items: ongoingCalls }] : []),
+			...(pastCalls.length ? [{ titleKey: 'Past_calls' as const, count: pastCalls.length, items: pastCalls }] : []),
+		];
+
+		return { groups, flatItems: groups.flatMap((group) => group.items) };
+	}, [videoConfs]);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				<ContextualbarIcon name='phone' />
-				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
+				<ContextualbarIcon name='history' />
+				<ContextualbarTitle>{t('Conference_call_history')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
@@ -56,7 +73,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
 							</States>
 						)}
-						{!loading && total === 0 && (
+						{!error && !loading && total === 0 && (
 							<ContextualbarEmptyContent
 								icon='phone'
 								title={t('No_history')}
@@ -66,18 +83,18 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 					</Box>
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{videoConfs.length > 0 && (
+					{flatItems.length > 0 && (
 						<VirtualizedScrollbars>
-							<Virtuoso
+							<GroupedVirtuoso
 								style={{
 									height: blockSize,
 									width: inlineSize,
 								}}
-								totalCount={total}
-								endReached={loadMoreItems}
-								overscan={25}
-								data={videoConfs}
-								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
+								groupCounts={groups.map((group) => group.count)}
+								groupContent={(index) => <VideoConfSectionDivider title={t(groups[index].titleKey)} count={groups[index].count} />}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreItems} /> }}
+								itemContent={(index) => <VideoConfListItem videoConfData={flatItems[index]} reload={reload} />}
 							/>
 						</VirtualizedScrollbars>
 					)}
