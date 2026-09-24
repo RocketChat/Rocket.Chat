@@ -3,6 +3,8 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, memo } from 'react';
 
+import { shouldDisplayE2EESetup } from '../lib/shouldDisplayE2EESetup';
+
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
@@ -15,9 +17,9 @@ export type HeaderProps = {
 
 const Header = ({ room, subscription }: HeaderProps) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
-	const encrypted = Boolean(room.encrypted);
+	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
-	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
+	const displayE2EESetup = shouldDisplayE2EESetup(room, { e2eEnabled, unencryptedMessagesAllowed });
 
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
@@ -31,7 +33,7 @@ const Header = ({ room, subscription }: HeaderProps) => {
 		return <OmnichannelRoomHeader />;
 	}
 
-	if (shouldDisplayE2EESetup) {
+	if (displayE2EESetup) {
 		return <RoomHeaderE2EESetup room={room} />;
 	}
 

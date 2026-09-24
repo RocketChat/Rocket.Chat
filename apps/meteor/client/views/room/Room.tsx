@@ -17,6 +17,7 @@ import RoomBody from './body/RoomBody';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
+import { shouldDisplayE2EESetup } from './lib/shouldDisplayE2EESetup';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
@@ -31,9 +32,9 @@ const Room = () => {
 	const subscription = useRoomSubscription();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
-	const isE2EEnabled = useSetting('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
-	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed && isE2EEnabled;
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
+	const displayE2EESetup = shouldDisplayE2EESetup(room, { e2eEnabled, unencryptedMessagesAllowed });
 	const roomLabel =
 		room.t === 'd' ? t('Conversation_with__roomName__', { roomName: room.name }) : t('Channel__roomName__', { roomName: room.name });
 
@@ -58,7 +59,7 @@ const Room = () => {
 							classificationBanner={<ClassificationBanner />}
 							header={<Header room={room} />}
 							body={
-								shouldDisplayE2EESetup ? (
+								displayE2EESetup ? (
 									<RoomE2EESetup />
 								) : (
 									<MediaCallRoom>

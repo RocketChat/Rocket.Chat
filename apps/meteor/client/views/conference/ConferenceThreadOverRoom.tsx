@@ -5,6 +5,7 @@ import { lazy, useEffect, useRef } from 'react';
 import ConferenceThreadChat from './ConferenceThreadChat';
 
 const ChatProvider = lazy(() => import('../room/providers/ChatProvider'));
+const MessageHighlightProvider = lazy(() => import('../room/MessageList/providers/MessageHighlightProvider'));
 
 type ConferenceThreadOverRoomProps = {
 	tmid: string;
@@ -33,9 +34,11 @@ const ConferenceThreadOverRoom = ({ tmid, onClose }: ConferenceThreadOverRoomPro
 	useEffect(() => {
 		const ours = (
 			<ConferenceThreadModal onClose={onClose}>
-				<ChatProvider tmid={tmid}>
-					<ConferenceThreadChat tmid={tmid} onEscape={onClose} />
-				</ChatProvider>
+				<MessageHighlightProvider>
+					<ChatProvider tmid={tmid}>
+						<ConferenceThreadChat tmid={tmid} onEscape={onClose} />
+					</ChatProvider>
+				</MessageHighlightProvider>
 			</ConferenceThreadModal>
 		);
 

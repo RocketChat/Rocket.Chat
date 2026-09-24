@@ -13,6 +13,7 @@ import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
 const ChatProvider = lazy(() => import('../room/providers/ChatProvider'));
+const MessageHighlightProvider = lazy(() => import('../room/MessageList/providers/MessageHighlightProvider'));
 const Room = lazy(() => import('../room/Room'));
 const RoomNotFound = lazy(() => import('../room/RoomNotFound'));
 
@@ -69,9 +70,11 @@ const ConferenceRoomPanel = ({ rid, tmid, thread, onCloseThread, onEscape }: Con
 						    second copy of the room. */}
 						<ModalProviderWithRegion>
 							{tmid ? (
-								<ChatProvider tmid={tmid}>
-									<ConferenceThreadChat tmid={tmid} onEscape={onEscape} />
-								</ChatProvider>
+								<MessageHighlightProvider>
+									<ChatProvider tmid={tmid}>
+										<ConferenceThreadChat tmid={tmid} onEscape={onEscape} />
+									</ChatProvider>
+								</MessageHighlightProvider>
 							) : (
 								<Room />
 							)}

@@ -73,7 +73,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 					<ThreadMessageContent message={message} />
 				)}
 			</MessageContainer>
-			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
+			{!message.private && message.e2e !== 'pending' && <MessageToolbarHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };

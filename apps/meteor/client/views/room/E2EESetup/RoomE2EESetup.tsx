@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import { e2e } from '../../../lib/e2ee';
 import { getStoredItem, STORAGE_KEYS } from '../../../lib/sdk/storage';
+import MediaCallRoom from '../body/MediaCallRoom';
 import RoomBody from '../body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
@@ -62,7 +63,11 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	return <RoomBody />;
+	return (
+		<MediaCallRoom>
+			<RoomBody />
+		</MediaCallRoom>
+	);
 };
 
 export default RoomE2EESetup;
