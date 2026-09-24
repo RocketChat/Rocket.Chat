@@ -5,7 +5,7 @@ export type Options = {
 	maxAge: number;
 };
 
-const store = new WeakMap<MemoizableFunction<unknown, unknown, unknown>, Map<unknown, unknown>>();
+const store = new WeakMap<MemoizableFunction<unknown, unknown, unknown>, () => void>();
 
 export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Options): MemoizedFunction<T, A, R> => {
 	const cache = new Map<A, R>();
@@ -43,12 +43,15 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 		return result;
 	};
 
-	store.set(memoized as MemoizableFunction<unknown, unknown, unknown>, cache);
+	store.set(memoized as MemoizableFunction<unknown, unknown, unknown>, () => {
+		cacheTimers.forEach((timer) => clearTimeout(timer));
+		cacheTimers.clear();
+		cache.clear();
+	});
 
 	return memoized;
 };
 
 export const clear = (fn: MemoizedFunction<unknown, unknown, unknown>): void => {
-	const cache = store.get(fn);
-	cache?.clear();
+	store.get(fn)?.();
 };
