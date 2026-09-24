@@ -6,9 +6,9 @@ import {
 	isRoomFederated,
 	isRoomNativeFederated,
 } from '@rocket.chat/core-typings';
-import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ReplyInThreadMessageActionProps = {
@@ -18,8 +18,8 @@ export type ReplyInThreadMessageActionProps = {
 };
 
 const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThreadMessageActionProps) => {
-	const router = useRouter();
-	const threadsEnabled = useSetting('Threads_enabled', true);
+	const threadsEnabled = useMessageActionsPolicy().settings.threadsEnabled ?? true;
+	const actions = useMessageActions();
 	const { t } = useTranslation();
 
 	if (!threadsEnabled || isOmnichannelRoom(room) || !subscription) {
@@ -39,18 +39,7 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 			title={t('Reply_in_thread')}
 			onClick={(event) => {
 				event.stopPropagation();
-				const routeName = router.getRouteName();
-
-				if (routeName) {
-					router.navigate({
-						name: routeName,
-						params: {
-							...router.getRouteParameters(),
-							tab: 'thread',
-							context: message.tmid || message._id,
-						},
-					});
-				}
+				actions.replyInThread(message);
 			}}
 		/>
 	);

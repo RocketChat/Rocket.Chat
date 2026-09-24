@@ -1,12 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
-import { t } from '../../../../app/utils/lib/i18n';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
 import { Messages } from '../../../stores';
-import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useUnFollowMessageAction = (
 	message: IMessage,
@@ -16,16 +13,7 @@ export const useUnFollowMessageAction = (
 	const { user } = policy;
 	const { threadsEnabled } = policy.settings;
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { mutate: toggleFollowingThread } = useToggleFollowingThreadMutation({
-		onSuccess: () => {
-			dispatchToastMessage({
-				type: 'success',
-				message: t('You_unfollowed_this_message'),
-			});
-		},
-	});
+	const actions = useMessageActions();
 
 	const { tmid, _id } = message;
 	const parentMessage = Messages.use((state) => state.find((record) => record._id === tmid || record._id === _id));
@@ -57,7 +45,7 @@ export const useUnFollowMessageAction = (
 		type: 'interaction',
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		action() {
-			toggleFollowingThread({ tmid: tmid || _id, follow: false, rid: room._id });
+			actions.setFollowing(message, room, false);
 		},
 		order: 1,
 		group: 'menu',

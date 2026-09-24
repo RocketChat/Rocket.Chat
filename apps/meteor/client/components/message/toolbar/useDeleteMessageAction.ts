@@ -2,10 +2,9 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useQuery } from '@tanstack/react-query';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { useChat } from '../../../views/room/contexts/ChatContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useDeleteMessageAction = (
 	message: IMessage,
@@ -13,7 +12,7 @@ export const useDeleteMessageAction = (
 ): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
-	const chat = useChat();
+	const actions = useMessageActions();
 
 	const { data: condition = false } = useQuery({
 		queryKey: ['delete-message', message] as const,
@@ -31,7 +30,7 @@ export const useDeleteMessageAction = (
 				return false;
 			}
 
-			return chat?.data.canDeleteMessage(message) ?? false;
+			return policy.canDeleteMessage(message);
 		},
 	});
 
@@ -47,7 +46,7 @@ export const useDeleteMessageAction = (
 		variant: 'danger',
 		type: 'management',
 		async action() {
-			await chat?.flows.requestMessageDeletion(message);
+			await actions.requestDeletion(message);
 		},
 		order: 10,
 		group: 'menu',

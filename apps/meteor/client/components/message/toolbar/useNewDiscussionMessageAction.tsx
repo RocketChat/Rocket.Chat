@@ -1,10 +1,8 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import CreateDiscussion from '../../CreateDiscussion';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useNewDiscussionMessageAction = (
 	message: IMessage,
@@ -14,7 +12,7 @@ export const useNewDiscussionMessageAction = (
 	const { user } = policy;
 	const enabled = policy.settings.discussionEnabled ?? false;
 
-	const setModal = useSetModal();
+	const actions = useMessageActions();
 
 	const canStartDiscussion = policy.permissions.startDiscussion;
 	const canStartDiscussionOtherUser = policy.permissions.startDiscussionOtherUser;
@@ -56,15 +54,7 @@ export const useNewDiscussionMessageAction = (
 		type: 'communication',
 		context: ['message', 'message-mobile', 'videoconf'],
 		async action() {
-			setModal(
-				<CreateDiscussion
-					defaultParentRoom={room?.prid || room?._id}
-					onClose={() => setModal(undefined)}
-					parentMessageId={message._id}
-					nameSuggestion={message?.msg?.substr(0, 140)}
-					encryptedParentRoom={room?.encrypted}
-				/>,
-			);
+			actions.startDiscussion(message, room);
 		},
 		order: 1,
 		group: 'menu',

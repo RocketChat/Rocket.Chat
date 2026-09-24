@@ -3,11 +3,13 @@ import { renderHook } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
 import { createElement } from 'react';
 
-import { MessageActionsPolicyProvider } from './MessageActionsPolicy';
 import { useReplyInDMAction } from './useReplyInDMAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { useMessageActionsPolicyValue, useMessageActionsValue } from '../../../views/room/MessageList/providers/useMessageListContract';
+import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
+jest.mock('../../../../app/utils/rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
 		openRouteLink: jest.fn(),
@@ -43,10 +45,18 @@ const subscription = createFakeSubscription({
 	t: 'c',
 });
 
+const autoTranslateOptions = { autoTranslateEnabled: false, showAutoTranslate: () => false };
+
+const RoomContract = ({ children }: { children?: ReactNode }) => {
+	const actionsPolicy = useMessageActionsPolicyValue(room);
+	const actions = useMessageActionsValue(autoTranslateOptions);
+	return createElement(MessageListContext.Provider, { value: { ...messageListContextDefaultValue, actionsPolicy, actions } }, children);
+};
+
 const withActionsPolicy =
 	(appRoot: ComponentType<{ children: ReactNode }>) =>
 	({ children }: { children: ReactNode }) =>
-		createElement(appRoot, null, createElement(MessageActionsPolicyProvider, { room }, children));
+		createElement(appRoot, null, createElement(RoomContract, null, children));
 
 afterEach(() => {
 	jest.clearAllMocks();

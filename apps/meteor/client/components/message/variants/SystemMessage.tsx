@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useMessageViewer } from '../MessageViewer';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
@@ -32,8 +31,8 @@ import {
 	useMessageListShowUsername,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListViewer,
 } from '../list/MessageListContext';
-import { withMessageViewer } from '../withMessageViewer';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -51,7 +50,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const normalizedUsername = normalizeUsername(user.username);
 	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
-	const { useRealName } = useMessageViewer();
+	const { useRealName } = useMessageListViewer();
 	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 
 	const messageType = MessageTypes.getType(message);
@@ -125,4 +124,4 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	);
 };
 
-export default memo(withMessageViewer(SystemMessage));
+export default memo(SystemMessage);

@@ -3,11 +3,11 @@ import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSear
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { useMessageActionsPolicyValue, useMessageActionsValue } from './useMessageListContract';
 import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
-import { MessageViewerProvider } from '../../../../components/message/MessageViewer';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
-import { MessageActionsPolicyProvider } from '../../../../components/message/toolbar/MessageActionsPolicy';
+import { useMessageListViewerValue } from '../../../../components/message/list/MessageViewerProvider';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -59,6 +59,13 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const { showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled } = useAutoTranslate(subscription);
+	const autoTranslateOptions = useMemo(
+		() => ({ showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled }),
+		[showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled],
+	);
+	const viewer = useMessageListViewerValue();
+	const actionsPolicy = useMessageActionsPolicyValue(room);
+	const actions = useMessageActionsValue(autoTranslateOptions);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -129,6 +136,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatDateAndTime,
 			formatTime,
 			formatDate,
+			viewer,
+			actionsPolicy,
+			actions,
 		}),
 		[
 			username,
@@ -156,17 +166,16 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatDateAndTime,
 			formatTime,
 			formatDate,
+			viewer,
+			actionsPolicy,
+			actions,
 		],
 	);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
 			<MessageListContext.Provider value={context}>
-				<GazzodownEnvironmentProvider>
-					<MessageActionsPolicyProvider room={room}>
-						<MessageViewerProvider>{children}</MessageViewerProvider>
-					</MessageActionsPolicyProvider>
-				</GazzodownEnvironmentProvider>
+				<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
 			</MessageListContext.Provider>
 		</AttachmentProvider>
 	);

@@ -6,6 +6,7 @@ import { createFakeMessage } from '../../../../tests/mocks/data';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 jest.mock('../list/MessageListContext', () => ({
+	...jest.requireActual('../list/MessageListContext'),
 	useMessageListReadReceipts: jest.fn(),
 }));
 

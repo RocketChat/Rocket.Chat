@@ -1,22 +1,13 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-
-const getMainMessageText = (message: IMessage): IMessage => {
-	const newMessage = { ...message };
-	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
-	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
-	return { ...newMessage };
-};
+import { useMessageActions } from '../list/MessageListContext';
 
 export const useCopyAction = (
 	message: IMessage,
 	{ subscription }: { subscription: ISubscription | undefined },
 ): MessageActionConfig | null => {
-	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+	const actions = useMessageActions();
 
 	if (!subscription) {
 		return null;
@@ -29,9 +20,7 @@ export const useCopyAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'duplication',
 		async action() {
-			const msgText = getMainMessageText(message).msg;
-			await navigator.clipboard.writeText(msgText);
-			dispatchToastMessage({ type: 'success', message: t('Copied') });
+			await actions.copyText(message);
 		},
 		order: 6,
 		group: 'menu',

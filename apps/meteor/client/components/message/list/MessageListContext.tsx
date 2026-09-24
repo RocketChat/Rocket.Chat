@@ -2,6 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
+import type { MessageActions, MessageActionsPolicy, MessageListViewer } from './messageListContract';
+import { defaultMessageListViewer, denyingMessageActionsPolicy, inertMessageActions } from './messageListContract';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
 import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import type { useFormatTime } from '../../../hooks/useFormatTime';
@@ -43,6 +45,9 @@ export type MessageListContextValue = {
 	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
+	viewer: MessageListViewer;
+	actionsPolicy: MessageActionsPolicy;
+	actions: MessageActions;
 };
 
 export const messageListContextDefaultValue: MessageListContextValue = {
@@ -74,6 +79,9 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
+	viewer: defaultMessageListViewer,
+	actionsPolicy: denyingMessageActionsPolicy,
+	actions: inertMessageActions,
 };
 
 export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
@@ -117,3 +125,7 @@ export const useMessageListFormatDateAndTime = (): MessageListContextValue['form
 
 export const useMessageListFormatTime = (): MessageListContextValue['formatTime'] => useContext(MessageListContext).formatTime;
 export const useMessageListFormatDate = (): MessageListContextValue['formatDate'] => useContext(MessageListContext).formatDate;
+
+export const useMessageListViewer = (): MessageListViewer => useContext(MessageListContext).viewer;
+export const useMessageActionsPolicy = (): MessageActionsPolicy => useContext(MessageListContext).actionsPolicy;
+export const useMessageActions = (): MessageActions => useContext(MessageListContext).actions;

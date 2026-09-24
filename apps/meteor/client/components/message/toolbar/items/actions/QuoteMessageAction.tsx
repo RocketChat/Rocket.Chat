@@ -7,9 +7,8 @@ import {
 } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
-import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import { useRoom } from '../../../../../views/room/contexts/RoomContext';
-import { useMessageListAutoTranslate } from '../../../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type QuoteMessageActionProps = {
@@ -18,8 +17,8 @@ export type QuoteMessageActionProps = {
 };
 
 const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) => {
-	const chat = useChat();
-	const autoTranslateOptions = useMessageListAutoTranslate();
+	const { chatAvailable } = useMessageActionsPolicy();
+	const actions = useMessageActions();
 	const { t } = useTranslation();
 
 	const room = useRoom();
@@ -31,27 +30,11 @@ const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) 
 		return null;
 	}
 
-	if (!chat || !subscription) {
+	if (!chatAvailable || !subscription) {
 		return null;
 	}
 
-	return (
-		<MessageToolbarItem
-			id='quote-message'
-			icon='quote'
-			title={t('Quote')}
-			onClick={() => {
-				if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
-					message.msg =
-						message.translations && autoTranslateOptions.autoTranslateLanguage
-							? message.translations[autoTranslateOptions.autoTranslateLanguage]
-							: message.msg;
-				}
-
-				chat?.composer?.quoteMessage(message);
-			}}
-		/>
-	);
+	return <MessageToolbarItem id='quote-message' icon='quote' title={t('Quote')} onClick={() => actions.quote(message)} />;
 };
 
 export default QuoteMessageAction;

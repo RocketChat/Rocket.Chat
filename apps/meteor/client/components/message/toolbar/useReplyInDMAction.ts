@@ -1,14 +1,12 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../stores';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useReplyInDMAction = (
 	message: IMessage,
@@ -16,7 +14,7 @@ export const useReplyInDMAction = (
 ): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
-	const router = useRouter();
+	const actions = useMessageActions();
 	const encrypted = isE2EEMessage(message);
 	const isABACEnabled = !!room.abacAttributes;
 	const canCreateDM = policy.permissions.createDirectMessage;
@@ -73,15 +71,7 @@ export const useReplyInDMAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
-			const { msg: _, ...searchParameters } = router.getSearchParameters();
-			roomCoordinator.openRouteLink(
-				'd',
-				{ name: message.u.username },
-				{
-					...searchParameters,
-					reply: message._id,
-				},
-			);
+			actions.replyInDirectMessage(message);
 		},
 		order: 0,
 		group: 'menu',

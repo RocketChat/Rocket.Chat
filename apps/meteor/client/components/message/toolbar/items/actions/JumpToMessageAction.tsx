@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
-import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
+import { useMessageActions } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type JumpToMessageActionProps = {
@@ -11,17 +11,9 @@ export type JumpToMessageActionProps = {
 
 const JumpToMessageAction = ({ id, message }: JumpToMessageActionProps) => {
 	const { t } = useTranslation();
+	const actions = useMessageActions();
 
-	return (
-		<MessageToolbarItem
-			id={id}
-			icon='jump'
-			title={t('Jump_to_message')}
-			onClick={() => {
-				setMessageJumpQueryStringParameter(message._id);
-			}}
-		/>
-	);
+	return <MessageToolbarItem id={id} icon='jump' title={t('Jump_to_message')} onClick={() => actions.jumpTo(message)} />;
 };
 
 export default JumpToMessageAction;

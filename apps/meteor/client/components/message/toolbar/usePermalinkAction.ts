@@ -1,11 +1,10 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConfig, MessageActionContext } from '../../../lib/MessageAction';
-import { getPermaLink } from '../../../lib/getPermaLink';
+import { useMessageActions } from '../list/MessageListContext';
 
 export const usePermalinkAction = (
 	message: IMessage,
@@ -14,7 +13,7 @@ export const usePermalinkAction = (
 ): MessageActionConfig | null => {
 	const { t } = useTranslation();
 
-	const dispatchToastMessage = useToastMessageDispatch();
+	const actions = useMessageActions();
 
 	const isABACEnabled = !!room.abacAttributes;
 	const encrypted = isE2EEMessage(message);
@@ -35,13 +34,7 @@ export const usePermalinkAction = (
 		context,
 		type,
 		async action() {
-			try {
-				const permalink = await getPermaLink(message._id);
-				navigator.clipboard.writeText(permalink);
-				dispatchToastMessage({ type: 'success', message: t('Copied') });
-			} catch (e) {
-				dispatchToastMessage({ type: 'error', message: e });
-			}
+			await actions.copyLink(message);
 		},
 		order,
 		group: 'menu',

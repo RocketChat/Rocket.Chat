@@ -1,16 +1,15 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useStarMessageMutation } from '../hooks/useStarMessageMutation';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useStarMessageAction = (message: IMessage, { room }: { room: IRoom }): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
 	const allowStarring = policy.settings.allowStarring ?? true;
 
-	const { mutateAsync: starMessage } = useStarMessageMutation();
+	const actions = useMessageActions();
 
 	if (!allowStarring || isOmnichannelRoom(room)) {
 		return null;
@@ -27,7 +26,7 @@ export const useStarMessageAction = (message: IMessage, { room }: { room: IRoom 
 		type: 'interaction',
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		async action() {
-			await starMessage(message);
+			await actions.star(message);
 		},
 		order: 3,
 		group: 'menu',

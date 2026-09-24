@@ -2,9 +2,8 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useChat } from '../../../views/room/contexts/ChatContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useEditMessageAction = (
 	message: IMessage,
@@ -12,7 +11,7 @@ export const useEditMessageAction = (
 ): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
-	const chat = useChat();
+	const actions = useMessageActions();
 	const isEditAllowed = policy.settings.allowEditing ?? true;
 	const canEditMessage = policy.permissions.editMessage;
 	const blockEditInMinutes = policy.settings.blockEditInMinutes ?? 0;
@@ -51,7 +50,7 @@ export const useEditMessageAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'management',
 		async action() {
-			await chat?.messageEditing.editMessage(message);
+			await actions.edit(message);
 		},
 		order: 8,
 		group: 'menu',

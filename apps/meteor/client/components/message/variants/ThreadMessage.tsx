@@ -11,10 +11,9 @@ import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
-import { useMessageViewer } from '../MessageViewer';
 import StatusIndicators from '../StatusIndicators';
-import { withMessageViewer } from '../withMessageViewer';
 import ThreadMessageContent from './thread/ThreadMessageContent';
+import { useMessageListViewer } from '../list/MessageListContext';
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -26,7 +25,7 @@ export type ThreadMessageProps = {
 
 const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
-	const { uid } = useMessageViewer();
+	const { uid } = useMessageListViewer();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = ignoredUser && !displayIgnoredMessage;
@@ -80,4 +79,4 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	);
 };
 
-export default memo(withMessageViewer(ThreadMessage));
+export default memo(ThreadMessage);

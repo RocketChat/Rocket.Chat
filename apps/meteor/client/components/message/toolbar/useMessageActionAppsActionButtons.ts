@@ -1,15 +1,12 @@
 import { type IUIActionButton, MessageActionContext as AppsEngineMessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { useAppActionButtons, getIdForActionButton } from '../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../hooks/useApplyButtonFilters';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
-import { UiKitTriggerTimeoutError } from '../../../lib/errors/UiKitTriggerTimeoutError';
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useMessageActions } from '../list/MessageListContext';
 
 const filterActionsByContext = (context: string | undefined, action: IUIActionButton) => {
 	if (!context) {
@@ -24,10 +21,8 @@ const filterActionsByContext = (context: string | undefined, action: IUIActionBu
 
 export const useMessageActionAppsActionButtons = (message: IMessage, context?: MessageActionContext, category?: string) => {
 	const result = useAppActionButtons('messageAction');
-	const actionManager = useUiKitActionManager();
+	const actions = useMessageActions();
 	const applyButtonFilters = useApplyButtonFilters(category);
-	const dispatchToastMessage = useToastMessageDispatch();
-	const { t } = useTranslation();
 	const data = useMemo(
 		() =>
 			result.data
@@ -42,33 +37,12 @@ export const useMessageActionAppsActionButtons = (message: IMessage, context?: M
 						type: 'apps',
 						variant: action.variant,
 						group: 'menu',
-						action: () => {
-							void actionManager
-								.emitInteraction(action.appId, {
-									type: 'actionButton',
-									rid: message.rid,
-									tmid: message.tmid,
-									mid: message._id,
-									actionId: action.actionId,
-									payload: { context: action.context },
-								})
-								.catch(async (reason) => {
-									if (reason instanceof UiKitTriggerTimeoutError) {
-										dispatchToastMessage({
-											type: 'error',
-											message: t('UIKit_Interaction_Timeout'),
-										});
-										return;
-									}
-
-									return reason;
-								});
-						},
+						action: () => actions.runAppAction(action, message),
 					};
 
 					return item;
 				}),
-		[actionManager, applyButtonFilters, context, dispatchToastMessage, message._id, message.rid, message.tmid, result.data, t],
+		[actions, applyButtonFilters, context, message, result.data],
 	);
 	return {
 		...result,

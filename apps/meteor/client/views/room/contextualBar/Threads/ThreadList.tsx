@@ -20,6 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { MessageViewerProvider } from '../../../../components/message/list/MessageViewerProvider';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
@@ -120,74 +121,76 @@ const ThreadList = () => {
 	);
 
 	return (
-		<ContextualbarDialog>
-			<ContextualbarHeader>
-				<ContextualbarIcon name='thread' />
-				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
-				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
-			</ContextualbarHeader>
-			<ContextualbarSection>
-				<TextInput
-					aria-label={t('Search_Messages')}
-					aria-controls={isSuccess ? threadListId : undefined}
-					placeholder={t('Search_Messages')}
-					endAddon={<Icon name='magnifier' size='x20' />}
-					ref={autoFocusRef}
-					value={searchText}
-					onChange={handleSearchTextChange}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select
+		<MessageViewerProvider>
+			<ContextualbarDialog>
+				<ContextualbarHeader>
+					<ContextualbarIcon name='thread' />
+					<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
+					<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
+				</ContextualbarHeader>
+				<ContextualbarSection>
+					<TextInput
+						aria-label={t('Search_Messages')}
 						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
+						placeholder={t('Search_Messages')}
+						endAddon={<Icon name='magnifier' size='x20' />}
+						ref={autoFocusRef}
+						value={searchText}
+						onChange={handleSearchTextChange}
 					/>
-				</Box>
-			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
+					<Box width='x144' marginInlineStart={8}>
+						<Select
+							aria-controls={isSuccess ? threadListId : undefined}
+							options={typeOptions}
+							value={type}
+							onChange={(value) => handleTypeChange(String(value))}
+						/>
 					</Box>
-				)}
-				{error && (
-					<Callout marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
-				)}
-				{isSuccess && (
-					<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
-						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
-						{items.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={itemCount}
-									endReached={() => fetchNextPage()}
-									overscan={25}
-									data={items}
-									itemContent={(_index, data: IThreadMainMessage) => (
-										<ThreadListItem
-											thread={data}
-											unread={subscription?.tunread ?? []}
-											unreadUser={subscription?.tunreadUser ?? []}
-											unreadGroup={subscription?.tunreadGroup ?? []}
-											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
-											onClick={handleThreadClick}
-										/>
-									)}
-								/>
-							</VirtualizedScrollbars>
-						)}
-					</Box>
-				)}
-			</ContextualbarContent>
-		</ContextualbarDialog>
+				</ContextualbarSection>
+				<ContextualbarContent paddingInline={0} ref={ref}>
+					<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+					{isPending && (
+						<Box paddingInline={24} paddingBlock={12}>
+							<Throbber size='x12' />
+						</Box>
+					)}
+					{error && (
+						<Callout marginInline={24} type='danger'>
+							{getErrorMessage(error, t('Something_went_wrong'))}
+						</Callout>
+					)}
+					{isSuccess && (
+						<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+							{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
+							{items.length > 0 && (
+								<VirtualizedScrollbars>
+									<Virtuoso
+										style={{
+											height: blockSize,
+											width: inlineSize,
+										}}
+										totalCount={itemCount}
+										endReached={() => fetchNextPage()}
+										overscan={25}
+										data={items}
+										itemContent={(_index, data: IThreadMainMessage) => (
+											<ThreadListItem
+												thread={data}
+												unread={subscription?.tunread ?? []}
+												unreadUser={subscription?.tunreadUser ?? []}
+												unreadGroup={subscription?.tunreadGroup ?? []}
+												hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+												onClick={handleThreadClick}
+											/>
+										)}
+									/>
+								</VirtualizedScrollbars>
+							)}
+						</Box>
+					)}
+				</ContextualbarContent>
+			</ContextualbarDialog>
+		</MessageViewerProvider>
 	);
 };
 

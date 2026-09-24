@@ -14,12 +14,10 @@ import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
-import { useMessageViewer } from '../MessageViewer';
 import StatusIndicators from '../StatusIndicators';
-import { withMessageViewer } from '../withMessageViewer';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListReadReceipts } from '../list/MessageListContext';
+import { useMessageListReadReceipts, useMessageListViewer } from '../list/MessageListContext';
 
 export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -70,7 +68,7 @@ const RoomMessage = ({
 	...props
 }: RoomMessageProps) => {
 	const { t } = useTranslation();
-	const { uid } = useMessageViewer();
+	const { uid } = useMessageListViewer();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
@@ -144,4 +142,4 @@ const RoomMessage = ({
 	);
 };
 
-export default memo(withMessageViewer(RoomMessage));
+export default memo(RoomMessage);

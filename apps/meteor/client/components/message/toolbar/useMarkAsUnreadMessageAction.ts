@@ -1,10 +1,8 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
-import { useRouter } from '@rocket.chat/ui-contexts';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMarkAsUnreadMutation } from '../hooks/useMarkAsUnreadMutation';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useMarkAsUnreadMessageAction = (
 	message: IMessage,
@@ -12,9 +10,7 @@ export const useMarkAsUnreadMessageAction = (
 ): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
-	const { mutateAsync: markAsUnread } = useMarkAsUnreadMutation();
-
-	const router = useRouter();
+	const actions = useMessageActions();
 
 	if (isOmnichannelRoom(room) || !user) {
 		return null;
@@ -35,8 +31,7 @@ export const useMarkAsUnreadMessageAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'interaction',
 		async action() {
-			router.navigate('/home');
-			await markAsUnread({ message, subscription });
+			await actions.markAsUnread(message, subscription);
 		},
 		order: 4,
 		group: 'menu',

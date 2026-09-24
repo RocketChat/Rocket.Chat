@@ -4,6 +4,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { Fragment, memo } from 'react';
 
+import { MessageViewerProvider } from '../../../components/message/list/MessageViewerProvider';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -18,32 +19,34 @@ const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	return (
-		<>
-			{messages.map((message, index, { [index - 1]: previous }) => {
-				const newDay = isMessageNewDay(message, previous);
-				const system = MessageTypes.isSystemMessage(message);
+		<MessageViewerProvider>
+			<>
+				{messages.map((message, index, { [index - 1]: previous }) => {
+					const newDay = isMessageNewDay(message, previous);
+					const system = MessageTypes.isSystemMessage(message);
 
-				return (
-					<Fragment key={message._id}>
-						{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
+					return (
+						<Fragment key={message._id}>
+							{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-						{!system && (
-							<RoomMessage
-								message={message}
-								sequential={false}
-								unread={false}
-								mention={false}
-								all={false}
-								ignoredUser={false}
-								showUserAvatar={showUserAvatar}
-							/>
-						)}
+							{!system && (
+								<RoomMessage
+									message={message}
+									sequential={false}
+									unread={false}
+									mention={false}
+									all={false}
+									ignoredUser={false}
+									showUserAvatar={showUserAvatar}
+								/>
+							)}
 
-						{system && <SystemMessage message={message} showUserAvatar={showUserAvatar} />}
-					</Fragment>
-				);
-			})}
-		</>
+							{system && <SystemMessage message={message} showUserAvatar={showUserAvatar} />}
+						</Fragment>
+					);
+				})}
+			</>
+		</MessageViewerProvider>
 	);
 };
 

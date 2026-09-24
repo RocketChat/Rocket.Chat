@@ -8,8 +8,7 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useMessageViewer } from '../MessageViewer';
-import { withMessageViewer } from '../withMessageViewer';
+import { useMessageListViewer } from '../list/MessageListContext';
 
 export type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;
@@ -18,7 +17,7 @@ export type ThreadMetricsParticipantsProps = {
 const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsProps) => {
 	const t = useTranslation();
 
-	const hideAvatar = !useMessageViewer().displayAvatars;
+	const hideAvatar = !useMessageListViewer().displayAvatars;
 
 	const participantsLengthExcludingVisibleAvatars = participants.length - 2;
 	const participantsLabel = participantsLengthExcludingVisibleAvatars > 0 ? `+${participantsLengthExcludingVisibleAvatars}` : undefined;
@@ -47,4 +46,4 @@ const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsPr
 	);
 };
 
-export default withMessageViewer(ThreadMetricsParticipants);
+export default ThreadMetricsParticipants;

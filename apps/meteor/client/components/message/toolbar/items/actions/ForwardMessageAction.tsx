@@ -1,11 +1,9 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getPermaLink } from '../../../../../lib/getPermaLink';
-import ForwardMessageModal from '../../../../../views/room/modals/ForwardMessageModal';
+import { useMessageActions } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ForwardMessageActionProps = {
@@ -14,7 +12,7 @@ export type ForwardMessageActionProps = {
 };
 
 const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
-	const setModal = useSetModal();
+	const actions = useMessageActions();
 	const { t } = useTranslation();
 
 	const encrypted = isE2EEMessage(message);
@@ -36,18 +34,7 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 			icon='arrow-forward'
 			title={getTitle}
 			disabled={encrypted || isABACEnabled}
-			onClick={async () => {
-				const permalink = await getPermaLink(message._id);
-				setModal(
-					<ForwardMessageModal
-						message={message}
-						permalink={permalink}
-						onClose={() => {
-							setModal(null);
-						}}
-					/>,
-				);
-			}}
+			onClick={() => actions.forward(message)}
 		/>
 	);
 };

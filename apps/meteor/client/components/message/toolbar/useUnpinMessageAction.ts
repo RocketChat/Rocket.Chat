@@ -1,9 +1,8 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useUnpinMessageMutation } from '../hooks/useUnpinMessageMutation';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useUnpinMessageAction = (
 	message: IMessage,
@@ -13,7 +12,7 @@ export const useUnpinMessageAction = (
 	const { allowPinning } = policy.settings;
 	const hasPermission = policy.permissions.pinMessage;
 
-	const { mutate: unpinMessage } = useUnpinMessageMutation();
+	const actions = useMessageActions();
 
 	if (!allowPinning || isOmnichannelRoom(room) || !hasPermission || !message.pinned || !subscription) {
 		return null;
@@ -26,7 +25,7 @@ export const useUnpinMessageAction = (
 		type: 'interaction',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		action() {
-			unpinMessage(message);
+			actions.unpin(message);
 		},
 		order: 2,
 		group: 'menu',

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import ThreadMetrics from './ThreadMetrics';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
+import { MessageViewerProvider } from '../list/MessageViewerProvider';
 
 const toggleFollowMock =
 	(done: jest.DoneCallback | (() => undefined)) =>
@@ -225,36 +226,51 @@ describe('Thread Metrics', () => {
 	});
 	describe('ThreadMetricsParticipants', () => {
 		it('should render 1 avatars', () => {
-			render(<ThreadMetricsParticipants participants={['user1']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', true)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', true)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			expect(screen.getByTitle('follower')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
 			expect(avatars.length).toBe(1);
 			expect(avatars.pop()).toBeVisible();
 		});
 		it('should render 2 avatars', () => {
-			render(<ThreadMetricsParticipants participants={['user1', 'user2']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', true)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1', 'user2']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', true)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			expect(screen.getByTitle('followers')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
 			expect(avatars.length).toBe(2);
 			avatars.forEach((avatar) => expect(avatar).toBeVisible());
 		});
 		it('should render 2 avatars and "+1" text', () => {
-			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', true)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1', 'user2', 'user3']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', true)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			expect(screen.getByTitle('followers')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
 			expect(avatars.length).toBe(2);
@@ -262,12 +278,17 @@ describe('Thread Metrics', () => {
 			expect(screen.getByText('+1')).toBeVisible();
 		});
 		it('should render 2 avatars and "+5" text', () => {
-			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', true)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', true)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			expect(screen.getByTitle('followers')).toBeVisible();
 
 			const avatars = screen.getAllByRole('figure');
@@ -278,12 +299,17 @@ describe('Thread Metrics', () => {
 		});
 
 		it('should render user icon and 1 follower', () => {
-			render(<ThreadMetricsParticipants participants={['user1']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', false)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', false)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			const follower = screen.getByTitle('follower');
 			expect(follower).toBeVisible();
 
@@ -294,12 +320,17 @@ describe('Thread Metrics', () => {
 		});
 
 		it('should render user icon and 5 followers', () => {
-			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5']} />, {
-				wrapper: mockAppRoot()
-					.withUserPreference('displayAvatars', false)
-					.withTranslations(...mockedTranslations)
-					.build(),
-			});
+			render(
+				<MessageViewerProvider>
+					<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5']} />
+				</MessageViewerProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withUserPreference('displayAvatars', false)
+						.withTranslations(...mockedTranslations)
+						.build(),
+				},
+			);
 			const follower = screen.getByTitle('followers');
 			expect(follower).toBeVisible();
 

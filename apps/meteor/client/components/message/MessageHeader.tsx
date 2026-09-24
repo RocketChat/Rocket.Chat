@@ -13,7 +13,6 @@ import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageViewer } from './MessageViewer';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import {
@@ -23,8 +22,8 @@ import {
 	useMessageListRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListViewer,
 } from './list/MessageListContext';
-import { withMessageViewer } from './withMessageViewer';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
 export type MessageHeaderProps = {
@@ -43,7 +42,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
-	const { useRealName } = useMessageViewer();
+	const { useRealName } = useMessageListViewer();
 	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 	const normalizedUsername = normalizeUsername(user.username);
 
@@ -83,4 +82,4 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	);
 };
 
-export default memo(withMessageViewer(MessageHeader));
+export default memo(MessageHeader);

@@ -1,17 +1,8 @@
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import ReportMessageModal from '../../../views/room/modals/ReportMessageModal';
-
-const getMainMessageText = (message: IMessage): IMessage => {
-	const newMessage = { ...message };
-	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
-	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
-	return { ...newMessage };
-};
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useReportMessageAction = (
 	message: IMessage,
@@ -19,7 +10,7 @@ export const useReportMessageAction = (
 ): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();
 	const { user } = policy;
-	const setModal = useSetModal();
+	const actions = useMessageActions();
 
 	const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 
@@ -39,14 +30,7 @@ export const useReportMessageAction = (
 		variant: 'danger',
 		type: 'management',
 		action() {
-			setModal(
-				<ReportMessageModal
-					message={getMainMessageText(message)}
-					onClose={() => {
-						setModal(null);
-					}}
-				/>,
-			);
+			actions.report(message);
 		},
 		order: 9,
 		group: 'menu',

@@ -3,9 +3,13 @@ import { isEditedMessage, isE2EEMessage, isE2EEPinnedMessage } from '@rocket.cha
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageViewer } from './MessageViewer';
-import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
-import { withMessageViewer } from './withMessageViewer';
+import {
+	useMessageDateFormatter,
+	useShowStarred,
+	useShowTranslated,
+	useShowFollowing,
+	useMessageListViewer,
+} from './list/MessageListContext';
 
 export type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
@@ -19,7 +23,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps) => {
 
 	const isEncryptedMessage = isE2EEMessage(message) || isE2EEPinnedMessage(message);
 
-	const { uid } = useMessageViewer();
+	const { uid } = useMessageListViewer();
 
 	const formatter = useMessageDateFormatter();
 
@@ -53,4 +57,4 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps) => {
 	);
 };
 
-export default withMessageViewer(StatusIndicators);
+export default StatusIndicators;

@@ -1,13 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { AutoTranslate } from '../../../lib/autotranslate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { Messages } from '../../../stores';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useViewOriginalTranslationAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },
@@ -17,7 +15,7 @@ export const useViewOriginalTranslationAction = (
 	const { user } = policy;
 	const autoTranslateEnabled = policy.settings.autoTranslateEnabled ?? false;
 	const canAutoTranslate = policy.permissions.autoTranslate;
-	const translateMessage = useEndpoint('POST', '/v1/autotranslate.translateMessage');
+	const actions = useMessageActions();
 
 	const language = useMemo(
 		() => subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid),
@@ -27,8 +25,6 @@ export const useViewOriginalTranslationAction = (
 		() => hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language),
 		[message, language],
 	);
-
-	const updateMessages = Messages.use((state) => state.update);
 
 	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
 		return null;
@@ -50,21 +46,7 @@ export const useViewOriginalTranslationAction = (
 		type: 'interaction',
 		group: 'menu',
 		action() {
-			if (!hasTranslations) {
-				AutoTranslate.messageIdsToWait[message._id] = true;
-				updateMessages(
-					(record) => record._id === message._id,
-					(record) => ({ ...record, autoTranslateFetching: true }),
-				);
-				void translateMessage({ messageId: message._id, targetLanguage: language });
-			}
-
-			updateMessages(
-				(record) => record._id === message._id,
-				'autoTranslateShowInverse' in message
-					? ({ autoTranslateShowInverse: _, ...record }) => record
-					: (record) => ({ ...record, autoTranslateShowInverse: true }),
-			);
+			actions.toggleTranslation(message, language, hasTranslations);
 		},
 		order: 90,
 	};

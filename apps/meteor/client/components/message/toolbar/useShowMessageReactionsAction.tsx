@@ -1,11 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import ReactionListModal from '../../../views/room/modals/ReactionListModal';
+import { useMessageActions } from '../list/MessageListContext';
 
 export const useShowMessageReactionsAction = (message: IMessage): MessageActionConfig | null => {
-	const setModal = useSetModal();
+	const actions = useMessageActions();
 
 	if (!message.reactions) {
 		return null;
@@ -18,14 +17,7 @@ export const useShowMessageReactionsAction = (message: IMessage): MessageActionC
 		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads', 'federated'],
 		type: 'interaction',
 		action() {
-			setModal(
-				<ReactionListModal
-					reactions={message.reactions ?? {}}
-					onClose={() => {
-						setModal(null);
-					}}
-				/>,
-			);
+			actions.showReactions(message);
 		},
 		order: 9,
 		group: 'menu',

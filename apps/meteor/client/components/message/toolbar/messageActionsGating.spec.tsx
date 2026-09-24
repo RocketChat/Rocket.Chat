@@ -3,7 +3,6 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { MessageActionsPolicyProvider } from './MessageActionsPolicy';
 import { useEditMessageAction } from './useEditMessageAction';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
@@ -14,6 +13,9 @@ import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
+import { useMessageActionsPolicyValue } from '../../../views/room/MessageList/providers/useMessageListContract';
+import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
+import { inertMessageActions } from '../list/messageListContract';
 
 jest.mock('../../../../app/utils/rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({
@@ -35,11 +37,20 @@ const othersMessage = createFakeMessage({ _id: 'others', rid: 'room-id', u: some
 
 type Builder = ReturnType<typeof mockAppRoot>;
 
+const RoomActionsPolicy = ({ children }: { children?: ReactNode }) => {
+	const actionsPolicy = useMessageActionsPolicyValue(room);
+	return (
+		<MessageListContext.Provider value={{ ...messageListContextDefaultValue, actionsPolicy, actions: inertMessageActions }}>
+			{children}
+		</MessageListContext.Provider>
+	);
+};
+
 const renderAction = <T,>(useAction: () => T, builder: Builder) => {
 	const AppRoot = builder.build();
 	const wrapper = ({ children }: { children: ReactNode }) => (
 		<AppRoot>
-			<MessageActionsPolicyProvider room={room}>{children}</MessageActionsPolicyProvider>
+			<RoomActionsPolicy>{children}</RoomActionsPolicy>
 		</AppRoot>
 	);
 

@@ -1,11 +1,8 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import { useMessageActionsPolicy } from './MessageActionsPolicy';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { getURL } from '../../../lib/getURL';
-import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
 
 export const useWebDAVMessageAction = (
 	message: IMessage,
@@ -16,7 +13,7 @@ export const useWebDAVMessageAction = (
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
-	const setModal = useSetModal();
+	const actions = useMessageActions();
 
 	if (!enabled || !subscription || !data?.length || !message.file) {
 		return null;
@@ -27,17 +24,7 @@ export const useWebDAVMessageAction = (
 		icon: 'upload',
 		label: 'Save_To_Webdav',
 		action() {
-			const [attachment] = message.attachments || [];
-			const url = getURL(attachment.title_link as string, { full: true });
-
-			setModal(
-				<SaveToWebdavModal
-					data={{ attachment, url }}
-					onClose={() => {
-						setModal(null);
-					}}
-				/>,
-			);
+			actions.saveToWebdav(message);
 		},
 		order: 100,
 		group: 'menu',
