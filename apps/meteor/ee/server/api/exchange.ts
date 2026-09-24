@@ -1,9 +1,9 @@
 import {
-	ajv,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
+	ajv,
 	validateForbiddenErrorResponse,
 	validateInternalErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
@@ -26,24 +26,23 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 
 const TEST_CONNECTION_SERVER_FAULTS: ReadonlySet<ExchangeErrorCode> = new Set(['unexpected-response']);
 
-const testConnectionResponse = {
-	type: 'object',
-	properties: {
-		provider: { type: 'string' },
-		message: { type: 'string' },
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['provider', 'message', 'success'],
-	additionalProperties: false,
-};
-
 API.v1.post(
 	'exchange.testConnection',
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['outlook-calendar'],
 		response: {
-			200: ajv.compile<{ provider: string; message: string; success: true }>(testConnectionResponse),
+			200: ajv.compile<{ provider: string; message: string; success: true }>({
+				type: 'object',
+				properties: {
+					provider: { type: 'string' },
+					message: { type: 'string' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['provider', 'message', 'success'],
+				additionalProperties: false,
+			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,

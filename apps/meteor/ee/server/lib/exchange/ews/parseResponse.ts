@@ -53,6 +53,19 @@ export const firstByTag = (scope: Document | Element, ns: string, tag: string): 
 export const allByTag = (scope: Document | Element, ns: string, tag: string): Element[] =>
 	Array.from(scope.getElementsByTagNameNS(ns, tag) as unknown as ArrayLike<Element>);
 
+export const parseEwsDateTime = (value: string | undefined): Date | undefined => {
+	if (!value) {
+		return undefined;
+	}
+
+	// We ask for UTC through `TimeZoneContext`, so a value arriving without a zone is still UTC. Reading it
+	// as local time would shift the event by the host offset, silently
+	const hasZone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value);
+	const parsed = new Date(hasZone ? value : `${value}Z`);
+
+	return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+};
+
 const responseCodesIn = (scope: Document | Element): Element[] => [
 	...allByTag(scope, MESSAGES_NS, 'ResponseCode'),
 	...allByTag(scope, ERRORS_NS, 'ResponseCode'),
