@@ -1,20 +1,20 @@
-import { usePermission, useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
+import { useCanManageUserStatus } from '../../../../hooks/useCanManageUserStatus';
 
-export const useManageUserStatusAction = (username?: string): AdminUserAction | undefined => {
+export const useManageUserStatusAction = (userId: string): AdminUserAction | undefined => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const canEditOtherUserInfo = usePermission('edit-other-user-info');
-	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
-	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const canManageUserStatus = useCanManageUserStatus();
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
 
-	return canEditOtherUserInfo && canViewFullOtherUserInfo && adminStatusHidingEnabled && username
+	return canManageUserStatus && userStatusEnabled
 		? {
 				icon: 'circle-unfilled',
-				content: t('Manage_status'),
-				onClick: () => router.navigate({ name: 'user-status', params: { tab: 'user-presence', context: 'edit', id: username } }),
+				content: t('Manage_user_status'),
+				onClick: () => router.navigate({ name: 'admin-users', params: { context: 'edit', id: userId } }),
 			}
 		: undefined;
 };
