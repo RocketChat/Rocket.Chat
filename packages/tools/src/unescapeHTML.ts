@@ -19,6 +19,8 @@ const htmlEntityCodeToCharacter = {
 const isHtmlEntityCode = (htmlEntityCode: string): htmlEntityCode is keyof typeof htmlEntityCodeToCharacter =>
 	Object.hasOwn(htmlEntityCodeToCharacter, htmlEntityCode);
 
+const fromCodePoint = (codePoint: number, entity: string): string => (codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : entity);
+
 export const unescapeHTML = (str: string): string =>
 	toString(str).replace(/\&([^;]{1,10});/g, (entity, htmlEntityCode) => {
 		let match;
@@ -29,12 +31,12 @@ export const unescapeHTML = (str: string): string =>
 
 		match = htmlEntityCode.match(/^#x([\da-fA-F]+)$/);
 		if (match) {
-			return String.fromCharCode(parseInt(match[1], 16));
+			return fromCodePoint(parseInt(match[1], 16), entity);
 		}
 
 		match = htmlEntityCode.match(/^#(\d+)$/);
 		if (match) {
-			return String.fromCharCode(~~match[1]);
+			return fromCodePoint(parseInt(match[1], 10), entity);
 		}
 
 		return entity;

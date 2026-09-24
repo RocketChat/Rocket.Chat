@@ -28,6 +28,18 @@ describe('unescapeHTML', () => {
 		expect(unescapeHTML(5 as unknown as string)).toBe('5');
 	});
 
+	it('decodes numeric entities beyond the Basic Multilingual Plane', () => {
+		expect(unescapeHTML('&#x1F600;')).toBe('😀');
+		expect(unescapeHTML('&#128512;')).toBe('😀');
+		expect(unescapeHTML('&#x10FFFF;')).toBe('\u{10FFFF}');
+	});
+
+	it('leaves out-of-range numeric entities as literal text', () => {
+		expect(unescapeHTML('&#x110000;')).toBe('&#x110000;');
+		expect(unescapeHTML('&#1114112;')).toBe('&#1114112;');
+		expect(unescapeHTML('&#9999999999;')).toBe('&#9999999999;');
+	});
+
 	it('leaves inherited object properties as literal text', () => {
 		expect(unescapeHTML('&toString;')).toBe('&toString;');
 		expect(unescapeHTML('&valueOf;')).toBe('&valueOf;');
