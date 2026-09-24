@@ -1,18 +1,20 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
 import { VideoRecorder } from '../../../../../../lib/videoRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
+import { useComposerCapabilities } from '../../../ComposerCapabilitiesContext';
 import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';
 
 export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps => {
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
-	const isVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled', true);
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml');
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
+	const {
+		fileUploadEnabled: isFileUploadEnabled,
+		videoRecorderEnabled: isVideoRecorderEnabled,
+		mediaTypeBlackList: fileUploadMediaTypeBlackList,
+		mediaTypeWhiteList: fileUploadMediaTypeWhiteList,
+	} = useComposerCapabilities();
 	const [isPermissionDenied, setIsPermissionDenied] = useMediaPermissions('camera');
 
 	const isAllowed = useMemo(

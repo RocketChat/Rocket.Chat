@@ -3,6 +3,7 @@ import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.cha
 import type { ReactNode } from 'react';
 import { memo, useMemo, useSyncExternalStore } from 'react';
 
+import ComposerCapabilitiesProvider from './ComposerCapabilitiesProvider';
 import ComposerSkeleton from './ComposerSkeleton';
 import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { useRoom } from '../contexts/RoomContext';
@@ -40,14 +41,16 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 		return <ComposerSkeleton />;
 	}
 	return (
-		<FeaturePreview feature='realtimeMessageComposer'>
-			<FeaturePreviewOff>
-				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
-			</FeaturePreviewOff>
-			<FeaturePreviewOn>
-				<RichTextMessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
-			</FeaturePreviewOn>
-		</FeaturePreview>
+		<ComposerCapabilitiesProvider rid={room._id}>
+			<FeaturePreview feature='realtimeMessageComposer'>
+				<FeaturePreviewOff>
+					<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
+				</FeaturePreviewOff>
+				<FeaturePreviewOn>
+					<RichTextMessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} {...props} />
+				</FeaturePreviewOn>
+			</FeaturePreview>
+		</ComposerCapabilitiesProvider>
 	);
 };
 

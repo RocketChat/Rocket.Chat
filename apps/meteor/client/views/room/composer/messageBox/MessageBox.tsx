@@ -2,7 +2,7 @@
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
@@ -17,7 +17,6 @@ import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut 
 import { handleSelectionWrapping } from './wrapSelection';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
@@ -28,6 +27,8 @@ import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoomFeatures } from '../../contexts/RoomFeaturesContext';
+import { useComposerCapabilities } from '../ComposerCapabilitiesContext';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
@@ -68,16 +69,11 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
-	const e2eEnabled = useSetting('E2E_Enable', false);
-	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
+	const { e2eEnabled, unencryptedMessagesAllowed } = useRoomFeatures();
+	const { isMobile, sendOnEnter, useEmojis, quoteChainLimit, federationEnabled: federationMatrixEnabled } = useComposerCapabilities();
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
-
-	const { isMobile } = useLayout();
-	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
-	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
 
 	if (!chat) {
 		throw new Error('Chat context not found');
@@ -116,8 +112,6 @@ const MessageBox = ({
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');
 	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
-
-	const useEmojis = useUserPreference<boolean>('useEmojis');
 
 	const handleOpenEmojiPicker = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -264,8 +258,6 @@ const MessageBox = ({
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(isRecordingAudio);
-
-	const federationMatrixEnabled = useIsFederationEnabled();
 
 	// canSendMessage directives read from the Subscriptions store, so subscribe to it to re-run on changes
 	// (e.g. user joins/leaves the room). room and federationMatrixEnabled are already React-reactive.

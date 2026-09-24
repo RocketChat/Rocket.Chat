@@ -1,10 +1,10 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryMenuItems } from '../../../../sidebar/categories/hooks/useCategoryMenuItems';
+import { useRoomFeatures } from '../../contexts/RoomFeaturesContext';
 
 const getGroupingIcon = (favorite: boolean, category: boolean, isFavoritesEnabled: boolean) => {
 	if (favorite) {
@@ -24,7 +24,7 @@ type RoomHeaderCategoryMenuProps = {
 
 const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 	const { t } = useTranslation();
-	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
+	const { favoritesEnabled: isFavoritesEnabled } = useRoomFeatures();
 	const favorite = Boolean(room.f);
 	const category = Boolean(room.category);
 	const groupingIcon = getGroupingIcon(favorite, category, isFavoritesEnabled);

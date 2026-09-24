@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../../../components/CreateDiscussion';
+import { useComposerCapabilities } from '../../../ComposerCapabilitiesContext';
 
 export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): GenericMenuItemProps => {
 	const t = useTranslation();
@@ -18,9 +19,7 @@ export const useCreateDiscussionAction = (disabled: boolean, room?: IRoom): Gene
 			<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} encryptedParentRoom={room?.encrypted} />,
 		);
 
-	const discussionEnabled = useSetting('Discussion_enabled', true);
-	const canStartDiscussion = usePermission('start-discussion', room._id);
-	const canSstartDiscussionOtherUser = usePermission('start-discussion-other-user', room._id);
+	const { discussionEnabled, canStartDiscussion, canStartDiscussionOtherUser: canSstartDiscussionOtherUser } = useComposerCapabilities();
 
 	const allowDiscussion = room && discussionEnabled && !isRoomFederated(room) && (canStartDiscussion || canSstartDiscussionOtherUser);
 

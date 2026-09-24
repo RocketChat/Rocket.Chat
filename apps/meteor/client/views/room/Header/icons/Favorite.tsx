@@ -1,9 +1,10 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
+import { useRoomFeatures } from '../../contexts/RoomFeaturesContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
 export type FavoriteProps = { room: IRoom & { f?: ISubscription['f'] } };
@@ -11,7 +12,7 @@ export type FavoriteProps = { room: IRoom & { f?: ISubscription['f'] } };
 const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: FavoriteProps) => {
 	const t = useTranslation();
 
-	const isFavoritesEnabled = useSetting('Favorite_Rooms', true) && ['c', 'p', 'd', 't'].includes(type);
+	const isFavoritesEnabled = useRoomFeatures().favoritesEnabled && ['c', 'p', 'd', 't'].includes(type);
 	const { mutate: toggleFavorite } = useToggleFavoriteMutation();
 
 	const handleFavoriteClick = useStableCallback(() => {

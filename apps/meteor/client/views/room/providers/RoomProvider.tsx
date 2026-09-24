@@ -4,6 +4,7 @@ import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
+import RoomFeaturesProvider from './RoomFeaturesProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
@@ -130,13 +131,15 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 
 	const roomTree = (
 		<RoomContext.Provider value={context}>
-			<RoomToolboxProvider>
-				<ImageGalleryProvider>
-					<UserCardProvider>
-						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
-					</UserCardProvider>
-				</ImageGalleryProvider>
-			</RoomToolboxProvider>
+			<RoomFeaturesProvider>
+				<RoomToolboxProvider>
+					<ImageGalleryProvider>
+						<UserCardProvider>
+							<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+						</UserCardProvider>
+					</ImageGalleryProvider>
+				</RoomToolboxProvider>
+			</RoomFeaturesProvider>
 		</RoomContext.Provider>
 	);
 

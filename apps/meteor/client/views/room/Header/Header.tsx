@@ -1,8 +1,9 @@
 import { isInviteSubscription } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { lazy, memo } from 'react';
 
+import { useRoomFeatures } from '../contexts/RoomFeaturesContext';
 import { shouldDisplayE2EESetup } from '../lib/shouldDisplayE2EESetup';
 
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
@@ -17,8 +18,7 @@ export type HeaderProps = {
 
 const Header = ({ room, subscription }: HeaderProps) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
-	const e2eEnabled = useSetting('E2E_Enable', false);
-	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
+	const { e2eEnabled, unencryptedMessagesAllowed } = useRoomFeatures();
 	const displayE2EESetup = shouldDisplayE2EESetup(room, { e2eEnabled, unencryptedMessagesAllowed });
 
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
