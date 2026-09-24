@@ -7,12 +7,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactEdit from './ContactEdit';
 import ContactInfo from './ContactInfo';
 import ContactsPageFilters, { useContactsPageFilters } from './ContactsPageFilters';
 import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
-import type { ContactsColumnKey } from './useContactsColumns';
-import { useContactsColumns } from './useContactsColumns';
+import type { ContactsColumnKey } from './hooks/useContactsColumns';
+import { useContactsColumns } from './hooks/useContactsColumns';
 import GenericNoResults from '../../components/GenericNoResults';
 import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
 import CallHistoryPageLayout from '../mediaCallHistory/CallHistoryPageLayout';
@@ -22,12 +23,14 @@ type ContactsTabProps = {
 	onChangeTab: (tab: CallHistoryTab) => void;
 };
 
+type Panel = { kind: 'info'; contact: Serialized<IContact> } | { kind: 'form'; contact?: Serialized<IContact> };
+
 const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const { t } = useTranslation();
 	const sortProps = useSort<ContactsColumnKey>('displayName', 'asc');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
-	const [selected, setSelected] = useState<Serialized<IContact>>();
+	const [panel, setPanel] = useState<Panel>();
 
 	const listContacts = useEndpoint('GET', '/v1/contacts.list');
 
@@ -54,9 +57,20 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 			}),
 	});
 
-	const contactFilters = <ContactsPageFilters {...filterProps} onCreated={setSelected} total={data?.syncedTotal ?? 0} />;
+	const contactFilters = (
+		<ContactsPageFilters {...filterProps} onCreate={() => setPanel({ kind: 'form' })} total={data?.syncedTotal ?? 0} />
+	);
 
-	const contextualBar = selected && <ContactInfo contact={selected} onClose={() => setSelected(undefined)} />;
+	const closePanel = () => setPanel(undefined);
+
+	const contextualBar =
+		panel?.kind === 'info' ? (
+			<ContactInfo contact={panel.contact} onEdit={() => setPanel({ kind: 'form', contact: panel.contact })} onClose={closePanel} />
+		) : (
+			panel?.kind === 'form' && (
+				<ContactEdit contact={panel.contact} onSaved={(contact) => setPanel({ kind: 'info', contact })} onClose={closePanel} />
+			)
+		);
 
 	const pagination = (
 		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
@@ -98,7 +112,13 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 			{data.items.length > 0 && (
 				<ContactsTable sort={sortProps} columns={columns}>
 					{data.items.map((contact) => (
-						<ContactsTableRow key={contact._id} contact={contact} columns={columns} onClick={() => setSelected(contact)} />
+						<ContactsTableRow
+							key={contact._id}
+							contact={contact}
+							columns={columns}
+							onClick={() => setPanel({ kind: 'info', contact })}
+							onEdit={() => setPanel({ kind: 'form', contact })}
+						/>
 					))}
 				</ContactsTable>
 			)}

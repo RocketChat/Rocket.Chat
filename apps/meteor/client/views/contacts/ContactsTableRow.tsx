@@ -5,16 +5,17 @@ import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import type { KeyboardEvent } from 'react';
 
 import ContactMenu from './ContactMenu';
-import type { ContactsColumns } from './useContactsColumns';
+import type { ContactsColumns } from './hooks/useContactsColumns';
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 
 export type ContactsTableRowProps = {
 	contact: Serialized<IContact>;
 	columns: ContactsColumns;
 	onClick: () => void;
+	onEdit: () => void;
 };
 
-const ContactsTableRow = ({ contact, columns, onClick }: ContactsTableRowProps) => {
+const ContactsTableRow = ({ contact, columns, onClick, onEdit }: ContactsTableRowProps) => {
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -58,7 +59,7 @@ const ContactsTableRow = ({ contact, columns, onClick }: ContactsTableRowProps) 
 			{columns.isVisible('companyName') && <GenericTableCell withTruncatedText>{companyName}</GenericTableCell>}
 			{columns.isVisible('officeLocation') && <GenericTableCell withTruncatedText>{officeLocation}</GenericTableCell>}
 			<GenericTableCell>
-				<ContactMenu contact={contact} />
+				<ContactMenu contact={contact} onEdit={onEdit} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

@@ -1,5 +1,5 @@
 import type { IContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, Chip } from '@rocket.chat/fuselage';
+import { Box, Chip, Divider } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarClose,
@@ -17,30 +17,34 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
+import ContactInfoEntry from './ContactInfoEntry';
 import ContactMenu from './ContactMenu';
+import { useContactCall } from './hooks/useContactCall';
+import { useContactLabel } from './hooks/useContactLabel';
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 
 export type ContactInfoProps = {
 	contact: Serialized<IContact>;
+	onEdit: () => void;
 	onClose: () => void;
 };
 
-const PHONE_LABELS: Record<string, string> = {
-	mobile: 'Mobile_phone',
-	business: 'Business_phone',
-	home: 'Home_phone',
-};
-
-const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
+const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
+	const labelOf = useContactLabel();
+	const { canCall, call } = useContactCall();
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
+
+	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
+	const plainEmails = emails.filter(({ label }) => !label);
+	const labelledEmails = emails.filter(({ label }) => label);
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='address-book' />
 				<ContextualbarTitle>{t('Contact_info')}</ContextualbarTitle>
-				<ContactMenu contact={contact} onDeleted={onClose} />
+				<ContactMenu contact={contact} onEdit={onEdit} onDeleted={onClose} />
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
@@ -49,30 +53,65 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						<InfoPanelTitle title={displayName} icon={<BaseAvatar size='x32' url={getAvatarURL({ contactId: _id }) ?? ''} />} />
 					</InfoPanelSection>
 					<InfoPanelSection>
-						{/* One field per address, unlabelled: Graph v1.0 does not say which one is work or personal. */}
-						{emails.map(({ address }) => (
-							<InfoPanelField key={address}>
+						{!!emails.length && <Divider />}
+
+						{!!plainEmails.length && (
+							<InfoPanelField>
 								<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-								<InfoPanelText>{address}</InfoPanelText>
+								{plainEmails.map(({ address }) => (
+									<ContactInfoEntry
+										key={address}
+										text={address}
+										actionIcon='mail'
+										actionLabel={t('Email')}
+										onAction={() => window.open(`mailto:${address}`, '_self')}
+									/>
+								))}
+							</InfoPanelField>
+						)}
+
+						{labelledEmails.map(({ address, label }) => (
+							<InfoPanelField key={address}>
+								<InfoPanelLabel>{`${t('Email')} (${labelOf(label)})`}</InfoPanelLabel>
+								<ContactInfoEntry
+									text={address}
+									actionIcon='mail'
+									actionLabel={t('Email')}
+									onAction={() => window.open(`mailto:${address}`, '_self')}
+								/>
 							</InfoPanelField>
 						))}
 
-						{phones.map(({ raw, label }) => (
-							<InfoPanelField key={raw}>
-								<InfoPanelLabel>{t(label && PHONE_LABELS[label] ? PHONE_LABELS[label] : 'Phone')}</InfoPanelLabel>
-								<InfoPanelText>{raw}</InfoPanelText>
-							</InfoPanelField>
-						))}
+						{!!phones.length && <Divider />}
+
+						{phones.map(({ raw, label }) => {
+							const resolved = labelOf(label);
+
+							return (
+								<InfoPanelField key={raw}>
+									<InfoPanelLabel>{resolved ? `${t('Phone')} (${resolved})` : t('Phone')}</InfoPanelLabel>
+									<ContactInfoEntry
+										text={raw}
+										actionIcon='phone'
+										actionLabel={t('Call')}
+										onAction={canCall ? () => call(raw) : undefined}
+									/>
+								</InfoPanelField>
+							);
+						})}
 
 						{!!categories?.length && (
-							<InfoPanelField>
-								<InfoPanelLabel>{t('Category')}</InfoPanelLabel>
-								<Box display='flex' flexWrap='wrap' style={{ gap: 4 }}>
-									{categories.map((category) => (
-										<Chip key={category}>{category}</Chip>
-									))}
-								</Box>
-							</InfoPanelField>
+							<>
+								<Divider />
+								<InfoPanelField>
+									<InfoPanelLabel>{t('Category')}</InfoPanelLabel>
+									<Box display='flex' flexWrap='wrap' style={{ gap: 4 }}>
+										{categories.map((category) => (
+											<Chip key={category}>{category}</Chip>
+										))}
+									</Box>
+								</InfoPanelField>
+							</>
 						)}
 
 						{companyName && (
@@ -88,6 +127,8 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 								<InfoPanelText>{officeLocation}</InfoPanelText>
 							</InfoPanelField>
 						)}
+
+						<Divider />
 
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Source')}</InfoPanelLabel>

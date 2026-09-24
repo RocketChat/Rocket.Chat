@@ -28,10 +28,10 @@ const toLocalContact = ({ displayName, givenName, surname, companyName, emails, 
 		givenName,
 		...(surname && { surname }),
 		...(companyName && { companyName }),
-		emails: emails ?? [],
-		phones: (phones ?? []).map(({ raw }) => {
+		emails: (emails ?? []).map(({ address, label }) => ({ address, ...(label && { label }) })),
+		phones: (phones ?? []).map(({ raw, label }) => {
 			const e164 = normalizeE164(raw, defaultRegion);
-			return { raw, ...(e164 && { e164 }) };
+			return { raw, ...(e164 && { e164 }), ...(label && { label }) };
 		}),
 	};
 };

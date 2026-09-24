@@ -29,8 +29,8 @@ export type LocalContactPayload = {
 	givenName: string;
 	surname?: string;
 	companyName?: string;
-	emails?: { address: string }[];
-	phones?: { raw: string }[];
+	emails?: { address: string; label?: string }[];
+	phones?: { raw: string; label?: string }[];
 };
 
 const localContactProperties = {
@@ -59,6 +59,7 @@ const localContactProperties = {
 			type: 'object',
 			properties: {
 				address: { type: 'string', minLength: 1 },
+				label: { type: 'string', nullable: true },
 			},
 			required: ['address'],
 			additionalProperties: false,
@@ -72,6 +73,7 @@ const localContactProperties = {
 			type: 'object',
 			properties: {
 				raw: { type: 'string', minLength: 1 },
+				label: { type: 'string', nullable: true },
 			},
 			required: ['raw'],
 			additionalProperties: false,

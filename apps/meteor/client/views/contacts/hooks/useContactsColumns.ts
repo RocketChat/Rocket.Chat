@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useCallback } from 'react';
 
 export const CONTACT_COLUMNS = [
 	{ key: 'displayName', label: 'Name', disabled: true },
@@ -17,20 +18,26 @@ export type ContactsColumns = {
 	toggle: (key: ContactsColumnKey) => void;
 };
 
+const STORAGE_KEY = 'contacts-hidden-columns';
+
 const isColumnDisabled = (key: ContactsColumnKey) => CONTACT_COLUMNS.some((column) => column.key === key && column.disabled);
 
 export const useContactsColumns = (): ContactsColumns => {
-	const [hidden, setHidden] = useState<ContactsColumnKey[]>([]);
+	const [hidden, setHidden] = useLocalStorage<ContactsColumnKey[]>(STORAGE_KEY, []);
 
-	const isVisible = useCallback((key: ContactsColumnKey) => !hidden.includes(key), [hidden]);
+	// A key stored before a column was renamed or locked would hide something the menu cannot bring back
+	const isVisible = useCallback((key: ContactsColumnKey) => isColumnDisabled(key) || !hidden.includes(key), [hidden]);
 
-	const toggle = useCallback((key: ContactsColumnKey) => {
-		if (isColumnDisabled(key)) {
-			return;
-		}
+	const toggle = useCallback(
+		(key: ContactsColumnKey) => {
+			if (isColumnDisabled(key)) {
+				return;
+			}
 
-		setHidden((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
-	}, []);
+			setHidden((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
+		},
+		[setHidden],
+	);
 
 	return { isVisible, isDisabled: isColumnDisabled, toggle };
 };

@@ -1,16 +1,13 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import type { ChangeEvent, SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ContactModal from './ContactModal';
-import { useContactsSync } from './useContactsSync';
+import { useContactsSync } from './hooks/useContactsSync';
 
 export type ContactsPageFiltersProps = {
 	onChangeText: (text: string) => void;
-	onCreated: (contact: Serialized<IContact>) => void;
+	onCreate: () => void;
 	searchText: string;
 	total: number;
 };
@@ -23,9 +20,8 @@ export const useContactsPageFilters = () => {
 	return { searchText, onChangeText };
 };
 
-const ContactsPageFilters = ({ onChangeText, onCreated, searchText, total }: ContactsPageFiltersProps) => {
+const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: ContactsPageFiltersProps) => {
 	const { t } = useTranslation();
-	const setModal = useSetModal();
 	const syncContacts = useContactsSync();
 
 	return (
@@ -54,7 +50,7 @@ const ContactsPageFilters = ({ onChangeText, onCreated, searchText, total }: Con
 					<Button icon='reload' loading={syncContacts.isPending} onClick={() => syncContacts.mutate()}>
 						{`${t('Sync')} (${total})`}
 					</Button>
-					<Button icon='address-book-plus' onClick={() => setModal(<ContactModal onCreated={onCreated} onClose={() => setModal(null)} />)}>
+					<Button icon='address-book-plus' onClick={onCreate}>
 						{t('Create')}
 					</Button>
 				</ButtonGroup>

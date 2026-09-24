@@ -10,8 +10,8 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { ContactsColumnKey, ContactsColumns } from './useContactsColumns';
-import { CONTACT_COLUMNS } from './useContactsColumns';
+import type { ContactsColumnKey, ContactsColumns } from './hooks/useContactsColumns';
+import { CONTACT_COLUMNS } from './hooks/useContactsColumns';
 
 type SortProps = {
 	sortBy: ContactsColumnKey;

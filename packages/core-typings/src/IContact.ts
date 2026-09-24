@@ -13,6 +13,8 @@ export interface IContactPhone {
 
 export interface IContactEmail {
 	address: string;
+	// Only local contacts carry one: neither EWS nor Graph v1.0 says the address type
+	label?: string;
 }
 
 /** A personal contact. Distinct from `ILivechatContact` */

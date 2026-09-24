@@ -3,29 +3,28 @@ import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import ContactModal from './ContactModal';
+import { useContactCall } from './hooks/useContactCall';
+import { useContactLabel } from './hooks/useContactLabel';
 import { getEndpointErrorMessage } from '../../lib/errorHandling';
 
 export type ContactMenuProps = {
 	contact: Serialized<IContact>;
+	onEdit: () => void;
 	onDeleted?: () => void;
 };
 
-const ContactMenu = ({ contact, onDeleted }: ContactMenuProps) => {
+const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteContact = useEndpoint('POST', '/v1/contacts.delete');
+	const labelOf = useContactLabel();
 
-	const number = contact.phones[0]?.raw;
-	const address = contact.emails[0]?.address;
-
-	const callAction = useMediaCallAction(number ? { number } : undefined);
+	const { canCall, call } = useContactCall();
 
 	const remove = useMutation({
 		mutationFn: () => deleteContact({ contactId: contact._id }),
@@ -42,8 +41,6 @@ const ContactMenu = ({ contact, onDeleted }: ContactMenuProps) => {
 		},
 	});
 
-	const handleEdit = () => setModal(<ContactModal contact={contact} onClose={() => setModal(null)} />);
-
 	const handleDelete = () =>
 		setModal(
 			<GenericModal
@@ -57,34 +54,43 @@ const ContactMenu = ({ contact, onDeleted }: ContactMenuProps) => {
 			</GenericModal>,
 		);
 
-	const handleEmail = () => {
-		if (address) {
-			window.open(`mailto:${address}`, '_self');
-		}
-	};
+	const reachItems: GenericMenuItemProps[] = [
+		...contact.phones.map(({ raw, label }, index) => {
+			const resolved = labelOf(label);
 
-	const sections: { items: GenericMenuItemProps[] }[] = [
-		{
-			items: [
-				{
-					id: 'call',
-					icon: 'phone',
-					content: t('Call'),
-					disabled: !number || !callAction,
-					onClick: () => number && callAction?.action({ number }),
-				},
-				{ id: 'email', icon: 'mail', content: t('Email'), disabled: !address, onClick: handleEmail },
-			],
-		},
+			return {
+				id: `call-${index}`,
+				icon: 'phone' as const,
+				content: resolved ? `${t('Call')} (${resolved}) ${raw}` : `${t('Call')} ${raw}`,
+				disabled: !canCall,
+				onClick: () => call(raw),
+			};
+		}),
+		...contact.emails.map(({ address, label }, index) => {
+			const resolved = labelOf(label);
+
+			return {
+				id: `email-${index}`,
+				icon: 'mail' as const,
+				content: resolved ? `${t('Email')} (${resolved}) ${address}` : `${t('Email')} ${address}`,
+				onClick: () => window.open(`mailto:${address}`, '_self'),
+			};
+		}),
 	];
+
+	const sections: { items: GenericMenuItemProps[] }[] = reachItems.length ? [{ items: reachItems }] : [];
 
 	if (contact.source === 'local') {
 		sections.push({
 			items: [
-				{ id: 'edit', icon: 'edit', content: t('Edit'), onClick: handleEdit },
+				{ id: 'edit', icon: 'edit', content: t('Edit'), onClick: onEdit },
 				{ id: 'delete', icon: 'trash', iconColor: 'danger', content: <Box color='danger'>{t('Delete')}</Box>, onClick: handleDelete },
 			],
 		});
+	}
+
+	if (!sections.length) {
+		return null;
 	}
 
 	return <GenericMenu title={t('Options')} icon='kebab' sections={sections} />;
