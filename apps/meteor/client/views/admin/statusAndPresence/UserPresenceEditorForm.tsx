@@ -9,6 +9,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	Icon,
+	IconButton,
 	TextInput,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
@@ -251,9 +252,13 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 						{t('Save')}
 					</Button>
 					{hasRules && (
-						<Button variant='secondary' square flexGrow={0} title={t('Remove_user_status_settings')} onClick={handleResetClick}>
-							<Icon name='undo' size='x16' />
-						</Button>
+						<IconButton
+							icon={<Icon name='undo' size='x16' />}
+							secondary
+							flexGrow={0}
+							title={t('Remove_user_status_settings')}
+							onClick={handleResetClick}
+						/>
 					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
