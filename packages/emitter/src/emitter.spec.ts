@@ -67,6 +67,38 @@ describe('`once` method', () => {
 		times(5, () => emitter.emit('test'));
 		expect(handler).toHaveBeenCalledTimes(1);
 	});
+
+	it('should call `test` handler only once when it re-emits the same event', () => {
+		const reentrant = jest.fn(() => emitter.emit('test'));
+		emitter.once('test', reentrant);
+		emitter.emit('test');
+		expect(reentrant).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test')).toBe(false);
+	});
+
+	it('should call `test` handler only once when an earlier handler re-emits the same event', () => {
+		let reemitted = false;
+		emitter.on('test', () => {
+			if (!reemitted) {
+				reemitted = true;
+				emitter.emit('test');
+			}
+		});
+		emitter.once('test', handler);
+		emitter.emit('test');
+		expect(handler).toHaveBeenCalledTimes(1);
+	});
+
+	it('should remove `test` handler even if it throws', () => {
+		const throwing = jest.fn(() => {
+			throw new Error('boom');
+		});
+		emitter.once('test', throwing);
+		expect(() => emitter.emit('test')).toThrow('boom');
+		emitter.emit('test');
+		expect(throwing).toHaveBeenCalledTimes(1);
+		expect(emitter.has('test')).toBe(false);
+	});
 });
 
 describe('`off` method', () => {

@@ -150,12 +150,18 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	): void;
 
 	emit(type: keyof EventMap, ...[event]: any[]) {
-		[...(this[evts].get(type) ?? [])].forEach((handler) => {
-			handler(event);
+		const snapshot = (this[evts].get(type) ?? []).map((handler) => [handler, this[once].has(handler)] as const);
 
-			if (this[once].get(handler)) {
+		snapshot.forEach(([handler, isOnce]) => {
+			if (isOnce) {
+				if (!this[evts].get(type)?.includes(handler)) {
+					return;
+				}
+
 				this.off(type, handler);
 			}
+
+			handler(event);
 		});
 	}
 }
