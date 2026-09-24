@@ -94,6 +94,21 @@ describe('tags', () => {
 			expect(cssUntyped([])()).toBe('');
 			expect(cssUntyped([null])()).toBe('');
 		});
+
+		it('releases the evaluation context when an interpolation throws', () => {
+			const failing = css`
+				color: ${() => {
+					throw new Error();
+				}};
+			`;
+			expect(() => failing()).toThrow();
+
+			expect(
+				css`
+					animation-name: ${keyframes`from { opacity: 0; }`};
+				`(),
+			).toMatch(/@keyframes /);
+		});
 	});
 
 	describe('keyframes', () => {
@@ -161,6 +176,21 @@ describe('tags', () => {
 			expect(keyframesUntyped(null)()).toBe('none');
 			expect(keyframesUntyped([])()).toBe('none');
 			expect(keyframesUntyped([null])()).toBe('none');
+		});
+
+		it('releases the evaluation context when an interpolation throws', () => {
+			const failing = keyframes`
+				from { opacity: ${() => {
+					throw new Error();
+				}}; }
+			`;
+			expect(() => failing()).toThrow();
+
+			expect(
+				css`
+					animation-name: ${keyframes`from { opacity: 0; }`};
+				`(),
+			).toMatch(/@keyframes /);
 		});
 	});
 });
