@@ -61,6 +61,7 @@ const nativeModules = (): Plugin => {
 			'client/lib/sdk/sdkTransportEnabled.ts': 'sdkTransportEnabled.ts',
 			'client/lib/sdk/ddpProtocol.ts': 'ddpProtocol.ts',
 			'client/lib/customOAuth/CustomOAuth.ts': 'CustomOAuth.ts',
+			'client/lib/getURL.ts': 'getURL.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
