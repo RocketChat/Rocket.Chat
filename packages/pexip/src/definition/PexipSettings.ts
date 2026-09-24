@@ -4,6 +4,7 @@ export type PexipSettings = {
 	enabled: boolean;
 	baseUrl: string;
 	meetingUrl: string;
+	escalationParams: string;
 	api: {
 		username: string;
 		password: string;
