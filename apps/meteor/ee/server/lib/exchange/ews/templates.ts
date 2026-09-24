@@ -96,11 +96,17 @@ export const resolveNamesRequest = (mailbox: string): string =>
  * patterns and their originating timezones out of our code. `IdOnly` because FindItem never returns a
  * body: detail comes from the GetItem that follows.
  */
-export const findItemCalendarViewRequest = (mailbox: string, start: Date, end: Date, maxEntries = 500): string =>
+// 1000 is what Exchange's default throttling policy allows a Find to hold; asking for more has no effect,
+// and an admin who lowered it gets a truncated page back, which is why this pages either way.
+export const findItemCalendarViewRequest = (mailbox: string, start: Date, end: Date, maxEntries = 1000): string =>
 	envelope(
 		[
 			'<m:FindItem Traversal="Shallow">',
-			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape></m:ItemShape>',
+			'<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape>',
+			// `CalendarView` takes no offset, so the only way to page it is to reopen the window at the last
+			// occurrence seen. That start time is the cursor, which makes it the one field worth asking for here.
+			'<t:AdditionalProperties><t:FieldURI FieldURI="calendar:Start"/></t:AdditionalProperties>',
+			'</m:ItemShape>',
 			`<m:CalendarView StartDate="${toEwsDateTime(start)}" EndDate="${toEwsDateTime(end)}" MaxEntriesReturned="${maxEntries}"/>`,
 			'<m:ParentFolderIds><t:DistinguishedFolderId Id="calendar"/></m:ParentFolderIds>',
 			'</m:FindItem>',
