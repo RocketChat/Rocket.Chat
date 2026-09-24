@@ -1,5 +1,5 @@
-import { api, MediaCall, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
 import { Streamer } from './streamer.module';
@@ -8,6 +8,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
+	Settings: { get: jest.fn() },
 }));
 
 jest.mock('@rocket.chat/models', () => ({
@@ -15,6 +16,9 @@ jest.mock('@rocket.chat/models', () => ({
 	Subscriptions: {
 		countByRoomIdAndUserId: jest.fn(),
 		findByRoomIdAndNotUserId: jest.fn(),
+	},
+	Users: {
+		findOneById: jest.fn(),
 	},
 }));
 
@@ -25,12 +29,14 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 class TestStreamer extends Streamer<any> {
+	static methods: Record<string, (this: unknown, eventName: string, ...args: unknown[]) => Promise<void>> = {};
+
 	registerPublication(): void {
 		// noop
 	}
 
-	registerMethod(): void {
-		// noop
+	registerMethod(methods: typeof TestStreamer.methods): void {
+		Object.assign(TestStreamer.methods, methods);
 	}
 
 	changedPayload(): string {
@@ -199,6 +205,45 @@ describe('NotificationsModule', () => {
 
 		it('ignores relayed events for a stream this process does not host', () => {
 			expect(() => notifications.deliverRelayed({ stream: 'no-such-stream', eventName: 'x', args: [], origin: 'other' })).not.toThrow();
+		});
+	});
+
+	describe('user activity hook', () => {
+		const writeRoom = (userId: string | null, eventName: string, ...args: unknown[]) =>
+			TestStreamer.methods['stream-notify-room'].call({ userId, connection: {} }, eventName, ...args);
+
+		beforeEach(() => {
+			jest.mocked(Settings.get).mockResolvedValue(false);
+			jest.mocked(Users.findOneById).mockResolvedValue({ username: 'alice' } as any);
+		});
+
+		it('reports an accepted user-activity write', async () => {
+			const handler = jest.fn();
+			notifications.onUserActivity(handler);
+
+			await writeRoom('u1', 'room1/user-activity', 'alice', ['user-typing'], {});
+
+			expect(handler).toHaveBeenCalledTimes(1);
+			expect(handler).toHaveBeenCalledWith({ rid: 'room1', uid: 'u1', activities: ['user-typing'] });
+		});
+
+		it('does not report a write the stream rejects', async () => {
+			const handler = jest.fn();
+			notifications.onUserActivity(handler);
+
+			await writeRoom('u1', 'room1/user-activity', 'mallory', ['user-typing'], {});
+
+			expect(handler).not.toHaveBeenCalled();
+		});
+
+		it('stops reporting once the handler is removed', async () => {
+			const handler = jest.fn();
+			const off = notifications.onUserActivity(handler);
+			off();
+
+			await writeRoom('u1', 'room1/user-activity', 'alice', [], {});
+
+			expect(handler).not.toHaveBeenCalled();
 		});
 	});
 });

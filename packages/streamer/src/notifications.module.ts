@@ -20,6 +20,12 @@ import type { IStreamer, IStreamerConstructor, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
 
+export type UserActivity = {
+	rid: string;
+	uid: string;
+	activities: string[];
+};
+
 export type NotificationsModuleOptions = {
 	/** Identifies this process among every process that hosts the same streams. */
 	originId: string;
@@ -67,6 +73,8 @@ export class NotificationsModule {
 	private readonly streams = new Map<string, IStreamer<StreamNames>>();
 
 	private readonly originId: string;
+
+	private readonly userActivityHandlers = new Set<(activity: UserActivity) => void>();
 
 	private readonly relay: StreamRelay = (stream, eventName, args) => {
 		api.broadcast('stream', { stream, eventName, args, origin: this.originId }).catch((err) => {
@@ -137,6 +145,12 @@ export class NotificationsModule {
 
 	getStream(name: string): IStreamer<StreamNames> | undefined {
 		return this.streams.get(name);
+	}
+
+	/** Runs `handler` for every user activity a client of this process reports on a room. */
+	onUserActivity(handler: (activity: UserActivity) => void): () => void {
+		this.userActivityHandlers.add(handler);
+		return () => this.userActivityHandlers.delete(handler);
 	}
 
 	/** Delivers an emit relayed from another process to this process's subscribers. */
@@ -297,6 +311,17 @@ export class NotificationsModule {
 			}
 
 			return true;
+		});
+
+		this.streamRoom.on('_afterWrite', (eventName, args, uid) => {
+			const [rid, e] = eventName.split('/');
+			if (e !== 'user-activity' || !uid) {
+				return;
+			}
+
+			const [, activities] = args;
+			const activity = { rid, uid, activities: Array.isArray(activities) ? activities : [] };
+			this.userActivityHandlers.forEach((handler) => handler(activity));
 		});
 
 		this.streamRoomUsers.allowRead('none');

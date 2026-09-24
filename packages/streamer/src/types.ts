@@ -87,6 +87,8 @@ export interface IStreamer<N extends StreamNames> {
 
 	on(event: '_afterPublish', fn: (streamer: this, publication: IPublication, eventName: string, ...data: any[]) => void): void;
 
+	on(event: '_afterWrite', fn: (eventName: string, args: unknown[], userId: string | null) => void): void;
+
 	removeSubscription(subscription: DDPSubscription, eventName: string): void;
 
 	removeListener(event: string, fn: (...data: any[]) => void): void;

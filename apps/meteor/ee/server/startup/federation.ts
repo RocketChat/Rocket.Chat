@@ -5,9 +5,9 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { StreamerCentral } from '@rocket.chat/streamer';
 
 import { i18n } from '../../../server/lib/i18n';
+import notifications from '../../../server/lib/notifications/core/lib/Notifications';
 import { slashCommands } from '../../../server/lib/utils/slashCommand';
 import { settings } from '../../../server/settings';
 import { registerFederationRoutes } from '../api/federation';
@@ -50,21 +50,14 @@ export const startFederationService = async (): Promise<void> => {
 
 	await registerFederationRoutes();
 
-	// TODO move to service/setup?
-	StreamerCentral.on('publish', (name, eventName, args, uid) => {
-		if (!serviceEnabled || !uid) {
+	notifications.onUserActivity(({ rid, uid, activities }) => {
+		if (!serviceEnabled) {
 			return;
 		}
 
-		if (name === 'notify-room' && eventName.endsWith('user-activity')) {
-			const [rid] = eventName.split('/');
-			const [, activities] = args;
-			const isTyping = Array.isArray(activities) && activities.includes('user-typing');
-
-			FederationMatrixService.notifyUserTyping(rid, uid, isTyping).catch((err) => {
-				logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
-			});
-		}
+		FederationMatrixService.notifyUserTyping(rid, uid, activities.includes('user-typing')).catch((err) => {
+			logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+		});
 	});
 
 	// `setupFederationMatrix()` runs the SDK's `init()`, which registers the DB
