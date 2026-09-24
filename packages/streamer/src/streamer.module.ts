@@ -1,5 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { StreamerEvents } from '@rocket.chat/ddp-client';
+import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
 
@@ -7,13 +7,7 @@ import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules
 
 const logger = new Logger('Streamer');
 
-class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
-	public instances: Record<string, Streamer<N>> = {};
-
-	constructor() {
-		super();
-	}
-}
+class StreamerCentralClass extends EventEmitter {}
 
 type ActivePublication = IPublication & {
 	_session: NonNullable<IPublication['_session']> & { socket: NonNullable<NonNullable<IPublication['_session']>['socket']> };
@@ -21,7 +15,7 @@ type ActivePublication = IPublication & {
 
 export const StreamerCentral = new StreamerCentralClass();
 
-export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmitter implements IStreamer<N> {
+export abstract class Streamer<N extends StreamNames> extends EventEmitter implements IStreamer<N> {
 	public subscriptions = new Set<DDPSubscription>();
 
 	protected subscriptionsByEventName = new Map<string, Set<DDPSubscription>>();
@@ -43,13 +37,6 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		{ retransmit = true, retransmitToSelf = false }: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
 	) {
 		super();
-
-		if (StreamerCentral.instances[name]) {
-			console.warn('Streamer instance already exists:', name);
-			return StreamerCentral.instances[name];
-		}
-
-		StreamerCentral.instances[name] = this;
 
 		this.retransmit = retransmit;
 		this.retransmitToSelf = retransmitToSelf;

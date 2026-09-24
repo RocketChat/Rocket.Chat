@@ -22,6 +22,9 @@ const serviceMocks = {
 		},
 		Apps: AppsMock,
 	},
+	'../../../../server/lib/notifications/core/lib/Notifications': {
+		default: { getStream: sinon.stub() },
+	},
 	'moleculer': {
 		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
 		Serializers: {

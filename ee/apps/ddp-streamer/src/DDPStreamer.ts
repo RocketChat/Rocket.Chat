@@ -6,7 +6,7 @@ import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer';
-import { ListenersModule, StreamerCentral, invalidatePublicationUserCache } from '@rocket.chat/streamer';
+import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
@@ -46,7 +46,7 @@ export class DDPStreamer extends ServiceClass {
 		private readonly lifecycle: ConnectionLifecycle,
 		private readonly registry: ConnectionRegistry,
 		private readonly collections: MeteorCollections,
-		notifications: NotificationsModule,
+		private readonly notifications: NotificationsModule,
 	) {
 		super();
 
@@ -54,9 +54,7 @@ export class DDPStreamer extends ServiceClass {
 
 		// TODO this is triggered by local events too, need to find a way to ignore if it's local
 		this.onEvent('stream', ([streamer, eventName, args]): void => {
-			// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
-			const stream = StreamerCentral.instances[streamer];
-			return stream?.emitWithoutBroadcast(eventName, ...args);
+			this.notifications.getStream(streamer)?._emit(eventName, args, undefined, false);
 		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {

@@ -58,22 +58,24 @@ export class NotificationsModule {
 
 	public readonly streamVideoConference: IStreamer<'video-conference'>;
 
+	private readonly streams = new Map<string, IStreamer<StreamNames>>();
+
 	constructor(private Streamer: IStreamerConstructor) {
-		this.streamAll = new this.Streamer('notify-all');
-		this.streamLogged = new this.Streamer('notify-logged');
-		this.streamRoom = new this.Streamer('notify-room');
-		this.streamRoomUsers = new this.Streamer('notify-room-users');
-		this.streamImporters = new this.Streamer('importers', { retransmit: false });
-		this.streamRoles = new this.Streamer('roles');
-		this.streamApps = new this.Streamer('apps', { retransmit: false });
-		this.streamAppsEngine = new this.Streamer('apps-engine', { retransmit: false });
-		this.streamCannedResponses = new this.Streamer('canned-responses');
-		this.streamIntegrationHistory = new this.Streamer('integrationHistory');
-		this.streamLivechatRoom = new this.Streamer('livechat-room');
-		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
-		this.streamRoomData = new this.Streamer('room-data');
-		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
-		this.streamRoomMessage = new this.Streamer('room-messages');
+		this.streamAll = this.createStream('notify-all');
+		this.streamLogged = this.createStream('notify-logged');
+		this.streamRoom = this.createStream('notify-room');
+		this.streamRoomUsers = this.createStream('notify-room-users');
+		this.streamImporters = this.createStream('importers', { retransmit: false });
+		this.streamRoles = this.createStream('roles');
+		this.streamApps = this.createStream('apps', { retransmit: false });
+		this.streamAppsEngine = this.createStream('apps-engine', { retransmit: false });
+		this.streamCannedResponses = this.createStream('canned-responses');
+		this.streamIntegrationHistory = this.createStream('integrationHistory');
+		this.streamLivechatRoom = this.createStream('livechat-room');
+		this.streamLivechatQueueData = this.createStream('livechat-inquiry-queue-observer');
+		this.streamRoomData = this.createStream('room-data');
+		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, 'user-presence'));
+		this.streamRoomMessage = this.createStream('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
 			if (!StreamerModule.isPublicationActive(publication)) {
@@ -100,9 +102,22 @@ export class NotificationsModule {
 			publication.onStop(() => streamer.removeListener(userId, userEvent));
 		});
 
-		this.streamUser = new this.Streamer('notify-user');
-		this.streamLocal = new this.Streamer('local');
-		this.streamVideoConference = new this.Streamer('video-conference');
+		this.streamUser = this.createStream('notify-user');
+		this.streamLocal = this.createStream('local');
+		this.streamVideoConference = this.createStream('video-conference');
+	}
+
+	private createStream<N extends StreamNames>(name: N, options?: { retransmit?: boolean }): IStreamer<N> {
+		return this.register(new this.Streamer(name, options));
+	}
+
+	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
+		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
+		return stream;
+	}
+
+	getStream(name: string): IStreamer<StreamNames> | undefined {
+		return this.streams.get(name);
 	}
 
 	configure(): void {

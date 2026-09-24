@@ -2,7 +2,7 @@ import { MediaCall, VideoConf } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
-import { Streamer, StreamerCentral } from './streamer.module';
+import { Streamer } from './streamer.module';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),
@@ -53,7 +53,6 @@ describe('NotificationsModule', () => {
 
 	afterEach(() => {
 		jest.restoreAllMocks();
-		Object.keys(StreamerCentral.instances).forEach((name) => delete StreamerCentral.instances[name]);
 	});
 
 	describe('notify-user allowWrite', () => {
