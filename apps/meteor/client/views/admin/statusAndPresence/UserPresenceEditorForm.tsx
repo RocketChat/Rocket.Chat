@@ -1,4 +1,5 @@
 import {
+	Box,
 	Button,
 	ButtonGroup,
 	Field,
@@ -7,7 +8,6 @@ import {
 	FieldHint,
 	FieldLabel,
 	FieldRow,
-	IconButton,
 	TextInput,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
@@ -15,19 +15,19 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { ContextualbarFooter, ContextualbarScrollableContent, UserAutoComplete } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import UserPresenceConfirmModal from './UserPresenceConfirmModal';
+import { useApplyUserPresenceRules } from './useApplyUserPresenceRules';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { hasAdminStatusRules } from './useManagedPresenceUsers';
+import { useResetUserPresenceRules } from './useResetUserPresenceRules';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 type UserPresenceEditorFormValues = {
 	username: string;
@@ -59,10 +59,10 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const queryClient = useQueryClient();
+	const applyRules = useApplyUserPresenceRules();
+	const resetRules = useResetUserPresenceRules();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
-	const updateUser = useEndpoint('POST', '/v1/users.update');
 
 	const {
 		control,
@@ -73,54 +73,6 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const presenceEnabled = watch('presenceEnabled');
 	const targetUsername = watch('username');
-
-	const applyPresence = useStableCallback(
-		async (
-			{
-				targetUserId,
-				presenceEnabled,
-				hiddenFrom,
-				statusText,
-			}: { targetUserId: string; presenceEnabled: boolean; hiddenFrom: string[]; statusText?: string },
-			message: string,
-		) => {
-			try {
-				await updateUser({
-					userId: targetUserId,
-					data: {
-						presenceDisabledByAdmin: !presenceEnabled,
-						statusVisibilityDeniedByAdmin: hiddenFrom,
-						...(statusText !== undefined && { statusText }),
-					},
-				});
-
-				queryClient.invalidateQueries({ queryKey: managedPresenceQueryKeys.all });
-				dispatchToastMessage({ type: 'success', message });
-				onClose();
-
-				return true;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-
-				return false;
-			}
-		},
-	);
-
-	const confirm = useStableCallback(
-		(title: string, description: string, confirmText: string, onConfirm: () => Promise<boolean>, variant?: 'danger') => {
-			setModal(
-				<UserPresenceConfirmModal
-					title={title}
-					description={description}
-					confirmText={confirmText}
-					variant={variant}
-					onConfirm={onConfirm}
-					onClose={() => setModal(null)}
-				/>,
-			);
-		},
-	);
 
 	const resolveTarget = useStableCallback(async (username: string) => {
 		if (userId) {
@@ -145,14 +97,36 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 			return;
 		}
 
-		const apply = () =>
-			applyPresence(
-				{ targetUserId: target._id, presenceEnabled, hiddenFrom, statusText: dirtyFields.statusText ? statusText : undefined },
+		const apply = async () => {
+			const applied = await applyRules(
+				target._id,
+				{ presenceEnabled, hiddenFrom, statusText: dirtyFields.statusText ? statusText : undefined },
 				t('Status_settings_updated', { name: username }),
 			);
 
+			if (applied) {
+				onClose();
+			}
+
+			return applied;
+		};
+
 		if (target.replacesExistingRule) {
-			confirm(t('Replace_user_status_settings'), t('Replace_user_status_settings_description', { name: username }), t('Replace'), apply);
+			setModal(
+				<UserPresenceConfirmModal
+					title={t('Replace_user_status_settings')}
+					description={
+						<Trans
+							i18nKey='Replace_user_status_settings_description'
+							values={{ name: username }}
+							components={{ bold: <Box is='span' fontWeight='bold' /> }}
+						/>
+					}
+					confirmText={t('Replace')}
+					onConfirm={apply}
+					onClose={() => setModal(null)}
+				/>,
+			);
 			return;
 		}
 
@@ -163,21 +137,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 
 	const hasRules = hasAdminStatusRules(user);
 
-	const handleRemoveClick = useStableCallback(() => {
-		const username = user?.username ?? '';
-
-		confirm(
-			t('Remove_user_status_settings'),
-			t('Remove_user_status_settings_description', { name: username }),
-			t('Remove'),
-			() =>
-				applyPresence(
-					{ targetUserId: userId ?? '', presenceEnabled: true, hiddenFrom: [], statusText: '' },
-					t('Status_settings_removed', { name: username }),
-				),
-			'danger',
-		);
-	});
+	const handleResetClick = useStableCallback(() => user && resetRules(user, onClose));
 
 	return (
 		<>
@@ -192,13 +152,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								rules={{ required: t('Required_field', { field: t('User') }) }}
 								render={({ field: { value, onChange } }) =>
 									defaultUsername ? (
-										<TextInput
-											id={usernameFieldId}
-											value={value}
-											disabled
-											startAddon={<UserAvatar size='x20' username={value} />}
-											aria-describedby={`${usernameFieldId}-hint`}
-										/>
+										<TextInput id={usernameFieldId} value={value} disabled startAddon={<UserAvatar size='x20' username={value} />} />
 									) : (
 										<UserAutoComplete
 											id={usernameFieldId}
@@ -206,7 +160,7 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 											onChange={onChange}
 											error={Boolean(errors.username)}
 											aria-invalid={errors.username ? 'true' : 'false'}
-											aria-describedby={`${usernameFieldId}-error ${usernameFieldId}-hint`}
+											aria-describedby={`${usernameFieldId}-error`}
 											placeholder={t('Select_user')}
 										/>
 									)
@@ -218,7 +172,6 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 								{errors.username.message}
 							</FieldError>
 						)}
-						<FieldHint id={`${usernameFieldId}-hint`}>{t('User_has_no_visibility_into_changes_made_in_this_panel')}</FieldHint>
 					</Field>
 					<Field>
 						<FieldRow>
@@ -293,10 +246,19 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary loading={isSubmitting}>
+					<Button form={formId} type='submit' variant='primary' loading={isSubmitting}>
 						{t('Save')}
 					</Button>
-					{hasRules && <IconButton icon='trash' small title={t('Remove_user_status_settings')} onClick={handleRemoveClick} />}
+					{hasRules && (
+						<Button
+							icon='undo'
+							variant='secondary'
+							square
+							flexGrow={0}
+							title={t('Remove_user_status_settings')}
+							onClick={handleResetClick}
+						/>
+					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>

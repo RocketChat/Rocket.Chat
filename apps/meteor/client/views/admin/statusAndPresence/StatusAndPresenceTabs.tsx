@@ -34,7 +34,7 @@ const StatusAndPresenceTabs = ({
 			)}
 			{canManageUserPresence && (
 				<TabsItem selected={currentTab === 'user-presence'} onClick={() => onChange('user-presence')}>
-					{t('User_Status')}
+					{t('Managed_users')}
 				</TabsItem>
 			)}
 		</Tabs>

@@ -15,16 +15,16 @@ export class AdminStatusAndPresence extends Admin {
 
 	protected readonly title = 'Status and presence';
 
-	get userStatusTab(): Locator {
-		return this.page.getByRole('tab', { name: 'User status', exact: true });
+	get managedUsersTab(): Locator {
+		return this.page.getByRole('tab', { name: 'Managed users', exact: true });
 	}
 
 	get editor(): Locator {
 		return this.page.getByRole('dialog', { name: 'Manage user status' });
 	}
 
-	async openUserStatusTab(): Promise<void> {
-		await this.userStatusTab.click();
+	async openManagedUsersTab(): Promise<void> {
+		await this.managedUsersTab.click();
 	}
 
 	async openEditor(): Promise<void> {
