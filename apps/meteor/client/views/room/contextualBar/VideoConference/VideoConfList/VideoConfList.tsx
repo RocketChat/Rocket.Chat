@@ -1,4 +1,4 @@
-import type { VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
+import type { VideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
@@ -23,7 +23,7 @@ import { getErrorMessage } from '../../../../../lib/errorHandling';
 export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
-	videoConfs: VideoConferenceWithDiscussion[];
+	videoConfs: VideoConference[];
 	loading: boolean;
 	error?: Error;
 	reload: () => void;

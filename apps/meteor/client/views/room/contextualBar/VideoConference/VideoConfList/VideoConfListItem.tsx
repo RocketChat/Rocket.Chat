@@ -1,4 +1,4 @@
-import { hasJoinedVideoConference, type VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
@@ -32,7 +32,7 @@ const VideoConfListItem = ({
 	reload,
 	...props
 }: {
-	videoConfData: VideoConferenceWithDiscussion;
+	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
 }) => {
