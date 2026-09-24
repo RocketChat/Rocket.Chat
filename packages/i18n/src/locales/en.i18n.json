@@ -6472,6 +6472,7 @@
   "Team_Auto-join_updated": "#{{channelName}} now has {{numberOfMembers}} members",
   "Team_Channels": "Team channels",
   "Team_collaboration_filters": "Team collaboration filters",
+  "Team_converted_to_channel": "Team converted to channel",
   "Team_Delete_Channel_modal_content": "Would you like to delete this channel?",
   "Team_Delete_Channel_modal_content_danger": "This can’t be undone.",
   "Team_has_been_created": "Team has been created",
