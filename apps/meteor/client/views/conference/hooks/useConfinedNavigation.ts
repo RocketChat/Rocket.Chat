@@ -3,6 +3,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
+import { NAVIGATE_TO_ROUTE_MESSAGE } from '../../root/hooks/useExternalRouteNavigation';
 
 /**
  * Whether a URL is a conference — the one place this window is allowed to go.
@@ -18,14 +19,45 @@ import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
 const isConference = (url: URL): boolean =>
 	url.origin === window.location.origin && url.pathname.startsWith(_relativeToSiteRootUrl('/conference/'));
 
+/** A name for the opener, so it can be raised without being navigated. */
+const OPENER_WINDOW_NAME = 'rocketchat-main';
+
 /**
- * Anything that isn't this conference opens in a new tab, leaving the call where it is.
+ * Anything that isn't this conference opens away from it, leaving the call where it is.
  *
- * Handing internal routes to the window that opened the call — so they land in the app the user already has
- * open, client-side — reads better and is worth doing, but it needs a desktop bridge and a `postMessage`
- * handshake with the opener. A tab is the honest one-line version until that earns its own change.
+ * A route of the workspace's goes to the window that opened the call, which lands it in the app the reader
+ * already has open rather than in a second copy of it: through the desktop bridge where the call window is a
+ * window of its own with no opener, and by asking the opener otherwise. A new tab is the fallback, and is all
+ * an address of somebody else's ever gets.
  */
 const openElsewhere = (url: URL) => {
+	const internal = url.origin === window.location.origin;
+	const route = internal ? `${url.pathname}${url.search}${url.hash}` : undefined;
+
+	if (route) {
+		const openInMainWindow = window.videoCallWindow?.openInMainWindow;
+		if (openInMainWindow) {
+			openInMainWindow(route);
+			return;
+		}
+
+		const opener = window.opener as Window | null;
+		if (opener && !opener.closed) {
+			try {
+				opener.postMessage({ type: NAVIGATE_TO_ROUTE_MESSAGE, path: route }, window.location.origin);
+				// `opener.focus()` cannot raise a background tab, but opening its name with no URL can — and does
+				// not navigate it.
+				if (!opener.name) {
+					opener.name = OPENER_WINDOW_NAME;
+				}
+				window.open('', opener.name);
+				return;
+			} catch {
+				// Opener gone or not reachable; fall through to a tab.
+			}
+		}
+	}
+
 	window.open(url.href, '_blank', 'noopener');
 };
 
