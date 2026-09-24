@@ -64,6 +64,8 @@ export type TransformMessage = (
 ) => string | false;
 
 export interface IStreamer<N extends StreamNames> {
+	readonly name: string;
+
 	serverOnly: boolean;
 
 	subscriptions: Set<DDPSubscription>;

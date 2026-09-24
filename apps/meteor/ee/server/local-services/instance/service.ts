@@ -13,6 +13,7 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
@@ -97,17 +98,15 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 						return;
 					}
 
-					const instance = StreamerCentral.instances[streamName];
+					const instance = notifications.getStream(streamName);
 					if (!instance) {
-						// return 'stream-not-exists';
 						return;
 					}
 
 					if (instance.serverOnly) {
 						instance.__emit(eventName, ...args);
 					} else {
-						// @ts-expect-error not sure why it thinks _emit needs an extra argument
-						StreamerCentral.instances[streamName]._emit(eventName, args);
+						instance._emit(eventName, args, undefined, false);
 					}
 				},
 			},
