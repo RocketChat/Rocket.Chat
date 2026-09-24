@@ -7,6 +7,7 @@ import { useMessageAuthor } from './hooks/useMessageAuthor';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
+import SequentialRoomMessage from '../../../components/message/variants/SequentialRoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useDateRef } from '../providers/DateListProvider';
@@ -72,18 +73,20 @@ export const MessageListItem = ({
 					</MessageDivider>
 				</Box>
 			)}
-			{visible && (
-				<RoomMessage
-					message={message}
-					author={author}
-					showUserAvatar={showUserAvatar}
-					sequential={shouldShowAsSequential}
-					unread={unread}
-					mention={mention}
-					all={all}
-					ignoredUser={ignoredUser}
-				/>
-			)}
+			{visible &&
+				(shouldShowAsSequential ? (
+					<SequentialRoomMessage message={message} author={author} unread={unread} mention={mention} all={all} ignoredUser={ignoredUser} />
+				) : (
+					<RoomMessage
+						message={message}
+						author={author}
+						showUserAvatar={showUserAvatar}
+						unread={unread}
+						mention={mention}
+						all={all}
+						ignoredUser={ignoredUser}
+					/>
+				))}
 			{isThreadMessage(message) && (
 				<div role='listitem'>
 					<ThreadMessagePreview

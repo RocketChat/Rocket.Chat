@@ -32,7 +32,7 @@ const message: IThreadMessage = {
 };
 
 it('should show normal message', () => {
-	render(<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+	render(<ThreadMessage message={message} unread={false} ignoredUser={false} showUserAvatar={true} />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -41,7 +41,7 @@ it('should show normal message', () => {
 });
 
 it('should show fallback content for ignored user', () => {
-	render(<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={true} showUserAvatar={true} />, {
+	render(<ThreadMessage message={message} unread={false} ignoredUser={true} showUserAvatar={true} />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -50,7 +50,7 @@ it('should show fallback content for ignored user', () => {
 });
 
 it('should show the message body once the ignored placeholder is clicked', async () => {
-	render(<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={true} showUserAvatar={true} />, {
+	render(<ThreadMessage message={message} unread={false} ignoredUser={true} showUserAvatar={true} />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -61,16 +61,13 @@ it('should show the message body once the ignored placeholder is clicked', async
 });
 
 it('should hide the message body when the user gets ignored without remounting', () => {
-	const { rerender } = render(
-		<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={false} showUserAvatar={true} />,
-		{
-			wrapper: mockAppRoot().build(),
-		},
-	);
+	const { rerender } = render(<ThreadMessage message={message} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot().build(),
+	});
 
 	expect(screen.getByText('message body')).toBeInTheDocument();
 
-	rerender(<ThreadMessage message={message} sequential={false} unread={false} ignoredUser={true} showUserAvatar={true} />);
+	rerender(<ThreadMessage message={message} unread={false} ignoredUser={true} showUserAvatar={true} />);
 
 	expect(screen.queryByText('message body')).not.toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();

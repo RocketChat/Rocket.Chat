@@ -2,6 +2,7 @@ import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typin
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import SequentialThreadMessage from '../../../../../components/message/variants/SequentialThreadMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -63,17 +64,12 @@ export const ThreadMessageItem = ({
 					</MessageDivider>
 				</Box>
 			)}
-			{system ? (
-				<SystemMessage message={message} author={author} showUserAvatar={showUserAvatar} />
-			) : (
-				<ThreadMessage
-					message={message}
-					author={author}
-					sequential={shouldShowAsSequential}
-					unread={firstUnread}
-					showUserAvatar={showUserAvatar}
-					ignoredUser={ignoredUser}
-				/>
+			{system && <SystemMessage message={message} author={author} showUserAvatar={showUserAvatar} />}
+			{!system && shouldShowAsSequential && (
+				<SequentialThreadMessage message={message} author={author} unread={firstUnread} ignoredUser={ignoredUser} />
+			)}
+			{!system && !shouldShowAsSequential && (
+				<ThreadMessage message={message} author={author} unread={firstUnread} showUserAvatar={showUserAvatar} ignoredUser={ignoredUser} />
 			)}
 		</>
 	);

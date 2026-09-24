@@ -95,7 +95,6 @@ const MessageSearchTab = () => {
 																	) : (
 																		<RoomMessage
 																			message={message}
-																			sequential={false}
 																			unread={unread}
 																			mention={mention}
 																			all={all}

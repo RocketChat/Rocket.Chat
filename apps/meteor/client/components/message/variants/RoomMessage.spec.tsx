@@ -3,6 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import RoomMessage from './RoomMessage';
+import SequentialRoomMessage from './SequentialRoomMessage';
 import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 const message: IMessage = {
@@ -48,20 +49,9 @@ jest.mock('../../../lib/RoomManager', () => ({
 }));
 
 it('should show normal message', () => {
-	render(
-		<RoomMessage
-			message={message}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={false}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot().build(),
-		},
-	);
+	render(<RoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot().build(),
+	});
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
 	expect(screen.getByText('message body')).toBeInTheDocument();
@@ -69,20 +59,9 @@ it('should show normal message', () => {
 });
 
 it('should show fallback content for ignored user', () => {
-	render(
-		<RoomMessage
-			message={message}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={true}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot().build(),
-		},
-	);
+	render(<RoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={true} showUserAvatar={true} />, {
+		wrapper: mockAppRoot().build(),
+	});
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
 	expect(screen.queryByText('message body')).not.toBeInTheDocument();
@@ -93,7 +72,6 @@ it('should show ignored message', () => {
 	render(
 		<RoomMessage
 			message={{ ...message, ignored: true }}
-			sequential={false}
 			all={false}
 			mention={false}
 			unread={false}
@@ -111,51 +89,50 @@ it('should show ignored message', () => {
 });
 
 it('should show read receipt', () => {
-	render(
-		<RoomMessage
-			message={message}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={false}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot()
-				.wrap((children) => (
-					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } }}>
-						{children}
-					</MessageListContext.Provider>
-				))
-				.build(),
-		},
-	);
+	render(<RoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } }}>
+					{children}
+				</MessageListContext.Provider>
+			))
+			.build(),
+	});
 
 	expect(screen.getByRole('status', { name: 'Message_viewed' })).toBeInTheDocument();
 });
 
 it('should not show read receipt if receipt is disabled', () => {
-	render(
-		<RoomMessage
-			message={message}
-			sequential={false}
-			all={false}
-			mention={false}
-			unread={false}
-			ignoredUser={false}
-			showUserAvatar={true}
-		/>,
-		{
-			wrapper: mockAppRoot()
-				.wrap((children) => (
-					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: false, storeUsers: false } }}>
-						{children}
-					</MessageListContext.Provider>
-				))
-				.build(),
-		},
-	);
+	render(<RoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: false, storeUsers: false } }}>
+					{children}
+				</MessageListContext.Provider>
+			))
+			.build(),
+	});
 
 	expect(screen.queryByRole('status', { name: 'Message_viewed' })).not.toBeInTheDocument();
+});
+
+it('opens a group with the author line', () => {
+	const { container } = render(
+		<RoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={false} showUserAvatar={true} />,
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	expect(container.querySelector('#messageId-displayName')).toBeInTheDocument();
+	expect(container.querySelector('[data-sequential="false"]')).toBeInTheDocument();
+});
+
+it('continues a group without avatar nor author line', () => {
+	const { container } = render(<SequentialRoomMessage message={message} all={false} mention={false} unread={false} ignoredUser={false} />, {
+		wrapper: mockAppRoot().build(),
+	});
+
+	expect(screen.getByText('message body')).toBeInTheDocument();
+	expect(screen.queryByRole('figure')).not.toBeInTheDocument();
+	expect(container.querySelector('#messageId-displayName')).not.toBeInTheDocument();
+	expect(container.querySelector('[data-sequential="true"]')).toBeInTheDocument();
 });

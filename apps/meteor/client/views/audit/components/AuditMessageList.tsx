@@ -32,7 +32,6 @@ const AuditMessageList = ({ messages }: AuditMessageListProps) => {
 							{!system && (
 								<RoomMessage
 									message={message}
-									sequential={false}
 									unread={false}
 									mention={false}
 									all={false}

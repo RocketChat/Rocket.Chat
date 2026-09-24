@@ -1,83 +1,41 @@
-import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import type { MessageActionContext } from '../../../lib/MessageAction';
-import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
-import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
-import MessageToolbarHolder from '../MessageToolbarHolder';
-import StatusIndicators from '../StatusIndicators';
-import ThreadMessageContent from './thread/ThreadMessageContent';
-import { useMessageListUserCard, useMessageListViewer } from '../list/MessageListContext';
-import type { MessageAuthor } from '../list/messageListContract';
+import ThreadMessageFrame from './thread/ThreadMessageFrame';
+import type { ThreadMessageFrameProps } from './thread/ThreadMessageFrame';
+import { useMessageListUserCard } from '../list/MessageListContext';
 
-export type ThreadMessageProps = {
-	message: IThreadMessage | IThreadMainMessage;
-	unread: boolean;
-	sequential: boolean;
+export type ThreadMessageProps = Omit<ThreadMessageFrameProps, 'leading' | 'header'> & {
 	showUserAvatar: boolean;
-	ignoredUser?: boolean;
-	author?: MessageAuthor;
 };
 
-const ThreadMessage = ({ message, author, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
-	const t = useTranslation();
-	const { uid } = useMessageListViewer();
-	const editing = useIsMessageHighlight(message._id);
-	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
-	const ignored = ignoredUser && !displayIgnoredMessage;
+/** A thread message that opens a group: the author's avatar and the author and time line above its content */
+const ThreadMessage = ({ message, author, showUserAvatar, ...props }: ThreadMessageProps) => {
 	const { openUserCard, triggerProps } = useMessageListUserCard();
 
-	// Checks if is videoconf message to limit toolbox actions
-	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
+	const avatar = message.u.username && showUserAvatar && (
+		<MessageAvatar
+			emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
+			avatarUrl={message.avatar}
+			username={message.u.username}
+			size='x36'
+			onClick={(e) => openUserCard(e, message.u.username)}
+			style={{ cursor: 'pointer' }}
+			role='button'
+			{...triggerProps}
+		/>
+	);
 
 	return (
-		<Message
-			role='listitem'
-			aria-roledescription={t('thread_message')}
-			tabIndex={0}
-			id={message._id}
-			isEditing={editing}
-			isPending={message.temp}
-			sequential={sequential}
-			data-id={message._id}
-			data-mid={message._id}
-			data-unread={unread}
-			data-sequential={sequential}
-			data-own={message.u._id === uid}
-		>
-			<MessageLeftContainer>
-				{!sequential && message.u.username && showUserAvatar && (
-					<MessageAvatar
-						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
-						avatarUrl={message.avatar}
-						username={message.u.username}
-						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
-						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
-					/>
-				)}
-				{sequential && <StatusIndicators message={message} />}
-			</MessageLeftContainer>
-
-			<MessageContainer>
-				{!sequential && <MessageHeader message={message} author={author} />}
-
-				{ignored ? (
-					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
-				) : (
-					<ThreadMessageContent message={message} author={author} />
-				)}
-			</MessageContainer>
-			{!message.private && message.e2e !== 'pending' && <MessageToolbarHolder message={message} context={messageContext} />}
-		</Message>
+		<ThreadMessageFrame
+			message={message}
+			author={author}
+			leading={avatar}
+			header={<MessageHeader message={message} author={author} />}
+			{...props}
+		/>
 	);
 };
 
