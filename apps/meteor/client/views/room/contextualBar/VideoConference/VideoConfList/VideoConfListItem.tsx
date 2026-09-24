@@ -1,9 +1,8 @@
-import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, type VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
 	Message,
-	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
 	MessageName,
@@ -18,9 +17,10 @@ import {
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -32,24 +32,45 @@ const VideoConfListItem = ({
 	reload,
 	...props
 }: {
-	videoConfData: VideoConference;
+	videoConfData: VideoConferenceWithDiscussion;
 	className?: string[];
 	reload: () => void;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
+	const discussionNameSetting = useSetting<string>(
+		'VideoConf_Persistent_Chat_Discussion_Name',
+		t('__param__Video_Call_Chat', { param: '[date]' }),
+	);
 
 	const {
 		_id: callId,
-		createdBy: { name, username, _id },
+		createdBy: { _id },
 		users,
 		createdAt,
 		endedAt,
 		discussionRid,
+		discussionTitle,
+		discussionLastMessage,
 	} = videoConfData;
 
-	const displayName = useUserDisplayName({ name, username });
+	/**
+	 * What to call the row: the chat the call moved to, then the name the call was given, then the name such a
+	 * chat would have had — which is what a call that never moved is left with.
+	 */
+	const name = useMemo(() => {
+		if (discussionTitle) {
+			return discussionTitle;
+		}
+
+		if ('title' in videoConfData && videoConfData.title) {
+			return videoConfData.title;
+		}
+
+		const date = createdAt.toISOString().substring(0, 10);
+		return discussionNameSetting.includes('[date]') ? discussionNameSetting.replace('[date]', date) : `${date} ${discussionNameSetting}`;
+	}, [discussionNameSetting, createdAt, discussionTitle, videoConfData]);
 	// Excludes the creator, and also members who never joined: `users` is the conference's membership list, so
 	// someone added to the call is in it whether or not they ever answered. A member with no username is left out
 	// too — the avatar stack has nothing to draw for them, so they took a place in the row and left a gap in it
@@ -83,20 +104,32 @@ const VideoConfListItem = ({
 			paddingBlock={8}
 		>
 			<Message {...props}>
-				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
-						<MessageName title={username}>{displayName}</MessageName>
+						<MessageName title={name}>{name}</MessageName>
 						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
 					</MessageHeader>
-					<MessageBody clamp={2} />
-					<Box display='flex'></Box>
+					<MessageBody clamp={2}>{discussionLastMessage?.msg}</MessageBody>
 					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
-							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
-								{endedAt ? t('Call_ended') : t('Join_call')}
-							</Button>
-							{discussionRid && (
+							{!endedAt ? (
+								<Button primary small icon='video' alignItems='center' display='flex' onClick={handleJoinConference}>
+									{t('Join_call')}
+								</Button>
+							) : (
+								// A call that ended leaves its chat behind, which is the only thing left to open.
+								<Button
+									small
+									alignItems='center'
+									display='flex'
+									icon='discussion'
+									disabled={!discussionRid}
+									onClick={discussionRid ? () => goToRoom(discussionRid) : undefined}
+								>
+									{t('Call_chat')}
+								</Button>
+							)}
+							{!endedAt && discussionRid && (
 								<IconButton
 									small
 									icon='discussion'
@@ -124,9 +157,7 @@ const VideoConfListItem = ({
 									)}
 								</AvatarStack>
 								<Box marginInlineStart={4}>
-									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
-										: t('joined')}
+									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS ? `+${joinedUsers.length - VIDEOCONF_STACK_MAX_USERS}` : null}
 								</Box>
 							</Box>
 						)}
