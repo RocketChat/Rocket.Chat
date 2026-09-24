@@ -53,16 +53,16 @@ const PHOTO_BATCH_SIZE = 20;
 /** How many contacts one `GetItem` is asked about. Higher than a photo batch because it carries no bytes. */
 const PHOTO_LOOKUP_BATCH_SIZE = 100;
 
-/** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
-const MAX_CALENDAR_VIEW_PAGES = 50;
-
-/** How many events one `GetItem` is asked for, matching the delta's own page size. */
-const EVENT_BATCH_SIZE = 100;
-
 const CONTACT_FOLDER_CLASS = 'IPF.Contact';
 
 /** At 100 folders a page, far past any real address book. A backstop against a server that never says it is done. */
 const MAX_FOLDER_PAGES = 50;
+
+/** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
+const MAX_CALENDAR_VIEW_PAGES = 50;
+
+/** How many items one `GetItem` is asked for, matching the delta's own page size. */
+const EVENT_BATCH_SIZE = 100;
 
 const isBusyStatus = (status: string | undefined): boolean => status === 'Busy';
 
@@ -114,7 +114,6 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			items: events,
 			cursor: syncState,
 			hasMore: !includesLastItem,
-			// Calling a short read full is what would delete the events we failed to read.
 			coverage: complete ? 'full' : 'partial',
 		};
 	}
