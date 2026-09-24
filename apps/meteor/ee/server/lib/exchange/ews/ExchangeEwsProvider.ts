@@ -62,7 +62,6 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			items: events,
 			cursor: syncState,
 			hasMore: !includesLastItem,
-			// Calling a short read full is what would delete the events we failed to read.
 			coverage: complete ? 'full' : 'partial',
 		};
 	}
@@ -91,16 +90,11 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 				}
 			}
 
-			// Anything other than an explicit "there is more" ends the walk, so a response we cannot read
-			// stops us rather than spinning against the server.
 			if (root?.getAttribute('IncludesLastItemInRange') !== 'false') {
 				complete = true;
 				break;
 			}
 
-			// `CalendarView` is sorted by start and has no offset, so the next page reopens the window at the
-			// last occurrence seen. Anything sharing that instant comes back and collapses on the id set, which
-			// is the safe direction to round: skipping it would lose an event.
 			const last = nodes[nodes.length - 1];
 			const next = last && parseEwsDateTime(textOf(firstByTag(last, TYPES_NS, 'Start')));
 
@@ -118,7 +112,6 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		return { events: await this.loadEvents(mailbox, [...ids]), complete };
 	}
 
-	/** Chunked because the window is no longer bounded by one page, and these items carry their bodies. */
 	private async loadEvents(mailbox: string, itemIds: string[]): Promise<ExchangeEvent[]> {
 		const events: ExchangeEvent[] = [];
 

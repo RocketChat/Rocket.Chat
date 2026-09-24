@@ -199,7 +199,7 @@ describe('MicrosoftGraphProvider', () => {
 			expect(serverFetch.mock.calls[1][0]).toBe('https://graph.microsoft.com/page2');
 		});
 
-		it('never claims a page is the whole window: Graph only ever answers with what changed', async () => {
+		it('never claims a page is full window: Graph only ever answers with what changed', async () => {
 			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': 'https://graph.microsoft.com/delta' }));
 
 			const page = await new MicrosoftGraphProvider(config).listEvents('user@contoso.com', timeWindow);
