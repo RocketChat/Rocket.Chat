@@ -7,10 +7,17 @@ import type { IInstanceService } from '../../../../../ee/server/sdk/types/IInsta
 
 const ServiceBrokerMock = {
 	call: sinon.stub(),
+	broadcast: sinon.stub(),
+	createService: sinon.stub(),
 };
 
 const AppsMock = {
 	getAppsStatusLocal: sinon.stub(),
+};
+
+const LocalBrokerMock = {
+	setClusterTransport: sinon.stub(),
+	broadcastLocal: sinon.stub(),
 };
 
 const serviceMocks = {
@@ -22,6 +29,14 @@ const serviceMocks = {
 		},
 		Apps: AppsMock,
 	},
+	'@rocket.chat/instance-status': {
+		InstanceStatus: { id: () => 'self' },
+		defaultPingInterval: 10,
+		indexExpire: 30,
+	},
+	'./getTransporter': {
+		getTransporter: () => 'nats://localhost:4222',
+	},
 	'../../../../server/lib/notifications/core/lib/Notifications': {
 		default: { getStream: sinon.stub() },
 	},
@@ -29,6 +44,10 @@ const serviceMocks = {
 		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
 		Serializers: {
 			Base: class {},
+		},
+		Transporters: {
+			NATS: class {},
+			TCP: class {},
 		},
 	},
 };
@@ -42,13 +61,69 @@ describe('InstanceService', () => {
 	let service: IInstanceService;
 
 	beforeEach(() => {
-		service = new InstanceService();
+		service = new InstanceService(LocalBrokerMock);
 		(service as any).broker = ServiceBrokerMock;
 	});
 
 	afterEach(() => {
 		ServiceBrokerMock.call.reset();
+		ServiceBrokerMock.broadcast.reset();
+		ServiceBrokerMock.createService.reset();
 		AppsMock.getAppsStatusLocal.reset();
+		LocalBrokerMock.setClusterTransport.reset();
+		LocalBrokerMock.broadcastLocal.reset();
+	});
+
+	describe('cluster transport', () => {
+		const startBroadcast = async () => {
+			await (service as any).startBroadcast();
+			expect(LocalBrokerMock.setClusterTransport.calledOnce).to.be.true;
+			return LocalBrokerMock.setClusterTransport.firstCall.args[0] as { publish(event: string, args: unknown[]): void };
+		};
+
+		it('should send local broker broadcasts to the other instances', async () => {
+			const transport = await startBroadcast();
+
+			transport.publish('user.name', [{ _id: 'u1' }]);
+
+			expect(ServiceBrokerMock.broadcast.calledOnceWith('event', { event: 'user.name', args: [{ _id: 'u1' }] })).to.be.true;
+		});
+
+		it('should not send anything while instance broadcast is disabled for troubleshooting', async () => {
+			const transport = await startBroadcast();
+			(service as any).troubleshootDisableInstanceBroadcast = true;
+
+			transport.publish('user.name', [{ _id: 'u1' }]);
+
+			expect(ServiceBrokerMock.broadcast.called).to.be.false;
+		});
+
+		it('should install the transport only once', async () => {
+			await startBroadcast();
+			await (service as any).startBroadcast();
+
+			expect(LocalBrokerMock.setClusterTransport.calledOnce).to.be.true;
+		});
+
+		describe('receiving', () => {
+			const receive = async (params: unknown, nodeID: string) => {
+				await (service as any).created();
+				const [schema] = ServiceBrokerMock.createService.firstCall.args;
+				schema.events.event({ params, nodeID });
+			};
+
+			it('should deliver events from other instances to this instance only', async () => {
+				await receive({ event: 'user.name', args: [{ _id: 'u1' }, 'extra'] }, 'other');
+
+				expect(LocalBrokerMock.broadcastLocal.calledOnceWith('user.name', { _id: 'u1' }, 'extra')).to.be.true;
+			});
+
+			it('should ignore its own events', async () => {
+				await receive({ event: 'user.name', args: [{ _id: 'u1' }] }, 'self');
+
+				expect(LocalBrokerMock.broadcastLocal.called).to.be.false;
+			});
+		});
 	});
 
 	describe('#getInstances', () => {

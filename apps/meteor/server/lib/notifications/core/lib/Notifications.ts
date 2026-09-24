@@ -1,4 +1,3 @@
-import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { NotificationsModule, Streamer } from '@rocket.chat/streamer';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -28,9 +27,5 @@ class Stream extends Streamer<'local'> {
 const notifications = new NotificationsModule(Stream);
 
 notifications.configure();
-
-notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
-	void api.broadcastLocal(eventName, ...args);
-});
 
 export default notifications;

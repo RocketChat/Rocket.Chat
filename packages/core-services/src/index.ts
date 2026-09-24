@@ -74,6 +74,7 @@ export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export type { EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
+export type { ClusterTransport } from './LocalBroker';
 
 export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 

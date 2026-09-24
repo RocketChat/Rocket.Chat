@@ -1,6 +1,6 @@
 import os from 'node:os';
 
-import type { AppStatusReport } from '@rocket.chat/core-services';
+import type { AppStatusReport, ClusterTransport, EventSignatures, LocalBroker } from '@rocket.chat/core-services';
 import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
@@ -31,6 +31,8 @@ class EJSONSerializer extends Base {
 	}
 }
 
+type ClusterBroker = Pick<LocalBroker, 'setClusterTransport' | 'broadcastLocal'>;
+
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
@@ -42,7 +44,17 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private troubleshootDisableInstanceBroadcast = false;
 
-	constructor() {
+	private readonly clusterTransport: ClusterTransport = {
+		publish: (event, args) => {
+			if (this.troubleshootDisableInstanceBroadcast) {
+				return;
+			}
+
+			void this.broker.broadcast('event', { event, args });
+		},
+	};
+
+	constructor(private readonly localBroker: ClusterBroker) {
 		super();
 
 		this.onEvent('license.module', async ({ module, valid }) => {
@@ -86,9 +98,20 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			...getLogger(process.env),
 		});
 
+		const { localBroker } = this;
+
 		this.broker.createService({
 			name: 'matrix',
 			events: {
+				event(ctx: any) {
+					const { event, args } = ctx.params as { event: keyof EventSignatures; args: unknown[] };
+
+					if (ctx.nodeID === InstanceStatus.id()) {
+						return;
+					}
+
+					void localBroker.broadcastLocal(event, ...(args as Parameters<EventSignatures[typeof event]>));
+				},
 				broadcast(ctx: any) {
 					const { eventName, streamName, args } = ctx.params;
 					const { nodeID } = ctx;
@@ -198,6 +221,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		this.broadcastStarted = true;
 
+		this.localBroker.setClusterTransport(this.clusterTransport);
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
 	}
 

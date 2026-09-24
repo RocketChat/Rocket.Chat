@@ -157,4 +157,54 @@ describe('LocalBroker', () => {
 			expect(test2Listener).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('#setClusterTransport()', () => {
+		const brokerWithTransport = () => {
+			const publish = jest.fn();
+			const broker = new LocalBroker();
+			broker.setClusterTransport({ publish });
+			return { broker, publish };
+		};
+
+		it('should hand every broadcast to the transport with its arguments', async () => {
+			const { broker, publish } = brokerWithTransport();
+
+			await broker.broadcast('test' as any, 'a', 1);
+
+			expect(publish).toHaveBeenCalledTimes(1);
+			expect(publish).toHaveBeenCalledWith('test', ['a', 1]);
+		});
+
+		it('should still deliver the broadcast to local listeners', async () => {
+			const listener = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
+			instance.onEvent('test' as any, listener);
+
+			const { broker } = brokerWithTransport();
+			broker.createService(instance);
+			await broker.broadcast('test' as any, 'a');
+
+			expect(listener).toHaveBeenCalledWith('a');
+		});
+
+		it('should not hand broadcastLocal or broadcastToServices to the transport', async () => {
+			const { broker, publish } = brokerWithTransport();
+
+			await broker.broadcastLocal('test' as any, 'a');
+			await broker.broadcastToServices(['test'], 'test' as any, 'a');
+
+			expect(publish).not.toHaveBeenCalled();
+		});
+
+		it('should stop handing broadcasts over once the transport is removed', async () => {
+			const { broker, publish } = brokerWithTransport();
+
+			broker.setClusterTransport(undefined);
+			await broker.broadcast('test' as any, 'a');
+
+			expect(publish).not.toHaveBeenCalled();
+		});
+	});
 });
