@@ -52,8 +52,12 @@ export interface IEmitter<EventMap extends DefaultEventMap = DefaultEventMap> {
 	events(): AnyEventTypeOf<EventMap>[];
 }
 
-const once = Symbol('once');
 const evts = Symbol('evts');
+
+type Registration<EventMap extends DefaultEventMap> = {
+	handler: AnyEventHandlerOf<EventMap>;
+	once: boolean;
+};
 
 /**
  * The event emitter class.
@@ -61,9 +65,7 @@ const evts = Symbol('evts');
  * @public
  */
 export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> implements IEmitter<EventMap> {
-	private [evts] = new Map<AnyEventTypeOf<EventMap>, AnyEventHandlerOf<EventMap>[]>();
-
-	private [once] = new WeakMap<AnyEventHandlerOf<EventMap>, number>();
+	private [evts] = new Map<AnyEventTypeOf<EventMap>, Registration<EventMap>[]>();
 
 	/**
 	 * Returns the whole EventType list
@@ -82,7 +84,7 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	/**
 	 * Adds the `handler` function to listen events of the `type` type.
 	 *
-	 * @returns a function to unsubscribe the handler invoking `this.off(type, handler)`
+	 * @returns a function to unsubscribe this registration of the handler
 	 */
 	on<T extends AnyEventOf<EventMap>, TType extends AnyEventTypeOf<EventMap> = EventTypeOf<EventMap, T>>(
 		type: TType,
@@ -90,16 +92,13 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	): OffCallbackHandler;
 
 	on(type: keyof EventMap, handler: (...args: any[]) => void) {
-		const handlers = this[evts].get(type) ?? [];
-		handlers.push(handler);
-		this[evts].set(type, handlers);
-		return () => this.off(type, handler);
+		return this.register(type, { handler, once: false });
 	}
 
 	/**
 	 * Adds a *one-time* `handler` function for the event of the `type` type.
 	 *
-	 * @returns a function to unsubscribe the handler invoking `this.off(type, handler)`
+	 * @returns a function to unsubscribe this registration of the handler
 	 */
 	once<T extends AnyEventOf<EventMap>, EventType extends AnyEventTypeOf<EventMap> = EventTypeOf<EventMap, T>>(
 		type: EventType,
@@ -107,9 +106,7 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	): OffCallbackHandler;
 
 	once(type: keyof EventMap, handler: (...args: any[]) => void) {
-		const counter = this[once].get(handler) || 0;
-		this[once].set(handler, counter + 1);
-		return this.on(type, handler);
+		return this.register(type, { handler, once: true });
 	}
 
 	/**
@@ -121,22 +118,9 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	): void;
 
 	off(type: keyof EventMap, handler: (...args: any[]) => void) {
-		const handlers = this[evts].get(type);
-		if (!handlers) {
-			return;
-		}
-
-		const counter = this[once].get(handler) ?? 0;
-		if (counter > 1) {
-			this[once].set(handler, counter - 1);
-		} else {
-			this[once].delete(handler);
-		}
-
-		handlers.splice(handlers.findIndex((callback) => callback === handler) >>> 0, 1);
-
-		if (handlers.length === 0) {
-			this[evts].delete(type);
+		const registration = this[evts].get(type)?.find((registration) => registration.handler === handler);
+		if (registration) {
+			this.unregister(type, registration);
 		}
 	}
 
@@ -150,18 +134,37 @@ export class Emitter<EventMap extends DefaultEventMap = DefaultEventMap> impleme
 	): void;
 
 	emit(type: keyof EventMap, ...[event]: any[]) {
-		const snapshot = (this[evts].get(type) ?? []).map((handler) => [handler, this[once].has(handler)] as const);
-
-		snapshot.forEach(([handler, isOnce]) => {
-			if (isOnce) {
-				if (!this[evts].get(type)?.includes(handler)) {
+		[...(this[evts].get(type) ?? [])].forEach((registration) => {
+			if (registration.once) {
+				if (!this[evts].get(type)?.includes(registration)) {
 					return;
 				}
 
-				this.off(type, handler);
+				this.unregister(type, registration);
 			}
 
-			handler(event);
+			registration.handler(event);
 		});
+	}
+
+	private register(type: keyof EventMap, registration: Registration<EventMap>): OffCallbackHandler {
+		const registrations = this[evts].get(type) ?? [];
+		registrations.push(registration);
+		this[evts].set(type, registrations);
+		return () => this.unregister(type, registration);
+	}
+
+	private unregister(type: keyof EventMap, registration: Registration<EventMap>) {
+		const registrations = this[evts].get(type);
+		const index = registrations?.indexOf(registration) ?? -1;
+		if (!registrations || index === -1) {
+			return;
+		}
+
+		registrations.splice(index, 1);
+
+		if (registrations.length === 0) {
+			this[evts].delete(type);
+		}
 	}
 }
