@@ -1,0 +1,21 @@
+apps/meteor/ee/server/apps/orchestrator.ts
+  s_2b0eded95c2435::t_b91d8b8eba33fe 142
+packages/streamer/src/index.ts
+  s_2b0eded95c2435::t_14061c1d58774a 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "da9b68a5733b5e16ba038264fb7cb96ee5818d9a",
+  "prompts": {},
+  "sessions": {
+    "s_2b0eded95c2435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7a05115-5a53-4853-82c7-0d37436775af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
