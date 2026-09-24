@@ -93,12 +93,12 @@ test.describe.serial('settings-account-profile', () => {
 
 		test.describe('Phones', () => {
 			test.beforeEach(async ({ api, page }) => {
-				await setUserPhones(api, Users.user3.data._id, []);
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
 				await page.reload();
 			});
 
 			test.afterEach(async ({ api }) => {
-				await setUserPhones(api, Users.user3.data._id, []);
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
 			});
 
 			test('should add and persist multiple phones on account profile', async ({ page }) => {
