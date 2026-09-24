@@ -1,6 +1,14 @@
-import type { ConferenceContextValue, ConferenceFailure } from '@rocket.chat/ui-conference';
+import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext } from '@rocket.chat/ui-conference';
-import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	usePermission,
+	useSetting,
+	useSetModal,
+	useUserId,
+	useUserPreference,
+	useUserSubscription,
+} from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -11,6 +19,7 @@ import { isRefusal } from '../../../lib/utils/isRefusal';
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
+import ConferenceDisconnectedModal from '../ConferenceDisconnectedModal';
 import ConferencePageError from '../ConferencePageError';
 import ConferenceUnauthorizedPage from '../ConferenceUnauthorizedPage';
 import ConferenceUserPicker from '../components/ConferenceUserPicker';
@@ -19,8 +28,13 @@ import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease'
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { usePexipPlugin } from '../hooks/usePexipPlugin';
+import { closeCallWindow } from '../lib/callWindow';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
+
+/** The internal Pexip integration, which is the one provider this window knows anything particular about. */
+const PEXIP_PROVIDER_NAME = 'core.pexip';
 
 /**
  * Why a read failed, reduced to the one distinction the window acts on.
@@ -52,6 +66,41 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	const [openThread, setOpenThread] = useState<string>();
 	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : setOpenThread });
 
+	const isPexip = conference.providerName === PEXIP_PROVIDER_NAME;
+	const setModal = useSetModal();
+
+	// Pexip opens on its chat: the call is what the reader came for, and the chat beside it is the point of
+	// opening it here rather than at the provider.
+	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>(isPexip ? 'chat' : undefined);
+
+	const togglePanel = useCallback((next: ConferencePanel) => {
+		// A thread is shown in the chat panel, so any click that leaves the chat closed takes the thread with it —
+		// including switching straight to the members panel.
+		setActivePanel((current) => {
+			const chatStaysOpen = next === 'chat' && current !== 'chat';
+			if (!chatStaysOpen) {
+				setOpenThread(undefined);
+			}
+			return current === next ? undefined : next;
+		});
+	}, []);
+
+	const panel = useMemo(() => ({ active: activePanel, toggle: togglePanel }), [activePanel, togglePanel]);
+
+	// Dropping out of the call leaves a window with nothing in it, so offer to close it — with a way to stay,
+	// since a reader who means to walk back in would rather not lose the chat beside it.
+	const handleDisconnected = useCallback(() => {
+		setModal(
+			<ConferenceDisconnectedModal
+				onCancel={() => setModal(null)}
+				onClose={() => {
+					setModal(null);
+					closeCallWindow();
+				}}
+			/>,
+		);
+	}, [setModal]);
+
 	const { leaveNow } = useLeaveConferenceOnClose(callId, conference.departure);
 
 	useConferencePresenceLease(callId, conference.joined);
@@ -73,6 +122,14 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
 
+	const { connected: pluginConnected, dialOut } = usePexipPlugin({
+		conferenceUrl: isPexip ? conference.url : undefined,
+		hasUnread: showUnread && unreadCount.total > 0,
+		chatVisible: activePanel === 'chat',
+		onToggleChat: (active) => setActivePanel(active ? 'chat' : undefined),
+		onDisconnected: handleDisconnected,
+	});
+
 	const thread = useMemo(
 		() => ({
 			tmid: openThread,
@@ -89,8 +146,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			ringMember: async (memberId) => {
 				await ring({ callId, userId: memberId });
 			},
-			shareChat: async (mode) => {
-				await shareChatEndpoint({ callId, mode });
+			shareChat: async (mode, users) => {
+				await shareChatEndpoint({ callId, mode, ...(users?.length ? { users } : {}) });
 				// The server broadcasts the change to every participant, but the one who asked for it should not
 				// wait for the round trip to see their own notice go away.
 				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
@@ -107,8 +164,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 
 				return { added: added.length };
 			},
+			dialOut: isPexip ? dialOut : undefined,
 		}),
-		[addParticipantsEndpoint, callId, conference, leaveNow, queryClient, ring, shareChatEndpoint],
+		[addParticipantsEndpoint, callId, conference, dialOut, isPexip, leaveNow, queryClient, ring, shareChatEndpoint],
 	);
 
 	const renderMemberStatus = useCallback((uid: string) => <ReactiveUserStatus uid={uid} />, []);
@@ -149,6 +207,11 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: conference.loading,
 				error: failureFor(conference.error),
 				retry: conference.retry,
+				// Pexip cannot be told about a camera or a microphone, so its preflight would be a single button
+				// between the reader and the call they opened.
+				autoJoin: isPexip,
+				providerOwnsChatToggle: pluginConnected,
+				panelDock: isPexip ? 'start' : 'end',
 			},
 			actions,
 			slots: {
@@ -163,6 +226,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			},
 			viewer: { uid, useRealName, displayAvatars, canRingUsers },
 			thread,
+			panel,
 		}),
 		[
 			actions,
@@ -176,6 +240,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			room,
 			uid,
 			useRealName,
+			isPexip,
+			panel,
+			pluginConnected,
 			showUnread,
 			subscription,
 			thread,

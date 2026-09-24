@@ -10,6 +10,8 @@ type CallPanelProps = {
 	visible: boolean;
 	/** Rise over the whole window instead of taking width from the call. */
 	sheet?: boolean;
+	/** Which side of the call the panel docks to. Ignored as a sheet, which covers the window either way. */
+	dock?: 'start' | 'end';
 	children: ReactNode;
 };
 
@@ -29,7 +31,7 @@ const CLOSE_MS = 200;
  * [docs/features/video-conference.md](../../../../docs/features/video-conference.md) for the docked and sheet
  * layouts.
  */
-const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
+const CallPanel = ({ visible, sheet = false, dock = 'end', children }: CallPanelProps) => {
 	const dockedInlineSize = visible ? PANEL_INLINE_SIZE : 0;
 
 	/**
@@ -87,8 +89,12 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			`
 		: // Rounded only where it meets the call: the borderRadius prop names whole-box tokens, not corners.
 			css`
-				border-start-start-radius: 0.25rem;
-				border-end-start-radius: 0.25rem;
+				order: ${dock === 'start' ? -1 : 0};
+
+				border-start-start-radius: ${dock === 'start' ? 0 : '0.25rem'};
+				border-end-start-radius: ${dock === 'start' ? 0 : '0.25rem'};
+				border-start-end-radius: ${dock === 'start' ? '0.25rem' : 0};
+				border-end-end-radius: ${dock === 'start' ? '0.25rem' : 0};
 
 				visibility: ${visible ? 'visible' : 'hidden'};
 				transition:
@@ -117,9 +123,12 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			borderBlockWidth={sheet ? 'none' : 'default'}
 			borderBlockStyle='solid'
 			borderBlockColor='stroke-extra-light'
-			borderInlineStartWidth={sheet || !visible ? 'none' : 'default'}
+			borderInlineStartWidth={sheet || !visible || dock === 'start' ? 'none' : 'default'}
 			borderInlineStartStyle='solid'
 			borderInlineStartColor='stroke-extra-light'
+			borderInlineEndWidth={sheet || !visible || dock === 'end' ? 'none' : 'default'}
+			borderInlineEndStyle='solid'
+			borderInlineEndColor='stroke-extra-light'
 		>
 			<Box display='flex' flexDirection='column' width='100%' minWidth={sheet ? 0 : PANEL_INLINE_SIZE} height='100%'>
 				{/* `visible` too, so opening shows the contents on the frame it is asked for, not the one after. */}

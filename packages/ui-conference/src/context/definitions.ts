@@ -15,6 +15,20 @@ export type ConferenceMember = Pick<
 	'_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'
 >;
 
+/** A panel that can be open beside the call. Only one is, since they share the space. */
+export type ConferencePanel = 'members' | 'chat';
+
+/**
+ * Which panel is open, and how to change that.
+ *
+ * Held by the application rather than by the window: a provider that draws its own chat control has to both
+ * follow this and drive it, and whatever does that stays mounted while the panel is shut.
+ */
+export type ConferencePanelState = {
+	active?: ConferencePanel;
+	toggle: (panel: ConferencePanel) => void;
+};
+
 /** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
 export type ConferenceChatAccess = VideoConferenceChatAccess & {
 	members: ConferenceMember[];
@@ -98,6 +112,22 @@ export type ConferenceSession = {
 	error?: ConferenceFailure;
 	/** Clears a failed join, which puts the reader back on the preflight with the choice they made intact. */
 	retry: () => void;
+	/**
+	 * Walk into the call without asking first.
+	 *
+	 * The preflight exists to collect a camera and a microphone. A provider that cannot be told about either has
+	 * nothing to collect, so the screen would be a single button between the reader and the call they opened.
+	 */
+	autoJoin?: boolean;
+	/**
+	 * The provider draws its own chat control, so this window drops the one in its bar rather than showing two.
+	 *
+	 * Only true while that control is actually on screen: before the reader connects, and after they drop out,
+	 * the provider's toolbar is gone and the window's own button is the only one left.
+	 */
+	providerOwnsChatToggle?: boolean;
+	/** Which side of the call the panels dock to. */
+	panelDock?: 'start' | 'end';
 };
 
 /**
@@ -113,8 +143,19 @@ export type ConferenceActions = {
 	leave: () => void;
 	/** Asks the server to ring one member again. Rejects if it refused, which the row is left to show. */
 	ringMember: (memberId: string) => Promise<void>;
-	/** Resolves "some members cannot read the chat" the one way the reader picked. Rejects if it failed. */
-	shareChat: (mode: 'invite' | 'discussion') => Promise<void>;
+	/**
+	 * Gives people the call's chat, the one way the reader picked. Rejects if it failed.
+	 *
+	 * Named nobody, it resolves "some members cannot read the chat" for whoever those members are. Named people,
+	 * it brings them into the conversation whether or not anyone was locked out.
+	 */
+	shareChat: (mode: 'invite' | 'discussion', users?: string[]) => Promise<void>;
+	/**
+	 * Calls a number or SIP address into the conference.
+	 *
+	 * Absent for a provider that cannot place one, which is what the modal reads to decide whether to offer it.
+	 */
+	dialOut?: (destination: string) => void;
 	/**
 	 * Associates people with the call, which is what lets them join it — deliberately putting them in no room.
 	 * Answers how many were actually added, since anyone already associated is skipped and a selection can come
