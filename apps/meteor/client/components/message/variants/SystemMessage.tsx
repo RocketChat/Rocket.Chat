@@ -22,12 +22,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
-import {
-	useIsSelecting,
-	useToggleSelect,
-	useIsSelectedMessage,
-	useCountSelected,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
@@ -61,7 +56,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
-	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {

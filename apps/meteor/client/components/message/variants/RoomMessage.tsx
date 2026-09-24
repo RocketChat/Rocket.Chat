@@ -9,12 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import {
-	useIsSelecting,
-	useToggleSelect,
-	useIsSelectedMessage,
-	useCountSelected,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -85,8 +80,6 @@ const RoomMessage = ({
 	const selected = useIsSelectedMessage(message._id);
 
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
-
-	useCountSelected();
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!selecting) return;

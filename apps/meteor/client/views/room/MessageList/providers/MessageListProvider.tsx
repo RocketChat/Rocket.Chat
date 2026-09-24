@@ -3,6 +3,7 @@ import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSear
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
+import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -14,6 +15,7 @@ import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
+import { useMessageRolesLookup } from '../hooks/useMessageRolesLookup';
 
 export type MessageListProviderProps = {
 	children: ReactNode;
@@ -50,6 +52,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
+	const getMessageRoles = useMessageRolesLookup(room._id, showRoles);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
@@ -91,6 +94,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			apiEmbedEnabled,
 			autoLinkDomains,
 			showRoles,
+			getMessageRoles,
 			showRealName,
 			showUsername,
 			jumpToMessageParam: msgParameter,
@@ -132,6 +136,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			hasSubscription,
 			autoTranslateLanguage,
 			showRoles,
+			getMessageRoles,
 			showRealName,
 			showUsername,
 			katexEnabled,
@@ -154,7 +159,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
-			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
+			<MessageListContext.Provider value={context}>
+				<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
+			</MessageListContext.Provider>
 		</AttachmentProvider>
 	);
 };

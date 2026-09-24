@@ -19,6 +19,7 @@ export type MessageListContextValue = {
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
 	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
+	getMessageRoles: (userId: string) => string[];
 	showRealName: boolean;
 	showUsername: boolean;
 	highlights?: {
@@ -59,6 +60,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 			date.toString(),
 	useOpenEmojiPicker: () => (): void => undefined,
 	showRoles: false,
+	getMessageRoles: () => [],
 	showRealName: false,
 	showUsername: false,
 	showColors: false,
@@ -85,6 +87,7 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
+export const useMessageListRoles = (userId: string): string[] => useContext(MessageListContext).getMessageRoles(userId);
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;

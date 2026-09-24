@@ -15,11 +15,11 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageRoles } from './header/hooks/useMessageRoles';
 import {
 	useMessageListShowUsername,
 	useMessageListShowRealName,
 	useMessageListShowRoles,
+	useMessageListRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
@@ -45,7 +45,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
+	const roles = useMessageListRoles(message.u._id);
 	const shouldShowRolesList = showRoles && roles.length > 0;
 
 	return (
