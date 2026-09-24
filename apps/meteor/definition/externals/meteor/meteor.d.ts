@@ -19,14 +19,6 @@ declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
 
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: IStreamer;
-			};
-
-			function on(name: string, callback: (...args: any[]) => void): void;
-		}
-
 		interface ErrorStatic {
 			new (error: string | number, reason?: string, details?: any): Error;
 		}

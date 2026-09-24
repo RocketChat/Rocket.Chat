@@ -17,13 +17,9 @@ import type {
 
 const logger = new Logger('Streamer');
 
-class StreamerCentralClass extends EventEmitter {}
-
 type ActivePublication = IPublication & {
 	_session: NonNullable<IPublication['_session']> & { socket: NonNullable<NonNullable<IPublication['_session']>['socket']> };
 };
-
-export const StreamerCentral = new StreamerCentralClass();
 
 export abstract class Streamer<N extends StreamNames> extends EventEmitter implements IStreamer<N> {
 	public subscriptions = new Set<DDPSubscription>();
@@ -33,8 +29,6 @@ export abstract class Streamer<N extends StreamNames> extends EventEmitter imple
 	public retransmit = true;
 
 	public retransmitToSelf = false;
-
-	public serverOnly = false;
 
 	private _allowRead: IRules = {};
 
