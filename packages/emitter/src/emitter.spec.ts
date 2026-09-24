@@ -132,6 +132,14 @@ describe('`off` method', () => {
 		expect(emitter.has('test')).toBe(false);
 	});
 
+	it('should remove only its own registration when using the stop callback', () => {
+		emitter.on('test', handler);
+		emitter.once('test', handler)();
+		times(2, () => emitter.emit('test'));
+		expect(handler).toHaveBeenCalledTimes(2);
+		expect(emitter.has('test')).toBe(true);
+	});
+
 	it('should have no `test` handler after emit once', () => {
 		emitter.once('test', handler);
 		emitter.emit('test');
