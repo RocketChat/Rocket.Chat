@@ -568,8 +568,8 @@ export class NotificationsModule {
 		this.streamImporters.emit('progress', progress);
 	}
 
-	notifyVideoConferenceUpdated(callId: string): void {
-		this.streamVideoConference.emit(`${callId}/updated`);
+	notifyVideoConferenceUpdatedInThisInstance(callId: string): void {
+		this.streamVideoConference.emitWithoutBroadcast(`${callId}/updated`);
 	}
 }
 
