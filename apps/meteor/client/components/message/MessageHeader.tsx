@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import {
 	MessageHeader as FuselageMessageHeader,
 	MessageName,
@@ -8,11 +9,11 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageViewer } from './MessageViewer';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import {
@@ -23,6 +24,7 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
+import { withMessageViewer } from './withMessageViewer';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
 export type MessageHeaderProps = {
@@ -41,7 +43,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
-	const displayName = useUserDisplayName(user);
+	const { useRealName } = useMessageViewer();
+	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
@@ -80,4 +83,4 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	);
 };
 
-export default memo(MessageHeader);
+export default memo(withMessageViewer(MessageHeader));

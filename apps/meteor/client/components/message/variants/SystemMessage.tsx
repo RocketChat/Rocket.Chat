@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import {
 	MessageSystem,
 	MessageSystemBody,
@@ -14,7 +15,6 @@ import {
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useMessageViewer } from '../MessageViewer';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
@@ -32,6 +33,7 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
+import { withMessageViewer } from '../withMessageViewer';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -49,7 +51,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const normalizedUsername = normalizeUsername(user.username);
 	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
-	const displayName = useUserDisplayName(user);
+	const { useRealName } = useMessageViewer();
+	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 
 	const messageType = MessageTypes.getType(message);
 
@@ -122,4 +125,4 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	);
 };
 
-export default memo(SystemMessage);
+export default memo(withMessageViewer(SystemMessage));

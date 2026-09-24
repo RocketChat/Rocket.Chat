@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
 import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
+import { MessageViewerProvider } from '../../../../components/message/MessageViewer';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { MessageActionsPolicyProvider } from '../../../../components/message/toolbar/MessageActionsPolicy';
@@ -162,7 +163,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
 			<MessageListContext.Provider value={context}>
 				<GazzodownEnvironmentProvider>
-					<MessageActionsPolicyProvider room={room}>{children}</MessageActionsPolicyProvider>
+					<MessageActionsPolicyProvider room={room}>
+						<MessageViewerProvider>{children}</MessageViewerProvider>
+					</MessageActionsPolicyProvider>
 				</GazzodownEnvironmentProvider>
 			</MessageListContext.Provider>
 		</AttachmentProvider>

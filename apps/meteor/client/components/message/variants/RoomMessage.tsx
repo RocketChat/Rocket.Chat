@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,9 @@ import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
+import { useMessageViewer } from '../MessageViewer';
 import StatusIndicators from '../StatusIndicators';
+import { withMessageViewer } from '../withMessageViewer';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
@@ -68,7 +70,7 @@ const RoomMessage = ({
 	...props
 }: RoomMessageProps) => {
 	const { t } = useTranslation();
-	const uid = useUserId();
+	const { uid } = useMessageViewer();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
@@ -142,4 +144,4 @@ const RoomMessage = ({
 	);
 };
 
-export default memo(RoomMessage);
+export default memo(withMessageViewer(RoomMessage));

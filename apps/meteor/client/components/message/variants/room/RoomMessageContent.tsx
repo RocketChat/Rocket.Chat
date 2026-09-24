@@ -2,12 +2,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserPresence } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
+import { useMessageViewer } from '../../MessageViewer';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
@@ -22,6 +23,7 @@ import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
+import { withMessageViewer } from '../../withMessageViewer';
 
 export type RoomMessageContentProps = {
 	message: IMessage;
@@ -36,7 +38,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const broadcast = subscription?.broadcast ?? false;
-	const uid = useUserId();
+	const { uid } = useMessageViewer();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const chat = useChat();
@@ -140,4 +142,4 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	);
 };
 
-export default memo(RoomMessageContent);
+export default memo(withMessageViewer(RoomMessageContent));

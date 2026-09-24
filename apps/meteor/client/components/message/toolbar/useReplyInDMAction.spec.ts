@@ -46,7 +46,7 @@ const subscription = createFakeSubscription({
 const withActionsPolicy =
 	(appRoot: ComponentType<{ children: ReactNode }>) =>
 	({ children }: { children: ReactNode }) =>
-		createElement(appRoot, null, createElement(MessageActionsPolicyProvider, { room, children }));
+		createElement(appRoot, null, createElement(MessageActionsPolicyProvider, { room }, children));
 
 afterEach(() => {
 	jest.clearAllMocks();

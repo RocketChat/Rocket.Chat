@@ -2,7 +2,7 @@ import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
@@ -11,7 +11,9 @@ import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
+import { useMessageViewer } from '../MessageViewer';
 import StatusIndicators from '../StatusIndicators';
+import { withMessageViewer } from '../withMessageViewer';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 export type ThreadMessageProps = {
@@ -24,7 +26,7 @@ export type ThreadMessageProps = {
 
 const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
-	const uid = useUserId();
+	const { uid } = useMessageViewer();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = ignoredUser && !displayIgnoredMessage;
@@ -78,4 +80,4 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	);
 };
 
-export default memo(ThreadMessage);
+export default memo(withMessageViewer(ThreadMessage));

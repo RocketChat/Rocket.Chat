@@ -44,7 +44,7 @@ export const useMessageActionsPolicy = (): MessageActionsPolicy => {
 
 type MessageActionsPolicyProviderProps = {
 	room: Pick<IRoom, '_id'>;
-	children: ReactNode;
+	children?: ReactNode;
 };
 
 /** Reads what the message actions depend on once per room, instead of once per hovered message */
