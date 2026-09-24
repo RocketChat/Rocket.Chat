@@ -289,7 +289,7 @@ else would — the conference renders outside the main app, so the sidebar's own
 |-----------|---------|------|
 | `?callUrl=` present | `ConferencePage` — hands off to the provider's external URL | `guest` allowed |
 | `:id` is `new`, with `?rid=` | `ConferenceStartPage` — the preflight for a conference that doesn't exist yet | authentication required (`guest={false}`) |
-| `:id` present | `ConferenceEmbeddedPage` — call + chat split view | authentication required (`guest={false}`) |
+| `:id` present | `ConferenceWindow` (`@rocket.chat/ui-conference`), assembled by `ConferenceProvider` — call + chat split view | authentication required (`guest={false}`) |
 | neither | `ConferencePageError` | — |
 
 Guests can't be members of the conference's room, so the embedded page requires a real account. A user without access to the conference's room gets `ConferenceUnauthorizedPage`, which logs out **without navigating away**, so re-login returns to the same conference. It and `ConferencePageError` are the same `ConferenceStatePage` with different words: the window is all the user has, so both keep the conference header and carry whatever way out they have.
@@ -609,7 +609,7 @@ Every conference endpoint authorizes through one `canAccessConference` check, wh
 
 Because all of them share that check, `add-participants` no longer disagrees with `join` and `info` about who is allowed in. `loadAccessibleConference` is the shared prologue: it reads the call, applies the check, and answers both failures the same way — `invalid-params`, deliberately vague about which of the two it was, so a stranger can't use an endpoint to learn that a call id is real.
 
-The check lives in `server/lib/videoConfAccess.ts` rather than beside these endpoints, because a provider's own endpoints need it too and two versions of "may this person be here" drift into two answers for the same person. That is not hypothetical: the LiveKit transport endpoint originally checked room access instead, so a member added to a call in a DM was refused the credentials for the very call they had just joined — a window showing them alone, with inert controls, because a refused token looks exactly like one that hasn't arrived yet.
+The check lives on the authorization service (`Authorization.canAccessConference`) rather than beside these endpoints, because a provider's own endpoints need it too and two versions of "may this person be here" drift into two answers for the same person. That is not hypothetical: the LiveKit transport endpoint originally checked room access instead, so a member added to a call in a DM was refused the credentials for the very call they had just joined — a window showing them alone, with inert controls, because a refused token looks exactly like one that hasn't arrived yet.
 
 ## Reaching a call without a ring
 
@@ -1172,19 +1172,19 @@ as the last read. A member removed from the room *during* a call still has the r
 | Stream typings | `packages/ddp-client/src/types/streams.ts` |
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
-| Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `components/ConferenceIframe.tsx`, `components/CallTopBar.tsx`, `components/CallPanel.tsx` |
+| Call chrome | `packages/ui-conference/src/views/ConferenceWindow.tsx`, `src/components/ConferenceIframe.tsx`, `src/components/CallTopBar.tsx`, `src/components/CallBar.tsx`, `src/components/CallPanel.tsx`; assembled by `apps/meteor/client/views/conference/providers/ConferenceProvider.tsx` |
 | Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoomPanel.tsx`, `ConferenceThreadChat.tsx`, `ConferenceThreadModal.tsx`, `ConferenceStoresReady.tsx`, `components/CallPanelHeader.tsx`, `components/ConferenceChatNotShared.tsx` |
 | Nothing to show | `apps/meteor/client/views/conference/ConferenceStatePage.tsx`, `ConferencePageError.tsx`, `ConferenceUnauthorizedPage.tsx` |
 | Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx` |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`) |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx` |
-| Preflight | `apps/meteor/client/views/conference/ConferencePreflight.tsx`, `ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `hooks/useCallPreferences.ts` |
+| Preflight | `packages/ui-conference/src/views/ConferencePreflight.tsx`, `src/hooks/useCallDevicesInitialState.ts`; `apps/meteor/client/views/conference/ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `components/ConferencePreflightMedia/` |
 | Members panel | `apps/meteor/client/views/conference/CallMembersPanel.tsx`, `CallMemberItem.tsx`, `client/hooks/useRingingExpiry.ts` |
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
-| Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/lib/videoConfPresence.ts`, `server/cron/videoConferences.ts` |
+| Presence leases | `apps/meteor/lib/videoConference/presence.ts`, `client/views/conference/hooks/useConferencePresenceLease.ts`, `server/cron/videoConferences.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |

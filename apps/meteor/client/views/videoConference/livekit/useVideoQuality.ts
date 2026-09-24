@@ -1,9 +1,8 @@
+import type { VideoQuality } from '@rocket.chat/ui-conference';
+import { useVideoQualityPreference } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack, VideoCaptureOptions } from 'livekit-client';
 import { VideoPresets } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import type { VideoQuality } from '../../conference/hooks/useCallPreferences';
-import { useVideoQualityPreference } from '../../conference/hooks/useCallPreferences';
 
 /**
  * What each choice asks the camera for. `auto` asks for nothing and lets the camera and the connection decide.

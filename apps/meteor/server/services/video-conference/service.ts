@@ -217,7 +217,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// whoever clicked the message block's info button as a 500 with nothing said. The same guard the other
 		// provider hooks already use, for the same reason.
 		if (!this.isEmbeddedProvider(call.providerName)) {
-			const blocks = await (await this.getProviderManager())
+			const blocks = await (
+				await this.getProviderManager()
+			)
 				.getVideoConferenceInfo(call.providerName, call, user || undefined)
 				.catch((e) => {
 					throw new Error(e);

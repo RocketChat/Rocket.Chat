@@ -298,6 +298,37 @@ export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode
 
 export const allCapabilities: VideoConferenceCapabilities = { mic: true, cam: true, title: true };
 
+/** A provider that runs the call in this window — the only one the preflight offers device choices for. */
+export const embeddedCapabilities: VideoConferenceCapabilities = { ...allCapabilities, embedded: true };
+
+/**
+ * Media devices, since Storybook has none. `getUserMedia` is deliberately absent, so a preview stays a placeholder
+ * instead of asking Storybook for a camera.
+ */
+export const withFakeDevices = () => () => {
+	const previous = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices');
+	const devices = [
+		{ deviceId: 'default', kind: 'audioinput', label: 'MacBook Pro Microphone', groupId: 'built-in' },
+		{ deviceId: 'yeti', kind: 'audioinput', label: 'Yeti Stereo Microphone', groupId: 'usb' },
+		{ deviceId: 'default', kind: 'audiooutput', label: 'MacBook Pro Speakers', groupId: 'built-in' },
+		{ deviceId: 'facetime', kind: 'videoinput', label: 'FaceTime HD Camera', groupId: 'built-in' },
+	] as unknown as MediaDeviceInfo[];
+
+	Object.defineProperty(navigator, 'mediaDevices', {
+		configurable: true,
+		value: { enumerateDevices: async () => devices, addEventListener: () => undefined, removeEventListener: () => undefined },
+	});
+
+	// Put the real thing back, so one story's devices don't decide the next one's.
+	return () => {
+		if (previous) {
+			Object.defineProperty(navigator, 'mediaDevices', previous);
+			return;
+		}
+		Reflect.deleteProperty(navigator, 'mediaDevices');
+	};
+};
+
 /** The four states a member of a call can be in. `ringing` needs {@link withLiveRings} to stay one. */
 export const members: Record<'joined' | 'ringing' | 'declined' | 'left', ConferenceMember> = {
 	joined: buildConferenceMember({ _id: 'joined', name: 'Ada Lovelace', username: 'ada' }),

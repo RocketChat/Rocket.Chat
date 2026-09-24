@@ -1,10 +1,10 @@
 import type { KrispNoiseFilterProcessor } from '@livekit/krisp-noise-filter';
+import type { NoiseMethod } from '@rocket.chat/ui-conference';
+import { useNoiseSuppressionPreference } from '@rocket.chat/ui-conference';
 import type { LocalAudioTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { RnnoiseProcessor } from './rnnoiseProcessor';
-import type { NoiseMethod } from '../../conference/hooks/useCallPreferences';
-import { useNoiseSuppressionPreference } from '../../conference/hooks/useCallPreferences';
 
 /**
  * The ways a microphone can be cleaned up, weakest first — which is the order a menu should offer them in, reading

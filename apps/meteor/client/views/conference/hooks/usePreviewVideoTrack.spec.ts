@@ -1,8 +1,8 @@
+import type { VideoQuality } from '@rocket.chat/ui-conference';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
 
-import type { VideoQuality } from './useCallPreferences';
 import { usePreviewVideoTrack } from './usePreviewVideoTrack';
 
 jest.mock('livekit-client', () => ({

@@ -167,6 +167,26 @@ LiveKitVideoConfProvider
         useLiveKitVideoConf() → { activeCall, joinCall, leaveCall }
 ```
 
+### How the call reaches the conference window
+
+The conference window lives in `@rocket.chat/ui-conference`, which can reach neither LiveKit nor the app. So the
+call is handed in, like everything else the window shows — through the conference context, assembled by
+`useNativeConferenceCall` inside the app's `ConferenceProvider`, and only for a call that runs in the window rather
+than at a provider's address:
+
+| On the context | What it carries |
+| --- | --- |
+| `slots.renderCall` | The call itself, given the two hosts the window mounts in its own bars — the call's header goes in the top bar, its controls in the bottom one, rather than in a strip of their own. |
+| `slots.diagnostics` | The *Connection info* panel, opened from the call's own menu through the window's `panel`. |
+| `slots.renderMemberActivity` | A member's microphone level in the people panel — drawn by the app, which holds the audio. |
+| `media` | Who has a hand up (by member id, in order — the window names them), whose microphone is off, who is presenting, and the mute and stop-presenting actions. |
+
+The preflight is the one piece with a lifetime of its own: its self-view and device choices open the reader's camera
+and microphone, which must close when the reader leaves the screen rather than when the call does. So
+`slots.preflightMedia` carries a `Provider` the preflight mounts around its preview — the devices open once, shared by
+the self-view and the pickers, and close with it. The start screen, which renders the preflight outside any
+conference, hands the same object in directly.
+
 `LiveKitVideoConfProvider` mounts a hidden `<LiveKitRoom>` via `createPortal` to a sibling DOM node, so the LK connection persists across React route changes — navigating between channels does not disconnect the call.
 
 Inside `<LiveKitRoom>`, an inner provider reads LK hooks (`useParticipants`, `useTracks`, `useLocalParticipant`) and pushes the computed value into `MediaCallViewContext` (shared with the legacy P2P UI). `MediaCallRoomSection` consumes that context unchanged.
@@ -174,7 +194,7 @@ Inside `<LiveKitRoom>`, an inner provider reads LK hooks (`useParticipants`, `us
 ### Which devices a call uses
 
 The preflight is the only place devices are chosen, and it remembers the choice in `localStorage`
-(`videoconf-call-preferences`, via `useCallPreferences`). Two rules keep that choice and the call in agreement:
+(`videoconf-call-preferences`, via `useCallDevicesInitialState` in `@rocket.chat/ui-conference`). Two rules keep that choice and the call in agreement:
 
 - **Applied as capture _defaults_, not capture options.** `audio` and `video` on `<LiveKitRoom>` describe the track
   published on the way in, so a call joined muted — the normal way to join — used to throw the chosen microphone away
@@ -479,13 +499,13 @@ This applies to both layout modes in `CallStage`:
 
 ### Presenting indicator
 
-`CallPresenting` renders a pill in the call top bar (inside `ConferenceEmbeddedPage`'s `CallTopBar`, alongside `CallRaisedHands`) showing who is screen-sharing. The presenter list is derived in a `useMemo`: the local screen track (`streams.localScreen.active`) and any remote participant whose `screenStream` is truthy.
+`CallPresenting` renders a pill in the conference window's top bar, alongside `CallRaisedHands`, showing who is screen-sharing. The presenter list is derived in a `useMemo`: the local screen track (`streams.localScreen.active`) and any remote participant whose `screenStream` is truthy.
 
 When the local user is presenting, the pill shows a desktop icon, the user's name with "(You, presenting)", and a red "Stop presenting" button wired to `onToggleScreenSharing`. When a remote user is presenting, it shows their avatar and "(presenting)". If multiple people share simultaneously, the first presenter is displayed with a `+N` overflow count for the rest.
 
 ### Ringback tone for the caller
 
-When the caller is in a DM-style call and at least one invited member's phone is ringing, a dialtone plays in a loop (`dialtone.mp3` via `useCustomSound().callSounds.playDialer()`). The effect lives in `ConferenceEmbeddedPage` and checks `isRingingVideoConferenceMember` on each member, filtering out the caller themselves. The tone stops when everyone has either joined or stopped ringing.
+When the caller is in a DM-style call and at least one invited member's phone is ringing, a dialtone plays in a loop (`dialtone.mp3` via `useCustomSound().callSounds.playDialer()`). The effect lives in the conference window and checks `isRingingVideoConferenceMember` on each member, filtering out the caller themselves. The tone stops when everyone has either joined or stopped ringing.
 
 ---
 

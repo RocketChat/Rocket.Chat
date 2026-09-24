@@ -1,11 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Dropdown, Icon, Option, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { useDropdownVisibility } from '@rocket.chat/ui-client';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '@rocket.chat/ui-voip';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useDropdownVisibility } from '../../room/Header/Omnichannel/QuickActions/hooks/useDropdownVisibility';
 
 type Choice = { id: string; name: string; note?: string };
 
@@ -64,9 +63,7 @@ const nameStyles = css`
 const CallDeviceMenu = ({ icon, label, devices, selectedId, onSelect, sections }: CallDeviceMenuProps) => {
 	const { t } = useTranslation();
 
-	const reference = useRef<HTMLButtonElement>(null);
-	const target = useRef<HTMLElement>(null);
-	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	const { isVisible, toggle, reference, target } = useDropdownVisibility<HTMLButtonElement, HTMLElement>();
 
 	// Devices and plain choices are reduced to the same three fields, so everything below draws one kind of row.
 	// Devices go through `orderDevices` first, shared with the in-call pickers, so a device is named and ordered the

@@ -1,6 +1,6 @@
+import type { CallDevices, CallPreferences } from '@rocket.chat/ui-conference';
 import { useEffect, useRef } from 'react';
 
-import type { CallDevices, CallPreferences } from './useCallPreferences';
 import { useOptionalLiveKitVideoConf } from '../../videoConference/livekit/LiveKitVideoConfContext';
 
 type EmbeddedConferenceCall = {

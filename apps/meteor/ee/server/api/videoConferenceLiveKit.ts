@@ -1,3 +1,4 @@
+import { Authorization } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
@@ -8,7 +9,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
-import { canAccessConference } from '../../../server/lib/videoConfAccess';
 import { createLiveKitAccessToken, getLiveKitConfig, isLiveKitFullyConfigured } from '../lib/livekit';
 
 const logger = new Logger('VideoConference/LiveKit/API');
@@ -51,7 +51,7 @@ async function authorizeCall(
 	const call = await VideoConferenceModel.findOneById(callId);
 	if (!call) return { error: 'invalid-call' };
 	if (!call.rid) return { error: 'invalid-call' };
-	if (!(await canAccessConference(call, userId))) {
+	if (!(await Authorization.canAccessConference(call, userId))) {
 		return { error: 'forbidden' };
 	}
 	return { call };

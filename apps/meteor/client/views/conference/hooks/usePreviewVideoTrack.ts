@@ -1,8 +1,8 @@
+import type { BlurLevel, BlurModel, VideoQuality } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 
-import type { BlurLevel, BlurModel, VideoQuality } from './useCallPreferences';
 import type { BackgroundBlurProcessor } from '../../videoConference/livekit/backgroundBlurProcessor';
 import { BLUR_STRENGTH } from '../../videoConference/livekit/useBackgroundBlur';
 import { useVirtualBackground } from '../../videoConference/livekit/virtualBackground';

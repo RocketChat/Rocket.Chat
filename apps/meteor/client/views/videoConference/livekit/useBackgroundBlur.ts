@@ -1,11 +1,11 @@
+import type { BlurLevel, BlurModel } from '@rocket.chat/ui-conference';
+import { useBackgroundBlurPreference } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { BackgroundBlurProcessor } from './backgroundBlurProcessor';
 import { supportsBackgroundBlur } from './backgroundBlurSupport';
 import { activateVirtualBackground, deactivateVirtualBackground, selectVirtualBackground, useVirtualBackground } from './virtualBackground';
-import type { BlurLevel, BlurModel } from '../../conference/hooks/useCallPreferences';
-import { useBackgroundBlurPreference } from '../../conference/hooks/useCallPreferences';
 
 /** Which way of blurring is doing it. The camera's own effect has no strengths to choose between. */
 type Blur = 'camera' | 'processor';

@@ -1,11 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider } from '@rocket.chat/fuselage';
+import { CallPanelHeader } from '@rocket.chat/ui-conference';
 import type { CallDiagnosticsData } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
 import CallDiagnosticsParticipantCard from './CallDiagnosticsParticipantCard';
 import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
-import CallPanelHeader from './CallPanelHeader';
 
 type CallDiagnosticsPanelProps = {
 	// ui-voip's source type carries this field. Keep the intersection while Meteor typechecks against a previously
