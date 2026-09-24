@@ -86,7 +86,8 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				return;
 			}
 
-			if (!anchor) {
+			// An iframe swallows the pointer, so nothing would close a tooltip left over the top of one.
+			if (!anchor || anchor.tagName === 'IFRAME') {
 				contextValue.close();
 				return;
 			}

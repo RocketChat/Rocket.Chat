@@ -7,10 +7,12 @@ import type {
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
 	VideoConferenceLeaveReason,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -19,9 +21,19 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	FindOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+/**
+ * Whether a status means the call can take no more participants — the point at which its SIP alias is released.
+ *
+ * `undefined` is "the status is not changing", which is not the same as "it is not finished": a partial update
+ * that names no status must leave the alias exactly where it is.
+ */
+const isFinishedStatus = (status?: VideoConference['status']): boolean =>
+	status !== undefined && [VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(status);
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
@@ -42,27 +54,60 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				unique: false,
 				partialFilterExpression: { status: { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] } },
 			},
+			// Unique only among the conferences that have an alias. The space is short enough to reuse, so an
+			// alias is released when a call ends — and without the partial filter every aliasless conference
+			// would collide with every other one on a missing field.
+			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
 		];
 	}
 
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
+	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>> {
 		// Matches conferences started in this room (`rid`) and those whose discussion *is* this room
 		// (`discussionRid`), so a discussion resolves the conference it belongs to — its members may have no
 		// access to the parent room the conference originated in.
-		return this.findPaginated<VideoConference>(
-			{ $or: [{ rid }, { discussionRid: rid }] },
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+
+		// An aggregation rather than a find, because the list names each conference after its discussion and
+		// shows that room's last message — two fields that live on the room, not on the conference.
+		//
+		// The paging stages come *before* the lookup on purpose. `$match`/`$sort`/`$skip`/`$limit` are pushed
+		// into the query layer, so both `{ rid, createdAt }` and `{ discussionRid, createdAt }` still serve the
+		// `$or` as an index-ordered merge — exactly as the find did — and the lookup then runs over one page
+		// rather than the room's whole call history.
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					// `fname` is the display name and `name` the slug; a room has at least one. `$first` because
+					// the lookup answers with an array, which holds one room or none.
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConferenceWithDiscussion>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
@@ -117,8 +162,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		sipAlias,
+		discussionRid,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>> &
+		Pick<IGroupVideoConference, 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -127,6 +175,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			// Spread conditionally rather than assigned: the driver writes an explicit `undefined` as `null`,
+			// which satisfies the alias index's `$exists` filter — so every conference created without one would
+			// collide with the last.
+			...(sipAlias ? { sipAlias } : {}),
+			...(discussionRid ? { discussionRid } : {}),
 			...callDetails,
 		};
 
@@ -171,12 +224,17 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedBy,
 				endedAt: endedAt || new Date(),
 			},
+			// The call is over: hand its SIP alias back so the number can be given out again.
+			$unset: {
+				sipAlias: true,
+			},
 		});
 	}
 
-	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void> {
+	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: data,
+			...(isFinishedStatus(data.status) && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -193,6 +251,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				status,
 			},
+			...(isFinishedStatus(status) && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -440,6 +499,63 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedAt: { $exists: false },
 			},
 			{ projection: { _id: 1, rid: 1, users: 1, providerName: 1 } },
+		);
+	}
+
+	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { sipAlias } });
+	}
+
+	public async unsetSipAliasById(callId: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { sipAlias: true } });
+	}
+
+	/** Scoped by provider because the alias is only unique within one — the index is on the pair. */
+	public async findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				providerName,
+				sipAlias,
+			},
+			options || {},
+		);
+	}
+
+	/**
+	 * Counts one more endpoint dialled in over SIP, addressed by the alias it dialled.
+	 *
+	 * By alias rather than by id because the alias is all a SIP participant event carries. Returns the updated
+	 * conference, which is how the caller tells a real call from an alias nothing answers to any more.
+	 */
+	public async increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				sipAlias,
+			},
+			{
+				$inc: { sipParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				_id: conferenceId,
+			},
+			{
+				$inc: { webrtcParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
 		);
 	}
 }

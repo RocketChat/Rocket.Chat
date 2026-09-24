@@ -4,12 +4,14 @@ import type {
 	VideoConference,
 	VideoConferenceCapabilities,
 	VideoConferenceChatAccess,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 
 import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
 import type { VideoConfCallIdProps } from './VideoConfCallIdProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
+import type { VideoConfJoinScheduledProps } from './VideoConfJoinScheduledProps';
 import type { VideoConfListProps } from './VideoConfListProps';
 import type { VideoConfRenameProps } from './VideoConfRenameProps';
 import type { VideoConfRingProps } from './VideoConfRingProps';
@@ -21,6 +23,7 @@ export * from './VideoConfInfoProps';
 export * from './VideoConfListProps';
 export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
+export * from './VideoConfJoinScheduledProps';
 export * from './VideoConfRingProps';
 export * from './VideoConfCallIdProps';
 export * from './VideoConfAddParticipantsProps';
@@ -37,6 +40,11 @@ export type VideoConferenceEndpoints = {
 		// `callId` + `rid` instead — the client routes the join into the
 		// embedded provider's React context rather than opening a popup URL.
 		POST: (params: VideoConfJoinProps) => { url: string; providerName: string; callId?: string; rid?: string };
+	};
+
+	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
+	'/v1/video-conference.join-scheduled': {
+		POST: (params: VideoConfJoinScheduledProps) => { callId: string };
 	};
 
 	/** Records that the caller left the call, ending the conference when nobody is left in it. */
@@ -92,7 +100,7 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.list': {
-		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
+		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConferenceWithDiscussion[] }>;
 	};
 
 	'/v1/video-conference.capabilities': {

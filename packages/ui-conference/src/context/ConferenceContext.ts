@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 import type {
 	ConferenceActions,
 	ConferenceCall,
+	ConferencePanelState,
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,
@@ -25,6 +26,7 @@ export type ConferenceContextValue = {
 	slots: ConferenceSlots;
 	/** What the workspace and this reader's preferences have settled, read once rather than per component. */
 	viewer: ConferenceViewer;
+	panel: ConferencePanelState;
 	/**
 	 * Which thread is open over the chat, rather than the thread itself — it is shown inside the room's own
 	 * provider, which is the application's. Kept here because navigation can open one too, and that arrives from
@@ -84,6 +86,9 @@ export const defaultConferenceContextValue: ConferenceContextValue = {
 		open: () => undefined,
 		close: () => undefined,
 	},
+	panel: {
+		toggle: () => undefined,
+	},
 };
 
 export const ConferenceContext = createContext<ConferenceContextValue>(defaultConferenceContextValue);
@@ -101,3 +106,5 @@ export const useConferenceActions = (): ConferenceActions => useContext(Conferen
 export const useConferenceSlots = (): ConferenceSlots => useContext(ConferenceContext).slots;
 
 export const useConferenceViewer = (): ConferenceViewer => useContext(ConferenceContext).viewer;
+
+export const useConferencePanel = (): ConferencePanelState => useContext(ConferenceContext).panel;

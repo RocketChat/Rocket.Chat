@@ -1,4 +1,4 @@
-export { ConferenceContext, defaultConferenceContextValue, useConference } from './context/ConferenceContext';
+export { ConferenceContext, defaultConferenceContextValue, useConference, useConferencePanel } from './context/ConferenceContext';
 export type { ConferenceContextValue } from './context/ConferenceContext';
 export { OngoingCallsContext, defaultOngoingCallsContextValue, useOngoingCalls } from './context/OngoingCallsContext';
 export type { OngoingCallsContextValue, CallRing } from './context/OngoingCallsContext';
@@ -9,6 +9,8 @@ export type {
 	ConferenceChatAccess,
 	ConferenceFailure,
 	ConferenceMember,
+	ConferencePanel,
+	ConferencePanelState,
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,

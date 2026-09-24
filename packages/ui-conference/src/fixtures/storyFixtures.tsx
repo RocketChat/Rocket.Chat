@@ -17,7 +17,7 @@ import type { ConferenceContextValue } from '../context/ConferenceContext';
 import { ConferenceContext, defaultConferenceContextValue } from '../context/ConferenceContext';
 import type { OngoingCallsContextValue } from '../context/OngoingCallsContext';
 import { OngoingCallsContext, defaultOngoingCallsContextValue } from '../context/OngoingCallsContext';
-import type { ConferenceMember } from '../context/definitions';
+import type { ConferencePanel, ConferenceMember } from '../context/definitions';
 import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState';
 import ConferenceViewport from '../views/ConferenceViewport';
 
@@ -94,7 +94,7 @@ export const buildConferenceContext = ({
 		join: action('join'),
 		leave: action('leave'),
 		ringMember: async (memberId) => action('ringMember')(memberId),
-		shareChat: async (mode) => action('shareChat')(mode),
+		shareChat: async (mode, users) => action('shareChat')(mode, users),
 		addParticipants: async (users, ring) => {
 			action('addParticipants')(users, ring);
 			return { added: users.length };
@@ -108,14 +108,34 @@ export const buildConferenceContext = ({
 	viewer: { uid: JOHN_DOE_ID, useRealName: false, displayAvatars: true, canRingUsers: true, ...viewer },
 });
 
+/**
+ * Holds the panel a story has open, which the application holds in the real thing.
+ *
+ * Without it every story's chat and members buttons are inert, since the value they toggle would be rebuilt
+ * unchanged on each render.
+ */
+const ConferenceFixtureProvider = ({ value, children }: { value: ConferenceContextValue; children: ReactNode }) => {
+	const [active, setActive] = useState<ConferencePanel | undefined>(value.panel.active);
+
+	const conference = useMemo(
+		() => ({
+			...value,
+			panel: { active, toggle: (panel: ConferencePanel) => setActive((current) => (current === panel ? undefined : panel)) },
+		}),
+		[value, active],
+	);
+
+	return <ConferenceContext.Provider value={conference}>{children}</ConferenceContext.Provider>;
+};
+
 export const withConference = (value?: ConferenceFixture): Decorator => {
 	const conference = buildConferenceContext(value);
 
 	// eslint-disable-next-line react/display-name
 	return (Story) => (
-		<ConferenceContext.Provider value={conference}>
+		<ConferenceFixtureProvider value={conference}>
 			<Story />
-		</ConferenceContext.Provider>
+		</ConferenceFixtureProvider>
 	);
 };
 
