@@ -45,7 +45,6 @@
 		"jest": "~30.2.0",
 		"jest-environment-jsdom": "~30.2.0",
 		"rollup": "~4.62.5",
-		"ts-jest": "~29.4.12",
 		"typescript": "~5.9.3"
 	}
 }
