@@ -1,6 +1,6 @@
 # Stream fan-out rides the service broker
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-09
 - **Scope:** `packages/streamer`, `packages/core-services` (`LocalBroker`), `apps/meteor` (`InstanceService`, notifications, federation startup), `ee/apps/ddp-streamer`
 
@@ -25,11 +25,11 @@ Every delivery that crosses a process boundary is a service broker event. There 
 fired on every broadcasting emit, and a `'publish'` hook fired on every client write. Whether anything listened
 depended on the deployment, and each deployment wired it differently:
 
-| deployment                       | `'broadcast'` listener                               | transport                      |
-| -------------------------------- | ---------------------------------------------------- | ------------------------------ |
-| enterprise multi-instance        | `InstanceService`, with the scalability license      | matrix Moleculer broker        |
-| microservices, monolith process  | none                                                 | none                           |
-| microservices, ddp-streamer      | `service.ts`                                         | `api.broadcast('stream', …)`   |
+| deployment                      | `'broadcast'` listener                          | transport                    |
+| ------------------------------- | ----------------------------------------------- | ---------------------------- |
+| enterprise multi-instance       | `InstanceService`, with the scalability license | matrix Moleculer broker      |
+| microservices, monolith process | none                                            | none                         |
+| microservices, ddp-streamer     | `service.ts`                                    | `api.broadcast('stream', …)` |
 
 In the enterprise multi-instance monolith the same channel also carried the service event bus itself:
 `LocalBroker` wrapped every `api.broadcast` as a fake emit on a `local` stream, and `Notifications.ts` unwrapped it
