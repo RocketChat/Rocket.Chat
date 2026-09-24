@@ -1,0 +1,381 @@
+{
+  "component": {
+    "form": {
+      "steps": "Step {{currentStep}} of {{stepCount}}",
+      "action": {
+        "back": "Back",
+        "next": "Next",
+        "skip": "Skip this step",
+        "registerWorkspace": "Register workspace",
+        "register": "Register",
+        "registerOffline": "Register offline",
+        "confirm": "Confirm",
+        "pasteHere": "Paste here...",
+        "completeRegistration": "Complete registration"
+      },
+      "requiredField": "This field is required",
+      "termsAndConditions": "I agree with <1>Terms and Conditions</1> and <3>Privacy Policy</3>"
+    },
+    "emailCodeFallback": "Didn’t receive email? <1>Resend</1> or <3>Change email</3>.",
+    "manageWorkspaceFallback": "Already have an account? <1>Manage your workspaces.</1>",
+    "createNewAccountPage": "Already registered? <1>Go to login</1>",
+    "wantToLogin": "Want to log in? <1>Go to login</1>"
+  },
+  "page": {
+    "form": {
+      "title": "Let's launch your workspace"
+    },
+    "emailConfirmed": {
+      "title": "Email Confirmed!",
+      "subtitle": "You can return to your Rocket.Chat application – we have launched your workspace already."
+    },
+    "checkYourEmail": {
+      "title": "Check your email",
+      "subtitle": "Your request has been sent successfully.<1></1>Check your email inbox to launch your Enterprise trial.<1></1>The link will expire in 30 minutes."
+    },
+    "confirmationProcess": {
+      "title": "Confirmation in Process"
+    },
+    "cloudDescription": {
+      "title": "Let's launch your workspace and <1>14-day trial</1>",
+      "tryGold": "Try our best Gold plan for 14 days for free",
+      "numberOfIntegrations": "Apps and integrations",
+      "availability": "Scalable micro-services",
+      "auditing": "Message audit panel / Audit logs",
+      "engagement": "Engagement Dashboard",
+      "ldap": "LDAP enhanced sync",
+      "omnichannel": "Omnichannel premium",
+      "sla": "SLA: Premium",
+      "push": "Secured push notifications",
+      "goldIncludes": "* Golden plan includes all features from other plans"
+    },
+    "alreadyHaveAccount": "Already have an account? <1>Manage your workspaces.</1>",
+    "invalidLink": {
+      "title": "Your Link is no Longer Valid",
+      "content": "Seems like you have already used invite link. It’s generated for a single sign in. Request a new one to join your workspace.",
+      "button": {
+        "text": "Request new link"
+      }
+    },
+    "requestTrial": {
+      "title": "Request a <1>30-day Trial</1>",
+      "subtitle": "Try our best Enterprise Edition plan for 30 days for free"
+    },
+    "magicLinkEmail": {
+      "title": "We emailed you a login link",
+      "subtitle": "Click the link in the email we just sent you to sign in to your workspace. <1>The link will expire in 30 minutes.</1>"
+    },
+    "loginPage": {
+      "title": {
+        "cloud": "Cloud Login"
+      },
+      "createAccount": {
+        "label": "New here? <1>Create account</1>"
+      }
+    },
+    "oauthAuthorizationPage": {
+      "title": "Authorization",
+      "allowLogin": "Do you wish to allow <1>{{name}}</1> to login with your Rocket.Chat Cloud Account?",
+      "buttons": {
+        "authorize": "Authorize",
+        "goBack": "Go Back"
+      }
+    },
+    "newAccountForm": {
+      "title": "Register new account"
+    },
+    "resetPasswordPage": {
+      "title": "Reset password?",
+      "emailSent": {
+        "title": "Password reset request received!",
+        "subtitle": "If there is a user with that email you will receive an email to finish password reset process."
+      }
+    },
+    "createPasswordPage": {
+      "title": "Create new password"
+    },
+    "somethingWentWrongPage": {
+      "title": "Something went wrong",
+      "subtitle": "Please, contact support.",
+      "requestId": "Request ID: {{requestId}}"
+    },
+    "createCloudWorkspace": {
+      "title": "Launch new workspace and <1>30-day trial</1>",
+      "tryGold": "Try Rocket.Chat Gold Edition for 30 days. No credit card required.",
+      "auditing": "Message audit panel / Audit logs",
+      "numberOfIntegrations": "Apps and integrations",
+      "ldap": "LDAP enhanced sync",
+      "omnichannel": "Enhanced Omnichannel",
+      "sla": "SLA: Premium",
+      "push": "Unlimited push notifications",
+      "engagement": "Engagement Dashboard"
+    },
+    "createFirstMember": {
+      "title": "Create first <1>workspace member</1>"
+    },
+    "redirect": {
+      "subtitle": "Redirecting in {{seconds}} seconds",
+      "redirectNotWorking": "Redirect not working? <1>Open workspace</1>"
+    }
+  },
+  "form": {
+    "adminInfoForm": {
+      "title": "Admin Info",
+      "subtitle": "We need this information to create an admin profile for your workspace.",
+      "fields": {
+        "fullName": {
+          "label": "Full name",
+          "placeholder": "First and last name"
+        },
+        "username": {
+          "label": "Username",
+          "placeholder": "@username"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Email"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Create password"
+        },
+        "keepPosted": {
+          "label": "Keep me posted about Rocket.Chat updates"
+        }
+      }
+    },
+    "organizationInfoForm": {
+      "title": "Organization Info",
+      "subtitle": "We need to know who you are.",
+      "fields": {
+        "organizationName": {
+          "label": "Organization name",
+          "placeholder": "Organization name"
+        },
+        "organizationType": {
+          "label": "Organization type",
+          "placeholder": "Select"
+        },
+        "organizationIndustry": {
+          "label": "Organization industry",
+          "placeholder": "Select"
+        },
+        "organizationSize": {
+          "label": "Organization size",
+          "placeholder": "Select"
+        },
+        "country": {
+          "label": "Country",
+          "placeholder": "Select"
+        }
+      }
+    },
+    "registeredServerForm": {
+      "title": "Register your workspace",
+      "included": {
+        "push": "Mobile push notifications",
+        "externalProviders": "Integration with external providers (WhatsApp, Facebook, Telegram, Twitter)",
+        "apps": "Access to marketplace apps"
+      },
+      "fields": {
+        "accountEmail": {
+          "inputLabel": "Admin email",
+          "inputPlaceholder": "Insert your email to continue"
+        }
+      },
+      "keepInformed": "Keep me informed about news and events",
+      "registerLater": "Register later",
+      "notConnectedToInternet": "The server is not connected to the internet, so you’ll have to do an offline registration for this workspace.",
+      "registrationEngagement": "Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.",
+      "registrationKeepInformed": "By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our <1>privacy policy</1>. You may unsubscribe at any time."
+    },
+    "createCloudWorkspace": {
+      "title": "New Cloud Workspace",
+      "fields": {
+        "orgEmail": {
+          "label": "Organization email",
+          "invalid": "Organization email required"
+        },
+        "workspaceName": {
+          "label": "Workspace name"
+        },
+        "workspaceUrl": {
+          "label": "Workspace URL",
+          "placeholder": "https://",
+          "exists": "Workspace already exists"
+        },
+        "serverRegion": {
+          "label": "Server region",
+          "tooltip": "Where is your server located"
+        },
+        "language": {
+          "label": "Language",
+          "tooltip": "The language used on your workspace's interface"
+        },
+        "keepMeInformed": "Keep me informed about news and events"
+      }
+    },
+    "registerOfflineForm": {
+      "title": "Register Offline",
+      "copyStep": {
+        "description": "If for any reason your workspace can’t be connected to the internet, follow these steps:<1></1>1. Go to: <2>cloud.rocket.chat > Workspaces</2> and click “<3>Register self-managed</3>”<4></4>2. Click “<5>Continue offline</5>”<6></6>3. In the <7>Register offline workspace</7> dialog in cloud.rocket.chat, paste the token in the box below"
+      },
+      "pasteStep": {
+        "description": "1. In <1>cloud.rocket.chat</1> get the generated text and paste below to complete your registration process"
+      },
+      "fields": {
+        "registrationToken": {
+          "inputLabel": "Registration token"
+        }
+      }
+    },
+    "requestTrialForm": {
+      "fields": {
+        "emailAddress": {
+          "label": "Organization email",
+          "placeholder": "Enter organization email address"
+        },
+        "organizationName": {
+          "label": "Organization name",
+          "placeholder": "Enter organization name"
+        },
+        "organizationSize": {
+          "label": "Organization size",
+          "placeholder": "Select"
+        },
+        "country": {
+          "label": "Country",
+          "placeholder": "Select"
+        }
+      },
+      "button": {
+        "text": "Request Trial"
+      },
+      "hasWorkspace": {
+        "label": "Already registered a workspace?",
+        "description": "Please use the email address associated with your cloud account"
+      }
+    },
+    "awaitConfirmationForm": {
+      "title": "Awaiting confirmation",
+      "content": {
+        "securityCode": "Security code",
+        "sentEmail": "Email sent to <1>{{emailAddress}}</1> with a confirmation link.Please verify that the security code below matches the one in the email."
+      }
+    },
+    "loginForm": {
+      "content": {
+        "default": "Enter your password to continue.",
+        "logIn": "Log in",
+        "passwordLess": "If you’re already registered we’ll email you a link to log in."
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Email"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter your password",
+          "error": "Email and password do not match"
+        }
+      },
+      "button": {
+        "text": "Log in"
+      },
+      "sendLoginLink": "Send login link",
+      "redirect": "Enter password instead",
+      "resetPassword": "Forgot your password? <1>Reset password</1>"
+    },
+    "newAccountForm": {
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Email"
+        },
+        "password": {
+          "label": "Create Password",
+          "placeholder": "Enter your password",
+          "error": "Email and password do not match"
+        },
+        "confirmPassword": {
+          "label": "Confirm Password",
+          "placeholder": "Enter your password",
+          "error": "Email and password do not match"
+        }
+      },
+      "button": {
+        "text": "Log in"
+      }
+    },
+    "resetPasswordForm": {
+      "action": {
+        "submit": "Reset Password"
+      },
+      "content": {
+        "subtitle": "Enter the email address associated with your account."
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Email"
+        }
+      }
+    },
+    "createPasswordForm": {
+      "fields": {
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter new password"
+        },
+        "confirmPassword": {
+          "label": "Confirm new password",
+          "placeholder": "Enter new password"
+        }
+      },
+      "button": {
+        "text": "Save new password"
+      }
+    },
+    "totpForm": {
+      "fields": {
+        "totpCode": {
+          "label": "TOTP Code",
+          "placeholder": "TOTP Code"
+        },
+        "backupCode": {
+          "label": "Backup Code",
+          "placeholder": "Backup Code"
+        }
+      },
+      "button": {
+        "text": "Log in"
+      },
+      "buttonBackupCode": {
+        "text": "Need to use backup code?"
+      },
+      "buttonTotpCode": {
+        "text": "Use TOTP code."
+      }
+    },
+    "createFirstMemberForm": {
+      "title": "New admin account",
+      "subtitle": "This will be your admin user for {{workspaceName}}.",
+      "fields": {
+        "username": {
+          "label": "Username"
+        },
+        "password": {
+          "label": "Password"
+        }
+      },
+      "button": {
+        "submit": "Launch workspace"
+      }
+    }
+  }
+}
