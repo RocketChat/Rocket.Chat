@@ -9751,12 +9751,15 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.5"
     eslint: "npm:~9.39.3"
     react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.8"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/message-parser": "workspace:^"
     react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 

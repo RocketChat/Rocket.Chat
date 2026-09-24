@@ -1,7 +1,7 @@
+import { renderComposerMarkup } from '@rocket.chat/gazzodown-alt';
 import { parse } from '@rocket.chat/message-parser';
 
 import { renderComposerContent } from './messageStateHandler';
-import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
 const mountMarkup = (text: string): HTMLDivElement => {
