@@ -6,7 +6,7 @@ import { MPEGMode } from './MPEGMode';
 import { ShortBlock } from './ShortBlock';
 import { VbrMode } from './VbrMode';
 import { fillArray } from './arrays';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import {
 	BLKSIZE,
 	BLKSIZE_s,
@@ -518,7 +518,7 @@ export class PsyModel {
 		assert(j === 129);
 		j = 0;
 		b = 0;
-		assert(gfc.s3_ss !== null);
+		assertDefined(gfc.s3_ss);
 		for (; b < gfc.npart_s; b++) {
 			let kk = gfc.s3ind_s[b][0];
 			let ecb = gfc.s3_ss[j++] * eb[kk];
@@ -945,7 +945,7 @@ export class PsyModel {
 
 			k = 0;
 
-			assert(gfc.s3_ll !== null);
+			assertDefined(gfc.s3_ll);
 			for (b = 0; b < gfc.npart_l; b++) {
 				let kk = gfc.s3ind[b][0];
 				let eb2 = eb_l[kk] * this.tab[mask_idx_l[kk]];
@@ -1356,7 +1356,7 @@ export class PsyModel {
 		j = 0;
 		b = 0;
 		this.psyvbr_calc_mask_index_s(gfc, max, avg, mask_idx_s);
-		assert(gfc.s3_ss !== null);
+		assertDefined(gfc.s3_ss);
 		for (; b < gfc.npart_s; b++) {
 			let kk = gfc.s3ind_s[b][0];
 			const last = gfc.s3ind_s[b][1];
@@ -1419,7 +1419,7 @@ export class PsyModel {
 		this.calc_mask_index_l(gfc, max, avg, mask_idx_l);
 
 		let k = 0;
-		assert(gfc.s3_ll !== null);
+		assertDefined(gfc.s3_ll);
 		for (b = 0; b < gfc.npart_l; b++) {
 			let x;
 			let ecb;

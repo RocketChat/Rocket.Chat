@@ -12,7 +12,7 @@ import { StartLine } from './StartLine';
 import { Takehiro } from './Takehiro';
 import { VbrMode } from './VbrMode';
 import { copyArray, fillArray, sortArray } from './arrays';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import { PSFB12, PSFB21, SBMAX_l, SBMAX_s, SBPSY_l, SBPSY_s, SFBMAX, SHORT_TYPE } from './constants';
 import { isCloseToEachOther } from './math';
 
@@ -54,7 +54,7 @@ export class Quantize {
 		let sum = 0;
 		const upper = Math.trunc(cod_info.max_nonzero_coeff);
 
-		assert(xrpow !== null);
+		assertDefined(xrpow);
 		cod_info.xrpow_max = 0;
 
 		assert(upper >= 0 && upper <= 575);
