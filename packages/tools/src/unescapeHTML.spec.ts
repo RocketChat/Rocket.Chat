@@ -26,6 +26,8 @@ describe('unescapeHTML', () => {
 		expect(unescapeHTML(null as unknown as string)).toBe('');
 		expect(unescapeHTML(undefined as unknown as string)).toBe('');
 		expect(unescapeHTML(5 as unknown as string)).toBe('5');
+		expect(unescapeHTML(0 as unknown as string)).toBe('0');
+		expect(unescapeHTML(false as unknown as string)).toBe('false');
 	});
 
 	it('decodes numeric entities beyond the Basic Multilingual Plane', () => {
