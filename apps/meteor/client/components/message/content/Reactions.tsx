@@ -2,13 +2,14 @@ import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { HTMLAttributes } from 'react';
-import { useContext, useRef } from 'react';
+import type { HTMLAttributes, KeyboardEvent, MouseEvent } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageListContext, useOpenEmojiPicker, useUserHasReacted } from '../list/MessageListContext';
+import { hasUserReacted } from '../helpers/messageViewerFacts';
+import { useMessageActions } from '../list/MessageActionsContext';
+import { useMessageListViewer } from '../list/MessageViewerContext';
 import Reaction from './reactions/Reaction';
-import { useToggleReactionMutation } from './reactions/useToggleReactionMutation';
 
 export type ReactionsProps = {
 	message: IMessage;
@@ -17,10 +18,16 @@ export type ReactionsProps = {
 const Reactions = ({ message, ...props }: ReactionsProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
-	const hasReacted = useUserHasReacted(message);
-	const openEmojiPicker = useOpenEmojiPicker(message);
-	const { username } = useContext(MessageListContext);
-	const toggleReactionMutation = useToggleReactionMutation();
+	const { uid, username } = useMessageListViewer();
+	const actions = useMessageActions();
+	const hasReacted = (reaction: string) => hasUserReacted(message, username, reaction);
+	const openEmojiPicker = (e: MouseEvent | KeyboardEvent) => {
+		if (!uid) {
+			return;
+		}
+		e.nativeEvent.stopImmediatePropagation();
+		actions.openReactionPicker(message, e.currentTarget);
+	};
 	const { toolbarProps } = useToolbar(props, ref);
 	const buttonProps = useButtonPattern(openEmojiPicker);
 
@@ -35,7 +42,7 @@ const Reactions = ({ message, ...props }: ReactionsProps) => {
 						name={name}
 						names={reactions.usernames.filter((user) => user !== username).map((username) => `@${username}`)}
 						messageId={message._id}
-						onClick={() => toggleReactionMutation.mutate({ mid: message._id, reaction: name })}
+						onClick={() => actions.toggleReaction(message, name)}
 					/>
 				))}
 			<MessageReactionAction title={t('Add_Reaction')} {...buttonProps} />

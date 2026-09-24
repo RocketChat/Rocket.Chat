@@ -3,17 +3,12 @@ import { createContext, useContext } from 'react';
 import type { MessageActions, MessageActionsPolicy } from './messageListContract';
 import { denyingMessageActionsPolicy, inertMessageActions } from './messageListContract';
 
-export type MessageActionsContextValue = {
-	policy: MessageActionsPolicy;
-	actions: MessageActions;
-};
+export const MessageActionsPolicyContext = createContext<MessageActionsPolicy>(denyingMessageActionsPolicy);
+MessageActionsPolicyContext.displayName = 'MessageActionsPolicy';
 
-export const MessageActionsContext = createContext<MessageActionsContextValue>({
-	policy: denyingMessageActionsPolicy,
-	actions: inertMessageActions,
-});
+export const MessageActionsContext = createContext<MessageActions>(inertMessageActions);
 MessageActionsContext.displayName = 'MessageActions';
 
-export const useMessageActionsPolicy = (): MessageActionsPolicy => useContext(MessageActionsContext).policy;
+export const useMessageActionsPolicy = (): MessageActionsPolicy => useContext(MessageActionsPolicyContext);
 
-export const useMessageActions = (): MessageActions => useContext(MessageActionsContext).actions;
+export const useMessageActions = (): MessageActions => useContext(MessageActionsContext);

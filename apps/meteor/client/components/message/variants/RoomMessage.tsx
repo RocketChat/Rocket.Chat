@@ -6,7 +6,7 @@ import Emoji from '../../Emoji';
 import MessageHeader from '../MessageHeader';
 import RoomMessageFrame from './room/RoomMessageFrame';
 import type { RoomMessageFrameProps } from './room/RoomMessageFrame';
-import { useMessageListUserCard } from '../list/MessageListContext';
+import { useMessageListUserCard } from '../list/MessageViewerContext';
 
 export type RoomMessageProps = Omit<RoomMessageFrameProps, 'leading' | 'header'> & {
 	showUserAvatar: boolean;

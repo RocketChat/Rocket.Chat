@@ -6,7 +6,8 @@ import type { ReactNode, UIEvent } from 'react';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
+import { useMessageListHighlights } from './message/list/MessageListContext';
+import { useMessageListViewer } from './message/list/MessageViewerContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 /** What every rendered markup block shares: the viewer's markup preferences and the mention interactions */
@@ -53,7 +54,7 @@ export const GazzodownEnvironmentProvider = ({ children }: GazzodownEnvironmentP
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = useUserPreference<boolean>('useEmojis', true);
-	const useRealName = useMessageListShowRealName();
+	const { useRealName } = useMessageListViewer();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
 	const { isEmbedded, isMobile } = useLayout();

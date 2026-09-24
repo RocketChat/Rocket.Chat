@@ -11,6 +11,7 @@ export type MessageListUserCard = Pick<UserCardContextValue, 'openUserCard' | 't
 /** What every rendered message needs to know about the person looking at it */
 export type MessageListViewer = {
 	uid: string | undefined;
+	username: string | undefined;
 	useRealName: boolean;
 	displayAvatars: boolean | undefined;
 };
@@ -72,6 +73,7 @@ export type MessageActions = {
 	forward: (message: IMessage) => Promise<void>;
 	quote: (message: IMessage & Partial<ITranslatedMessage>) => void;
 	react: (message: IMessage, emoji: string) => void;
+	toggleReaction: (message: IMessage, reaction: string) => void;
 	openReactionPicker: (message: IMessage, anchor: Element) => void;
 	replyInThread: (message: IMessage) => void;
 	jumpTo: (message: IMessage) => void;
@@ -80,6 +82,7 @@ export type MessageActions = {
 
 export const defaultMessageListViewer: MessageListViewer = {
 	uid: undefined,
+	username: undefined,
 	useRealName: false,
 	displayAvatars: undefined,
 };
@@ -141,6 +144,7 @@ export const inertMessageActions: MessageActions = {
 	quote: noop,
 	react: noop,
 	openReactionPicker: noop,
+	toggleReaction: noop,
 	replyInThread: noop,
 	jumpTo: noop,
 	runAppAction: noop,

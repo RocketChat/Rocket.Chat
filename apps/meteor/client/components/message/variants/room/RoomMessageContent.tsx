@@ -21,8 +21,8 @@ import {
 	useMessageListReadReceipts,
 	useMessageListBroadcast,
 	useMessageListChatAvailable,
-	useMessageListViewer,
 } from '../../list/MessageListContext';
+import { useMessageListViewer } from '../../list/MessageViewerContext';
 import type { MessageAuthor } from '../../list/messageListContract';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 

@@ -4,6 +4,7 @@ import { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
+import { useToggleReactionMutation } from '../../../../components/message/content/reactions/useToggleReactionMutation';
 import { getMainMessageText } from '../../../../components/message/helpers/getMainMessageText';
 import { useMarkAsUnreadMutation } from '../../../../components/message/hooks/useMarkAsUnreadMutation';
 import { usePinMessageMutation } from '../../../../components/message/hooks/usePinMessageMutation';
@@ -130,6 +131,7 @@ export const useMessageActionsValue = (autoTranslateOptions: AutoTranslateOption
 	const { mutateAsync: starMessage } = useStarMessageMutation();
 	const { mutateAsync: unstarMessage } = useUnstarMessageMutation();
 	const { mutateAsync: markAsUnread } = useMarkAsUnreadMutation();
+	const { mutate: toggleReaction } = useToggleReactionMutation();
 	const { mutate: toggleFollowingThread } = useToggleFollowingThreadMutation({
 		onSuccess: (_data, { follow }) => {
 			dispatchToastMessage({ type: 'success', message: t(follow ? 'You_followed_this_message' : 'You_unfollowed_this_message') });
@@ -235,6 +237,7 @@ export const useMessageActionsValue = (autoTranslateOptions: AutoTranslateOption
 				chat?.composer?.quoteMessage(message);
 			},
 			react,
+			toggleReaction: (message, reaction) => toggleReaction({ mid: message._id, reaction }),
 			openReactionPicker: (message, anchor) => {
 				chat?.emojiPicker.open(anchor, (emoji) => react(message, emoji));
 			},
@@ -285,6 +288,7 @@ export const useMessageActionsValue = (autoTranslateOptions: AutoTranslateOption
 		starMessage,
 		unstarMessage,
 		markAsUnread,
+		toggleReaction,
 		toggleFollowingThread,
 		autoTranslateOptions,
 	]);

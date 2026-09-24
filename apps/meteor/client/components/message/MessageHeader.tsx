@@ -16,14 +16,12 @@ import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import {
 	useMessageListShowUsername,
-	useMessageListShowRealName,
 	useMessageListShowRoles,
 	useMessageListRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
-	useMessageListUserCard,
-	useMessageListViewer,
 } from './list/MessageListContext';
+import { useMessageListUserCard, useMessageListViewer } from './list/MessageViewerContext';
 import type { MessageAuthor } from './list/messageListContract';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
@@ -40,11 +38,10 @@ const MessageHeader = ({ message, author = message.u }: MessageHeaderProps) => {
 	const { triggerProps, openUserCard } = useMessageListUserCard();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, message.u.username));
 
-	const showRealName = useMessageListShowRealName();
 	const user = author;
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const { useRealName } = useMessageListViewer();
+	const showUsername = useMessageListShowUsername() && useRealName && !usernameAndRealNameAreSame;
 	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 	const normalizedUsername = normalizeUsername(user.username);
 

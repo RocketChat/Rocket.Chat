@@ -1,14 +1,15 @@
-import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter, useUserCard } from '@rocket.chat/ui-contexts';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useLayout, useUserPreference, useSetting, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
 import { useMessageActionsPolicyValue, useMessageActionsValue } from './useMessageListContract';
 import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
-import { MessageActionsContext } from '../../../../components/message/list/MessageActionsContext';
+import { MessageActionsContext, MessageActionsPolicyContext } from '../../../../components/message/list/MessageActionsContext';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
-import { useMessageListViewerValue } from '../../../../components/message/list/MessageViewerProvider';
+import { MessageViewerContext } from '../../../../components/message/list/MessageViewerContext';
+import { useMessageViewerValue } from '../../../../components/message/list/MessageViewerProvider';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -35,10 +36,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		throw new Error('Room not found');
 	}
 
-	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
-	const user = useUser();
-	const uid = user?._id;
-	const username = user?.username;
 	const subscription = useRoomSubscription();
 
 	const { isMobile } = useLayout();
@@ -49,7 +46,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && (!isRoomFederated(room) || federationReadReceipts);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
-	const showRealName = useSetting('UI_Use_Real_Name', false);
 	const showColors = useSetting('HexColorPreview_Enabled', false);
 
 	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
@@ -64,9 +60,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		() => ({ showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled }),
 		[showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled],
 	);
-	const viewer = useMessageListViewerValue();
-	const { openUserCard, triggerProps } = useUserCard();
-	const userCard = useMemo(() => ({ openUserCard, triggerProps }), [openUserCard, triggerProps]);
+	const viewer = useMessageViewerValue();
 	const actionsPolicy = useMessageActionsPolicyValue(room);
 	const actions = useMessageActionsValue(autoTranslateOptions);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
@@ -80,37 +74,20 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const chat = useChat();
 	const chatAvailable = Boolean(chat);
 	const broadcast = Boolean(subscription?.broadcast);
-	const messageActions = useMemo(() => ({ policy: actionsPolicy, actions }), [actionsPolicy, actions]);
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
 			showColors,
-			useUserHasReacted: username
-				? (message) =>
-						(reaction): boolean =>
-							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
-				: () => (): boolean => false,
-			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
-				: (): boolean => false,
 
 			autoTranslate: {
 				autoTranslateEnabled,
 				autoTranslateLanguage,
 				showAutoTranslate,
 			},
-			useShowStarred: hasSubscription
-				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
-				: (): boolean => false,
-			useMessageDateFormatter:
-				() =>
-				(date: Date): string =>
-					date.toLocaleString(),
 			apiEmbedEnabled,
 			autoLinkDomains,
 			showRoles,
 			getMessageRoles,
-			showRealName,
 			showUsername,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
@@ -127,14 +104,6 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 					urlRegex: getRegexHighlightUrl(highlight),
 				})),
 
-			useOpenEmojiPicker: uid
-				? (message) =>
-						(e): void => {
-							e.nativeEvent.stopImmediatePropagation();
-							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
-						}
-				: () => (): void => undefined,
-			username,
 			readReceipts: {
 				enabled: readReceiptsEnabled,
 				storeUsers: readReceiptsStoreUsers,
@@ -142,30 +111,24 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatDateAndTime,
 			formatTime,
 			formatDate,
-			viewer,
+			subscribed: hasSubscription,
 			broadcast,
 			chatAvailable,
-			userCard,
 		}),
 		[
-			username,
-			uid,
 			showAutoTranslate,
 			autoTranslateEnabled,
 			hasSubscription,
 			autoTranslateLanguage,
 			showRoles,
 			getMessageRoles,
-			showRealName,
 			showUsername,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,
 			highlights,
-			reactToMessage,
 			showColors,
 			msgParameter,
-			chat?.emojiPicker,
 			readReceiptsEnabled,
 			readReceiptsStoreUsers,
 			apiEmbedEnabled,
@@ -173,19 +136,21 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatDateAndTime,
 			formatTime,
 			formatDate,
-			viewer,
 			broadcast,
 			chatAvailable,
-			userCard,
 		],
 	);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
 			<MessageListContext.Provider value={context}>
-				<MessageActionsContext.Provider value={messageActions}>
-					<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
-				</MessageActionsContext.Provider>
+				<MessageViewerContext.Provider value={viewer}>
+					<MessageActionsPolicyContext.Provider value={actionsPolicy}>
+						<MessageActionsContext.Provider value={actions}>
+							<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
+						</MessageActionsContext.Provider>
+					</MessageActionsPolicyContext.Provider>
+				</MessageViewerContext.Provider>
 			</MessageListContext.Provider>
 		</AttachmentProvider>
 	);

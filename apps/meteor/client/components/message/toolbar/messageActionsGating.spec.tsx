@@ -14,8 +14,7 @@ import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 import { useMessageActionsPolicyValue } from '../../../views/room/MessageList/providers/useMessageListContract';
-import { MessageActionsContext } from '../list/MessageActionsContext';
-import { inertMessageActions } from '../list/messageListContract';
+import { MessageActionsPolicyContext } from '../list/MessageActionsContext';
 
 jest.mock('../../../../app/utils/rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({
@@ -39,11 +38,7 @@ type Builder = ReturnType<typeof mockAppRoot>;
 
 const RoomActionsPolicy = ({ children }: { children?: ReactNode }) => {
 	const actionsPolicy = useMessageActionsPolicyValue(room);
-	return (
-		<MessageActionsContext.Provider value={{ policy: actionsPolicy, actions: inertMessageActions }}>
-			{children}
-		</MessageActionsContext.Provider>
-	);
+	return <MessageActionsPolicyContext.Provider value={actionsPolicy}>{children}</MessageActionsPolicyContext.Provider>;
 };
 
 const renderAction = <T,>(useAction: () => T, builder: Builder) => {

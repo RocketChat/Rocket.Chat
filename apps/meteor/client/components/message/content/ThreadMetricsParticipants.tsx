@@ -8,7 +8,7 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useMessageListViewer } from '../list/MessageListContext';
+import { useMessageListViewer } from '../list/MessageViewerContext';
 
 export type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;

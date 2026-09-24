@@ -3,13 +3,9 @@ import { isEditedMessage, isE2EEMessage, isE2EEPinnedMessage } from '@rocket.cha
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import {
-	useMessageDateFormatter,
-	useShowStarred,
-	useShowTranslated,
-	useShowFollowing,
-	useMessageListViewer,
-} from './list/MessageListContext';
+import { isMessageFollowedBy, isMessageStarredBy } from './helpers/messageViewerFacts';
+import { useMessageListSubscribed, useShowTranslated } from './list/MessageListContext';
+import { useMessageListViewer } from './list/MessageViewerContext';
 
 export type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
@@ -18,14 +14,12 @@ export type StatusIndicatorsProps = {
 const StatusIndicators = ({ message }: StatusIndicatorsProps) => {
 	const { t } = useTranslation();
 	const translated = useShowTranslated(message);
-	const starred = useShowStarred({ message });
-	const following = useShowFollowing({ message });
 
 	const isEncryptedMessage = isE2EEMessage(message) || isE2EEPinnedMessage(message);
 
 	const { uid } = useMessageListViewer();
-
-	const formatter = useMessageDateFormatter();
+	const starred = useMessageListSubscribed() && isMessageStarredBy(message, uid);
+	const following = isMessageFollowedBy(message, uid);
 
 	return (
 		<MessageStatusIndicator>
@@ -40,10 +34,10 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps) => {
 					color={message.u._id !== message.editedBy._id ? 'danger' : undefined}
 					title={
 						message.editedBy._id === uid
-							? t('Message_has_been_edited_at', { date: formatter(message.editedAt) })
+							? t('Message_has_been_edited_at', { date: message.editedAt.toLocaleString() })
 							: t('Message_has_been_edited_by_at', {
 									username: message.editedBy.username || '?',
-									date: formatter(message.editedAt),
+									date: message.editedAt.toLocaleString(),
 								})
 					}
 				/>

@@ -5,7 +5,7 @@ import Emoji from '../../Emoji';
 import MessageHeader from '../MessageHeader';
 import ThreadMessageFrame from './thread/ThreadMessageFrame';
 import type { ThreadMessageFrameProps } from './thread/ThreadMessageFrame';
-import { useMessageListUserCard } from '../list/MessageListContext';
+import { useMessageListUserCard } from '../list/MessageViewerContext';
 
 export type ThreadMessageProps = Omit<ThreadMessageFrameProps, 'leading' | 'header'> & {
 	showUserAvatar: boolean;

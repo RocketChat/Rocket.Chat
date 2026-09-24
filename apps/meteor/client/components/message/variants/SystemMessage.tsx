@@ -25,14 +25,8 @@ import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import {
-	useMessageListShowRealName,
-	useMessageListShowUsername,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-	useMessageListUserCard,
-	useMessageListViewer,
-} from '../list/MessageListContext';
+import { useMessageListShowUsername, useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
+import { useMessageListUserCard, useMessageListViewer } from '../list/MessageViewerContext';
 import type { MessageAuthor } from '../list/messageListContract';
 
 export type SystemMessageProps = {
@@ -47,12 +41,11 @@ const SystemMessage = ({ message, author = message.u, showUserAvatar, ...props }
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard } = useMessageListUserCard();
 
-	const showRealName = useMessageListShowRealName();
 	const user = author;
 	const normalizedUsername = normalizeUsername(user.username);
 	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const { useRealName } = useMessageListViewer();
+	const showUsername = useMessageListShowUsername() && useRealName && !usernameAndRealNameAreSame;
 	const displayName = getUserDisplayName(user.name, user.username, useRealName);
 
 	const messageType = MessageTypes.getType(message);

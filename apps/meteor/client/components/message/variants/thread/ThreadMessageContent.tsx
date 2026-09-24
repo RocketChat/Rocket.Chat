@@ -14,12 +14,8 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import {
-	useMessageListOembedEnabled,
-	useMessageListReadReceipts,
-	useMessageListBroadcast,
-	useMessageListViewer,
-} from '../../list/MessageListContext';
+import { useMessageListOembedEnabled, useMessageListReadReceipts, useMessageListBroadcast } from '../../list/MessageListContext';
+import { useMessageListViewer } from '../../list/MessageViewerContext';
 import type { MessageAuthor } from '../../list/messageListContract';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 

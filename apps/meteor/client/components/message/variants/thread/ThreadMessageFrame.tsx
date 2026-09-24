@@ -9,7 +9,7 @@ import type { MessageActionContext } from '../../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../../views/room/MessageList/contexts/MessageHighlightContext';
 import IgnoredContent from '../../IgnoredContent';
 import MessageToolbarHolder from '../../MessageToolbarHolder';
-import { useMessageListViewer } from '../../list/MessageListContext';
+import { useMessageListViewer } from '../../list/MessageViewerContext';
 import type { MessageAuthor } from '../../list/messageListContract';
 
 export type ThreadMessageFrameProps = {

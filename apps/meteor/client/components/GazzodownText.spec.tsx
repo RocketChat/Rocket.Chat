@@ -13,7 +13,6 @@ jest.mock('@rocket.chat/fuselage-hooks', () => ({
 }));
 jest.mock('./message/list/MessageListContext', () => ({
 	useMessageListHighlights: jest.fn(),
-	useMessageListShowRealName: jest.fn(() => false),
 }));
 jest.mock('../lib/utils/fireGlobalEvent', () => ({
 	fireGlobalEvent: jest.fn(),

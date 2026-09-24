@@ -2,13 +2,13 @@ import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, Messa
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useTooltipClose, useTooltipOpen } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { useRef, useContext } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReactionTooltip from './ReactionTooltip';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
-import { MessageListContext } from '../../list/MessageListContext';
+import { useMessageListViewer } from '../../list/MessageViewerContext';
 
 const normalizeUsernames = (names: string[]) => names.map<string>(normalizeUsername);
 
@@ -27,7 +27,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...pro
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
-	const { showRealName, username } = useContext(MessageListContext);
+	const { useRealName: showRealName, username } = useMessageListViewer();
 
 	const mine = hasReacted(name);
 

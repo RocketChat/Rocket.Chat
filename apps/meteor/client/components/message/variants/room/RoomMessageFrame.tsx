@@ -11,7 +11,8 @@ import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../../../
 import IgnoredContent from '../../IgnoredContent';
 import MessageToolbarHolder from '../../MessageToolbarHolder';
 import { getCheckboxLabel } from '../../helpers/getCheckboxLabel';
-import { useMessageListReadReceipts, useMessageListViewer } from '../../list/MessageListContext';
+import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import { useMessageListViewer } from '../../list/MessageViewerContext';
 import type { MessageAuthor } from '../../list/messageListContract';
 
 export type RoomMessageFrameProps = {
