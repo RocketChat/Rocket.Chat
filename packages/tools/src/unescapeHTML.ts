@@ -17,7 +17,7 @@ const htmlEntityCodeToCharacter = {
 } as const;
 
 const isHtmlEntityCode = (htmlEntityCode: string): htmlEntityCode is keyof typeof htmlEntityCodeToCharacter =>
-	htmlEntityCode in htmlEntityCodeToCharacter;
+	Object.hasOwn(htmlEntityCodeToCharacter, htmlEntityCode);
 
 export const unescapeHTML = (str: string): string =>
 	toString(str).replace(/\&([^;]{1,10});/g, (entity, htmlEntityCode) => {

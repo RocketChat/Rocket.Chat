@@ -27,4 +27,11 @@ describe('unescapeHTML', () => {
 		expect(unescapeHTML(undefined as unknown as string)).toBe('');
 		expect(unescapeHTML(5 as unknown as string)).toBe('5');
 	});
+
+	it('leaves inherited object properties as literal text', () => {
+		expect(unescapeHTML('&toString;')).toBe('&toString;');
+		expect(unescapeHTML('&valueOf;')).toBe('&valueOf;');
+		expect(unescapeHTML('&constructor;')).toBe('&constructor;');
+		expect(unescapeHTML('&__proto__;')).toBe('&__proto__;');
+	});
 });
