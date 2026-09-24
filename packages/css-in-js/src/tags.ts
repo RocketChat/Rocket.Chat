@@ -64,6 +64,9 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 	return String(value);
 };
 
+const containsEvaluable = (value: unknown): boolean =>
+	typeof value === 'function' || (Array.isArray(value) && value.some(containsEvaluable));
+
 const reduceEvaluable = ([first, ...rest]: readonly string[], values: readonly unknown[], args: readonly unknown[]): string =>
 	values.reduce<string>((string, value, i) => string + evaluateValue(value, args) + rest[i], first).trim();
 
@@ -77,7 +80,7 @@ export const css = (slices: TemplateStringsArray, ...values: readonly unknown[])
 		return staticEvaluable('');
 	}
 
-	if (!values.some((value) => typeof value === 'function')) {
+	if (!values.some(containsEvaluable)) {
 		const content = reduceEvaluable(slices, values, []);
 
 		return staticEvaluable(content);
