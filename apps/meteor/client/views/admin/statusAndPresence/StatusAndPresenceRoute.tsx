@@ -11,6 +11,7 @@ import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
+import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
@@ -28,10 +29,7 @@ const StatusAndPresenceRoute = () => {
 	const canManageCustomStatus = usePermission('manage-user-status');
 	const hasPrivateSettings = useIsPrivilegedSettingsContext();
 	const statusSettings = useSettings(statusSettingsQuery);
-	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
-	const canEditOtherUserInfo = usePermission('edit-other-user-info');
-	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
-	const canManageUserPresence = canEditOtherUserInfo && canViewFullOtherUserInfo && adminStatusHidingEnabled;
+	const canManageUserPresence = useCanManageUserStatus();
 
 	const settingIds = useMemo(
 		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),

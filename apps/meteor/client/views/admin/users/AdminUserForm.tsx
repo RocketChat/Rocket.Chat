@@ -1,5 +1,7 @@
 import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import {
+	Accordion,
+	AccordionItem,
 	Field,
 	FieldLabel,
 	FieldRow,
@@ -23,7 +25,6 @@ import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
-	usePermission,
 	useSetting,
 	useEndpoint,
 	useRouter,
@@ -44,6 +45,7 @@ import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
@@ -111,9 +113,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
 	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
-	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
-	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
-	const canEditOtherUserInfo = usePermission('edit-other-user-info');
+	const canManageUserStatus = useCanManageUserStatus();
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -140,7 +140,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
-	const showUserStatusSection = userStatusEnabled && adminStatusHidingEnabled && canViewFullOtherUserInfo && canEditOtherUserInfo;
+	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
@@ -503,85 +503,37 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</>
 						)}
 					</Field>
-					{showUserStatusSection && (
+					{!showUserStatusSection && (
 						<Field>
-							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
-								<FieldLabel htmlFor={userStatusId}>{t('Show_status')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='presenceDisabledByAdmin'
-										render={({ field: { ref, onChange, value } }) => (
-											<ToggleSwitch
-												id={userStatusId}
-												ref={ref}
-												aria-describedby={`${userStatusId}-hint`}
-												onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
-												checked={value !== true}
-											/>
-										)}
-									/>
-								</FieldRow>
-							</Box>
-							<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
-								{t('User_status_admin_hint')}
-							</FieldHint>
-						</Field>
-					)}
-					<Field>
-						<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
-							{t('StatusMessage')}
-						</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='statusText'
-								rules={{
-									maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }) },
-								}}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={statusTextId}
-										disabled={statusFieldsDisabled}
-										error={errors?.statusText?.message}
-										aria-invalid={errors.statusText ? 'true' : 'false'}
-										aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-										flexGrow={1}
-									/>
-								)}
-							/>
-						</FieldRow>
-						{errors?.statusText && (
-							<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
-								{errors.statusText.message}
-							</FieldError>
-						)}
-						<FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
-					</Field>
-					{showUserStatusSection && !isNewUserPage && (
-						<Field>
-							<FieldLabel htmlFor={hiddenFromId} disabled={statusFieldsDisabled}>
-								{t('Hide_status_from')}
+							<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
+								{t('StatusMessage')}
 							</FieldLabel>
 							<FieldRow>
 								<Controller
 									control={control}
-									name='statusVisibilityDeniedByAdmin'
-									render={({ field: { value, onChange } }) => (
-										<UserAutoCompleteMultiple
-											id={hiddenFromId}
-											value={value}
-											onChange={onChange}
+									name='statusText'
+									rules={{
+										maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }) },
+									}}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											id={statusTextId}
 											disabled={statusFieldsDisabled}
-											exceptions={userData?.username ? [userData.username] : undefined}
-											aria-describedby={`${hiddenFromId}-hint`}
-											placeholder={t('Select_users')}
+											error={errors?.statusText?.message}
+											aria-invalid={errors.statusText ? 'true' : 'false'}
+											aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
+											flexGrow={1}
 										/>
 									)}
 								/>
 							</FieldRow>
-							<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_status_from_hint')}</FieldHint>
+							{errors?.statusText && (
+								<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
+									{errors.statusText.message}
+								</FieldError>
+							)}
+							<FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
 						</Field>
 					)}
 					<Field>
@@ -634,6 +586,103 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</>
 					)}
 				</FieldGroup>
+				{showUserStatusSection && (
+					<Accordion>
+						<AccordionItem title={t('User_Status')} defaultExpanded>
+							<FieldGroup>
+								<Field>
+									<Box
+										display='flex'
+										flexDirection='row'
+										alignItems='center'
+										justifyContent='space-between'
+										flexGrow={1}
+										marginBlockEnd={8}
+									>
+										<FieldLabel htmlFor={userStatusId}>{t('Show_status')}</FieldLabel>
+										<FieldRow>
+											<Controller
+												control={control}
+												name='presenceDisabledByAdmin'
+												render={({ field: { ref, onChange, value } }) => (
+													<ToggleSwitch
+														id={userStatusId}
+														ref={ref}
+														aria-describedby={`${userStatusId}-hint`}
+														onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(!event.currentTarget.checked)}
+														checked={value !== true}
+													/>
+												)}
+											/>
+										</FieldRow>
+									</Box>
+									<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
+										{t('User_status_admin_hint')}
+									</FieldHint>
+								</Field>
+								<Field>
+									<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
+										{t('StatusMessage')}
+									</FieldLabel>
+									<FieldRow>
+										<Controller
+											control={control}
+											name='statusText'
+											rules={{
+												maxLength: {
+													value: USER_STATUS_TEXT_MAX_LENGTH,
+													message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
+												},
+											}}
+											render={({ field }) => (
+												<TextInput
+													{...field}
+													id={statusTextId}
+													disabled={statusFieldsDisabled}
+													error={errors?.statusText?.message}
+													aria-invalid={errors.statusText ? 'true' : 'false'}
+													aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
+													flexGrow={1}
+												/>
+											)}
+										/>
+									</FieldRow>
+									{errors?.statusText && (
+										<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
+											{errors.statusText.message}
+										</FieldError>
+									)}
+									<FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_admin_hint')}</FieldHint>
+								</Field>
+								{!isNewUserPage && (
+									<Field>
+										<FieldLabel htmlFor={hiddenFromId} disabled={statusFieldsDisabled}>
+											{t('Hide_status_from')}
+										</FieldLabel>
+										<FieldRow>
+											<Controller
+												control={control}
+												name='statusVisibilityDeniedByAdmin'
+												render={({ field: { value, onChange } }) => (
+													<UserAutoCompleteMultiple
+														id={hiddenFromId}
+														value={value}
+														onChange={onChange}
+														disabled={statusFieldsDisabled}
+														exceptions={userData?.username ? [userData.username] : undefined}
+														aria-describedby={`${hiddenFromId}-hint`}
+														placeholder={t('Select_users')}
+													/>
+												)}
+											/>
+										</FieldRow>
+										<FieldHint id={`${hiddenFromId}-hint`}>{t('Hide_status_from_hint')}</FieldHint>
+									</Field>
+								)}
+							</FieldGroup>
+						</AccordionItem>
+					</Accordion>
+				)}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>

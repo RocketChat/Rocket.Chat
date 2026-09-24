@@ -88,9 +88,9 @@ test.describe('Admin > Status and presence > Managed users', () => {
 
 			const editDialog = admin.editor;
 			await expect(editDialog).toBeVisible();
-			await editDialog.getByRole('button', { name: 'Reset user status settings', exact: true }).click();
+			await editDialog.getByRole('button', { name: 'Replace user status settings', exact: true }).click();
 
-			const confirmModal = page.getByRole('dialog', { name: 'Reset user status settings' });
+			const confirmModal = page.getByRole('dialog', { name: 'Replace user status settings' });
 			await confirmModal.getByRole('button', { name: 'Reset', exact: true }).click();
 
 			await expect(confirmModal).not.toBeVisible();

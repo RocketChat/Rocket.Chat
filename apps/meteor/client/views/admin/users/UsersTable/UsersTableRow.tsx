@@ -82,7 +82,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onReload);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
-	const manageUserStatusAction = useManageUserStatusAction(username);
+	const manageUserStatusAction = useManageUserStatusAction(userId);
 	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);

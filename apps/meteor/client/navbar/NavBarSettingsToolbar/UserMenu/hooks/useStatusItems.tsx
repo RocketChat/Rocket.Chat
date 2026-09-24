@@ -21,9 +21,7 @@ import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserS
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
-	// We should lift this up to somewhere else if we want to use it in other places
-
-	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
+	const invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const queryClient = useQueryClient();
 	const stream = useStream('notify-logged');
@@ -151,7 +149,9 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
-		const presetItems = (statuses ?? [])
+		const availableStatuses = (statuses ?? []).filter((status) => invisibleAllowed || status.statusType !== UserStatusEnum.OFFLINE);
+
+		const presetItems = availableStatuses
 			.filter((s) => userStatuses.isValidType(s.id))
 			.map((status): GenericMenuItemProps => ({
 				id: status.id,
@@ -163,7 +163,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		// Admin-defined custom statuses
 		const customItems = allowUserStatusMessageChange
-			? (statuses ?? [])
+			? availableStatuses
 					.filter((s) => !userStatuses.isValidType(s.id))
 					.map((status): GenericMenuItemProps => ({
 						id: status.id,
@@ -199,6 +199,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		user?.statusText,
 		customStatusExpiration,
 		statuses,
+		invisibleAllowed,
 		handleCustomStatus,
 		handleStatusVisibility,
 		statusVisibilityEnabled,

@@ -47,6 +47,14 @@ export class EditUserFlexTab extends FlexTab {
 		return this.root.getByRole('link', { name: 'Set up SMTP' });
 	}
 
+	get sectionUserStatus(): Locator {
+		return this.root.getByRole('button', { name: 'User status', exact: true });
+	}
+
+	get toggleShowStatus(): Locator {
+		return this.root.locator('label', { has: this.root.page().getByRole('checkbox', { name: 'Show status' }) });
+	}
+
 	getCustomField(fieldName: string): Locator {
 		return this.root.getByRole('textbox', { name: fieldName, exact: true });
 	}
