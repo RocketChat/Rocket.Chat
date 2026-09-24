@@ -64,6 +64,14 @@ describe('tags', () => {
 			).toBe('color: red;');
 		});
 
+		it('interpolates functions nested in arrays with args passed', () => {
+			const rule = css`
+				color: ${[(colorValue: string): string => colorValue]};
+			`;
+			expect(rule('red')).toBe('color: red;');
+			expect(rule('blue')).toBe('color: blue;');
+		});
+
 		it('interpolates other `css` tagged template strings', () => {
 			expect(
 				css`
