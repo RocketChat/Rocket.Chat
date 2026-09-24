@@ -5,7 +5,6 @@ import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
-import { StreamerCentral } from '@rocket.chat/streamer';
 import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
@@ -13,7 +12,6 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
@@ -112,26 +110,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 					void localBroker.broadcastLocal(event, ...(args as Parameters<EventSignatures[typeof event]>));
 				},
-				broadcast(ctx: any) {
-					const { eventName, streamName, args } = ctx.params;
-					const { nodeID } = ctx;
-
-					const fromLocalNode = nodeID === InstanceStatus.id();
-					if (fromLocalNode) {
-						return;
-					}
-
-					const instance = notifications.getStream(streamName);
-					if (!instance) {
-						return;
-					}
-
-					if (instance.serverOnly) {
-						instance.__emit(eventName, ...args);
-					} else {
-						instance._emit(eventName, args, undefined, false);
-					}
-				},
 			},
 			actions: {
 				getAppsStatus(_ctx) {
@@ -222,15 +200,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broadcastStarted = true;
 
 		this.localBroker.setClusterTransport(this.clusterTransport);
-		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
-	}
-
-	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
-		if (this.troubleshootDisableInstanceBroadcast) {
-			return;
-		}
-
-		void this.broker.broadcast('broadcast', { streamName, eventName, args });
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {

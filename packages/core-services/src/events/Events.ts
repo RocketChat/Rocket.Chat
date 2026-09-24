@@ -52,6 +52,14 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+/** A stream emit relayed to the other processes; `origin` identifies the process that emitted it. */
+export type RelayedStreamEvent = {
+	stream: string;
+	eventName: string;
+	args: unknown[];
+	origin: string;
+};
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
@@ -121,7 +129,7 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
+	'stream'(relayed: RelayedStreamEvent): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(

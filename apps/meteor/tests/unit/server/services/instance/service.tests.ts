@@ -37,9 +37,6 @@ const serviceMocks = {
 	'./getTransporter': {
 		getTransporter: () => 'nats://localhost:4222',
 	},
-	'../../../../server/lib/notifications/core/lib/Notifications': {
-		default: { getStream: sinon.stub() },
-	},
 	'moleculer': {
 		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
 		Serializers: {

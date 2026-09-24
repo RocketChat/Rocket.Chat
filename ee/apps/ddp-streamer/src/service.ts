@@ -4,7 +4,7 @@ import { api, getConnection, getTrashCollection } from '@rocket.chat/core-servic
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
-import { NotificationsModule, StreamerCentral } from '@rocket.chat/streamer';
+import { NotificationsModule } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
 
 import { DDPStreamer } from './DDPStreamer';
@@ -42,11 +42,7 @@ void (async () => {
 	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
 
-	StreamerCentral.on('broadcast', (name, eventName, args) => {
-		void api.broadcast('stream', [name, eventName, args]);
-	});
-
-	const notifications = new NotificationsModule(createStreamAdapter(server));
+	const notifications = new NotificationsModule(createStreamAdapter(server), { originId: InstanceStatus.id() });
 
 	notifications.configure();
 

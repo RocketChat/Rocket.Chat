@@ -6,7 +6,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { statusVisibilityGate } from './StatusVisibilityGate';
 import { Streamer } from './streamer.module';
-import type { IPublication, IStreamerConstructor, Connection, IStreamer } from './types';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer, StreamerOptions } from './types';
 
 type UserPresenceStreamProps = {
 	added: IUser['_id'][];
@@ -139,7 +139,7 @@ class UserPresence {
 
 export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	static getInstance(StreamerClass: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
+	static getInstance(StreamerClass: IStreamerConstructor, name = 'user-presence', options?: StreamerOptions): IStreamer<'user-presence'> {
 		return new (
 			class StreamPresence extends StreamerClass<'user-presence'> {
 				override async _publish(
@@ -183,7 +183,7 @@ export class StreamPresence {
 					publication.onStop(() => client.stop());
 				}
 			} as any
-		)(name);
+		)(name, options);
 	}
 }
 
