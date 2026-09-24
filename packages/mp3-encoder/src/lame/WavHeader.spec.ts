@@ -16,8 +16,11 @@ test('readHeader skips the pad byte after an odd-sized chunk', () => {
 	view.setUint16(20, 1, true);
 	view.setUint16(22, 2, true);
 	view.setUint32(24, 44100, true);
+	view.setUint32(28, 44100 * 2 * 2, true);
+	view.setUint16(32, 2 * 2, true);
+	view.setUint16(34, 16, true);
 
-	writeFourcc(view, 36, 'LIST');
+	writeFourcc(view, 36, 'JUNK');
 	view.setUint32(40, 3, true);
 
 	writeFourcc(view, 48, 'data');
