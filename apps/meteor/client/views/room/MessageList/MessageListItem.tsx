@@ -8,6 +8,7 @@ import { isMessageNewDay } from './lib/isMessageNewDay';
 import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SequentialRoomMessage from '../../../components/message/variants/SequentialRoomMessage';
+import SequentialThreadMessagePreview from '../../../components/message/variants/SequentialThreadMessagePreview';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useDateRef } from '../providers/DateListProvider';
@@ -89,15 +90,25 @@ export const MessageListItem = ({
 				))}
 			{isThreadMessage(message) && (
 				<div role='listitem'>
-					<ThreadMessagePreview
-						data-mid={message._id}
-						data-tmid={message.tmid}
-						data-unread={showUnreadDivider}
-						data-sequential={sequential}
-						sequential={shouldShowAsSequential}
-						message={message}
-						showUserAvatar={showUserAvatar}
-					/>
+					{shouldShowAsSequential ? (
+						<SequentialThreadMessagePreview
+							data-mid={message._id}
+							data-tmid={message.tmid}
+							data-unread={showUnreadDivider}
+							data-sequential={sequential}
+							message={message}
+							showUserAvatar={showUserAvatar}
+						/>
+					) : (
+						<ThreadMessagePreview
+							data-mid={message._id}
+							data-tmid={message.tmid}
+							data-unread={showUnreadDivider}
+							data-sequential={sequential}
+							message={message}
+							showUserAvatar={showUserAvatar}
+						/>
+					)}
 				</div>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} author={author} />}

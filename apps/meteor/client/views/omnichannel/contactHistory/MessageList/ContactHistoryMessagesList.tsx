@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactHistoryMessage from './ContactHistoryMessage';
+import SequentialContactHistoryMessage from './SequentialContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 import { MessageViewerProvider } from '../../../../components/message/list/MessageViewerProvider';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -133,8 +134,10 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 										const lastMessage = messages[index - 1];
 										const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
 										const isNewDay = isMessageNewDay(data, lastMessage);
-										return (
-											<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+										return isSequential ? (
+											<SequentialContactHistoryMessage message={data} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+										) : (
+											<ContactHistoryMessage message={data} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
 										);
 									}}
 								/>

@@ -24,6 +24,7 @@ import { MessageViewerProvider } from '../../../../../components/message/list/Me
 import { isMessageNewDay } from '../../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageSequential';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
+import SequentialContactHistoryMessage from '../../../contactHistory/MessageList/SequentialContactHistoryMessage';
 import { useHistoryMessageList } from '../../../contactHistory/MessageList/useHistoryMessageList';
 
 type ContactHistoryMessagesListProps = {
@@ -113,8 +114,10 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 										const lastMessage = messages[index - 1];
 										const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
 										const isNewDay = isMessageNewDay(data, lastMessage);
-										return (
-											<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+										return isSequential ? (
+											<SequentialContactHistoryMessage message={data} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+										) : (
+											<ContactHistoryMessage message={data} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
 										);
 									}}
 								/>
