@@ -17,10 +17,7 @@ export function copyArray<T>(src: ArrayLike<T>, srcPos: number, dest: { [index: 
 }
 
 export function sortArray(a: TypedArray, fromIndex: number, toIndex: number) {
-	const sorted = Array.from(a).slice(fromIndex, toIndex).sort();
-	for (let i = fromIndex; i < toIndex; i++) {
-		a[i] = sorted[i - fromIndex];
-	}
+	a.subarray(fromIndex, toIndex).sort();
 }
 
 export function fillArray(a: TypedArray, val: number): void;
