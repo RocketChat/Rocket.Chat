@@ -2,7 +2,7 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePreflight from './ConferencePreflight';
@@ -16,8 +16,6 @@ import { ChatPanelContext } from '../context/ChatPanelContext';
 import { useConference } from '../context/ConferenceContext';
 import { useRinging } from '../hooks/useRinging';
 import { PREFLIGHT_FACES_SHOWN } from '../lib/constants';
-
-type ConferencePanel = 'members' | 'chat';
 
 /**
  * Folds a badge into its button's name. The badges are `aria-hidden` and `aria-label` overrides a button's
@@ -33,26 +31,11 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
  * from a fixture — and what keeps the one part it cannot build, the call's chat, a node it is handed.
  */
 const ConferenceWindow = () => {
-	const { room, session, call, actions, slots, thread, viewer } = useConference();
+	const { room, session, call, actions, slots, viewer, panel } = useConference();
 	const { t } = useTranslation();
 
-	const [activePanel, setActivePanel] = useState<ConferencePanel | undefined>();
+	const { active: activePanel, toggle: togglePanel } = panel;
 	const chatVisible = activePanel === 'chat';
-
-	const togglePanel = useCallback(
-		(panel: ConferencePanel) => {
-			// A thread is shown in the chat panel, so any click that leaves the chat closed takes the thread with
-			// it — including switching straight to the members panel.
-			const chatStaysOpen = panel === 'chat' && activePanel !== 'chat';
-
-			setActivePanel((current) => (current === panel ? undefined : panel));
-
-			if (!chatStaysOpen) {
-				thread.close();
-			}
-		},
-		[activePanel, thread],
-	);
 
 	// Stable: it is a context value the chat panel reads, and rebuilding it re-renders the product's whole room.
 	const closeChat = useMemo(() => ({ close: () => togglePanel('chat') }), [togglePanel]);
@@ -100,6 +83,14 @@ const ConferenceWindow = () => {
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
+	const { autoJoin, joined, loading: joining, error: joinError } = session;
+	const { join } = actions;
+	useEffect(() => {
+		if (autoJoin && !joined && !joining && !joinError) {
+			join({ mic: true, cam: false }, call.name, false);
+		}
+	}, [autoJoin, joined, joining, joinError, join, call.name]);
+
 	// Only a refusal is an answer about the call. Anything else is the server not having been reached, which says
 	// nothing about it — and sending someone away from a call that is still running is the worse mistake.
 	if (room.error) {
@@ -132,7 +123,7 @@ const ConferenceWindow = () => {
 	}
 
 	if (!session.joined) {
-		if (room.loading) {
+		if (room.loading || session.autoJoin) {
 			return <>{slots.loading}</>;
 		}
 
@@ -179,25 +170,27 @@ const ConferenceWindow = () => {
 					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
 					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 				/>
-				<IconButton
-					small
-					secondary
-					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-					title={t('Chat')}
-					aria-pressed={chatVisible}
-					onClick={() => togglePanel('chat')}
-					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-					// for truth.
-					badge={
-						chatBadge !== undefined ? (
-							<Badge variant={unreadVariant} title={unreadTitle}>
-								{chatBadge}
-							</Badge>
-						) : undefined
-					}
-				/>
+				{!session.providerOwnsChatToggle && (
+					<IconButton
+						small
+						secondary
+						aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+						title={t('Chat')}
+						aria-pressed={chatVisible}
+						onClick={() => togglePanel('chat')}
+						icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+						// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+						// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+						// for truth.
+						badge={
+							chatBadge !== undefined ? (
+								<Badge variant={unreadVariant} title={unreadTitle}>
+									{chatBadge}
+								</Badge>
+							) : undefined
+						}
+					/>
+				)}
 			</CallTopBar>
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
@@ -205,7 +198,7 @@ const ConferenceWindow = () => {
 					{session.url && <ConferenceIframe url={session.url} />}
 				</Box>
 
-				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
+				<CallPanel visible={!!activePanel} sheet={sheetPanel} dock={session.panelDock}>
 					{activePanel === 'members' && <CallMembersPanel onClose={() => togglePanel('members')} />}
 					{/* The call's chat is the product's room — its provider, its message list, its composer — so it
 					    arrives built. What this window owns is the panel it sits in, which is why closing it is

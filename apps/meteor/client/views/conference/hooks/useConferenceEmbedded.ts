@@ -214,6 +214,8 @@ export const useConferenceEmbedded = (callId: string) => {
 			chatAccess,
 		} as const,
 		conference: {
+			/** Which provider runs the call, for the behaviour that is one provider's rather than every provider's. */
+			providerName: info?.providerName,
 			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
 			/**
 			 * What this window should tell the server when it goes, which depends on how far its user got.
