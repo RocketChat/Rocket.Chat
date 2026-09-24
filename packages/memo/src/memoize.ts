@@ -52,6 +52,6 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 	return memoized;
 };
 
-export const clear = (fn: MemoizedFunction<unknown, unknown, unknown>): void => {
-	store.get(fn)?.();
+export const clear = <T, A, R>(fn: MemoizedFunction<T, A, R>): void => {
+	store.get(fn as MemoizableFunction<unknown, unknown, unknown>)?.();
 };
