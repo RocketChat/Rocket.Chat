@@ -14,6 +14,7 @@ addMigration({
 		});
 		await LoginServiceConfiguration.deleteMany({
 			service: { $in: ['facebook', 'twitter', 'linkedin', 'meteor-developer', 'wordpress', 'drupal', 'dolphin', 'github_enterprise'] },
+			custom: { $ne: true },
 		});
 	},
 });
