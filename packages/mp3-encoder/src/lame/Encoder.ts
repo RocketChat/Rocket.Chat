@@ -144,11 +144,6 @@ export class Encoder {
 
 		const masking_MS = Array.from({ length: 2 }, () => Array.from({ length: 2 }, () => new III_psy_ratio()));
 
-		masking_MS[0][0] = new III_psy_ratio();
-		masking_MS[0][1] = new III_psy_ratio();
-		masking_MS[1][0] = new III_psy_ratio();
-		masking_MS[1][1] = new III_psy_ratio();
-
 		let masking;
 
 		const gfc = gfp.internal_flags;
