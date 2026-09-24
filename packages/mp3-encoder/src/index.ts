@@ -31,12 +31,10 @@ function init(config: Config): void {
 
 function encode(arrayBuffer: Float32Array): void {
 	samplesMono = convertBuffer(arrayBuffer);
-	let remaining = samplesMono.length;
-	for (let i = 0; remaining >= 0; i += maxSamples) {
+	for (let i = 0; i < samplesMono.length; i += maxSamples) {
 		const left = samplesMono.subarray(i, i + maxSamples);
 		const buffer = encoder.encodeBuffer(left);
 		dataBuffer.push(new Int8Array(buffer));
-		remaining -= maxSamples;
 	}
 }
 
