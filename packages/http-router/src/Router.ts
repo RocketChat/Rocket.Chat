@@ -1,3 +1,5 @@
+import type { IncomingMessage } from 'node:http';
+
 import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
@@ -421,19 +423,28 @@ export class Router<
 		return this as any;
 	}
 
+	private mountedApp?: Hono;
+
 	get router(): express.Router {
 		// eslint-disable-next-line new-cap
 		const router = express.Router();
 		const hono = new Hono();
-		router.use(
-			this.base,
-			honoAdapterForExpress(
-				hono.route(this.base, this.innerRouter).options('*', (c) => {
-					return c.body('OK');
-				}),
-			),
-		);
+		this.mountedApp = hono.route(this.base, this.innerRouter).options('*', (c) => {
+			return c.body('OK');
+		});
+		router.use(this.base, honoAdapterForExpress(this.mountedApp));
 		return router;
+	}
+
+	/**
+	 * Serve a request built in-process through the same app the HTTP server mounts,
+	 * so it passes through every middleware a network request would.
+	 */
+	async dispatch(request: Request, env: { incoming: IncomingMessage }): Promise<Response> {
+		if (!this.mountedApp) {
+			throw new Error('Router is not mounted');
+		}
+		return this.mountedApp.fetch(request, env);
 	}
 
 	getHonoRouter(): InnerRouter {
