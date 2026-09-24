@@ -290,7 +290,7 @@ export class Quantize {
 			j += width;
 			if (distort[sfb] >= 1.0) continue;
 
-			sortArray(work, j - width, width);
+			sortArray(work, j - width, j);
 			if (isCloseToEachOther(work[j - 1], 0.0)) continue;
 
 			allowedNoise = (1.0 - distort[sfb]) * l3_xmin[sfb];
