@@ -2,7 +2,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useStarMessageAction = (message: IMessage, { room }: { room: IRoom }): MessageActionConfig | null => {
 	const policy = useMessageActionsPolicy();

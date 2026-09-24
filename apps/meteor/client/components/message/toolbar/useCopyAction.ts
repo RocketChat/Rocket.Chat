@@ -1,7 +1,7 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions } from '../list/MessageListContext';
+import { useMessageActions } from '../list/MessageActionsContext';
 
 export const useCopyAction = (
 	message: IMessage,

@@ -8,7 +8,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageActionsContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ReplyInThreadMessageActionProps = {

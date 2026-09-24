@@ -14,7 +14,7 @@ import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 import { useMessageActionsPolicyValue } from '../../../views/room/MessageList/providers/useMessageListContract';
-import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
+import { MessageActionsContext } from '../list/MessageActionsContext';
 import { inertMessageActions } from '../list/messageListContract';
 
 jest.mock('../../../../app/utils/rocketchat.info', () => ({ Info: {} }));
@@ -40,9 +40,9 @@ type Builder = ReturnType<typeof mockAppRoot>;
 const RoomActionsPolicy = ({ children }: { children?: ReactNode }) => {
 	const actionsPolicy = useMessageActionsPolicyValue(room);
 	return (
-		<MessageListContext.Provider value={{ ...messageListContextDefaultValue, actionsPolicy, actions: inertMessageActions }}>
+		<MessageActionsContext.Provider value={{ policy: actionsPolicy, actions: inertMessageActions }}>
 			{children}
-		</MessageListContext.Provider>
+		</MessageActionsContext.Provider>
 	);
 };
 

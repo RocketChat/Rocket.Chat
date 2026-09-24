@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConfig, MessageActionContext } from '../../../lib/MessageAction';
-import { useMessageActions } from '../list/MessageListContext';
+import { useMessageActions } from '../list/MessageActionsContext';
 
 export const usePermalinkAction = (
 	message: IMessage,

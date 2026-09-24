@@ -3,7 +3,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
 import { Messages } from '../../../stores';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useUnFollowMessageAction = (
 	message: IMessage,

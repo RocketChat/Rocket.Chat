@@ -2,7 +2,7 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const usePinMessageAction = (
 	message: IMessage,

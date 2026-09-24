@@ -3,7 +3,7 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMessageActions } from '../../../list/MessageListContext';
+import { useMessageActions } from '../../../list/MessageActionsContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ForwardMessageActionProps = {

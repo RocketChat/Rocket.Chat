@@ -2,7 +2,7 @@ import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useWebDAVMessageAction = (
 	message: IMessage,

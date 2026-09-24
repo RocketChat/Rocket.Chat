@@ -6,7 +6,7 @@ import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { useAppActionButtons, getIdForActionButton } from '../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../hooks/useApplyButtonFilters';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions } from '../list/MessageListContext';
+import { useMessageActions } from '../list/MessageActionsContext';
 
 const filterActionsByContext = (context: string | undefined, action: IUIActionButton) => {
 	if (!context) {

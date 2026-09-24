@@ -2,7 +2,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useMarkAsUnreadMessageAction = (
 	message: IMessage,

@@ -6,7 +6,7 @@ import { useShallow } from 'zustand/shallow';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { Rooms, Subscriptions } from '../../../stores';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useReplyInDMAction = (
 	message: IMessage,

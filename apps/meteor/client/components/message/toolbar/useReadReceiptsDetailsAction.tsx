@@ -1,7 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
-import { useMessageActions, useMessageListReadReceipts } from '../list/MessageListContext';
+import { useMessageActions } from '../list/MessageActionsContext';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionConfig | null => {
 	const actions = useMessageActions();

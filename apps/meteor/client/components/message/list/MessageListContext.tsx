@@ -1,14 +1,9 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { MessageActions, MessageActionsPolicy, MessageListUserCard, MessageListViewer } from './messageListContract';
-import {
-	defaultMessageListViewer,
-	denyingMessageActionsPolicy,
-	inertMessageActions,
-	inertMessageListUserCard,
-} from './messageListContract';
+import type { MessageListUserCard, MessageListViewer } from './messageListContract';
+import { defaultMessageListViewer, inertMessageListUserCard } from './messageListContract';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
 import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import type { useFormatTime } from '../../../hooks/useFormatTime';
@@ -51,10 +46,9 @@ export type MessageListContextValue = {
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
 	viewer: MessageListViewer;
-	subscription: ISubscription | undefined;
+	broadcast: boolean;
+	chatAvailable: boolean;
 	userCard: MessageListUserCard;
-	actionsPolicy: MessageActionsPolicy;
-	actions: MessageActions;
 };
 
 export const messageListContextDefaultValue: MessageListContextValue = {
@@ -87,10 +81,9 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatTime: () => '',
 	formatDate: () => '',
 	viewer: defaultMessageListViewer,
-	subscription: undefined,
+	broadcast: false,
+	chatAvailable: false,
 	userCard: inertMessageListUserCard,
-	actionsPolicy: denyingMessageActionsPolicy,
-	actions: inertMessageActions,
 };
 
 export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
@@ -136,9 +129,8 @@ export const useMessageListFormatTime = (): MessageListContextValue['formatTime'
 export const useMessageListFormatDate = (): MessageListContextValue['formatDate'] => useContext(MessageListContext).formatDate;
 
 export const useMessageListViewer = (): MessageListViewer => useContext(MessageListContext).viewer;
-export const useMessageActionsPolicy = (): MessageActionsPolicy => useContext(MessageListContext).actionsPolicy;
-export const useMessageActions = (): MessageActions => useContext(MessageListContext).actions;
+export const useMessageListBroadcast = (): boolean => useContext(MessageListContext).broadcast;
 
-export const useMessageListSubscription = () => useContext(MessageListContext).subscription;
+export const useMessageListChatAvailable = (): boolean => useContext(MessageListContext).chatAvailable;
 
 export const useMessageListUserCard = () => useContext(MessageListContext).userCard;

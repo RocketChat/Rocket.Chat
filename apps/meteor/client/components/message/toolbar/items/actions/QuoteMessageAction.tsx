@@ -8,7 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../../../../views/room/contexts/RoomContext';
-import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageActionsContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type QuoteMessageActionProps = {

@@ -17,7 +17,7 @@ import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import {
 	useMessageListOembedEnabled,
 	useMessageListReadReceipts,
-	useMessageListSubscription,
+	useMessageListBroadcast,
 	useMessageListViewer,
 } from '../../list/MessageListContext';
 import type { MessageAuthor } from '../../list/messageListContract';
@@ -31,8 +31,7 @@ export type ThreadMessageContentProps = {
 const ThreadMessageContent = ({ message, author = message.u }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const oembedEnabled = useMessageListOembedEnabled();
-	const subscription = useMessageListSubscription();
-	const broadcast = subscription?.broadcast ?? false;
+	const broadcast = useMessageListBroadcast();
 	const { uid } = useMessageListViewer();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 

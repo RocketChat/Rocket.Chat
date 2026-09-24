@@ -5,7 +5,7 @@ import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { AutoTranslate } from '../../../lib/autotranslate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useTranslateAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },

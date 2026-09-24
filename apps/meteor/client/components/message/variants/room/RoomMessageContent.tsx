@@ -17,10 +17,10 @@ import ThreadMetrics from '../../content/ThreadMetrics';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import {
-	useMessageActionsPolicy,
 	useMessageListOembedEnabled,
 	useMessageListReadReceipts,
-	useMessageListSubscription,
+	useMessageListBroadcast,
+	useMessageListChatAvailable,
 	useMessageListViewer,
 } from '../../list/MessageListContext';
 import type { MessageAuthor } from '../../list/messageListContract';
@@ -38,11 +38,10 @@ export type RoomMessageContentProps = {
 const RoomMessageContent = ({ message, author = message.u, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const oembedEnabled = useMessageListOembedEnabled();
-	const subscription = useMessageListSubscription();
-	const broadcast = subscription?.broadcast ?? false;
+	const broadcast = useMessageListBroadcast();
 	const { uid } = useMessageListViewer();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
-	const { chatAvailable } = useMessageActionsPolicy();
+	const chatAvailable = useMessageListChatAvailable();
 	const { t } = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);

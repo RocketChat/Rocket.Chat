@@ -5,6 +5,7 @@ import { useMemo, memo } from 'react';
 
 import { useMessageActionsPolicyValue, useMessageActionsValue } from './useMessageListContract';
 import { GazzodownEnvironmentProvider } from '../../../../components/GazzodownEnvironment';
+import { MessageActionsContext } from '../../../../components/message/list/MessageActionsContext';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useMessageListViewerValue } from '../../../../components/message/list/MessageViewerProvider';
@@ -77,6 +78,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 	const msgParameter = useSearchParameter('msg');
 
 	const chat = useChat();
+	const chatAvailable = Boolean(chat);
+	const broadcast = Boolean(subscription?.broadcast);
+	const messageActions = useMemo(() => ({ policy: actionsPolicy, actions }), [actionsPolicy, actions]);
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
@@ -139,10 +143,9 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatTime,
 			formatDate,
 			viewer,
-			subscription,
+			broadcast,
+			chatAvailable,
 			userCard,
-			actionsPolicy,
-			actions,
 		}),
 		[
 			username,
@@ -171,17 +174,18 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 			formatTime,
 			formatDate,
 			viewer,
-			subscription,
+			broadcast,
+			chatAvailable,
 			userCard,
-			actionsPolicy,
-			actions,
 		],
 	);
 
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
 			<MessageListContext.Provider value={context}>
-				<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
+				<MessageActionsContext.Provider value={messageActions}>
+					<GazzodownEnvironmentProvider>{children}</GazzodownEnvironmentProvider>
+				</MessageActionsContext.Provider>
 			</MessageListContext.Provider>
 		</AttachmentProvider>
 	);

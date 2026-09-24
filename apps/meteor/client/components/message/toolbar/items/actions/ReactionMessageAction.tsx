@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
-import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../../../list/MessageActionsContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ReactionMessageActionProps = {

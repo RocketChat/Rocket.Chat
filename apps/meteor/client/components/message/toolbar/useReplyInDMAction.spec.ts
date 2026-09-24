@@ -7,7 +7,7 @@ import { useReplyInDMAction } from './useReplyInDMAction';
 import { createFakeMessage, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useMessageActionsPolicyValue, useMessageActionsValue } from '../../../views/room/MessageList/providers/useMessageListContract';
-import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
+import { MessageActionsContext } from '../list/MessageActionsContext';
 
 jest.mock('../../../../app/utils/rocketchat.info', () => ({ Info: {} }));
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({
@@ -50,7 +50,7 @@ const autoTranslateOptions = { autoTranslateEnabled: false, showAutoTranslate: (
 const RoomContract = ({ children }: { children?: ReactNode }) => {
 	const actionsPolicy = useMessageActionsPolicyValue(room);
 	const actions = useMessageActionsValue(autoTranslateOptions);
-	return createElement(MessageListContext.Provider, { value: { ...messageListContextDefaultValue, actionsPolicy, actions } }, children);
+	return createElement(MessageActionsContext.Provider, { value: { policy: actionsPolicy, actions } }, children);
 };
 
 const withActionsPolicy =

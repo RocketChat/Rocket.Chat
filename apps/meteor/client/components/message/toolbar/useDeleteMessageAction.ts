@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { useMessageActions, useMessageActionsPolicy } from '../list/MessageListContext';
+import { useMessageActions, useMessageActionsPolicy } from '../list/MessageActionsContext';
 
 export const useDeleteMessageAction = (
 	message: IMessage,
