@@ -1,29 +1,17 @@
-import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useWebDAVAccountIntegrationsQuery } from '../../../../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
-import { useChat } from '../../../../contexts/ChatContext';
-import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
-import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 import { useComposerCapabilities } from '../../../ComposerCapabilitiesContext';
+import { useComposerMenuActions } from '../../../ComposerMenuActionsContext';
 
 export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 	const { webdavEnabled: enabled } = useComposerCapabilities();
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
-	const chat = useChat();
-
 	const { t } = useTranslation();
-	const setModal = useSetModal();
-	const handleAddWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
-
-	const handleUpload = async (file: File) => chat?.flows.uploadFiles({ files: [file] });
-
-	const handleOpenWebdav = (account: IWebdavAccountIntegration) =>
-		setModal(<WebdavFilePickerModal account={account} onUpload={handleUpload} onClose={() => setModal(null)} />);
+	const { addWebdavAccount, pickWebdavFile } = useComposerMenuActions();
 
 	return [
 		{
@@ -31,7 +19,7 @@ export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 			content: t('Add_Server'),
 			icon: 'cloud-plus',
 			disabled: !isSuccess,
-			onClick: handleAddWebDav,
+			onClick: addWebdavAccount,
 		},
 		...(isSuccess
 			? data.map((account) => ({
@@ -39,7 +27,7 @@ export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 					content: account.name,
 					icon: 'cloud-plus' as const,
 					disabled,
-					onClick: () => handleOpenWebdav(account),
+					onClick: () => pickWebdavFile(account),
 				}))
 			: []),
 	];
