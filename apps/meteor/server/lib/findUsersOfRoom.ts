@@ -3,11 +3,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
+import { hiddenIds, scopeHidesAnyone } from '@rocket.chat/streamer';
 import type { FindCursor, FindOptions } from 'mongodb';
 
 import { settings } from '../settings';
 import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibility/effectiveStatus';
-import { hiddenIds, scopeHidesAnyone } from './statusVisibility/presenceScope';
 
 type FindUsersParam = {
 	rid: string;
