@@ -3,6 +3,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import { lazy, memo } from 'react';
 
+import RoomHeaderActionsProvider from './RoomHeaderActionsProvider';
 import { useRoomFeatures } from '../contexts/RoomFeaturesContext';
 import { shouldDisplayE2EESetup } from '../lib/shouldDisplayE2EESetup';
 
@@ -25,6 +26,10 @@ const Header = ({ room, subscription }: HeaderProps) => {
 		return null;
 	}
 
+	return <RoomHeaderActionsProvider>{renderVariant(room, subscription, displayE2EESetup)}</RoomHeaderActionsProvider>;
+};
+
+const renderVariant = (room: IRoom, subscription: ISubscription | undefined, displayE2EESetup: boolean) => {
 	if (subscription && isInviteSubscription(subscription)) {
 		return <RoomInviteHeader room={room} />;
 	}

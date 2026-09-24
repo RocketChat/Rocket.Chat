@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import { useRoomFeatures } from '../../contexts/RoomFeaturesContext';
-import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
+import { useRoomHeaderActions } from '../RoomHeaderActionsContext';
 
 export type FavoriteProps = { room: IRoom & { f?: ISubscription['f'] } };
 
@@ -13,14 +13,14 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: Favorit
 	const t = useTranslation();
 
 	const isFavoritesEnabled = useRoomFeatures().favoritesEnabled && ['c', 'p', 'd', 't'].includes(type);
-	const { mutate: toggleFavorite } = useToggleFavoriteMutation();
+	const { toggleFavorite } = useRoomHeaderActions();
 
 	const handleFavoriteClick = useStableCallback(() => {
 		if (!isFavoritesEnabled) {
 			return;
 		}
 
-		toggleFavorite({ roomId: _id, favorite: !favorite, roomName: name || '' });
+		toggleFavorite({ _id, name }, !favorite);
 	});
 
 	const favoriteLabel = favorite ? `${t('Unfavorite')} ${name}` : `${t('Favorite')} ${name}`;

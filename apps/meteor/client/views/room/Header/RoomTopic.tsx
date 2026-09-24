@@ -1,8 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
+import { useRoomHeaderActions } from './RoomHeaderActionsContext';
 import MarkdownText from '../../../components/MarkdownText';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
@@ -13,10 +14,7 @@ export type RoomTopicProps = {
 const RoomTopic = ({ room }: RoomTopicProps) => {
 	const t = useTranslation();
 	const canEdit = useCanEditRoom(room);
-	const router = useRouter();
-
-	const currentRoute = router.getLocationPathname();
-	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
+	const { roomSettingsHref } = useRoomHeaderActions();
 
 	const { topic } = room;
 	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
@@ -27,7 +25,7 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 
 	if (!topic && canEditTopic) {
 		return (
-			<Box is='a' href={href}>
+			<Box is='a' href={roomSettingsHref(room)}>
 				{t('Add_topic')}
 			</Box>
 		);
