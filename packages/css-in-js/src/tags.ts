@@ -86,7 +86,14 @@ export const css = (slices: TemplateStringsArray, ...values: readonly unknown[])
 	return <T extends readonly unknown[]>(...args: T): string => {
 		const [, freeContext] = holdContext();
 
-		const content = reduceEvaluable(slices, values, args);
+		let content: string;
+
+		try {
+			content = reduceEvaluable(slices, values, args);
+		} catch (error) {
+			freeContext();
+			throw error;
+		}
 
 		return content + freeContext();
 	};
@@ -105,16 +112,18 @@ export const keyframes = (slices: TemplateStringsArray, ...values: unknown[]): k
 	const fn: keyframesFn = <T extends readonly unknown[]>(...args: T): string => {
 		const [context, freeContext] = holdContext();
 
-		const content = reduceEvaluable(slices, values, args);
+		try {
+			const content = reduceEvaluable(slices, values, args);
 
-		const animationName = createAnimationName(content);
-		const escapedAnimationName = escapeName(animationName);
+			const animationName = createAnimationName(content);
+			const escapedAnimationName = escapeName(animationName);
 
-		context.push(`@keyframes ${escapedAnimationName}{${content}}`);
+			context.push(`@keyframes ${escapedAnimationName}{${content}}`);
 
-		freeContext();
-
-		return escapedAnimationName;
+			return escapedAnimationName;
+		} finally {
+			freeContext();
+		}
 	};
 
 	return fn;
