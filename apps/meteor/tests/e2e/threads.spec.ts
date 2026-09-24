@@ -246,7 +246,7 @@ test.describe.serial('Threads - small screens', () => {
 		// 121 user messages were seeded — an unloaded older page must remain or there is nothing to drain
 		expect(loadedMessages).toBeLessThan(121);
 
-		await poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'View thread' }).click();
+		await poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Thread', exact: true }).click();
 		await expect(page).toHaveURL(/.*thread/);
 		await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('thread reply');
 		await expect(poHomeChannel.content.mainMessageListScroller).toBeHidden();

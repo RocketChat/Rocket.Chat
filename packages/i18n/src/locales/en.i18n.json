@@ -16,6 +16,10 @@
     "one": "+{{count}} follower",
     "other": "+{{count}} followers"
   },
+  "__count__members": {
+    "one": "{{count}} member",
+    "other": "{{count}} members"
+  },
   "__count__message_pruned": {
     "one": "{{count}} message pruned",
     "other": "{{count}} messages pruned"
@@ -33,8 +37,14 @@
     "one": "{{count}} person joined",
     "other": "{{count}} people joined"
   },
-  "__count__replies": "{{count}} replies",
-  "__count__replies__date__": "{{count}} replies, {{date}}",
+  "__count__replies": {
+    "one": "{{count}} reply",
+    "other": "{{count}} replies"
+  },
+  "__count__replies__date__": {
+    "one": "{{count}} reply, {{date}}",
+    "other": "{{count}} replies, {{date}}"
+  },
   "__count__result_found": {
     "one": "{{count}} result found",
     "other": "{{count}} results found"
@@ -2182,7 +2192,7 @@
   "Discussion_first_message_title": "Message",
   "Discussion_info": "Discussion info",
   "Discussion_name": "Discussion name",
-  "Discussion_start": "Start a discussion",
+  "Discussion_start": "Start discussion",
   "Discussion_target_channel": "Parent channel or team",
   "Discussion_target_channel_description": "Select a channel which is related to what you want to ask",
   "Discussion_target_channel_prefix": "You are creating a discussion in",
@@ -4728,6 +4738,7 @@
   "No_Referrer": "No referrer",
   "No_Referrer_When_Downgrade": "No referrer when downgrade",
   "No_release_information_provided": "No release information provided",
+  "No_replies": "No replies",
   "No_requested_apps": "No requested apps",
   "No_requests": "No requests",
   "No_results_found": "No results found",
@@ -7075,12 +7086,13 @@
   "User_joined_conversation": "Has joined the conversation",
   "User_joined_team": "<strong>joined</strong> this team",
   "User_joined_the_channel": "joined the channel",
-  "User_joined_the_conversation": "joined the conversation",
+  "User_joined_the_conversation": "joined the discussion",
   "User_joined_the_team": "joined this team",
   "user_key_refreshed_successfully": "key refreshed successfully",
   "User_left": "Has left the channel.",
   "User_left_team": "<strong>left</strong> this team",
   "User_left_this_channel": "left the channel",
+  "User_left_this_discussion": "left the discussion",
   "User_left_this_team": "left this team",
   "User_logged_out": "User is logged out",
   "User_management": "User management",

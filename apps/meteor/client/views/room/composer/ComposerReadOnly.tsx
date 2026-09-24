@@ -26,7 +26,7 @@ const ComposerReadOnly = () => {
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('room_is_read_only')}</MessageFooterCalloutContent>
 			{!isSubscribed && (
-				<Button primary onClick={() => join.mutate()} loading={join.isPending}>
+				<Button primary icon='login' onClick={() => join.mutate()} loading={join.isPending}>
 					{t('Join')}
 				</Button>
 			)}

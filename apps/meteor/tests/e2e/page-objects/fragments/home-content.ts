@@ -658,7 +658,7 @@ export class HomeContent {
 	}
 
 	get btnOptionStartDiscussion(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Start a discussion' });
+		return this.page.getByRole('menuitem', { name: 'Start discussion' });
 	}
 
 	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {

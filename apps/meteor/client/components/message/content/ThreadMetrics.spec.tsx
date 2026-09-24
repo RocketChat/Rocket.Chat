@@ -105,7 +105,7 @@ describe('Thread Metrics', () => {
 			expect(screen.getByTitle('followers')).toBeVisible();
 			expect(screen.getByText('3')).toBeVisible();
 
-			const replyButton = screen.getByText('View_thread');
+			const replyButton = screen.getByText('Thread');
 			expect(replyButton).toBeVisible();
 			await userEvent.click(replyButton);
 
@@ -161,7 +161,7 @@ describe('Thread Metrics', () => {
 			expect(screen.getByTitle('followers')).toBeVisible();
 			expect(screen.getByText('3')).toBeVisible();
 
-			const replyButton = screen.getByText('View_thread');
+			const replyButton = screen.getByText('Thread');
 			expect(replyButton).toBeVisible();
 			await userEvent.click(replyButton);
 

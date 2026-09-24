@@ -61,23 +61,14 @@ const DiscussionListItem = ({
 				<MessageBody clamp={2}>{msg}</MessageBody>
 				<MessageBlock>
 					<MessageMetrics>
-						{!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='discussion' />
-								<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='clock' />
-								<MessageMetricsItemLabel>{dlm ? formatDate(dlm) : undefined}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
+						<MessageMetricsItem>
+							<MessageMetricsItemIcon name='discussion' />
+							<MessageMetricsItemLabel>
+								{dcount && dlm
+									? t('__count__replies__date__', { count: dcount, date: formatDate(dlm) })
+									: t('__count__replies', { count: dcount })}
+							</MessageMetricsItemLabel>
+						</MessageMetricsItem>
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>

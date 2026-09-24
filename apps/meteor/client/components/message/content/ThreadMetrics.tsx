@@ -1,16 +1,10 @@
-import {
-	MessageMetricsItem,
-	MessageBlock,
-	MessageMetrics,
-	MessageMetricsReply,
-	MessageMetricsItemIcon,
-	MessageMetricsItemLabel,
-} from '@rocket.chat/fuselage';
+import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsReply, MessageMetricsItemLabel } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
@@ -30,6 +24,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 	const { t } = useTranslation();
 
 	const format = useTimeAgo();
+	const formatDateAndTime = useFormatDateAndTime();
 
 	const goToThread = useGoToThread();
 
@@ -45,15 +40,15 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 					data-mid={mid}
 					onClick={() => goToThread({ rid, tmid: mid })}
 					primary={!!unread}
+					icon='thread'
 					position='relative'
 					overflow='visible'
 				>
-					{t('View_thread')}
+					{t('Thread')}
 				</MessageMetricsReply>
 				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />
 				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
-				<MessageMetricsItem title={t('Last_message__date__', { date: format(lm) })}>
-					<MessageMetricsItemIcon name='thread' />
+				<MessageMetricsItem title={t('Last_message__date__', { date: formatDateAndTime(lm) })}>
 					{isSmall ? (
 						<MessageMetricsItemLabel>{t('__count__replies', { count: counter })}</MessageMetricsItemLabel>
 					) : (
