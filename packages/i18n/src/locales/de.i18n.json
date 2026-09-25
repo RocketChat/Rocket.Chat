@@ -322,8 +322,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud-ID",
   "Accounts_OAuth_Nextcloud_secret": "Geheimer Client-Schlüssel",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud Server-URL",
-  "Accounts_OAuth_Proxy_host": "Proxy-Host",
-  "Accounts_OAuth_Proxy_services": "Proxy-Port",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Mindestens ein Kleinbuchstabe",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Erzwingen, dass ein Passwort mindestens ein Kleinbuchstabe enthält.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Mindestens eine Ziffer",

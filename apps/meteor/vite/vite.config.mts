@@ -60,7 +60,6 @@ const nativeModules = (): Plugin => {
 			'client/lib/sdk/meteorBackedSdk.ts': 'meteorBackedSdk.ts',
 			'client/lib/sdk/sdkTransportEnabled.ts': 'sdkTransportEnabled.ts',
 			'client/lib/sdk/ddpProtocol.ts': 'ddpProtocol.ts',
-			'client/lib/customOAuth/CustomOAuth.ts': 'CustomOAuth.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 

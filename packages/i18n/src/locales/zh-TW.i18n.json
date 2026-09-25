@@ -138,8 +138,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud id",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud 伺服器網址",
-  "Accounts_OAuth_Proxy_host": "Proxy 主機",
-  "Accounts_OAuth_Proxy_services": "Proxy 服務",
   "Accounts_Password_Policy_AtLeastOneLowercase": "至少一個小寫字母",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "強制密碼至少包含一個小寫字母。",
   "Accounts_Password_Policy_AtLeastOneNumber": "至少一個號碼",

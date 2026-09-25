@@ -178,7 +178,6 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
-		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -195,8 +194,9 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
+				//	Older mobile app versions only support the legacy Meteor OAuth flow, so they must hide these buttons.
 				if ((service as OAuthConfiguration).custom || service.service === 'saml') {
-					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
+					return { ...service, hideButtonOnMobile: true };
 				}
 
 				return {
@@ -207,7 +207,7 @@ API.v1.get(
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
-					hideButtonOnMobile: isPassportFlowEnabled,
+					hideButtonOnMobile: true,
 				};
 			}),
 		});

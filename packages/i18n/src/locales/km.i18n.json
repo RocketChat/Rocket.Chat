@@ -123,8 +123,6 @@
   "Accounts_OAuth_Nextcloud_id": "លេខសម្គាល់  Nextcloud",
   "Accounts_OAuth_Nextcloud_secret": "Client សម្ងាត់",
   "Accounts_OAuth_Nextcloud_URL": "URL ម៉ាស៊ីនបម្រើ Nextcloud",
-  "Accounts_OAuth_Proxy_host": "ម៉ាស៊ីនប្រូកស៊ី",
-  "Accounts_OAuth_Proxy_services": "សេវាប្រូកស៊ី",
   "Accounts_Password_Policy_AtLeastOneLowercase": "យ៉ាងហោចណាស់មានអក្សរតូចមួយតួរ",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "អនុវត្តថាពាក្យសម្ងាត់មានយ៉ាងហោចណាស់តួអក្សរតូចមួយ។",
   "Accounts_Password_Policy_AtLeastOneNumber": "នៅលេខមួយតូច",

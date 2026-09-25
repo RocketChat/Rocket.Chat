@@ -141,8 +141,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud ID",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud server URL",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxyservices",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Minstens één kleine letter",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Ervoor zorgen dat een wachtwoord minstens één kleine letter bevat.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Minstens één cijfer",
