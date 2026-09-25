@@ -1,0 +1,33 @@
+apps/meteor/server/startup/localBroker.ts
+  s_2b0eded95c2435::t_04f4b77c9702c9 1-3
+packages/core-services/src/LocalBroker.ts
+  s_2b0eded95c2435::t_4657231af8c88f 15-18,37-38,107-112,118
+packages/core-services/src/index.ts
+  s_2b0eded95c2435::t_4657231af8c88f 77
+packages/core-services/tests/LocalBroker.test.ts
+  s_2b0eded95c2435::t_a87338e232c135 160-209
+apps/meteor/server/startup/localServices.ts
+  s_2b0eded95c2435::t_04f4b77c9702c9 1,3,5
+apps/meteor/ee/server/local-services/instance/service.ts
+  s_2b0eded95c2435::t_04f4b77c9702c9 3,34-35,47-57,101-102,106-114,224
+apps/meteor/tests/unit/server/services/instance/service.tests.ts
+  s_2b0eded95c2435::t_9dc48b90bb8822 10-11,18-22,32-39,48-51,64,70-71,73-126
+apps/meteor/ee/server/startup/services.ts
+  s_2b0eded95c2435::t_04f4b77c9702c9 5,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2df2400aa123eb8842264c2d9590aba6b9d536a1",
+  "prompts": {},
+  "sessions": {
+    "s_2b0eded95c2435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7a05115-5a53-4853-82c7-0d37436775af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

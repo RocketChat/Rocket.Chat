@@ -1,0 +1,54 @@
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_2b0eded95c2435::t_03e75e484f3173 49
+packages/streamer/src/notifications.module.spec.ts
+  s_2b0eded95c2435::t_b49e6472aea852 50,161,175,183,191
+  s_2b0eded95c2435::t_b7a802802b71bb 201
+  s_2b0eded95c2435::t_08db1fa4bf0c52 1,51,158-160,162-174,176-182,184-190,192-200,202
+  s_2b0eded95c2435::t_6f0e4a060d3921 203
+packages/streamer/src/index.ts
+  s_2b0eded95c2435::t_6454446f6fa5e7 3,7-18
+packages/core-services/src/index.ts
+  s_2b0eded95c2435::t_26c25fcf582b77 75
+packages/streamer/src/StreamPresence.ts
+  s_2b0eded95c2435::t_6454446f6fa5e7 9,186
+  s_2b0eded95c2435::t_26c25fcf582b77 142
+packages/streamer/src/types.ts
+  s_2b0eded95c2435::t_26c25fcf582b77 107-115,117
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_2b0eded95c2435::t_03e75e484f3173 48
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_2b0eded95c2435::t_03e75e484f3173 2,28
+packages/streamer/src/streamer.module.ts
+  s_2b0eded95c2435::t_26c25fcf582b77 6-16,45-46,49,55,278
+packages/streamer/src/notifications.module.ts
+  s_2b0eded95c2435::t_6454446f6fa5e7 1-2,19,23-27,69-71,75-82,96,130,142-148
+  s_2b0eded95c2435::t_b49e6472aea852 72-74
+  s_2b0eded95c2435::t_5fb68572151a52 149-150
+ee/apps/ddp-streamer/src/service.ts
+  s_2b0eded95c2435::t_03e75e484f3173 7,45
+packages/core-services/src/events/Events.ts
+  s_2b0eded95c2435::t_26c25fcf582b77 55-62,132
+packages/streamer/src/listeners.module.ts
+  s_2b0eded95c2435::t_6454446f6fa5e7 51-52
+packages/streamer/src/listeners.module.spec.ts
+  s_2b0eded95c2435::t_b49e6472aea852 52,84
+  s_2b0eded95c2435::t_08db1fa4bf0c52 1,53,82-83,85-108
+.changeset/stream-relay-microservices.md
+  s_2b0eded95c2435::t_0228d8b61fc9a5 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f6effd8b49b814db691c18f1d773d8dd8a3c127c",
+  "prompts": {},
+  "sessions": {
+    "s_2b0eded95c2435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7a05115-5a53-4853-82c7-0d37436775af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
