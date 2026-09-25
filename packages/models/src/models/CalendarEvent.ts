@@ -34,7 +34,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent> {
+	public findByUserIdAndDate(uid: IUser['_id'], date: Date, options?: { excludeImported?: boolean }): FindCursor<ICalendarEvent> {
 		const startTime = new Date(date.toISOString());
 		startTime.setHours(0, 0, 0, 0);
 
@@ -45,6 +45,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				uid,
 				startTime: { $gte: startTime, $lt: finalTime },
+				...(options?.excludeImported && { externalId: { $not: { $type: 'string' } } }),
 			},
 			{
 				sort: { startTime: 1 },

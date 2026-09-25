@@ -109,8 +109,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findOne({ _id: eventId });
 	}
 
-	public async list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]> {
-		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
+	public async list(uid: IUser['_id'], date: Date, options?: { excludeImported?: boolean }): Promise<ICalendarEvent[]> {
+		return CalendarEvent.findByUserIdAndDate(uid, date, options).toArray();
 	}
 
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null> {
