@@ -1,0 +1,23 @@
+.changeset/stale-dm-room-fields-cache.md
+  s_c69f9362517597::t_3fba86159dc94f 1-5
+apps/meteor/client/lib/cachedStores/CachedStore.ts
+  ai_agent 122-124
+apps/meteor/client/cachedStores/SubscriptionsCachedStore.ts
+  ai_agent 89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3e1c981fade3497ca53189461634acb1e4fbfd89",
+  "prompts": {},
+  "sessions": {
+    "s_c69f9362517597": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "81c19c81-07fc-46a0-99b1-187580a61d7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
