@@ -860,7 +860,7 @@
   "Displays_action_text": "Əməliyyatın mətni göstərir",
   "Do_not_display_unread_counter": "Bu kanalın hər hansı bir əksini göstərməyin",
   "Do_you_want_to_accept": "Qəbul etmək istəyirsinizmi?",
-  "Do_you_want_to_change_to_s_question": "<strong>{{currentUrl}}</strong>ünvanına dəyişmək istəyirsiniz?",
+  "Do_you_want_to_change_to_s_question": "<bold>{{currentUrl}}</bold>ünvanına dəyişmək istəyirsiniz?",
   "Document_Domain": "Document domain",
   "Domain": "Domain",
   "Domain_added": "domain əlavə edildi",

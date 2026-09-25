@@ -1122,7 +1122,7 @@
   "Do_Nothing": "Non fare nulla",
   "Do_nothing": "Non fare nulla",
   "Do_you_want_to_accept": "Vuoi accettare?",
-  "Do_you_want_to_change_to_s_question": "Vuoi cambiare in <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Vuoi cambiare in <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Dominio del documento",
   "Documentation": "Documentazione",
   "Domain": "Dominio",
