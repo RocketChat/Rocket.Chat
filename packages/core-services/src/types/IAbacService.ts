@@ -12,6 +12,12 @@ import type {
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
 
+export type AbacCreationAttributesDenialReason = 'invalid' | 'not-entitled' | 'unavailable' | 'inconclusive';
+
+export type AbacCreationAttributesResult =
+	| { allowed: true; attributes: IAbacAttributeDefinition[]; bypassed: boolean }
+	| { allowed: false; reason: AbacCreationAttributesDenialReason; code: string; key?: string; attributes?: IAbacAttributeDefinition[] };
+
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
 	listAbacAttributes(
@@ -38,6 +44,8 @@ export interface IAbacService {
 	deleteAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<void>;
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
+	validateCreationAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<AbacCreationAttributesResult>;
+	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;

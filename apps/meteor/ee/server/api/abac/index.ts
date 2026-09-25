@@ -3,7 +3,7 @@ import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
-import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {
@@ -26,11 +26,15 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
+	POSTAbacAttributeAssignabilityBodySchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
+import { toAbacAttributeDefinitions } from '../../../../server/lib/rooms/toAbacAttributeDefinitions';
 import { settings } from '../../../../server/settings';
+import { toCreationAttributesDenialError } from '../../lib/abac/creationAttributesDenial';
+import { toAbacActor } from '../../lib/abac/toAbacActor';
 
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id
@@ -484,6 +488,38 @@ const abacEndpoints = API.v1
 			const keys = (await Abac.listAbacAttributeKeys(getActorFromUser(this.user))).sort((a, b) => a.localeCompare(b));
 
 			return API.v1.success({ data: keys.map((key) => ({ key, label: key })) });
+		},
+	)
+
+	// Runs the check room creation runs, so the answer before creating cannot disagree with it.
+	.post(
+		'abac/attribute-assignability',
+		{
+			authRequired: true,
+			permissionsRequired: ['create-abac-managed-room'],
+			license: ['abac'],
+			body: POSTAbacAttributeAssignabilityBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			const result = await Abac.validateCreationAttributes(
+				toAbacAttributeDefinitions(this.bodyParams.attributes) ?? [],
+				toAbacActor(this.user),
+			);
+			if (!result.allowed) {
+				throw toCreationAttributesDenialError(result);
+			}
+
+			return API.v1.success();
 		},
 	);
 
