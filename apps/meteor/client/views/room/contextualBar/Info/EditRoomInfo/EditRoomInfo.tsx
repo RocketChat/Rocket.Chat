@@ -59,12 +59,6 @@ export type EditRoomInfoProps = {
 	onClickBack: () => void;
 };
 
-const title = {
-	team: 'Edit_team',
-	channel: 'Edit_channel',
-	discussion: 'Edit_discussion',
-} as const;
-
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
 		case 'd':
@@ -236,11 +230,21 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
+	const title = useMemo(
+		() =>
+			({
+				team: t('Edit_team'),
+				channel: t('Edit_channel'),
+				discussion: t('Edit_discussion'),
+			})[roomType],
+		[roomType, t],
+	);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
+				<ContextualbarTitle>{title}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding={24}>
