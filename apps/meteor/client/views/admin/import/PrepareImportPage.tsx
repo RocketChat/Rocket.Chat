@@ -2,9 +2,9 @@ import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
@@ -40,7 +40,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 
 // TODO: review inner logic
 function PrepareImportPage() {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
@@ -204,7 +204,7 @@ function PrepareImportPage() {
 			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
-						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
+						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>

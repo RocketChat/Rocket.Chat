@@ -12,7 +12,6 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -203,7 +202,7 @@ const UserInfo = ({
 						(customField) =>
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
-									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
+									<InfoPanelLabel>{t(customField.label)}</InfoPanelLabel>
 									<InfoPanelText>
 										<MarkdownText content={customField.value} variant='inline' />
 									</InfoPanelText>
