@@ -6,6 +6,7 @@ import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { withTimeout } from '../../data/utils';
@@ -664,6 +665,232 @@ describe('[Calendar Events]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	(!IS_EE ? describe.only : describe.skip)('[Calendar Events without the Outlook license]', () => {
+		const subject = `calendar-events.unlicensed-${Date.now()}`;
+		const date = new Date();
+		let importedId: string | undefined;
+		let ownId: string | undefined;
+
+		before('create one imported event and one the user owns', async () => {
+			const imported = await request
+				.post(api('calendar-events.import'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+					externalId: `calendar-events.unlicensed-${Date.now()}`,
+				})
+				.expect(200);
+
+			expect(imported.body).to.have.property('success', true);
+			importedId = imported.body.id;
+
+			const own = await request
+				.post(api('calendar-events.create'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+				})
+				.expect(200);
+
+			expect(own.body).to.have.property('success', true);
+			ownId = own.body.id;
+
+			expect(importedId).to.be.a('string');
+			expect(ownId).to.be.a('string');
+		});
+
+		after(() =>
+			Promise.all([
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: importedId }),
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: ownId }),
+			]),
+		);
+
+		it('should leave imported events out of the list', async () => {
+			await request
+				.get(api('calendar-events.list'))
+				.set(credentials)
+				.query({ date: date.toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.not.include(importedId);
+				});
+		});
+
+		it('should still list the events the user created', async () => {
+			await request
+				.get(api('calendar-events.list'))
+				.set(credentials)
+				.query({ date: date.toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(ownId);
+				});
+		});
+
+		it('should refuse to return an imported event by id', async () => {
+			await request
+				.get(api('calendar-events.info'))
+				.set(credentials)
+				.query({ id: importedId })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should still return an event the user created by id', async () => {
+			await request
+				.get(api('calendar-events.info'))
+				.set(credentials)
+				.query({ id: ownId })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', subject);
+				});
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[Calendar Events while the server owns the sync]', () => {
+		const subject = `calendar-events.server-managed-${Date.now()}`;
+		const date = new Date();
+		let importedId: string | undefined;
+		let ownId: string | undefined;
+
+		before('create both events while the sync is still off, then hand the calendar over', async () => {
+			const imported = await request
+				.post(api('calendar-events.import'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+					externalId: `calendar-events.server-managed-${Date.now()}`,
+				})
+				.expect(200);
+
+			expect(imported.body).to.have.property('success', true);
+			importedId = imported.body.id;
+
+			const own = await request
+				.post(api('calendar-events.create'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+				})
+				.expect(200);
+
+			expect(own.body).to.have.property('success', true);
+			ownId = own.body.id;
+
+			expect(importedId).to.be.a('string');
+			expect(ownId).to.be.a('string');
+
+			await updateSetting('Exchange_Mode', 'server');
+		});
+
+		after(async () => {
+			await updateSetting('Exchange_Mode', 'legacy');
+
+			await Promise.all([
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: importedId }),
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: ownId }),
+			]);
+		});
+
+		it('should refuse to create an event carrying an external id', async () => {
+			await request
+				.post(api('calendar-events.create'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+					externalId: `calendar-events.server-managed-refused-${Date.now()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+				});
+		});
+
+		it('should refuse to import an event', async () => {
+			await request
+				.post(api('calendar-events.import'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+					externalId: `calendar-events.server-managed-refused-${Date.now()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+				});
+		});
+
+		it('should refuse to update an imported event', async () => {
+			await request
+				.post(api('calendar-events.update'))
+				.set(credentials)
+				.send({ eventId: importedId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+				});
+		});
+
+		it('should refuse to delete an imported event', async () => {
+			await request
+				.post(api('calendar-events.delete'))
+				.set(credentials)
+				.send({ eventId: importedId })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+				});
+		});
+
+		it('should still create an event with no external id', async () => {
+			const created = await request
+				.post(api('calendar-events.create'))
+				.set(credentials)
+				.send({ startTime: date.toISOString(), subject, description: 'Description' })
+				.expect(200);
+
+			expect(created.body).to.have.property('success', true);
+
+			await request.post(api('calendar-events.delete')).set(credentials).send({ eventId: created.body.id }).expect(200);
+		});
+
+		it('should still update an event the user owns', async () => {
+			await request
+				.post(api('calendar-events.update'))
+				.set(credentials)
+				.send({ eventId: ownId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 	});
 

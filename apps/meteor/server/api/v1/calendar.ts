@@ -196,7 +196,7 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
-		if (event.externalId && isServerManaged()) {
+		if (isImported(event) && isServerManaged()) {
 			return API.v1.failure('error-calendar-managed-by-server-sync');
 		}
 
@@ -235,7 +235,7 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
-		if (event.externalId && isServerManaged()) {
+		if (isImported(event) && isServerManaged()) {
 			return API.v1.failure('error-calendar-managed-by-server-sync');
 		}
 
