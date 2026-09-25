@@ -1368,7 +1368,7 @@
   "Cloud_Workspace_Id": "Cloud-Arbeitsbereichs-ID",
   "Cloud_workspace_support": "Wenn Sie Probleme mit einem Cloud-Dienst haben, versuchen Sie zunächst, die Synchronisierung durchzuführen. Wenn das Problem weiterhin besteht, öffnen Sie ein Support-Ticket in der Cloud-Konsole.",
   "cloud.RegisterWorkspace_Setup_Email_Confirmation": "E-Mail mit Bestätigungslink an <1>email</1> gesendet.",
-  "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Ich bin mit den Nutzungsvereinbarung und den Datenschutzbestimmungen einverstanden",
+  "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Ich bin mit der <1>Nutzungsvereinbarung</1> und den <3>Datenschutzbestimmungen</3> einverstanden",
   "cloud.RegisterWorkspace_Token_Step_One": "1. Öffnen Sie: <1>cloud.rocket.chat > Workspaces</1> und klicken Sie auf <3>'Register self-managed'</3>.",
   "Collaborative": "Kollaborativ",
   "Collapse": "Ausblenden",
