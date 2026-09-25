@@ -538,12 +538,15 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										</Field>
 										{retentionOverrideGlobal && (
 											<>
-												<Callout
-													type='danger'
-													dangerouslySetInnerHTML={{
-														__html: DOMPurify.sanitize(t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })),
-													}}
-												/>
+												<Callout type='danger'>
+													<span
+														dangerouslySetInnerHTML={{
+															__html: DOMPurify.sanitize(
+																t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy }),
+															),
+														}}
+													/>
+												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>
 														{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAgeDefault })}
