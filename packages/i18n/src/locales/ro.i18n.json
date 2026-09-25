@@ -315,7 +315,6 @@
   "archive-room": "Camera de arhivă",
   "archive-room_description": "Permisiune pentru arhivarea unui canal",
   "Archived": "Arhivată",
-  "are_typing": "tastează",
   "Are_you_sure": "Sigur doriți asta?",
   "Are_you_sure_you_want_to_delete_your_account": "Sunteți sigur că doriți să ștergeți contul?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Sigur doriți să dezactivați integrarea prin Facebook?",
@@ -1344,7 +1343,6 @@
   "IRC_Port": "Portul care se leagă de serverul gazdă IRC.",
   "IRC_Private_Message": "Rezultatul comenzii PRIVMSG.",
   "IRC_Quit": "Rezultat la renunțarea la o sesiune IRC.",
-  "is_typing": "tastează",
   "Issue_Links": "Eliberați link-urile tracker",
   "IssueLinks_Incompatible": "Avertisment: nu permiteți simultan acest lucru și \"Hex Color Preview\".",
   "IssueLinks_LinkTemplate": "Șablon pentru link-uri de emitere",
@@ -2491,6 +2489,11 @@
   "User__username__removed_from__room_name__leaders": "Utilizatorul {{username}} a fost eliminat de la liderii {{room_name}}",
   "User__username__removed_from__room_name__moderators": "Utilizatorul {{username}} a fost eliminat din moderatorii  {{room_name}}",
   "User__username__removed_from__room_name__owners": "Utilizatorul {{username}} scos din proprietarii {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} tastează",
+    "few": "{{users, list}} tastează",
+    "other": "{{users, list}} tastează"
+  },
   "User_added": "Utilizator adăugat",
   "User_added_by": "Utilizator {{user_added}} adăugat de către {{user_by}}.",
   "User_added_successfully": "Utilizator adăugat cu succes",

@@ -529,7 +529,6 @@
   "archive-room": "封存 Room",
   "archive-room_description": "有權限封存頻道",
   "Archived": "封存",
-  "are_typing": "正在打字",
   "Are_you_sure": "您確定？",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "您確定要清除所有未讀訊息?",
   "Are_you_sure_you_want_to_close_this_chat": "您確定要關閉這個聊天嗎?",
@@ -2188,7 +2187,6 @@
   "IRC_Port": "要在IRC主機服務器上綁定的端口。",
   "IRC_Private_Message": "PRIVMSG命令的輸出。",
   "IRC_Quit": "退出IRC會話時的輸出。",
-  "is_typing": "正在打字",
   "Issue_Links": "問題跟踪鏈接",
   "IssueLinks_Incompatible": "警告：不要同時啟用此功能和“十六進制顏色預覽”。",
   "IssueLinks_LinkTemplate": "問題鏈接模板",
@@ -4186,6 +4184,9 @@
   "User__username__removed_from__room_name__moderators": "使用者{{username}}從{{room_name}}刪除主持人身份",
   "User__username__removed_from__room_name__owners": "使用者{{username}}從{{room_name}}刪除擁有者身份",
   "User__username__unmuted_in_room__roomName__": "使用者 {{username}} 在房間 {{roomName}} 中不靜音",
+  "User_activity_typing": {
+    "other": "{{users, list}} 正在打字"
+  },
   "User_added": "使用者已新增",
   "User_added_by": " {{user_by}} 新增了 {{user_added}} 。",
   "User_added_successfully": "新增使用者已成功",

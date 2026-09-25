@@ -362,7 +362,6 @@
   "archive-room": "Archyvo kambarys",
   "archive-room_description": "Leidimas archyvuoti kanalą",
   "Archived": "Archyvuota",
-  "are_typing": "rašo",
   "Are_you_sure": "Ar tu tuo tikras?",
   "Are_you_sure_you_want_to_delete_your_account": "Ar tikrai norite ištrinti savo sąskaitą?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Ar tikrai norite išjungti \"Facebook\" integraciją?",
@@ -1396,7 +1395,6 @@
   "IRC_Port": "Portas prisijungti prie IRC pagrindinio serverio.",
   "IRC_Private_Message": "PRIVMSG komandos išvestis.",
   "IRC_Quit": "Rezultatas pasibaigus IRC sesijai.",
-  "is_typing": "rašo",
   "Issue_Links": "Problemų sekimo nuorodos",
   "IssueLinks_Incompatible": "Įspėjimas: neleiskite ir \"Hex\" spalvų peržiūros tuo pačiu metu.",
   "IssueLinks_LinkTemplate": "Šablonas išleidimo nuorodoms",
@@ -2548,6 +2546,12 @@
   "User__username__removed_from__room_name__leaders": "Vartotojo {{username}} pašalinta iš {{room_name}} lyderių",
   "User__username__removed_from__room_name__moderators": "Vartotojas {{username}} pašalintas iš {{room_name}} moderatorių",
   "User__username__removed_from__room_name__owners": "Vartotojas {{username}} pašalintas iš {{room_name}} savininkų",
+  "User_activity_typing": {
+    "one": "{{users, list}} rašo",
+    "few": "{{users, list}} rašo",
+    "many": "{{users, list}} rašo",
+    "other": "{{users, list}} rašo"
+  },
   "User_added": "Vartotojas pridėtas",
   "User_added_by": "Naudotojas {{user_added}}pridėjo {{user_by}}.",
   "User_added_successfully": "Vartotojas sėkmingai pridėtas",

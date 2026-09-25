@@ -532,7 +532,6 @@
   "archive-room": "Archiver un salon",
   "archive-room_description": "Autorisation d'archiver un canal",
   "Archived": "Archivé",
-  "are_typing": "sont en train d'écrire",
   "Are_you_sure": "Êtes-vous sûr(e) ?",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Voulez-vous vraiment effacer tous les messages non lus ?",
   "Are_you_sure_you_want_to_close_this_chat": "Voulez-vous vraiment fermer ce chat ?",
@@ -2235,7 +2234,6 @@
   "IRC_Port": "Port auquel se connecter sur le serveur hôte IRC.",
   "IRC_Private_Message": "Sortie de la commande PRIVMSG.",
   "IRC_Quit": "Sortie après avoir quitté une session IRC.",
-  "is_typing": "est en train d'écrire",
   "Issue_Links": "Liens de suivi des problèmes",
   "IssueLinks_Incompatible": "Attention : n'activez pas cette option et l'aperçu de couleur hexadécimale en même temps.",
   "IssueLinks_LinkTemplate": "Modèle pour les liens de problèmes",
@@ -4447,6 +4445,11 @@
   "User__username__removed_from__room_name__moderators": "L'utilisateur {{username}} n'est plus modérateur de {{room_name}}.",
   "User__username__removed_from__room_name__owners": "L'utilisateur {{username}} n'est plus propriétaire de {{room_name}}.",
   "User__username__unmuted_in_room__roomName__": "L'utilisateur {{username}} n'est plus en sourdine dans le salon {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} est en train d'écrire",
+    "many": "{{users, list}} sont en train d'écrire",
+    "other": "{{users, list}} sont en train d'écrire"
+  },
   "User_added": "Utilisateur ajouté",
   "User_added_by": "L'utilisateur {{user_added}} a été ajouté par {{user_by}}.",
   "User_added_successfully": "Utilisateur ajouté avec succès",

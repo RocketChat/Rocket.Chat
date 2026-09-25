@@ -315,7 +315,6 @@
   "archive-room": "Ruang arsip",
   "archive-room_description": "Izin untuk mengarsipkan saluran",
   "Archived": "diarsipkan",
-  "are_typing": "sedang mengetik",
   "Are_you_sure": "Apakah anda yakin?",
   "Are_you_sure_you_want_to_delete_your_account": "Apakah Anda yakin ingin menghapus akun Anda?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Apakah Anda yakin ingin menonaktifkan integrasi Facebook?",
@@ -1344,7 +1343,6 @@
   "IRC_Port": "Port untuk mengikat ke server host IRC.",
   "IRC_Private_Message": "Output dari perintah PRIVMSG.",
   "IRC_Quit": "Output setelah keluar dari sesi IRC.",
-  "is_typing": "sedang mengetik",
   "Issue_Links": "Masalah link pelacak",
   "IssueLinks_Incompatible": "Peringatan: jangan aktifkan ini dan 'Hex Color Preview' pada saat bersamaan.",
   "IssueLinks_LinkTemplate": "Template untuk tautan terbitan",
@@ -2502,6 +2500,9 @@
   "User__username__removed_from__room_name__leaders": "Pengguna {{username}} dihapus dari {{room_name}} pemimpin",
   "User__username__removed_from__room_name__moderators": "Pengguna {{username}} dihapus dari moderator {{room_name}}",
   "User__username__removed_from__room_name__owners": "Pengguna {{username}} dihapus dari pemilik {{room_name}}",
+  "User_activity_typing": {
+    "other": "{{users, list}} sedang mengetik"
+  },
   "User_added": "Pengguna telah ditambahkan",
   "User_added_by": "Pengguna {{user_added}} telah ditambahkan oleh {{user_by}}.",
   "User_added_successfully": "Pengguna berhasil ditambahkan",

@@ -608,10 +608,6 @@
   "archive-room": "Arkistoi huone",
   "archive-room_description": "Oikeus arkistoida kanava",
   "Archived": "Arkistoitu",
-  "are_playing": "pelaavat",
-  "are_recording": "tallentavat",
-  "are_typing": "kirjoittavat",
-  "are_uploading": "lataavat",
   "Are_you_sure": "Oletko varma?",
   "Are_you_sure_delete_department": "Haluatko varmasti poistaa tämän osaston? Toimintoa ei voi kumota. Vahvista antamalla osaston nimi.",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Haluatko varmasti tyhjentää kaikki lukemattomat viestit?",
@@ -2552,10 +2548,6 @@
   "IRC_Port": "Portti, johon sidotaan IRC-isäntäpalvelimessa.",
   "IRC_Private_Message": "PRIVMSG-komennon tulos.",
   "IRC_Quit": "Tulos IRC-istunnon lopettamisen yhteydessä.",
-  "is_playing": "pelaa",
-  "is_recording": "tallentaa",
-  "is_typing": "kirjoittaa",
-  "is_uploading": "lataa",
   "Issue_Links": "Ongelmanseurannan linkit",
   "IssueLinks_Incompatible": "Varoitus: älä ota tätä ja hex-värien esikatselua käyttöön samanaikaisesti.",
   "IssueLinks_LinkTemplate": "Ongelmalinkkien malli",
@@ -5162,6 +5154,22 @@
   "User__username__removed_from__room_name__moderators": "Käyttäjä {{username}} on poistettu huoneen {{room_name}}  valvojista",
   "User__username__removed_from__room_name__owners": "{{username}} poistettu huoneen {{room_name}} omistajista",
   "User__username__unmuted_in_room__roomName__": "Käyttäjän {{username}} mykistys poistettu huoneessa {{roomName}}",
+  "User_activity_playing": {
+    "one": "{{users, list}} pelaa",
+    "other": "{{users, list}} pelaavat"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} tallentaa",
+    "other": "{{users, list}} tallentavat"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} kirjoittaa",
+    "other": "{{users, list}} kirjoittavat"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} lataa",
+    "other": "{{users, list}} lataavat"
+  },
   "User_added": "Käyttäjä lisätty.",
   "User_added_by": "{{user_by}} lisäsi käyttäjän {{user_added}}.",
   "User_added_successfully": "Käyttäjän on lisätty",

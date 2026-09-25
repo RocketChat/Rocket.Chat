@@ -314,7 +314,6 @@
   "archive-room": "ห้องเก็บถาวร",
   "archive-room_description": "อนุญาตให้จัดเก็บช่อง",
   "Archived": "เก็บถาวร",
-  "are_typing": "กำลังพิมพ์",
   "Are_you_sure": "คุณแน่ใจไหม?",
   "Are_you_sure_you_want_to_delete_your_account": "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีของคุณ?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "คุณแน่ใจหรือไม่ว่าต้องการปิดการใช้งาน Facebook integration?",
@@ -1338,7 +1337,6 @@
   "IRC_Port": "พอร์ตเชื่อมต่อกับเซิร์ฟเวอร์โฮสต์ IRC",
   "IRC_Private_Message": "ผลลัพธ์ของคำสั่ง PRIVMSG",
   "IRC_Quit": "ผลลัพธ์เมื่อออกจากเซสชัน IRC",
-  "is_typing": "กำลังพิมพ์",
   "Issue_Links": "ลิงก์เครื่องมือติดตามปัญหา",
   "IssueLinks_Incompatible": "คำเตือน: ไม่ใช้งานนี้และ 'Hex Color Preview' ในเวลาเดียวกัน",
   "IssueLinks_LinkTemplate": "เทมเพลตสำหรับลิงก์ของปัญหา",
@@ -2482,6 +2480,9 @@
   "User__username__removed_from__room_name__leaders": "ลบผู้ใช้ {{username}} ออกจากผู้นำ {{room_name}} แล้ว",
   "User__username__removed_from__room_name__moderators": "ลบผู้ใช้ {{username}} ออกจาก {{room_name}} moderators",
   "User__username__removed_from__room_name__owners": "ลบผู้ใช้ {{username}} ออกจากเจ้าของ {{room_name}} แล้ว",
+  "User_activity_typing": {
+    "other": "{{users, list}} กำลังพิมพ์"
+  },
   "User_added": "เพิ่มผู้ใช้แล้ว",
   "User_added_by": "ผู้ใช้ {{user_added}}เพิ่มโดย {{user_by}}",
   "User_added_successfully": "เพิ่มผู้ใช้สำเร็จแล้ว",

@@ -315,7 +315,6 @@
   "archive-room": "Arhiva soba",
   "archive-room_description": "Dozvola za arhiviranje kanala",
   "Archived": "Arhivirano",
-  "are_typing": "tipkaju",
   "Are_you_sure": "Jesi li siguran?",
   "Are_you_sure_you_want_to_delete_your_account": "Sigurni ste da želite izbrisati svoj račun?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Jeste li sigurni da želite onemogućiti Facebook integraciju?",
@@ -1344,7 +1343,6 @@
   "IRC_Port": "Port za povezivanje na IRC poslužitelj hosta.",
   "IRC_Private_Message": "Izlaz iz naredbe PRIVMSG.",
   "IRC_Quit": "Izlaz nakon isteka IRC sesije.",
-  "is_typing": "tipka",
   "Issue_Links": "Izdajte veze za praćenje",
   "IssueLinks_Incompatible": "Upozorenje: nemojte omogućiti to i istovremeno prikaz 'Hex Color Preview'.",
   "IssueLinks_LinkTemplate": "Predložak za veze za izdavanje",
@@ -2490,6 +2488,11 @@
   "User__username__removed_from__room_name__leaders": "Korisnik {{username}} uklonjen iz voditelja {{room_name}}",
   "User__username__removed_from__room_name__moderators": "Korisnik {{username}} je uklonjen iz moderatora sobe {{room_name}}",
   "User__username__removed_from__room_name__owners": "Korisnik {{username}} uklonjen kao vlasnik sobe {{room_name}} ",
+  "User_activity_typing": {
+    "one": "{{users, list}} tipka",
+    "few": "{{users, list}} tipkaju",
+    "other": "{{users, list}} tipkaju"
+  },
   "User_added": "Korisnik je dodan",
   "User_added_by": "{{user_by}} je dodao korisnika {{user_added}}.",
   "User_added_successfully": "Korisnik je uspješno dodan",

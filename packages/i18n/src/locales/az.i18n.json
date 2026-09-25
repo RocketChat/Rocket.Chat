@@ -315,7 +315,6 @@
   "archive-room": "Arxiv otağı",
   "archive-room_description": "Kanal arxivinə icazə verin",
   "Archived": "Arxivləndi",
-  "are_typing": "yazırlar",
   "Are_you_sure": "Sən əminsən?",
   "Are_you_sure_you_want_to_delete_your_account": "Hesabınızı silmək istədiyinizə əminsinizmi?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Facebook inteqrasiyasını əlindən almaq istəyirsiniz?",
@@ -1346,7 +1345,6 @@
   "IRC_Port": "IRC ana serverinə bağlanacaq port.",
   "IRC_Private_Message": "PRIVMSG əmrinin çıxışı.",
   "IRC_Quit": "IRC sessiyasından çıxdıqdan sonra çıxış.",
-  "is_typing": "yazır",
   "Issue_Links": "Sayı izləyici əlaqələri",
   "IssueLinks_Incompatible": "Xəbərdarlıq: bu və 'Hex Color Preview' funksiyasını eyni anda etkinleştirmeyin.",
   "IssueLinks_LinkTemplate": "Məsələ linkləri üçün Şablon",
@@ -2501,6 +2499,10 @@
   "User__username__removed_from__room_name__leaders": "İstifadəçi {{username}} {{room_name}} liderlərindən silindi",
   "User__username__removed_from__room_name__moderators": "İstifadəçi {{username}} {{room_name}} moderatorlarından silindi",
   "User__username__removed_from__room_name__owners": "İstifadəçi {{username}} {{room_name}} sahiblərindən silindi",
+  "User_activity_typing": {
+    "one": "{{users, list}} yazır",
+    "other": "{{users, list}} yazırlar"
+  },
   "User_added": "İstifadəçi əlavə edildi",
   "User_added_by": "İstifadəçi {{user_added}} {{user_by}}tərəfindən əlavə edilib.",
   "User_added_successfully": "İstifadəçi uğurla əlavə edildi",

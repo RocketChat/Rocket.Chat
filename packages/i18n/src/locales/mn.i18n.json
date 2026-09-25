@@ -313,7 +313,6 @@
   "archive-room": "Архивын өрөө",
   "archive-room_description": "Сувгийг архивлах зөвшөөрөл",
   "Archived": "Архивлагдсан",
-  "are_typing": "гэж бичиж байна",
   "Are_you_sure": "Чи итгэлтэй байна уу?",
   "Are_you_sure_you_want_to_delete_your_account": "Та акаунтаа устгахдаа итгэлтэй байна уу?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Та Facebook-ийг нэгтгэхийг хүсч байгаадаа итгэлтэй байна уу?",
@@ -1340,7 +1339,6 @@
   "IRC_Port": "IRC хост сервер дээр холболт хийх порт.",
   "IRC_Private_Message": "PRIVMSG тушаалын гаралт.",
   "IRC_Quit": "IRC сессээс гарахдаа гарах үр дүн.",
-  "is_typing": "бичиж байна",
   "Issue_Links": "Tracker холбоосыг оруулах",
   "IssueLinks_Incompatible": "Анхааруулга: Үүнийг \"Hex Color Preview\" -ийг нэг дор идэвхжүүлээрэй.",
   "IssueLinks_LinkTemplate": "Холбоосыг гаргах загвар",
@@ -2487,6 +2485,10 @@
   "User__username__removed_from__room_name__leaders": "User {{username}} {{room_name}} удирдагчаас хасагдсан",
   "User__username__removed_from__room_name__moderators": "User {{username}} {{room_name}} зохицуулагчаас хасагдсан",
   "User__username__removed_from__room_name__owners": "User {{username}} {{room_name}} эзэмшигчээс хасагдсан",
+  "User_activity_typing": {
+    "one": "{{users, list}} бичиж байна",
+    "other": "{{users, list}} гэж бичиж байна"
+  },
   "User_added": "Хэрэглэгч нэмсэн",
   "User_added_by": "Хэрэглэгч {{user_added}}нэмж {{user_by}}.",
   "User_added_successfully": "Хэрэглэгч амжилттай нэмсэн",

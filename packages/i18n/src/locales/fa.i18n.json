@@ -394,7 +394,6 @@
   "archive-room": "اتاق بایگانی",
   "archive-room_description": "مجوز آرشیو کانال",
   "Archived": "آرشیو",
-  "are_typing": "در حال تایپ کردن",
   "Are_you_sure": "آیا مطمئن هستید؟",
   "Are_you_sure_you_want_to_delete_this_record": "آیا مطمئن هستید که می خواهید این رکورد را حذف کنید؟",
   "Are_you_sure_you_want_to_delete_your_account": "آیا شما مطمئن هستید که می خواهید حساب کاربری خود را حذف کنید؟",
@@ -1610,7 +1609,6 @@
   "IRC_Port": "درگاه برای اتصال به سرور میزبان IRC.",
   "IRC_Private_Message": "خروجی دستور PRIVMSG.",
   "IRC_Quit": "خروجی پس از ترک یک جلسه IRC.",
-  "is_typing": "می نویسد",
   "Issue_Links": "پیوندهای ردیاب شماره",
   "IssueLinks_Incompatible": "هشدار: این و پیش نمایش رنگ Hex را در همان زمان فعال نکنید.",
   "IssueLinks_LinkTemplate": "الگو برای لینک های موضوع",
@@ -2835,6 +2833,10 @@
   "User__username__removed_from__room_name__leaders": "کاربر {{username}} از رهبران {{room_name}} حذف شده است",
   "User__username__removed_from__room_name__moderators": "{{username}} از {{room_name}}  مدیران حذف شد",
   "User__username__removed_from__room_name__owners": "{{username}} از {{room_name}} مالکان حذف شد",
+  "User_activity_typing": {
+    "one": "{{users, list}} می نویسد",
+    "other": "{{users, list}} در حال تایپ کردن"
+  },
   "User_added": "کاربر اضافه شد",
   "User_added_by": "کاربر {{user_by}} {{user_added}} را اضافه کرد.",
   "User_added_successfully": "کاربر با موفقیت اضافه شد",

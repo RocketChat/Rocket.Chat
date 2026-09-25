@@ -315,7 +315,6 @@
   "archive-room": "Argief Kamer",
   "archive-room_description": "Toestemming om 'n kanaal te argiveer",
   "Archived": "argief",
-  "are_typing": "is tik",
   "Are_you_sure": "Is jy seker?",
   "Are_you_sure_you_want_to_delete_your_account": "Is jy seker jy wil jou rekening uitvee?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Is jy seker jy wil Facebook integrasie uitskakel?",
@@ -1346,7 +1345,6 @@
   "IRC_Port": "Die poort om te bind op die IRC-bedienerbediener.",
   "IRC_Private_Message": "Uitvoer van die PRIVMSG opdrag.",
   "IRC_Quit": "Uitset wanneer u 'n IRC-sessie afsluit.",
-  "is_typing": "besig om te tik",
   "Issue_Links": "Uitreik tracker skakels",
   "IssueLinks_Incompatible": "Waarskuwing: moenie hierdie en die 'Hex Color Preview' terselfdertyd aktiveer nie.",
   "IssueLinks_LinkTemplate": "Sjabloon vir uitgawe skakels",
@@ -2497,6 +2495,10 @@
   "User__username__removed_from__room_name__leaders": "Gebruiker {{username}} verwyder van {{room_name}} leiers",
   "User__username__removed_from__room_name__moderators": "Gebruiker {{username}} verwyder van {{room_name}} moderators",
   "User__username__removed_from__room_name__owners": "Gebruiker {{username}} verwyder van {{room_name}} eienaars",
+  "User_activity_typing": {
+    "one": "{{users, list}} besig om te tik",
+    "other": "{{users, list}} is tik"
+  },
   "User_added": "Gebruiker bygevoeg",
   "User_added_by": "Gebruiker {{user_added}}bygevoeg deur {{user_by}}.",
   "User_added_successfully": "Gebruiker bygevoeg suksesvol",

@@ -529,7 +529,6 @@
   "archive-room": "Roomのアーカイブ",
   "archive-room_description": "チャネルをアーカイブする権限",
   "Archived": "アーカイブ済み",
-  "are_typing": "が入力しています",
   "Are_you_sure": "よろしいですか？",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "未読のメッセージをすべてクリアしてよろしいですか？",
   "Are_you_sure_you_want_to_close_this_chat": "このチャットを閉じてよろしいですか？",
@@ -2212,7 +2211,6 @@
   "IRC_Port": "IRCホストサーバーでバインドするポート。",
   "IRC_Private_Message": "PRIVMSGコマンドの出力。",
   "IRC_Quit": "IRCセッションを終了すると出力されます。",
-  "is_typing": "が入力中",
   "Issue_Links": "問題トラッカーリンク",
   "IssueLinks_Incompatible": "警告：これと「16進色プレビュー」を同時に有効にしないでください。",
   "IssueLinks_LinkTemplate": "問題リンクのテンプレート",
@@ -4393,6 +4391,9 @@
   "User__username__removed_from__room_name__moderators": "ユーザー{{username}}を{{room_name}}のモデレーターから削除しました",
   "User__username__removed_from__room_name__owners": "ユーザー{{username}}を{{room_name}}の所有者から削除しました",
   "User__username__unmuted_in_room__roomName__": "ルーム{{roomName}}でユーザー{{username}} のミュートが解除されました",
+  "User_activity_typing": {
+    "other": "{{users, list}} が入力しています"
+  },
   "User_added": "ユーザーを追加しました",
   "User_added_by": "{{user_by}}がユーザー{{user_added}}を追加しました。",
   "User_added_successfully": "ユーザーが正常に追加されました",

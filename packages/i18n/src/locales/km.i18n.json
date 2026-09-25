@@ -387,7 +387,6 @@
   "archive-room": "បន្ទប់បណ្ណសារ",
   "archive-room_description": "សិទ្ធិក្នុងការរក្សាទុកឆានែល",
   "Archived": "ទុកជាឯកសារ",
-  "are_typing": "កំពុង​វាយ",
   "Are_you_sure": "តើ​អ្នក​ច្បាស់​ហើយ​ឬ?",
   "Are_you_sure_you_want_to_delete_this_record": "តើអ្នកពិតជាចង់លុបកំណត់ត្រានេះមែនទេ?",
   "Are_you_sure_you_want_to_delete_your_account": "តើអ្នកពិតជាចង់លុបគណនីរបស់អ្នក?",
@@ -1607,7 +1606,6 @@
   "IRC_Port": "ច្រកដើម្បីភ្ជាប់ទៅម៉ាស៊ីនមេ IRC ។",
   "IRC_Private_Message": "លទ្ធផលនៃពាក្យបញ្ជា PRIVMSG ។",
   "IRC_Quit": "ទិន្នផលពេលចេញពីសម័យ IRC ។",
-  "is_typing": "គឺ​កំពុង​វាយ",
   "Issue_Links": "តំណកម្មវិធីតាមដានបញ្ហា",
   "IssueLinks_Incompatible": "ការព្រមាន: កុំបើកដំណើរការនេះនិង 'មើលពណ៌ធម្មជាតិ Hex' ក្នុងពេលតែមួយ។",
   "IssueLinks_LinkTemplate": "ពុម្ពសម្រាប់តំណភ្ជាប់បញ្ហា",
@@ -2832,6 +2830,9 @@
   "User__username__removed_from__room_name__leaders": "{{username}} អ្នកប្រើត្រូវបានដកចេញពីមេដឹកនាំ {{room_name}}",
   "User__username__removed_from__room_name__moderators": "{{username}} អ្នកប្រើយកចេញពីល្មម {{room_name}}",
   "User__username__removed_from__room_name__owners": "{{username}} អ្នកប្រើយកចេញពីម្ចាស់ {{room_name}}",
+  "User_activity_typing": {
+    "other": "{{users, list}} កំពុង​វាយ"
+  },
   "User_added": "អ្នកប្រើត្រូវបានបន្ថែម",
   "User_added_by": "អ្នក​ប្រើ {{user_added}} បាន​ថែម​ដោយ {{user_by}}.",
   "User_added_successfully": "អ្នកប្រើដែលបានបន្ថែមដោយជោគជ័យ",

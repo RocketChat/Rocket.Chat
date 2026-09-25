@@ -867,10 +867,6 @@
   "archive-room": "Arquivar sala",
   "archive-room_description": "Permissão para arquivar um canal",
   "Archived": "Arquivado",
-  "are_playing": "estão jogando",
-  "are_recording": "estão registrando",
-  "are_typing": "estão digitando",
-  "are_uploading": "estão fazendo upload",
   "Are_you_sure": "Você tem certeza?",
   "Are_you_sure_delete_contact": "Tem certeza de que deseja excluir {{contactName}} e todos os {{channelsCount}} do histórico de conversas deles? Para confirmar, digite '{{confirmationText}}' no campo abaixo.",
   "Are_you_sure_delete_department": "Tem certeza de que deseja excluir esse departamento? Essa ação não pode ser desfeita. Digite o nome do departamento para confirmar.",
@@ -3311,10 +3307,6 @@
   "IRC_Port": "A porta para se conectar ao servidor host IRC.",
   "IRC_Private_Message": "Saída do comando PRIVMSG.",
   "IRC_Quit": "Saída ao encerrar uma sessão IRC.",
-  "is_playing": "está tocando",
-  "is_recording": "está gravando",
-  "is_typing": "está digitando",
-  "is_uploading": "está fazendo upload de",
   "Issue_Links": "links do rastreador de problemas",
   "IssueLinks_Incompatible": "Aviso: não habilite esta opção e \"Visualização de cor hex\" ao mesmo tempo.",
   "IssueLinks_LinkTemplate": "Modelo para links de problemas",
@@ -6708,6 +6700,31 @@
   "User__username__removed_from__room_name__owners": "O usuário {{username}} foi removido dos proprietários da {{room_name}}",
   "User__username__unbanned_from__roomName__": "Usuário {{username}} cancelou o banimento de {{roomName}}",
   "User__username__unmuted_in_room__roomName__": "O som do usuário {{username}} foi ativado na sala {{roomName}}",
+  "User_activity_hidden_users": {
+    "one": "mais {{count}} pessoa",
+    "many": "mais {{count}} pessoas",
+    "other": "mais {{count}} pessoas"
+  },
+  "User_activity_playing": {
+    "one": "{{users, list}} está tocando",
+    "many": "{{users, list}} estão jogando",
+    "other": "{{users, list}} estão jogando"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} está gravando",
+    "many": "{{users, list}} estão gravando",
+    "other": "{{users, list}} estão gravando"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} está digitando",
+    "many": "{{users, list}} estão digitando",
+    "other": "{{users, list}} estão digitando"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} está fazendo upload de",
+    "many": "{{users, list}} estão fazendo upload",
+    "other": "{{users, list}} estão fazendo upload"
+  },
   "User_added": "Usuário adicionado",
   "User_added_by": "O usuário {{user_added}} foi adicionado à conversa por {{user_by}}.",
   "User_added_successfully": "Usuário adicionado com sucesso",
