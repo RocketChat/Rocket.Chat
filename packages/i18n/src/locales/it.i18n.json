@@ -2931,7 +2931,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Il ridimensionamento dell'immagine non funzionerà se non rileva ImageMagick or GraphicsMagick installato sul tuo server.",
   "The_redirectUri_is_required": "Il redirectUri é richiesto",
   "The_server_will_restart_in_s_seconds": "Il server si riavvierà in %s secondi",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "L'impostazione<strong>{{settingName}}</strong> è configurata su <strong>{{configuredUrl}}</strong> e stai accedendo da<strong>{{currentUrl}}</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "L'impostazione<bold>{{settingName}}</bold> è configurata su <bold>{{configuredUrl}}</bold> e stai accedendo da<bold>{{currentUrl}}</bold>!",
   "The_user_will_be_removed_from_s": "L'utente sarà rimosso da {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "L'utente non potrà più scrivere sul canale {{roomName}}",
   "Theme": "Tema",
