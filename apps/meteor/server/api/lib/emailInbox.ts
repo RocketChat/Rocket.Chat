@@ -1,14 +1,12 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, Users } from '@rocket.chat/models';
-import type { DeleteResult, Filter, InsertOneResult, Sort } from 'mongodb';
+import type { DeleteResult, InsertOneResult, Sort } from 'mongodb';
 
 import { notifyOnEmailInboxChanged } from '../../lib/notifyListener';
 
 export const findEmailInboxes = async ({
-	query = {},
 	pagination: { offset, count, sort },
 }: {
-	query?: Filter<IEmailInbox>;
 	pagination: {
 		offset: number;
 		count: number;
@@ -20,11 +18,14 @@ export const findEmailInboxes = async ({
 	count: number;
 	offset: number;
 }> => {
-	const { cursor, totalCount } = EmailInbox.findPaginated(query, {
-		sort: sort || { name: 1 },
-		skip: offset,
-		limit: count,
-	});
+	const { cursor, totalCount } = EmailInbox.findPaginated(
+		{},
+		{
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+		},
+	);
 
 	const [emailInboxes, total] = await Promise.all([cursor.toArray(), totalCount]);
 

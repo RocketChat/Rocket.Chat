@@ -59,29 +59,27 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get users() {
 		const self = this;
 		return {
-			all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields) });
+			// These three map to `GET /v1/users.list`, which has no projection parameter — read the fields you need
+			// (`name`, `_id`) from the response. It filters by `email`; for roles, type or a search term use `users.listByStatus`.
+			all(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
+				return self.rest.get('/v1/users.list', {});
 			},
 			allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ name: 1 }) });
+				return self.rest.get('/v1/users.list', {});
 			},
 			allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify({ _id: 1 }) });
+				return self.rest.get('/v1/users.list', {});
 			},
-			online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields), query: JSON.stringify({ status: { $ne: 'offline' } }) });
+			// These three map to `GET /v1/users.presence` — with no params it returns every non-offline user, narrowed
+			// with `ids` or `from`. Its projection is fixed, so read the fields you need from the response.
+			online(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
+				return self.rest.get('/v1/users.list', {});
 			},
 			onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', {
-					fields: JSON.stringify({ name: 1 }),
-					query: JSON.stringify({ status: { $ne: 'offline' } }),
-				});
+				return self.rest.get('/v1/users.list', {});
 			},
 			onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
-				return self.rest.get('/v1/users.list', {
-					fields: JSON.stringify({ _id: 1 }),
-					query: JSON.stringify({ status: { $ne: 'offline' } }),
-				});
+				return self.rest.get('/v1/users.list', {});
 			},
 			info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>> {
 				return self.rest.get('/v1/users.info', { username });
