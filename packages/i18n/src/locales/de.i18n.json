@@ -1816,7 +1816,7 @@
   "Custom_Integration": "Benutzerdefinierte Integration",
   "Custom_OAuth_has_been_added": "Benutzerdefiniertes OAuth wurde hinzugefügt",
   "Custom_OAuth_has_been_removed": "Benutzerdefiniertes OAuth wurde entfernt",
-  "Custom_oauth_helper": "Bei der Einrichtung Ihres OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutzen Sie dafür folgende URL: <pre>{{url}}</pre>",
+  "Custom_oauth_helper": "Bei der Einrichtung Ihres OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutzen Sie dafür folgende URL: <code>{{url}}</code>",
   "Custom_OAuth_name": "Benutzerdefinierter OAuth-Name",
   "Custom_OAuth_name_hint": "Geben Sie einen eindeutigen Namen ein, mit dem Sie verschiedene Authentifizierungsmethoden identifizieren und verwalten können.",
   "Custom_roles": "Benutzerdefinierte Rollen",

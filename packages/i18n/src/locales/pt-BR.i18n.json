@@ -1811,7 +1811,7 @@
   "Custom_Integration": "Integração personalizada",
   "Custom_OAuth_has_been_added": "O OAuth personalizado foi adicionado",
   "Custom_OAuth_has_been_removed": "O OAuth personalizado foi removido",
-  "Custom_oauth_helper": "Ao configurar o seu provedor de OAuth, você terá que informar uma URL de Callback. Use <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Ao configurar o seu provedor de OAuth, você terá que informar uma URL de Callback. Use <code>{{url}}</code>.",
   "Custom_OAuth_name": "Nome personalizado do OAuth",
   "Custom_OAuth_name_hint": "Digite um nome exclusivo que o ajudará a identificar e gerenciar diferentes métodos de autenticação.",
   "Custom_roles": "Funções personalizadas",

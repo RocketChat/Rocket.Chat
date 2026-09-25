@@ -1115,7 +1115,7 @@
   "Custom_Emoji_Updated_Successfully": "사용자 정의 이모지를 업데이트 했습니다.",
   "Custom_Field_Removed": "사용자정의 필드 제거",
   "Custom_Fields": "사용자 정의 필드",
-  "Custom_oauth_helper": "OAuth Provider를 설정할때, 콜백 URL을 알려줘야합니다. <pre>{{url}}</pre>를 사용.",
+  "Custom_oauth_helper": "OAuth Provider를 설정할때, 콜백 URL을 알려줘야합니다. <code>{{url}}</code>를 사용.",
   "Custom_Script_Logged_In": "로그인한 사용자를 위한 사용자 정의 스크립트 ",
   "Custom_Script_Logged_In_Description": "항상 사용자와 로그인 한 모든 사용자에게 실행되는 사용자 정의 스크립트. 예 (채팅을 입력하고 로그인 할 때마다)",
   "Custom_Script_Logged_Out": "로그아웃 사용자를 위한 사용자 정의 스크립트 ",

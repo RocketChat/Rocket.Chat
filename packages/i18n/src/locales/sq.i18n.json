@@ -771,7 +771,7 @@
   "Custom_Emoji_Info": "Info Custom Emoji",
   "Custom_Emoji_Updated_Successfully": "Personalizimi i emoji u përditësua me sukses",
   "Custom_Fields": "Fushat Custom",
-  "Custom_oauth_helper": "Kur ngritjen Provider tuaj OAuth, ju do të keni për të informuar një URL callback. përdorim <pre> {{url}} </pre> .",
+  "Custom_oauth_helper": "Kur ngritjen Provider tuaj OAuth, ju do të keni për të informuar një URL callback. përdorim <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Custom Script për përdoruesit e regjistruar në",
   "Custom_Script_Logged_Out": "Custom Script për përdoruesit e regjistruar jashtë",
   "Custom_Scripts": "Scripts Custom",

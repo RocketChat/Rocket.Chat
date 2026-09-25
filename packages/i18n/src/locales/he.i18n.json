@@ -358,7 +358,7 @@
   "Custom": "מותאם",
   "Custom CSS": "CSS מותאם אישית",
   "Custom_Fields": "שדות מותאמים אישית",
-  "Custom_oauth_helper": "כאשר אתה מגדיר ספק OAuth, תצטרך לספק כתובת Callback. השתמש ב-<pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "כאשר אתה מגדיר ספק OAuth, תצטרך לספק כתובת Callback. השתמש ב-<code>{{url}}</code>.",
   "Custom_Script_Logged_In": "סקריפט המותאם אישית עבור משתמשים מחוברים",
   "Custom_Script_Logged_Out": "סקריפט המותאם אישית למשתמשים מתנתקים",
   "Customize": "התאם אישית",

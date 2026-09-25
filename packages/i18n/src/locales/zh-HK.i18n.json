@@ -792,7 +792,7 @@
   "Custom_Emoji_Info": "自定义表情符号信息",
   "Custom_Emoji_Updated_Successfully": "自定义表情符号已成功更新",
   "Custom_Fields": "自定义字段",
-  "Custom_oauth_helper": "设置OAuth提供程序时，您必须通知回调URL。使用<pre>{{url}}</pre>。",
+  "Custom_oauth_helper": "设置OAuth提供程序时，您必须通知回调URL。使用<code>{{url}}</code>。",
   "Custom_Script_Logged_In": "用于登录用户的自定义脚本",
   "Custom_Script_Logged_Out": "用于注销用户的自定义脚本",
   "Custom_Scripts": "自定义脚本",

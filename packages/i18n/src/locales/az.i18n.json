@@ -770,7 +770,7 @@
   "Custom_Emoji_Info": "Xüsusi Emoji Məlumatı",
   "Custom_Emoji_Updated_Successfully": "Xüsusi emoji uğurla güncəllənir",
   "Custom_Fields": "Xüsusi sahələr",
-  "Custom_oauth_helper": "OAuth Provayderinizi qurarkən, bir Geri Axtarış URL'sini bildirməlisiniz. <pre>{{url}}</pre>istifadə edin.",
+  "Custom_oauth_helper": "OAuth Provayderinizi qurarkən, bir Geri Axtarış URL'sini bildirməlisiniz. <code>{{url}}</code> istifadə edin.",
   "Custom_Script_Logged_In": "Daxil olanlar üçün xüsusi skript",
   "Custom_Script_Logged_Out": "Daxil olanlar üçün xüsusi skript",
   "Custom_Scripts": "Xüsusi skriptlər",
