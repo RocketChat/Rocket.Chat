@@ -315,7 +315,6 @@
   "archive-room": "Dhoma Arkivore",
   "archive-room_description": "Leja për të arkivuar një kanal",
   "Archived": "arkivuar",
-  "are_typing": "po shkruajn",
   "Are_you_sure": "Jeni i sigurt?",
   "Are_you_sure_you_want_to_delete_your_account": "Jeni te sigurte qe doni te fshini llogarinë tuaj?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Je i sigurt që dëshiron ta çaktivizosh integrimin në Facebook?",
@@ -1347,7 +1346,6 @@
   "IRC_Port": "Port për të lidhur në serverin e strehuesit IRC.",
   "IRC_Private_Message": "Output i komandës PRIVMSG.",
   "IRC_Quit": "Prodhimi pas mbylljes së një sesioni IRC.",
-  "is_typing": "po shkruan",
   "Issue_Links": "Lëshon lidhjet e gjurmuesit",
   "IssueLinks_Incompatible": "Paralajmërim: mos e aktivizoni këtë dhe 'Hex Color Preview' në të njëjtën kohë.",
   "IssueLinks_LinkTemplate": "Modeli për lidhjet e çështjeve",
@@ -2497,6 +2495,10 @@
   "User__username__removed_from__room_name__leaders": "Përdoruesi {{username}} u hoq nga udhëheqësit {{room_name}}",
   "User__username__removed_from__room_name__moderators": "User {{username}} hequr nga moderatorëve {{room_name}}",
   "User__username__removed_from__room_name__owners": "User {{username}} hequr nga pronarët {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} po shkruan",
+    "other": "{{users, list}} po shkruajn"
+  },
   "User_added": "Përdoruesi u shtua",
   "User_added_by": "Përdoruesi <em>{{user_added}} </em>shtuar nga <em>{{user_by}} </em>.",
   "User_added_successfully": "User shtua me sukses",

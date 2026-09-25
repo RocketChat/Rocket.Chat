@@ -629,10 +629,6 @@
   "archive-room": "पुरालेख कक्ष",
   "archive-room_description": "किसी चैनल को संग्रहित करने की अनुमति",
   "Archived": "संग्रहीत",
-  "are_playing": "खेल रहे हैं",
-  "are_recording": "रिकॉर्डिंग कर रहे हैं",
-  "are_typing": "टाइप कर रहे हैं",
-  "are_uploading": "अपलोड कर रहे हैं",
   "Are_you_sure": "क्या आपको यकीन है?",
   "Are_you_sure_delete_department": "क्या आप वाकई इस विभाग को हटाना चाहते हैं? इस एक्शन को वापस नहीं किया जा सकता। पुष्टि करने के लिए कृपया विभाग का नाम दर्ज करें।",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "क्या आप वाकई सभी अपठित संदेशों को साफ़ करना चाहते हैं?",
@@ -2673,10 +2669,6 @@
   "IRC_Port": "आईआरसी होस्ट सर्वर पर बाइंड करने के लिए पोर्ट।",
   "IRC_Private_Message": "PRIVMSG कमांड का आउटपुट।",
   "IRC_Quit": "आईआरसी सत्र छोड़ने पर आउटपुट।",
-  "is_playing": "खेल रहे है",
-  "is_recording": "रिकॉर्डिंग कर रहा है",
-  "is_typing": "टाइप कर रहा है",
-  "is_uploading": "अपलोड कर रहा है",
   "Issue_Links": "ट्रैकर लिंक जारी करें",
   "IssueLinks_Incompatible": "चेतावनी: इसे और 'हेक्स कलर प्रीव्यू' को एक ही समय में सक्षम न करें।",
   "IssueLinks_LinkTemplate": "समस्या लिंक के लिए टेम्पलेट",
@@ -5502,6 +5494,22 @@
   "User__username__removed_from__room_name__moderators": "उपयोगकर्ता {{username}} को {{room_name}} मॉडरेटर से हटा दिया गया",
   "User__username__removed_from__room_name__owners": "उपयोगकर्ता {{username}} को {{room_name}} स्वामियों से हटा दिया गया",
   "User__username__unmuted_in_room__roomName__": "उपयोगकर्ता {{username}} को कमरे में अनम्यूट किया गया है {{roomName}}",
+  "User_activity_playing": {
+    "one": "{{users, list}} खेल रहे है",
+    "other": "{{users, list}} खेल रहे हैं"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} रिकॉर्डिंग कर रहा है",
+    "other": "{{users, list}} रिकॉर्डिंग कर रहे हैं"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} टाइप कर रहा है",
+    "other": "{{users, list}} टाइप कर रहे हैं"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} अपलोड कर रहा है",
+    "other": "{{users, list}} अपलोड कर रहे हैं"
+  },
   "User_added": "उपयोगकर्ता जोड़ा गया",
   "User_added_by": "उपयोगकर्ता {{user_added}} को {{user_by}} द्वारा जोड़ा गया।",
   "User_added_successfully": "उपयोगकर्ता सफलतापूर्वक जोड़ा गया",

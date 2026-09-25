@@ -313,7 +313,6 @@
   "archive-room": "Arhiviraj sobo",
   "archive-room_description": "Dovoljenje za arhiviranje kanala",
   "Archived": "Arhivirano",
-  "are_typing": "pišejo",
   "Are_you_sure": "Ste prepričani?",
   "Are_you_sure_you_want_to_delete_your_account": "Ste prepričani, da želite izbrisati svoj račun?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Ste prepričani, da želite onemogočiti integracijo Facebooka?",
@@ -1336,7 +1335,6 @@
   "IRC_Port": "Vrata za povezovanje z gostiteljskim strežnikom IRC.",
   "IRC_Private_Message": "Izhod iz ukaza PRIVMSG.",
   "IRC_Quit": "Izhod po preklicu seje IRC.",
-  "is_typing": "piše",
   "Issue_Links": "Povezave do sledilnika težav",
   "IssueLinks_Incompatible": "Opozorilo: ne omogočite tega in možnosti \"Hex Color Preview (Predogleda barv Hex)\" hkrati.",
   "IssueLinks_LinkTemplate": "Predloga za izdaje povezav",
@@ -2487,6 +2485,12 @@
   "User__username__removed_from__room_name__leaders": "Uporabnik {{username}} ni več vodja sobe {{room_name}} ",
   "User__username__removed_from__room_name__moderators": "Uporabnik {{username}} ni več moderator sobe {{room_name}} ",
   "User__username__removed_from__room_name__owners": "Uporabnik {{username}} ni več lastnik sobe {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} piše",
+    "two": "{{users, list}} pišejo",
+    "few": "{{users, list}} pišejo",
+    "other": "{{users, list}} pišejo"
+  },
   "User_added": "Uporabnik dodan",
   "User_added_by": "Uporabnika {{user_added}} je dodal {{user_by}}",
   "User_added_successfully": "Uporabnik je bil uspešno dodan",

@@ -418,7 +418,6 @@
   "archive-room": "Архівувати кімнату",
   "archive-room_description": "Дозвіл на архівування кімнати",
   "Archived": "Читальний зал",
-  "are_typing": "друкує…",
   "Are_you_sure": "Ви впевнені?",
   "Are_you_sure_you_want_to_delete_this_record": "Ви впевнені, що хочете видалити цей запис?",
   "Are_you_sure_you_want_to_delete_your_account": "Ви впевнені, що хочете видалити свій обліковий запис?",
@@ -1775,7 +1774,6 @@
   "IRC_Port": "Порт для зв'язку на хост-сервері IRC.",
   "IRC_Private_Message": "Вихід команди PRIVMSG.",
   "IRC_Quit": "Вихід після завершення сесії IRC.",
-  "is_typing": "друкує",
   "Issue_Links": "Проблеми з посиланнями на трекер",
   "IssueLinks_Incompatible": "Попередження: не вмикайте цей параметр і попередньо переглядайте \"Hex Color Preview\" одночасно.",
   "IssueLinks_LinkTemplate": "Шаблон для випуску посилання",
@@ -3063,6 +3061,12 @@
   "User__username__removed_from__room_name__leaders": "Користувача  {{username}} видалено з лідерів {{room_name}} ",
   "User__username__removed_from__room_name__moderators": "{{username}} Користувач вилучений з модераторів {{room_name}} ",
   "User__username__removed_from__room_name__owners": "{{username}} Користувач вилучений з власників {{room_name}} ",
+  "User_activity_typing": {
+    "one": "{{users, list}} друкує",
+    "few": "{{users, list}} друкує…",
+    "many": "{{users, list}} друкує…",
+    "other": "{{users, list}} друкує…"
+  },
   "User_added": "Користувача додано",
   "User_added_by": "Користувач {{user_added}} доданий {{user_by}}.",
   "User_added_successfully": "Користувач успішно доданий",

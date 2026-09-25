@@ -374,7 +374,6 @@
   "archive-room": "Arşiv",
   "archive-room_description": "Kanal Arşivleme İzni",
   "Archived": "Arşivlendi",
-  "are_typing": "yazıyor",
   "Are_you_sure": "Emin misiniz?",
   "Are_you_sure_you_want_to_delete_your_account": "Hesabınızı silmek istediğinizden emin misiniz?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Facebook entegrasyonunu devre dışı bırakmak istediğinizden emin misiniz?",
@@ -1621,7 +1620,6 @@
   "IRC_Port": "IRC ana sunucuya bağlanacak bağlantı noktası.",
   "IRC_Private_Message": "PRIVMSG komutunun çıktısı.",
   "IRC_Quit": "Bir IRC oturumu bırakıldığında çıktı.",
-  "is_typing": "yazıyor",
   "Issue_Links": "İzleyici bağlantıları yayınla",
   "IssueLinks_Incompatible": "Uyarı: Bunu ve 'Hex Color Preview' ı aynı anda etkinleştirmeyin.",
   "IssueLinks_LinkTemplate": "Sayı bağlantıları için şablon",
@@ -2975,6 +2973,10 @@
   "User__username__removed_from__room_name__leaders": "Kullanıcı {{username}}, {{room_name}} liderlerinden kaldırıldı",
   "User__username__removed_from__room_name__moderators": "Kullanıcı {{username}} adlı {{room_name}} moderatörler kaldırıldı",
   "User__username__removed_from__room_name__owners": "Kullanıcı {{username}} adlı {{room_name}} sahipleri kaldırılır",
+  "User_activity_typing": {
+    "one": "{{users, list}} yazıyor",
+    "other": "{{users, list}} yazıyor"
+  },
   "User_added": "Kullanıcı eklendi",
   "User_added_by": "{{user_added}} adlı kullanıcı {{user_by}} tarafından eklendi.",
   "User_added_successfully": "Kullanıcı başarıyla eklendi",

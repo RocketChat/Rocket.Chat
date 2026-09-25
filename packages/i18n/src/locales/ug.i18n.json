@@ -172,7 +172,6 @@
   "Apply_and_refresh_all_clients": "ھەممە تېرمىنالنى قوللىدى ۋە يېڭىلاندى",
   "Archive": "ئارخىپ ۋە ھۆججەتلەرنى تۈرگە ئايرىپ ساقلىماق",
   "Archived": "ئاللىبۇرۇن تۈرگە ئايرىپ ساقلاندى",
-  "are_typing": "كىرگۈزۈۋاتىدۇ",
   "Are_you_sure": "سىز جەزىملەشتۈرەمسىز",
   "Are_you_sure_you_want_to_delete_your_account": "سىز ئۆزىڭىزنىڭ ھېسابات نومۇرىنى يۇيۇشنى جەزىملەشتۈرەمسىز ؟",
   "at": "بامۇ",
@@ -533,7 +532,6 @@
   "Invitation_Subject_Default": "غا تەكلىپ قىلىندىڭىز [Site_Name] سىز ئاللىبۇرۇن",
   "Invite_user_to_join_channel": "بىر ئەزانى بۇ قانالغا كىرىشكە تەكلىپ قىلىڭ",
   "Invite_Users": "ئەزا تەكلىپ قىلىش",
-  "is_typing": "كىرگۈزۈلۈۋاتىدۇ",
   "It_works": "ئۇتۇقلۇق بولدى",
   "italics": "يانتۇ خەت نۇسخىسى",
   "Join": "قوشۇلۇش",
@@ -1115,6 +1113,10 @@
   "User__username__is_now_an_owner_of__room_name_": "نىڭ ئىگىدارى {{room_name}} ھازىر بولسا {{username}} ئەزا",
   "User__username__removed_from__room_name__moderators": "ئۆي يېغىن رەئىسىدىن يۇيۇۋېتىلدى.{{room_name}}نى ئاللىبۇرۇن {{username}} ئەزا",
   "User__username__removed_from__room_name__owners": "ئۆينىڭ ئىگىدارىدىن يۇيۇۋېتىلدى.{{room_name}} نى {{username}}ئەزا",
+  "User_activity_typing": {
+    "one": "{{users, list}} كىرگۈزۈلۈۋاتىدۇ",
+    "other": "{{users, list}} كىرگۈزۈۋاتىدۇ"
+  },
   "User_added_by": "نى قاتتى {{user_added}} {{user_by}}",
   "User_added_successfully": "يېڭى ئەزانى قېتىش ئۇتۇقلۇق بولدى",
   "User_doesnt_exist": "بولغان ئەزا يوق`@{{username}}` ئەزا ئىسمى",

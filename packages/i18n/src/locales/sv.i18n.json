@@ -862,10 +862,6 @@
   "archive-room": "Arkivera Rum",
   "archive-room_description": "Tillstånd att arkivera en kanal",
   "Archived": "Arkiverad",
-  "are_playing": "spelar",
-  "are_recording": "spelar in",
-  "are_typing": "skriver",
-  "are_uploading": "laddar upp",
   "Are_you_sure": "Är du säker?",
   "Are_you_sure_delete_contact": "Är du säker att du vill ta bort {{contactName}} och alla {{channelsCount}} av deras konversationshistorik? För att bekräfta, skriv '{{confirmationText}}' i fältet nedan.",
   "Are_you_sure_delete_department": "Är du säker på att du vill radera denna avdelning? Den här åtgärden kan inte ångras. Ange avdelningens namn för att bekräfta.",
@@ -3297,10 +3293,6 @@
   "IRC_Port": "Port att binda till på IRC-värdservern.",
   "IRC_Private_Message": "Utmatning av PRIVMSG-kommandot.",
   "IRC_Quit": "Utgång vid avslutande av en IRC-session.",
-  "is_playing": "spelar",
-  "is_recording": "spelar in",
-  "is_typing": "skriver",
-  "is_uploading": "laddar upp",
   "Issue_Links": "Utfärda tracker-länkar",
   "IssueLinks_Incompatible": "Varning: aktivera inte detta och \"Hex Color Preview\" samtidigt.",
   "IssueLinks_LinkTemplate": "Mall för att utfärda länkar",
@@ -6677,6 +6669,22 @@
   "User__username__removed_from__room_name__owners": "Användarn {{username}} togs bort från {{room_name}} ägare",
   "User__username__unbanned_from__roomName__": "Användare {{username}} inte längre bannlyst från {{roomName}}",
   "User__username__unmuted_in_room__roomName__": "Ljudet slogs på för användaren {{username}} i rummet {{roomName}}",
+  "User_activity_playing": {
+    "one": "{{users, list}} spelar",
+    "other": "{{users, list}} spelar"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} spelar in",
+    "other": "{{users, list}} spelar in"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} skriver",
+    "other": "{{users, list}} skriver"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} laddar upp",
+    "other": "{{users, list}} laddar upp"
+  },
   "User_added": "Användare tillagd",
   "User_added_by": "Användaren {{user_added}} tillagd av {{user_by}}.",
   "User_added_successfully": "Användare framgångsrikt tillagd",

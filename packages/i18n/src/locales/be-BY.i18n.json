@@ -328,7 +328,6 @@
   "archive-room": "Архіў Room",
   "archive-room_description": "Дазвол у архіў канала",
   "Archived": "Архівавана",
-  "are_typing": "набіраеце",
   "Are_you_sure": "Вы ўпэўнены?",
   "Are_you_sure_you_want_to_delete_your_account": "Вы ўпэўненыя, што жадаеце выдаліць свой рахунак?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Вы ўпэўненыя, што хочаце адключыць інтэграцыю Facebook?",
@@ -1366,7 +1365,6 @@
   "IRC_Port": "Порт для звязвання на хост-серверы IRC.",
   "IRC_Private_Message": "Выснова каманды PRIVMSG.",
   "IRC_Quit": "Выснову пры выхадзе ў IRC сесіі.",
-  "is_typing": "друкуе",
   "Issue_Links": "Выпуск трэкер спасылка",
   "IssueLinks_Incompatible": "Увага: не ўключайце гэта і «Hex Color Preview» ў той жа самы час.",
   "IssueLinks_LinkTemplate": "Шаблон для выпуску спасылак",
@@ -2525,6 +2523,12 @@
   "User__username__removed_from__room_name__leaders": "{{username}} Карыстальнік выдалены з {{room_name}} лідэраў",
   "User__username__removed_from__room_name__moderators": "{{username}} Карыстальнік выдалены з {{room_name}} мадэратараў",
   "User__username__removed_from__room_name__owners": "{{username}} Карыстальнік выдалены з {{room_name}} уладальнікаў",
+  "User_activity_typing": {
+    "one": "{{users, list}} друкуе",
+    "few": "{{users, list}} набіраеце",
+    "many": "{{users, list}} набіраеце",
+    "other": "{{users, list}} набіраеце"
+  },
   "User_added": "Карыстальнік дададзены",
   "User_added_by": "Карыстальнік {{user_added}}дададзены {{user_by}}.",
   "User_added_successfully": "Карыстальнік дададзены паспяхова",
