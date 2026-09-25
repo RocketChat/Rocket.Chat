@@ -1,5 +1,11 @@
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
+import {
+	AbacEntityResolutionFailedError,
+	AbacInvalidAttributeValuesError,
+	OnlyCompliantCanBeAddedToRoomError,
+	PdpUnavailableError,
+} from './errors';
 import { AbacService } from './index';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
@@ -1109,6 +1115,287 @@ describe('AbacService (unit)', () => {
 			expect(store.assertCanModifyRoom).not.toHaveBeenCalled();
 			expect(store.validateAssignable).not.toHaveBeenCalled();
 			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+		});
+	});
+
+	describe('validateCreationAttributes', () => {
+		const requested = [{ key: 'dept', values: ['eng', 'sales'] }];
+
+		const makeStore = (held: Record<string, string[]> = {}) => ({
+			validateAssignable: jest.fn().mockResolvedValue(undefined),
+			entitlementsOf: jest.fn().mockResolvedValue(new Map(Object.entries(held).map(([key, values]) => [key, new Set(values)]))),
+		});
+
+		const restrictToOwned = (enabled: boolean) =>
+			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? enabled : undefined));
+
+		beforeEach(() => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			restrictToOwned(true);
+		});
+
+		describe('under the local PDP', () => {
+			it('names every attribute and only the values the actor does not hold', async () => {
+				mockAbacFind.mockReturnValue({
+					toArray: async () => [
+						{ key: 'dept', values: ['eng', 'sales'] },
+						{ key: 'region', values: ['emea', 'apac'] },
+					],
+				});
+				(service as any).attributeStores.local.store = makeStore({ dept: ['eng'], region: ['emea'] });
+
+				await expect(
+					service.validateCreationAttributes([...requested, { key: 'region', values: ['emea', 'apac'] }], fakeActor),
+				).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [
+						{ key: 'dept', values: ['sales'] },
+						{ key: 'region', values: ['apac'] },
+					],
+				});
+			});
+
+			it('allows values the actor holds, normalized', async () => {
+				(service as any).attributeStores.local.store = makeStore({ dept: ['eng', 'sales'] });
+
+				const unnormalized = [{ key: ' dept ', values: ['eng', ' sales', 'eng'] }];
+
+				await expect(service.validateCreationAttributes(unnormalized, fakeActor)).resolves.toEqual({
+					allowed: true,
+					attributes: requested,
+					bypassed: false,
+				});
+			});
+
+			it('allows values the actor does not hold when restricting to owned attributes is off', async () => {
+				restrictToOwned(false);
+				const store = makeStore();
+				(service as any).attributeStores.local.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({ allowed: true });
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+
+			it('skips the owned-attributes rule for a bypass holder, and says so', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				const store = makeStore();
+				(service as any).attributeStores.local.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: true,
+					attributes: requested,
+					bypassed: true,
+				});
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+
+			it('still refuses an attribute the workspace does not define to a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				(service as any).attributeStores.local.store = makeStore();
+
+				await expect(service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'invalid',
+					code: 'error-attribute-definition-not-found',
+				});
+			});
+
+			it('refuses the same key given twice', async () => {
+				(service as any).attributeStores.local.store = makeStore({ dept: ['eng', 'sales'] });
+
+				await expect(
+					service.validateCreationAttributes(
+						[
+							{ key: 'dept', values: ['eng'] },
+							{ key: 'dept', values: ['sales'] },
+						],
+						fakeActor,
+					),
+				).resolves.toMatchObject({ allowed: false, reason: 'invalid', key: 'dept' });
+			});
+
+			it('refuses nothing to assign rather than approving it', async () => {
+				(service as any).attributeStores.local.store = makeStore();
+
+				await expect(service.validateCreationAttributes([], fakeActor)).resolves.toMatchObject({ allowed: false, reason: 'invalid' });
+			});
+
+			it('refuses as unavailable when the PDP is down, before evaluating anything', async () => {
+				(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(false) };
+				const store = makeStore({ dept: ['eng', 'sales'] });
+				(service as any).attributeStores.local.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('under the Virtru PDP', () => {
+			beforeEach(() => {
+				mockHasModule.mockReturnValue(true);
+				Object.assign(service as any, {
+					abacEnabled: true,
+					pdpTypeSetting: 'virtru',
+					attributeStoreSetting: 'virtru',
+					pdpType: 'virtru',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true) },
+				});
+			});
+
+			it('names the attribute Virtru does not entitle the actor to, and ignores the owned-attributes rule', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(
+					new AbacInvalidAttributeValuesError({ attributes: [{ key: 'dept', values: ['sales'] }] }),
+				);
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [{ key: 'dept', values: ['sales'] }],
+				});
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+
+			it('allows exactly what Virtru entitles the actor to', async () => {
+				const store = makeStore();
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: true,
+					attributes: requested,
+					bypassed: false,
+				});
+				expect(store.validateAssignable).toHaveBeenCalledWith(requested, fakeActor);
+			});
+
+			it('refuses as inconclusive when the actor cannot be resolved to a Virtru entity', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new AbacEntityResolutionFailedError());
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: false,
+					reason: 'inconclusive',
+					code: 'error-virtru-entity-resolution-failed',
+				});
+			});
+
+			it('refuses as unavailable, rather than failing, when the entitlements call errors or times out', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new Error('request timed out'));
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+			});
+
+			it('refuses as unavailable when Virtru cannot be reached', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new PdpUnavailableError());
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'unavailable',
+				});
+			});
+
+			it('skips the entitlement check for a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				const store = makeStore();
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({ allowed: true, bypassed: true });
+				expect(store.validateAssignable).not.toHaveBeenCalled();
+			});
+
+			describe('with the local attribute store', () => {
+				let checkUsernamesMatchAttributes: jest.Mock;
+
+				beforeEach(() => {
+					checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
+					Object.assign(service as any, {
+						attributeStoreSetting: 'local',
+						pdp: { isAvailable: jest.fn().mockResolvedValue(true), checkUsernamesMatchAttributes },
+					});
+					(service as any).attributeStores.local.store = makeStore();
+				});
+
+				it('refuses the creation when Virtru does not permit the creator the attributes', async () => {
+					checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+					await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+						allowed: false,
+						reason: 'not-entitled',
+						code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
+					});
+					expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], requested, { _id: 'room-creation' });
+				});
+
+				it('allows what Virtru permits the creator, without the owned-attributes rule', async () => {
+					const store = makeStore();
+					(service as any).attributeStores.local.store = store;
+
+					await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+						allowed: true,
+						attributes: requested,
+						bypassed: false,
+					});
+					expect(store.entitlementsOf).not.toHaveBeenCalled();
+				});
+
+				it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
+					await expect(service.validateCreationAttributes(requested, { ...fakeActor, username: undefined } as any)).resolves.toMatchObject({
+						allowed: false,
+						reason: 'not-entitled',
+					});
+					expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
+				});
+			});
+		});
+	});
+
+	describe('auditRoomAttributesAtCreation', () => {
+		const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+
+		beforeEach(() => {
+			mockCreateAuditServerEvent.mockReset();
+		});
+
+		it('records the attributes a room was created with', async () => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+
+			await service.auditRoomAttributesAtCreation(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attribute.changed',
+				expect.objectContaining({ change: 'created', reason: 'api', previous: [], current: room.abacAttributes }),
+				expect.objectContaining({ _id: fakeActor._id }),
+			);
+		});
+
+		it('records that the creator bypassed store validation', async () => {
+			mockHasPermission.mockReset().mockResolvedValue(true);
+
+			await service.auditRoomAttributesAtCreation(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attribute.changed',
+				expect.objectContaining({ reason: 'store-validation-bypassed' }),
+				expect.anything(),
+			);
 		});
 	});
 
