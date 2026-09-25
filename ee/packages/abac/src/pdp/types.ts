@@ -55,7 +55,7 @@ export interface IPolicyDecisionPoint {
 		user: AtLeast<IUser, '_id'>,
 	): Promise<{ granted: boolean; userToRemove?: IUser }>;
 
-	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: Pick<IRoom, '_id'>): Promise<void>;
 
 	evaluateSubjectsAgainstAttributes(
 		subjects: EvaluableSubject[],

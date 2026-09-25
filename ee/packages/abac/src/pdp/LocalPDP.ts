@@ -90,7 +90,11 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		await LDAPEnterprise.syncUsersAbacAttributesByIds(userIds);
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {
+	async checkUsernamesMatchAttributes(
+		usernames: string[],
+		attributes: IAbacAttributeDefinition[],
+		_object: Pick<IRoom, '_id'>,
+	): Promise<void> {
 		const nonCompliantUsersFromList = await Users.find(
 			{
 				username: { $in: usernames },

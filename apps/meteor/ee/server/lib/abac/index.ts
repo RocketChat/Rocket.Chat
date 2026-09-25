@@ -8,6 +8,7 @@ export const createPermissions = async () => {
 		{ _id: 'manage-abac-admin-rooms', roles: ['admin'] },
 		{ _id: 'view-abac-admin-audit', roles: ['admin'] },
 		{ _id: 'bypass-abac-store-validation', roles: [] },
+		{ _id: 'create-abac-managed-room', roles: ['admin', 'user'] },
 	];
 
 	for (const permission of permissions) {

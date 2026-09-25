@@ -78,12 +78,13 @@ export const Audit = {
 		current: IAbacAttributeDefinition[],
 		change: AbacAttributeDefinitionChangeType,
 		actor: AbacActor,
+		reason: AbacAuditReason = 'api',
 	) => {
 		return audit(
 			'abac.object.attribute.changed',
 			{
 				room: minimalRoom,
-				reason: 'api',
+				reason,
 				change,
 				previous,
 				current,

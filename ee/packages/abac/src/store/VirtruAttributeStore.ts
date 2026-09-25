@@ -11,6 +11,7 @@ import {
 	AbacNotAuthorizedToModifyRoomError,
 	PdpUnavailableError,
 } from '../errors';
+import { findUnownedValues } from '../helper';
 import { logger } from '../logger';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsRequest, IGetEntitlementsResponse } from '../pdp/types';
@@ -121,12 +122,9 @@ export class VirtruAttributeStore implements IAttributeStore {
 	}
 
 	async validateAssignable(attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
-		const owned = await this.entitlementsOf(actor);
-		for (const a of attrs) {
-			const allowed = owned.get(a.key);
-			if (!allowed || !a.values.every((v) => allowed.has(v))) {
-				throw new AbacInvalidAttributeValuesError();
-			}
+		const unowned = findUnownedValues(attrs, await this.entitlementsOf(actor));
+		if (unowned.length) {
+			throw new AbacInvalidAttributeValuesError({ attributes: unowned });
 		}
 	}
 

@@ -53,9 +53,11 @@ export const createChannelMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 	}
 
+	const { abacAttributes: _unvalidated, ...roomExtraData } = extraData;
+
 	return createRoom('c', name, user, members, excludeSelf, readOnly, {
 		...(customFields && Object.keys(customFields).length && { customFields }),
-		...extraData,
+		...roomExtraData,
 	});
 };
 

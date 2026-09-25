@@ -32,8 +32,10 @@ import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, redactHiddenMembers } from '../../lib/statusVisibility/hiddenUsers';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { eraseTeam } from '../lib/eraseTeam';
@@ -115,10 +117,11 @@ const teamsEndpoints = API.v1
 			permissionsRequired: ['create-team'],
 			body: isTeamsCreateProps,
 			response: {
-				200: ajv.compile<{ team: ITeam }>({
+				200: ajv.compile<{ team: ITeam; skippedMembers?: string[] }>({
 					type: 'object',
 					properties: {
 						team: { type: 'object' },
+						skippedMembers: { type: 'array', items: { type: 'string' } },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['team', 'success'],
@@ -130,13 +133,27 @@ const teamsEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, abacAttributes } = this.bodyParams;
 
 			if (room?.id && !(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.id))) {
 				return API.v1.forbidden();
 			}
 
-			const team = await Team.create(this.userId, {
+			if (abacAttributes) {
+				if (!settings.get('ABAC_Enabled')) {
+					return API.v1.failure('error-abac-not-enabled');
+				}
+				// Converting an existing room creates no room for the attributes to land on.
+				if (room?.id) {
+					return API.v1.failure('error-abac-attributes-room-conversion');
+				}
+				// The creation guard checks the owner's authority, so it has to be the caller's own.
+				if (owner && owner !== this.userId) {
+					return API.v1.failure('error-abac-attributes-owner-must-be-caller');
+				}
+			}
+
+			const { skippedMembers, ...team } = await Team.create(this.userId, {
 				team: {
 					name,
 					type,
@@ -144,9 +161,10 @@ const teamsEndpoints = API.v1
 				room: room as Parameters<typeof Team.create>[1]['room'],
 				members,
 				owner,
+				abacAttributes: toAbacAttributeDefinitions(abacAttributes),
 			});
 
-			return API.v1.success({ team });
+			return API.v1.success({ team, ...(skippedMembers && { skippedMembers }) });
 		},
 	);
 

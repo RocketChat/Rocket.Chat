@@ -4,7 +4,14 @@ export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>,
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
 export type AbacAuditReason =
-	'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval' | 'virtru-pdp-sync' | 'attribute-store-switch';
+	| 'ldap-sync'
+	| 'room-attributes-change'
+	| 'system'
+	| 'api'
+	| 'realtime-policy-eval'
+	| 'virtru-pdp-sync'
+	| 'attribute-store-switch'
+	| 'store-validation-bypassed';
 
 export type AbacPdpType = 'local' | 'virtru';
 

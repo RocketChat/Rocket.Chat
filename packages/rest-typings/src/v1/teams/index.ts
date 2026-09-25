@@ -99,8 +99,10 @@ export type TeamsEndpoints = {
 				};
 			};
 			owner?: IUser['_id'];
+			abacAttributes?: Record<string, string[]>;
 		}) => {
 			team: ITeam;
+			skippedMembers?: string[];
 		};
 	};
 
