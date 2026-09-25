@@ -45,7 +45,7 @@ void (async () => {
 	registerAccountMethods(server, lifecycle);
 	registerPresenceMethods(server);
 
-	const notifications = new NotificationsModule(createStreamAdapter(server), { originId: InstanceStatus.id() });
+	const notifications = new NotificationsModule(createStreamAdapter(server), InstanceStatus.id());
 
 	notifications.onUserActivity(({ rid, uid, activities }) => {
 		FederationMatrix.notifyUserTyping(rid, uid, activities.includes('user-typing')).catch((err) => {

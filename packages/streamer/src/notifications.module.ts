@@ -26,11 +26,6 @@ export type UserActivity = {
 	activities: string[];
 };
 
-export type NotificationsModuleOptions = {
-	/** Identifies this process among every process that hosts the same streams. */
-	originId: string;
-};
-
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
 
@@ -70,8 +65,6 @@ export class NotificationsModule {
 
 	private readonly streams = new Map<string, IStreamer<StreamNames>>();
 
-	private readonly originId: string;
-
 	private readonly userActivityHandlers = new Set<(activity: UserActivity) => void>();
 
 	private readonly relay: StreamRelay = (stream, eventName, args) => {
@@ -82,10 +75,9 @@ export class NotificationsModule {
 
 	constructor(
 		private Streamer: IStreamerConstructor,
-		{ originId }: NotificationsModuleOptions,
+		/** Identifies this process among every process that hosts the same streams. */
+		private readonly originId: string,
 	) {
-		this.originId = originId;
-
 		this.streamAll = this.createStream('notify-all');
 		this.streamLogged = this.createStream('notify-logged');
 		this.streamRoom = this.createStream('notify-room');

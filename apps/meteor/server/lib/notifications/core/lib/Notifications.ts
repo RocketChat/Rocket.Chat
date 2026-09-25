@@ -25,7 +25,7 @@ class Stream extends Streamer<'local'> {
 	}
 }
 
-const notifications = new NotificationsModule(Stream, { originId: InstanceStatus.id() });
+const notifications = new NotificationsModule(Stream, InstanceStatus.id());
 
 notifications.configure();
 
