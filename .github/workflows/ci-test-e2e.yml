@@ -234,7 +234,7 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
@@ -251,7 +251,7 @@ jobs:
         if: (inputs.type == 'api-apps-deno' && inputs.release == 'ee')
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: 'true'
         run: |
           set -o xtrace
@@ -267,7 +267,7 @@ jobs:
         if: inputs.type == 'api-livechat'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
