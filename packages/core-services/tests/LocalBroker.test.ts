@@ -197,14 +197,5 @@ describe('LocalBroker', () => {
 
 			expect(publish).not.toHaveBeenCalled();
 		});
-
-		it('should stop handing broadcasts over once the transport is removed', async () => {
-			const { broker, publish } = brokerWithTransport();
-
-			broker.setClusterTransport(undefined);
-			await broker.broadcast('test' as any, 'a');
-
-			expect(publish).not.toHaveBeenCalled();
-		});
 	});
 });

@@ -108,7 +108,7 @@ export class LocalBroker implements IBroker {
 	 * Installs what carries `broadcast()` to the other instances of this deployment. Without one, a broadcast stays
 	 * in this process.
 	 */
-	setClusterTransport(transport: ClusterTransport | undefined): void {
+	setClusterTransport(transport: ClusterTransport): void {
 		this.clusterTransport = transport;
 	}
 

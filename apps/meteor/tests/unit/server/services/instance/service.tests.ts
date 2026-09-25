@@ -1,3 +1,4 @@
+import type { ClusterTransport } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -72,34 +73,27 @@ describe('InstanceService', () => {
 	});
 
 	describe('cluster transport', () => {
-		const startBroadcast = async () => {
-			await (service as any).startBroadcast();
+		const startBroadcast = () => {
+			(service as any).startBroadcast();
 			expect(LocalBrokerMock.setClusterTransport.calledOnce).to.be.true;
-			return LocalBrokerMock.setClusterTransport.firstCall.args[0] as { publish(event: string, args: unknown[]): void };
+			return LocalBrokerMock.setClusterTransport.firstCall.args[0] as ClusterTransport;
 		};
 
-		it('should send local broker broadcasts to the other instances', async () => {
-			const transport = await startBroadcast();
+		it('should send local broker broadcasts to the other instances', () => {
+			const transport = startBroadcast();
 
 			transport.publish('user.name', [{ _id: 'u1' }]);
 
 			expect(ServiceBrokerMock.broadcast.calledOnceWith('event', { event: 'user.name', args: [{ _id: 'u1' }] })).to.be.true;
 		});
 
-		it('should not send anything while instance broadcast is disabled for troubleshooting', async () => {
-			const transport = await startBroadcast();
+		it('should not send anything while instance broadcast is disabled for troubleshooting', () => {
+			const transport = startBroadcast();
 			(service as any).troubleshootDisableInstanceBroadcast = true;
 
 			transport.publish('user.name', [{ _id: 'u1' }]);
 
 			expect(ServiceBrokerMock.broadcast.called).to.be.false;
-		});
-
-		it('should install the transport only once', async () => {
-			await startBroadcast();
-			await (service as any).startBroadcast();
-
-			expect(LocalBrokerMock.setClusterTransport.calledOnce).to.be.true;
 		});
 
 		describe('receiving', () => {

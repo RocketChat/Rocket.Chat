@@ -17,7 +17,6 @@ const logger = new Logger('Federation');
 let serviceEnabled = false;
 
 const configureFederation = async () => {
-	// only registers the typing listener if the service is enabled
 	serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
 	if (!serviceEnabled) {
 		return;

@@ -1,5 +1,4 @@
-import { api } from '@rocket.chat/core-services';
-import type { IServiceClass } from '@rocket.chat/core-services';
+import { api, ServiceClass } from '@rocket.chat/core-services';
 
 import { ListenersModule } from './listeners.module';
 import { NotificationsModule } from './notifications.module';
@@ -25,35 +24,21 @@ class TestStreamer extends Streamer<any> {
 	}
 }
 
-const createService = () => {
-	const handlers = new Map<string, (...args: any[]) => unknown>();
-
-	const service = {
-		onEvent: jest.fn((event: string, handler: (...args: any[]) => unknown) => handlers.set(event, handler)),
-		onSettingChanged: jest.fn(),
-	} as unknown as IServiceClass;
-
-	const fire = (event: string, ...args: unknown[]) => {
-		const handler = handlers.get(event);
-		if (!handler) {
-			throw new Error(`no handler for ${event}`);
-		}
-		return handler(...args);
-	};
-
-	return { service, fire };
-};
+class TestService extends ServiceClass {
+	protected name = 'test';
+}
 
 describe('ListenersModule', () => {
 	let notifications: NotificationsModule;
-	let fire: ReturnType<typeof createService>['fire'];
+	let service: TestService;
+
+	const fire: TestService['emit'] = (...args) => service.emit(...args);
 
 	beforeEach(() => {
 		jest.spyOn(api, 'broadcast').mockResolvedValue();
 		notifications = new NotificationsModule(TestStreamer as any, 'self');
-		const created = createService();
-		fire = created.fire;
-		new ListenersModule(created.service, notifications, { get: () => undefined });
+		service = new TestService();
+		new ListenersModule(service, notifications, { get: () => undefined });
 	});
 
 	afterEach(() => {
