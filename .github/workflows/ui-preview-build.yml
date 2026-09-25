@@ -1,0 +1,70 @@
+name: UI Preview Build
+
+# Builds the standalone web client for a PR. Runs the PR's code without secrets or write permissions;
+# ui-preview-publish.yml decides whether the result is published.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - 'apps/meteor/client/**'
+      - 'apps/meteor/app/**'
+      - 'apps/meteor/ee/client/**'
+      - 'apps/meteor/public/**'
+      - 'apps/meteor/vite/**'
+      - 'packages/**'
+      - 'ee/packages/**'
+      - 'yarn.lock'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+permissions: {}
+
+jobs:
+  build:
+    name: Build UI preview
+    if: github.event.action != 'labeled' || github.event.label.name == 'ui-preview'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          cache-modules: true
+          install: true
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      # Same package set `yarn dev:next` builds against a remote server.
+      - name: Build packages the client reads from dist
+        run: |
+          filters=$(node --input-type=module -e "
+            import { distOnlyWorkspacePackages, publicAssetWorkspacePackages } from './apps/meteor/vite/workspacePackages.mjs';
+            console.log([...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => '--filter=' + name + '...').join(' '));
+          ")
+          yarn turbo run build $filters
+
+      - name: Build standalone client
+        run: yarn workspace @rocket.chat/meteor build:vite
+
+      - name: Package bundle
+        run: |
+          mkdir -p ui-preview
+          # The rest of dist/ is public/, which the Rocket.Chat server already serves.
+          tar --format=ustar -czf ui-preview/ui-preview.tar.gz -C apps/meteor/vite/dist index.html bundle
+          echo "${{ github.event.pull_request.number }}" > ui-preview/pr-number
+          du -h ui-preview/ui-preview.tar.gz
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-preview
+          path: ui-preview
+          retention-days: 3
