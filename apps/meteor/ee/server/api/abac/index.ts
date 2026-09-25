@@ -28,6 +28,8 @@ import {
 	GETAbacAttributeKeysResponseSchema,
 	GETAbacConfigResponseSchema,
 	POSTAbacAttributeAssignabilityBodySchema,
+	POSTAbacMembershipPreviewBodySchema,
+	POSTAbacMembershipPreviewResponseSchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
@@ -537,6 +539,39 @@ const abacEndpoints = API.v1
 			}
 
 			return API.v1.success();
+		},
+	)
+
+	.post(
+		'abac/membership-preview',
+		{
+			authRequired: true,
+			permissionsRequired: ['create-abac-managed-room'],
+			license: ['abac'],
+			body: POSTAbacMembershipPreviewBodySchema,
+			response: {
+				200: POSTAbacMembershipPreviewResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			const { members, attributes } = this.bodyParams;
+			if (members.length + 1 > settings.get<number>('API_User_Limit')) {
+				throw new Error('error-abac-preview-too-many-members');
+			}
+
+			const result = await Abac.previewCreationMembers(members, toAbacAttributeDefinitions(attributes) ?? [], toAbacActor(this.user));
+			if (!result.allowed) {
+				throw toCreationAttributesDenialError(result);
+			}
+
+			return API.v1.success(result.preview);
 		},
 	);
 
