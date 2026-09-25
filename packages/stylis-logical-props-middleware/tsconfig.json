@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
+		"types": ["jest"],
 		"outDir": "./dist/esm"
 	},
 	// Deliberately empty: it clears the `**/*.spec.ts` exclusion inherited from

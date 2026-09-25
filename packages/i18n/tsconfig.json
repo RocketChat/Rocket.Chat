@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
+		"types": ["node"],
 		"target": "es2024",
 		"module": "node18",
 		"moduleResolution": "node16",

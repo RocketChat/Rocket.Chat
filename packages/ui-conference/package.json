@@ -53,7 +53,7 @@
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.14",
 		"storybook": "^9.1.20",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@react-aria/focus": "*",
