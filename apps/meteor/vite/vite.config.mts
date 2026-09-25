@@ -249,6 +249,8 @@ export default defineConfig({
 	},
 	build: {
 		outDir: join(here, 'dist'),
+		// `/assets` is a server route (logos, favicons), proxied in dev and preview.
+		assetsDir: 'bundle',
 		emptyOutDir: true,
 		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
 		cssMinify: 'esbuild',
