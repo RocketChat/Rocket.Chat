@@ -58,7 +58,7 @@ const serviceMocks = {
 
 const { CalendarService } = proxyquire.noCallThru().load('../../../../../server/services/calendar/service', serviceMocks);
 
-describe.only('CalendarService', () => {
+describe('CalendarService', () => {
 	let sandbox: sinon.SinonSandbox;
 	let service: InstanceType<typeof CalendarService>;
 	const fakeUserId = 'user123';
