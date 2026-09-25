@@ -3,6 +3,8 @@ import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocke
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
+import type { VirtruClient } from '../clients/virtru/VirtruClient';
+import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
 import {
 	AbacEntityResolutionFailedError,
 	AbacInvalidAttributeValuesError,
@@ -11,8 +13,6 @@ import {
 } from '../errors';
 import { logger } from '../logger';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
-import type { VirtruClient } from '../clients/virtru/VirtruClient';
-import { buildAttributeFqns, buildEntityIdentifier, getUserEntityKey, parseAttributeFqns } from '../clients/virtru/identity';
 import type { IGetDecisionBulkRequest, IGetDecisionBulkResponse, IGetEntitlementsRequest, IGetEntitlementsResponse } from '../pdp/types';
 
 const storeLogger = logger.section('VirtruAttributeStore');
@@ -101,6 +101,14 @@ export class VirtruAttributeStore implements IAttributeStore {
 			count: slice.length,
 			total,
 		};
+	}
+
+	async listAttributeKeys(actor: AbacActor | undefined): Promise<string[]> {
+		if (!actor) {
+			throw new AbacEntityResolutionFailedError();
+		}
+
+		return (await this.getEntitlements(actor)).map(({ key }) => key);
 	}
 
 	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {
