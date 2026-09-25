@@ -5442,7 +5442,7 @@
   "RetentionPolicyRoom_FilesOnly": "Remover apenas arquivos, manter as mensagens",
   "RetentionPolicyRoom_MaxAge": "Idade máxima da mensagem em dias (padrão: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Substituir política de retenção global",
-  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar essas configurações sem atenção poderá destruir todo o histórico de mensagens. Leia a documentação antes de ativar o recurso <a href=\"{{retentionPolicyUrl}}\">aqui</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar essas configurações sem atenção poderá destruir todo o histórico de mensagens. Leia a documentação antes de ativar o recurso <link>aqui</link>.",
   "Retry": "Tentar novamente",
   "Retry_Count": "Tentar contagem novamente",
   "Retrying": "Tentando novamente",

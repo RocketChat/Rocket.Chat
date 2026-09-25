@@ -3596,7 +3596,7 @@
   "RetentionPolicyRoom_FilesOnly": "Alleen bestanden snoeien, berichten bewaren",
   "RetentionPolicyRoom_MaxAge": "Maximale berichtleeftijd in dagen (standaard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Negeer het globale retentiebeleid",
-  "RetentionPolicyRoom_ReadTheDocs": "Kijk uit! Als u deze instellingen zonder de grootste zorg aanpast, kan dit alle berichthistorie vernietigen. Lees de documentatie voordat u de functie inschakelt <a href=\"{{retentionPolicyUrl}}\">hier</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Kijk uit! Als u deze instellingen zonder de grootste zorg aanpast, kan dit alle berichthistorie vernietigen. Lees de documentatie voordat u de functie inschakelt <link>hier</link>.",
   "Retry": "Probeer het opnieuw",
   "Retry_Count": "Aantal pogingen",
   "Return_to_home": "Terugkeren naar homepagina",

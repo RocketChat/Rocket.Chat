@@ -3592,7 +3592,7 @@
   "RetentionPolicyRoom_FilesOnly": "Élaguer uniquement les fichiers, conserver les messages",
   "RetentionPolicyRoom_MaxAge": "Âge maximal des messages en jours (par défaut : {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Ignorer la politique de rétention globale",
-  "RetentionPolicyRoom_ReadTheDocs": "Faites attention lors de l'ajustement de ces paramètres, car vous risquez de détruire tout l'historique des messages. Lisez la documentation avant d'activer la fonctionnalité <a href=\"{{retentionPolicyUrl}}\">ici</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Faites attention lors de l'ajustement de ces paramètres, car vous risquez de détruire tout l'historique des messages. Lisez la documentation avant d'activer la fonctionnalité <link>ici</link>.",
   "Retry": "Recommencer",
   "Retry_Count": "Nombre de tentatives",
   "Return_to_home": "Retourner à la page d'accueil",

@@ -2955,7 +2955,7 @@
   "RetentionPolicyRoom_FilesOnly": "Pročistit pouze soubory, zprávy ponechat",
   "RetentionPolicyRoom_MaxAge": "Maximální stáří zprávy ve dnech (výchozí: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Přepsat zásady globální uchovávání",
-  "RetentionPolicyRoom_ReadTheDocs": "Pozor! Vyladění těchto nastavení bez maximální péče může zničit celou historii zpráv. Přečtěte si dokumentaci <a href=\"{{retentionPolicyUrl}}\">zde </a> před zapnutím funkce.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pozor! Vyladění těchto nastavení bez maximální péče může zničit celou historii zpráv. Přečtěte si dokumentaci <link>zde</link> před zapnutím funkce.",
   "Retry_Count": "Počet opakování",
   "Return_to_home": "Návrat na úvod",
   "Return_to_previous_page": "Návrat na předchozí stránku",
