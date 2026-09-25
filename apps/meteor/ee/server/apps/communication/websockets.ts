@@ -3,9 +3,6 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import { api } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 
-import { AppEvents } from './events';
-
-export { AppEvents };
 export class AppServerNotifier {
 	async appAdded(appId: string): Promise<void> {
 		void api.broadcast('apps.added', appId);
