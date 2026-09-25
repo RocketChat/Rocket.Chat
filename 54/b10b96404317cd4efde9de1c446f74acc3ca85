@@ -25,12 +25,19 @@ packages/core-services/src/types/IXMPPServerService.ts
   s_bad883804e82a0::t_dbfc846539c8d1 1-27
 yarn.lock
   s_bad883804e82a0::t_f55ba1b01e9549 10271,11732,11736-11737,11740-11741
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 7489-7506
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.6.21",
   "base_commit_sha": "54b10b96404317cd4efde9de1c446f74acc3ca85",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_bad883804e82a0": {
       "agent_id": {
