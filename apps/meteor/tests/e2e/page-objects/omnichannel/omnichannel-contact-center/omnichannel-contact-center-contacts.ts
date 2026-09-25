@@ -5,11 +5,12 @@ import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { MenuMoreActions } from '../../fragments';
 import { OmnichannelEditContactFlexTab } from '../../fragments/flextabs';
 import { OmnichannelDeleteContactModal } from '../../fragments/modals';
+import { OmnichannelSectionsHref } from '../omnichannel-admin';
 
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
-	protected readonly route = 'current/contacts';
+	protected readonly route = OmnichannelSectionsHref.currentContacts;
 
-	protected override readonly tableName = 'Omnichannel Contact Center Contacts';
+	protected override readonly tableName = 'Omnichannel contact center contacts';
 
 	readonly contactInfo: OmnichannelContactInfo;
 

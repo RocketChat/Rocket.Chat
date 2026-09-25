@@ -91,6 +91,7 @@ export const getURLWithoutSettings = (
 	},
 	cdnPrefix: string,
 	siteUrl: string,
+	rootUrlPathPrefix: string,
 	cloudDeepLinkUrl?: string,
 ): string =>
 	_getURL(
@@ -102,7 +103,7 @@ export const getURLWithoutSettings = (
 			cloud_route,
 			cloud_params,
 			_cdn_prefix: cdnPrefix,
-			_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
+			_root_url_path_prefix: rootUrlPathPrefix,
 			_site_url: siteUrl,
 		},
 		cloudDeepLinkUrl,

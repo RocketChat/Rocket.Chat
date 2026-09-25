@@ -2,11 +2,11 @@ import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
+import { sdk } from './SDKClient';
 import { getDdpSdk } from './sdk/ddpSdk';
 import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { subscribeRaw } from '../meteor/connection';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -14,7 +14,7 @@ const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }
 	if (!sdkTransportEnabled) {
 		// Flag off: route directly through Meteor.subscribe — bit-for-bit develop
 		// behaviour, no DDPSDK socket created, no proxy in the call path.
-		Meteor.subscribe('stream-user-presence', '', payload);
+		subscribeRaw('stream-user-presence', '', payload);
 		return;
 	}
 	const ddp = getDdpSdk();
@@ -25,7 +25,7 @@ const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }
 		ddp.client.subscribe('stream-user-presence', '', payload);
 		return;
 	}
-	Meteor.subscribe('stream-user-presence', '', payload);
+	subscribeRaw('stream-user-presence', '', payload);
 };
 
 type InternalEvents = {

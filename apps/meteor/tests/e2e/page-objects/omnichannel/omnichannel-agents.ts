@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
 
@@ -8,7 +8,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit User' }));
+		super(page.getByRole('dialog', { name: 'Edit user' }));
 		this.listbox = new Listbox(page);
 	}
 
@@ -49,7 +49,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 
 class OmnichannelAgentInfoFlexTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'User info' }));
 	}
 
 	get btnEdit(): Locator {
@@ -62,7 +62,7 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 }
 
 export class OmnichannelAgents extends OmnichannelAdmin {
-	protected readonly route = 'agents';
+	protected readonly route = OmnichannelSectionsHref.agents;
 
 	protected readonly title = 'Agents';
 

@@ -29,7 +29,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",

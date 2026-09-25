@@ -29,7 +29,6 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccount,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -78,18 +77,6 @@ export type EventSignatures = {
 	'notify.uiInteraction'(uid: string, data: UiKit.ServerInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
-	'notify.webdav'(
-		uid: string,
-		data:
-			| {
-					type: 'changed';
-					account: Partial<IWebdavAccount>;
-			  }
-			| {
-					type: 'removed';
-					account: { _id: IWebdavAccount['_id'] };
-			  },
-	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
 	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
 	'notify.deleteMessageBulk'(
@@ -162,6 +149,12 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	/**
+	 * Something about the conference changed: its chat's room, who can read it, or its membership.
+	 *
+	 * One event for all of it, because there is one answer to all of it: read the conference again.
+	 */
+	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
@@ -293,7 +286,6 @@ export type EventSignatures = {
 	// Send all events from here
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;

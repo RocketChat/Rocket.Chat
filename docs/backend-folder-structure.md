@@ -68,7 +68,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `omnichannel/` | The livechat/omnichannel engine: `QueueManager`, `RoutingManager` (+ `routing/` strategies), `business-hour/`, `contacts/`, `analytics/`, transcripts, visitors, guests, departments… The biggest domain. |
 | `authorization/` | Permission/role checks: `hasPermission`, `canAccessRoom`, `getRoles`, `constant/permissions.ts` (the permission list), `streamer/` (permission change notifications). |
 | `auth/` | Authentication utilities: `passwordPolicy`, `generatePassword`, login attempt logging/restriction, `oauth2-server/` (OAuth app admin), `token-login`. |
-| `auth-providers/` | One folder/file per external login provider: `apple/`, `crowd/`, `custom-oauth/`, `oauth/` (core OAuth glue), `github.ts`, `gitlab.ts`, `google.js`, `wordpress.ts`, … |
+| `auth-providers/` | One folder/file per external login provider: `apple/`, `custom-oauth/`, `oauth/` (core OAuth glue), `github.ts`, `gitlab.ts`, `google.js`, … |
 | `saml/`, `cas/`, `ldap/`, `2fa/`, `e2e/` | Protocol-specific auth/crypto subsystems. |
 | `notifications/` | Notification delivery: `push/`, `push-config/`, `email/` (Mailer API), `mail-messages/`, `queue/`, `core/` (Notifications streams), `message/` (per-message desktop/email/mobile decision helpers), direct-reply email processing. |
 | `media/` | Files and media: `file-upload/` (FileUpload + storage configs), `file/`, `emoji-custom/`, `emoji-native/`, `custom-sounds/`, `assets/`. |
@@ -81,7 +81,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 
 ## The EE tree (`ee/server/`) and the license boundary
 
-`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services — note: `ee/server/services/` is docker/build scaffolding for the microservices images, **not** a code folder).
+`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
 
 **The directory boundary is the license boundary.** Code under an `ee/` path is governed by the Enterprise license (`apps/meteor/ee/LICENSE`); everything else is community-licensed:
 

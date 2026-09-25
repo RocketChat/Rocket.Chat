@@ -12,7 +12,7 @@ const AttachmentBlock = ({ pre, color = 'annotation', children }: AttachmentBloc
 			display='flex'
 			flexDirection='row'
 			paddingInlineStart={16}
-			borderRadius={2}
+			borderRadius='small'
 			borderInlineStartStyle='solid'
 			borderInlineStartWidth='default'
 			borderInlineStartColor={color}

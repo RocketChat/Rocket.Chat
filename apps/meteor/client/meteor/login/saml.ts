@@ -2,10 +2,11 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { type LoginCallback, handleLogin } from '../../lib/2fa/overrideLoginMethod';
 import { absoluteUrl } from '../../lib/absoluteUrl';
 import { STORAGE_KEYS, removeStoredItem } from '../../lib/sdk/storage';
 import { settings } from '../../lib/settings';
+import { callLoginMethod } from '../accounts';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -63,7 +64,7 @@ Meteor.logout = async function (...args) {
 	if (provider && settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
 		console.info('SAML session terminated via SLO');
 
-		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
+		const { sdk } = await import('../../lib/SDKClient');
 		sdk
 			.call('samlLogout', provider)
 			.then((result) => {

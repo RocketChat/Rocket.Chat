@@ -760,8 +760,10 @@ exports[`renders OngoingCall without crashing 1`] = `
           id="rcx-media-call-widget-title"
         >
           <time
+            aria-live="off"
             class="rcx-box rcx-box--full rcx-css-2eyztw"
             datetime="PT0H0M0S"
+            role="timer"
           >
             00
             :
@@ -1208,8 +1210,10 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
           id="rcx-media-call-widget-title"
         >
           <time
+            aria-live="off"
             class="rcx-box rcx-box--full rcx-css-2eyztw"
             datetime="PT0H0M0S"
+            role="timer"
           >
             00
             :
@@ -1407,8 +1411,10 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
           id="rcx-media-call-widget-title"
         >
           <time
+            aria-live="off"
             class="rcx-box rcx-box--full rcx-css-2eyztw"
             datetime="PT0H0M0S"
+            role="timer"
           >
             00
             :
@@ -1495,7 +1501,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
           role="group"
         >
           <button

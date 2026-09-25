@@ -3023,23 +3023,6 @@ const POSTCannedResponsesPropsSchema = {
 
 export const isPOSTCannedResponsesProps = ajv.compile<POSTCannedResponsesProps>(POSTCannedResponsesPropsSchema);
 
-type DELETECannedResponsesProps = {
-	_id: string;
-};
-
-const DELETECannedResponsesPropsSchema = {
-	type: 'object',
-	properties: {
-		_id: {
-			type: 'string',
-		},
-	},
-	required: ['_id'],
-	additionalProperties: false,
-};
-
-export const isDELETECannedResponsesProps = ajv.compile<DELETECannedResponsesProps>(DELETECannedResponsesPropsSchema);
-
 type POSTLivechatUsersTypeProps = {
 	username: string;
 };
@@ -4810,7 +4793,6 @@ export type OmnichannelEndpoints = {
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 		POST: (params: POSTCannedResponsesProps) => void;
-		DELETE: (params: DELETECannedResponsesProps) => void;
 	};
 
 	'/v1/canned-responses/:_id': {
@@ -4852,7 +4834,7 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
 
-		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 
 	'/v1/omnichannel/contacts': {
@@ -4880,7 +4862,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsChannelsProps) => { channels: ILivechatContactChannel[] | null };
 	};
 	'/v1/omnichannel/contact.search': {
-		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactSearchProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 	'/v1/livechat/agent.info/:rid/:token': {
 		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };

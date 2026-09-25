@@ -18,6 +18,13 @@ type FederationServerConfig = {
 	adminUser: string;
 	adminPassword: string;
 	adminMatrixUserId: string;
+};
+
+/**
+ * Only Synapse carries fixture users: specs cannot register Matrix accounts, so everything beyond
+ * the admin is provisioned at container boot. Rocket.Chat specs create and delete their own.
+ */
+type SynapseServerConfig = FederationServerConfig & {
 	additionalUser1: FederationUserConfig;
 	/**
 	 * Reserved for tests that need a user the other side has never seen. Must not be used
@@ -26,9 +33,10 @@ type FederationServerConfig = {
 	 */
 	firstContactUser: FederationUserConfig;
 };
+
 export interface IFederationConfig {
 	rc1: FederationServerConfig;
-	hs1: FederationServerConfig;
+	hs1: SynapseServerConfig;
 }
 
 /**
@@ -66,10 +74,6 @@ function getFederationConfig(): IFederationConfig {
 	const rcDomain = validateEnvVar('FEDERATION_RC1_DOMAIN', 'rc1');
 	const rcAdminUser = validateEnvVar('FEDERATION_RC1_ADMIN_USER', 'admin');
 	const rcAdminPassword = validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', 'admin');
-	const rcAdditionalUser1 = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', 'user2');
-	const rcAdditionalUser1Password = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD', 'user2pass');
-	const rcFirstContactUser = validateEnvVar('FEDERATION_RC1_FIRST_CONTACT_USER', 'user3');
-	const rcFirstContactUserPassword = validateEnvVar('FEDERATION_RC1_FIRST_CONTACT_USER_PASSWORD', 'user3pass');
 
 	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', 'hs1');
 	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', 'admin');
@@ -87,16 +91,6 @@ function getFederationConfig(): IFederationConfig {
 			adminUser: rcAdminUser,
 			adminPassword: rcAdminPassword,
 			adminMatrixUserId: `@${rcAdminUser}:${rcDomain}`,
-			additionalUser1: {
-				username: rcAdditionalUser1,
-				password: rcAdditionalUser1Password,
-				matrixUserId: `@${rcAdditionalUser1}:${rcDomain}`,
-			},
-			firstContactUser: {
-				username: rcFirstContactUser,
-				password: rcFirstContactUserPassword,
-				matrixUserId: `@${rcFirstContactUser}:${rcDomain}`,
-			},
 		},
 		hs1: {
 			url: `https://${hs1Domain}`,

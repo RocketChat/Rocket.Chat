@@ -21,17 +21,20 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 	const closeContextualbar = onClose ?? closeTab;
 
 	const callbackRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			ref.current = node;
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
+		(node: HTMLElement) => {
+			const onKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
 					closeContextualbar();
 				}
-			});
+			};
+
+			ref.current = node;
+			node.addEventListener('keydown', onKeyDown);
+
+			return () => {
+				node.removeEventListener('keydown', onKeyDown);
+				ref.current = null;
+			};
 		},
 		[closeContextualbar],
 	);

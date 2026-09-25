@@ -63,7 +63,6 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
-	IWebdavAccountsModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -109,6 +108,7 @@ import {
 	ServerEventsRaw,
 	SamlUsedAssertionsRaw,
 	CronHistoryRaw,
+	VideoConferenceRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -198,7 +198,6 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
-export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
@@ -245,6 +244,9 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+	// The video-conference stream decides who may follow a call by reading it, and that check runs in whichever
+	// process holds the stream — ddp-streamer, once the services are split out.
+	registerModel('IVideoConferenceModel', () => new VideoConferenceRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
 }

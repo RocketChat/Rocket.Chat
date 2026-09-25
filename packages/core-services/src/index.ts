@@ -7,6 +7,7 @@ import type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 } from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
@@ -21,7 +22,6 @@ import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
-import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
@@ -79,13 +79,6 @@ export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceM
 export type { IServiceContext, IServiceClass } from './types/ServiceClass';
 export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export type {
-	IFederationService,
-	IFederationServiceEE,
-	IFederationJoinExternalPublicRoomInput,
-	FederationConfigurationStatus,
-} from './types/IFederationService';
-
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
 
 export type {
@@ -97,6 +90,9 @@ export type {
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
 
+export { getInstanceMethods } from './lib/getInstanceMethods';
+export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry';
+export type { LocalHandler } from './lib/LocalServiceRegistry';
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
@@ -164,6 +160,7 @@ export type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
@@ -209,8 +206,6 @@ export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
 export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
-export const Federation = proxify<IFederationService>('federation');
-export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
 export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');

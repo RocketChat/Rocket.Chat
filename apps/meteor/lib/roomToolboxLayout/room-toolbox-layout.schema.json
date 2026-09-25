@@ -1,0 +1,77 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://rocket.chat/schemas/room-toolbox-layout/v1.json",
+	"title": "Rocket.Chat Room Toolbox Layout configuration",
+	"description": "A list of entries, each declaring the toolbox layout for the room types it claims. Room types left out keep the default layout.",
+	"type": "array",
+	"minItems": 1,
+	"items": { "$ref": "#/$defs/entry" },
+	"allOf": [
+		{
+			"$comment": "A room type may be claimed by at most one entry; minContains 0 keeps entries that do not claim it valid.",
+			"contains": { "$ref": "#/$defs/entryClaimingPublicChannel" },
+			"minContains": 0,
+			"maxContains": 1
+		},
+		{
+			"contains": { "$ref": "#/$defs/entryClaimingPrivateChannel" },
+			"minContains": 0,
+			"maxContains": 1
+		},
+		{
+			"contains": { "$ref": "#/$defs/entryClaimingDirectMessage" },
+			"minContains": 0,
+			"maxContains": 1
+		}
+	],
+	"$defs": {
+		"roomType": { "enum": ["c", "p", "d"] },
+		"entry": {
+			"type": "object",
+			"required": ["roomType"],
+			"additionalProperties": false,
+			"properties": {
+				"roomType": {
+					"type": "array",
+					"minItems": 1,
+					"uniqueItems": true,
+					"items": { "$ref": "#/$defs/roomType" }
+				},
+				"maxVisibleNormal": {
+					"type": "integer",
+					"minimum": 0,
+					"description": "How many non-featured actions stay in the toolbox before overflowing into the kebab menu"
+				},
+				"items": {
+					"type": "array",
+					"items": { "$ref": "#/$defs/item" }
+				}
+			}
+		},
+		"item": {
+			"type": "object",
+			"required": ["id"],
+			"additionalProperties": false,
+			"properties": {
+				"id": { "type": "string", "minLength": 1 },
+				"featured": { "type": "boolean" },
+				"order": { "type": "integer" }
+			}
+		},
+		"entryClaimingPublicChannel": {
+			"type": "object",
+			"required": ["roomType"],
+			"properties": { "roomType": { "type": "array", "contains": { "const": "c" } } }
+		},
+		"entryClaimingPrivateChannel": {
+			"type": "object",
+			"required": ["roomType"],
+			"properties": { "roomType": { "type": "array", "contains": { "const": "p" } } }
+		},
+		"entryClaimingDirectMessage": {
+			"type": "object",
+			"required": ["roomType"],
+			"properties": { "roomType": { "type": "array", "contains": { "const": "d" } } }
+		}
+	}
+}

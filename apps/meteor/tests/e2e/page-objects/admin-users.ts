@@ -1,10 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 import { expect } from '../utils/test';
 
-type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
+type UserActions = 'Make admin' | 'Remove admin' | 'Activate' | 'Deactivate';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
@@ -20,6 +20,14 @@ export class AdminUsers extends Admin {
 		this.userRowMenu = new MenuMoreActions(page);
 	}
 
+	protected readonly route = AdminSectionsHref.users;
+
+	protected readonly title = 'Users';
+
+	override async waitForReady(): Promise<void> {
+		await this.inputSearchUsers.waitFor({ state: 'visible' });
+	}
+
 	get btnNewUser(): Locator {
 		return this.page.getByRole('button', { name: 'New user', exact: true });
 	}
@@ -29,7 +37,7 @@ export class AdminUsers extends Admin {
 	}
 
 	private get inputSearchUsers(): Locator {
-		return this.page.getByRole('textbox', { name: 'Search Users' });
+		return this.page.getByRole('textbox', { name: 'Search users' });
 	}
 
 	get btnMoreActionsMenu(): Locator {

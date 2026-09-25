@@ -36,8 +36,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
-			// TODO: remove this index in the next major release (8.0.0)
-			// { key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
 			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
@@ -271,11 +269,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findPaginated<T, O>(query, options);
 	}
 
-	async findOneByEmailAndPhoneAndCustomField(
+	async findOneByEmailAndPhoneAndCustomField<
+		T extends Document = ILivechatVisitor,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		email: string | null | undefined,
 		phone: string | null | undefined,
 		customFields?: { [key: string]: RegExp },
-	): Promise<ILivechatVisitor | null> {
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = Object.assign(
 			{
 				disabled: { $ne: true },
@@ -291,7 +293,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return null;
 		}
 
-		return this.findOne(query);
+		return this.findOne<T, O>(query, options);
 	}
 
 	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {

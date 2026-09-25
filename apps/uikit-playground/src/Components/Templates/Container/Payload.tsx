@@ -36,7 +36,7 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 				onClick={clickHandler}
 				border='1px solid #e6e6e6'
 				padding='4px'
-				borderRadius={12}
+				borderRadius='large'
 				className={css`
 					cursor: pointer;
 				`}

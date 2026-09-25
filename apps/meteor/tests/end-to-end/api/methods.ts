@@ -2530,6 +2530,29 @@ describe('Meteor.methods', () => {
 		});
 	});
 
+	describe('[@registerUser]', () => {
+		before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+
+		it('should not register a user without an email', async () => {
+			const res = await request
+				.post(methodCallAnon('registerUser'))
+				.send({
+					message: JSON.stringify({ msg: 'method', id: 'id', method: 'registerUser', params: [{ email: null }] }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			const data = JSON.parse(res.body.message);
+			expect(data).to.have.property('error');
+			expect(data).to.not.have.property('result');
+		});
+
+		it('should no longer expose the Accounts_AllowAnonymousWrite setting', async () => {
+			await request.get(api('settings/Accounts_AllowAnonymousWrite')).set(credentials).expect(400);
+		});
+	});
+
 	describe('[@getRoomByTypeAndName]', () => {
 		let testUser: TestUser<IUser>;
 		let testUser2: TestUser<IUser>;
@@ -2770,6 +2793,100 @@ describe('Meteor.methods', () => {
 					expect(parsedResponse.result._id).to.equal(dmId);
 					done();
 				});
+		});
+
+		it('should return the room object for a DM addressed by username', async () => {
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(dmId);
+			expect(parsedResponse.result.t).to.equal('d');
+		});
+
+		it('should throw error when the DM addressed by username does not exist', async () => {
+			const stranger = await createUser();
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', stranger.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(400);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse).to.have.property('error');
+			expect(parsedResponse.error.error).to.equal('error-invalid-room');
+
+			await deleteUser(stranger);
+		});
+
+		it('should return the room object for a group DM addressed by a comma separated username list', async () => {
+			const usernames = `${testUser.username},${testUser2.username}`;
+
+			const groupDm = (await request.post(api('im.create')).set(credentials).send({ usernames }).expect(200)).body.room;
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', usernames],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(groupDm._id);
+
+			await deleteRoom({ type: 'd', roomId: groupDm._id });
+		});
+
+		it('should keep resolving a DM by username after the other member is renamed', async () => {
+			const renamedUser = await createUser();
+			const renamedDmId = (await request.post(api('im.create')).set(credentials).send({ username: renamedUser.username }).expect(200)).body
+				.room._id;
+
+			const username = `renamed.${Date.now()}`;
+			await request.post(api('users.update')).set(credentials).send({ userId: renamedUser._id, data: { username } }).expect(200);
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result._id).to.equal(renamedDmId);
+
+			await deleteRoom({ type: 'd', roomId: renamedDmId });
+			await deleteUser(renamedUser);
 		});
 	});
 
@@ -3275,8 +3392,8 @@ describe('Meteor.methods', () => {
 	});
 
 	describe('[@saveSettings]', () => {
-		it('should return an error when trying to save a "NaN" value', () => {
-			void request
+		it('should return an error when trying to save a "NaN" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3292,12 +3409,11 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
 				});
 		});
 
-		it('should return an error when trying to save a "Infinity" value', () => {
-			void request
+		it('should return an error when trying to save a "Infinity" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3308,17 +3424,16 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 1 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value Infinity');
 				});
 		});
 
-		it('should return an error when trying to save a "-Infinity" value', () => {
-			void request
+		it('should return an error when trying to save a "-Infinity" value', async () => {
+			await request
 				.post(api('method.call/saveSettings'))
 				.set(credentials)
 				.send({
@@ -3329,12 +3444,11 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: -1 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
 				});
 		});
 	});

@@ -1,4 +1,4 @@
-import { emoji } from '../../../app/emoji/client';
+import { emoji } from '../emoji';
 
 export const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
 	const html = Object.values(emoji.packages)

@@ -1,5 +1,4 @@
 import type http from 'node:http';
-import type { UrlWithParsedQuery } from 'node:url';
 import url from 'node:url';
 
 import { Logger } from '@rocket.chat/logger';
@@ -14,13 +13,6 @@ import { settings } from '../../settings';
 type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
-
-declare module 'meteor/webapp' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace WebApp {
-		function setInlineScriptsAllowed(allowed: boolean): Promise<void>;
-	}
-}
 
 let templatePromise: Promise<void> | void;
 export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
@@ -92,14 +84,6 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 });
 
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
-declare module 'meteor/webapp' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace WebApp {
-		function categorizeRequest(
-			req: http.IncomingMessage,
-		): { arch: string; path: string; url: UrlWithParsedQuery } & Record<string, unknown>;
-	}
-}
 
 let cachingVersion = '';
 export function setCachingVersion(value: string): void {

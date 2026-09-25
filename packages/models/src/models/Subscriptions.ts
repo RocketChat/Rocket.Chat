@@ -46,10 +46,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { alert: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { ls: 1 } },
-			// TODO: remove these indexes in the next major release (8.0.0) - their only consumers (the per-room notification-preference finders) were removed
-			// { key: { desktopNotifications: 1 }, sparse: true },
-			// { key: { mobilePushNotifications: 1 }, sparse: true },
-			// { key: { emailNotifications: 1 }, sparse: true },
 			{ key: { autoTranslate: 1 }, sparse: true },
 			{ key: { autoTranslateLanguage: 1 }, sparse: true },
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
@@ -1312,13 +1308,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': userId,
 		};
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				f: favorite,
-			},
-		};
+		const update: UpdateFilter<ISubscription> = favorite ? { $set: { f: true }, $unset: { category: 1 } } : { $set: { f: false } };
 
 		return this.updateOne(query, update);
+	}
+
+	setCategoryByRoomIdsAndUserId(roomIds: string[], userId: string, category: string | null): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			'rid': { $in: roomIds },
+			't': { $ne: 'l' },
+		};
+
+		const update: UpdateFilter<ISubscription> = category !== null ? { $set: { category, f: false } } : { $unset: { category: 1 } };
+
+		return this.updateMany(query, update);
 	}
 
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {

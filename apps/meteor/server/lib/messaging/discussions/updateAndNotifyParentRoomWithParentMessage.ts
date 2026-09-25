@@ -1,31 +1,30 @@
-import type { IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/cached';
 import { notifyOnMessageChange } from '../../notifyListener';
+import { expandSystemMessageOptions, shouldHideSystemMessage } from '../../systemMessage/hideSystemMessage';
 
 type DiscussionRoom = Pick<IRoom, '_id' | 'msgs' | 'lm' | 'sysMes'>;
 
 /**
- * Both the system messages hidden globally and the ones hidden on the room itself are
- * filtered out from the room history, so the count has to consider both of them.
- * Type `rm` is filtered out because it's already discounted when the message is deleted.
+ * `rm` is excluded from the discount because it's already discounted when the message is deleted.
  */
-const getHiddenTypesToDiscount = (room: DiscussionRoom): MessageTypesValues[] => {
-	const globalHiddenTypes = settings.get<MessageTypesValues[]>('Hide_System_Messages');
-	const globallyHiddenTypes = Array.isArray(globalHiddenTypes) ? globalHiddenTypes : [];
-	const roomHiddenTypes = Array.isArray(room.sysMes) ? room.sysMes : [];
+export const expandHiddenSystemMessageTypes = (types: unknown): Set<MessageTypesValues> => {
+	const expanded = expandSystemMessageOptions(Array.isArray(types) ? (types as MessageTypesValues[]) : []);
+	expanded.delete('rm');
 
-	return [...new Set([...globallyHiddenTypes, ...roomHiddenTypes])]
-		.flatMap<MessageTypesValues>((type) =>
-			// `mute_unmute` is a single option covering two different message types
-			type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type],
-		)
-		.filter((type) => type !== 'rm');
+	return expanded;
+};
+
+const getRawHiddenTypes = (room: Pick<IRoom, 'sysMes'>): MessageTypesValues[] => {
+	const globalHiddenTypes = settings.get<MessageTypesValues[]>('Hide_System_Messages');
+
+	return [...(Array.isArray(globalHiddenTypes) ? globalHiddenTypes : []), ...(Array.isArray(room.sysMes) ? room.sysMes : [])];
 };
 
 const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number> => {
-	const hiddenMessageTypes = getHiddenTypesToDiscount(room);
+	const hiddenMessageTypes = [...expandHiddenSystemMessageTypes(getRawHiddenTypes(room))];
 
 	if (!hiddenMessageTypes.length) {
 		return room.msgs;
@@ -36,14 +35,7 @@ const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number>
 	return Math.max(room.msgs - hiddenMessagesCount, 0);
 };
 
-/**
- * Copies the current metadata of a discussion (messages count and last message timestamp) to the
- *  message which links to it on the parent room, and notifies the change to the clients.
- */
-export const updateAndNotifyParentRoomWithParentMessage = async (room: DiscussionRoom): Promise<void> => {
-	room.msgs = await getDiscussionMessagesCount(room);
-
-	const parentMessage = await Messages.refreshDiscussionMetadata(room);
+const notifyParentMessage = (parentMessage: IMessage | null): void => {
 	if (!parentMessage) {
 		return;
 	}
@@ -52,4 +44,20 @@ export const updateAndNotifyParentRoomWithParentMessage = async (room: Discussio
 		id: parentMessage._id,
 		data: parentMessage,
 	});
+};
+
+export const updateAndNotifyParentRoomWithParentMessage = async (room: DiscussionRoom): Promise<void> => {
+	const msgs = await getDiscussionMessagesCount(room);
+
+	notifyParentMessage(await Messages.refreshDiscussionMetadata({ ...room, msgs }));
+};
+
+export const incrementAndNotifyParentRoomWithParentMessage = async (
+	room: Pick<IRoom, '_id' | 'lm' | 'sysMes'>,
+	messageType: IMessage['t'],
+	countDelta: number,
+): Promise<void> => {
+	const isHidden = !!messageType && shouldHideSystemMessage(messageType, getRawHiddenTypes(room));
+
+	notifyParentMessage(await Messages.incDiscussionMetadata(room, isHidden ? 0 : countDelta));
 };

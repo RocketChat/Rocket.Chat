@@ -47,8 +47,7 @@ test.describe('E2EE File Encryption', () => {
 
 		encryptedRoomId = group._id;
 
-		await page.goto(`/group/${group.name}`);
-		await page.locator('#main-content').waitFor();
+		await poHomeChannel.gotoGroup(group.name as string);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 		await expect
 			.poll(

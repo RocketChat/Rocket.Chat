@@ -85,6 +85,14 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
+	// Virtua's cache is positional, so only reuse it when the message count still matches the one it was captured against.
+	const initialCacheRef = useRef(
+		(() => {
+			const store = RoomManager.getStore(rid);
+			return store?.cacheMessageCount === messages.length ? store.cache : undefined;
+		})(),
+	);
+
 	const messagesLength = canPreview ? messages.length + 1 : messages.length;
 
 	useEffect(() => {
@@ -204,7 +212,7 @@ export const MessageList = function MessageList({
 		setShouldJumpToBottom,
 	]);
 
-	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
+	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef, messagesLength: messages.length });
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -264,6 +272,7 @@ export const MessageList = function MessageList({
 					role='list'
 					className='messages-list'
 					keepMounted={keepMountedMessages}
+					cache={initialCacheRef.current}
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
 						storeScrollPosition();
@@ -282,12 +291,14 @@ export const MessageList = function MessageList({
 					{canPreview ? (
 						<>
 							{hasMorePreviousMessages ? (
-								<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+								<div className='load-more' role='presentation'>
+									{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}
+								</div>
 							) : (
-								<li>
+								<div role='listitem'>
 									<RoomForeword user={user} room={room} />
 									{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-								</li>
+								</div>
 							)}
 						</>
 					) : null}
@@ -316,7 +327,11 @@ export const MessageList = function MessageList({
 							</Fragment>
 						);
 					})}
-					{hasMoreNextMessages ? <li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li> : null}
+					{hasMoreNextMessages ? (
+						<div className='load-more' role='presentation'>
+							{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}
+						</div>
+					) : null}
 				</VList>
 			</SelectedMessagesProvider>
 		</MessageListProvider>
