@@ -21,7 +21,7 @@ const appRoot = ({ enabled = true, activeModules = ['federation'] }: { enabled?:
 			Federation_Matrix_Federated_Description_invalid_version:
 				'This room was created by an old Federation version and its blocked indeterminately. <1>Click here</1> for more information about Matrix Federation support',
 		})
-		.withSetting('Federation_Matrix_enabled', enabled ?? true)
+		.withSetting('Federation_Service_Enabled', enabled ?? true)
 		.withEndpoint('GET', '/v1/licenses.info', () => ({
 			license: createFakeLicenseInfo({ activeModules }),
 		}))

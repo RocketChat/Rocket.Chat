@@ -5,7 +5,6 @@ import type { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
@@ -27,11 +26,8 @@ export type AuthenticationProviderProps = {
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
-	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
-	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
-
-	useLDAPAndCrowdCollisionWarning();
+	const loginMethod: LoginMethods = isLdapEnabled ? 'loginWithLDAP' : 'loginWithPassword';
 
 	const isLoggingIn = useSyncExternalStore(subscribeLoggingIn, getLoggingInSnapshot);
 
@@ -60,14 +56,10 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					});
 				}),
 			loginWithService: <T extends LoginServiceConfiguration>(serviceConfig: T): (() => Promise<true>) => {
-				const loginMethods: Record<string, string | undefined> = {
-					'meteor-developer': 'MeteorDeveloperAccount',
-				};
-
 				const { service: serviceName } = serviceConfig;
 				const clientConfig = ('clientConfig' in serviceConfig && serviceConfig.clientConfig) || {};
 
-				const loginWithService = `loginWith${loginMethods[serviceName] || capitalize(String(serviceName || ''))}`;
+				const loginWithService = `loginWith${capitalize(String(serviceName || ''))}`;
 
 				const method = getLoginWithMethod(loginWithService);
 
