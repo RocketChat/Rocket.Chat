@@ -1243,7 +1243,7 @@
   "Custom_Field_Removed": "Aangepast veld verwijderd",
   "Custom_Fields": "Aangepaste velden",
   "Custom_Integration": "Aangepaste integratie",
-  "Custom_oauth_helper": "Bij het instellen van uw OAuth Provider, moet u een Callback URL geven. Gebruik <pre>{{url}}</pre> .",
+  "Custom_oauth_helper": "Bij het instellen van uw OAuth Provider, moet u een Callback URL geven. Gebruik <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Aangepast script voor aangemelde gebruikers",
   "Custom_Script_Logged_In_Description": "Aangepast script dat ALTIJD en voor ELKE gebruiker die is ingelogd wordt uitgevoerd. (Bijv. telkens wanneer u de chat binnengaat en u bent ingelogd)",
   "Custom_Script_Logged_Out": "Aangepast script voor afgemelde gebruikers",

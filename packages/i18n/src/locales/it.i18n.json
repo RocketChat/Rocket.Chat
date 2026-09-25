@@ -986,7 +986,7 @@
   "Custom_Emoji_Info": "Informazioni Emoji personalizzata",
   "Custom_Emoji_Updated_Successfully": "Emoji personalizzata aggiornata con successo",
   "Custom_Fields": "Campi personalizzati",
-  "Custom_oauth_helper": "Quando si imposta l'OAuth Provider, è necessario impostare un URL Callback. Usa <pre>{{url}}</pre> .",
+  "Custom_oauth_helper": "Quando si imposta l'OAuth Provider, è necessario impostare un URL Callback. Usa <code>{{url}}</code>.",
   "Custom_roles": "Ruoli personalizzati",
   "Custom_Script_Logged_In": "Script personalizzato per gli utenti collegati",
   "Custom_Script_Logged_Out": "Script personalizzato per gli utenti scollegati",

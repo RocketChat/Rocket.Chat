@@ -1246,7 +1246,7 @@
   "Custom_Field_Removed": "Champ personnalisé supprimé",
   "Custom_Fields": "Champs personnalisés",
   "Custom_Integration": "Intégration personnalisée",
-  "Custom_oauth_helper": "Lorsque vous configurez votre fournisseur OAuth, vous devez indiquer une URL de rappel. Utilisez <pre>{{url}}</pre>",
+  "Custom_oauth_helper": "Lorsque vous configurez votre fournisseur OAuth, vous devez indiquer une URL de rappel. Utilisez <code>{{url}}</code>",
   "Custom_Script_Logged_In": "Script personnalisé pour les utilisateurs connectés",
   "Custom_Script_Logged_In_Description": "Script personnalisé qui s'exécute TOUJOURS et pour TOUT utilisateur connecté (lorsque vous entrez dans le chat et que vous êtes connecté)",
   "Custom_Script_Logged_Out": "Script personnalisé pour les utilisateurs déconnectés",

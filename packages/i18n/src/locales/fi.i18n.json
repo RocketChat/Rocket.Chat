@@ -1395,7 +1395,7 @@
   "Custom_Integration": "Mukautettu integrointi",
   "Custom_OAuth_has_been_added": "Mukautettu OAuth on lisätty",
   "Custom_OAuth_has_been_removed": "Mukautettu OAuth on poistettu",
-  "Custom_oauth_helper": "Kun määrität OAuth-palveluntarjoajaa, ilmoita myös vastakutsun URL-osoite. Käytä: <pre>{{url}}</pre> .",
+  "Custom_oauth_helper": "Kun määrität OAuth-palveluntarjoajaa, ilmoita myös vastakutsun URL-osoite. Käytä: <code>{{url}}</code>.",
   "Custom_roles": "Mukautetut roolit",
   "Custom_roles_upsell_add_custom_roles_workspace": "Lisää työtilaan sopivia mukautettuja rooleja",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "Mukautettujen roolien avulla voit asettaa oikeuksia työtilasi ihmisille. Määritä kaikki tarvittavat roolit, jotta kaikkien työympäristö on turvallinen.",

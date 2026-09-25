@@ -771,7 +771,7 @@
   "Custom_Emoji_Info": "Maklumat Emoji Tersuai",
   "Custom_Emoji_Updated_Successfully": "Emoji tersuai berjaya dikemas kini",
   "Custom_Fields": "Fields Custom",
-  "Custom_oauth_helper": "Apabila menyediakan Pembekal OAuth anda, anda akan mempunyai untuk memberitahu URL Callback. Penggunaan <pre> {{url}} </pre> .",
+  "Custom_oauth_helper": "Apabila menyediakan Pembekal OAuth anda, anda akan mempunyai untuk memberitahu URL Callback. Penggunaan <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Custom Script untuk log masuk pengguna",
   "Custom_Script_Logged_Out": "Custom Script untuk pengguna log keluar",
   "Custom_Scripts": "Skrip Tersuai",

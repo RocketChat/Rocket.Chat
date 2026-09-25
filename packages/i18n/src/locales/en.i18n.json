@@ -1939,7 +1939,7 @@
   "Custom_Integration": "Custom integration",
   "Custom_OAuth_has_been_added": "Custom OAuth has been added",
   "Custom_OAuth_has_been_removed": "Custom OAuth has been removed",
-  "Custom_oauth_helper": "When setting up your OAuth provider, you'll have to inform a callback URL. Use <pre>{{url}}</pre> .",
+  "Custom_oauth_helper": "When setting up your OAuth provider, you'll have to inform a callback URL. Use <code>{{url}}</code>.",
   "Custom_OAuth_name": "Custom OAuth name",
   "Custom_OAuth_name_hint": "Enter a unique name that will help you identify and manage different authentication methods.",
   "Custom_roles": "Custom roles",

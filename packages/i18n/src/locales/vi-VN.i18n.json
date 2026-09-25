@@ -864,7 +864,7 @@
   "Custom_Emoji_Info": "Thông tin Emoji Tùy chỉnh",
   "Custom_Emoji_Updated_Successfully": "Đã cập nhật thành công emoji tùy chỉnh",
   "Custom_Fields": "Trường tùy chỉnh",
-  "Custom_oauth_helper": "Khi thiết lập nhà cung cấp OAuth của bạn, bạn sẽ phải thông báo cho một URL gọi lại. Sử dụng <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Khi thiết lập nhà cung cấp OAuth của bạn, bạn sẽ phải thông báo cho một URL gọi lại. Sử dụng <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Tập lệnh Tuỳ chỉnh cho Người dùng đăng nhập",
   "Custom_Script_Logged_Out": "Tập lệnh Tuỳ chỉnh cho Người dùng đăng nhập",
   "Custom_Scripts": "Script Tuỳ chỉnh",

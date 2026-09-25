@@ -788,7 +788,7 @@
   "Custom_Emoji_Info": "Custom emoji info",
   "Custom_Emoji_Updated_Successfully": "Emoji ທີ່ຖືກຕ້ອງຖືກປັບປຸງຢ່າງປະສົບຜົນສໍາເລັດ",
   "Custom_Fields": "ຊຸດກໍານົດຄ່າ",
-  "Custom_oauth_helper": "ໃນເວລາທີ່ການສ້າງຕັ້ງໃຫ້ບໍລິການ OAuth ຂອງທ່ານ, ທ່ານຈະຕ້ອງໄດ້ແຈ້ງ URL ໂທໄດ້. ການນໍາໃຊ້ <pre> {{url}} </pre> .",
+  "Custom_oauth_helper": "ໃນເວລາທີ່ການສ້າງຕັ້ງໃຫ້ບໍລິການ OAuth ຂອງທ່ານ, ທ່ານຈະຕ້ອງໄດ້ແຈ້ງ URL ໂທໄດ້. ການນໍາໃຊ້ <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Script Custom ສໍາລັບການເຂົ້າສູ່ລະບົບຜູ້ໃຊ້",
   "Custom_Script_Logged_Out": "Script ລູກຄ້າສໍາລັບຜູ້ໃຊ້ອອກຈາກລະບົບ",
   "Custom_Scripts": "Custom scripts",

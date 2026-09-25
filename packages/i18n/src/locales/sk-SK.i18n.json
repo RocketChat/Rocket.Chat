@@ -776,7 +776,7 @@
   "Custom_Emoji_Info": "Informácia o vlastnom Emoji",
   "Custom_Emoji_Updated_Successfully": "Vlastné Emoji bolo úspešne aktualizované",
   "Custom_Fields": "Vlastné polia",
-  "Custom_oauth_helper": "Pri nastavovaní poskytovateľa OAuth budete musieť informovať URL spätného volania. Použite <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Pri nastavovaní poskytovateľa OAuth budete musieť informovať URL spätného volania. Použite <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Vlastný skript pre prihlásených používateľov",
   "Custom_Script_Logged_Out": "Vlastný skript pre odhlásených používateľov",
   "Custom_Scripts": "Vlastné skripty",
