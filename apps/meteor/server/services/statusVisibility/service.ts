@@ -116,11 +116,11 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 	}
 
 	private allPresences(): Promise<UserPresence[]> {
-		return Users.findUsersNotOffline<UserPresence>({ projection: PRESENCE_FIELDS }).toArray();
+		return Users.findUsersNotOffline({ projection: PRESENCE_FIELDS }).toArray();
 	}
 
 	private async rebuildAdminDisabled(targets?: IUser['_id'][]): Promise<UserPresence[]> {
-		const users = await Users.findPresenceDisabledByAdmin<UserPresence>(targets, { projection: PRESENCE_FIELDS }).toArray();
+		const users = await Users.findPresenceDisabledByAdmin(targets, { projection: PRESENCE_FIELDS }).toArray();
 		const disabled = new Set(users.map(({ _id }) => _id));
 
 		if (!targets) {
