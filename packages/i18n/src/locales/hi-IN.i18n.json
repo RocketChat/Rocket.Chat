@@ -4448,7 +4448,7 @@
   "RetentionPolicyRoom_FilesOnly": "केवल फाइलों की छँटाई करें, संदेश रखें",
   "RetentionPolicyRoom_MaxAge": "अधिकतम संदेश आयु दिनों में (डिफ़ॉल्ट: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "वैश्विक प्रतिधारण नीति को ओवरराइड करें",
-  "RetentionPolicyRoom_ReadTheDocs": "ध्यान रहें! अत्यधिक सावधानी के बिना इन सेटिंग्स में बदलाव करने से सभी संदेश इतिहास नष्ट हो सकते हैं। कृपया <a href=\"{{retentionPolicyUrl}}\">यहां</a> सुविधा चालू करने से पहले दस्तावेज़ पढ़ें।",
+  "RetentionPolicyRoom_ReadTheDocs": "ध्यान रहें! अत्यधिक सावधानी के बिना इन सेटिंग्स में बदलाव करने से सभी संदेश इतिहास नष्ट हो सकते हैं। कृपया <link>यहां</link> सुविधा चालू करने से पहले दस्तावेज़ पढ़ें।",
   "Retry": "पुन: प्रयास करें",
   "Retry_Count": "count पुनः प्रयास करें",
   "Return_to_home": "घर पर वापस",
