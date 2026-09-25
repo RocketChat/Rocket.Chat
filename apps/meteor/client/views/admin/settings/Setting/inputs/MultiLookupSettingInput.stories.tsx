@@ -5,7 +5,7 @@ import { action } from 'storybook/actions';
 
 import MultiLookupSettingInput from './MultiLookupSettingInput';
 
-const LOOKUP_ENDPOINT = '/v1/abac/attribute-keys' as const;
+const LOOKUP_ENDPOINT = '/v1/ai.llm.models' as const;
 
 const options = ['clearance', 'nationality', 'project', 'releasability'].map((key) => ({ key, label: key }));
 

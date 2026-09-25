@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import MultiLookupSettingInput from './MultiLookupSettingInput';
 
-const LOOKUP_ENDPOINT = '/v1/abac/attribute-keys' as const;
+const LOOKUP_ENDPOINT = '/v1/ai.llm.models' as const;
 
 type Options = { key: string; label: string }[];
 
