@@ -10,7 +10,7 @@ on:
 permissions: {}
 
 env:
-  IMAGE: ghcr.io/rocketchat/rocket.chat-ui-preview
+  IMAGE: ghcr.io/rocketchat/rocket.chat-web-preview
 
 jobs:
   publish:
