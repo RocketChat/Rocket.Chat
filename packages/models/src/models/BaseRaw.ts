@@ -60,8 +60,7 @@ export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted>
-{
+> implements IBaseModel<T, C, TDeleted> {
 	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
@@ -391,7 +390,7 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc as WithId<T>;
+		return doc;
 	}
 
 	findOneAndDeleteById(_id: T['_id'], options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {

@@ -1,5 +1,17 @@
 # @rocket.chat/abac
 
+## 0.3.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [75e5b937aab6f6884df522af9e4aee2b6463fdfd, e7fd972c86b04b8cf80e7be8ec825f176939203b, 1c48beb3300fe2dcbae5094aca4f27ab2ce985e4, 17dfc71b4ad7294655e7fab9043cddbea23cb071, 38ea6ba80fd0e8d7c41a44278d54703b5d70da56, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 6b7ce0cc0f32cda7a78b91effaff5fc02aab4340, 37faaa89ad1b4b721d6054e40a91327bd8140525, 4964afe2dd4301ae02ba0299231fc946920837b9]:</summary>
+  - @rocket.chat/models@2.6.0-rc.0
+  - @rocket.chat/core-services@0.17.0-rc.0
+  - @rocket.chat/core-typings@8.9.0-rc.0
+  - @rocket.chat/server-fetch@0.2.5-rc.0
+
+  </details>
+
 ## 0.3.2
 
 ### Patch Changes
@@ -7,12 +19,12 @@
 - ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
 
 - <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/core-typings@8.8.0
   - @rocket.chat/models@2.5.0
   - @rocket.chat/core-services@0.16.0
   - @rocket.chat/tools@0.4.0
   - @rocket.chat/server-fetch@0.2.4
+
   </details>
 
 ## 0.3.2-rc.0
@@ -22,12 +34,12 @@
 - ([#41763](https://github.com/RocketChat/Rocket.Chat/pull/41763)) Drops `@rocket.chat/string-helpers` in favor of `@rocket.chat/tools`
 
 - <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba, 5deefe2766132f13118f38dc42cf1c9895208961, 8984df841e1ecc46198e073982adabc1f069c352, a9f3e6cd3f31eac17bec626287fcf815d802e9b9, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/core-typings@8.8.0-rc.0
   - @rocket.chat/models@2.5.0-rc.0
   - @rocket.chat/core-services@0.16.0-rc.0
   - @rocket.chat/tools@0.4.0-rc.0
   - @rocket.chat/server-fetch@0.2.4-rc.0
+
   </details>
 
 ## 0.3.1
@@ -35,11 +47,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1]:</summary>
-
   - @rocket.chat/core-typings@8.7.0
   - @rocket.chat/models@2.4.0
   - @rocket.chat/core-services@0.15.0
   - @rocket.chat/server-fetch@0.2.3
+
   </details>
 
 ## 0.3.1-rc.0
@@ -47,11 +59,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1]:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.0
   - @rocket.chat/models@2.4.0-rc.0
   - @rocket.chat/core-services@0.15.0-rc.0
   - @rocket.chat/server-fetch@0.2.3-rc.0
+
   </details>
 
 ## 0.3.0
@@ -61,7 +73,6 @@
 - ([#40634](https://github.com/RocketChat/Rocket.Chat/pull/40634)) Allows using Virtru as the attribute store for ABAC decisions.
 
   ### Important
-
   - When using virtru as the store, the internal attribute store is disabled.
   - On switch, existing ABAC attributes from rooms will be removed. Rooms will continue to be private & no users will be removed until you add attributes again.
   - Users are only allowed to see & edit rooms they have access to. Access decision is evaluated on Virtru
@@ -70,11 +81,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
-
   - @rocket.chat/models@2.3.1
   - @rocket.chat/core-services@0.14.2
   - @rocket.chat/core-typings@8.6.0
   - @rocket.chat/server-fetch@0.2.2
+
   </details>
 
 ## 0.3.0-rc.0
@@ -84,7 +95,6 @@
 - ([#40634](https://github.com/RocketChat/Rocket.Chat/pull/40634)) Allows using Virtru as the attribute store for ABAC decisions.
 
   ### Important
-
   - When using virtru as the store, the internal attribute store is disabled.
   - On switch, existing ABAC attributes from rooms will be removed. Rooms will continue to be private & no users will be removed until you add attributes again.
   - Users are only allowed to see & edit rooms they have access to. Access decision is evaluated on Virtru
@@ -93,11 +103,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
-
   - @rocket.chat/models@2.3.1-rc.0
   - @rocket.chat/core-services@0.14.2-rc.0
   - @rocket.chat/core-typings@8.6.0-rc.0
   - @rocket.chat/server-fetch@0.2.2-rc.0
+
   </details>
 
 ## 0.2.1
@@ -107,11 +117,11 @@
 - ([#40499](https://github.com/RocketChat/Rocket.Chat/pull/40499)) Fixes an issue where some actions made by the abac service were not broadcasting to clients, which affected reactivity
 
 - <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
-
   - @rocket.chat/models@2.3.0
   - @rocket.chat/core-typings@8.5.0
   - @rocket.chat/core-services@0.14.1
   - @rocket.chat/server-fetch@0.2.1
+
   </details>
 
 ## 0.2.1-rc.0
@@ -121,11 +131,11 @@
 - ([#40499](https://github.com/RocketChat/Rocket.Chat/pull/40499)) Fixes an issue where some actions made by the abac service were not broadcasting to clients, which affected reactivity
 
 - <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
-
   - @rocket.chat/models@2.3.0-rc.0
   - @rocket.chat/core-typings@8.5.0-rc.0
   - @rocket.chat/core-services@0.14.1-rc.0
   - @rocket.chat/server-fetch@0.2.1-rc.0
+
   </details>
 
 ## 0.2.0
@@ -137,12 +147,12 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 95a82f72dd45fc51d54bb1beed295315facf9109, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 95a82f72dd45fc51d54bb1beed295315facf9109, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
-
   - @rocket.chat/core-services@0.14.0
   - @rocket.chat/models@2.2.0
   - @rocket.chat/core-typings@8.4.0
   - @rocket.chat/server-fetch@0.2.0
   - @rocket.chat/tools@0.3.0
+
   </details>
 
 ## 0.2.0-rc.2
@@ -150,11 +160,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.4.0-rc.2
   - @rocket.chat/core-services@0.14.0-rc.2
   - @rocket.chat/models@2.2.0-rc.2
   - @rocket.chat/server-fetch@0.2.0-rc.2
+
   </details>
 
 ## 0.2.0-rc.1
@@ -162,11 +172,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.14.0-rc.1
   - @rocket.chat/core-typings@8.4.0-rc.1
   - @rocket.chat/models@2.2.0-rc.1
   - @rocket.chat/server-fetch@0.2.0-rc.1
+
   </details>
 
 ## 0.1.8
@@ -174,10 +184,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.13.4
   - @rocket.chat/core-typings@8.3.2
   - @rocket.chat/models@2.1.4
+
   </details>
 
 ## 0.1.7
@@ -185,10 +195,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.1
   - @rocket.chat/core-services@0.13.3
   - @rocket.chat/models@2.1.3
+
   </details>
 
 ## 0.2.0-rc.0
@@ -200,12 +210,12 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [21cd54f87de5837fe6c999a44bd15be34b9fe905, 278b84f78360e53792a2e5d7620615039a0e15e9, 95a82f72dd45fc51d54bb1beed295315facf9109, 12c44d2db65af9f90c741da621164f5738fc19f5, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 9713af36f5c0d673f2d2093015f322341706bab0, f3fa3ee2f2e53b777de9abd466f1b76a1ec1b96c, c544b805d1c03f8eae9d061cd48838206207a7c9, 8c0e16ca29b393cfa50b425520db48ba5a74f678, 95a82f72dd45fc51d54bb1beed295315facf9109, f4dfb8ddc2049692371aeb084110b5768151b5df]:</summary>
-
   - @rocket.chat/core-services@0.14.0-rc.0
   - @rocket.chat/models@2.2.0-rc.0
   - @rocket.chat/core-typings@8.4.0-rc.0
   - @rocket.chat/server-fetch@0.2.0-rc.0
   - @rocket.chat/tools@0.3.0-rc.0
+
   </details>
 
 ## 0.1.6
@@ -215,11 +225,11 @@
 - ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
 
 - <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
-
   - @rocket.chat/models@2.1.2
   - @rocket.chat/core-services@0.13.2
   - @rocket.chat/core-typings@8.3.0
   - @rocket.chat/logger@1.0.1
+
   </details>
 
 ## 0.1.6-rc.4
@@ -227,10 +237,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.4
   - @rocket.chat/core-services@0.13.2-rc.4
   - @rocket.chat/models@2.1.2-rc.4
+
   </details>
 
 ## 0.1.6-rc.3
@@ -238,10 +248,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.3
   - @rocket.chat/core-services@0.13.2-rc.3
   - @rocket.chat/models@2.1.2-rc.3
+
   </details>
 
 ## 0.1.6-rc.2
@@ -249,10 +259,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.2
   - @rocket.chat/core-services@0.13.2-rc.2
   - @rocket.chat/models@2.1.2-rc.2
+
   </details>
 
 ## 0.1.6-rc.1
@@ -260,10 +270,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.1
   - @rocket.chat/core-services@0.13.2-rc.1
   - @rocket.chat/models@2.1.2-rc.1
+
   </details>
 
 ## 0.1.6-rc.0
@@ -273,11 +283,11 @@
 - ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
 
 - <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
-
   - @rocket.chat/models@2.1.2-rc.0
   - @rocket.chat/core-services@0.13.2-rc.0
   - @rocket.chat/core-typings@8.3.0-rc.0
   - @rocket.chat/logger@1.0.1-rc.0
+
   </details>
 
 ## 0.1.5
@@ -285,10 +295,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.1
   - @rocket.chat/core-services@0.13.1
   - @rocket.chat/models@2.1.1
+
   </details>
 
 ## 0.1.4
@@ -296,10 +306,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
-
   - @rocket.chat/core-typings@8.2.0
   - @rocket.chat/models@2.1.0
   - @rocket.chat/core-services@0.13.0
+
   </details>
 
 ## 0.1.4-rc.2
@@ -307,10 +317,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.2
   - @rocket.chat/core-services@0.13.0-rc.2
   - @rocket.chat/models@2.1.0-rc.2
+
   </details>
 
 ## 0.1.4-rc.1
@@ -318,10 +328,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.1
   - @rocket.chat/core-services@0.13.0-rc.1
   - @rocket.chat/models@2.1.0-rc.1
+
   </details>
 
 ## 0.1.4-rc.0
@@ -329,10 +339,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.0
   - @rocket.chat/models@2.1.0-rc.0
   - @rocket.chat/core-services@0.13.0-rc.0
+
   </details>
 
 ## 0.1.3
@@ -340,10 +350,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.1.1
   - @rocket.chat/core-services@0.12.3
   - @rocket.chat/models@2.0.3
+
   </details>
 
 ## 0.1.2
@@ -351,10 +361,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
-
   - @rocket.chat/models@2.0.2
   - @rocket.chat/core-services@0.12.2
   - @rocket.chat/core-typings@8.1.0
+
   </details>
 
 ## 0.1.2-rc.2
@@ -362,10 +372,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.2-rc.2
   - @rocket.chat/core-typings@8.1.0-rc.2
   - @rocket.chat/models@2.0.2-rc.2
+
   </details>
 
 ## 0.1.2-rc.1
@@ -383,10 +393,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
-
   - @rocket.chat/models@2.0.1-rc.0
   - @rocket.chat/core-services@0.12.1-rc.0
   - @rocket.chat/core-typings@8.1.0-rc.0
+
   </details>
 
 ## 0.1.1
@@ -408,11 +418,11 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, ec0f8b435dd12c218adffa8892737c7ced4debb8]:</summary>
-
   - @rocket.chat/core-typings@8.0.0
   - @rocket.chat/models@2.0.0
   - @rocket.chat/core-services@0.12.0
   - @rocket.chat/logger@1.0.0
+
   </details>
 
 ## 0.1.0-rc.5
@@ -420,10 +430,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.5
   - @rocket.chat/core-services@0.12.0-rc.5
   - @rocket.chat/models@2.0.0-rc.5
+
   </details>
 
 ## 0.1.0-rc.4
@@ -431,10 +441,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.4
   - @rocket.chat/core-services@0.12.0-rc.4
   - @rocket.chat/models@2.0.0-rc.4
+
   </details>
 
 ## 0.1.0-rc.3
@@ -442,10 +452,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.3
   - @rocket.chat/core-typings@8.0.0-rc.3
   - @rocket.chat/models@2.0.0-rc.3
+
   </details>
 
 ## 0.1.0-rc.2
@@ -453,10 +463,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.2
   - @rocket.chat/core-services@0.12.0-rc.2
   - @rocket.chat/models@2.0.0-rc.2
+
   </details>
 
 ## 0.1.0-rc.1
@@ -464,10 +474,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.1
   - @rocket.chat/core-services@0.12.0-rc.1
   - @rocket.chat/models@2.0.0-rc.1
+
   </details>
 
 ## 0.1.0-rc.0
@@ -479,9 +489,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, ec0f8b435dd12c218adffa8892737c7ced4debb8]:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.0
   - @rocket.chat/models@2.0.0-rc.0
   - @rocket.chat/core-services@0.12.0-rc.0
   - @rocket.chat/logger@1.0.0-rc.0
+
   </details>

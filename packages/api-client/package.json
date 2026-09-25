@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.56",
+	"version": "0.2.57-rc.0",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",

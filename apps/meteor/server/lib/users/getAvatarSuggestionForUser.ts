@@ -5,6 +5,7 @@ import Gravatar from 'gravatar';
 import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
+import { warnGravatarDeprecation } from './gravatarDeprecation';
 import { settings } from '../../settings';
 
 const avatarProviders = {
@@ -112,6 +113,8 @@ const avatarProviders = {
 		}
 
 		if (user.emails && user.emails.length > 0) {
+			warnGravatarDeprecation();
+
 			for (const email of user.emails) {
 				if (email.verified === true) {
 					avatars.push({

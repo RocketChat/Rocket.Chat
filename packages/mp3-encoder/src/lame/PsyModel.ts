@@ -2204,7 +2204,7 @@ export class PsyModel {
 				eql_balance += gfc.ATH.eql_w[i];
 			}
 			eql_balance = 1.0 / eql_balance;
-			for (i = BLKSIZE / 2; --i >= 0; ) {
+			for (i = BLKSIZE / 2; --i >= 0;) {
 				gfc.ATH.eql_w[i] *= eql_balance;
 			}
 		}

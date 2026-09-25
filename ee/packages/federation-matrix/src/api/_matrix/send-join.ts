@@ -79,7 +79,7 @@ const SendJoinEventSchema = {
 			required: ['membership'],
 		},
 	},
-	required: ['type', 'state_key', 'sender', 'origin', 'origin_server_ts', 'content'],
+	required: ['type', 'state_key', 'sender', 'origin_server_ts', 'content'],
 };
 
 const isSendJoinEventProps = ajv.compile(SendJoinEventSchema);
@@ -117,6 +117,8 @@ const SendJoinResponseSchema = {
 const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 
 export const getMatrixSendJoinRoutes = () => {
+	// PUT /_matrix/federation/v2/send_join/{roomId}/{eventId}
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2send_joinroomideventid
 	return new Router('/federation').put(
 		'/v2/send_join/:roomId/:stateKey',
 		{

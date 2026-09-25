@@ -2,8 +2,8 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 
 import CannedResponsesComposer from './CannedResponsesComposer';
-import { emoji } from '../../../../../../app/emoji/client';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),

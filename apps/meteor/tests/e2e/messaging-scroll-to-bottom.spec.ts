@@ -66,9 +66,7 @@ test.describe.serial('Messaging scroll to bottom', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel._id}/thread/${mainMessage._id}`);
-		await poHomeChannel.content.waitForChannel();
-		await poHomeChannel.content.waitForThread();
+		await poHomeChannel.gotoChannelThread(targetChannel._id, mainMessage._id);
 	});
 
 	test.afterAll(async ({ api }) => {

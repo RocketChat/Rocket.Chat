@@ -73,12 +73,15 @@ export const createUser = <TUser extends IUser>(
 				if (err) {
 					return reject(err);
 				}
+				if (!res.body?.user) {
+					return reject(new Error(`users.create failed for "${username}" with status ${res.status}: ${JSON.stringify(res.body)}`));
+				}
 				resolve(res.body.user);
 			});
 	});
 
 export const login = (username: string | undefined, password: string, config?: IRequestConfig): Promise<Credentials> =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		const requestInstance = config?.request || request;
 		void requestInstance
 			.post(api('login'))
@@ -86,7 +89,13 @@ export const login = (username: string | undefined, password: string, config?: I
 				user: username,
 				password,
 			})
-			.end((_err: unknown, res: Response) => {
+			.end((err: unknown, res: Response) => {
+				if (err) {
+					return reject(err);
+				}
+				if (!res.body?.data?.authToken) {
+					return reject(new Error(`login failed for "${username}" with status ${res.status}: ${JSON.stringify(res.body)}`));
+				}
 				resolve({
 					'X-Auth-Token': res.body.data.authToken,
 					'X-User-Id': res.body.data.userId,

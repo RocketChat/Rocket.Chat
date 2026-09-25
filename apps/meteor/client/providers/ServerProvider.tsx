@@ -15,8 +15,8 @@ import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
+import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
@@ -34,27 +34,33 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	keys,
 	params,
 	signal,
+	keepalive,
 }: {
 	method: TMethod;
 	pathPattern: TPathPattern;
 	keys: UrlParams<TPathPattern>;
 	params: OperationParams<TMethod, TPathPattern>;
 	signal?: AbortSignal;
+	keepalive?: boolean;
 }): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 	switch (method) {
 		case 'GET':
-			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.get(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'POST':
-			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.post(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'PUT':
-			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.put(compiledPath, params as never, { signal, keepalive }) as never;
 
 		case 'DELETE':
-			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.delete(compiledPath, params as any, { signal, keepalive }) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');
@@ -77,7 +83,7 @@ const getStream =
 const getStreamAll =
 	<N extends StreamNames>(streamName: N) =>
 	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
-		sdk.onAnyStreamEvent(streamName, callback as (eventName: string, args: unknown[]) => void).stop;
+		sdk.onAnyStreamEvent(streamName, callback).stop;
 
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);

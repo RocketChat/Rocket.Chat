@@ -2,16 +2,18 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 
 import { useNotificationAllowed } from './useNotificationAllowed';
-import { getUserAvatarURL } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { stripTags } from '../../../lib/utils/stringUtils';
+import { sdk } from '../../lib/SDKClient';
+import { getUserAvatarURL } from '../../lib/getUserAvatarURL';
 import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 
 export const useNotification = () => {
-	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
+	const requireInteractionPreference = useUserPreference('desktopNotificationRequireInteraction');
 	const router = useRouter();
+	const joinCall = useVideoConfJoinCall();
 	const notificationAllowed = useNotificationAllowed();
 
 	const notify = useStableCallback(async (notification: INotificationDesktop) => {
@@ -32,6 +34,10 @@ export const useNotification = () => {
 			notification: true,
 		} as any);
 
+		// A notification may demand interaction on its own — a conference ring outlives the
+		// recipient's preference, per INotificationDesktop.requireInteraction.
+		const requireInteraction = requireInteractionPreference || notification.requireInteraction;
+
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
@@ -39,10 +45,11 @@ export const useNotification = () => {
 			canReply: true,
 			silent: true,
 			requireInteraction,
+			...(window.RocketChatDesktop && notification.actions?.length ? { actions: notification.actions } : {}),
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
-		const notificationDuration = !requireInteraction ? (notification.duration ?? 0) - 0 || 10 : -1;
+		const notificationDuration = !requireInteraction && notification.duration ? notification.duration - 0 : 0;
 		if (notificationDuration > 0) {
 			setTimeout(() => n.close(), notificationDuration * 1000);
 		}
@@ -56,9 +63,26 @@ export const useNotification = () => {
 							_id: Random.id(),
 							rid,
 							msg: response,
+							...(notification.payload.tmid && { tmid: notification.payload.tmid }),
 						},
 					}),
 			);
+
+			// "Join" action (desktop app): join the call the same way the ongoing-call banner does. The event fires
+			// for whichever button was pressed, so it has to say which — the server names this one `join`
+			// (`video-conference/service.ts`), and a second action added later must not silently join a call.
+			const { conferenceId } = notification.payload;
+			if (conferenceId) {
+				n.addEventListener('action', (event) => {
+					if (event.action !== 'join') {
+						return;
+					}
+
+					n.close();
+					window.focus();
+					joinCall(conferenceId);
+				});
+			}
 		}
 
 		n.onclick = () => {

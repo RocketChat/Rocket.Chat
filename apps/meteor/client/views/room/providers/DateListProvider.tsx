@@ -1,39 +1,26 @@
-import type { ReactNode } from 'react';
-import { createContext, useContext, useMemo, useState } from 'react';
+import type { ReactNode, RefCallback } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 type DateListContextValue = {
 	list: Set<HTMLElement>;
-	dateRef: () => (ref: HTMLElement | null) => void;
+	dateRef: RefCallback<HTMLElement>;
 };
 
 const DateListContext = createContext<DateListContextValue | undefined>(undefined);
 
-const useDateRef = () => {
-	const context = useDateListController();
-	return useMemo(() => context.dateRef(), [context]);
-};
+const useDateRef = () => useDateListController().dateRef;
 
 export type DateListProviderProps = { children: ReactNode };
 
 const DateListProvider = ({ children }: DateListProviderProps) => {
 	const [list] = useState<Set<HTMLElement>>(new Set<HTMLElement>());
 
-	const addToList = (value: HTMLElement) => {
-		list.add(value);
+	const [dateRef] = useState(() => (node: HTMLElement) => {
+		list.add(node);
 		return () => {
-			list.delete(value);
+			list.delete(node);
 		};
-	};
-
-	const dateRef = () => {
-		let remove: () => void;
-		return (ref: HTMLElement | null) => {
-			if (remove) remove();
-
-			if (!ref) return;
-			remove = addToList(ref);
-		};
-	};
+	});
 
 	return <DateListContext.Provider value={{ list, dateRef }}>{children}</DateListContext.Provider>;
 };

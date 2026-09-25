@@ -2,12 +2,19 @@
 
 Monorepo: the main Meteor app lives in `apps/meteor/`, shared libraries in `packages/`, other services in `apps/` and `ee/`.
 
+## Writing code here
+
+Comments state the **intent** of a function, never the mechanism, and never explain
+code that lives in another file — that belongs in `docs/features/`. Full rules:
+[docs/code-comments.md](docs/code-comments.md).
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Cross-cutting
 
+- [docs/code-comments.md](docs/code-comments.md) — what a comment may say, and where reasoning goes when it is not a comment
 - [docs/i18n.md](docs/i18n.md) — translation keys: where they live, naming, namespaces, interpolation, plurals, server-side `lng`, what the i18n linter enforces
 
 ### Frontend
@@ -17,6 +24,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
 - [docs/anchor-navigation.md](docs/anchor-navigation.md) — deep-linking to a field via URL hash fragments
@@ -34,6 +42,10 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/meteor-modern-stack.md](docs/meteor-modern-stack.md) — Meteor modern build stack, file-watching caveats
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 - [docs/npm-publishing.md](docs/npm-publishing.md) — how the public packages reach npm: `release.yml`, changesets, OIDC trusted publishing, provenance
+
+### Testing
+
+- [Playwright E2E testing guide](apps/meteor/tests/e2e/README.md) — setup, locators, page objects, cleanup, performance patterns, and testing conventions
 
 ### Other
 

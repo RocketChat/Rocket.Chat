@@ -40,9 +40,9 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-export type CreateTeamModalProps = { onClose: () => void };
+export type CreateTeamModalProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
-const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
+const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
@@ -145,6 +145,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			const { team } = await createTeamAction(params);
 			dispatchToastMessage({ type: 'success', message: t('Team_has_been_created') });
 			goToRoom(team.roomId);
+			void onSuccess?.(team.roomId);
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

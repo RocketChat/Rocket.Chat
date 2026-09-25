@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import { expect, test } from './utils/test';
 
 const CardNames = {
@@ -22,8 +23,7 @@ test.describe.serial('homepage', () => {
 	test.describe('for admins', () => {
 		test.beforeAll(async ({ browser }) => {
 			adminPage = await browser.newPage({ storageState: Users.admin.state });
-			await adminPage.goto('/home');
-			await adminPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
+			await new HomeChannel(adminPage).goto();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -112,8 +112,7 @@ test.describe.serial('homepage', () => {
 		test.beforeAll(async ({ api, browser }) => {
 			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
-			await regularUserPage.goto('/home');
-			await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
+			await new HomeChannel(regularUserPage).goto();
 		});
 
 		test.afterAll(async () => {
@@ -151,8 +150,10 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 
-				await regularUserPage.goto('/home');
-				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'NewTitle', exact: true }).waitFor();
+				// the home heading is the setting under test, so wait for its new value rather than the default one
+				await new HomeChannel(regularUserPage).gotoExpecting(
+					regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'NewTitle', exact: true }),
+				);
 			});
 
 			test.afterAll(async ({ api }) => {
@@ -176,8 +177,7 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 
-				await regularUserPage.goto('/home');
-				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
+				await new HomeChannel(regularUserPage).goto();
 			});
 
 			test.afterAll(async ({ api }) => {

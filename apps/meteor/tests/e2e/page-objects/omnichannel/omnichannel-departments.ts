@@ -1,13 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { MenuOptions } from '../fragments';
 import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
 
 export class OmnichannelDepartments extends OmnichannelAdmin {
-	protected readonly route = 'departments';
+	protected readonly route = OmnichannelSectionsHref.departments;
 
 	protected readonly title = 'Departments';
 

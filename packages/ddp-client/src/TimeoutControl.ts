@@ -3,11 +3,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { Connection } from './Connection';
 import type { DDPClient } from './types/DDPClient';
 
-export interface TimeoutControlEvents
-	extends Emitter<{
-		timeout: void;
-		heartbeat: void;
-	}> {
+export interface TimeoutControlEvents extends Emitter<{
+	timeout: void;
+	heartbeat: void;
+}> {
 	reset(): void;
 	stop(): void;
 	readonly timeout: number;

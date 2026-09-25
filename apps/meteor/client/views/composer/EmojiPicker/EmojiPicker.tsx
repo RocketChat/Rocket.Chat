@@ -1,5 +1,5 @@
 import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
-import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
@@ -19,9 +19,10 @@ import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
-import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
+import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
+import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
 export type EmojiPickerProps = {
@@ -40,7 +41,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const [isVisibleRef, isInputVisible] = useIsVisible();
 	const textInputRef = useRef<HTMLInputElement>(undefined);
 
-	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
+	const mergedTextInputRef = useMergedRefsV2(isVisibleRef, textInputRef);
 
 	const emojiCategories = getCategoriesList();
 

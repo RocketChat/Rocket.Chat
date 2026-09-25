@@ -6,6 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { notifyOnUserChangeById } from '../../notifyListener';
 import { validateEmailDomain } from '../../validateEmailDomain';
+import { warnGravatarDeprecation } from '../gravatarDeprecation';
 import { setUserAvatar } from '../setUserAvatar';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
@@ -74,6 +75,8 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	// Offline (air-gapped) licenses suppress the default Gravatar fetch — a
 	// default-on outbound call the workspace must never initiate on its own.
 	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email && !License.hasOfflineLicense()) {
+		warnGravatarDeprecation();
+
 		const gravatarUrl = Gravatar.url(userData.email, {
 			default: '404',
 			size: '200',

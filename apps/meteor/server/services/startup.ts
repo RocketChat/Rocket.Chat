@@ -70,7 +70,7 @@ export const registerServices = async (): Promise<void> => {
 	if (!isRunningMs()) {
 		const { Presence } = await import('@rocket.chat/presence');
 
-		const { Authorization } = await import('./authorization/service');
+		const { Authorization } = await import('@rocket.chat/authorization');
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());

@@ -1,0 +1,310 @@
+import { isInVideoConference } from '@rocket.chat/core-typings';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import type { CallPreferences, ConferenceChatAccess } from '@rocket.chat/ui-conference';
+import {
+	useConnectionStatus,
+	useEndpoint,
+	useSetting,
+	useStream,
+	useToastMessageDispatch,
+	useUser,
+	useUserId,
+} from '@rocket.chat/ui-contexts';
+import { useVideoConfWindowEnabled, useVideoConferenceInfo } from '@rocket.chat/ui-video-conf';
+import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { departureFor } from './useLeaveConferenceOnClose';
+import { conferenceNameFor } from '../../../../lib/videoConference/conferenceName';
+import type { PersistentChatMode } from '../../../../lib/videoConference/constants';
+import { isUnaskedConferenceMember } from '../../../../lib/videoConference/memberStatus';
+import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
+import { isRefusal } from '../../../lib/utils/isRefusal';
+import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
+import { NEW_CONFERENCE_ID } from '../lib/callWindow';
+
+/**
+ * Adds the viewer's display name to the provider's URL, so they arrive named rather than anonymous.
+ *
+ * The URL comes from whichever provider is configured, so it is not ours to trust the shape of: `new URL` throws
+ * on anything relative, and a throw here happens during render and takes the whole conference window with it.
+ * Arriving unnamed is the right way to fail at naming someone.
+ */
+const withDisplayName = (callUrl: string, displayName?: string): string => {
+	if (!displayName) {
+		return callUrl;
+	}
+
+	try {
+		// No base: a provider's url is absolute, and resolving a relative one against *our* origin would hand the
+		// call window a Rocket.Chat address instead of failing at naming, which is the harmless outcome.
+		const url = new URL(callUrl);
+		url.searchParams.set('name', displayName);
+		return url.toString();
+	} catch {
+		return callUrl;
+	}
+};
+
+/**
+ * Whether the call's chat lives in a thread off the call message, rather than in the room itself.
+ *
+ * Has to give the same answer as `VideoConfService.chatLivesInAThread`, which asks the same two settings:
+ * disagree and the panel is titled "Thread in …" over a thread nobody is subscribed to. The call window is
+ * required here on top of those two, which the server does not ask — it cannot change the answer, since this
+ * only runs inside that window. See [the feature
+ * doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#the-setting).
+ */
+const chatLivesInAThread = (isPersistentChatEnabled: boolean, isCallWindowEnabled: boolean, chatMode: PersistentChatMode): boolean =>
+	isPersistentChatEnabled && isCallWindowEnabled && chatMode === 'thread';
+
+export const useConferenceEmbedded = (callId: string) => {
+	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
+	const renameConference = useEndpoint('POST', '/v1/video-conference.rename');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const subscribeToVideoConference = useStream('video-conference');
+	/** Bumped every time this window starts watching the call, so the catch-up read below happens once per go. */
+	const [watchingSince, setWatchingSince] = useState(0);
+	const { connected } = useConnectionStatus();
+	const queryClient = useQueryClient();
+	const uid = useUserId();
+	// The provider is told who is arriving, so the name in the call is the one the workspace shows.
+	const user = useUser();
+	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
+
+	// The fallback is only reached where the setting isn't registered, which is a workspace without the call
+	// window — and there the server answers `main_room` too. Once the window is on, the registered value wins.
+	const chatMode = useSetting<PersistentChatMode>('VideoConf_Persistent_Chat_Mode', 'main_room');
+	const isPersistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
+	const isCallWindowEnabled = useVideoConfWindowEnabled();
+
+	const {
+		data: info,
+		isPending: isInfoPending,
+		error: infoError,
+		refetch: refetchInfo,
+	} = useVideoConferenceInfo(callId, {
+		// A conference this user may not have, or that never existed, is an answer: say so at once rather than
+		// three attempts later. A request that never arrived is not an answer about anything, and a call window is
+		// opened once — so that one is worth another go before the window gives up on it.
+		retry: (failureCount, error) => !isRefusal(error) && failureCount < 2,
+		// The shared default holds a conference indefinitely because the room's message block is told about
+		// changes. This window is too, over `{callId}/updated` below — but a dropped socket loses that, and a
+		// window that comes back to a call it is *in* has to come back to the truth. Nothing else here would ask.
+		refetchOnReconnect: 'always',
+	});
+
+	// Subscribing too early is permanent: `allowRead` refuses a call id that does not exist yet, and a connection
+	// with no user on it, and nothing reports the refusal or asks again. So this waits for a real id and a user,
+	// and subscribes per connection — one lost with the socket leaves the window watching nothing. See [the
+	// feature doc](../../../../../../docs/features/video-conference-persistent-chat/README.md#realtime-updates).
+	useEffect(() => {
+		if (callId === NEW_CONFERENCE_ID || !connected || !uid) {
+			return;
+		}
+
+		const stop = subscribeToVideoConference(`${callId}/updated`, () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		});
+
+		setWatchingSince((epoch) => epoch + 1);
+
+		return stop;
+	}, [callId, connected, uid, subscribeToVideoConference, queryClient]);
+
+	// And read the call again once something is listening: subscribing is a round trip, and whatever moved while
+	// it was in flight was announced once, to nobody here. After the first read has settled, because invalidating
+	// one still in flight achieves nothing — the fetch already running is the one that returns, stale answer and
+	// all.
+	const caughtUpAt = useRef(0);
+	useEffect(() => {
+		if (!watchingSince || isInfoPending || caughtUpAt.current === watchingSince) {
+			return;
+		}
+
+		caughtUpAt.current = watchingSince;
+		void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+	}, [watchingSince, isInfoPending, callId, queryClient]);
+
+	// Members who are in the call but can't read its chat — membership grants no room access.
+	// Membership timestamps arrive as strings over REST; revive them once here so nothing downstream has to care.
+	const members = useMemo(() => info?.users.map(mapVideoConfUserFromApi) ?? [], [info?.users]);
+
+	/**
+	 * What the call is called. A group call with a title uses that title. A DM or GDM call lists every
+	 * participant's name so each viewer sees who the call is with at a glance. Everything else falls back
+	 * to the room name.
+	 */
+	const currentName = useMemo(() => {
+		if (!info) return '';
+
+		const isDM = info.type === 'direct' || info.chatAccess.type === 'd';
+
+		// A group conference with an explicit title — but not in a DM, where the "title" is the
+		// subscription name the server defaulted to, not a user-chosen name.
+		if (!isDM && info.type === 'videoconference' && 'title' in info && info.title) {
+			return info.title;
+		}
+
+		// DM and GDM calls: list everyone in the call so each viewer sees who it is with.
+		// `info.type === 'direct'` covers 1:1 DMs (including when the chat lives in a discussion
+		// room whose type is 'p'); `chatAccess.type === 'd'` catches GDM calls.
+		if (isDM) {
+			const names = info.users.map((u) => u.name || u.username).filter(Boolean);
+			// When the other party isn't in `users` yet (ring unchecked, or they haven't joined),
+			// the title carries their name — include it so both sides appear.
+			const title = 'title' in info ? info.title : undefined;
+			if (title && !names.includes(title)) {
+				names.push(title);
+			}
+			if (names.length > 0) {
+				return names.join(', ');
+			}
+		}
+
+		return conferenceNameFor({ ...info, ...('title' in info ? { title: undefined } : {}) }, uid) || info.chatAccess.name;
+	}, [info, uid]);
+
+	const chatAccess = useMemo((): ConferenceChatAccess | undefined => {
+		if (!info) {
+			return undefined;
+		}
+
+		const missing = new Set(info.chatAccess.membersWithoutAccess);
+		return { ...info.chatAccess, members: members.filter(({ _id }) => missing.has(_id)) };
+	}, [info, members]);
+
+	const isThreadedChat = chatLivesInAThread(isPersistentChatEnabled, isCallWindowEnabled, chatMode);
+
+	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
+	// choices into the provider's URL — and what marks them as present. So nothing here asks for it.
+	//
+	// The result is held in the cache rather than in this hook's state, so a window that has *already* joined —
+	// one that just created the conference on the start screen — finds it there and goes straight into the call
+	// instead of asking again.
+	//
+	// Observed, rather than read once with `getQueryData`: an entry nothing observes is inactive, and React Query
+	// collects it after `gcTime` — five minutes, which is a short call. The window would then lose the URL it is
+	// showing and decide the join had failed, mid-conference. `skipToken` is what declares a query that is only
+	// ever written to: it holds the observer open without a `queryFn` there is no honest way to write, since the
+	// answer comes from joining and joining is the user's decision, made below.
+	const { data } = useQuery<Awaited<ReturnType<typeof joinConference>>>({
+		queryKey: videoConferenceQueryKeys.join(callId),
+		queryFn: skipToken,
+	});
+
+	const {
+		mutate: join,
+		isPending,
+		error,
+		reset: resetJoin,
+	} = useMutation({
+		mutationFn: async ({ state, name }: { state: CallPreferences; name?: string }) => {
+			// Naming is not worth failing the join over: if it doesn't take, the toast says so and the user still
+			// gets the call, which is what they actually asked for.
+			if (name && name !== currentName) {
+				try {
+					await renameConference({ callId, title: name });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
+
+			return joinConference({ callId, state });
+		},
+		onSuccess: (joined) => {
+			queryClient.setQueryData(videoConferenceQueryKeys.join(callId), joined);
+			// Joining changes our own membership, and the broadcast announcing it can beat the stream subscription
+			// being established — which left the members list showing us as absent until something else moved.
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		},
+	});
+
+	const ownMember = members.find((member) => member._id === uid);
+
+	return {
+		call: {
+			// Who is associated with the call and where each of them stands — the call window uses it to tell
+			// "still ringing" from "nobody is coming".
+			members,
+			/** Only a direct call rang a particular person, so only there does ringing again mean anything. */
+			canRing: info?.type === 'direct',
+			/** Whether the conference has ended and can no longer be joined. */
+			ended: info ? 'endedAt' in info && !!info.endedAt : false,
+			/** What the call is called: its own name if it has one, otherwise the room it belongs to. */
+			name: currentName,
+			/** When the conference was created — serves as the timer's start point. */
+			createdAt: info?.createdAt ? new Date(info.createdAt) : undefined,
+			/**
+			 * Naming a call is the creator's to do, and only a group call has a name of its own — a direct call is
+			 * named after the other person, per viewer.
+			 */
+			canRename: info?.type === 'videoconference' && info.createdBy._id === uid,
+			/** Which devices the provider can actually be told about, which is all the preflight offers. */
+			capabilities: info?.capabilities ?? {},
+			/**
+			 * A direct call this user placed whose other side has not been asked to answer yet — entering the call
+			 * is what calls them, so the preflight says so rather than pretending they are already ringing.
+			 */
+			placing:
+				info?.type === 'direct' &&
+				info.createdBy._id === uid &&
+				members.some((member) => member._id !== uid && isUnaskedConferenceMember(member)),
+		} as const,
+		room: {
+			rid: info?.discussionRid || info?.rid,
+			tmid: !info?.discussionRid && isThreadedChat ? info?.messages.started : undefined,
+			name: info?.chatAccess.name,
+			type: info?.chatAccess.type,
+			loading: isInfoPending,
+			error: infoError,
+			/** For a read that failed on the way rather than on the way back: there is nothing to do but ask again. */
+			retry: refetchInfo,
+			chatAccess,
+		} as const,
+		conference: {
+			url: data?.url ? withDisplayName(data.url, displayName) : undefined,
+			/**
+			 * What this window should tell the server when it goes, which depends on how far its user got.
+			 *
+			 * Having joined, they leave. Having not, they were either the one placing a direct call — for whom
+			 * abandoning the preflight is cancelling it, the ring included — or someone who was rung and is
+			 * answering no. Anyone else was never asked and never arrived: closing a window they opened
+			 * themselves is not an event in the call's history.
+			 */
+			departure: departureFor({
+				// The server's answer as well as this window's own: a reload loses the local join but not the
+				// membership it recorded, and a window that reported nothing on its way out would leave the call
+				// carrying someone who is gone until their lease ran out — a day, for a provider with no leases.
+				// `isInVideoConference` and not `joined`, so a membership they already left is not read as active.
+				joined: !!data || !!(ownMember && isInVideoConference(ownMember)),
+				isDirect: info?.type === 'direct',
+				isCreator: info?.createdBy._id === uid,
+				wasRung: !!ownMember?.ringingAt,
+			}),
+			/**
+			 * A provider that runs the call inside Rocket.Chat rather than at a URL of its own. The server says so
+			 * by answering the join with an empty url — there is no page to send anyone to — so that is what this
+			 * reads, rather than a second capability the two sides would have to keep in step.
+			 *
+			 * `url` is `undefined` for these, which is the truth: there is no address. What must not happen is the
+			 * page reading that as a join that went wrong, so it asks this first.
+			 */
+			embedded: data ? data.url === '' : false,
+			/**
+			 * Whether *this window* has joined — which is to say, whether it holds a session to render.
+			 *
+			 * Deliberately not "is this user in the call": a reload keeps the membership the server recorded but
+			 * loses the join it was built on, and a window that read that membership as a session had nothing to
+			 * show and no way back — it went past the preflight and straight into the unexpected-error page. What
+			 * the membership is still good for is knowing how to leave, which `departure` above reads for itself.
+			 */
+			joined: !!data,
+			loading: isPending,
+			error,
+			/** Clears a failed join, which puts the reader back on the preflight with the choice they made intact. */
+			retry: resetJoin,
+			join,
+		} as const,
+	};
+};

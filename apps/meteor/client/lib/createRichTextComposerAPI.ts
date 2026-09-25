@@ -1,0 +1,243 @@
+import type { Options } from '@rocket.chat/message-parser';
+import { escapeHTML } from '@rocket.chat/tools';
+import type { RefObject } from 'react';
+
+import type { ComposerAPI } from './chats/ChatAPI';
+import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
+import { limitQuoteChain } from './limitQuoteChain';
+import { createComposerRenderer, renderComposerContent } from './messageStateHandler';
+import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
+
+export const createRichTextComposerAPI = (
+	input: HTMLDivElement,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
+	quoteChainLimit: number,
+	parseOptions: Options,
+	composerRef: RefObject<HTMLElement | null>,
+	{ rid, tmid }: { rid: string; tmid?: string },
+): ComposerAPI => {
+	const focus = (): void => {
+		input.focus();
+	};
+
+	const getText = (): string => input.innerText.replace(/\n$/, '');
+
+	const setText: SetText = (text, { selection, skipFocus } = {}) => {
+		!skipFocus && focus();
+
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+
+		if (typeof selection === 'function') {
+			selection = selection({ start: selectionStart, end: selectionEnd });
+		}
+
+		if (selection) {
+			// Establish the caret inside the input before execCommand. Focusing alone does not create a
+			// selection range on an empty/blurred composer, so without this the insert is a silent no-op.
+			setSelectionRange(input, selectionStart, selectionEnd);
+
+			// execCommand can report success while inserting nothing (empty composer) or insert into a
+			// different focused element (e.g. the emoji picker search box). Fall back to editing directly
+			// only when the composer text is not already the expected splice, so a successful insert keeps
+			// its rendered markup instead of being flattened to innerText.
+			const before = input.innerText;
+			const expected = before.substring(0, selectionStart) + text + before.substring(selectionEnd);
+			document.execCommand?.('insertText', false, text);
+			if (input.innerText !== expected) {
+				input.innerText = expected;
+				!skipFocus && focus();
+			}
+			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
+		}
+
+		if (!selection) {
+			input.innerHTML = escapeHTML(text);
+		}
+
+		// The events below are synthetic, so the input renderer ignores them and the markup would stay
+		// unrendered. Skip it while empty: rendering '' yields the renderer's trailing newline, which would
+		// leave `clear()` with a composer that is no longer empty.
+		if (input.innerText !== '') {
+			const { selectionStart: caretStart, selectionEnd: caretEnd } = getSelectionRange(input);
+			renderComposerContent(input, parseOptions, { selectionStart: caretStart, selectionEnd: caretEnd });
+		}
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+
+		!skipFocus && focus();
+	};
+
+	const renderer = createComposerRenderer(input, parseOptions);
+
+	const core = createComposerAPICore({
+		input,
+		composerRef,
+		room: { rid, tmid },
+		initialValue: initialDraft,
+		save: () => persistDraft(getText()),
+		setText,
+		focus,
+		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
+		richText: true,
+	});
+
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const cleanedInitText = input.innerText;
+
+		// Double-clicking the last word of a line selects the trailing paragraph newline too; keep any
+		// trailing newlines out of the wrapped range so the closing marker stays on the same line.
+		const rawSelected = cleanedInitText.slice(selectionStart, selectionEnd);
+		const selectedText = rawSelected.replace(/\n+$/, '');
+		const selEnd = selectionEnd - (rawSelected.length - selectedText.length);
+
+		const initText = cleanedInitText.slice(0, selectionStart);
+		const finalText = cleanedInitText.slice(selEnd, input.innerText.length);
+
+		focus();
+
+		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
+
+		const startPatternFound =
+			startPattern.length > 0 &&
+			selectionStart >= startPattern.length &&
+			cleanedInitText.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const endPatternFound = endPattern.length > 0 && cleanedInitText.slice(selEnd, selEnd + endPattern.length) === endPattern;
+
+		if (startPatternFound && endPatternFound) {
+			const unwrapStart = selectionStart - startPattern.length;
+			const unwrapEnd = unwrapStart + selectedText.length;
+
+			setSelectionRange(input, unwrapStart, selEnd + endPattern.length);
+			focus();
+
+			if (selectedText.includes('\n') || !document.execCommand?.('insertText', false, selectedText)) {
+				input.innerText = initText.slice(0, unwrapStart) + selectedText + finalText.slice(endPattern.length);
+				renderComposerContent(input, parseOptions, { selectionStart: unwrapStart, selectionEnd: unwrapEnd });
+			}
+
+			focus();
+
+			setSelectionRange(input, unwrapStart, unwrapEnd);
+
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+
+			return { selectionStart: unwrapStart, selectionEnd: unwrapEnd, value: input.innerText };
+		}
+
+		// Explicitly set the selection range and send focus back to the editor again
+		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
+		setSelectionRange(input, selectionStart, selEnd);
+		focus();
+
+		const replacement = pattern.replace('{{text}}', selectedText);
+		const newStart = selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + selectedText.length;
+
+		// execCommand('insertText') mangles embedded newlines (drops them and duplicates the last
+		// character across the caret), so for multi-line selections rebuild the text directly and
+		// re-render the markup ourselves.
+		if (replacement.includes('\n') || !document.execCommand?.('insertText', false, replacement)) {
+			input.innerText = initText + replacement + finalText;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
+		}
+
+		focus();
+
+		setSelectionRange(input, newStart, newEnd);
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+
+		return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
+	};
+
+	// Gets the text that is connected to the cursor and replaces it with the given text
+	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
+		// Selects the text that is connected to the cursor, then focus so execCommand has an active target
+		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
+		focus();
+		const textAreaTxt = input.innerText;
+		const expected = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
+
+		const newStart = selection.start + text.length;
+		const newEnd = selection.start + text.length;
+
+		const inserted = !text.includes('\n') && document.execCommand?.('insertText', false, text);
+
+		if (!inserted || input.innerText !== expected) {
+			input.innerText = expected;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
+		}
+
+		setSelectionRange(input, newStart, newEnd);
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+	};
+
+	const insertNewLine = (): void => {
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const text = input.innerText;
+
+		const bare = selectionStart === selectionEnd ? bareLinePrefixRange(text, selectionStart) : undefined;
+
+		if (bare) {
+			replaceText('', bare);
+			return;
+		}
+
+		const marker = continueLinePrefix(text, selectionStart);
+
+		core.insertText(marker ? `\n${marker}` : '\n');
+	};
+
+	const replyWith = async (text: string): Promise<void> => {
+		setText(text);
+		const end = input.innerText.length;
+		renderComposerContent(input, parseOptions, { selectionStart: end, selectionEnd: end });
+	};
+
+	return {
+		...core,
+		release: () => {
+			core.release();
+			renderer.release();
+		},
+		setText,
+		insertNewLine,
+		wrapSelection,
+		replaceText,
+		replyWith,
+		substring: (start: number, end?: number) => {
+			return getText().substring(start, end);
+		},
+		getCursorPosition: () => {
+			return getSelectionRange(input).selectionStart;
+		},
+		setCursorToEnd: () => {
+			const end = input.innerText.length;
+			focus();
+			setSelectionRange(input, end, end);
+		},
+		setCursorToStart: () => {
+			focus();
+			setSelectionRange(input, 0, 0);
+		},
+		get text(): string {
+			return getText();
+		},
+		get selection(): { start: number; end: number } {
+			const { selectionStart, selectionEnd } = getSelectionRange(input);
+			return {
+				start: selectionStart,
+				end: selectionEnd,
+			};
+		},
+	};
+};

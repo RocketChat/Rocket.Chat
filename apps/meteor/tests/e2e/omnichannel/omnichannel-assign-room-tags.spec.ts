@@ -55,8 +55,7 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await page.goto('/');
-		await poOmnichannel.waitForHome();
+		await poOmnichannel.goto();
 	});
 
 	test.beforeEach(async ({ api }) => {

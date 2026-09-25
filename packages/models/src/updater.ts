@@ -44,6 +44,14 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return this;
 	}
 
+	getSet<K extends keyof SetProps<T>>(key: K): SetProps<T>[K] | undefined {
+		return this._set?.get(key) as SetProps<T>[K] | undefined;
+	}
+
+	getInc<K extends keyof IncProps<T>>(key: K): number | undefined {
+		return this._inc?.get(key);
+	}
+
 	hasChanges() {
 		const filter = this.getRawUpdateFilter();
 		return this._hasChanges(filter);

@@ -83,6 +83,10 @@ export class RoomToolbar extends Toolbar {
 		return this.menu.getMenuItem('Prune Messages');
 	}
 
+	get menuItemAutoTranslate(): Locator {
+		return this.menu.getMenuItem('Auto-Translate');
+	}
+
 	get menuItemNotificationsPreferences(): Locator {
 		return this.menu.getMenuItem('Notifications Preferences');
 	}
@@ -97,6 +101,29 @@ export class RoomToolbar extends Toolbar {
 
 	get menuItemFiles(): Locator {
 		return this.menu.getMenuItem('Files');
+	}
+
+	/** The room's conference-call history. */
+	get menuItemCalls(): Locator {
+		return this.menu.getMenuItem('Calls');
+	}
+
+	get btnCalls(): Locator {
+		return this.root.getByRole('button', { name: 'Calls', exact: true });
+	}
+
+	/**
+	 * Opens the room's call history, wherever the toolbar happens to be keeping it: the action is ordered last,
+	 * so it is normally behind *Options*, but a room with few actions shows it outright.
+	 */
+	async openCalls(): Promise<void> {
+		if (await this.btnCalls.isVisible()) {
+			await this.btnCalls.click();
+			return;
+		}
+
+		await this.openMoreOptions();
+		await this.menuItemCalls.click();
 	}
 
 	async openRoomInfo() {
