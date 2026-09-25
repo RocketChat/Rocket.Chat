@@ -41,7 +41,7 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-i18next": "~17.0.14",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage-hooks": "*",

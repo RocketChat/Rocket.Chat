@@ -20,7 +20,7 @@
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"moment": "^2.31.0",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"date-fns": "~4.1.0",

@@ -51,7 +51,7 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"sharp": "~0.35.5",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"react": "*",

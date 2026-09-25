@@ -18,10 +18,9 @@
 		"noFallthroughCasesInSwitch": false,
 
 		/* Module Resolution Options */
-		"baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": ["*"],
+			"/*": ["./*"],
 			/* No .meteor/local/types/packages.d.ts fallback: its `export =` module
 			   declarations take over the module identity under TS7 and discard the
 			   ambient merges from @types/meteor and definition/externals. Everything
@@ -29,6 +28,8 @@
 			"meteor/*": ["./node_modules/@types/meteor/*"],
 			"swiper/modules/index.mjs": ["./node_modules/swiper/types/modules/index.d.ts"],
 			"swiper/swiper-react.mjs": ["./node_modules/swiper/swiper-react.d.ts"],
+			/* tinykeys 1.x lists no `types` in its `exports` map, so `bundler` resolution misses its declarations. */
+			"tinykeys": ["./node_modules/tinykeys/dist/tinykeys.d.ts"],
 		},
 		"preserveSymlinks": true,
 
