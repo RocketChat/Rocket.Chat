@@ -34,8 +34,6 @@ type ClusterBroker = Pick<LocalBroker, 'setClusterTransport' | 'broadcastLocal'>
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
-	private broadcastStarted = false;
-
 	private transporter: Transporters.TCP | Transporters.NATS;
 
 	private broker: ServiceBroker;
@@ -55,9 +53,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor(private readonly localBroker: ClusterBroker) {
 		super();
 
-		this.onEvent('license.module', async ({ module, valid }) => {
+		this.onEvent('license.module', ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
-				await this.startBroadcast();
+				this.startBroadcast();
 			}
 		});
 
@@ -186,19 +184,13 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 
-			await this.startBroadcast();
+			this.startBroadcast();
 		} catch (error) {
 			console.error('Instance service did not start correctly', error);
 		}
 	}
 
-	private async startBroadcast() {
-		if (this.broadcastStarted) {
-			return;
-		}
-
-		this.broadcastStarted = true;
-
+	private startBroadcast() {
 		this.localBroker.setClusterTransport(this.clusterTransport);
 	}
 

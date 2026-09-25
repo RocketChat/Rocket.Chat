@@ -139,7 +139,7 @@ class UserPresence {
 
 export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	static getInstance(StreamerClass: IStreamerConstructor, name = 'user-presence', options?: StreamerOptions): IStreamer<'user-presence'> {
+	static getInstance(StreamerClass: IStreamerConstructor, options?: StreamerOptions): IStreamer<'user-presence'> {
 		return new (
 			class StreamPresence extends StreamerClass<'user-presence'> {
 				override async _publish(
@@ -183,7 +183,7 @@ export class StreamPresence {
 					publication.onStop(() => client.stop());
 				}
 			} as any
-		)(name, options);
+		)('user-presence', options);
 	}
 }
 

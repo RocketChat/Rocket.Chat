@@ -16,7 +16,7 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor, StreamRelay } from './types';
+import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
 
@@ -65,8 +65,6 @@ export class NotificationsModule {
 
 	private readonly streams = new Map<string, IStreamer<StreamNames>>();
 
-	private readonly userActivityHandlers = new Set<(activity: UserActivity) => void>();
-
 	private readonly relay: StreamRelay = (stream, eventName, args) => {
 		api.broadcast('stream', { stream, eventName, args, origin: this.originId }).catch((err) => {
 			logger.error({ msg: 'Failed to relay stream event', stream, eventName, err });
@@ -91,7 +89,7 @@ export class NotificationsModule {
 		this.streamLivechatRoom = this.createStream('livechat-room');
 		this.streamLivechatQueueData = this.createStream('livechat-inquiry-queue-observer');
 		this.streamRoomData = this.createStream('room-data');
-		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, 'user-presence', { relay: this.relay }));
+		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, { relay: this.relay }));
 		this.streamRoomMessage = this.createStream('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
@@ -123,7 +121,7 @@ export class NotificationsModule {
 		this.streamVideoConference = this.createStream('video-conference');
 	}
 
-	private createStream<N extends StreamNames>(name: N, options?: { retransmit?: boolean }): IStreamer<N> {
+	private createStream<N extends StreamNames>(name: N, options?: Omit<StreamerOptions, 'relay'>): IStreamer<N> {
 		return this.register(new this.Streamer(name, { ...options, relay: this.relay }));
 	}
 
@@ -132,17 +130,23 @@ export class NotificationsModule {
 		return stream;
 	}
 
-	getStream(name: string): IStreamer<StreamNames> | undefined {
-		return this.streams.get(name);
-	}
-
 	/** Runs `handler` for every user activity a client of this process reports on a room. */
 	onUserActivity(handler: (activity: UserActivity) => void): () => void {
-		this.userActivityHandlers.add(handler);
-		return () => this.userActivityHandlers.delete(handler);
+		const listener = (eventName: string, args: unknown[], uid: string | null) => {
+			const [rid, e] = eventName.split('/');
+			if (e !== 'user-activity' || !uid) {
+				return;
+			}
+
+			const [, activities] = args;
+			handler({ rid, uid, activities: Array.isArray(activities) ? activities : [] });
+		};
+
+		this.streamRoom.on('_afterWrite', listener);
+		return () => this.streamRoom.removeListener('_afterWrite', listener);
 	}
 
-	/** Delivers an emit relayed from another process to this process's subscribers. */
+	/** Delivers an emit relayed from another process to this process's subscribers, skipping this process's own emits. */
 	deliverRelayed({ stream, eventName, args, origin }: RelayedStreamEvent): void {
 		if (origin === this.originId) {
 			return;
@@ -300,17 +304,6 @@ export class NotificationsModule {
 			}
 
 			return true;
-		});
-
-		this.streamRoom.on('_afterWrite', (eventName, args, uid) => {
-			const [rid, e] = eventName.split('/');
-			if (e !== 'user-activity' || !uid) {
-				return;
-			}
-
-			const [, activities] = args;
-			const activity = { rid, uid, activities: Array.isArray(activities) ? activities : [] };
-			this.userActivityHandlers.forEach((handler) => handler(activity));
 		});
 
 		this.streamRoomUsers.allowRead('none');
