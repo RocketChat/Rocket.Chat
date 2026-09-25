@@ -1408,7 +1408,7 @@
   "Do_not_provide_this_code_to_anyone": "このコードを誰にも提供しないでください。",
   "Do_Nothing": "何もしない",
   "Do_you_want_to_accept": "同意しますか？",
-  "Do_you_want_to_change_to_s_question": "<strong>{{currentUrl}}</strong>に変更しますか？",
+  "Do_you_want_to_change_to_s_question": "<bold>{{currentUrl}}</bold>に変更しますか？",
   "Document_Domain": "ドキュメントドメイン",
   "Domain": "ドメイン",
   "Domain_added": "ドメインが追加されました",

@@ -1425,7 +1425,7 @@
   "Do_not_provide_this_code_to_anyone": "Ne communiquez ce code à personne.",
   "Do_Nothing": "Ne rien faire",
   "Do_you_want_to_accept": "Voulez-vous accepter ?",
-  "Do_you_want_to_change_to_s_question": "Voulez-vous passer à <strong>{{currentUrl}}</strong> ?",
+  "Do_you_want_to_change_to_s_question": "Voulez-vous passer à <bold>{{currentUrl}}</bold> ?",
   "Document_Domain": "Domaine de document",
   "Documentation": "Documentation",
   "Domain": "Domaine",

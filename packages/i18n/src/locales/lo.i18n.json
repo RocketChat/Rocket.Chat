@@ -877,7 +877,7 @@
   "Displays_action_text": "ຂໍ້ຄວາມສະແດງການປະຕິບັດ",
   "Do_not_display_unread_counter": "ບໍ່ສະແດງໂຄມໄຟໃດໆຂອງຊ່ອງນີ້",
   "Do_you_want_to_accept": "ທ່ານຕ້ອງການຍອມຮັບບໍ?",
-  "Do_you_want_to_change_to_s_question": "<strong>ທ່ານຕ້ອງການທີ່ຈະມີການປ່ຽນແປງການ {{currentUrl}}?</strong>",
+  "Do_you_want_to_change_to_s_question": "ທ່ານຕ້ອງການທີ່ຈະມີການປ່ຽນແປງການ <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Document domain",
   "Domain": "ໂດເມນ",
   "Domain_added": "ໂດເມນເພີ່ມ",

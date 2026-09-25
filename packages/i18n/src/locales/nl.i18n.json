@@ -1424,7 +1424,7 @@
   "Do_not_provide_this_code_to_anyone": "Geef deze code aan niemand.",
   "Do_Nothing": "Niets doen",
   "Do_you_want_to_accept": "Wil je accepteren?",
-  "Do_you_want_to_change_to_s_question": "Wil je veranderen naar <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Wil je veranderen naar <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Document domein",
   "Documentation": "Documentatie",
   "Domain": "Domein",

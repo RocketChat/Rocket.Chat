@@ -910,7 +910,7 @@
   "Displays_action_text": "Rodomas veiksmo tekstas",
   "Do_not_display_unread_counter": "Nerodykite šio kanalo skaitiklio",
   "Do_you_want_to_accept": "Ar norite priimti?",
-  "Do_you_want_to_change_to_s_question": "Ar norite pakeisti į <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Ar norite pakeisti į <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Dokumento domenas",
   "Domain": "Domenas",
   "Domain_added": "domenas pridėtas",
