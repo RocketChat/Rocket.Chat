@@ -1,6 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Field } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Meta } from '@storybook/react';
 
 import ActionSettingInput from './ActionSettingInput';
@@ -13,7 +12,7 @@ export default {
 export const Default = {
 	args: {
 		_id: 'setting_id',
-		actionText: 'Action text' as TranslationKey,
+		actionText: 'Action text',
 		value: 'methodName' as keyof ServerMethods,
 	},
 };
@@ -21,7 +20,7 @@ export const Default = {
 export const Disabled = {
 	args: {
 		_id: 'setting_id',
-		actionText: 'Action text' as TranslationKey,
+		actionText: 'Action text',
 		value: 'methodName' as keyof ServerMethods,
 		disabled: true,
 	},
@@ -30,7 +29,7 @@ export const Disabled = {
 export const WithinChangedSection = {
 	args: {
 		_id: 'setting_id',
-		actionText: 'Action text' as TranslationKey,
+		actionText: 'Action text',
 		value: 'methodName' as keyof ServerMethods,
 		sectionChanged: true,
 	},
