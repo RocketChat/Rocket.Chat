@@ -2,12 +2,15 @@
 // talks to Vite (PORT, default 3000), which proxies server routes to Meteor
 // (METEOR_PORT, default 3100). Meteor skips its own client build.
 // With RC_SERVER_URL set, only Vite starts and it proxies to that server instead.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { distOnlyWorkspacePackages, publicAssetWorkspacePackages } from './workspacePackages.mjs';
+
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const workspaceRoot = join(appRoot, '../..');
 const require = createRequire(import.meta.url);
 
 const port = process.env.PORT || '3000';
@@ -31,6 +34,16 @@ const stopTree = (child) => {
 	}
 	process.kill(-child.pid, 'SIGTERM');
 };
+
+// The client compiles workspace packages from source, so against a remote server only the packages it reads from
+// dist are built; the local Meteor server still loads every package from dist.
+const buildFilters = remoteServerUrl
+	? [...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => `--filter=${name}...`)
+	: ['--filter=@rocket.chat/meteor^...'];
+const build = spawnSync('yarn', ['turbo', 'run', 'build', ...buildFilters], { cwd: workspaceRoot, stdio: 'inherit', shell: isWindows });
+if (build.status !== 0) {
+	process.exit(build.status ?? 1);
+}
 
 const children = [
 	!remoteServerUrl &&
