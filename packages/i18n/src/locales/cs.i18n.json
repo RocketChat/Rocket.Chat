@@ -1048,7 +1048,7 @@
   "Custom_Emoji_Info": "Info o vlastní emotikoně",
   "Custom_Emoji_Updated_Successfully": "Vlastní emotikona upravena",
   "Custom_Fields": "Vlastní pole",
-  "Custom_oauth_helper": "Při nastavování OAuth poskytovatele, budete muset nastavit callback URL. Použijte <pre> {{url}} </pre> ,",
+  "Custom_oauth_helper": "Při nastavování OAuth poskytovatele, budete muset nastavit callback URL. Použijte <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Vlastní skripty pro přihlášené uživatele",
   "Custom_Script_Logged_In_Description": "Vlastní skript, který bude spuštěn VŽDY a VŠEM přihlášeným uživatelům (pokaždé, když vstoupíte do chatu a jste přihlášeni)",
   "Custom_Script_Logged_Out": "Vlastní skripty pro odhlášené uživatele",

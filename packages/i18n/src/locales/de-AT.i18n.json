@@ -771,7 +771,7 @@
   "Custom_Emoji_Info": "Info zu plattformspezifischem Emoji",
   "Custom_Emoji_Updated_Successfully": "Benutzerdefiniertes Emoji wurde erfolgreich aktualisiert",
   "Custom_Fields": "Benutzerdefinierte Felder",
-  "Custom_oauth_helper": "Bei der Einrichtung muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <pre>{{url}}</pre>",
+  "Custom_oauth_helper": "Bei der Einrichtung muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <code>{{url}}</code>",
   "Custom_Script_Logged_In": "Benutzerdefiniertes Script für angemeldete Benutzer",
   "Custom_Script_Logged_Out": "Benutzerdefiniertes Script für abgemeldete Benutzer",
   "Custom_Scripts": "Benutzerdefinierte Skripts",

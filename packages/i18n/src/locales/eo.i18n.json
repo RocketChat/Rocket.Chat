@@ -770,7 +770,7 @@
   "Custom_Emoji_Info": "Propra Emoji Informoj",
   "Custom_Emoji_Updated_Successfully": "Propra emoji ĝisdatigita sukcese",
   "Custom_Fields": "Propraj Kampoj",
-  "Custom_oauth_helper": "Kiam vi agordas vian OAuth Provider, vi devos informi Callback-URL. Uzu <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Kiam vi agordas vian OAuth Provider, vi devos informi Callback-URL. Uzu <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Propra Skripto por Ensalutitaj Uzantoj",
   "Custom_Script_Logged_Out": "Propra Skripto por ensalutintaj uzantoj",
   "Custom_Scripts": "Propra Skriptoj",

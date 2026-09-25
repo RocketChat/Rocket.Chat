@@ -1276,7 +1276,7 @@
   "Custom_Field_Removed": "Campo personalizado eliminado",
   "Custom_Fields": "Campos personalizados",
   "Custom_Integration": "Integración personalizada",
-  "Custom_oauth_helper": "Al configurar el proveedor de OAuth, tendrás que indicar una URL de devolución. Usa <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Al configurar el proveedor de OAuth, tendrás que indicar una URL de devolución. Usa <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Script personalizado para los usuarios que han iniciado sesión",
   "Custom_Script_Logged_In_Description": "Script personalizado que se ejecutará SIEMPRE y para CUALQUIER usuario que haya iniciado sesión (por ejemplo, cada vez que accedas al chat y hayas iniciado sesión)",
   "Custom_Script_Logged_Out": "Script personalizado para los usuarios que han cerrado sesión",

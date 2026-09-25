@@ -822,7 +822,7 @@
   "Custom_Emoji_Info": "Pasirinktinė \"Emoji\" informacija",
   "Custom_Emoji_Updated_Successfully": "Tinkintos piktogramos sėkmingai atnaujintos",
   "Custom_Fields": "Pasirinktiniai laukai",
-  "Custom_oauth_helper": "Nustatydami OAuth teikėją turėsite pranešti atgalinio ryšio URL. Naudokite <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Nustatydami OAuth teikėją turėsite pranešti atgalinio ryšio URL. Naudokite <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Tinkintas scenarijus prisijungusiems vartotojams",
   "Custom_Script_Logged_Out": "Pasirinktinis scenarijus išjungtiems vartotojams",
   "Custom_Scripts": "Tinkinti scenarijai",

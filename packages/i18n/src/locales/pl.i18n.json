@@ -1378,7 +1378,7 @@
   "Custom_Integration": "Integracja niestandardowa",
   "Custom_OAuth_has_been_added": "Dodano niestandardowy OAuth",
   "Custom_OAuth_has_been_removed": "Niestandardowy OAuth został usunięty",
-  "Custom_oauth_helper": "Podczas konfigurowania dostawcy OAuth należy podać adres URL wywołania zwrotnego. Użyj adresu <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Podczas konfigurowania dostawcy OAuth należy podać adres URL wywołania zwrotnego. Użyj adresu <code>{{url}}</code>.",
   "Custom_roles": "Role niestandardowe",
   "Custom_Script_Logged_In": "Skrypt niestandardowy dla zalogowanych użytkowników",
   "Custom_Script_Logged_In_Description": "Skrypt niestandardowy, który będzie uruchamiany ZAWSZE w przypadku KAŻDEGO zalogowanego użytkownika, np. (gdy użytkownik wejdzie na czat i jest zalogowany)",
