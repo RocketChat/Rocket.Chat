@@ -15,6 +15,8 @@ export type RemoteMucSessionDeps = {
 	/** The bare JID of the local user joining on whose behalf we act. */
 	localJid: string;
 	nick: string;
+	/** Caps the discussion history the room replays on join; omitted leaves it to the room's default. */
+	maxHistoryStanzas?: number;
 	send: (stanza: Element) => Promise<void>;
 	onJoined: (occupants: MucRemoteOccupant[]) => void;
 	onJoinFailed: (condition: string) => void;
@@ -40,8 +42,10 @@ export class RemoteMucSession {
 
 	async join(): Promise<void> {
 		this.state = 'joining';
+		const { maxHistoryStanzas } = this.deps;
+		const history = maxHistoryStanzas === undefined ? undefined : xml('history', { maxstanzas: String(maxHistoryStanzas) });
 		await this.deps.send(
-			xml('presence', { from: this.occupantJid, to: `${this.deps.roomJid}/${this.deps.nick}` }, xml('x', { xmlns: NS_MUC })),
+			xml('presence', { from: this.occupantJid, to: `${this.deps.roomJid}/${this.deps.nick}` }, xml('x', { xmlns: NS_MUC }, history)),
 		);
 	}
 

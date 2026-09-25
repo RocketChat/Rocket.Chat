@@ -4,17 +4,17 @@ Companion to [xmpp-server.md](xmpp-server.md) (feature behavior and configuratio
 
 ## High-level shape
 
-Everything lives in one workspace package, `ee/packages/xmpp-server` (`@rocket.chat/xmpp-server`), structured in two strictly separated layers, plus thin wiring inside `apps/meteor`:
+Everything lives in one workspace package, `ee/packages/xmpp-server` (`@rocket.chat/xmpp-server`), structured in two strictly separated layers. The package runs only in the `ee/apps/xmpp-server-service` microservice. `apps/meteor` holds just the outgoing hooks and the setting definitions:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ apps/meteor                                                 │
-│   ee/server/startup/xmppServer.ts   (lifecycle, settings)   │
 │   ee/server/hooks/xmpp/index.ts     (outgoing callbacks)    │
 │   server/settings/federation-service.ts (XMPP_Server_*)     │
 └──────────────┬──────────────────────────────────────────────┘
-               │ service proxy (@rocket.chat/core-services)
+               │ service proxy + broker events (network broker)
 ┌──────────────▼──────────────────────────────────────────────┐
+│ ee/apps/xmpp-server-service  (process entrypoint)           │
 │ ee/packages/xmpp-server                                     │
 │  src/service/   Integration layer (ServiceClass)            │
 │    - knows Rocket.Chat: models, core-services, core-typings │
@@ -27,7 +27,7 @@ Everything lives in one workspace package, `ee/packages/xmpp-server` (`@rocket.c
 └─────────────────────────────────────────────────────────────┘
 ```
 
-The protocol core is deliberately Rocket.Chat-agnostic so it can later be hosted in a standalone process (`ee/apps/`-style microservice) without changes: every public method returns a promise and every event payload is JSON-serializable (the `raw: Element` fields serialize via `toString()`).
+The protocol core is deliberately Rocket.Chat-agnostic: every public method returns a promise and every event payload is JSON-serializable (the `raw: Element` fields serialize via `toString()`).
 
 ## Protocol core (`src/`)
 
@@ -75,9 +75,9 @@ The protocol core holds **only ephemeral state**, all rebuilt on `start()`: open
 
 ## Integration layer (`src/service/`)
 
-`XMPPServerService extends ServiceClass` (broker name `'xmpp-server'`), mirroring the posture of `FederationMatrix` in `ee/packages/federation-matrix`. Its interface (`IXMPPServerService` in `packages/core-services`, proxied as `XMPPServer`) exposes: `configure(config)`, `stop()`, `isRunning()`, `sendMessage(message, room, user)`, `registerHostedRoom(room)`, `inviteToHostedRoom(rid, inviterId, jid)`, `addHostedRoomMember(rid, userId)`, `removeHostedRoomMember(rid, userId)`, `joinRemoteMUC(userId, rid)`, `ensureXMPPUsersExistLocally(jids)`.
+`XMPPServerService extends ServiceClass` (broker name `'xmpp-server'`), mirroring the posture of `FederationMatrix` in `ee/packages/federation-matrix`. Its interface (`IXMPPServerService` in `packages/core-services`, proxied as `XMPPServer`) exposes: `isRunning()`, `sendMessage(message, room, user)`, `registerHostedRoom(room)`, `inviteToHostedRoom(rid, inviterId, jid)`, `addHostedRoomMember(rid, userId)`, `removeHostedRoomMember(rid, userId)`, `joinRemoteMUC(userId, rid)`, `ensureXMPPUsersExistLocally(jids)`.
 
-- `configure()` diffs the incoming settings against the running config: listener-affecting changes (domain/port/TLS) stop and restart the core; soft changes (allowlist, presence flag) are hot-applied. Core event handlers are attached in `configure()`, not `created()`, so a stopped service is fully inert.
+- The service configures itself (see [Settings and lifecycle wiring](#settings-and-lifecycle-wiring)). Each reconfiguration diffs the settings against the running config: listener-affecting changes (domain/port/TLS) stop and restart the core; soft changes (allowlist, presence flag) are hot-applied. Core event handlers are attached when the core starts, not in `created()`, so a stopped service is fully inert.
 - Because MUC state in the core is ephemeral, every start rebuilds it from the database (`restoreMucState`, non-fatal by design — a failure degrades group chat but must not take the listener down): each `host-muc` room is re-registered with its local members re-seated as virtual occupants, and each `remote-muc` room is rejoined once per local member. Skipping the latter is why a mirrored room goes silent after a restart.
 - Join authorization is the one request/response path into Rocket.Chat: the `authorizeMucJoin` delegate allows any federated domain into a public channel (`t === 'c'`) but requires an existing subscription for a private group, which is what makes invitations meaningful.
 - Inbound handlers live in `src/service/events/{message,presence,muc}.ts` (mirroring `federation-matrix/src/events/`).
@@ -154,8 +154,23 @@ remote server connects (or reuses session) → InboundSession authenticates doma
 ## Settings and lifecycle wiring
 
 - Settings are registered as a new `XMPP_Server` section of the `Federation` group in `apps/meteor/server/settings/federation-service.ts` (all `enterprise: true, modules: ['federation']`).
-- `apps/meteor/ee/server/startup/xmppServer.ts` registers the service, watches all `XMPP_Server_*` keys (`settings.watchMultiple`) and gates on `License.hasModule('federation') && XMPP_Server_Enabled`, calling `XMPPServer.configure(...)` or `XMPPServer.stop()`. `License.onToggledFeature('federation', { up, down })` covers license flips. Invoked from `startRocketChat.ts` in `loadAfterLicense`.
-- Unlike the Matrix service, `stop()` is real: the package holds a TCP listener that must be released when the feature is disabled.
+- The service owns its configuration. In `started()` it reads the `XMPP_Server_*` settings through the `Settings` service proxy (Meteor's settings cache) and the license through the `License` proxy (`readXMPPServerConfiguration` in `src/service/configuration.ts`), then gates `enabled` on `License.hasModule('federation') && XMPP_Server_Enabled`. After that it reconfigures on every `watch.settings` event for an `XMPP_Server_*` key and on every `license.module` event for `federation`. Reconfigurations are queued one at a time: saving several settings at once fires one event per key, and two overlapping starts would compete for the port.
+- Unlike the Matrix service, stopping is real: the package holds a TCP listener that must be released when the feature is disabled, and when the broker stops the service (`stopped()`).
+
+### The microservice
+
+`ee/apps/xmpp-server-service` is the only host of `XMPPServerService`. Meteor does not register it in either deployment mode. Without the microservice, Meteor's `XMPPServer.*` calls from the hooks resolve to nothing, so the feature is simply inactive.
+
+```sh
+# Meteor started with TRANSPORTER=TCP (or a NATS URL), then:
+yarn workspace @rocket.chat/xmpp-server-service ms
+```
+
+The process starts only after Meteor's `settings` and `license` services are reachable, as every networked service does. The S2S listener binds `XMPP_Server_Port` (default 5269) in this process. The health check listens on `PORT` (default 3039), and moleculer metrics use the broker's usual port (9458). The generic `ee/apps/Dockerfile` builds it with `SERVICE=xmpp-server-service`. Each service process opens its own listener, so run a single instance of this service per domain.
+
+`GET /stats` on the health port returns running totals of every inbound event the protocol core has decoded, keyed by event name. With `XMPP_DECODE_ONLY=true`, stanzas are still parsed, routed and answered at the protocol level, but no inbound event reaches Rocket.Chat, hosted-MUC joins skip the database authorization check, and remote-MUC joins request no discussion history (`<history maxstanzas="0"/>`). In normal mode that history is how the server catches up on messages sent while it was offline. In decode-only mode it would only replay the same backlog on every restart. Use it to load-test decoding alone: sample `/stats` twice and divide by the interval.
+
+`LOG_LEVEL` (`warn`, `info` or `debug`) sets the process's log level. Without it, loggers stay at `warn`, because the `Log_Level` admin setting only takes effect inside Meteor's own process. At `debug`, every inbound event is logged as `XMPP event` with its payload, including the XML of the stanza that produced it. Payloads are only serialized when debug is enabled, so leave it off during throughput runs.
 
 ## Client touch points
 

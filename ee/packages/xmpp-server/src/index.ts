@@ -9,3 +9,4 @@ export type { Logger } from './logger';
 
 // Rocket.Chat integration service (imports @rocket.chat/core-services & models).
 export { XMPPServerService } from './service/XMPPServerService';
+export type { XMPPServerServiceOptions } from './service/XMPPServerService';

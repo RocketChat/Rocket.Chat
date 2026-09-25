@@ -11779,6 +11779,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/xmpp-server-service@workspace:ee/apps/xmpp-server-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/xmpp-server-service@workspace:ee/apps/xmpp-server-service"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/tracing": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/xmpp-server": "workspace:^"
+    "@types/node": "npm:~24.13.2"
+    "@types/polka": "npm:^0.5.8"
+    eslint: "npm:~9.39.5"
+    moleculer: "npm:^0.14.35"
+    mongodb: "npm:6.16.0"
+    nats: "npm:^2.28.2"
+    pino: "npm:10.3.1"
+    polka: "npm:^0.5.2"
+    prom-client: "npm:^14.2.0"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/xmpp-server@workspace:^, @rocket.chat/xmpp-server@workspace:ee/packages/xmpp-server":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/xmpp-server@workspace:ee/packages/xmpp-server"
@@ -15347,7 +15372,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:~24.13.6":
+"@types/node@npm:~22.19.21":
+  version: 22.19.21
+  resolution: "@types/node@npm:22.19.21"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/3767b914ea4ec2f05dfa541b90e20bf580ab671feae8459c49f67eddd6c18f1d178d054a0836d3928f53e3049e84c0c7ee64630c20980941202ba5ecfd731e56
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:~24.13.2, @types/node@npm:~24.13.6":
   version: 24.13.6
   resolution: "@types/node@npm:24.13.6"
   dependencies:
@@ -29468,7 +29502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moleculer@npm:^0.14.36":
+"moleculer@npm:^0.14.35, moleculer@npm:^0.14.36":
   version: 0.14.36
   resolution: "moleculer@npm:0.14.36"
   dependencies:

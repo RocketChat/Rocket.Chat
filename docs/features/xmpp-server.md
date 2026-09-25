@@ -18,7 +18,7 @@ The package implements the XMPP server federation core in-process:
 
 ### Integration layer
 
-A Rocket.Chat service (`xmpp-server`) bridges the protocol core to the product:
+A Rocket.Chat service (`xmpp-server`), running in its own microservice (`ee/apps/xmpp-server-service`), bridges the protocol core to the product:
 
 - **Remote users** appear as local user records: username is the full bare JID (e.g. `alice@remote.tld`), marked `federated` with an `xmppFederation` field. They are created on demand when they first interact.
 - **Outgoing messages** are picked up from the normal message pipeline (`afterSaveMessage`) for rooms marked as XMPP rooms and sent as XMPP `<message/>` stanzas.
@@ -99,7 +99,7 @@ The certificate should cover both the XMPP domain and the MUC subdomain (SAN ent
 
 Port 5269 (or the configured port) must be reachable from the internet, TCP, both directions (inbound for remote servers connecting to you, outbound for connections you originate — including the dialback verification connections remote servers make back to you).
 
-Note: the XMPP listener binds inside the main Rocket.Chat process. It is not HTTP — it cannot sit behind the usual reverse proxy; expose the port directly or via a TCP-level proxy.
+Note: the XMPP listener binds inside the `xmpp-server-service` microservice, not the main Rocket.Chat process, so the feature requires a microservices deployment with that service running (one instance per XMPP domain). It is not HTTP — it cannot sit behind the usual reverse proxy; expose the port directly or via a TCP-level proxy.
 
 ## Configuration on the XMPP side
 

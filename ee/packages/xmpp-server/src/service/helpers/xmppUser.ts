@@ -36,7 +36,6 @@ export async function createOrUpdateXMPPUser(options: { jid: string; name?: stri
 		},
 		{
 			upsert: true,
-			projection: { _id: 1, username: 1 },
 			returnDocument: 'after',
 		},
 	);

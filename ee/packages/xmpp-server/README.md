@@ -20,9 +20,10 @@ See [../../../docs/features/xmpp-server.md](../../../docs/features/xmpp-server.m
   `@rocket.chat/core-services` `ServiceClass` that bridges the protocol core to
   Rocket.Chat models and events.
 
-The protocol core is kept free of product dependencies so it can later run in a
-standalone process; only the service layer imports `@rocket.chat/*` product
-packages.
+The protocol core is kept free of product dependencies; only the service layer
+imports `@rocket.chat/*` product packages. The service runs only in the
+`ee/apps/xmpp-server-service` microservice
+(`yarn workspace @rocket.chat/xmpp-server-service ms`), never inside Meteor.
 
 ## What it implements
 

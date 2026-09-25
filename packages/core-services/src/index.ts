@@ -90,7 +90,7 @@ export type {
 } from './types/IFederationService';
 
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
-export type { IXMPPServerService, XMPPServerConfiguration } from './types/IXMPPServerService';
+export type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type {
 	ConversationData,

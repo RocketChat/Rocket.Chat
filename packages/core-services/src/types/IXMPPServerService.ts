@@ -1,20 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-export type XMPPServerConfiguration = {
-	enabled: boolean;
-	domain: string;
-	port: number;
-	tlsCert: string;
-	tlsKey: string;
-	mucSubdomain: string;
-	domainAllowList: string[];
-	presenceEnabled: boolean;
-};
-
 export interface IXMPPServerService {
-	/** Reconciles the running server against the given configuration (start/restart/stop). */
-	configure(config: XMPPServerConfiguration): Promise<void>;
-	stop(): Promise<void>;
 	isRunning(): boolean;
 	/** Called from the outgoing message hook for XMPP-federated rooms. */
 	sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void>;

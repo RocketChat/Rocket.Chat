@@ -1,5 +1,5 @@
-import { api, Message, Room, ServiceClass } from '@rocket.chat/core-services';
-import type { IXMPPServerService, XMPPServerConfiguration } from '@rocket.chat/core-services';
+import { api, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import type { IXMPPServerService } from '@rocket.chat/core-services';
 import { isRoomXMPPFederated, isRoomXMPPHostedMuc, isRoomXMPPRemoteMuc, isUserXMPPFederated } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -8,9 +8,11 @@ import { Random } from '@rocket.chat/random';
 
 import { XMPPServer } from '../XMPPServer';
 import type { MucJoinDecision, XMPPServerConfig } from '../config';
-import type { IncomingChatMessage, IncomingPresence } from '../events';
+import type { IncomingChatMessage, IncomingPresence, XMPPServerEventMap } from '../events';
+import type { XMPPServerConfiguration } from './configuration';
 import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
+import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
 import { domainOfJid, toBareJid } from './helpers/jid';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
@@ -43,16 +45,57 @@ const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1
 /** The room JID's localpart is the MUC room id used by the protocol core. */
 const mucLocalpart = (mucJid: string): string => mucJid.split('@')[0];
 
+const INBOUND_EVENTS = [
+	'connection.established',
+	'connection.lost',
+	'connection.failed',
+	'error',
+	'message.received',
+	'message.error',
+	'presence.received',
+	'presence.subscriptionRequest',
+	'presence.subscribed',
+	'presence.unsubscribed',
+	'presence.probe',
+	'muc.occupantJoined',
+	'muc.occupantLeft',
+	'muc.messageReceived',
+	'muc.subjectChanged',
+	'muc.inviteReceived',
+	'muc.remoteJoined',
+	'muc.remoteJoinFailed',
+	'muc.remoteOccupantJoined',
+	'muc.remoteOccupantLeft',
+	'muc.remoteMessage',
+	'muc.remoteSessionLost',
+] as const satisfies readonly (keyof XMPPServerEventMap)[];
+
+export type XMPPServerServiceOptions = {
+	/** When false, inbound traffic is decoded and counted but never reaches Rocket.Chat. Default true. */
+	forwardToRocketChat?: boolean;
+};
+
 export class XMPPServerService extends ServiceClass implements IXMPPServerService {
 	protected name = 'xmpp-server';
 
 	private readonly logger = new Logger('XMPPServer');
+
+	private readonly forwardToRocketChat: boolean;
+
+	private readonly inboundEventCounts = new Map<string, number>(INBOUND_EVENTS.map((type) => [type, 0]));
 
 	private server: XMPPServer | undefined;
 
 	private fingerprint: ListenerFingerprint | undefined;
 
 	private presenceEnabled = false;
+
+	private reconfiguring: Promise<void> = Promise.resolve();
+
+	constructor({ forwardToRocketChat = true }: XMPPServerServiceOptions = {}) {
+		super();
+		this.forwardToRocketChat = forwardToRocketChat;
+	}
 
 	override async created(): Promise<void> {
 		// Outbound presence: fan a local user's status out to the remote domains they share a DM with.
@@ -62,15 +105,53 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			}
 			await this.broadcastLocalPresence(user);
 		});
+
+		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
+			if (isXMPPSettingKey(setting._id)) {
+				await this.reconfigure();
+			}
+		});
+
+		this.onEvent('license.module', async ({ module }): Promise<void> => {
+			if (module === 'federation') {
+				await this.reconfigure();
+			}
+		});
+	}
+
+	override async started(): Promise<void> {
+		await this.reconfigure();
+	}
+
+	override async stopped(): Promise<void> {
+		await this.stopServer();
 	}
 
 	isRunning(): boolean {
 		return this.server?.isRunning ?? false;
 	}
 
-	async configure(config: XMPPServerConfiguration): Promise<void> {
+	/** Totals of events decoded by the protocol core since the service was created. */
+	getInboundEventCounts(): Record<string, number> {
+		return Object.fromEntries(this.inboundEventCounts);
+	}
+
+	/** Brings the listener in line with the current settings and license; runs one at a time so a burst of changes cannot race two listeners onto the port. */
+	private reconfigure(): Promise<void> {
+		this.reconfiguring = this.reconfiguring.then(async () => {
+			try {
+				const config = await readXMPPServerConfiguration((key) => Settings.get(key), await License.hasModule('federation'));
+				await this.applyConfiguration(config);
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to configure native XMPP server', err });
+			}
+		});
+		return this.reconfiguring;
+	}
+
+	private async applyConfiguration(config: XMPPServerConfiguration): Promise<void> {
 		if (!config.enabled || !config.domain) {
-			await this.stop();
+			await this.stopServer();
 			return;
 		}
 
@@ -83,11 +164,16 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 
-		await this.stop();
+		await this.stopServer();
 
 		try {
 			const server = new XMPPServer(this.toCoreConfig(config));
-			this.attachHandlers(server, config);
+			this.observeInboundEvents(server);
+			if (this.forwardToRocketChat) {
+				this.attachHandlers(server, config);
+			} else {
+				this.logger.warn('XMPP server running in decode-only mode: inbound traffic will not reach Rocket.Chat');
+			}
 			await server.start();
 			this.server = server;
 			this.fingerprint = fingerprint;
@@ -108,7 +194,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		await this.joinRemoteMucRooms();
 	}
 
-	async stop(): Promise<void> {
+	private async stopServer(): Promise<void> {
 		if (!this.server) {
 			return;
 		}
@@ -291,6 +377,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			localJid: `${user.username}@${this.server.domain}`,
 			roomJid: room.xmppFederation.muc,
 			nick: user.username,
+			// History catches up on messages missed while offline; decode-only mode has nowhere to store them
+			...(!this.forwardToRocketChat && { maxHistoryStanzas: 0 }),
 		});
 	}
 
@@ -388,12 +476,26 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			requireTls: tlsProvided,
 			tls: tlsProvided ? { cert: config.tlsCert, key: config.tlsKey } : undefined,
 			allowedDomains: config.domainAllowList,
-			delegates: {
-				authorizeMucJoin: (params) =>
-					this.authorizeMucJoin(normalizeDomain(`${config.mucSubdomain || 'conference'}.${config.domain}`), params),
-			},
+			// Without the delegate the core admits every join, keeping decode-only mode off the database
+			...(this.forwardToRocketChat && {
+				delegates: {
+					authorizeMucJoin: (params) =>
+						this.authorizeMucJoin(normalizeDomain(`${config.mucSubdomain || 'conference'}.${config.domain}`), params),
+				},
+			}),
 			logger: toCoreLogger(this.logger),
 		};
+	}
+
+	/** Counts every inbound event for `/stats` and, at debug level, logs it with the stanza that produced it. */
+	private observeInboundEvents(server: XMPPServer): void {
+		for (const type of INBOUND_EVENTS) {
+			server.on(type, () => {
+				this.inboundEventCounts.set(type, (this.inboundEventCounts.get(type) ?? 0) + 1);
+				// Serializing stanzas is too costly to pay for when the line would be discarded anyway
+				this.logger.debug({ msg: 'XMPP event', event: type });
+			});
+		}
 	}
 
 	/**
@@ -627,6 +729,6 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	}
 
 	private fingerprintOf(config: XMPPServerConfiguration): ListenerFingerprint {
-		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey].join(' ');
+		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey].join('\0');
 	}
 }

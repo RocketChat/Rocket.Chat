@@ -220,7 +220,7 @@ export class XMPPServer {
 
 	// --- Remote MUC (we join as a client on behalf of a local user) ---
 
-	async mucJoinRemoteRoom(params: { localJid: string; roomJid: string; nick: string }): Promise<void> {
+	async mucJoinRemoteRoom(params: { localJid: string; roomJid: string; nick: string; maxHistoryStanzas?: number }): Promise<void> {
 		const key = this.remoteKey(params.localJid, params.roomJid);
 		if (this.remoteMucSessions.has(key)) {
 			return;
@@ -229,6 +229,7 @@ export class XMPPServer {
 			roomJid: params.roomJid,
 			localJid: params.localJid,
 			nick: params.nick,
+			maxHistoryStanzas: params.maxHistoryStanzas,
 			send: (stanza) => this.send(stanza),
 			onJoined: (occupants) =>
 				this.emitter.emit('muc.remoteJoined', { roomJid: params.roomJid, localJid: params.localJid, nick: params.nick, occupants }),
