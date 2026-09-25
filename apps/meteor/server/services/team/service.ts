@@ -1,4 +1,4 @@
-import { Room, Authorization, Message, ServiceClassInternal, api } from '@rocket.chat/core-services';
+import { Room, Authorization, Message, ServiceClassInternal, api, isMeteorError } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -39,10 +39,20 @@ import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactSta
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
+const isAbacError = (error: unknown): boolean => {
+	if (isMeteorError(error)) {
+		return String(error.error).startsWith('error-abac-');
+	}
+	return error instanceof Error && error.message.startsWith('error-abac-');
+};
+
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(
+		uid: string,
+		{ team, room = { name: team.name, extraData: {} }, members, owner, abacAttributes }: ITeamCreateParams,
+	): Promise<ITeam & { skippedMembers?: string[] }> {
 		if (!(await checkUsernameAvailability(team.name, 'room'))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -78,20 +88,30 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			roomId: '', // this will be populated at the end
 		};
 
+		const { abacAttributes: _unvalidated, ...roomExtraData } = room.extraData ?? {};
+
 		try {
-			const roomId =
-				room.id ||
-				(
-					await Room.create(owner || uid, {
-						...room,
-						type: team.type === TeamType.PRIVATE ? 'p' : 'c',
-						name: team.name,
-						members: memberUsernames as string[],
-						extraData: {
-							...room.extraData,
-						},
-					})
-				)._id;
+			let roomId = room.id;
+			let skippedMembers: string[] | undefined;
+			if (!roomId) {
+				const createdRoom = await Room.create(owner || uid, {
+					...room,
+					type: team.type === TeamType.PRIVATE ? 'p' : 'c',
+					name: team.name,
+					members: memberUsernames as string[],
+					extraData: {
+						...roomExtraData,
+						...(abacAttributes && { abacAttributes }),
+					},
+				});
+				roomId = createdRoom._id;
+				skippedMembers = createdRoom.skippedMembers;
+			}
+			const skippedIds = new Set(
+				skippedMembers?.length
+					? (await Users.findUsersByUsernames(skippedMembers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id)
+					: [],
+			);
 
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
@@ -120,7 +140,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				createdBy,
 			});
 
-			await TeamMember.insertMany(membersList);
+			await TeamMember.insertMany(membersList.filter(({ userId }) => !skippedIds.has(userId)));
 
 			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
@@ -135,8 +155,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			return {
 				_id: teamId,
 				...teamData,
+				...(skippedMembers && { skippedMembers }),
 			};
 		} catch (e) {
+			if (isAbacError(e)) {
+				throw e;
+			}
 			throw new Error('error-team-creation');
 		}
 	}

@@ -1,6 +1,6 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
-import { AbacAttributes } from '@rocket.chat/models';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction, IUser } from '@rocket.chat/core-typings';
+import { AbacAttributes, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document } from 'mongodb';
 
@@ -45,8 +45,9 @@ export class LocalAttributeStore implements IAttributeStore {
 		await ensureAttributeDefinitionsExist(attrs);
 	}
 
-	async entitlementsOf(_actor: AbacActor): Promise<AttributeEntitlements> {
-		return new Map();
+	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {
+		const user = await Users.findOneById<Pick<IUser, 'abacAttributes'>>(actor._id, { projection: { abacAttributes: 1 } });
+		return new Map((user?.abacAttributes ?? []).map(({ key, values }) => [key, new Set(values)]));
 	}
 
 	async scopeRoomsPage<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
