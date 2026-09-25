@@ -15,8 +15,10 @@ Every delivery that crosses a process boundary is a service broker event. There 
 - `LocalBroker` reaches other instances only through an explicit cluster-transport port. In an enterprise
   multi-instance monolith, `InstanceService` implements that port over its existing Moleculer broker ("matrix"),
   keeping the scalability license gate and the `Troubleshoot_Disable_Instance_Broadcast` switch.
-- A server-side reaction to a client's stream write is a typed hook injected into `NotificationsModule` that makes
-  a **service call**, never a listener on a stream and never a broadcast.
+- A server-side reaction to a client's stream write is a domain event that `NotificationsModule` publishes with
+  `emitToOne`, which reaches **one instance of each listening service**. The consumer subscribes to it like to any
+  other event, so no process that hosts client connections wires anything for it. Typing is `room.user-activity`,
+  consumed by `FederationMatrix`.
 - `StreamerCentral` is removed. `NotificationsModule` owns the registry of its streams.
 
 ## Why
@@ -57,9 +59,13 @@ Making the broker the only channel removes the per-deployment wiring, which is w
 - **Retire matrix; run `MoleculerBroker` in a multi-instance monolith.** One broker implementation everywhere, but
   it changes licensing enforcement, node discovery (TCP plus the `InstanceStatus` change stream) and operations.
   Out of proportion with the problem. The port keeps that door open.
-- **Broadcast client-write hooks as broker events.** A broadcast reaches every instance of the consumer, so a
-  multi-instance deployment would send the same Matrix typing notification once per instance. A service call is
-  answered by one.
+- **Broadcast client-write reactions as broker events.** A broadcast reaches every instance of the consumer, so a
+  multi-instance deployment would send the same Matrix typing notification once per instance.
+- **A hook in each process that hosts clients, making a service call.** A call reaches one instance, but every such
+  process has to register the hook and know who consumes it: ddp-streamer would name `FederationMatrix`. Routing
+  the hook through the monolith instead only moves that knowledge into a relay method whose job is to be a hop.
+- **Reuse the `stream` relay.** It is a broadcast, so it has the duplication problem, and it does not say which
+  user wrote.
 
 ## Consequences
 
@@ -69,6 +75,9 @@ Making the broker the only channel removes the per-deployment wiring, which is w
   (`emitWithoutBroadcast`, `notify…InThisInstance`). Every instance already received the event.
 - In microservices mode the monolith receives every stream relay, such as typing, and delivers it to its own DDP
   sessions, of which there are normally none.
+- `IBroker` gains `emitToOne`. Moleculer implements it as a balanced `emit`, grouped by service name; `LocalBroker`
+  delivers in process, because service names are unique there and the client write happens on one instance. A NATS
+  broker implements it with a queue group per service, on a subject prefix apart from the broadcast one.
 - The `stream` event and matrix payloads change shape. During the first rolling upgrade, instances on different
   versions do not exchange real-time events until all of them are upgraded. No compatibility layer is kept for it.
 - How events travel in each deployment is documented in `docs/service-brokers.md`, "Events across instances".

@@ -54,8 +54,8 @@ pending. This is why a service can safely read settings in `started()` in the
 monolith.
 
 **Events.** `broadcast()` emits to this process's listeners and hands the event to
-the cluster transport, if one is installed. `broadcastLocal()` and
-`broadcastToServices()` never leave the process. See
+the cluster transport, if one is installed. `broadcastLocal()`, `broadcastToServices()`
+and `emitToOne()` never leave the process. See
 [Events across instances](#events-across-instances).
 
 ## MoleculerBroker
@@ -102,11 +102,15 @@ processes is relayed as the event `stream`.
 
 ### What each call reaches
 
-| deployment                         | `broadcast`                          | `broadcastLocal` | `broadcastToServices`                | carried by                        |
-| ---------------------------------- | ------------------------------------ | ---------------- | ------------------------------------ | --------------------------------- |
-| single monolith                    | this process                         | this process     | this process, every listener         | —                                 |
-| enterprise multi-instance monolith | every instance                       | this process     | this process, every listener         | `InstanceService` (matrix broker) |
-| microservices                      | every node, **including the sender** | this node        | every instance of the named services | the Moleculer transporter         |
+| deployment                         | `broadcast`                          | `broadcastLocal` | `broadcastToServices`                | `emitToOne`                            | carried by                        |
+| ---------------------------------- | ------------------------------------ | ---------------- | ------------------------------------ | -------------------------------------- | --------------------------------- |
+| single monolith                    | this process                         | this process     | this process, every listener         | this process                           | —                                 |
+| enterprise multi-instance monolith | every instance                       | this process     | this process, every listener         | this process                           | `InstanceService` (matrix broker) |
+| microservices                      | every node, **including the sender** | this node        | every instance of the named services | one instance of each listening service | the Moleculer transporter         |
+
+`emitToOne` means "one instance of each service that listens". In a monolith every service
+exists once per process, and whatever publishes it (a client write, for instance) happens on
+a single instance, so delivering in process is already exactly once per service.
 
 ### The cluster transport
 
@@ -158,11 +162,17 @@ microservices mode that is every client: none connect to the monolith.
 ### Reacting to a client's write on the server
 
 Some client writes need a server-side reaction, such as forwarding typing to federation.
-These are typed hooks on `NotificationsModule` (`onUserActivity()`), registered in every
-process that hosts client connections. The hook makes a **service call**, never a
-broadcast: a broadcast reaches every instance of the consumer, and a call reaches one.
-Never listen on the stream itself for this. A stream listener only fires in the process
-that received the write.
+`NotificationsModule` publishes these as domain events with `emitToOne()`, from whichever
+process received the write, and the consumer subscribes with `onEvent()`:
+
+| client write                        | event                | consumer           |
+| ----------------------------------- | -------------------- | ------------------ |
+| `notify-room` `<rid>/user-activity` | `room.user-activity` | `FederationMatrix` |
+
+Use `emitToOne()`, not `broadcast()`: a broadcast reaches every instance of the consumer, so a
+multi-instance deployment would react once per instance. Never listen on the stream itself
+either. A stream listener only fires in the process that received the write, which in
+microservices mode is ddp-streamer.
 
 ### Delivery
 
