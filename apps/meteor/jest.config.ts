@@ -45,7 +45,6 @@ export default {
 				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
-				'<rootDir>/server/services/calendar/**/*.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
