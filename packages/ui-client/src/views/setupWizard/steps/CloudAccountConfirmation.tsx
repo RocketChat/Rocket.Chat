@@ -1,6 +1,6 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
-import { useToastMessageDispatch, useSettingSetValue, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useEffect, useCallback } from 'react';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEffect, useCallback, useRef } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
@@ -14,30 +14,33 @@ const CloudAccountConfirmation = () => {
 		maxSteps,
 		goToStep,
 		setupWizardData: { registrationData },
-		saveWorkspaceData,
+		completeCloudRegistration,
 	} = useSetupWizardContext();
-	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { t, i18n } = useTranslation();
+	const { i18n } = useTranslation();
+	const isConfirming = useRef(false);
 
 	const getConfirmation = useCallback(async () => {
-		try {
-			if (registrationData.device_code) {
-				const { pollData } = await cloudConfirmationPoll({
-					deviceCode: registrationData.device_code,
-				});
+		if (isConfirming.current || !registrationData.device_code) {
+			return;
+		}
 
-				if ('successful' in pollData && pollData.successful) {
-					await saveWorkspaceData();
-					dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
-					return setShowSetupWizard('completed');
-				}
+		isConfirming.current = true;
+		try {
+			const { pollData } = await cloudConfirmationPoll({
+				deviceCode: registrationData.device_code,
+			});
+
+			if ('successful' in pollData && pollData.successful) {
+				await completeCloudRegistration();
 			}
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			isConfirming.current = false;
 		}
-	}, [cloudConfirmationPoll, registrationData.device_code, setShowSetupWizard, saveWorkspaceData, dispatchToastMessage, t]);
+	}, [cloudConfirmationPoll, registrationData.device_code, completeCloudRegistration, dispatchToastMessage]);
 
 	useEffect(() => {
 		const pollInterval = setInterval(() => getConfirmation(), setIntervalTime(registrationData.interval));
