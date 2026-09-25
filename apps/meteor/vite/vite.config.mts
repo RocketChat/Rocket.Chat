@@ -209,6 +209,8 @@ export default defineConfig({
 	build: {
 		outDir: join(here, 'dist'),
 		emptyOutDir: true,
+		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
+		cssMinify: 'esbuild',
 		sourcemap: true,
 	},
 });
