@@ -8,7 +8,7 @@ export type ImportedCalendarEvent = Omit<InsertionModel<ICalendarEvent>, 'notifi
 export type CalendarBulkUpsertResult = { matchedCount: number; modifiedCount: number; upsertedCount: number };
 
 export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
-	findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent>;
+	findByUserIdAndDate(uid: IUser['_id'], date: Date, options?: { excludeImported?: boolean }): FindCursor<ICalendarEvent>;
 	updateEvent(eventId: ICalendarEvent['_id'], eventData: Partial<ICalendarEvent>): Promise<UpdateResult>;
 	findNextNotificationDate(): Promise<Date | null>;
 	findEventsToNotify(notificationTime: Date, minutes: number): FindCursor<ICalendarEvent>;

@@ -1,5 +1,6 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	ajv,
 	isCalendarEventListProps,
@@ -70,7 +71,7 @@ API.v1.get(
 		const { userId } = this;
 		const { date } = this.queryParams;
 
-		const data = await Calendar.list(userId, new Date(date));
+		const data = await Calendar.list(userId, new Date(date), { excludeImported: !License.hasModule('outlook-calendar') });
 
 		return API.v1.success({ data });
 	},

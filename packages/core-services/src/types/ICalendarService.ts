@@ -20,7 +20,7 @@ export interface ICalendarService {
 	create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']>;
 	import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']>;
 	get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null>;
-	list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]>;
+	list(uid: IUser['_id'], date: Date, options?: { excludeImported?: boolean }): Promise<ICalendarEvent[]>;
 	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null>;
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
 	setupNextNotification(): Promise<void>;
