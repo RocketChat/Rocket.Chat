@@ -90,7 +90,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		done(null, user);
 	});
 
-	settings.watchByRegex(/^(Accounts_OAuth_[a-z0-9_]+|API_GitHub_Enterprise_URL)$/i, () => {
+	settings.watchByRegex(/^Accounts_OAuth_[a-z0-9_]+$/i, () => {
 		if (!settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
 			return;
 		}
