@@ -1,11 +1,4 @@
-import type {
-	FacebookOAuthConfiguration,
-	ISetting,
-	ISettingColor,
-	LoginServiceConfiguration,
-	TwitterOAuthConfiguration,
-	OAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, LoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
@@ -202,20 +195,14 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (
-					(service as OAuthConfiguration).custom ||
-					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
-				) {
+				if ((service as OAuthConfiguration).custom || service.service === 'saml') {
 					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
 				return {
 					_id: service._id,
 					name: service.service,
-					clientId:
-						(service as FacebookOAuthConfiguration).appId ||
-						(service as OAuthConfiguration).clientId ||
-						(service as TwitterOAuthConfiguration).consumerKey,
+					clientId: (service as OAuthConfiguration).clientId,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
