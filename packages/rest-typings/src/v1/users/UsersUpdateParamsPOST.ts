@@ -1,4 +1,4 @@
-import type { IUserSettings } from '@rocket.chat/core-typings';
+import type { IUserPhoneNumber, IUserSettings } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
@@ -23,6 +23,7 @@ export type UsersUpdateParamsPOST = {
 		language?: string;
 		status?: string;
 		freeSwitchExtension?: string;
+		phones?: IUserPhoneNumber[];
 	};
 	confirmRelinquish?: boolean;
 };
@@ -106,6 +107,18 @@ const UsersUpdateParamsPostSchema = {
 				freeSwitchExtension: {
 					type: 'string',
 					nullable: true,
+				},
+				phones: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							number: { type: 'string', transformStripWhitespaces: true, format: 'basic_phone_number' },
+							label: { type: 'string', maxLength: 50 },
+						},
+						required: ['number'],
+						additionalProperties: false,
+					},
 				},
 			},
 			required: [],

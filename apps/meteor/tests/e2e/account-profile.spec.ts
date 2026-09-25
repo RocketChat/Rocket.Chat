@@ -10,6 +10,7 @@ import {
 	HomeChannel,
 } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
+import { setUserPhones } from './utils/setUserPhones';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user3.state });
@@ -87,6 +88,53 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.btnSetAvatarLink).toBeDisabled();
 				await expect(poAccountProfile.inputAvatarLink).toBeDisabled();
 				await setSettingValueById(api, 'Accounts_AllowUserAvatarChange', true);
+			});
+		});
+
+		test.describe('Phones', () => {
+			test.beforeEach(async ({ api, page }) => {
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
+				await page.reload();
+			});
+
+			test.afterEach(async ({ api }) => {
+				await expect(await setUserPhones(api, Users.user3.data._id, [])).toBeOK();
+			});
+
+			test('should add and persist multiple phones on account profile', async ({ page }) => {
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(0);
+				await poAccountProfile.phoneNumber.addPhone('+15554440001', 'Work');
+				await poAccountProfile.phoneNumber.addPhone('+15554440002', 'Home');
+
+				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(2);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440001');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Work');
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(1)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(1)).toHaveValue('Home');
+			});
+
+			test('should remove a phone on account profile and persist result', async ({ api, page }) => {
+				await setUserPhones(api, Users.user3.data._id, [
+					{ number: '+15554440001', label: 'Work' },
+					{ number: '+15554440002', label: 'Home' },
+				]);
+
+				await page.reload();
+
+				await poAccountProfile.phoneNumber.removePhone(0);
+				await poAccountProfile.btnSaveChanges.click();
+				await poAccountProfile.toastMessage.dismissToast();
+
+				await page.reload();
+
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(1);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('+15554440002');
+				await expect(poAccountProfile.phoneNumber.getPhoneLabelInput(0)).toHaveValue('Home');
 			});
 		});
 	});
