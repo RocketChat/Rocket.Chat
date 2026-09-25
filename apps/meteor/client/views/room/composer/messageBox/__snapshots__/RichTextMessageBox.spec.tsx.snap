@@ -1,0 +1,702 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Empty without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1qcz93u"
+      >
+        <div
+          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-1d7yiwx"
+          style="position: absolute; pointer-events: none; opacity: 1;"
+        >
+          Message
+        </div>
+        <span
+          aria-label="Message"
+          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
+          contenteditable="true"
+          name="msg"
+          style="display: block; white-space: pre-wrap; word-break: normal; overflow-wrap: break-word; cursor: text; overflow-y: scroll;"
+        />
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
+      >
+        <div
+          aria-label="Message actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="toolbar"
+        >
+          <button
+            aria-label="Emoji"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
+          />
+          <button
+            aria-label="Bold"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Italic"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Strikethrough"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Inline code"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Multi line code"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+            >
+              ⁅
+            </i>
+          </button>
+          <button
+            aria-label="Bulleted list"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-list-bullets rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Numbered list"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-list-numbers rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Link"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="KaTeX"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="group"
+        >
+          <button
+            aria-label="Send"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
+            >
+              〈
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithText without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1qcz93u"
+      >
+        <div
+          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-1d7yiwx"
+          style="position: absolute; pointer-events: none; opacity: 0;"
+        >
+          Message
+        </div>
+        <span
+          aria-label="Message"
+          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
+          contenteditable="true"
+          name="msg"
+          style="display: block; white-space: pre-wrap; word-break: normal; overflow-wrap: break-word; cursor: text; overflow-y: scroll;"
+        >
+          <span
+            style="font-weight: bold; font-size: 1.5em;"
+          >
+            # 
+            Heading one
+            
+
+          </span>
+          <span
+            style="font-weight: bold; font-size: 1.3em;"
+          >
+            ## 
+            Heading two
+            
+
+          </span>
+          <span
+            style="font-weight: bold; font-size: 1.1em;"
+          >
+            ### 
+            Heading three
+            
+
+          </span>
+          <span
+            style="font-weight: bold; font-size: 1em;"
+          >
+            #### 
+            Heading four
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            Plain text with 
+            *
+            <strong>
+              bold
+            </strong>
+            *
+            , 
+            *
+            <strong>
+              bold double
+            </strong>
+            *
+            , 
+            _
+            <em>
+              italic
+            </em>
+            _
+            , 
+            ~
+            <del>
+              strike
+            </del>
+            ~
+            , 
+            ~
+            <del>
+              strike double
+            </del>
+            ~
+            , 
+            \`
+            <code
+              class="code-colors inline"
+            >
+              inline code
+            </code>
+            \`
+            , 
+            ||
+            <span
+              style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
+            >
+              inline spoiler
+            </span>
+            ||
+             and an escaped *asterisk*.
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            Mentions 
+            <span
+              class="rcx-message__highlight rcx-message__highlight--other"
+            >
+              @
+              rocket.cat
+            </span>
+             and 
+            <span
+              class="rcx-message__highlight rcx-message__highlight--link"
+            >
+              #
+              general
+            </span>
+            , emoji 
+            :smile:
+             and 
+            😀
+            .
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            Links 
+            <a
+              href="https://rocket.chat/"
+              rel="noopener noreferrer"
+              style="color: var(--rcx-color-font-info, #095ad2); text-decoration: underline;"
+            >
+              [markdown link](https://rocket.chat)
+            </a>
+            , 
+            <a
+              href="https://rocket.chat/"
+              rel="noopener noreferrer"
+              style="color: var(--rcx-color-font-info, #095ad2); text-decoration: underline;"
+            >
+              [angle bracket link](https://rocket.chat)
+            </a>
+            , bare 
+            <a
+              href="https://rocket.chat/"
+              rel="noopener noreferrer"
+              style="color: var(--rcx-color-font-info, #095ad2); text-decoration: underline;"
+            >
+              https://rocket.chat
+            </a>
+            , 
+            <a
+              href="mailto:support@rocket.chat"
+              rel="noopener noreferrer"
+              style="color: var(--rcx-color-font-info, #095ad2); text-decoration: underline;"
+            >
+              support@rocket.chat
+            </a>
+            , 
+            <a
+              href="tel:15551234567"
+              rel="noopener noreferrer"
+              style="color: var(--rcx-color-font-info, #095ad2); text-decoration: underline;"
+            >
+              [+15551234567](tel:15551234567)
+            </a>
+             and 
+            ![alt text](https://rocket.chat/logo.png)
+            .
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            Timestamp 
+            &lt;t:1700000000:F&gt;
+            , escaped &lt;t:1700000000:F&gt; and color:#ff0000.
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span
+            style="border-inline-start: 2px solid var(--rcx-color-stroke-light, #ccc); padding-inline-start: 8px; color: var(--rcx-color-font-secondary-info, #666);"
+          >
+            <span>
+              &gt; 
+              Quote line one
+              
+
+            </span>
+            <span>
+              &gt; 
+              Quote line two
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          <span
+            style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
+          >
+            <span>
+              Spoiler block line one
+              
+
+            </span>
+            <span>
+              Spoiler block line two
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                - 
+              </span>
+              Hyphen list item
+              
+
+            </span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                - 
+              </span>
+              Second hyphen item
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                - 
+              </span>
+              Asterisk list item
+              
+
+            </span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                - 
+              </span>
+              Second asterisk item
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                1. 
+              </span>
+              Ordered item one
+              
+
+            </span>
+            <span>
+              <span
+                style="font-weight: 700; padding-inline-start: 0.5rem;"
+              >
+                2. 
+              </span>
+              Ordered item two
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          <span>
+            <span>
+              - [x] 
+              Completed task
+              
+
+            </span>
+            <span>
+              - [ ] 
+              Pending task
+              
+
+            </span>
+          </span>
+          <span>
+            
+
+          </span>
+          | Column A | Column B |
+| --- | ---: |
+| cell one | cell two |
+
+          <span>
+            
+
+          </span>
+          ---
+
+          <span>
+            
+
+          </span>
+          <code
+            class="code-colors"
+            style="display: inline-block; width: 100%; vertical-align: top;"
+          >
+            \`\`\`js
+const fenced = 'code block';
+\`\`\`
+          </code>
+        </span>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pfnuo2"
+      >
+        <div
+          aria-label="Message actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="toolbar"
+        >
+          <button
+            aria-label="Emoji"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
+          />
+          <button
+            aria-label="Bold"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Italic"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Strikethrough"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Inline code"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Multi line code"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+            >
+              ⁅
+            </i>
+          </button>
+          <button
+            aria-label="Bulleted list"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-list-bullets rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Numbered list"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-list-numbers rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Link"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="KaTeX"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="group"
+        >
+          <button
+            aria-label="Send"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
+            >
+              〈
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

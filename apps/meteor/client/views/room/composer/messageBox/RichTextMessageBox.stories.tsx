@@ -61,7 +61,18 @@ const markdownSample = [
 	'```',
 ].join('\n');
 
-const toolbarIcons = ['emoji', 'bold', 'italic', 'strike', 'code', 'multiline', 'list-bullets', 'list-numbers', 'link', 'katex'] as const;
+// Labels mirror `formattingButtons` so the toolbar is as accessible here as it is in MessageBoxBase.
+const formatters = [
+	{ icon: 'bold', label: 'Bold' },
+	{ icon: 'italic', label: 'Italic' },
+	{ icon: 'strike', label: 'Strikethrough' },
+	{ icon: 'code', label: 'Inline code' },
+	{ icon: 'multiline', label: 'Multi line code' },
+	{ icon: 'list-bullets', label: 'Bulleted list' },
+	{ icon: 'list-numbers', label: 'Numbered list' },
+	{ icon: 'link', label: 'Link' },
+	{ icon: 'katex', label: 'KaTeX' },
+] as const;
 
 type RealTimeComposerProps = {
 	source: string;
@@ -77,10 +88,10 @@ const RealTimeComposer = ({ source, placeholder }: RealTimeComposerProps) => (
 		</ComposerMarkupContext.Provider>
 		<MessageComposerToolbar>
 			<MessageComposerToolbarActions aria-label='Message actions'>
-				<MessageComposerAction icon='emoji' />
+				<MessageComposerAction aria-label='Emoji' icon='emoji' />
 				<MessageComposerActionsDivider />
-				{toolbarIcons.slice(1).map((icon) => (
-					<MessageComposerAction key={icon} icon={icon} />
+				{formatters.map(({ icon, label }) => (
+					<MessageComposerAction key={icon} aria-label={label} icon={icon} />
 				))}
 			</MessageComposerToolbarActions>
 			<MessageComposerToolbarSubmit>
