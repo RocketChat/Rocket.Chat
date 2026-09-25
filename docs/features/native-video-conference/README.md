@@ -62,7 +62,6 @@ All settings live in `apps/meteor/ee/server/settings/video-conference.ts`, under
 | Setting                        | Type            | Default       | Purpose                                                  |
 | ------------------------------ | --------------- | ------------- | -------------------------------------------------------- |
 | `VideoConf_LiveKit_Enabled`    | boolean         | `false`       | Master toggle. Gates the embedded provider registration. |
-| `VideoConf_LiveKit_Mode`       | select          | `self_hosted` | Doc hint (`self_hosted` / `cloud`). No runtime effect.   |
 | `VideoConf_LiveKit_Url`        | string          | —             | Full `wss://` URL the client connects to.                |
 | `VideoConf_LiveKit_Api_Key`    | string (secret) | —             | LK API key. Mints participant tokens + Twirp calls.      |
 | `VideoConf_LiveKit_Api_Secret` | password        | —             | Paired with the key.                                     |

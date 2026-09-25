@@ -68,17 +68,6 @@ export function addSettings(): Promise<void> {
 
 					const livekitEnabled = { _id: 'VideoConf_LiveKit_Enabled', value: true };
 
-					await this.add('VideoConf_LiveKit_Mode', 'self_hosted', {
-						type: 'select',
-						values: [
-							{ key: 'self_hosted', i18nLabel: 'Self_hosted' },
-							{ key: 'cloud', i18nLabel: 'LiveKit_Cloud' },
-						],
-						public: true,
-						invalidValue: 'self_hosted',
-						enableQuery: [livekitEnabled],
-					});
-
 					await this.add('VideoConf_LiveKit_Url', '', {
 						type: 'string',
 						public: true,

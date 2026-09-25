@@ -159,7 +159,6 @@ services:
 
       # --- LiveKit connection ---
       OVERWRITE_SETTING_VideoConf_LiveKit_Enabled: "true"
-      OVERWRITE_SETTING_VideoConf_LiveKit_Mode: self_hosted
       OVERWRITE_SETTING_VideoConf_LiveKit_Url: wss://livekit.example.com
       OVERWRITE_SETTING_VideoConf_LiveKit_Api_Key: APIKeyGoesHere
       OVERWRITE_SETTING_VideoConf_LiveKit_Api_Secret: SecretGoesHere
@@ -360,12 +359,10 @@ instead of any other installed provider.
 | Setting | Key | Type | Default |
 |---|---|---|---|
 | **LiveKit Enabled** | `VideoConf_LiveKit_Enabled` | boolean | `false` |
-| **Mode** | `VideoConf_LiveKit_Mode` | select | `self_hosted` |
 | **LiveKit URL** | `VideoConf_LiveKit_Url` | string | — |
 | **API Key** | `VideoConf_LiveKit_Api_Key` | string (secret) | — |
 | **API Secret** | `VideoConf_LiveKit_Api_Secret` | password | — |
 
-**Mode** is informational only — `self_hosted` and `cloud` behave identically at runtime.
 The provider registers itself automatically once all four fields (enabled + URL + key + secret)
 are filled.
 
@@ -402,7 +399,6 @@ Every setting can be forced via `OVERWRITE_SETTING_<key>`:
 ```bash
 OVERWRITE_SETTING_VideoConf_Default_Provider=livekit
 OVERWRITE_SETTING_VideoConf_LiveKit_Enabled=true
-OVERWRITE_SETTING_VideoConf_LiveKit_Mode=self_hosted
 OVERWRITE_SETTING_VideoConf_LiveKit_Url=wss://livekit.example.com
 OVERWRITE_SETTING_VideoConf_LiveKit_Api_Key=APIKeyGoesHere
 OVERWRITE_SETTING_VideoConf_LiveKit_Api_Secret=SecretGoesHere
