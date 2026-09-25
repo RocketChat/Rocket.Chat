@@ -44,12 +44,19 @@ ee/packages/xmpp-server/src/muc/MucRoom.spec.ts
   s_bad883804e82a0::t_cdb21c33e5ddd7 1-29,34-69,73-86,93-102,109-111
 ee/packages/xmpp-server/src/service/XMPPServerService.ts
   s_bad883804e82a0::t_23d09c74ffd428 115-142,144,146-147,150,153-168,242-319
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 7489-7490
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.6.21",
   "base_commit_sha": "f812da5d2ddaf1660c697b263533a91261f36c57",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_bad883804e82a0": {
       "agent_id": {
