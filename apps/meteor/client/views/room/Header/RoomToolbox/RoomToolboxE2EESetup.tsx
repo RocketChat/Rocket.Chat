@@ -11,7 +11,10 @@ export type RoomToolboxE2EESetupProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 
+// Calls a static list of hooks through a callback, which React Compiler would memoize into one call; `'use no memo'` opts it out.
 const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
+	'use no memo';
+
 	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
 

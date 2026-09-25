@@ -1,6 +1,8 @@
+import { create } from 'zustand';
+
 export function createMockGlobalStore(records: any[]) {
 	return {
-		use: (selector: any) => selector(records),
+		use: create(() => records),
 		get state() {
 			return records;
 		},

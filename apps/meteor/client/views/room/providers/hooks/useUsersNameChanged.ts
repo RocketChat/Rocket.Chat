@@ -2,12 +2,13 @@ import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useStore } from 'zustand';
 
 import { Messages, Subscriptions } from '../../../../stores';
 
 export const useUsersNameChanged = () => {
 	const notify = useStream('notify-logged');
-	const updateMessages = Messages.use((state) => state.update);
+	const updateMessages = useStore(Messages.use, (state) => state.update);
 	useEffect(() => {
 		return notify('Users:NameChanged', ({ _id, name, username }) => {
 			updateMessages(

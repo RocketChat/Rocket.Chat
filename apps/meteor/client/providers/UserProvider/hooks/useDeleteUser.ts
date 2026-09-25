@@ -1,5 +1,6 @@
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useStore } from 'zustand';
 
 import { Messages } from '../../../stores';
 
@@ -8,8 +9,8 @@ export const useDeleteUser = () => {
 
 	const uid = useUserId();
 
-	const updateMessages = Messages.use((state) => state.update);
-	const removeMessages = Messages.use((state) => state.remove);
+	const updateMessages = useStore(Messages.use, (state) => state.update);
+	const removeMessages = useStore(Messages.use, (state) => state.remove);
 
 	useEffect(() => {
 		if (!uid) {

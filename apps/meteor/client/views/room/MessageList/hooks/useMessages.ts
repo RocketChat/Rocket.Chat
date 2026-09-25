@@ -3,6 +3,7 @@ import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
 
 import { Messages } from '../../../../stores';
@@ -36,5 +37,8 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 		[rid, hideSysMessages, showThreadsInMainChannel],
 	);
 
-	return Messages.use(useShallow((state) => state.filter(predicate).sort((a, b) => a.ts.getTime() - b.ts.getTime())));
+	return useStore(
+		Messages.use,
+		useShallow((state) => state.filter(predicate).sort((a, b) => a.ts.getTime() - b.ts.getTime())),
+	);
 };

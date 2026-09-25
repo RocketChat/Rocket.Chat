@@ -30,10 +30,13 @@ import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
 
+// Calls a static list of hooks through a callback, which React Compiler would memoize into one call; `'use no memo'` opts it out.
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
 	actionDefault: (actionId: string) => void;
 } => {
+	'use no memo';
+
 	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
 	const router = useRouter();

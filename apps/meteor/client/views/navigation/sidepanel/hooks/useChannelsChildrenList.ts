@@ -1,4 +1,5 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
 
 import { pipe } from '../../../../lib/cachedStores/pipe';
@@ -39,7 +40,8 @@ const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean
 };
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
-	return Subscriptions.use(
+	return useStore(
+		Subscriptions.use,
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
 				if (parentRid === subscription.prid || parentRid === subscription.rid) {
