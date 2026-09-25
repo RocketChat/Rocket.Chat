@@ -4187,6 +4187,52 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				const res = await createGroup({ clearance: ['secret'] }).expect(400);
 				expect(res.body).to.have.property('errorType', 'error-abac-decision-unavailable');
 			});
+
+			describe('membership preview', () => {
+				const preview = (attributes: Record<string, string[]> = { clearance: ['secret'] }) =>
+					request.post(`${v1}/abac/membership-preview`).set(creatorV.creds).send({ members: [], attributes });
+
+				it('reports the creator as compliant on PERMIT', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview().expect(200);
+					expect(res.body.compliant.map(({ _id }: IUser) => _id)).to.deep.equal([creatorV.user._id]);
+					expect(res.body.creator).to.equal('compliant');
+				});
+
+				it('refuses a value the creator is not entitled to, as creation does', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+					const res = await preview({ clearance: ['topsecret'] }).expect(400);
+					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
+				});
+
+				it('reports an unanswered decision as inconclusive, not compliant', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview().expect(200);
+					expect(res.body.compliant).to.deep.equal([]);
+					expect(res.body.inconclusive.map(({ _id }: IUser) => _id)).to.deep.equal([creatorV.user._id]);
+					expect(res.body.creator).to.equal('inconclusive');
+				});
+
+				it('says decisions are unavailable when Virtru is unreachable', async () => {
+					await mockServerReset();
+					await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+					const res = await preview().expect(400);
+					expect(res.body).to.have.property('errorType', 'error-abac-decision-unavailable');
+				});
+			});
 		});
 
 		describe('bypass-abac-store-validation permission (spec §4.2)', () => {

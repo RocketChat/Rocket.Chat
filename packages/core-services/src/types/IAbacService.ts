@@ -1,6 +1,7 @@
 import type {
 	IAbacAttributeDefinition,
 	IAbacAttribute,
+	IAbacMembershipPreview,
 	IRoom,
 	IRoomAbacRedaction,
 	IUser,
@@ -17,6 +18,9 @@ export type AbacCreationAttributesDenialReason = 'invalid' | 'not-entitled' | 'u
 export type AbacCreationAttributesResult =
 	| { allowed: true; attributes: IAbacAttributeDefinition[]; bypassed: boolean }
 	| { allowed: false; reason: AbacCreationAttributesDenialReason; code: string; key?: string; attributes?: IAbacAttributeDefinition[] };
+
+export type AbacMembershipPreviewResult =
+	{ allowed: true; preview: IAbacMembershipPreview } | Extract<AbacCreationAttributesResult, { allowed: false }>;
 
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
@@ -46,6 +50,11 @@ export interface IAbacService {
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	validateCreationAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<AbacCreationAttributesResult>;
 	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
+	previewCreationMembers(
+		usernames: string[],
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+	): Promise<AbacMembershipPreviewResult>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
