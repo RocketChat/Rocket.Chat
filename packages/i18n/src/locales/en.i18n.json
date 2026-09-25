@@ -7282,6 +7282,7 @@
   "VideoConf_Enable_Persistent_Chat_description": "When persistent chat is enabled, Rocket.Chat will create a discussion every time a conference call is initiated. The provider app is responsible for sending the chat messages to this discussion.",
   "VideoConf_Enable_Teams": "Enable in teams",
   "VideoConf_LiveKit": "LiveKit",
+  "VideoConf_LiveKit_Alpha_Alert": "LiveKit is currently in alpha. Its capabilities and configuration may evolve as we gather feedback.",
   "VideoConf_LiveKit_Api_Key": "API Key",
   "VideoConf_LiveKit_Api_Secret": "API Secret",
   "VideoConf_LiveKit_Enabled": "LiveKit Enabled",
