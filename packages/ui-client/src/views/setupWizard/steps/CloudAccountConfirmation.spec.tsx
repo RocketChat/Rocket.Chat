@@ -1,6 +1,6 @@
 import type { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { act, render } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { ContextType, ReactNode } from 'react';
 import { useContext } from 'react';
 
@@ -8,7 +8,7 @@ import CloudAccountConfirmation from './CloudAccountConfirmation';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 
 jest.mock('@rocket.chat/onboarding-ui', () => ({
-	AwaitingConfirmationPage: () => null,
+	AwaitingConfirmationPage: ({ description }: { description?: ReactNode }) => <>{description}</>,
 }));
 
 const POLL_INTERVAL_SECONDS = 5;
@@ -34,49 +34,52 @@ const confirmedPollData: CloudConfirmationPollData = {
 	},
 };
 
-const WithWizard = ({ overrides, children }: { overrides: Partial<ContextType<typeof SetupWizardContext>>; children: ReactNode }) => {
-	const defaults = useContext(SetupWizardContext);
+const pendingPollData: CloudConfirmationPollData = { successful: false, payload: confirmedPollData.payload };
 
-	return (
-		<SetupWizardContext.Provider
-			value={{
-				...defaults,
-				setupWizardData: {
-					...defaults.setupWizardData,
-					registrationData: {
-						device_code: 'device-code',
-						user_code: 'USER-CODE',
-						cloudEmail: 'admin@example.com',
-						interval: POLL_INTERVAL_SECONDS,
-					},
-				},
-				...overrides,
-			}}
-		>
-			{children}
-		</SetupWizardContext.Provider>
-	);
+type WizardProps = {
+	deviceCode: string;
+	completeCloudRegistration: () => Promise<void>;
+};
+
+const WithWizard = ({ deviceCode, completeCloudRegistration, children }: WizardProps & { children: ReactNode }) => {
+	const defaults = useContext(SetupWizardContext);
+	const value: ContextType<typeof SetupWizardContext> = {
+		...defaults,
+		setupWizardData: {
+			...defaults.setupWizardData,
+			registrationData: {
+				device_code: deviceCode,
+				user_code: 'USER-CODE',
+				cloudEmail: 'admin@example.com',
+				interval: POLL_INTERVAL_SECONDS,
+			},
+		},
+		completeCloudRegistration,
+	};
+
+	return <SetupWizardContext.Provider value={value}>{children}</SetupWizardContext.Provider>;
 };
 
 const renderStep = ({
 	completeCloudRegistration,
+	poll = jest.fn(async () => ({ pollData: confirmedPollData })),
 	toast = jest.fn(),
 }: {
 	completeCloudRegistration: () => Promise<void>;
+	poll?: jest.Mock;
 	toast?: jest.Mock;
 }) => {
-	const poll = jest.fn(async () => ({ pollData: confirmedPollData }));
-
-	render(
-		<WithWizard overrides={{ completeCloudRegistration }}>
+	const view = (deviceCode: string) => (
+		<WithWizard deviceCode={deviceCode} completeCloudRegistration={completeCloudRegistration}>
 			<CloudAccountConfirmation />
-		</WithWizard>,
-		{
-			wrapper: mockAppRoot().withToastMessageDispatch(toast).withEndpoint('GET', '/v1/cloud.confirmationPoll', poll).build(),
-		},
+		</WithWizard>
 	);
 
-	return { poll, toast };
+	const { rerender } = render(view('device-code'), {
+		wrapper: mockAppRoot().withToastMessageDispatch(toast).withEndpoint('GET', '/v1/cloud.confirmationPoll', poll).build(),
+	});
+
+	return { poll, toast, resendEmail: (deviceCode: string) => rerender(view(deviceCode)) };
 };
 
 const waitForPollTicks = (ticks: number) =>
@@ -93,7 +96,22 @@ describe('CloudAccountConfirmation', () => {
 		jest.useRealTimers();
 	});
 
-	it('does not poll again or re-run the completion while a confirmed registration is still being completed', async () => {
+	it('keeps polling until the registration is confirmed', async () => {
+		const completeCloudRegistration = jest.fn(async () => undefined);
+		const poll = jest
+			.fn()
+			.mockResolvedValueOnce({ pollData: pendingPollData })
+			.mockResolvedValueOnce({ pollData: pendingPollData })
+			.mockResolvedValue({ pollData: confirmedPollData });
+		renderStep({ completeCloudRegistration, poll });
+
+		await waitForPollTicks(5);
+
+		expect(poll).toHaveBeenCalledTimes(3);
+		expect(completeCloudRegistration).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops polling once the registration is confirmed, while the completion is still pending', async () => {
 		const completeCloudRegistration = jest.fn(() => new Promise<void>(() => undefined));
 		const { poll } = renderStep({ completeCloudRegistration });
 
@@ -103,20 +121,47 @@ describe('CloudAccountConfirmation', () => {
 		expect(completeCloudRegistration).toHaveBeenCalledTimes(1);
 	});
 
-	it('reports a failed completion and tries again on the next poll', async () => {
+	it('does not retry a failed completion on its own', async () => {
+		const completeCloudRegistration = jest.fn<Promise<void>, []>().mockRejectedValue(new Error('two-factor confirmation cancelled'));
+		const { poll, toast } = renderStep({ completeCloudRegistration });
+
+		await waitForPollTicks(4);
+
+		expect(poll).toHaveBeenCalledTimes(1);
+		expect(completeCloudRegistration).toHaveBeenCalledTimes(1);
+		expect(toast).toHaveBeenCalledWith({ type: 'error', message: new Error('two-factor confirmation cancelled') });
+		expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+	});
+
+	it('retries a failed completion when the user asks to', async () => {
 		const completeCloudRegistration = jest
 			.fn<Promise<void>, []>()
 			.mockRejectedValueOnce(new Error('two-factor confirmation cancelled'))
 			.mockResolvedValue(undefined);
-		const { poll, toast } = renderStep({ completeCloudRegistration });
+		renderStep({ completeCloudRegistration });
 
 		await waitForPollTicks(1);
 
-		expect(toast).toHaveBeenCalledWith({ type: 'error', message: new Error('two-factor confirmation cancelled') });
+		fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(0);
+		});
 
+		expect(completeCloudRegistration).toHaveBeenCalledTimes(2);
+		expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
+	});
+
+	it('polls again for the new code after the confirmation email is resent', async () => {
+		const completeCloudRegistration = jest.fn(() => new Promise<void>(() => undefined));
+		const { poll, resendEmail } = renderStep({ completeCloudRegistration });
+
+		await waitForPollTicks(2);
+		expect(poll).toHaveBeenCalledTimes(1);
+
+		resendEmail('new-device-code');
 		await waitForPollTicks(1);
 
 		expect(poll).toHaveBeenCalledTimes(2);
-		expect(completeCloudRegistration).toHaveBeenCalledTimes(2);
+		expect(poll).toHaveBeenLastCalledWith({ deviceCode: 'new-device-code' });
 	});
 });

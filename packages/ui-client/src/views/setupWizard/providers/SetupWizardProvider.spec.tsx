@@ -15,6 +15,15 @@ const WithSettingsDispatch = ({ dispatch, children }: { dispatch: SettingsContex
 	return <SettingsContext.Provider value={{ ...settings, dispatch }}>{children}</SettingsContext.Provider>;
 };
 
+const deferred = () => {
+	let resolve!: () => void;
+	const promise = new Promise<void>((settle) => {
+		resolve = settle;
+	});
+
+	return { promise, resolve };
+};
+
 const renderProvider = ({ dispatch, toast = jest.fn() }: { dispatch: SettingsContextValue['dispatch']; toast?: jest.Mock }) => {
 	let wizard: ContextType<typeof SetupWizardContext> | undefined;
 
@@ -47,10 +56,21 @@ const renderProvider = ({ dispatch, toast = jest.fn() }: { dispatch: SettingsCon
 describe('SetupWizardProvider', () => {
 	describe('completeCloudRegistration', () => {
 		it('saves the workspace data and completes the wizard in a single settings request', async () => {
-			const dispatch = jest.fn<Promise<void>, Parameters<SettingsContextValue['dispatch']>>(async () => undefined);
+			const request = deferred();
+			const dispatch = jest.fn<Promise<void>, Parameters<SettingsContextValue['dispatch']>>(() => request.promise);
 			const { wizard, toast } = renderProvider({ dispatch });
 
-			await act(() => wizard.completeCloudRegistration());
+			let completion: Promise<void> | undefined;
+			act(() => {
+				completion = wizard.completeCloudRegistration();
+			});
+
+			expect(toast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+
+			await act(async () => {
+				request.resolve();
+				await completion;
+			});
 
 			expect(dispatch).toHaveBeenCalledTimes(1);
 			expect(dispatch.mock.calls[0][0]).toEqual(
@@ -76,12 +96,23 @@ describe('SetupWizardProvider', () => {
 
 	describe('completeSetupWizard', () => {
 		it('reports success only after the wizard is marked as completed', async () => {
-			const dispatch = jest.fn<Promise<void>, Parameters<SettingsContextValue['dispatch']>>(async () => undefined);
+			const request = deferred();
+			const dispatch = jest.fn<Promise<void>, Parameters<SettingsContextValue['dispatch']>>(() => request.promise);
 			const { wizard, toast } = renderProvider({ dispatch });
 
-			await act(() => wizard.completeSetupWizard());
+			let completion: Promise<void> | undefined;
+			act(() => {
+				completion = wizard.completeSetupWizard();
+			});
 
 			expect(dispatch).toHaveBeenCalledWith([{ _id: 'Show_Setup_Wizard', value: 'completed' }]);
+			expect(toast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
+
+			await act(async () => {
+				request.resolve();
+				await completion;
+			});
+
 			expect(toast).toHaveBeenCalledWith(expect.objectContaining({ type: 'success' }));
 		});
 

@@ -1,6 +1,8 @@
+import { Button, Callout } from '@rocket.chat/fuselage';
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useEffect, useCallback, useRef } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
@@ -18,35 +20,47 @@ const CloudAccountConfirmation = () => {
 	} = useSetupWizardContext();
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { i18n } = useTranslation();
-	const isConfirming = useRef(false);
+	const { t, i18n } = useTranslation();
+	const isPolling = useRef(false);
+	const [confirmedDeviceCode, setConfirmedDeviceCode] = useState<string>();
+
+	const deviceCode = registrationData.device_code;
+	const isConfirmed = !!deviceCode && confirmedDeviceCode === deviceCode;
+
+	const { mutate: complete, isError: hasCompletionFailed } = useMutation({
+		mutationFn: completeCloudRegistration,
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
 
 	const getConfirmation = useCallback(async () => {
-		if (isConfirming.current || !registrationData.device_code) {
+		if (isPolling.current || !deviceCode) {
 			return;
 		}
 
-		isConfirming.current = true;
+		isPolling.current = true;
 		try {
-			const { pollData } = await cloudConfirmationPoll({
-				deviceCode: registrationData.device_code,
-			});
+			const { pollData } = await cloudConfirmationPoll({ deviceCode });
 
 			if ('successful' in pollData && pollData.successful) {
-				await completeCloudRegistration();
+				setConfirmedDeviceCode(deviceCode);
+				complete();
 			}
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			isConfirming.current = false;
+			isPolling.current = false;
 		}
-	}, [cloudConfirmationPoll, registrationData.device_code, completeCloudRegistration, dispatchToastMessage]);
+	}, [cloudConfirmationPoll, deviceCode, complete, dispatchToastMessage]);
 
 	useEffect(() => {
+		if (isConfirmed) {
+			return;
+		}
+
 		const pollInterval = setInterval(() => getConfirmation(), setIntervalTime(registrationData.interval));
 
 		return (): void => clearInterval(pollInterval);
-	}, [getConfirmation, registrationData.interval]);
+	}, [getConfirmation, isConfirmed, registrationData.interval]);
 
 	return (
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
@@ -55,6 +69,19 @@ const CloudAccountConfirmation = () => {
 				stepCount={maxSteps}
 				emailAddress={registrationData.cloudEmail}
 				securityCode={registrationData.user_code}
+				description={
+					hasCompletionFailed && (
+						<Callout
+							type='danger'
+							title={t('Something_went_wrong')}
+							actions={
+								<Button small onClick={() => complete()}>
+									{t('Retry')}
+								</Button>
+							}
+						/>
+					)
+				}
 				onResendEmailRequest={(): Promise<void> => registerServer({ email: registrationData.cloudEmail, resend: true })}
 				onChangeEmailRequest={(): void => goToStep(3)}
 			/>
