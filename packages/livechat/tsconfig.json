@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
+		"types": ["webpack-env"],
 		"module": "CommonJS",
 		"outDir": "./dist",
 		"allowJs": true,
