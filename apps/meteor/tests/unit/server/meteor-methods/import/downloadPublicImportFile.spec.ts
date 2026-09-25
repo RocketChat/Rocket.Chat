@@ -75,9 +75,7 @@ describe('executeDownloadPublicImportFile', () => {
 	});
 
 	it('rejects local filesystem paths before creating an import', async () => {
-		await expect(executeDownloadPublicImportFile('user-id', '/tmp/import.zip', 'csv')).to.be.rejectedWith(
-			'error-invalid-import-file-url',
-		);
+		await expect(executeDownloadPublicImportFile('user-id', '/tmp/import.zip', 'csv')).to.be.rejectedWith('error-invalid-import-file-url');
 
 		expect(stubs.newOperation.called).to.be.false;
 		expect(stubs.createWriteStream.called).to.be.false;
