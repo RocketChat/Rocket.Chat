@@ -91,8 +91,10 @@ const UserAndRoomAutoCompleteMultiple = ({
 			return [...acc, toOption(room)];
 		}, []);
 
+		if (!selectedIds.length) return searchOptions;
+
 		return [...searchOptions, ...selectedRooms.map(toOption)];
-	}, [allowReadOnly, excludeTypes, limit, rooms, selectedRooms, user]);
+	}, [allowReadOnly, excludeTypes, limit, rooms, selectedIds, selectedRooms, user]);
 
 	return (
 		<AutoComplete
