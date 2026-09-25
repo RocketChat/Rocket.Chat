@@ -1,23 +1,19 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
+import { type LocationPathname, UserContext, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
-import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { ltrim, rtrim } from '../../../../lib/utils/stringUtils';
 import { AccountBox } from '../../../lib/AccountBox';
 import { baseURI } from '../../../lib/baseURI';
-import { loginServices } from '../../../lib/loginServices';
 import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
-import { settings } from '../../../lib/settings';
 import { router } from '../../../providers/RouterProvider';
 
 export const useIframeCommands = () => {
 	const iframeReceiveEnabled = useSetting('Iframe_Integration_receive_enable');
 	const iframeReceiveOrigin = useSetting('Iframe_Integration_receive_origin', '*');
 	const loginWithToken = useLoginWithToken();
-	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
-	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -50,45 +46,16 @@ export const useIframeCommands = () => {
 				AccountBox.setStatus(data.status);
 			},
 
-			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
-				if (enableModernOAuthFlow) {
-					const url = new URL(window.location.href);
-					const queryParams = url.searchParams;
-					const loginClient = queryParams.get('loginClient');
+			'call-custom-oauth-login'(data: { service: string }) {
+				const loginClient = new URL(window.location.href).searchParams.get('loginClient');
 
-					const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
+				const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
 
-					if (loginClient) {
-						redirectUrl.searchParams.set('loginClient', loginClient);
-					}
-
-					window.location.href = redirectUrl.toString();
-					return;
+				if (loginClient) {
+					redirectUrl.searchParams.set('loginClient', loginClient);
 				}
 
-				const customOAuthCallback = (response: unknown) => {
-					event.source?.postMessage(
-						{
-							event: 'custom-oauth-callback',
-							response,
-						},
-						{ targetOrigin: event.origin },
-					);
-				};
-
-				const siteUrl = `${settings.peek('Site_Url') ?? ''}/`;
-				if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
-					data.redirectUrl = null;
-				}
-
-				if (window.ServiceConfiguration) {
-					const customOauth = loginServices.getLoginService(data.service);
-
-					if (customOauth) {
-						const customRedirectUri = data.redirectUrl || siteUrl;
-						loginWithCustomOauth(capitalize(customOauth.service, true), { redirectUrl: customRedirectUri }, customOAuthCallback);
-					}
-				}
+				window.location.href = redirectUrl.toString();
 			},
 
 			'login-with-token'(data: { token: string }) {
@@ -133,5 +100,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableModernOAuthFlow]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, logout]);
 };

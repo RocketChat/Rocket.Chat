@@ -1,4 +1,4 @@
-import { MockedServerContext, MockedSettingsContext, MockedUserContext } from '@rocket.chat/mock-providers';
+import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
 import { Meteor } from 'meteor/meteor';
 
@@ -24,13 +24,11 @@ it('should redirect to /home', async () => {
 	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
-			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-				<MockedUserContext>
-					<RouterContextMock navigate={navigateStub}>
-						<SAMLLoginRoute />
-					</RouterContextMock>
-				</MockedUserContext>
-			</MockedSettingsContext>
+			<MockedUserContext>
+				<RouterContextMock navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedUserContext>
 		</MockedServerContext>,
 	);
 
@@ -42,11 +40,9 @@ it('should redirect to /home when userId is null and the stored invite token is 
 	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
-			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
-			</MockedSettingsContext>
+			<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+				<SAMLLoginRoute />
+			</RouterContextMock>
 		</MockedServerContext>,
 	);
 
@@ -58,11 +54,9 @@ it('should redirect to the invite page with the stored invite token when it is v
 	mockUseSamlInviteToken.mockReturnValue(['test', () => ({})]);
 	render(
 		<MockedServerContext>
-			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-				<RouterContextMock navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
-			</MockedSettingsContext>
+			<RouterContextMock navigate={navigateStub}>
+				<SAMLLoginRoute />
+			</RouterContextMock>
 		</MockedServerContext>,
 	);
 
@@ -73,11 +67,9 @@ it('should redirect to the invite page with the stored invite token when it is v
 it('should call loginWithSamlToken when component is mounted', async () => {
 	render(
 		<MockedServerContext>
-			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-				<RouterContextMock navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
-			</MockedSettingsContext>
+			<RouterContextMock navigate={navigateStub}>
+				<SAMLLoginRoute />
+			</RouterContextMock>
 		</MockedServerContext>,
 	);
 
@@ -88,11 +80,9 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 it('should call loginWithSamlToken with the token when it is present', async () => {
 	render(
 		<MockedUserContext>
-			<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-				<RouterContextMock routeParameters={{ token: 'testToken' }} navigate={navigateStub}>
-					<SAMLLoginRoute />
-				</RouterContextMock>
-			</MockedSettingsContext>
+			<RouterContextMock routeParameters={{ token: 'testToken' }} navigate={navigateStub}>
+				<SAMLLoginRoute />
+			</RouterContextMock>
 		</MockedUserContext>,
 	);
 
@@ -119,11 +109,9 @@ describe('native client handoff', () => {
 	it.each(['mobile', 'desktop'])('should hand the credential token to the %s client without logging in', async (loginClient) => {
 		render(
 			<MockedServerContext>
-				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient }} navigate={navigateStub}>
-						<SAMLLoginRoute />
-					</RouterContextMock>
-				</MockedSettingsContext>
+				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
 			</MockedServerContext>,
 		);
 
@@ -139,26 +127,9 @@ describe('native client handoff', () => {
 	it('should log in normally for an unrecognized loginClient', async () => {
 		render(
 			<MockedServerContext>
-				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: true }}>
-					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
-						<SAMLLoginRoute />
-					</RouterContextMock>
-				</MockedSettingsContext>
-			</MockedServerContext>,
-		);
-
-		expect(buildSamlDeepLinkURL).not.toHaveBeenCalled();
-		expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
-	});
-
-	it('should ignore loginClient and log in normally when the modern flow is disabled', async () => {
-		render(
-			<MockedServerContext>
-				<MockedSettingsContext settings={{ Accounts_OAuth_Use_Modern_Flow: false }}>
-					<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'desktop' }} navigate={navigateStub}>
-						<SAMLLoginRoute />
-					</RouterContextMock>
-				</MockedSettingsContext>
+				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
 			</MockedServerContext>,
 		);
 

@@ -1,3 +1,5 @@
+import { createPrivateKey } from 'node:crypto';
+
 import { MeteorError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import express from 'express';
@@ -7,16 +9,13 @@ import passport from 'passport';
 import { Strategy as AppleStrategy } from 'passport-apple';
 import type { Profile } from 'passport-apple';
 
-import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { handleIdentityToken } from './handleIdentityToken';
-import { config } from '../../../../app/apple/lib/config';
 import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
+import { SystemLogger } from '../../logger/system';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from '../../oauth/passportOAuthCallback';
 import { removeOAuthRoutes } from '../../oauth/removeOAuthRoutes';
-
-new AppleCustomOAuth('apple', config);
 
 type RequestWithAppleProfile = {
 	appleProfile?: {
@@ -42,6 +41,30 @@ function isRequestWithAppleProfile(req: object): req is RequestWithAppleProfile 
 	return false;
 }
 
+const isValidPrivateKey = (key: string): boolean => {
+	try {
+		createPrivateKey({ key, format: 'pem' });
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+// Keeps the Apple login service listed whenever Apple login is enabled, so the mobile apps can still sign in natively
+// with an identity token; the web button is only shown once the web flow is fully configured.
+const hideAppleWebButton = () =>
+	ServiceConfiguration.configurations.upsertAsync(
+		{
+			service: 'apple',
+		},
+		{
+			$set: {
+				showButton: false,
+				enabled: settings.get('Accounts_OAuth_Apple'),
+			},
+		},
+	);
+
 settings.watchMultiple(
 	[
 		'Accounts_OAuth_Apple',
@@ -49,15 +72,10 @@ settings.watchMultiple(
 		'Accounts_OAuth_Apple_secretKey',
 		'Accounts_OAuth_Apple_iss',
 		'Accounts_OAuth_Apple_kid',
-		'Accounts_OAuth_Use_Modern_Flow',
 	],
-	async ([enabled, clientId, serverSecret, iss, kid, useModernFlow]) => {
+	async ([enabled, clientId, serverSecret, iss, kid]) => {
 		passport.unuse('apple');
 		removeOAuthRoutes('apple');
-
-		if (!useModernFlow) {
-			return;
-		}
 
 		if (!enabled) {
 			return ServiceConfiguration.configurations.removeAsync({
@@ -65,26 +83,21 @@ settings.watchMultiple(
 			});
 		}
 
-		// if everything is empty but Apple login is enabled, don't show the login button
-		if (!clientId && !serverSecret && !iss && !kid) {
-			await ServiceConfiguration.configurations.upsertAsync(
-				{
-					service: 'apple',
-				},
-				{
-					$set: {
-						showButton: false,
-						enabled: settings.get('Accounts_OAuth_Apple'),
-					},
-				},
-			);
+		const [normalizedClientId, normalizedServerSecret, normalizedIss, normalizedKid] = [clientId, serverSecret, iss, kid].map((value) =>
+			typeof value === 'string' ? value.trim() : '',
+		);
+
+		if (![normalizedClientId, normalizedServerSecret, normalizedIss, normalizedKid].every(Boolean)) {
+			await hideAppleWebButton();
 			return;
 		}
 
-		if (typeof clientId !== 'string' || !clientId) {
-			return ServiceConfiguration.configurations.removeAsync({
-				service: 'apple',
-			});
+		const privateKeyString = normalizedServerSecret.replace(/\\n/g, '\n');
+
+		if (!isValidPrivateKey(privateKeyString)) {
+			SystemLogger.error({ msg: 'Failed to configure Apple OAuth service: invalid private key' });
+			await hideAppleWebButton();
+			return;
 		}
 
 		passport.use(
@@ -92,10 +105,10 @@ settings.watchMultiple(
 
 			new AppleStrategy(
 				{
-					clientID: clientId,
-					teamID: settings.get<string>('Accounts_OAuth_Apple_iss'),
-					keyID: settings.get<string>('Accounts_OAuth_Apple_kid'),
-					privateKeyString: settings.get<string>('Accounts_OAuth_Apple_secretKey').replace(/\\n/g, '\n'),
+					clientID: normalizedClientId,
+					teamID: normalizedIss,
+					keyID: normalizedKid,
+					privateKeyString,
 					callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/apple`,
 					scope: ['name', 'email'],
 					passReqToCallback: true,
@@ -103,7 +116,7 @@ settings.watchMultiple(
 				},
 				async (req, accessToken: string, refreshToken: string, idToken: string, _profile: Profile, done) => {
 					try {
-						const serviceData = await handleIdentityToken(idToken, clientId);
+						const serviceData = await handleIdentityToken(idToken, normalizedClientId);
 
 						if (isRequestWithAppleProfile(req)) {
 							const appleName = req.appleProfile?.name;
@@ -174,5 +187,21 @@ settings.watchMultiple(
 			.route('/_oauth/apple')
 			.post(...callbackHandler)
 			.get(...callbackHandler);
+
+		await ServiceConfiguration.configurations.upsertAsync(
+			{
+				service: 'apple',
+			},
+			{
+				$set: {
+					showButton: true,
+					enabled: settings.get('Accounts_OAuth_Apple'),
+					loginStyle: 'popup',
+					clientId: normalizedClientId,
+					buttonColor: '#000',
+					buttonLabelColor: '#FFF',
+				},
+			},
+		);
 	},
 );

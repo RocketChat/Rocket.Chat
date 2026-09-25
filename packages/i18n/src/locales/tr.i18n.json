@@ -120,8 +120,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud id",
   "Accounts_OAuth_Nextcloud_secret": "İstemci Gizli Kodu",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud Sunucu URL",
-  "Accounts_OAuth_Proxy_host": "Vekil Sunucu",
-  "Accounts_OAuth_Proxy_services": "Proxy Hizmetleri",
   "Accounts_Password_Policy_AtLeastOneLowercase": "En Az Bir Küçük Harf",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Bir parolanın en az bir küçük harf karakteri içerdiğini zorunlu kılın.",
   "Accounts_Password_Policy_AtLeastOneNumber": "En Az Bir Numarada",

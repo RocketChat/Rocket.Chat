@@ -138,8 +138,6 @@
   "Accounts_OAuth_Nextcloud_id": "ID de Nextcloud",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
   "Accounts_OAuth_Nextcloud_URL": "URL del servidor de Nextcloud",
-  "Accounts_OAuth_Proxy_host": "Host del servidor intermediari (proxy)",
-  "Accounts_OAuth_Proxy_services": "Serveis del servidor intermediari (proxy)",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Almenys un minúscules",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Aplica que una contrasenya contingui al menys un caràcter en minúscula.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Almenys un nombre",

@@ -4,13 +4,6 @@ import { settingsRegistry } from '.';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
-		await this.add('Accounts_OAuth_Use_Modern_Flow', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Accounts_OAuth_Use_Modern_Flow_Label',
-			i18nDescription: 'Accounts_OAuth_Use_Modern_Flow_Description',
-		});
-
 		await this.section('Apple', async function () {
 			await this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
 
@@ -136,15 +129,5 @@ export const createOauthSettings = () =>
 			type: 'string',
 			secret: true,
 			hidden: true,
-		});
-		return this.section('Proxy', async function () {
-			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
-				type: 'string',
-				public: true,
-			});
-			return this.add('Accounts_OAuth_Proxy_services', '', {
-				type: 'string',
-				public: true,
-			});
 		});
 	});

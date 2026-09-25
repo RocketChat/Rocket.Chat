@@ -138,8 +138,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud ID",
   "Accounts_OAuth_Nextcloud_secret": "クライアントシークレット",
   "Accounts_OAuth_Nextcloud_URL": "NextcloudサーバーURL",
-  "Accounts_OAuth_Proxy_host": "プロキシホスト",
-  "Accounts_OAuth_Proxy_services": "プロキシサービス",
   "Accounts_Password_Policy_AtLeastOneLowercase": "少なくとも1文字は小文字が必要",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "パスワードに小文字を1文字以上含めることを強制します。",
   "Accounts_Password_Policy_AtLeastOneNumber": "1文字以上の数字が必要",

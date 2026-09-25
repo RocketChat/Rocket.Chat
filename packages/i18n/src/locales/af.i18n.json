@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google Geheime",
   "Accounts_OAuth_Nextcloud": "OAuth aangeskakel",
   "Accounts_OAuth_Nextcloud_secret": "Kliëntgeheim",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy services",
   "Accounts_Password_Policy_AtLeastOneLowercase": "By minstens een kleinletter",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Stel vas dat 'n wagwoord ten minste een kleinletter bevat.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Met minstens een nommer",

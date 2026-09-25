@@ -127,7 +127,6 @@
   "Accounts_OAuth_Nextcloud": "Đã cho phép đăng nhập qua OAuth",
   "Accounts_OAuth_Nextcloud_id": "Id NextCloud",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
-  "Accounts_OAuth_Proxy_host": "Chủ Proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Ít nhất một chữ thường",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Thực thi mật khẩu chứa ít nhất một ký tự chữ thường.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Ít nhất một số",

@@ -105,8 +105,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth सक्षम",
   "Accounts_OAuth_Nextcloud_secret": "क्लाइंट Secret",
-  "Accounts_OAuth_Proxy_host": "प्रॉक्सी होस्ट",
-  "Accounts_OAuth_Proxy_services": "प्रॉक्सी सेवाएँ",
   "Accounts_Password_Policy_AtLeastOneLowercase": "कम से कम एक लोअरकेस में",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "लागू करें कि पासवर्ड में कम से कम एक लोअरकेस वर्ण हो।",
   "Accounts_Password_Policy_AtLeastOneNumber": "कम से कम एक नंबर",

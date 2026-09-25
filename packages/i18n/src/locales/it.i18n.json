@@ -146,8 +146,6 @@
   "Accounts_OAuth_Google_secret": "Chiave segreta Google",
   "Accounts_OAuth_Nextcloud": "OAuth abilitato",
   "Accounts_OAuth_Nextcloud_secret": "Chiave segreta",
-  "Accounts_OAuth_Proxy_host": "Host Proxy",
-  "Accounts_OAuth_Proxy_services": "Servizi Proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Almeno una minuscola",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Imponi che una password contenga almeno un carattere minuscolo.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Almeno un numero",
