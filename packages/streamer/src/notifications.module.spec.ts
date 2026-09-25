@@ -54,7 +54,7 @@ describe('NotificationsModule', () => {
 
 	beforeEach(() => {
 		jest.spyOn(api, 'broadcast').mockResolvedValue();
-		notifications = new NotificationsModule(TestStreamer as any, { originId: 'self' });
+		notifications = new NotificationsModule(TestStreamer as any, 'self');
 		notifications.configure();
 	});
 

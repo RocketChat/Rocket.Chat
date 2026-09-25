@@ -50,7 +50,7 @@ describe('ListenersModule', () => {
 
 	beforeEach(() => {
 		jest.spyOn(api, 'broadcast').mockResolvedValue();
-		notifications = new NotificationsModule(TestStreamer as any, { originId: 'self' });
+		notifications = new NotificationsModule(TestStreamer as any, 'self');
 		const created = createService();
 		fire = created.fire;
 		new ListenersModule(created.service, notifications, { get: () => undefined });

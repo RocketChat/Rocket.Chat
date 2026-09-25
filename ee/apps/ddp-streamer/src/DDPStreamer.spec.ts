@@ -45,7 +45,7 @@ jest.mock('@rocket.chat/logger', () => ({
 const mockFindOneById = jest.mocked(Users.findOneById);
 
 const server = new Server();
-const notifications = new NotificationsModule(createStreamAdapter(server), { originId: 'self' });
+const notifications = new NotificationsModule(createStreamAdapter(server), 'self');
 
 function makeMetrics(): jest.Mocked<IServiceMetrics> {
 	return {
