@@ -6250,7 +6250,7 @@
   "The_selected_user_is_not_a_monitor": "O usuário selecionado não é um monitor",
   "The_selected_user_is_not_an_agent": "O usuário selecionado não é um agente",
   "The_server_will_restart_in_s_seconds": "O servidor será reiniciado em %s segundos",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A configuração <strong>{{settingName}}</strong> está definida como <strong>{{configuredUrl}}</strong> e você está acessando a partir de <strong>{{currentUrl}}</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A configuração <bold>{{settingName}}</bold> está definida como <bold>{{configuredUrl}}</bold> e você está acessando a partir de <bold>{{currentUrl}}</bold>!",
   "The_user_s_will_be_removed_from_role_s": "O usuário {{username}} será removido da função {{role}}",
   "The_user_will_be_banned_from__roomName__": "O usuário será banido de {{roomName}}",
   "The_user_will_be_removed_from_s": "O usuário será removido de {{roomName}}",
