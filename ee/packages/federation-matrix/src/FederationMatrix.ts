@@ -133,6 +133,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		);
 
+		this.onEvent('room.user-activity', async ({ rid, uid, activities }): Promise<void> => {
+			try {
+				await this.notifyUserTyping(rid, uid, activities.includes('user-typing'));
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+			}
+		});
+
 		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
 			if (!username || username.includes(':')) {
 				return;
@@ -838,7 +846,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
+	private async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
 		if (!this.processEDUTyping) {
 			return;
 		}

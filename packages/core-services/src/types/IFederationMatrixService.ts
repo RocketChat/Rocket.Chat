@@ -28,7 +28,6 @@ export interface IFederationMatrixService {
 		role: 'moderator' | 'owner' | 'leader' | 'user',
 	): Promise<void>;
 	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
-	notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
 	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
 	canUserAccessFederation(user: IUser): Promise<boolean>;

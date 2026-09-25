@@ -122,6 +122,11 @@ export class LocalBroker implements IBroker {
 		this.events.emit(event, ...args);
 	}
 
+	/** Service names are unique within a process, so every listener here is the one instance of its service. */
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broadcastLocal(event, ...args);
+	}
+
 	async broadcastToServices<T extends keyof EventSignatures>(
 		_services: string[],
 		event: T,

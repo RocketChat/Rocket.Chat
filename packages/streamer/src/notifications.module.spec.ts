@@ -208,42 +208,40 @@ describe('NotificationsModule', () => {
 		});
 	});
 
-	describe('user activity hook', () => {
+	describe('user activity', () => {
 		const writeRoom = (userId: string | null, eventName: string, ...args: unknown[]) =>
 			TestStreamer.methods['stream-notify-room'].call({ userId, connection: {} }, eventName, ...args);
+
+		let emitToOne: jest.SpyInstance;
 
 		beforeEach(() => {
 			jest.mocked(Settings.get).mockResolvedValue(false);
 			jest.mocked(Users.findOneById).mockResolvedValue({ username: 'alice' } as any);
+			emitToOne = jest.spyOn(api, 'emitToOne').mockResolvedValue();
 		});
 
-		it('reports an accepted user-activity write', async () => {
-			const handler = jest.fn();
-			notifications.onUserActivity(handler);
-
+		it('reports an accepted user-activity write to one instance of each listening service', async () => {
 			await writeRoom('u1', 'room1/user-activity', 'alice', ['user-typing'], {});
 
-			expect(handler).toHaveBeenCalledTimes(1);
-			expect(handler).toHaveBeenCalledWith({ rid: 'room1', uid: 'u1', activities: ['user-typing'] });
+			expect(emitToOne).toHaveBeenCalledTimes(1);
+			expect(emitToOne).toHaveBeenCalledWith('room.user-activity', { rid: 'room1', uid: 'u1', activities: ['user-typing'] });
 		});
 
 		it('does not report a write the stream rejects', async () => {
-			const handler = jest.fn();
-			notifications.onUserActivity(handler);
-
 			await writeRoom('u1', 'room1/user-activity', 'mallory', ['user-typing'], {});
 
-			expect(handler).not.toHaveBeenCalled();
+			expect(emitToOne).not.toHaveBeenCalled();
 		});
 
-		it('stops reporting once the handler is removed', async () => {
-			const handler = jest.fn();
-			const off = notifications.onUserActivity(handler);
-			off();
+		it('does not report activity relayed from another process', () => {
+			notifications.deliverRelayed({
+				stream: 'notify-room',
+				eventName: 'room1/user-activity',
+				args: ['alice', ['user-typing']],
+				origin: 'other',
+			});
 
-			await writeRoom('u1', 'room1/user-activity', 'alice', [], {});
-
-			expect(handler).not.toHaveBeenCalled();
+			expect(emitToOne).not.toHaveBeenCalled();
 		});
 	});
 });
