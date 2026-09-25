@@ -5694,7 +5694,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune files only, keep messages",
   "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
-  "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href=\"{{retentionPolicyUrl}}\">here</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <link>here</link>.",
   "Retry": "Retry",
   "Retry_Count": "Retry count",
   "Retrying": "Retrying",

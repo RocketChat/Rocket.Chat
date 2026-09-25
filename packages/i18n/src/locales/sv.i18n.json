@@ -5422,7 +5422,7 @@
   "RetentionPolicyRoom_FilesOnly": "Gallra bara filer, behåll meddelanden",
   "RetentionPolicyRoom_MaxAge": "Maximal meddelandeålder i dagar (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Åsidosätt global lagringspolicy",
-  "RetentionPolicyRoom_ReadTheDocs": "Se upp! Att ändra dessa inställningar utan att veta vad man gör kan förstöra all meddelandehistorik. Läs dokumentationen innan du aktiverar funktionen <a href=\"{{retentionPolicyUrl}}\">här</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Se upp! Att ändra dessa inställningar utan att veta vad man gör kan förstöra all meddelandehistorik. Läs dokumentationen innan du aktiverar funktionen <link>här</link>.",
   "Retry": "Försök igen",
   "Retry_Count": "Försök igen",
   "Retrying": "Försöker igen",

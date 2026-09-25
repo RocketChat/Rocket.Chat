@@ -2047,7 +2047,7 @@
   "RetentionPolicyRoom_FilesOnly": "Senpaga dosieroj nur, konservu mesaĝojn",
   "RetentionPolicyRoom_MaxAge": "Maksimuma mesaĝo en tagoj (defaŭlte: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anstataŭigi tutmondan retencan politikon",
-  "RetentionPolicyRoom_ReadTheDocs": "Atentu! Taksado de ĉi tiuj agordoj sen plej granda zorgo povas detrui ĉiujn mesaĝajn historiojn. Bonvolu legi la dokumentadon antaŭ igi la funkcion en <a href = \"{{retentionPolicyUrl}}\">ĉi tie</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Atentu! Taksado de ĉi tiuj agordoj sen plej granda zorgo povas detrui ĉiujn mesaĝajn historiojn. Bonvolu legi la dokumentadon antaŭ igi la funkcion en <link>ĉi tie</link>.",
   "Retry_Count": "Retry count",
   "Role": "Rolo",
   "Role_Editing": "Rolo Eldono",

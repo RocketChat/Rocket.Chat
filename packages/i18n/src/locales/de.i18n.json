@@ -5472,7 +5472,7 @@
   "RetentionPolicyRoom_FilesOnly": "Nur Dateien bereinigen, Nachrichten behalten",
   "RetentionPolicyRoom_MaxAge": "Maximales Nachrichtenalter in Tagen (Standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Globale Aufbewahrungsrichtlinie außer Kraft setzen",
-  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Eine fehlerhafte Anpassung dieser Einstellungen kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature <a href=\"{{retentionPolicyUrl}}\">hier</a>aktivieren.",
+  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Eine fehlerhafte Anpassung dieser Einstellungen kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature <link>hier</link> aktivieren.",
   "Retry": "Erneut versuchen",
   "Retry_Count": "Anzahl der Wiederholungsversuche",
   "Retrying": "Erneuter Versuch",
