@@ -1,0 +1,32 @@
+ee/apps/ddp-streamer/src/publications/autoupdate.ts
+  s_a3d0eb8bd3caff::t_33d01faed042da 2,10-29,32-34
+ee/apps/ddp-streamer/src/publications/meteorCollection.ts
+  s_a3d0eb8bd3caff::t_19d2242d266823 4-7,13,15-17
+ee/apps/ddp-streamer/src/service.ts
+  s_a3d0eb8bd3caff::t_19d2242d266823 3,40
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_a3d0eb8bd3caff::t_56431ab17f1cad 13,68
+ee/apps/ddp-streamer/package.json
+  s_a3d0eb8bd3caff::t_7368c0ecf4e1f9 33
+ee/apps/ddp-streamer/src/publications/autoupdate.spec.ts
+  s_a3d0eb8bd3caff::t_fb4af8a995497a 11-12,16-17,27,32-53
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_a3d0eb8bd3caff::t_19d2242d266823 21,34
+  s_a3d0eb8bd3caff::t_b18c702420fa60 258-264,266-269,271-277,279,281-283,285,287,289-295
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8707c6fe176e0918ae9366f88701a4542dc2423c",
+  "prompts": {},
+  "sessions": {
+    "s_a3d0eb8bd3caff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7dca468-7cff-4f29-878e-3e0b0f3b6d9b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
