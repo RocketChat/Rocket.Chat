@@ -6,6 +6,7 @@
 		"lib": ["es2023"],
 		"module": "commonjs",
 		"sourceMap": true,
+		"types": ["node"],
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"],
 	"ts-node": {

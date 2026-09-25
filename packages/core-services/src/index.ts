@@ -1,4 +1,4 @@
-import { proxify } from './lib/proxify';
+import { proxify, type Promisify } from './lib/proxify';
 import type {
 	IAISearchService,
 	AISearchAnswerMessage,
@@ -197,7 +197,7 @@ export const NPS = proxify<INPSService>('nps');
 export const Team = proxify<ITeamService>('team');
 export const MessageReads = proxify<IMessageReadsService>('message-reads');
 export const Room = proxify<IRoomService>('room');
-export const Media = proxify<IMediaService>('media');
+export const Media: Promisify<IMediaService> = proxify<IMediaService>('media');
 export const MediaCall = proxify<IMediaCallService>('media-call');
 export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxify<ILDAPService>('ldap');

@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"outDir": "./dist/ee/apps/ddp-streamer/src",
 		"types": ["jest", "node"]

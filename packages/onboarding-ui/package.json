@@ -65,7 +65,7 @@
     "react-i18next": "~17.0.14",
     "storybook": "~9.1.20",
     "ts-jest": "~29.4.12",
-    "typescript": "~5.9.3"
+    "typescript": "~6.0.3"
   },
   "peerDependencies": {
     "@rocket.chat/fuselage": "*",
