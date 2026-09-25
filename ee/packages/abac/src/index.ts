@@ -1,5 +1,5 @@
 import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
+import type { AbacActor, AbacCreationAttributesResult, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
@@ -22,12 +22,15 @@ import pLimit from 'p-limit';
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
 import {
+	AbacError,
+	AbacErrorCode,
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
 	AbacDuplicateAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
+	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
 } from './errors';
@@ -37,6 +40,10 @@ import {
 	extractAttribute,
 	diffAttributeSets,
 	validateAndNormalizeAttributes,
+	ensureAttributeDefinitionsExist,
+	findUnownedValues,
+	toAttributeMap,
+	toCreationDenial,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
 } from './helper';
@@ -547,6 +554,96 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		await store.validateAssignable(attrs, actor);
+	}
+
+	async validateCreationAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<AbacCreationAttributesResult> {
+		let normalized: IAbacAttributeDefinition[];
+		let store: IAttributeStore;
+		let bypassed: boolean;
+
+		try {
+			normalized = validateAndNormalizeAttributes(toAttributeMap(attributes));
+			if (!normalized.length) {
+				throw new AbacInvalidAttributeValuesError();
+			}
+
+			await this.ensurePdpAvailable();
+			store = await this.resolveAttributeStore();
+			if (store === this.attributeStores.local.store) {
+				await ensureAttributeDefinitionsExist(normalized);
+			}
+
+			bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		} catch (err) {
+			return toCreationDenial(err, 'invalid');
+		}
+
+		if (bypassed) {
+			return { allowed: true, attributes: normalized, bypassed };
+		}
+
+		try {
+			await this.assertCreatorMayAssign(normalized, actor, store);
+		} catch (err) {
+			if (!(err instanceof AbacError)) {
+				logger.error({ msg: 'ABAC creator authority check failed', err });
+				return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+			}
+			return toCreationDenial(err, 'not-entitled');
+		}
+
+		return { allowed: true, attributes: normalized, bypassed };
+	}
+
+	private async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor, store: IAttributeStore): Promise<void> {
+		if (this.pdpType === 'local') {
+			return this.assertCreatorHoldsAttributes(attributes, actor, store);
+		}
+
+		if (store !== this.attributeStores.local.store) {
+			return store.validateAssignable(attributes, actor);
+		}
+
+		return this.assertPdpPermitsCreator(attributes, actor);
+	}
+
+	private async assertCreatorHoldsAttributes(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		store: IAttributeStore,
+	): Promise<void> {
+		if (!(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'))) {
+			return;
+		}
+
+		const unowned = findUnownedValues(attributes, await store.entitlementsOf(actor));
+		if (unowned.length) {
+			throw new AbacInvalidAttributeValuesError({ attributes: unowned });
+		}
+	}
+
+	private async assertPdpPermitsCreator(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (!actor.username) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
+		}
+
+		await this.pdp?.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
+	}
+
+	async auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
+			return;
+		}
+
+		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		await Audit.objectAttributeChanged(
+			{ _id: room._id, name: room.name },
+			[],
+			room.abacAttributes,
+			'created',
+			actor,
+			bypassed ? 'store-validation-bypassed' : 'api',
+		);
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {

@@ -23,7 +23,7 @@ export interface ICreateRoomParams<T extends IRoom = IRoom> {
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom>;
+	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom & { skippedMembers?: string[] }>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(

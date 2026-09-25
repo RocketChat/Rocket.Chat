@@ -4,6 +4,7 @@ import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
 const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
+const localPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'local' }];
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('General', async function () {
@@ -60,6 +61,14 @@ export function addSettings(): Promise<void> {
 					],
 					alert: 'ABAC_PDP_Type_Switch_Alert',
 					enableQuery: abacEnabledQuery,
+				});
+				await this.add('ABAC_Restrict_To_Owned_Attributes', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Restrict_To_Owned_Attributes_Description',
+					enableQuery: localPdpQuery,
 				});
 				await this.add('ABAC_Attribute_Store', 'local', {
 					type: 'select',
