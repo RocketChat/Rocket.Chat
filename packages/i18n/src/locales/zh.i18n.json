@@ -2001,7 +2001,7 @@
   "Do_Nothing": "什么也不做",
   "Do_nothing": "不做任何操作",
   "Do_you_want_to_accept": "你想接受吗？",
-  "Do_you_want_to_change_to_s_question": "您是否想修改为 <strong>{{currentUrl}}</strong>？",
+  "Do_you_want_to_change_to_s_question": "您是否想修改为 <bold>{{currentUrl}}</bold>？",
   "Document_Domain": "文档域",
   "Documentation": "文档",
   "Domain": "域名",

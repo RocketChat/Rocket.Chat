@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import DOMPurify from 'dompurify';
 import { Trans, useTranslation } from 'react-i18next';
 
 export type UrlChangeModalProps = {
@@ -21,11 +20,13 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 					components={{ bold: <Box is='span' fontWeight='bold' /> }}
 				/>
 			</Box>
-			<p
-				dangerouslySetInnerHTML={{
-					__html: DOMPurify.sanitize(t('Do_you_want_to_change_to_s_question', { currentUrl })),
-				}}
-			/>
+			<p>
+				<Trans
+					i18nKey='Do_you_want_to_change_to_s_question'
+					values={{ currentUrl }}
+					components={{ bold: <Box is='span' fontWeight='bold' /> }}
+				/>
+			</p>
 		</GenericModal>
 	);
 };
