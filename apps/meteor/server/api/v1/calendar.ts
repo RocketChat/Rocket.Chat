@@ -16,6 +16,8 @@ import {
 import { settings } from '../../settings';
 import { API } from '../api';
 
+const isImported = (event: ICalendarEvent) => typeof event.externalId === 'string';
+
 const successWithDataSchema = ajv.compile<{ data: ICalendarEvent[] }>({
 	type: 'object',
 	properties: {
@@ -95,7 +97,7 @@ API.v1.get(
 
 		const event = await Calendar.get(id);
 
-		if (event?.uid !== userId) {
+		if (event?.uid !== userId || (isImported(event) && !License.hasModule('outlook-calendar'))) {
 			return API.v1.failure();
 		}
 
