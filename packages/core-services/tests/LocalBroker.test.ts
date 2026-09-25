@@ -158,6 +158,27 @@ describe('LocalBroker', () => {
 		});
 	});
 
+	describe('#emitToOne()', () => {
+		it('should deliver the event to the listening services in this process only', async () => {
+			const listener = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
+			instance.onEvent('test' as any, listener);
+
+			const publish = jest.fn();
+			const broker = new LocalBroker();
+			broker.setClusterTransport({ publish });
+			broker.createService(instance);
+
+			await broker.emitToOne('test' as any, 'a');
+
+			expect(listener).toHaveBeenCalledTimes(1);
+			expect(listener).toHaveBeenCalledWith('a');
+			expect(publish).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('#setClusterTransport()', () => {
 		const brokerWithTransport = () => {
 			const publish = jest.fn();

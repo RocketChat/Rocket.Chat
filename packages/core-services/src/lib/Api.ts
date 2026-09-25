@@ -61,6 +61,10 @@ export class Api implements IApiService {
 		return this.broker?.broadcastLocal(event, ...args);
 	}
 
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broker?.emitToOne(event, ...args);
+	}
+
 	nodeList(): Promise<IBrokerNode[]> {
 		if (!this.broker) {
 			throw new Error('No broker set to start.');

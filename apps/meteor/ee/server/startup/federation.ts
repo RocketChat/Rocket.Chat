@@ -7,17 +7,14 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../server/lib/i18n';
-import notifications from '../../../server/lib/notifications/core/lib/Notifications';
 import { slashCommands } from '../../../server/lib/utils/slashCommand';
 import { settings } from '../../../server/settings';
 import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
 
-let serviceEnabled = false;
-
 const configureFederation = async () => {
-	serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
+	const serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
 	if (!serviceEnabled) {
 		return;
 	}
@@ -48,16 +45,6 @@ export const startFederationService = async (): Promise<void> => {
 	api.registerService(new FederationMatrix());
 
 	await registerFederationRoutes();
-
-	notifications.onUserActivity(({ rid, uid, activities }) => {
-		if (!serviceEnabled) {
-			return;
-		}
-
-		FederationMatrixService.notifyUserTyping(rid, uid, activities.includes('user-typing')).catch((err) => {
-			logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
-		});
-	});
 
 	// `setupFederationMatrix()` runs the SDK's `init()`, which registers the DB
 	// collections (including `AppServiceStateCollection`). It must complete

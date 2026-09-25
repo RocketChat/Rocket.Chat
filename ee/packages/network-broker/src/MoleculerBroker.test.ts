@@ -36,4 +36,13 @@ describe('MoleculerBroker', () => {
 
 		expect(stoppedStub.called).to.be.true;
 	});
+
+	it('should emit a balanced event, so one instance of each listening service receives it', async () => {
+		const emit = sinon.stub().resolves();
+		const balanced = new MoleculerBroker({ emit } as any);
+
+		await balanced.emitToOne('room.user-activity', { rid: 'r1', uid: 'u1', activities: ['user-typing'] });
+
+		expect(emit.calledOnceWith('room.user-activity', [{ rid: 'r1', uid: 'u1', activities: ['user-typing'] }])).to.be.true;
+	});
 });

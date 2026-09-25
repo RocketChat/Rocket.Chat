@@ -20,12 +20,6 @@ import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } fr
 
 const logger = new Logger('NotificationsModule');
 
-export type UserActivity = {
-	rid: string;
-	uid: string;
-	activities: string[];
-};
-
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
 
@@ -128,22 +122,6 @@ export class NotificationsModule {
 	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
 		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
 		return stream;
-	}
-
-	/** Runs `handler` for every user activity a client of this process reports on a room. */
-	onUserActivity(handler: (activity: UserActivity) => void): () => void {
-		const listener = (eventName: string, args: unknown[], uid: string | null) => {
-			const [rid, e] = eventName.split('/');
-			if (e !== 'user-activity' || !uid) {
-				return;
-			}
-
-			const [, activities] = args;
-			handler({ rid, uid, activities: Array.isArray(activities) ? activities : [] });
-		};
-
-		this.streamRoom.on('_afterWrite', listener);
-		return () => this.streamRoom.removeListener('_afterWrite', listener);
 	}
 
 	/** Delivers an emit relayed from another process to this process's subscribers, skipping this process's own emits. */
@@ -304,6 +282,18 @@ export class NotificationsModule {
 			}
 
 			return true;
+		});
+
+		this.streamRoom.on('_afterWrite', (eventName, args, uid) => {
+			const [rid, e] = eventName.split('/');
+			if (e !== 'user-activity' || !uid) {
+				return;
+			}
+
+			const [, activities] = args;
+			api.emitToOne('room.user-activity', { rid, uid, activities: Array.isArray(activities) ? activities : [] }).catch((err) => {
+				logger.error({ msg: 'Failed to report user activity', rid, err });
+			});
 		});
 
 		this.streamRoomUsers.allowRead('none');

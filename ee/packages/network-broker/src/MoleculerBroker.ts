@@ -174,6 +174,10 @@ export class MoleculerBroker implements IBroker {
 		void this.broker.broadcastLocal(event, args);
 	}
 
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broker.emit(event, args);
+	}
+
 	async broadcastToServices<T extends keyof EventSignatures>(
 		services: string[],
 		event: T,

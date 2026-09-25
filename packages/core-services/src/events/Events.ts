@@ -62,6 +62,8 @@ export type RelayedStreamEvent = {
 
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
+	/** A local client reported what its user is doing in a room, such as typing. */
+	'room.user-activity': (data: { rid: string; uid: string; activities: string[] }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
