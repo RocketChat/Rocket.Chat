@@ -769,7 +769,7 @@
   "Custom_Emoji_Info": "ข้อมูลอิโมจิที่กำหนดเอง",
   "Custom_Emoji_Updated_Successfully": "กำหนดค่า emoji แบบกำหนดเองสำเร็จแล้ว",
   "Custom_Fields": "ฟิลด์ที่กำหนดเอง",
-  "Custom_oauth_helper": "เมื่อตั้งค่าผู้ให้บริการ OAuth คุณจะต้องแจ้ง URL โทรกลับ ใช้ <pre>{{url}}</pre>",
+  "Custom_oauth_helper": "เมื่อตั้งค่าผู้ให้บริการ OAuth คุณจะต้องแจ้ง URL โทรกลับ ใช้ <code>{{url}}</code>",
   "Custom_Script_Logged_In": "สคริปต์ที่กำหนดเองสำหรับผู้ใช้ที่ล็อกอิน",
   "Custom_Script_Logged_Out": "สคริปต์ที่กำหนดเองสำหรับผู้ใช้ที่บันทึกไว้",
   "Custom_Scripts": "สคริปต์ที่กำหนดเอง",

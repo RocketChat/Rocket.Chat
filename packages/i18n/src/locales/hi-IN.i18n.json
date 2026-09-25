@@ -1465,7 +1465,7 @@
   "Custom_Integration": "कस्टम एकीकरण",
   "Custom_OAuth_has_been_added": "कस्टम OAuth जोड़ा गया है",
   "Custom_OAuth_has_been_removed": "कस्टम OAuth हटा दिया गया है",
-  "Custom_oauth_helper": "अपना OAuth प्रदाता स्थापित करते समय, आपको एक कॉलबैक URL सूचित करना होगा। उपयोग<pre> {{url}}</pre> .",
+  "Custom_oauth_helper": "अपना OAuth प्रदाता स्थापित करते समय, आपको एक कॉलबैक URL सूचित करना होगा। उपयोग <code>{{url}}</code>.",
   "Custom_roles": "कस्टम भूमिकाएँ",
   "Custom_roles_upsell_add_custom_roles_workspace": "अपने कार्यक्षेत्र के अनुरूप कस्टम भूमिकाएँ जोड़ें",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "कस्टम भूमिकाएँ आपको अपने कार्यक्षेत्र में लोगों के लिए अनुमतियाँ सेट करने की अनुमति देती हैं। यह सुनिश्चित करने के लिए कि लोगों को काम करने के लिए सुरक्षित वातावरण मिले, सभी भूमिकाएँ निर्धारित करें।",

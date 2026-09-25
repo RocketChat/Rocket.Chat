@@ -771,7 +771,7 @@
   "Custom_Emoji_Info": "Custom emoji info",
   "Custom_Emoji_Updated_Successfully": "Custom emoji berhasil diperbarui",
   "Custom_Fields": "Fields kustom",
-  "Custom_oauth_helper": "Anda harus menyediakan URL Callback ketika melakukan setup untuk OAuth Provider. Gunakan <pre>{{url}}</pre> .",
+  "Custom_oauth_helper": "Anda harus menyediakan URL Callback ketika melakukan setup untuk OAuth Provider. Gunakan <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Kustom Script untuk login pengguna",
   "Custom_Script_Logged_Out": "Kustom Script untuk log out pengguna",
   "Custom_Scripts": "Skrip Kustom",

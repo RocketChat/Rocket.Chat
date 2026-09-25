@@ -1229,7 +1229,7 @@
   "Custom_Field_Removed": "自訂欄位已移除",
   "Custom_Fields": "自訂欄位",
   "Custom_Integration": "自訂整合",
-  "Custom_oauth_helper": "設定 OAuth 提供者時，請提供一個 Callback URL。使用 <pre> {{url}} </pre> 。",
+  "Custom_oauth_helper": "設定 OAuth 提供者時，請提供一個 Callback URL。使用 <code>{{url}}</code>。",
   "Custom_Script_Logged_In": "針對登錄使用者自訂腳本",
   "Custom_Script_Logged_In_Description": "自訂腳本讓所有登入的使用者在登入時都會執行。例如. (無論何時登入頁面)",
   "Custom_Script_Logged_Out": "自訂腳本用於登出用戶",

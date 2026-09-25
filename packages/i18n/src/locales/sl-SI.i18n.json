@@ -767,7 +767,7 @@
   "Custom_Emoji_Info": "Informacije o čustvenih simbolih po meri",
   "Custom_Emoji_Updated_Successfully": "Čustveni simboli po meri so bili uspešno posodobljeni",
   "Custom_Fields": "Polja po meri",
-  "Custom_oauth_helper": "Pri nastavljanju ponudnika OAuth boste morali obvestiti URL povratnega klica. Uporabite <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Pri nastavljanju ponudnika OAuth boste morali obvestiti URL povratnega klica. Uporabite <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Skript po meri za prijavljene uporabnike",
   "Custom_Script_Logged_Out": "Skript po meri za odjavljene uporabnike",
   "Custom_Scripts": "Skripti po meri",

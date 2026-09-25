@@ -1598,7 +1598,7 @@
   "Custom_Integration": "Tilpasset integrasjon",
   "Custom_OAuth_has_been_added": "Egendefinert OAuth er lagt til",
   "Custom_OAuth_has_been_removed": "Tilpasset OAuth er fjernet",
-  "Custom_oauth_helper": "Når du konfigurerer OAuth-leverandøren din, må du informere en tilbakekallingsadresse. Bruk <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Når du konfigurerer OAuth-leverandøren din, må du informere en tilbakekallingsadresse. Bruk <code>{{url}}</code>.",
   "Custom_OAuth_name": "Egendefinert OAuth-navn",
   "Custom_OAuth_name_hint": "Skriv inn et unikt navn som vil hjelpe deg med å identifisere og administrere ulike autentiseringsmetoder.",
   "Custom_roles": "Egendefinerte roller",

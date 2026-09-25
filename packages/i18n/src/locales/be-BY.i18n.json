@@ -789,7 +789,7 @@
   "Custom_Emoji_Info": "Прыстасаваныя Emoji інфармацыя",
   "Custom_Emoji_Updated_Successfully": "Прыстасаваныя смайлікі паспяхова абноўленыя",
   "Custom_Fields": "прыстасаваныя поля",
-  "Custom_oauth_helper": "Падчас усталявання OAuth пастаўшчыка, вы павінны будзеце паведаміць Callback URL. Выкарыстоўвайце <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Падчас усталявання OAuth пастаўшчыка, вы павінны будзеце паведаміць Callback URL. Выкарыстоўвайце <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Карыстацкі скрыпт для зарэгістраваных карыстальнікаў",
   "Custom_Script_Logged_Out": "Карыстацкі скрыпт для логаут карыстальнікаў",
   "Custom_Scripts": "прыстасаваныя скрыпты",

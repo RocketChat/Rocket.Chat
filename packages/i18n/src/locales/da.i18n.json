@@ -1124,7 +1124,7 @@
   "Custom_Emoji_Updated_Successfully": "Den brugerdefinerede emoji er opdateret",
   "Custom_Field_Removed": "Brugerdefineret felt fjernet",
   "Custom_Fields": "Brugerdefinerede felter",
-  "Custom_oauth_helper": "Når du konfigurerer din OAuth-leverandør, skal du oplyse en tilbagekalds-url. Brug <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Når du konfigurerer din OAuth-leverandør, skal du oplyse en tilbagekalds-url. Brug <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Brugerdefineret script til brugere der er logget ind ",
   "Custom_Script_Logged_In_Description": "Brugerdefineret script der ALTID kører og for ENHVER bruger der er logget ind. (F.eks. hver gang du går ind i chatten og du er logget ind)",
   "Custom_Script_Logged_Out": "Brugerdefineret script for brugere der er logget ud",

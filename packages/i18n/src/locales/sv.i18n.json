@@ -1802,7 +1802,7 @@
   "Custom_Integration": "Anpassad integrering",
   "Custom_OAuth_has_been_added": "Anpassad OAuth har lagts till",
   "Custom_OAuth_has_been_removed": "Anpassad OAuth har tagits bort",
-  "Custom_oauth_helper": "När du ställer in din OAuth-provider, måste du ange en callback-webbadress. Använd <pre> {{url}} </pre> .",
+  "Custom_oauth_helper": "När du ställer in din OAuth-provider, måste du ange en callback-webbadress. Använd <code>{{url}}</code>.",
   "Custom_OAuth_name": "Anpassat OAuth-namn",
   "Custom_OAuth_name_hint": "Ange ett unikt namn som hjälper dig att identifiera och hantera olika autentiseringsmetoder.",
   "Custom_roles": "Anpassade roller",

@@ -769,7 +769,7 @@
   "Custom_Emoji_Info": "Gwybodaeth Emoji Custom",
   "Custom_Emoji_Updated_Successfully": "Diweddarwyd emoji Custom yn llwyddiannus",
   "Custom_Fields": "Maesau Custom",
-  "Custom_oauth_helper": "Wrth sefydlu eich Darparwr OAuth, bydd yn rhaid i chi hysbysu URL Callback. Defnyddiwch <pre> {{url}}</pre>.",
+  "Custom_oauth_helper": "Wrth sefydlu eich Darparwr OAuth, bydd yn rhaid i chi hysbysu URL Callback. Defnyddiwch <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Sgript Custom ar gyfer Defnyddwyr Mewnol",
   "Custom_Script_Logged_Out": "Sgript Custom ar gyfer Defnyddwyr Wedi Logio",
   "Custom_Scripts": "Sgriptiau Custom",

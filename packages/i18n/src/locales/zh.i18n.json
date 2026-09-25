@@ -1739,7 +1739,7 @@
   "Custom_Integration": "自定义集成",
   "Custom_OAuth_has_been_added": "已添加自定义 OAuth",
   "Custom_OAuth_has_been_removed": "已移除自定义 OAuth",
-  "Custom_oauth_helper": "设置完 OAuth 提供者之后，你还需要设置回调 URL。请使用 <pre>{{url}}</pre>。",
+  "Custom_oauth_helper": "设置完 OAuth 提供者之后，你还需要设置回调 URL。请使用 <code>{{url}}</code>。",
   "Custom_OAuth_name": "自定义 OAuth 名称",
   "Custom_OAuth_name_hint": "输入一个唯一名称，便于识别和管理不同的认证方式。",
   "Custom_roles": "自定义角色",

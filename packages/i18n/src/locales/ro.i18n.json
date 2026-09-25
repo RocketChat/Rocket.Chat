@@ -771,7 +771,7 @@
   "Custom_Emoji_Info": "Personalizate Emoji Info",
   "Custom_Emoji_Updated_Successfully": "Emoji personalizat sa actualizat cu succes",
   "Custom_Fields": "câmpuri customizate",
-  "Custom_oauth_helper": "La configurarea furnizorul de OAuth, va trebui să apelați un URL de apel invers. Utilizați <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "La configurarea furnizorul de OAuth, va trebui să apelați un URL de apel invers. Utilizați <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Script-ul personalizat pentru utilizatorii autentificați",
   "Custom_Script_Logged_Out": "Script-ul personalizat pentru utilizatorii delogat",
   "Custom_Scripts": "Scripturi personalizate",

@@ -1344,7 +1344,7 @@
   "Custom_Integration": "Egyéni integráció",
   "Custom_OAuth_has_been_added": "Az egyéni OAuth hozzá lett adva",
   "Custom_OAuth_has_been_removed": "Az egyéni OAuth el lett távolítva",
-  "Custom_oauth_helper": "Ha beállítja az OAuth-szolgáltatóját, akkor tájékoztatnia kell egy visszahívási URL-t. Használja ezt: <pre>{{url}}</pre>.",
+  "Custom_oauth_helper": "Ha beállítja az OAuth-szolgáltatóját, akkor tájékoztatnia kell egy visszahívási URL-t. Használja ezt: <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Egyéni parancsfájl a bejelentkezett felhasználókhoz",
   "Custom_Script_Logged_In_Description": "Egyéni parancsfájl, amely MINDIG lefut az ÖSSZES bejelentkezett felhasználónál (például amikor belép egy csevegésbe és be van jelentkezve)",
   "Custom_Script_Logged_Out": "Egyéni parancsfájl a kijelentkezett felhasználókhoz",

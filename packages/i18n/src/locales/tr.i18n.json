@@ -907,7 +907,7 @@
   "Custom_Emoji_Info": "Özel Emoji Bilgileri",
   "Custom_Emoji_Updated_Successfully": "Özel emoji başarıyla güncellendi",
   "Custom_Fields": "Özel Alanlar",
-  "Custom_oauth_helper": "OAuth sağlayıcısı kurarken, bir geri bildirim URL bildirmek gerekir.  <pre> {{url}} </pre> kullan.",
+  "Custom_oauth_helper": "OAuth sağlayıcısı kurarken, bir geri bildirim URL bildirmek gerekir. <code>{{url}}</code> kullan.",
   "Custom_Script_Logged_In": "Özel Senaryo kullanıcılar giriş için",
   "Custom_Script_Logged_Out": "Özel Senaryo çıkış yapmış kullanıcılar için",
   "Custom_Scripts": "Özel Komut Dosyaları",
