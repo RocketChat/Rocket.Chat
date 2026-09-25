@@ -22,7 +22,7 @@
 		"@react-aria/visually-hidden": "^3.8.27",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "^0.33.2-rc.0",
-		"@rocket.chat/fuselage": "^0.92.0",
+		"@rocket.chat/fuselage": "patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-230cc3d235.patch",
 		"@rocket.chat/fuselage-forms": "~1.5.1",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.35.0",
