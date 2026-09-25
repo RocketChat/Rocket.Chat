@@ -2057,7 +2057,7 @@
   "RetentionPolicyRoom_FilesOnly": "Fail prune sahaja, simpan mesej",
   "RetentionPolicyRoom_MaxAge": "Umur mesej maksimum dalam hari (lalai: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Mengatasi dasar pengekalan global",
-  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <a href = \"{{retentionPolicyUrl}}\">di sini</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <link>di sini</link>.",
   "Retry_Count": "Cuba semula",
   "Role": "peranan",
   "Role_Editing": "peranan Editing",
