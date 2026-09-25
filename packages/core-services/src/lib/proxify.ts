@@ -1,6 +1,6 @@
 import { api } from '../api';
 
-type Promisify<T> = {
+export type Promisify<T> = {
 	[K in keyof T as T[K] extends (...params: any[]) => unknown ? K : never]: T[K] extends (...params: any[]) => Promise<any>
 		? T[K]
 		: T[K] extends (...params: infer P) => infer R
