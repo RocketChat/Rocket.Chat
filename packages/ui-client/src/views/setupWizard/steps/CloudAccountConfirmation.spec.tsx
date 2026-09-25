@@ -8,7 +8,14 @@ import CloudAccountConfirmation from './CloudAccountConfirmation';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 
 jest.mock('@rocket.chat/onboarding-ui', () => ({
-	AwaitingConfirmationPage: ({ description }: { description?: ReactNode }) => <>{description}</>,
+	AwaitingConfirmationPage: ({ description, onResendEmailRequest }: { description?: ReactNode; onResendEmailRequest: () => void }) => (
+		<>
+			{description}
+			<button type='button' onClick={onResendEmailRequest}>
+				Resend email
+			</button>
+		</>
+	),
 }));
 
 const POLL_INTERVAL_SECONDS = 5;
@@ -34,14 +41,15 @@ const confirmedPollData: CloudConfirmationPollData = {
 	},
 };
 
-const pendingPollData: CloudConfirmationPollData = { successful: false, payload: confirmedPollData.payload };
+const pendingPollData: CloudConfirmationPollData = { status: 'authorization_pending' };
 
 type WizardProps = {
 	deviceCode: string;
 	completeCloudRegistration: () => Promise<void>;
+	registerServer: ContextType<typeof SetupWizardContext>['registerServer'];
 };
 
-const WithWizard = ({ deviceCode, completeCloudRegistration, children }: WizardProps & { children: ReactNode }) => {
+const WithWizard = ({ deviceCode, completeCloudRegistration, registerServer, children }: WizardProps & { children: ReactNode }) => {
 	const defaults = useContext(SetupWizardContext);
 	const value: ContextType<typeof SetupWizardContext> = {
 		...defaults,
@@ -55,6 +63,7 @@ const WithWizard = ({ deviceCode, completeCloudRegistration, children }: WizardP
 			},
 		},
 		completeCloudRegistration,
+		registerServer,
 	};
 
 	return <SetupWizardContext.Provider value={value}>{children}</SetupWizardContext.Provider>;
@@ -62,15 +71,17 @@ const WithWizard = ({ deviceCode, completeCloudRegistration, children }: WizardP
 
 const renderStep = ({
 	completeCloudRegistration,
+	registerServer = jest.fn(async () => undefined),
 	poll = jest.fn(async () => ({ pollData: confirmedPollData })),
 	toast = jest.fn(),
 }: {
 	completeCloudRegistration: () => Promise<void>;
+	registerServer?: WizardProps['registerServer'];
 	poll?: jest.Mock;
 	toast?: jest.Mock;
 }) => {
 	const view = (deviceCode: string) => (
-		<WithWizard deviceCode={deviceCode} completeCloudRegistration={completeCloudRegistration}>
+		<WithWizard deviceCode={deviceCode} completeCloudRegistration={completeCloudRegistration} registerServer={registerServer}>
 			<CloudAccountConfirmation />
 		</WithWizard>
 	);
@@ -79,7 +90,7 @@ const renderStep = ({
 		wrapper: mockAppRoot().withToastMessageDispatch(toast).withEndpoint('GET', '/v1/cloud.confirmationPoll', poll).build(),
 	});
 
-	return { poll, toast, resendEmail: (deviceCode: string) => rerender(view(deviceCode)) };
+	return { poll, toast, receiveNewRegistrationIntent: (deviceCode: string) => rerender(view(deviceCode)) };
 };
 
 const waitForPollTicks = (ticks: number) =>
@@ -151,14 +162,18 @@ describe('CloudAccountConfirmation', () => {
 		expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
 	});
 
-	it('polls again for the new code after the confirmation email is resent', async () => {
+	it('polls for the new code after the confirmation email is resent', async () => {
 		const completeCloudRegistration = jest.fn(() => new Promise<void>(() => undefined));
-		const { poll, resendEmail } = renderStep({ completeCloudRegistration });
+		const registerServer = jest.fn(async () => undefined);
+		const { poll, receiveNewRegistrationIntent } = renderStep({ completeCloudRegistration, registerServer });
 
 		await waitForPollTicks(2);
 		expect(poll).toHaveBeenCalledTimes(1);
 
-		resendEmail('new-device-code');
+		fireEvent.click(screen.getByRole('button', { name: 'Resend email' }));
+		expect(registerServer).toHaveBeenCalledWith({ email: 'admin@example.com', resend: true });
+
+		receiveNewRegistrationIntent('new-device-code');
 		await waitForPollTicks(1);
 
 		expect(poll).toHaveBeenCalledTimes(2);
