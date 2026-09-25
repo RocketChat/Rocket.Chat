@@ -16,7 +16,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, Key, SyntheticEvent } from 'react';
@@ -42,7 +41,7 @@ function NewImportPage() {
 		refetchOnWindowFocus: false,
 	});
 
-	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name as TranslationKey)] as const) || [], [importers, t]);
+	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name)] as const) || [], [importers, t]);
 
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
@@ -237,9 +236,7 @@ function NewImportPage() {
 							</FieldRow>
 							{importer && (
 								<FieldHint>
-									{importer.key === 'csv'
-										? t('Importer_From_Description_CSV')
-										: t('Importer_From_Description', { from: t(importer.name as TranslationKey) })}
+									{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
 								</FieldHint>
 							)}
 						</Field>

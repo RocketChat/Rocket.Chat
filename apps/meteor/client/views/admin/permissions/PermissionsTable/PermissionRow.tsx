@@ -1,6 +1,5 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,15 +12,15 @@ const getName = (t: TFunction, permission: IPermission): string => {
 	if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
 		let path = '';
 		if (permission.group) {
-			path = `${t(permission.group as TranslationKey)} > `;
+			path = `${t(permission.group)} > `;
 		}
 		if (permission.section) {
-			path = `${path}${t(permission.section as TranslationKey)} > `;
+			path = `${path}${t(permission.section)} > `;
 		}
-		return `${path}${t(permission.settingId as TranslationKey)}`;
+		return `${path}${t(permission.settingId!)}`;
 	}
 
-	return t(permission._id as TranslationKey);
+	return t(permission._id);
 };
 
 export type PermissionRowProps = {
@@ -39,7 +38,7 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 
 	return (
 		<GenericTableRow key={permissionId} role='link' action tabIndex={0}>
-			<GenericTableCell maxWidth='x300' withTruncatedText title={t(`${permissionId}_description` as TranslationKey)}>
+			<GenericTableCell maxWidth='x300' withTruncatedText title={t(`${permissionId}_description`)}>
 				{permissionName}
 			</GenericTableCell>
 			{roleList.map(({ _id: roleId, name, description }) => (

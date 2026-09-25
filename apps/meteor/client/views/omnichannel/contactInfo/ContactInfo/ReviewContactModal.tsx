@@ -1,7 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -86,13 +85,13 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 					return (
 						<Field key={index}>
-							<FieldLabel id={name}>{t(label as TranslationKey)}</FieldLabel>
+							<FieldLabel id={name}>{t(label)}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name={name}
 									control={control}
 									rules={{
-										required: isContactManagerField ? undefined : t('Required_field', { field: t(label as TranslationKey) }),
+										required: isContactManagerField ? undefined : t('Required_field', { field: t(label) }),
 									}}
 									render={({ field: { value, onChange } }) => (
 										<Component

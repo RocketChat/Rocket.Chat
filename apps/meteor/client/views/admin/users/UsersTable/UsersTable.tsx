@@ -10,7 +10,6 @@ import {
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
 import type { usePagination, useSort } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
@@ -174,7 +173,7 @@ const UsersTable = ({
 			{isSuccess && users.length === 0 && (
 				<GenericNoResults
 					icon='user'
-					title={t('Users_Table_Generic_No_users', { status: tab !== 'all' ? t(tab as TranslationKey) : '' })}
+					title={t('Users_Table_Generic_No_users', { status: tab !== 'all' ? t(tab) : '' })}
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}

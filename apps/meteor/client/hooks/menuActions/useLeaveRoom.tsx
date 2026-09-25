@@ -1,6 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +51,7 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, { roomName: name })}
+				text={t(warnText, { roomName: name })}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}

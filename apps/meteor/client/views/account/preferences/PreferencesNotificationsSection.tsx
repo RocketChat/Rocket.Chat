@@ -2,7 +2,6 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Button } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -69,13 +68,13 @@ const PreferencesNotificationsSection = () => {
 
 	const desktopNotificationOptions = useMemo<SelectOption[]>((): SelectOption[] => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications] as TranslationKey)})`]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications])})`]);
 		return optionsCp;
 	}, [defaultDesktopNotifications, notificationOptions, t]);
 
 	const mobileNotificationOptions = useMemo(() => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications] as TranslationKey)})`]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications])})`]);
 		return optionsCp;
 	}, [defaultMobileNotifications, notificationOptions, t]);
 
@@ -83,7 +82,7 @@ const PreferencesNotificationsSection = () => {
 		const options = Object.entries(emailNotificationOptionsLabelMap).map(
 			([key, val]) => i18n.exists(val) && [key, t(val)],
 		) as SelectOption[];
-		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode] as TranslationKey)})`]);
+		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode])})`]);
 		return options;
 	}, [i18n, t, userEmailNotificationMode]);
 

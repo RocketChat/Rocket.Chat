@@ -17,16 +17,16 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { usePreferenceFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 
 const AccountFeaturePreviewPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { features, unseenFeatures } = usePreferenceFeaturePreviewList();
 
@@ -95,7 +95,7 @@ const AccountFeaturePreviewPage = () => {
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
-									<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+									<AccordionItem defaultExpanded={index === 0} key={group} title={t(group)}>
 										<FieldGroup>
 											{features.map((feature) => (
 												<Fragment key={feature.name}>

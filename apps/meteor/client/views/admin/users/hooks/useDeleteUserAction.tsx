@@ -1,23 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	useSetting,
-	usePermission,
-	useEndpoint,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const userRoute = useRoute('admin-users');
 	const canDeleteUser = usePermission('delete-user');
@@ -50,7 +42,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 				}
 			},
 			{
-				contentTitle: t(`Delete_User_Warning_${erasureType}` as TranslationKey),
+				contentTitle: t(`Delete_User_Warning_${erasureType}`),
 				confirmText: t('Delete'),
 			},
 			onChange,
@@ -59,7 +51,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 	const confirmDeleteUser = useStableCallback(() => {
 		setModal(
 			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={(): void => setModal()} confirmText={t('Delete')}>
-				{t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
+				{t(`Delete_User_Warning_${erasureType}`)}
 			</GenericModal>,
 		);
 	});
