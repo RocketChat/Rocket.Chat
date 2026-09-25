@@ -2208,7 +2208,7 @@
   "Do_Nothing": "Do nothing",
   "Do_nothing": "Do nothing",
   "Do_you_want_to_accept": "Do you want to accept?",
-  "Do_you_want_to_change_to_s_question": "Do you want to change to <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Do you want to change to <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Document domain",
   "Documentation": "Documentation",
   "Domain": "Domain",

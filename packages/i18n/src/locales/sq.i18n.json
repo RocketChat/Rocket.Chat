@@ -861,7 +861,7 @@
   "Displays_action_text": "Teksti tregon veprim",
   "Do_not_display_unread_counter": "Mos shfaq asnjë numërues të këtij kanali",
   "Do_you_want_to_accept": "A doni të pranoni?",
-  "Do_you_want_to_change_to_s_question": "A doni të ndryshojë <strong>për {{currentUrl}}?</strong>",
+  "Do_you_want_to_change_to_s_question": "A doni të ndryshojë për <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Domain i Dokumentit",
   "Domain": "fushë",
   "Domain_added": "domain shtuar",

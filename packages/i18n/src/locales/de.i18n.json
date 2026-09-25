@@ -2080,7 +2080,7 @@
   "Do_Nothing": "Nichts unternehmen",
   "Do_nothing": "Nichts tun",
   "Do_you_want_to_accept": "Möchten Sie akzeptieren?",
-  "Do_you_want_to_change_to_s_question": "Möchten Sie dies zu <strong>{{currentUrl}}</strong> ändern?",
+  "Do_you_want_to_change_to_s_question": "Möchten Sie dies zu <bold>{{currentUrl}}</bold> ändern?",
   "Document_Domain": "Dokumentdomäne",
   "Documentation": "Dokumentation",
   "Domain": "Domain",

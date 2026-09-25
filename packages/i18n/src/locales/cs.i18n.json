@@ -1200,7 +1200,7 @@
   "Do_not_provide_this_code_to_anyone": "Tento kód nikomu neukazujte",
   "Do_Nothing": "Nedělat nic",
   "Do_you_want_to_accept": "Chcete přijmout?",
-  "Do_you_want_to_change_to_s_question": "Chcete změnit na <strong>{{currentUrl}}?</strong>",
+  "Do_you_want_to_change_to_s_question": "Chcete změnit na <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Doména dokumentů",
   "Domain": "Doména",
   "Domain_added": "Doména přidána",

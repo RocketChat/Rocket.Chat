@@ -1590,7 +1590,7 @@
   "Do_Nothing": "Nic nie rób",
   "Do_nothing": "Nic nie rób",
   "Do_you_want_to_accept": "Czy chcesz zaakceptować?",
-  "Do_you_want_to_change_to_s_question": "Czy chcesz zmienić na <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Czy chcesz zmienić na <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Domena dokumentu",
   "Documentation": "Dokumentacja",
   "Domain": "Domena",

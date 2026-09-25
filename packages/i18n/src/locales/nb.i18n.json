@@ -2004,7 +2004,7 @@
   "Do_Nothing": "Ikke gjør noe",
   "Do_nothing": "Gjør ingenting",
   "Do_you_want_to_accept": "Ønsker du å godta?",
-  "Do_you_want_to_change_to_s_question": "Vil du endre til <strong>{{currentUrl}}</strong>?",
+  "Do_you_want_to_change_to_s_question": "Vil du endre til <bold>{{currentUrl}}</bold>?",
   "Document_Domain": "Dokumentdomene",
   "Documentation": "Dokumentasjon",
   "Domain": "Domene",
