@@ -60,7 +60,7 @@ const requireAuditor = async (userId: string | null): Promise<IUser> => {
 	}
 
 	const user = await Users.findOneById(userId);
-	if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
+	if (!user || !(await hasPermissionAsync(user, 'can-audit'))) {
 		throw new Meteor.Error('Not allowed');
 	}
 	return user;
