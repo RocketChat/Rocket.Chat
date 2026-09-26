@@ -26,6 +26,39 @@ import { useTranslation } from 'react-i18next';
 import { useErrorHandler } from './useErrorHandler';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 
+const ACCEPTED_FILE_TYPES: Record<string, { extensions: string[]; accept: string }> = {
+	'slack-users': {
+		extensions: ['.csv'],
+		accept: '.csv, text/csv, text/comma-separated-values, application/vnd.ms-excel',
+	},
+	'omnichannel_contact': {
+		extensions: ['.csv'],
+		accept: '.csv, text/csv, text/comma-separated-values, application/vnd.ms-excel',
+	},
+	'csv': {
+		extensions: ['.zip'],
+		accept: '.zip, application/zip, application/x-zip-compressed',
+	},
+	'slack': {
+		extensions: ['.zip'],
+		accept: '.zip, application/zip, application/x-zip-compressed',
+	},
+};
+
+const isValidImportFile = (file: File, importerKey?: string): boolean => {
+	if (!importerKey) {
+		return true;
+	}
+
+	const mapping = ACCEPTED_FILE_TYPES[importerKey];
+	if (!mapping) {
+		return true;
+	}
+
+	const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
+	return mapping.extensions.includes(fileExtension);
+};
+
 // TODO: review inner logic
 function NewImportPage() {
 	const { t } = useTranslation();
@@ -67,6 +100,8 @@ function NewImportPage() {
 			return;
 		}
 
+		setFiles([]);
+
 		router.navigate(
 			{
 				pattern: '/admin/import/new/:importerKey?',
@@ -97,7 +132,17 @@ function NewImportPage() {
 			}
 		}
 
-		setFiles(Array.from(files ?? []));
+		const fileList = Array.from(files ?? []);
+		const invalidFiles = fileList.filter((file) => !isValidImportFile(file, importerKey));
+
+		if (invalidFiles.length > 0) {
+			dispatchToastMessage({ type: 'error', message: t('Invalid_Import_File_Type') });
+			event.target.value = '';
+			setFiles([]);
+			return;
+		}
+
+		setFiles(fileList);
 	};
 
 	const handleFileUploadChipClick = (file: File) => () => {
@@ -105,7 +150,13 @@ function NewImportPage() {
 	};
 
 	const handleFileUploadImportButtonClick = async () => {
-		if (!importerKey) {
+		if (!importerKey || files.length === 0) {
+			return;
+		}
+
+		const hasInvalidFile = files.some((file) => !isValidImportFile(file, importerKey));
+		if (hasInvalidFile) {
+			dispatchToastMessage({ type: 'error', message: t('Invalid_Import_File_Type') });
 			return;
 		}
 
@@ -284,7 +335,12 @@ function NewImportPage() {
 												{t('Importer_Source_File')}
 											</FieldLabel>
 											<FieldRow>
-												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
+												<InputBox
+													type='file'
+													id={fileSourceInputId}
+													accept={importerKey ? ACCEPTED_FILE_TYPES[importerKey]?.accept : undefined}
+													onChange={handleImportFileChange}
+												/>
 											</FieldRow>
 											{files?.length > 0 && (
 												<FieldRow>
