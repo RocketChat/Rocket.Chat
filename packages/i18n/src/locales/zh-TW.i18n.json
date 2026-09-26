@@ -4024,7 +4024,7 @@
   "Title_offline": "標題離線",
   "To": "到",
   "To_additional_emails": "額外的電子郵件",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "要在您的網站上安裝Rocket.Chat評價等級，複製和粘貼的最後一個<strong>&lt;/body&gt;</strong>網站上的標籤之上的代碼。",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "要在您的網站上安裝Rocket.Chat評價等級，複製和粘貼的最後一個<bold>{{bodyTag}}</bold>網站上的標籤之上的代碼。",
   "to_see_more_details_on_how_to_integrate": "看到如何整合更多的細節。",
   "To_users": "為了使用者",
   "Today": "今天",

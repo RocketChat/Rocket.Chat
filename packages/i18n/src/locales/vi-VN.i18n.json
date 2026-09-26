@@ -2501,7 +2501,7 @@
   "Title_bar_color_offline": "Màu thanh tiêu đề không giới hạn",
   "Title_offline": "Tiêu đề ngoại tuyến",
   "To_additional_emails": "Gửi email bổ sung",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Để cài đặt Rocket.Chat Livechat trong trang web của bạn, hãy sao chép &amp; dán mã này vào cuối <strong>&lt; / body &gt;</strong> trên trang web của bạn.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Để cài đặt Rocket.Chat Livechat trong trang web của bạn, hãy sao chép & dán mã này vào cuối <bold>{{bodyTag}}</bold> trên trang web của bạn.",
   "to_see_more_details_on_how_to_integrate": "để xem thêm chi tiết về cách tích hợp.",
   "To_users": "Cho người dùng",
   "Toggle_original_translated": "Chuyển đổi bản gốc / dịch",

@@ -2387,7 +2387,7 @@
   "Title_bar_color_offline": "สีของแถบชื่อเรื่องออฟไลน์",
   "Title_offline": "หัวข้อออฟไลน์",
   "To_additional_emails": "ไปที่อีเมลเพิ่มเติม",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "หากต้องการติดตั้ง Rocket.Chat Livechat ในเว็บไซต์ของคุณให้คัดลอกและ amp; วางรหัสนี้ไว้เหนือช่วงเวลาสุดท้าย <strong>&lt; / body &gt;</strong>ในไซต์ของคุณ",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "หากต้องการติดตั้ง Rocket.Chat Livechat ในเว็บไซต์ของคุณให้คัดลอกและ amp; วางรหัสนี้ไว้เหนือช่วงเวลาสุดท้าย <bold>{{bodyTag}}</bold>ในไซต์ของคุณ",
   "to_see_more_details_on_how_to_integrate": "เพื่อดูรายละเอียดเพิ่มเติมเกี่ยวกับการผสานรวม",
   "To_users": "สำหรับผู้ใช้",
   "Toggle_original_translated": "สลับเป็นต้นฉบับ / แปล",

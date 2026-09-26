@@ -2855,7 +2855,7 @@
   "Title_offline": "Çevrimdışı başlık",
   "To": "Kime",
   "To_additional_emails": "Ek e-postalara",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Web sitenize Rocket.Chat Canlı Görüşme yüklemek için kopyalayıp sitenizde son <strong>&lt;/body&gt;</strong> etiketinin üzerine bu kodu yapıştırın.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Web sitenize Rocket.Chat Canlı Görüşme yüklemek için kopyalayıp sitenizde son <bold>{{bodyTag}}</bold> etiketinin üzerine bu kodu yapıştırın.",
   "to_see_more_details_on_how_to_integrate": "entegre etmek konusunda daha fazla ayrıntı görmek için.",
   "To_users": "Kullanıcılara",
   "Today": "Bugün",

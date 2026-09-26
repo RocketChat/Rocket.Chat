@@ -2424,7 +2424,7 @@
   "Title_bar_color_offline": "标题栏颜色脱机",
   "Title_offline": "标题离线",
   "To_additional_emails": "额外的电子邮件",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "要在您的网站上安装Rocket.Chat Livechat，请复制＆amp;将此代码粘贴到最后<strong>＆lt; / body＆gt;</strong>上方您网站上的标记。",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "要在您的网站上安装Rocket.Chat Livechat，请复制并将此代码粘贴到最后<bold>{{bodyTag}}</bold>上方您网站上的标记。",
   "to_see_more_details_on_how_to_integrate": "查看更多关于如何整合的细节。",
   "To_users": "给用户",
   "Toggle_original_translated": "切换原始/翻译",

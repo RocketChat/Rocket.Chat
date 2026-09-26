@@ -2406,7 +2406,7 @@
   "Title_bar_color_offline": "Judul bar warna secara offline",
   "Title_offline": "Judul secara offline",
   "To_additional_emails": "Ke email tambahan",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Untuk menginstal Rocket.Chat Livechat di website Anda, copy & paste kode ini di atas <strong>&lt;/body&gt;</strong> tag terakhir di situs Anda.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Untuk menginstal Rocket.Chat Livechat di website Anda, copy & paste kode ini di atas <bold>{{bodyTag}}</bold> tag terakhir di situs Anda.",
   "to_see_more_details_on_how_to_integrate": "untuk melihat rincian lebih lanjut tentang bagaimana mengintegrasikan.",
   "To_users": "untuk Pengguna",
   "Toggle_original_translated": "Toggle original / diterjemahkan",

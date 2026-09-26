@@ -3003,7 +3003,7 @@
   "Title_offline": "Titolo offline",
   "To": "A",
   "To_additional_emails": "Per ulteriori e-mail",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Installa Rocket.Chat Livechat nel tuo sito, copia e incolla questo codice sopra l'ultimo tag <strong>&lt;/body&gt;</strong> nel tuo sito.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Installa Rocket.Chat Livechat nel tuo sito, copia e incolla questo codice sopra l'ultimo tag <bold>{{bodyTag}}</bold> nel tuo sito.",
   "to_see_more_details_on_how_to_integrate": "per vedere altri dettagli su come integrarlo.",
   "To_users": "Agli Utenti",
   "Toggle_original_translated": "Attiva / disattiva originale",

@@ -2740,7 +2740,7 @@
   "Title_bar_color_offline": "رنگ نوار عنوان برون‌خط",
   "Title_offline": "عنوان برون‌خط",
   "To_additional_emails": "به ایمیل های اضافی",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "برای نصب راکت چت در وب سایت خود، کد زیر را در کد سایت خود در بالای تگ <strong>body</strong> قرار دهید",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "برای نصب راکت چت در وب سایت خود، کد زیر را در کد سایت خود در بالای تگ <bold>{{bodyTag}}</bold> قرار دهید",
   "to_see_more_details_on_how_to_integrate": "برای دیدن جزئیات بیشتر در مورد چگونگی ادغام.",
   "To_users": "به کاربران",
   "Toggle_original_translated": "تعویض اصلی / ترجمه شده",

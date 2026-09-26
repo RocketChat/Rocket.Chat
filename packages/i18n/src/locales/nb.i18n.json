@@ -6248,7 +6248,7 @@
   "Title_offline": "Tittel frakoblet",
   "To": "Til",
   "To_additional_emails": "Til flere e-poster",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "For å installere Rocket.Chat Livechat på nettstedet ditt, kopier &amp; lim inn denne koden over den siste <strong>&lt;/body&gt;</strong>-koden på nettstedet ditt.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "For å installere Rocket.Chat Livechat på nettstedet ditt, kopier & lim inn denne koden over den siste <bold>{{bodyTag}}</bold>-koden på nettstedet ditt.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "For å unngå å se denne meldingen igjen, sørg for at nettleserinnstillingene tillater åpning av popup-vinduer fra arbeidsområdets URL:",
   "to_see_more_details_on_how_to_integrate": "for å se flere detaljer om hvordan å integrere.",
   "To_users": "Til brukere",

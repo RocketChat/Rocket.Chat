@@ -2397,7 +2397,7 @@
   "Title_bar_color_offline": "Lliw bar teitl all-lein",
   "Title_offline": "Teitl all-lein",
   "To_additional_emails": "I negeseuon e-bost ychwanegol",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "I osod Rocket.Chat Livechat yn eich gwefan, copi &amp; gludwch y cod hwn uwchben y <strong>&lt; / body &gt;</strong> tag ar eich gwefan.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "I osod Rocket.Chat Livechat yn eich gwefan, copi & gludwch y cod hwn uwchben y <bold>{{bodyTag}}</bold> tag ar eich gwefan.",
   "to_see_more_details_on_how_to_integrate": "i weld mwy o fanylion ar sut i integreiddio.",
   "To_users": "I Ddefnyddwyr",
   "Toggle_original_translated": "Toggle gwreiddiol / cyfieithu",

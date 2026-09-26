@@ -4263,7 +4263,7 @@
   "Title_offline": "Titel offline",
   "To": "Naar",
   "To_additional_emails": "Op aanvullende e-mails",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Om Rocket.Chat Livechat op uw website te installeren, kopiëer &amp; plakt u deze code boven de laatste <strong>&lt;/body&gt;</strong>-tag op uw site.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Om Rocket.Chat Livechat op uw website te installeren, kopiëer & plakt u deze code boven de laatste <bold>{{bodyTag}}</bold>-tag op uw site.",
   "to_see_more_details_on_how_to_integrate": "voor meer informatie over hoe u kunt integreren.",
   "To_users": "Aan gebruikers",
   "Today": "Vandaag",

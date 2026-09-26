@@ -2399,7 +2399,7 @@
   "Title_bar_color_offline": "Titolo trinkejo senkonekta",
   "Title_offline": "Titolo senkonekta",
   "To_additional_emails": "Al pliaj retpoŝtoj",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Instali Rocket.Chat Livechat en via retejo, kopii &amp; batu ĉi tiun kodon super la lasta <strong>&lt; / body &gt;</strong> etikedo sur via retejo.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Instali Rocket.Chat Livechat en via retejo, kopii & batu ĉi tiun kodon super la lasta <bold>{{bodyTag}}</bold> etikedo sur via retejo.",
   "to_see_more_details_on_how_to_integrate": "Por vidi pli da detaloj pri kiel integri.",
   "To_users": "Al uzantoj",
   "Toggle_original_translated": "Baskuligi originalan / tradukitan",

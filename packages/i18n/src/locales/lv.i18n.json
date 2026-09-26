@@ -2406,7 +2406,7 @@
   "Title_bar_color_offline": "Nosaukuma joslas krāsa bezsaistē",
   "Title_offline": "Nosaukums bezsaistē",
   "To_additional_emails": "Uz papildu e-pastiem",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Lai jūsu vietnē instalētu Rocket.Chat Livechat, kopējiet &amp; ielīmējiet šo kodu virs pēdējā <strong>&lt; / body &gt;</strong> ietagojiet savā vietnē.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Lai jūsu vietnē instalētu Rocket.Chat Livechat, kopējiet & ielīmējiet šo kodu virs pēdējā <bold>{{bodyTag}}</bold> ietagojiet savā vietnē.",
   "to_see_more_details_on_how_to_integrate": "lai redzētu vairāk informācijas par to, kā integrēt.",
   "To_users": "Lietotājiem",
   "Toggle_original_translated": "Pārslēgt oriģinālu / tulkot",

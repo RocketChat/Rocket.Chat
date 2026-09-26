@@ -4264,7 +4264,7 @@
   "Title_offline": "Titre hors ligne",
   "To": "À",
   "To_additional_emails": "À d'autres adresses e-mail",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Pour installer le Livechat Rocket.Chat sur votre site Web, copiez-collez ce code au dessus de la dernière balise <strong>&lt;/body&gt;</strong> du site.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Pour installer le Livechat Rocket.Chat sur votre site Web, copiez-collez ce code au dessus de la dernière balise <bold>{{bodyTag}}</bold> du site.",
   "to_see_more_details_on_how_to_integrate": "pour plus de détails sur l'intégration.",
   "To_users": "À des utilisateurs",
   "Today": "Aujourd'hui",

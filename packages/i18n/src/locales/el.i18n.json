@@ -2405,7 +2405,7 @@
   "Title_bar_color_offline": "Τίτλος χρώμα μπαρ offline",
   "Title_offline": "Τίτλος offline",
   "To_additional_emails": "Για επιπλέον μηνύματα ηλεκτρονικού ταχυδρομείου",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Για να εγκαταστήσετε τη Ζωντανή Συζήτηση Rocket.Chat στην ιστοσελίδα σας, αντιγράψτε και επικολλήστε αυτόν τον κώδικα πάνω από την τελευταία ετικέτα <strong>&lt;/body&gt;</strong> στον ιστότοπό σας.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Για να εγκαταστήσετε τη Ζωντανή Συζήτηση Rocket.Chat στην ιστοσελίδα σας, αντιγράψτε και επικολλήστε αυτόν τον κώδικα πάνω από την τελευταία ετικέτα <bold>{{bodyTag}}</bold> στον ιστότοπό σας.",
   "to_see_more_details_on_how_to_integrate": "για να δείτε περισσότερες λεπτομέρειες σχετικά με τον τρόπο ενσωμάτωσης.",
   "To_users": "Για χρήστες",
   "Toggle_original_translated": "Εναλλαγή αρχικού / μεταφρασμένου",

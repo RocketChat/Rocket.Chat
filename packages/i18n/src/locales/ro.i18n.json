@@ -2396,7 +2396,7 @@
   "Title_offline": "Titlu principal off-line",
   "To": "Către",
   "To_additional_emails": "Pentru e-mailuri suplimentare",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Pentru a instala Rocket.Chat Livechat în site-ul dvs., copiați & lipiți acest cod chiar înaintea ultimului tag <strong>&lt;/body&gt;</strong> din pagină.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Pentru a instala Rocket.Chat Livechat în site-ul dvs., copiați & lipiți acest cod chiar înaintea ultimului tag <bold>{{bodyTag}}</bold> din pagină.",
   "to_see_more_details_on_how_to_integrate": "pentru a vedea mai multe detalii cu privire la modul în care să se integreze.",
   "To_users": "Către utilizatori",
   "Toggle_original_translated": "Comutați versiunea originală / tradusă",

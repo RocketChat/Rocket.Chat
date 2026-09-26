@@ -4215,7 +4215,7 @@
   "Title_offline": "タイトル（オフライン）",
   "To": "まで",
   "To_additional_emails": "追加のメールへ",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "WebサイトでRocket.Chatライブチャットをインストールするには、サイトの最後の<strong>&lt;/body&gt;</strong>タグの上に、このコードをコピーして貼り付けます。",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "WebサイトでRocket.Chatライブチャットをインストールするには、サイトの最後の<bold>{{bodyTag}}</bold>タグの上に、このコードをコピーして貼り付けます。",
   "to_see_more_details_on_how_to_integrate": "統合方法の詳細を確認してください。",
   "To_users": "宛先ユーザー",
   "Today": "今日",

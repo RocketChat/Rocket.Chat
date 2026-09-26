@@ -2400,7 +2400,7 @@
   "Title_bar_color_offline": "Titelbarfarbe ist offline.",
   "Title_offline": "Titel ist offline.",
   "To_additional_emails": "Zu zusätzlichen E-Mails",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-LiveChat auf Ihrer Webseite zu installieren, kopieren und fügen Sie den Code über den letzten <strong>&lt;/body&gt;</strong>-Tag Ihrer Seite ein.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-LiveChat auf Ihrer Webseite zu installieren, kopieren und fügen Sie den Code über den letzten <bold>{{bodyTag}}</bold>-Tag Ihrer Seite ein.",
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen.",
   "To_users": "An die Benutzer",
   "Toggle_original_translated": "Original umschalten / übersetzen",

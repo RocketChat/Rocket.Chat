@@ -2675,7 +2675,7 @@
   "Title_offline": "Titel wenn offline",
   "To": "Bis",
   "To_additional_emails": "Zu zusätzlichen E-Mails",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-Livechat auf Deiner Webseite zu installieren, kopiere den Code und füge ihn oberhalb des letzten <strong>&lt;/body&gt;</strong>-Tags Deiner Seite ein.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-Livechat auf Deiner Webseite zu installieren, kopiere den Code und füge ihn oberhalb des letzten <bold>{{bodyTag}}</bold>-Tags Deiner Seite ein.",
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen",
   "To_users": "An Benutzer",
   "Today": "Heute",

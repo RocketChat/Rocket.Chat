@@ -2434,7 +2434,7 @@
   "Title_bar_color_offline": "Title ແຖບສີອອຟໄລ",
   "Title_offline": "Title ອອຟໄລ",
   "To_additional_emails": "ກັບອີເມວເພີ່ມເຕີມ",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "ການຕິດຕັ້ງ Rocket.Chat Livechat ໃນເວັບໄຊທ໌ຂອງທ່ານ, ສໍາເນົາແລະການວາງຂໍ້ກໍານົດຂ້າງເທິງນີ້ໄດ້ <strong>&lt;/body&gt;</strong> tag ສຸດທ້າຍຢູ່ໃນເວັບໄຊຂອງທ່ານ.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "ການຕິດຕັ້ງ Rocket.Chat Livechat ໃນເວັບໄຊທ໌ຂອງທ່ານ, ສໍາເນົາແລະການວາງຂໍ້ກໍານົດຂ້າງເທິງນີ້ໄດ້ <bold>{{bodyTag}}</bold> tag ສຸດທ້າຍຢູ່ໃນເວັບໄຊຂອງທ່ານ.",
   "to_see_more_details_on_how_to_integrate": "ເພື່ອເຂົ້າໄປເບິ່ງລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບວິທີການເຊື່ອມໂຍງ.",
   "To_users": "ກັບຜູ້ໃຊ້",
   "Toggle_original_translated": "Toggle original / translated",

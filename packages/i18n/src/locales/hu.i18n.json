@@ -4670,7 +4670,7 @@
   "Title_offline": "Cím, kapcsolat nélkül",
   "To": "Címzett",
   "To_additional_emails": "További e-mail-címekhez",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ahhoz, hogy a Rocket.Chat élő csevegést telepítse a weboldalán, másolja ki és illessze be ezt a kódot a webhelyén lévő utolsó <strong>&lt;/body&gt;</strong> címke fölé.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ahhoz, hogy a Rocket.Chat élő csevegést telepítse a weboldalán, másolja ki és illessze be ezt a kódot a webhelyén lévő utolsó <bold>{{bodyTag}}</bold> címke fölé.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Annak érdekében, hogy ez az üzenet ne jelenjen meg újra, győződjön meg arról, hogy a böngészője beállításai engedélyezik-e a felugró ablakok megnyitását a munkaterület URL-jéről: ",
   "to_see_more_details_on_how_to_integrate": "további részletek megtekintéséhez arról, hogy hogyan kell integrálni.",
   "To_users": "Felhasználóknak",

@@ -4680,7 +4680,7 @@
   "Title_offline": "Tytuł nieaktywny",
   "To": "Do",
   "To_additional_emails": "Do dodatkowych wiadomości e-mail",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Aby zainstalować Rocket.Chat LiveChat na swojej stronie, skopiuj i wklej powyższy kod nad ostatni <strong>&lt;/body&gt;</strong> na swojej stronie.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Aby zainstalować Rocket.Chat LiveChat na swojej stronie, skopiuj i wklej powyższy kod nad ostatni <bold>{{bodyTag}}</bold> na swojej stronie.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Aby uniknąć ponownego wyświetlania tego komunikatu, upewnij się, że ustawienia przeglądarki zezwalają na otwieranie wyskakujących okienek z adresu URL obszaru roboczego ",
   "to_see_more_details_on_how_to_integrate": "aby zobaczyć więcej szczegółów na temat integracji.",
   "To_users": "Do użytkowników",

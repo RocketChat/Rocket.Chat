@@ -3472,7 +3472,7 @@
   "Title_offline": "Název režimu offline",
   "To": "Komu",
   "To_additional_emails": "Další e-maily",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Chcete-li nainstalovat Rocket.Chat LiveChat na své webové stránky, zkopírujte &amp; vložte tento kód před uzavírací tag <strong>&lt;/body&gt;</strong>.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Chcete-li nainstalovat Rocket.Chat LiveChat na své webové stránky, zkopírujte & vložte tento kód před uzavírací tag <bold>{{bodyTag}}</bold>.",
   "to_see_more_details_on_how_to_integrate": "pro zobrazení více detailů k integracím",
   "To_users": "Uživatelům",
   "Today": "Dnes",

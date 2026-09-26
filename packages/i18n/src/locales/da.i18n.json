@@ -3581,7 +3581,7 @@
   "Title_offline": "Titel offline",
   "To": "Til",
   "To_additional_emails": "Til yderligere e-mails",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "For at installere Rocket.Chat Livechat på dit websted, kopier &amp; Indsæt denne kode ovenover det sidste <strong>&lt; / body &gt;</strong> tag på dit websted.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "For at installere Rocket.Chat Livechat på dit websted, kopier & Indsæt denne kode ovenover det sidste <bold>{{bodyTag}}</bold> tag på dit websted.",
   "to_see_more_details_on_how_to_integrate": "at se flere detaljer om integration.",
   "To_users": "Til brugere",
   "Today": "I dag",

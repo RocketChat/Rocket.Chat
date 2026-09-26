@@ -2217,7 +2217,7 @@
   "Title_bar_color_offline": "Титле бар боја онлине",
   "Title_offline": "Наслов онлине",
   "To_additional_emails": "За додатне е-поруке",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Да бисте инсталирали Роцкет.Цхат ливеЦхат у вашем сајту, цопи & пасте овај код изнад задњег <strong>&lt;/body&gt;</strong> на свом сајту.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Да бисте инсталирали Роцкет.Цхат ливеЦхат у вашем сајту, цопи & пасте овај код изнад задњег <bold>{{bodyTag}}</bold> на свом сајту.",
   "to_see_more_details_on_how_to_integrate": "видјети детаље о начину интеграције.",
   "To_users": "korisnicima",
   "Toggle_original_translated": "Пребаците оригинал / преведен",

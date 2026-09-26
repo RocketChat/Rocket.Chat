@@ -4103,7 +4103,7 @@
   "Title_offline": "Títol desconnectat",
   "To": "a",
   "To_additional_emails": "A correus electrònics addicionals",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Per instal·lar el xat en viu (livechat) de Rocket.Chat al teu lloc web, còpia i enganxa aquest codi damunt la darrera etiqueta <strong>&lt;/body&gt;</strong> del mateix.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Per instal·lar el xat en viu (livechat) de Rocket.Chat al teu lloc web, còpia i enganxa aquest codi damunt la darrera etiqueta <bold>{{bodyTag}}</bold> del mateix.",
   "to_see_more_details_on_how_to_integrate": "per a veure més detalls sobre com fer la integració.",
   "To_users": "Per als usuaris",
   "Today": "Avui",

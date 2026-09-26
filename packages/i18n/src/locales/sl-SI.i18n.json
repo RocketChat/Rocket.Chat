@@ -2392,7 +2392,7 @@
   "Title_bar_color_offline": "Barva naslovne vrstice ob nedosegljivosti",
   "Title_offline": "Naslov ob nedosegljiivosti",
   "To_additional_emails": "Dodatna e-poštna sporočila",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Če želite namestiti Rocket.Chat Livechat na spletno mesto, kopirajte &amp; prilepite to kodo nad zadnjo <strong>&lt;/body&gt;</strong> oznako na vašem spletnem mestu.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Če želite namestiti Rocket.Chat Livechat na spletno mesto, kopirajte & prilepite to kodo nad zadnjo <bold>{{bodyTag}}</bold> oznako na vašem spletnem mestu.",
   "to_see_more_details_on_how_to_integrate": "za več podrobnosti o tem, kako se integrirati.",
   "To_users": "Na uporabnike",
   "Toggle_original_translated": "Preklopi original/preveden",

@@ -2392,7 +2392,7 @@
   "Title_bar_color_offline": "Гарах газрын өнгөөр ​​офлайн",
   "Title_offline": "Гарчиг офлайн байна",
   "To_additional_emails": "Нэмэлт имэйлийг авах",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Өөрийн вэбсайт дахь Rocket.Chat Livechat-ийг суулгахын тулд &amp; энэ кодыг сүүлд <strong>&lt; / body &gt;</strong>сайт дээрээ шошго.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Өөрийн вэбсайт дахь Rocket.Chat Livechat-ийг суулгахын тулд & энэ кодыг сүүлд <bold>{{bodyTag}}</bold>сайт дээрээ шошго.",
   "to_see_more_details_on_how_to_integrate": "хэрхэн нэгтгэх тухай дэлгэрэнгүй мэдээллийг үзэх.",
   "To_users": "Хэрэглэгчдэд",
   "Toggle_original_translated": "Эх / хөрвүүлэлтийг соль",
