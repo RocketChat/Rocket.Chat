@@ -132,6 +132,7 @@ type FindPaginatedUsersByStatusProps = {
 	hasLoggedIn?: boolean;
 	type?: string;
 	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
+	statusManagement?: 'default' | 'managed';
 };
 
 export async function findPaginatedUsersByStatus({
@@ -145,10 +146,12 @@ export async function findPaginatedUsersByStatus({
 	hasLoggedIn,
 	type,
 	inactiveReason,
+	statusManagement,
 }: FindPaginatedUsersByStatusProps) {
-	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
+	const actualSort: Record<string, 1 | -1> = sort ? { ...sort } : { username: 1 };
 	if (sort?.status) {
 		actualSort.active = sort.status;
+		delete actualSort.status;
 	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {
@@ -218,6 +221,14 @@ export async function findPaginatedUsersByStatus({
 		} else {
 			Object.assign(match, inactiveReasonCondition);
 		}
+	}
+
+	if (statusManagement) {
+		const managedStatus = {
+			$or: [{ presenceDisabledByAdmin: true }, { statusVisibilityDeniedByAdmin: { $exists: true, $ne: [] } }],
+		};
+
+		match.$and = [...(match.$and ?? []), statusManagement === 'managed' ? managedStatus : { $nor: [managedStatus] }];
 	}
 
 	const { cursor, totalCount } = Users.findPaginated(

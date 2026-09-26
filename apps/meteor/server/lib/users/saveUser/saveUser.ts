@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError } from '@rocket.chat/core-services';
-import { isUserFederated } from '@rocket.chat/core-typings';
+import { MeteorError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -21,10 +21,10 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { shouldBreakInVersion } from '../../shouldBreakInVersion';
+import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
-import { setStatusText } from '../setStatusText';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -52,6 +52,8 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 
 	freeSwitchExtension?: string;
 };
@@ -69,6 +71,35 @@ const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 	}
 
 	return user;
+};
+
+const STATUS_TEXT_MAX_LENGTH = 120;
+
+const getChangedStatusText = async (user: IUser, { statusText, presenceDisabledByAdmin }: SaveUserData): Promise<string | undefined> => {
+	const text = statusText?.trim().substring(0, STATUS_TEXT_MAX_LENGTH);
+
+	if (text === undefined || text === (user.statusText ?? '')) {
+		return undefined;
+	}
+
+	// this same save may be flipping the flag, and the service still answers for the state before the transaction
+	const presenceDisabled = presenceDisabledByAdmin ?? (await StatusVisibility.isPresenceDisabledFor(user._id));
+
+	return presenceDisabled ? undefined : text;
+};
+
+const isExpired = (expiresAt?: Date): boolean => expiresAt != null && new Date(expiresAt).getTime() < Date.now();
+
+const getOwnStatus = ({ statusDefault, statusSource, previousState }: IUser): UserStatus => {
+	if (!statusSource || statusSource === 'manual') {
+		return statusDefault ?? UserStatus.ONLINE;
+	}
+
+	if (previousState?.statusSource === 'manual' && !isExpired(previousState.statusExpiresAt)) {
+		return previousState.statusDefault;
+	}
+
+	return UserStatus.ONLINE;
 };
 
 const _saveUser = (session?: ClientSession) =>
@@ -134,8 +165,10 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.statusText === 'string') {
-			await setStatusText(oldUserData, userData.statusText, { updater, session });
+		const statusText = await getChangedStatusText(oldUserData, userData);
+
+		if (statusText !== undefined) {
+			updater.set('statusText', statusText);
 		}
 
 		if (userData.email) {
@@ -192,6 +225,38 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const presenceChanged =
+			userData.presenceDisabledByAdmin !== undefined &&
+			userData.presenceDisabledByAdmin !== (oldUserData?.presenceDisabledByAdmin === true);
+
+		if (presenceChanged) {
+			if (userData.presenceDisabledByAdmin) {
+				updater.set('presenceDisabledByAdmin', true);
+			} else {
+				updater.unset('presenceDisabledByAdmin');
+			}
+		}
+
+		const deniedByAdmin =
+			userData.statusVisibilityDeniedByAdmin !== undefined
+				? await resolveUsersByUsernames(
+						(userData.statusVisibilityDeniedByAdmin ?? []).filter((username) => username !== oldUserData?.username),
+					)
+				: undefined;
+
+		const storedDeniedByAdmin = oldUserData?.statusVisibilityDeniedByAdmin ?? [];
+		const deniedByAdminChanged =
+			deniedByAdmin !== undefined &&
+			(deniedByAdmin.ids.length !== storedDeniedByAdmin.length || deniedByAdmin.ids.some((id) => !storedDeniedByAdmin.includes(id)));
+
+		if (deniedByAdminChanged) {
+			if (deniedByAdmin.ids.length) {
+				updater.set('statusVisibilityDeniedByAdmin', deniedByAdmin.ids);
+			} else {
+				updater.unset('statusVisibilityDeniedByAdmin');
+			}
+		}
+
 		if (userData.customFields) {
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
@@ -199,6 +264,20 @@ const _saveUser = (session?: ClientSession) =>
 		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
 
 		await onceTransactionCommitedSuccessfully(async () => {
+			if (presenceChanged || deniedByAdminChanged) {
+				await StatusVisibility.invalidate([userData._id], { allViewers: presenceChanged }).catch(() => undefined);
+			}
+
+			if (statusText !== undefined) {
+				if (presenceChanged) {
+					await StatusVisibility.refresh([userData._id]);
+				}
+
+				if (!(await StatusVisibility.isPresenceDisabledFor(userData._id))) {
+					await Presence.setStatus(userData._id, getOwnStatus(oldUserData), statusText);
+				}
+			}
+
 			if (session && options?.auditStore) {
 				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
 				// updater will be commited by this point, so it won't affect the external user activation/deactivation
@@ -232,11 +311,13 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
+
 			void notifyOnUserChange({
 				clientAction: 'updated',
 				id: userData._id,
 				diff: {
-					...userData,
+					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
 			});

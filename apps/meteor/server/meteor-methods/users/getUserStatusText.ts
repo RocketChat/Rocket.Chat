@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { isHiddenFor } from '@rocket.chat/streamer';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
@@ -22,6 +23,6 @@ Meteor.methods<ServerMethods>({
 
 		const hidden = await getUsersHiddenFrom(currentUserId);
 
-		return hidden?.has(userId) ? undefined : getStatusText(userId);
+		return isHiddenFor(hidden, userId) ? undefined : getStatusText(userId);
 	},
 });

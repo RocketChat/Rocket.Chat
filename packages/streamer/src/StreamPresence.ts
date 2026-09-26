@@ -1,3 +1,4 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import { StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { USER_STATUS_TO_PRESENCE_CODE, UserStatus } from '@rocket.chat/core-typings';
@@ -5,6 +6,7 @@ import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { statusVisibilityGate } from './StatusVisibilityGate';
+import { NOTHING_HIDDEN, isHiddenFor } from './presenceScope';
 import { Streamer } from './streamer.module';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from './types';
 
@@ -34,8 +36,11 @@ class UserPresence {
 
 	private readonly listeners: Set<string>;
 
-	// map value as true marks a pending correction
-	private hiddenFrom = new Map<IUser['_id'], true | undefined>();
+	private scope: PresenceScope = NOTHING_HIDDEN;
+
+	private pendingCorrections = new Set<IUser['_id']>();
+
+	private refreshing: Promise<void> = Promise.resolve();
 
 	private stale = true;
 
@@ -48,6 +53,9 @@ class UserPresence {
 	listen(uid: string): void {
 		if (this.listeners.has(uid)) {
 			return;
+		}
+		if (isHiddenFor(this.scope, uid)) {
+			this.pendingCorrections.add(uid);
 		}
 		e.on(uid, this.run);
 		this.listeners.add(uid);
@@ -62,21 +70,27 @@ class UserPresence {
 		return this.stale;
 	}
 
-	async refreshHiddenFrom(): Promise<void> {
-		if (!(await statusVisibilityGate.ensureEnabled())) {
-			if (this.hiddenFrom.size) {
-				this.hiddenFrom = new Map();
-			}
+	async refreshHiddenUsers(): Promise<void> {
+		this.refreshing = this.refreshing.catch(() => undefined).then(() => this.applyHiddenUsers());
+		return this.refreshing;
+	}
+
+	private async applyHiddenUsers(): Promise<void> {
+		if (!(await statusVisibilityGate.ensureActive())) {
+			this.scope = NOTHING_HIDDEN;
+			this.pendingCorrections = new Set();
 			this.stale = false;
 			return;
 		}
 
-		const previous = this.hiddenFrom;
-
 		try {
-			const hidden = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
+			const scope = await StatusVisibility.getHiddenFrom(this.publication._session?.userId);
+			const previous = this.scope;
 
-			this.hiddenFrom = new Map(hidden.map((uid) => [uid, !previous.has(uid) && this.listeners.has(uid) ? true : undefined]));
+			this.scope = scope;
+			this.pendingCorrections = new Set(
+				[...this.listeners].filter((uid) => isHiddenFor(scope, uid) && (!isHiddenFor(previous, uid) || this.pendingCorrections.has(uid))),
+			);
 			this.stale = false;
 		} catch (error) {
 			this.stale = true;
@@ -85,14 +99,10 @@ class UserPresence {
 	}
 
 	run = (args: UserPresenceStreamArgs): void => {
-		const hidden = this.hiddenFrom.has(args.uid);
+		const hidden = isHiddenFor(this.scope, args.uid);
 
-		if (hidden) {
-			if (!this.hiddenFrom.get(args.uid)) {
-				return;
-			}
-
-			this.hiddenFrom.set(args.uid, undefined);
+		if (hidden && !this.pendingCorrections.delete(args.uid)) {
+			return;
 		}
 
 		const visiblePresence: UserPresenceStreamArgs = hidden
@@ -153,7 +163,7 @@ export class StreamPresence {
 
 					if (client.isStale) {
 						try {
-							await client.refreshHiddenFrom();
+							await client.refreshHiddenUsers();
 						} catch (error) {
 							if (main) {
 								client.stop();
@@ -196,5 +206,5 @@ export const refreshVisibility = async (viewers?: IUser['_id'][]): Promise<void>
 	const affected = viewers && new Set(viewers);
 	const clients = affected ? Array.from(liveClients).filter(({ viewerId }) => viewerId && affected.has(viewerId)) : liveClients;
 
-	await Promise.allSettled(Array.from(clients, (client) => client.refreshHiddenFrom()));
+	await Promise.allSettled(Array.from(clients, (client) => client.refreshHiddenUsers()));
 };
