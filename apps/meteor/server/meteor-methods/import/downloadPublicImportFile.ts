@@ -8,7 +8,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
-import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';

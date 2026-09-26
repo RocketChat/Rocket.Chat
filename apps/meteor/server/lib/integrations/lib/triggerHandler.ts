@@ -17,7 +17,7 @@ import _ from 'underscore';
 import type { OutgoingRequestData } from './ScriptEngine';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
-import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
+import { outgoingEvents } from '../../../../lib/integrations/outgoingEvents';
 import { settings } from '../../../settings';
 import { processWebhookMessage } from '../../messages/processWebhookMessage';
 import { notifyOnIntegrationChangedById } from '../../notifyListener';
