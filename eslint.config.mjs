@@ -12,6 +12,8 @@ export default [
 			'apps/meteor/**/imports',
 			'apps/meteor/**/packages',
 			'apps/meteor/.meteor/**',
+			// NestJS conventions apply here instead; the package lints itself with oxlint.
+			'apps/nest-shadow/**',
 		],
 	},
 	{

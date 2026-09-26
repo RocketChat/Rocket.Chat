@@ -1,0 +1,6 @@
+# compiled output
+/dist
+/*.tsbuildinfo
+
+# local env files
+.env

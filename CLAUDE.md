@@ -37,6 +37,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/ajv-instances.md](docs/ajv-instances.md) — when to use `ajv` vs `ajvQuery` in `@rocket.chat/rest-typings`
 - [docs/apps-engine-migration.md](docs/apps-engine-migration.md) — phased extraction of apps execution into a microservice
 - [docs/service-brokers.md](docs/service-brokers.md) — how services reach each other: the local and Moleculer brokers, and the calls that only work because both ends share a process
+- [apps/nest-shadow/README.md](apps/nest-shadow/README.md) — a NestJS shadow of ten chat REST endpoints as a standalone process, and the core-services seam gaps it found; the package follows NestJS conventions, not the monorepo's
 
 ### Build and tooling
 

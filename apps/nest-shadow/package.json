@@ -1,0 +1,62 @@
+{
+  "name": "@rocket.chat/nest-shadow",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shadow of the Rocket.Chat REST API for chat, built with NestJS as a standalone process",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "oxlint src/ test/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "testunit": "vitest run && vitest run --config ./vitest.config.e2e.ts"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "downloadDir": "../../node_modules/.cache/mongodb-memory-server",
+      "preferGlobalPath": false
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "^12.1.0",
+    "@nestjs/core": "^12.1.0",
+    "@nestjs/platform-express": "^12.1.0",
+    "@rocket.chat/account-utils": "workspace:^",
+    "@rocket.chat/core-services": "workspace:^",
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/models": "workspace:^",
+    "@rocket.chat/network-broker": "workspace:^",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "mongodb": "6.16.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.7",
+    "@nestjs/schematics": "^12.0.5",
+    "@nestjs/testing": "^12.1.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "~24.13.2",
+    "@types/supertest": "^7.2.1",
+    "mongodb-memory-server": "^10.2.3",
+    "oxlint": "^1.85.0",
+    "prettier": "~3.9.6",
+    "source-map-support": "^0.5.21",
+    "supertest": "~7.1.4",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
+}
