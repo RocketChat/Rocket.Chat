@@ -128,6 +128,42 @@ it('should handle reconnecting', async () => {
 	jest.useRealTimers();
 });
 
+it('should keep reconnecting while the server stays down', async () => {
+	const client = new MinimalDDPClient();
+	connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: Infinity, retryTime: 100 });
+
+	await handleConnection(server, connection.connect());
+
+	jest.useFakeTimers();
+
+	server.close();
+	WS.clean();
+
+	// several attempts fail against no server at all
+	await jest.advanceTimersByTimeAsync(5_000);
+	expect(connection.retryCount).toBeGreaterThan(2);
+	expect(connection.status).toBe('disconnected');
+
+	server = new WS('ws://localhost:1234/websocket');
+
+	await handleConnection(
+		server,
+		jest.advanceTimersByTimeAsync(30_000),
+		new Promise((resolve) => {
+			const handler = (status: string) => {
+				if (status === 'connected') {
+					connection.off('connection', handler);
+					resolve(status);
+				}
+			};
+			connection.on('connection', handler);
+		}),
+	);
+
+	expect(connection.status).toBe('connected');
+	expect(connection.retryCount).toBe(0);
+});
+
 it('should queue messages if the connection is not ready', async () => {
 	const client = new MinimalDDPClient();
 	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
