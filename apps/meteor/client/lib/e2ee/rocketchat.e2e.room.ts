@@ -23,8 +23,8 @@ import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha2
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
-import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { t } from '../../../lib/i18n';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 import { roomCoordinator } from '../rooms/roomCoordinator';

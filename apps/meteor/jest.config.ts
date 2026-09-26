@@ -12,10 +12,8 @@ export default {
 			testMatch: [
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/ee/client/**/**.spec.[jt]s?(x)',
-				'<rootDir>/app/ui-message/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
-				'<rootDir>/app/ui/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/lib/emoji-native/**/**.spec.[jt]s?(x)',
 			],
 
@@ -42,7 +40,7 @@ export default {
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/ee/server/cron/**/*.spec.ts',
 				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
-				'<rootDir>/app/utils/lib/**.spec.ts',
+				'<rootDir>/lib/mimeTypes.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
@@ -51,6 +49,7 @@ export default {
 				'<rootDir>/server/api/lib/getUserInfo.spec.ts',
 				'<rootDir>/server/api/v1/middlewares/*.spec.ts',
 				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
+				'<rootDir>/server/lib/apps/**/*.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
 				'<rootDir>/server/lib/integrations/**/*.spec.ts',
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',

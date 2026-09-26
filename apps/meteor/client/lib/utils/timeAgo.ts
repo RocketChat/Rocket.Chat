@@ -1,4 +1,4 @@
-import { t } from '../../../app/utils/lib/i18n';
+import { t } from '../../../lib/i18n';
 import { getUserPreference } from '../getUserPreference';
 import { settings } from '../settings';
 import { getUserId } from '../user';

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getExtension } from '../../../app/utils/lib/mimeTypes';
+import { getExtension } from '../../../lib/mimeTypes';
 
 describe('mimeTypes', () => {
 	describe('#getExtension()', () => {

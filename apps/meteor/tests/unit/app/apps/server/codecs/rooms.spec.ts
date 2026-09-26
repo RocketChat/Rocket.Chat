@@ -4,7 +4,7 @@ import proxyquire from 'proxyquire';
 
 let visitor: Record<string, unknown>;
 
-const { appRoomToRocketChat } = proxyquire.noCallThru().load('../../../../../../app/apps/server/converters/codecs/rooms', {
+const { appRoomToRocketChat } = proxyquire.noCallThru().load('../../../../../../server/lib/apps/converters/codecs/rooms', {
 	'@rocket.chat/models': {
 		LivechatVisitors: {
 			findOneEnabledById: async () => visitor,

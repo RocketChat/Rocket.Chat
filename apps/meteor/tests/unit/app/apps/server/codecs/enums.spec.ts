@@ -10,7 +10,7 @@ import {
 	SettingTypeCodec,
 	UserStatusConnectionCodec,
 	UserTypeCodec,
-} from '../../../../../../app/apps/server/converters/codecs/enums';
+} from '../../../../../../server/lib/apps/converters/codecs/enums';
 
 /*
  * These are copies of the legacy private helpers the codecs replace. They act as the oracle:

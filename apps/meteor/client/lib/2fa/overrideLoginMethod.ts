@@ -37,7 +37,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 								return;
 							}
 
-							Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+							Promise.all([import('../../../lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 								if (isTotpMaxAttemptsError(error)) {
 									dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
 									reject(error);
@@ -85,7 +85,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 					return;
 				}
 
-				Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+				Promise.all([import('../../../lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 					dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 					callback?.(undefined);
 				});

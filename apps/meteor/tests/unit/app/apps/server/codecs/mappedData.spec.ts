@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import * as z from 'zod';
 
-import { createMappedCodec, mappedDecode, mappedDecodeAsync } from '../../../../../../app/apps/server/converters/codecs/mappedData';
+import { createMappedCodec, mappedDecode, mappedDecodeAsync } from '../../../../../../server/lib/apps/converters/codecs/mappedData';
 
 describe('createMappedCodec', () => {
 	const codec = createMappedCodec({

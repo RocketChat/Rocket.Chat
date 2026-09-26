@@ -1,4 +1,4 @@
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 
 export function getMarketplaceHeaders(): Record<string, any> {
 	return {
