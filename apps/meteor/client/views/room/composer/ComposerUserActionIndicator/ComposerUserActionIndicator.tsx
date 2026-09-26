@@ -67,13 +67,15 @@ const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorP
 			{actions.map(({ action, users }, index) => {
 				const shownUsers = users.length <= maxUsernames ? users : users.slice(0, maxUsernames - 1);
 				const hiddenUsersCount = users.length - shownUsers.length;
+				// The verb agrees with the listed subject (one person, two, or several), not with the total number of users
+				const subjectCount = Math.min(users.length, 3);
 
 				return (
 					<Fragment key={action}>
 						{index > 0 && ', '}
 						{t('User_activity', {
 							context: action,
-							count: users.length,
+							count: subjectCount,
 							users: hiddenUsersCount ? [...shownUsers, t('User_activity_hidden_users', { count: hiddenUsersCount })] : shownUsers,
 						})}
 					</Fragment>
