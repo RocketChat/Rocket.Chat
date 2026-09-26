@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IMessageSearchResult, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -855,10 +855,12 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatSearchProps,
 			response: {
-				200: ajv.compile<{ messages: IMessage[] }>({
+				// Full-text search attaches a MongoDB `$meta: 'textScore'` relevance score, so results
+				// are IMessageSearchResult (IMessage + optional `score`), not bare IMessage. See #42086.
+				200: ajv.compile<{ messages: IMessageSearchResult[] }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessageSearchResult' } },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'success'],
