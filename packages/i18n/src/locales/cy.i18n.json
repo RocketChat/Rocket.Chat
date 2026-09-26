@@ -2045,7 +2045,7 @@
   "RetentionPolicyRoom_FilesOnly": "Gwahardd ffeiliau yn unig, cadwch negeseuon",
   "RetentionPolicyRoom_MaxAge": "Oedran uchafswm neges mewn dyddiau (diofyn: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anwybyddu'r polisi cadw byd-eang",
-  "RetentionPolicyRoom_ReadTheDocs": "Gwyliwch allan! Gall tweaking y lleoliadau hyn heb ofal eithaf ddinistrio holl hanes negeseuon. Darllenwch y ddogfennaeth cyn troi'r nodwedd ar <link>yma</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Gwyliwch allan! Gall tweaking y lleoliadau hyn heb ofal eithaf ddinistrio holl hanes negeseuon. Darllenwch y ddogfennaeth cyn troi'r nodwedd ar <docsLink>yma</docsLink>.",
   "Retry_Count": "Ailadroddwch y Cyfrif",
   "Role": "Rôl",
   "Role_Editing": "Golygu Rôl",

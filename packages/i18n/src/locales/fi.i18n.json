@@ -4182,7 +4182,7 @@
   "RetentionPolicyRoom_FilesOnly": "Karsi vain tiedostot, pidä viestit",
   "RetentionPolicyRoom_MaxAge": "Viestin maksimi-ikä päivinä (oletus: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Ohita yleinen säilytyskäytäntö",
-  "RetentionPolicyRoom_ReadTheDocs": "Ole varovainen! Näiden asetusten muuttaminen huolettomasti voi poistaa koko viestihistorian. Tutustu oppaisiin <link>täällä</link>, ennen kuin otat ominaisuuden käyttöön.",
+  "RetentionPolicyRoom_ReadTheDocs": "Ole varovainen! Näiden asetusten muuttaminen huolettomasti voi poistaa koko viestihistorian. Tutustu oppaisiin <docsLink>täällä</docsLink>, ennen kuin otat ominaisuuden käyttöön.",
   "Retry": "Yritä Uudelleen",
   "Retry_Count": "Uudelleenyritysten määrä",
   "Return_to_home": "Palaa kotinäkymään",

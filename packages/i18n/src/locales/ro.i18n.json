@@ -2043,7 +2043,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune numai fișierele, păstrează mesajele",
   "RetentionPolicyRoom_MaxAge": "Vârsta mesajului maxim în zile (implicit: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Depășiți politica de păstrare globală",
-  "RetentionPolicyRoom_ReadTheDocs": "Ai grija! Ajustarea acestor setări fără o atenție deosebită poate distruge tot istoricul mesajelor. Citiți documentația înainte de a activa caracteristica <link>aici</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Ai grija! Ajustarea acestor setări fără o atenție deosebită poate distruge tot istoricul mesajelor. Citiți documentația înainte de a activa caracteristica <docsLink>aici</docsLink>.",
   "Retry_Count": "Retry count",
   "Role": "Rol",
   "Role_Editing": "Editare rol",

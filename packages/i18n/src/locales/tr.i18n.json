@@ -2445,7 +2445,7 @@
   "RetentionPolicyRoom_FilesOnly": "Yalnızca dosyaları buda, iletileri koru",
   "RetentionPolicyRoom_MaxAge": "Maksimum ileti yaşı gün olarak (varsayılan: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Genel saklama politikasını geçersiz kıl",
-  "RetentionPolicyRoom_ReadTheDocs": "Dikkat! Azami özen göstermeden bu ayarları yapmak tüm ileti geçmişini yok edebilir. Lütfen <link>buradan</link> özelliği açmadan önce belgelemeyi okuyun.",
+  "RetentionPolicyRoom_ReadTheDocs": "Dikkat! Azami özen göstermeden bu ayarları yapmak tüm ileti geçmişini yok edebilir. Lütfen <docsLink>buradan</docsLink> özelliği açmadan önce belgelemeyi okuyun.",
   "Retry_Count": "Yeniden Dene Sayımı",
   "Return_to_home": "Anasayfaya dön",
   "Return_to_previous_page": "Önceki sayfaya dön",

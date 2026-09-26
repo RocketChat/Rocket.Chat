@@ -3556,7 +3556,7 @@
   "RetentionPolicyRoom_FilesOnly": "ファイルのみを整理し、メッセージは残す",
   "RetentionPolicyRoom_MaxAge": "メッセージ保持日数（デフォルト：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "グローバル保持ポリシーを上書き",
-  "RetentionPolicyRoom_ReadTheDocs": "ご注意ください！これらの設定を不用意に調整すると、すべてのメッセージ履歴が破棄されます。機能を有効にする前に<link>こちら</link>のドキュメントを参照してください。",
+  "RetentionPolicyRoom_ReadTheDocs": "ご注意ください！これらの設定を不用意に調整すると、すべてのメッセージ履歴が破棄されます。機能を有効にする前に<docsLink>こちら</docsLink>のドキュメントを参照してください。",
   "Retry": "再試行",
   "Retry_Count": "再試行回数",
   "Return_to_home": "ホームに戻る",

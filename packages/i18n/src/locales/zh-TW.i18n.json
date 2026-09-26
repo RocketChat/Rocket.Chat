@@ -3470,7 +3470,7 @@
   "RetentionPolicyRoom_FilesOnly": "僅修剪檔案，保留訊息",
   "RetentionPolicyRoom_MaxAge": "最大訊息年齡（以天為單位）（預設值：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "覆蓋全域保留策略",
-  "RetentionPolicyRoom_ReadTheDocs": "小心！不注意的調整這些設定可能會破壞所有歷史訊息記錄。在<link>此處</link>打開上的功能之前，請先閱讀相關文件。",
+  "RetentionPolicyRoom_ReadTheDocs": "小心！不注意的調整這些設定可能會破壞所有歷史訊息記錄。在<docsLink>此處</docsLink>打開上的功能之前，請先閱讀相關文件。",
   "Retry_Count": "重試計數",
   "Return_to_home": "返回首頁",
   "Return_to_previous_page": "返回前一頁",

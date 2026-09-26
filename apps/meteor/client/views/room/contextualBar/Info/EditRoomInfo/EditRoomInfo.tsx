@@ -542,7 +542,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												<Callout type='danger'>
 													<Trans
 														i18nKey='RetentionPolicyRoom_ReadTheDocs'
-														components={{ link: <ExternalLink to={links.retentionPolicy} /> }}
+														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
 													/>
 												</Callout>
 												<Field>

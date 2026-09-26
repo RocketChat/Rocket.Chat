@@ -2060,7 +2060,7 @@
   "RetentionPolicyRoom_FilesOnly": "Apgriezt tikai failus, saglabāt ziņojumus",
   "RetentionPolicyRoom_MaxAge": "Maksimālais ziņu vecums dienās (pēc noklusējuma: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Pārlabot globālo saglabāšanas politiki",
-  "RetentionPolicyRoom_ReadTheDocs": "Uzmanies! Konfigurējot šos iestatījumus bezrūpīgi izdzēst visu ziņojumu vēsturi. Pirms funkcijas ieslēgšanas lūdzam izlasīt dokumentāciju <link>šeit</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Uzmanies! Konfigurējot šos iestatījumus bezrūpīgi izdzēst visu ziņojumu vēsturi. Pirms funkcijas ieslēgšanas lūdzam izlasīt dokumentāciju <docsLink>šeit</docsLink>.",
   "Retry_Count": "Mēģinājumu skaits",
   "Role": "Loma",
   "Role_Editing": "Lomu rediģēšana",

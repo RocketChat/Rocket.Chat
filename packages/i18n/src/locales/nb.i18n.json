@@ -5299,7 +5299,7 @@
   "RetentionPolicyRoom_FilesOnly": "Beskjær kun filer, behold meldinger",
   "RetentionPolicyRoom_MaxAge": "Maksimal meldingsalder i dager (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Overstyr globale retningslinjer for oppbevaring",
-  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <link>her</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <docsLink>her</docsLink>.",
   "Retry": "Prøv på nytt",
   "Retry_Count": "Antall forsøk",
   "Retrying": "Prøver på nytt",

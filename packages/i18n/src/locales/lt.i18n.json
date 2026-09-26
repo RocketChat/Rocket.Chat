@@ -2099,7 +2099,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune tik failus, saugo pranešimus",
   "RetentionPolicyRoom_MaxAge": "Maksimalus pranešimo amžius dienomis (numatytasis: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Pervesti pasaulinę saugojimo politiką",
-  "RetentionPolicyRoom_ReadTheDocs": "Saugokitės! Nepakankamai atsargiai keisdami šiuos nustatymus galite sunaikinti visą pranešimų istoriją. Prieš įjungdami šią funkciją, perskaitykite dokumentaciją <link>čia</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Saugokitės! Nepakankamai atsargiai keisdami šiuos nustatymus galite sunaikinti visą pranešimų istoriją. Prieš įjungdami šią funkciją, perskaitykite dokumentaciją <docsLink>čia</docsLink>.",
   "Retry_Count": "Pakartotinai kartoti",
   "Role": "Vaidmuo",
   "Role_Editing": "Vaidmenų redagavimas",
