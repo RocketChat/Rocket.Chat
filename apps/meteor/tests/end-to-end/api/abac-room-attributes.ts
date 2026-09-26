@@ -202,7 +202,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await writeAttributes(rid, {}, ownerCredentials)
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('error', 'error-abac-room-attributes-cleared');
+						expect(res.body).to.include({ error: 'error-abac-room-attributes-cleared', errorType: 'error-abac-room-attributes-cleared' });
 					});
 			} finally {
 				await setSetting('ABAC_Enforce_All_Rooms', false);
