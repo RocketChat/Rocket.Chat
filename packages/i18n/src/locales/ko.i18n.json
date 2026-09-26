@@ -3039,7 +3039,7 @@
   "RetentionPolicyRoom_FilesOnly": "파일만 정리하고 메시지는 보존합니다.",
   "RetentionPolicyRoom_MaxAge": "최대 메시지 수명 (일수) (기본값 : {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "전역 보존 정책 재정의",
-  "RetentionPolicyRoom_ReadTheDocs": "주의하세요! 모든 메시지 기록이 삭제 될 수 있습니다. 기능을 사용하기 전에 <link>이곳</link>에서 설명서를 읽으십시오.",
+  "RetentionPolicyRoom_ReadTheDocs": "주의하세요! 모든 메시지 기록이 삭제 될 수 있습니다. 기능을 사용하기 전에 <docsLink>이곳</docsLink>에서 설명서를 읽으십시오.",
   "Retry_Count": "다시 시도 횟수",
   "Return_to_home": "홈으로 돌아가기",
   "Return_to_previous_page": "이전 페이지로 돌아가기",

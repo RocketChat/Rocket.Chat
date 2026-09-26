@@ -2367,7 +2367,7 @@
   "RetentionPolicyRoom_FilesOnly": "فقط پرونده ها را ببندید، پیام ها را نگه دارید",
   "RetentionPolicyRoom_MaxAge": "حداکثر سن پیام در روز (به طور پیش فرض: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "نادیده گرفتن سیاست حفظ احتمالات جهانی",
-  "RetentionPolicyRoom_ReadTheDocs": "توجه! اعمال این بهینه سازی ممکن است بدون هیچ اختاری تاریخچه پیامهای شمار را از بین ببرد. لطفا راهنما را قبل از اعمال <link>اینجا</link> بخوانید",
+  "RetentionPolicyRoom_ReadTheDocs": "توجه! اعمال این بهینه سازی ممکن است بدون هیچ اختاری تاریخچه پیامهای شمار را از بین ببرد. لطفا راهنما را قبل از اعمال <docsLink>اینجا</docsLink> بخوانید",
   "Retry_Count": "تعداد تلاش مجدد",
   "Role": "نقش",
   "Role_Editing": "نقش در حال ویرایش",

@@ -2053,7 +2053,7 @@
   "RetentionPolicyRoom_FilesOnly": "Yalnız faylları daraltın, mesajları saxlayın",
   "RetentionPolicyRoom_MaxAge": "Günlərdə maksimum mesaj yaşı (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Qlobal saxlama siyasətini ləğv edin",
-  "RetentionPolicyRoom_ReadTheDocs": "Diqqətli ol! Bu parametrləri çox səmərəli istifadə etmədən tweaking bütün mesaj tarixini məhv edə bilər. Xüsusiyyətini <link>burada</link> buraxmadan əvvəl sənədləri oxuyun.",
+  "RetentionPolicyRoom_ReadTheDocs": "Diqqətli ol! Bu parametrləri çox səmərəli istifadə etmədən tweaking bütün mesaj tarixini məhv edə bilər. Xüsusiyyətini <docsLink>burada</docsLink> buraxmadan əvvəl sənədləri oxuyun.",
   "Retry_Count": "Yenidən cəhd edin",
   "Role": "Rolu",
   "Role_Editing": "Rolü redaktə",

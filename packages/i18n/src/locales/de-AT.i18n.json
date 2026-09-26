@@ -2049,7 +2049,7 @@
   "RetentionPolicyRoom_FilesOnly": "Bereinigen Sie nur Dateien, behalten Sie Nachrichten",
   "RetentionPolicyRoom_MaxAge": "Maximales Nachrichtenalter in Tagen (Standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Globale Aufbewahrungsrichtlinie außer Kraft setzen",
-  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <link>hier</link> aktivieren.",
+  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <docsLink>hier</docsLink> aktivieren.",
   "Retry_Count": "Wiederholungsanzahl",
   "Role": "Rolle",
   "Role_Editing": "Rolle bearbeiten",

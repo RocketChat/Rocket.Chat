@@ -2385,7 +2385,7 @@
   "RetentionPolicyRoom_FilesOnly": "Remover apenas arquivos, mantenha mensagens",
   "RetentionPolicyRoom_MaxAge": "Validade máxima da mensagem em dias (padrão: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Substituir política de retenção global",
-  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar estas configurações sem as devidas precauções, pode resultar na destruição de todo o histórico de mensagens. Leia a documentação antes de activar o recurso <link>aqui</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar estas configurações sem as devidas precauções, pode resultar na destruição de todo o histórico de mensagens. Leia a documentação antes de activar o recurso <docsLink>aqui</docsLink>.",
   "Retry_Count": "Contagem de tentativas",
   "Return_to_previous_page": "Regressar à página anterior",
   "Robot_Instructions_File_Content": "Conteúdo do arquivo Robots.txt",

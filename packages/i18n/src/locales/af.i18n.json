@@ -2050,7 +2050,7 @@
   "RetentionPolicyRoom_FilesOnly": "Snoei slegs lêers, hou boodskappe",
   "RetentionPolicyRoom_MaxAge": "Maksimum boodskap ouderdom in dae (standaard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Hersien globale retensiebeleid",
-  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <link>hier</link> verander.",
+  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <docsLink>hier</docsLink> verander.",
   "Retry_Count": "Probeer weer",
   "Role": "Rol",
   "Role_Editing": "Rolredigering",

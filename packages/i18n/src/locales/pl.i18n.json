@@ -3949,7 +3949,7 @@
   "RetentionPolicyRoom_FilesOnly": "Przycinaj tylko pliki, zachowaj wiadomości",
   "RetentionPolicyRoom_MaxAge": "Maksymalny wiek wiadomości w dniach (domyślnie: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Zastąp globalną zasadę przechowywania",
-  "RetentionPolicyRoom_ReadTheDocs": "Uważaj! Poprawianie tych ustawień bez szczególnej staranności może zniszczyć całą historię wiadomości. Zapoznaj się z dokumentacją przed włączeniem funkcji dostępną <link>tutaj</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Uważaj! Poprawianie tych ustawień bez szczególnej staranności może zniszczyć całą historię wiadomości. Zapoznaj się z dokumentacją przed włączeniem funkcji dostępną <docsLink>tutaj</docsLink>.",
   "Retry": "Powtórz",
   "Retry_Count": "Spróbuj ponownie",
   "Return_to_home": "Powrót do strony domowej",

@@ -5285,7 +5285,7 @@
   "RetentionPolicyRoom_FilesOnly": "仅修剪文件，保留消息",
   "RetentionPolicyRoom_MaxAge": "消息保持时限（以天为单位）（默认值：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "覆盖全局保留策略",
-  "RetentionPolicyRoom_ReadTheDocs": "小心！调整这些设置可能会破坏所有消息历史记录。请在<link>此处</link>启用该功能之前阅读文档。",
+  "RetentionPolicyRoom_ReadTheDocs": "小心！调整这些设置可能会破坏所有消息历史记录。请在<docsLink>此处</docsLink>启用该功能之前阅读文档。",
   "Retry": "重试",
   "Retry_Count": "重试计数",
   "Retrying": "正在重试",

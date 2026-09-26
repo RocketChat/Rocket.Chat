@@ -3467,7 +3467,7 @@
   "RetentionPolicyRoom_FilesOnly": "Esborri només arxius, mantingui missatges",
   "RetentionPolicyRoom_MaxAge": "Antiguitat màxima de l'missatge en dies (per defecte: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anul·lar la política de retenció global",
-  "RetentionPolicyRoom_ReadTheDocs": "Compte! Ajustar aquestes configuracions sense tenir més cura pot destruir tot l'historial de missatges. Llegiu la documentació abans d'activar la funció <link>aquí</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Compte! Ajustar aquestes configuracions sense tenir més cura pot destruir tot l'historial de missatges. Llegiu la documentació abans d'activar la funció <docsLink>aquí</docsLink>.",
   "Retry": "processar de nou",
   "Retry_Count": "Comptador de reintents",
   "Return_to_home": "Tornar a inici",

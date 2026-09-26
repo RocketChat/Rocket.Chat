@@ -2174,7 +2174,7 @@
   "RetentionPolicyRoom_FilesOnly": "Spusti samo datoteke, zadržite poruke",
   "RetentionPolicyRoom_MaxAge": "Maksimalna dob poruka u danima (zadana vrijednost: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Poništi globalno zadržavanje pravila",
-  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Ugađanje ovih postavki bez veće pažnje može uništiti sve povijesti poruka. Pročitajte dokumentaciju prije nego što uključite značajku <link>ovdje</link>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Ugađanje ovih postavki bez veće pažnje može uništiti sve povijesti poruka. Pročitajte dokumentaciju prije nego što uključite značajku <docsLink>ovdje</docsLink>.",
   "Retry_Count": "Ponovite račun",
   "Role": "Uloga",
   "Role_Editing": "Uređivanje Uloge",
