@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
@@ -5,7 +6,13 @@ import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
+import type {
+	IAbacAttributeDefinition,
+	ISubscription,
+	IUser as ICoreUser,
+	IRoom as ICoreRoom,
+	IMessage as ICoreMessage,
+} from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
@@ -16,6 +23,10 @@ import { createDirectMessage } from '../../../meteor-methods/messages/createDire
 import { createDiscussion } from '../../../meteor-methods/messages/createDiscussion';
 import { createChannelMethod } from '../../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../../meteor-methods/rooms/createPrivateGroup';
+import { settings } from '../../../settings';
+
+const isAttributeDefinitionList = (value: unknown): value is IAbacAttributeDefinition[] =>
+	Array.isArray(value) && value.every((attribute) => typeof attribute === 'object' && attribute !== null);
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
@@ -63,12 +74,25 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
 		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const abacAttributes = room.abacAttributes?.length ? room.abacAttributes : undefined;
+
+		if (abacAttributes && !isAttributeDefinitionList(abacAttributes)) {
+			throw new AbacContractError(AbacErrorCode.InvalidAttributes, { cause: AbacErrorCode.InvalidAttributeValues });
+		}
+
+		if (abacAttributes && !settings.get('ABAC_Enabled')) {
+			throw new AbacContractError(AbacErrorCode.NotEnabled);
+		}
+
+		if (abacAttributes && room.type !== RoomType.PRIVATE_GROUP) {
+			throw new AbacContractError(AbacErrorCode.AttributesPrivateRoomsOnly);
+		}
 
 		switch (room.type) {
 			case RoomType.CHANNEL:
 				return this.createChannel(room.creator.id, rcRoom, members);
 			case RoomType.PRIVATE_GROUP:
-				return this.createPrivateGroup(room.creator.id, rcRoom, members);
+				return this.createPrivateGroup(room.creator.id, rcRoom, members, abacAttributes);
 			case RoomType.DIRECT_MESSAGE:
 				return this.createDirectMessage(room.creator.id, members);
 			default:
@@ -94,12 +118,28 @@ export class AppRoomBridge extends RoomBridge {
 		return (await createDirectMessage(members, userId)).rid;
 	}
 
-	private async createPrivateGroup(userId: string, room: ICoreRoom, members: string[]): Promise<string> {
+	private async createPrivateGroup(
+		userId: string,
+		room: ICoreRoom,
+		members: string[],
+		abacAttributes?: IAbacAttributeDefinition[],
+	): Promise<string> {
 		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error('Invalid user');
 		}
-		return (await createPrivateGroupMethod(user, room.name || '', members, room.ro, room.customFields, this.prepareExtraData(room))).rid;
+		return (
+			await createPrivateGroupMethod(
+				user,
+				room.name || '',
+				members,
+				room.ro,
+				room.customFields,
+				this.prepareExtraData(room),
+				false,
+				abacAttributes,
+			)
+		).rid;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
