@@ -74,7 +74,7 @@
 		"@babel/preset-env": "~7.29.7",
 		"@babel/runtime": "~7.29.7",
 		"@bugsnag/js": "~7.20.2",
-		"@bugsnag/plugin-react": "~7.19.0",
+		"@bugsnag/plugin-react": "~8.9.0",
 		"@datastructures-js/priority-queue": "^6.3.5",
 		"@date-fns/tz": "^1.4.1",
 		"@emotion/hash": "^0.9.2",
