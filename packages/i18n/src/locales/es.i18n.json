@@ -769,8 +769,6 @@
   "CDN_PREFIX_ALL": "Usar prefijo de CDN para todos los activos",
   "Certificates_and_Keys": "Certificados y claves",
   "Change_Room_Type": "Cambiar el tipo de Room",
-  "change-livechat-room-visitor": "Cambiar visitantes de Room de Livechat",
-  "change-livechat-room-visitor_description": "Permiso para añadir información adicional al visitante de la sala de Livechat",
   "Changing_email": "Cambiando correo electrónico",
   "Channel": "Channel",
   "channel": "canal",

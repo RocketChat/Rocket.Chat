@@ -1134,8 +1134,6 @@
   "Certificates_and_Keys": "证书和密钥",
   "Change_E2EE_password": "更改端到端加密(E2EE)密码",
   "Change_Room_Type": "聊天室类型更改",
-  "change-livechat-room-visitor": "更改 Livechat 房间访客",
-  "change-livechat-room-visitor_description": "向 Livechat 房间访客添加额外信息的权限",
   "Changed_from": "变更自",
   "changed_room_announcement_to__room_announcement_": "将房间公告更改为：{{room_announcement}}",
   "changed_room_description_to__room_description_": "将房间描述更改为：{{room_description}}",

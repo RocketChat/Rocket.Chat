@@ -1136,8 +1136,6 @@
   "Certificates_and_Keys": "Sertifikater og nøkler",
   "Change_E2EE_password": "Endre E2EE-passord",
   "Change_Room_Type": "Endring av romtypen",
-  "change-livechat-room-visitor": "Endre besøkende på Livechat-rom",
-  "change-livechat-room-visitor_description": "Tillatelse til å legge til tilleggsinformasjon til den besøkende på livechat-rommet",
   "Changed_from": "Endret fra",
   "changed_room_announcement_to__room_announcement_": "endret romkunngjøring til: {{room_announcement}}",
   "changed_room_description_to__room_description_": "endret rombeskrivelse til: {{room_description}}",

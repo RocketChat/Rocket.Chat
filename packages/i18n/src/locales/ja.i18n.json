@@ -744,8 +744,6 @@
   "CDN_PREFIX_ALL": "すべてのアセットにCDNプレフィックスを使用",
   "Certificates_and_Keys": "証明書とキー",
   "Change_Room_Type": "Roomタイプの変更",
-  "change-livechat-room-visitor": "ライブチャットRoomの訪問者の変更",
-  "change-livechat-room-visitor_description": "ライブチャットルームの訪問者に情報を追加する権限",
   "Changing_email": "メールアドレスを変更中",
   "Channel": "Channel",
   "channel": "チャネル",

@@ -1200,8 +1200,6 @@
   "Certificates_and_Keys": "Certifikat och nycklar",
   "Change_E2EE_password": "Ändra E2EE-lösenord",
   "Change_Room_Type": "Ändra rumstyp",
-  "change-livechat-room-visitor": "Ändringar av besökare i Livechat-rum",
-  "change-livechat-room-visitor_description": "Behörighet att lägga till ytterligare information för besökaren i Livechat-rummet",
   "Changed_from": "Ändrad från",
   "changed_room_announcement_to__room_announcement_": "ändrat rumsmeddelande till: {{room_announcement}}",
   "changed_room_description_to__room_description_": "ändrade rumsbeskrivningen till: {{room_description}}",

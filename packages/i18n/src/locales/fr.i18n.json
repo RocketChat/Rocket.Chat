@@ -756,8 +756,6 @@
   "CDN_PREFIX_ALL": "Utiliser le préfixe CDN pour toutes les ressources",
   "Certificates_and_Keys": "Certificats et clés",
   "Change_Room_Type": "Modification du type de salon",
-  "change-livechat-room-visitor": "Modifier les visiteurs des salons Livechat",
-  "change-livechat-room-visitor_description": "Autorisation d'ajouter des informations supplémentaires aux visiteurs des salons Livechat",
   "Changing_email": "Modification de l'adresse e-mail",
   "Channel": "Canal",
   "channel": "canal",
