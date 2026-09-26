@@ -4356,7 +4356,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
 
 				const res = await createGroup({ clearance: ['topsecret'] }).expect(400);
-				expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+				expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 				expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
 			});
 
@@ -4365,7 +4365,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
 
 				const res = await createGroup({ clearance: ['secret'] }).expect(400);
-				expect(res.body).to.have.property('errorType', 'error-abac-decision-unavailable');
+				expect(res.body).to.include({ error: 'error-abac-decision-unavailable', errorType: 'error-abac-decision-unavailable' });
 			});
 
 			describe('membership preview', () => {
@@ -4420,7 +4420,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
 
 					const res = await preview().expect(400);
-					expect(res.body).to.have.property('errorType', 'error-abac-decision-unavailable');
+					expect(res.body).to.include({ error: 'error-abac-decision-unavailable', errorType: 'error-abac-decision-unavailable' });
 				});
 			});
 		});
