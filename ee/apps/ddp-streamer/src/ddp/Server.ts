@@ -1,4 +1,4 @@
-import type { IServiceMetrics } from '@rocket.chat/core-services';
+import type { IBroker, IServiceMetrics } from '@rocket.chat/core-services';
 import { MeteorError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { v1 as uuidv1 } from 'uuid';
@@ -24,18 +24,6 @@ const noRemoteMethods: RemoteMethodCall = async (_client, method) => {
 	throw new MeteorError(404, `Method '${method}' not found`);
 };
 
-const handleInternalException = (err: unknown, msg: string): MeteorError => {
-	if (err instanceof MeteorError) {
-		return err;
-	}
-
-	// default errors are logged to the console and redacted from the client
-	// TODO switch to using the logger (ideally broker.logger)
-	logger.error({ msg, err });
-
-	return new MeteorError(500, 'Internal server error');
-};
-
 export class Server {
 	private _subscriptions = new Map<string, SubscriptionFn>();
 
@@ -43,12 +31,47 @@ export class Server {
 
 	private metrics?: IServiceMetrics;
 
+	private broker?: IBroker & { logger?: any };
+
 	public readonly id = uuidv1();
 
-	constructor(private readonly callRemoteMethod: RemoteMethodCall = noRemoteMethods) {}
+	constructor(
+		private readonly callRemoteMethod: RemoteMethodCall = noRemoteMethods,
+		broker?: IBroker & { logger?: any },
+	) {
+		this.broker = broker;
+	}
+
+	setBroker(broker: IBroker & { logger?: any }): void {
+		this.broker = broker;
+	}
 
 	setMetrics(metrics: IServiceMetrics): void {
 		this.metrics = metrics;
+	}
+
+	private handleInternalException(err: unknown, msg: string): MeteorError {
+		if (err instanceof MeteorError) {
+			return err;
+		}
+
+		// default errors are logged and redacted from the client
+		const brokerLogger = this.broker?.logger || (this.broker as any)?.broker?.logger;
+		if (brokerLogger) {
+			if (typeof brokerLogger.child === 'function') {
+				brokerLogger.child({ section: 'ddp-streamer' }).error({ msg, err });
+			} else if (typeof (this.broker as any)?.getLogger === 'function') {
+				(this.broker as any).getLogger('ddp-streamer').error({ msg, err });
+			} else {
+				brokerLogger.error({ msg, err });
+			}
+		} else if (typeof (this.broker as any)?.getLogger === 'function') {
+			(this.broker as any).getLogger('ddp-streamer').error({ msg, err });
+		} else {
+			logger.error({ msg, err });
+		}
+
+		return new MeteorError(500, 'Internal server error');
 	}
 
 	async call(session: Session, packet: IPacket): Promise<void> {
@@ -69,7 +92,7 @@ export class Server {
 			const result = await fn.apply(session, packet.params);
 			return this.sendResult(session, packet, result);
 		} catch (err: unknown) {
-			return this.sendResult(session, packet, null, handleInternalException(err, 'Method call error'));
+			return this.sendResult(session, packet, null, this.handleInternalException(err, 'Method call error'));
 		}
 	}
 
@@ -104,7 +127,7 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
-			return session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			return session.send(encodeNosub(packet.id, this.handleInternalException(err, 'Subscription error')));
 		}
 	}
 

@@ -145,6 +145,97 @@ describe('Server method contracts', () => {
 		expect(mockCallMethodWithToken).not.toHaveBeenCalled();
 		expect(session.send).not.toHaveBeenCalled();
 	});
+
+	it('logs internal method exceptions using broker.logger when available', async () => {
+		const brokerLogger = { error: jest.fn() };
+		server.setBroker({ logger: brokerLogger } as any);
+		server.methods({
+			failing: jest.fn().mockRejectedValue(new Error('internal failure')),
+		});
+
+		await server.call(session, makePacket('failing'));
+
+		expect(brokerLogger.error).toHaveBeenCalledWith({
+			msg: 'Method call error',
+			err: expect.any(Error),
+		});
+	});
+
+	it('logs internal method exceptions using scoped child logger if available', async () => {
+		const childLogger = { error: jest.fn() };
+		const brokerLogger = {
+			child: jest.fn().mockReturnValue(childLogger),
+			error: jest.fn(),
+		};
+		server.setBroker({ logger: brokerLogger } as any);
+		server.methods({
+			failing: jest.fn().mockRejectedValue(new Error('internal failure')),
+		});
+
+		await server.call(session, makePacket('failing'));
+
+		expect(brokerLogger.child).toHaveBeenCalledWith({ section: 'ddp-streamer' });
+		expect(childLogger.error).toHaveBeenCalledWith({
+			msg: 'Method call error',
+			err: expect.any(Error),
+		});
+		expect(brokerLogger.error).not.toHaveBeenCalled();
+	});
+
+	it('logs internal method exceptions using broker.getLogger if available', async () => {
+		const scopedLogger = { error: jest.fn() };
+		const broker = {
+			logger: { error: jest.fn() },
+			getLogger: jest.fn().mockReturnValue(scopedLogger),
+		};
+		server.setBroker(broker as any);
+		server.methods({
+			failing: jest.fn().mockRejectedValue(new Error('internal failure')),
+		});
+
+		await server.call(session, makePacket('failing'));
+
+		expect(broker.getLogger).toHaveBeenCalledWith('ddp-streamer');
+		expect(scopedLogger.error).toHaveBeenCalledWith({
+			msg: 'Method call error',
+			err: expect.any(Error),
+		});
+		expect(broker.logger.error).not.toHaveBeenCalled();
+	});
+
+	it('logs internal method exceptions using broker.getLogger when broker has no logger property', async () => {
+		const scopedLogger = { error: jest.fn() };
+		const broker = {
+			getLogger: jest.fn().mockReturnValue(scopedLogger),
+		};
+		server.setBroker(broker as any);
+		server.methods({
+			failing: jest.fn().mockRejectedValue(new Error('internal failure')),
+		});
+
+		await server.call(session, makePacket('failing'));
+
+		expect(broker.getLogger).toHaveBeenCalledWith('ddp-streamer');
+		expect(scopedLogger.error).toHaveBeenCalledWith({
+			msg: 'Method call error',
+			err: expect.any(Error),
+		});
+	});
+
+	it('accepts broker in constructor', async () => {
+		const brokerLogger = { error: jest.fn() };
+		const customServer = new Server(undefined, { logger: brokerLogger } as any);
+		customServer.methods({
+			failing: jest.fn().mockRejectedValue(new Error('internal failure')),
+		});
+
+		await customServer.call(session, makePacket('failing'));
+
+		expect(brokerLogger.error).toHaveBeenCalledWith({
+			msg: 'Method call error',
+			err: expect.any(Error),
+		});
+	});
 });
 
 describe('Server subscriptions', () => {
@@ -236,6 +327,19 @@ describe('Server subscriptions', () => {
 
 		expect(handler).toHaveBeenCalledTimes(1);
 		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+	});
+
+	it('logs internal subscription exceptions using broker.logger when available', async () => {
+		const brokerLogger = { error: jest.fn() };
+		server.setBroker({ logger: brokerLogger } as any);
+		server.publish('failing-sub', jest.fn().mockRejectedValue(new Error('internal sub failure')));
+
+		await server.subscribe(session, makeSubscription('failing-sub'));
+
+		expect(brokerLogger.error).toHaveBeenCalledWith({
+			msg: 'Subscription error',
+			err: expect.any(Error),
+		});
 	});
 
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
