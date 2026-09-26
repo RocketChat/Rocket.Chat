@@ -10368,7 +10368,7 @@ __metadata:
     bad-words: "npm:^3.0.4"
     bcrypt: "npm:^6.0.0"
     body-parser: "npm:^1.20.6"
-    bson: "npm:^6.7.1"
+    bson: "npm:^7.3.3"
     busboy: "npm:^1.6.0"
     chai: "npm:^4.5.0"
     chai-as-promised: "npm:^7.1.2"
@@ -18650,10 +18650,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.7.0, bson@npm:^6.7.1":
+"bson@npm:^6.7.0":
   version: 6.10.4
   resolution: "bson@npm:6.10.4"
   checksum: 10/8a79a452219a13898358a5abc93e32bc3805236334f962661da121ce15bd5cade27718ba3310ee2a143ff508489b08467eed172ecb2a658cb8d2e94fdb76b215
+  languageName: node
+  linkType: hard
+
+"bson@npm:^7.3.3":
+  version: 7.3.3
+  resolution: "bson@npm:7.3.3"
+  checksum: 10/27f90714578b84999cd79dd53aede2fd09118371af453f2a0b47ed07e50ab9514c1b2d5acd3d85e805172c32b963f3c3a457a34dd6ff7d0eb0d9e20910735f8f
   languageName: node
   linkType: hard
 
