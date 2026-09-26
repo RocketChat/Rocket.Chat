@@ -171,7 +171,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await createGroup({ abacAttributes: { [dept]: ['eng'] } }, creatorCredentials)
 					.expect(400)
 					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-attributes-not-allowed');
+						expect(res.body).to.include({ error: 'error-abac-attributes-not-allowed', errorType: 'error-abac-attributes-not-allowed' });
 					});
 			} finally {
 				await updatePermission('create-abac-managed-room', ['admin', 'user']);
@@ -182,7 +182,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await createGroup({ abacAttributes: { [dept]: ['eng', 'sales'] } }, creatorCredentials)
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
 				});
 		});
@@ -208,7 +208,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials)
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
 					});
 			});
 		});
@@ -229,7 +229,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await createGroup({ abacAttributes: { [`rc-undefined-${suffix}`]: ['x'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 				});
 		});
 
@@ -253,7 +253,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await createGroup({ abacAttributes: { [dept]: ['eng'] } })
 					.expect(400)
 					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
+						expect(res.body).to.include({ error: 'error-abac-not-enabled', errorType: 'error-abac-not-enabled' });
 					});
 			} finally {
 				await setSetting('ABAC_Enabled', true);
@@ -312,7 +312,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await createGroup({ abacAttributes: { [dept]: ['ops'] } }, creatorCredentials)
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
 					});
 			});
 		});
@@ -351,7 +351,41 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, owner: creator._id, abacAttributes: { [dept]: ['eng'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body.error).to.include('error-abac-attributes-owner-must-be-caller');
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-owner-must-be-caller',
+						errorType: 'error-abac-attributes-owner-must-be-caller',
+					});
+				});
+		});
+
+		it('is refused on a public team', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 0, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-private-rooms-only',
+						errorType: 'error-abac-attributes-private-rooms-only',
+					});
+				});
+		});
+
+		it('is refused when converting an existing room', async () => {
+			const group = await createGroup({}).expect(200);
+			track(group.body.group._id);
+
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, room: { id: group.body.group._id }, abacAttributes: { [dept]: ['eng'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({
+						error: 'error-abac-attributes-room-conversion',
+						errorType: 'error-abac-attributes-room-conversion',
+					});
 				});
 		});
 
@@ -362,7 +396,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ name: `abac-rc-team-${Date.now()}`, type: 1, abacAttributes: { [dept]: ['sales'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 				});
 		});
 	});
@@ -382,7 +416,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await createGroup({})
 				.expect(400)
 				.expect((res) => {
-					expect(res.body.error).to.include('error-abac-attributes-required');
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
 				});
 		});
 
@@ -390,7 +424,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await createGroup({ abacAttributes: { [dept]: ['eng'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body.error).to.include('error-abac-attributes-required');
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
 				});
 		});
 
@@ -406,7 +440,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ name: `abac-rc-team-${Date.now()}`, type: 1 })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body.error).to.include('error-abac-attributes-required');
+					expect(res.body).to.include({ error: 'error-abac-attributes-required', errorType: 'error-abac-attributes-required' });
 				});
 		});
 	});
@@ -532,7 +566,10 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } })
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('errorType', 'error-abac-preview-too-many-members');
+						expect(res.body).to.include({
+							error: 'error-abac-preview-too-many-members',
+							errorType: 'error-abac-preview-too-many-members',
+						});
 					});
 				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] }, excludeSelf: true }).expect(200);
 			} finally {
