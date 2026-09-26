@@ -70,6 +70,7 @@ export type EventSignatures = {
 	'license.module'(data: { module: string; valid: boolean }): void;
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
+	'abac.config.changed'(): void;
 
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: ILivechatInquiryRecord }): void;
 	'message'(data: { action: string; message: IMessage }): void;

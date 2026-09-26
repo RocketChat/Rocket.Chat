@@ -144,6 +144,7 @@ export const appsQueryKeys = {
 
 export const ABACQueryKeys = {
 	all: ['abac'] as const,
+	config: () => [...ABACQueryKeys.all, 'config'] as const,
 	logs: {
 		all: () => [...ABACQueryKeys.all, 'logs'] as const,
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.logs.all(), 'list', ...args] as const,

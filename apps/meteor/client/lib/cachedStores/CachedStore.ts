@@ -50,11 +50,9 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	protected eventType: StreamNames;
 
-	// Bumped from 18 → 19 to invalidate caches populated before the DDPSDK
-	// wire encoding was switched from JSON to EJSON. Entries written by the
-	// JSON window stored dates as ISO strings instead of Date instances, so
-	// fields like subscription.ls would fail `.getTime()` when read back.
-	private readonly version = 19;
+	// Bumped from 19 → 20 when the ABAC client configuration moved to
+	// `GET /v1/abac/config`.
+	private readonly version = 20;
 
 	private updatedAt = new Date(0);
 
