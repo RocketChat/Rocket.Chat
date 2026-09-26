@@ -2093,8 +2093,6 @@
   "Rooms": "Istabas",
   "run-import": "Palaist importēšanu",
   "run-import_description": "Atļauja palaist importētājus",
-  "run-migration": "Palaist migrāciju",
-  "run-migration_description": "Atļauja palaist migrāciju",
   "Running_Instances": "Aktīvās instances",
   "Runtime_Environment": "Runtime vide",
   "Same_As_Token_Sent_Via": "Tā pats, kā \"Žetons nosūtīts izmantojot\"",

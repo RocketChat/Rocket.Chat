@@ -2392,8 +2392,6 @@
   "Run_only_once_for_each_visitor": "ដំណើរការតែនៅលើអ្នកទស្សនាម្នាក់ៗ",
   "run-import": "ដំណើរការការនាំចូល",
   "run-import_description": "ការអនុញ្ញាតឱ្យដំណើរការអ្នកនាំចូល",
-  "run-migration": "រត់ការធ្វើចំណាកស្រុក",
-  "run-migration_description": "ការអនុញ្ញាតឱ្យដំណើរការការផ្លាស់ប្តូរ",
   "Running_Instances": "រត់",
   "Runtime_Environment": "បរិស្ថានពេលរត់",
   "Same_As_Token_Sent_Via": "ដូចគ្នានឹង \"លេខសំងាត់បានផ្ញើតាម\"",

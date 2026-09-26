@@ -2104,8 +2104,6 @@
   "Rooms": "房间",
   "run-import": "运行导入",
   "run-import_description": "运行进口商的权限",
-  "run-migration": "运行迁移",
-  "run-migration_description": "运行迁移的权限",
   "Running_Instances": "运行实例",
   "Runtime_Environment": "运行环境",
   "Same_As_Token_Sent_Via": "与“通过发送的令牌”相同",

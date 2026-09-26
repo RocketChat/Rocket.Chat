@@ -2074,8 +2074,6 @@
   "Rooms": "ห้องพัก",
   "run-import": "เรียกใช้การนำเข้า",
   "run-import_description": "อนุญาตให้ผู้ดำเนินการนำเข้า",
-  "run-migration": "เรียกใช้การโยกย้าย",
-  "run-migration_description": "อนุญาตให้ใช้การย้ายข้อมูล",
   "Running_Instances": "การใช้งานอินสแตนซ์",
   "Runtime_Environment": "สภาพแวดล้อมรันไทม์",
   "Same_As_Token_Sent_Via": "เหมือนกับ \"Token Sent Via\"",

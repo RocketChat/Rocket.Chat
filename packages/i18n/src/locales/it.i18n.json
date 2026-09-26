@@ -2618,8 +2618,6 @@
   "Rooms": "Stanze",
   "run-import": "Esegui importazione",
   "run-import_description": "Autorizzazione a gestire gli importatori",
-  "run-migration": "Esegui migrazione",
-  "run-migration_description": "Autorizzazione a eseguire le migrazioni",
   "Running_Instances": "Istanze in esecuzione",
   "Runtime_Environment": "Ambiente di runtime",
   "Same_As_Token_Sent_Via": "Come \"Token Sent Via\"",

@@ -2119,8 +2119,6 @@
   "Rooms": "ຫ້ອງ",
   "run-import": "Run import",
   "run-import_description": "ການອະນຸຍາດດໍາເນີນການນໍາເຂົ້າ",
-  "run-migration": "Run migration",
-  "run-migration_description": "ການອະນຸຍາດໃຫ້ດໍາເນີນການເຄື່ອນຍ້າຍ",
   "Running_Instances": "ແລ່ນກໍລະນີ",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "ຄືກັນກັບ \"Token Sent ຜ່ານ\"",

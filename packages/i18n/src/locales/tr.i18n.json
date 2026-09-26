@@ -2489,8 +2489,6 @@
   "Run_only_once_for_each_visitor": "Her ziyaretçi için sadece bir kez çalıştır",
   "run-import": "İçe Aktarımı Çalıştır",
   "run-import_description": "Ithalatçıların çalıştırılmasına izin",
-  "run-migration": "Geçişi çalıştır",
-  "run-migration_description": "Taşıma işlemlerini çalıştırma izni",
   "Running_Instances": "Örneklerini Çalıştırma",
   "Runtime_Environment": "Çalışma Zamanı Ortamı",
   "Same_As_Token_Sent_Via": "\"Token Sent Via\" ile aynı",

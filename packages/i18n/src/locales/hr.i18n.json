@@ -2210,8 +2210,6 @@
   "Rooms": "Sobe",
   "run-import": "Pokreni uvoz",
   "run-import_description": "Dozvola za pokretanje uvoznika",
-  "run-migration": "Pokreni migraciju",
-  "run-migration_description": "Dozvola za pokretanje migracija",
   "Running_Instances": "Pokrenuta instanca",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Isto kao i \"Token poslan putem\"",

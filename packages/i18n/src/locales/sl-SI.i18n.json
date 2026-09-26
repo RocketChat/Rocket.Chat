@@ -2076,8 +2076,6 @@
   "Rooms": "Sobe",
   "run-import": "Zaženite uvoz",
   "run-import_description": "Dovoljenje za izvajanje uvoznikov",
-  "run-migration": "Zaženi selitev",
-  "run-migration_description": "Dovoljenje za zagon selitev",
   "Running_Instances": "Vodenje primerkov",
   "Runtime_Environment": "Izvajalno okolje",
   "Same_As_Token_Sent_Via": "Enako kot \"Žeton poslan preko\"",

@@ -2081,8 +2081,6 @@
   "Rooms": "Стаий",
   "run-import": "Стартирайте импортирането",
   "run-import_description": "Разрешение за управление на вносителите",
-  "run-migration": "Изпълнете миграцията",
-  "run-migration_description": "Разрешение за стартиране на миграциите",
   "Running_Instances": "Изпълняващи потребителски модели",
   "Runtime_Environment": "По време на работа",
   "Same_As_Token_Sent_Via": "Същото като \"Token Sent Via\"",

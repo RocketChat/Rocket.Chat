@@ -2081,8 +2081,6 @@
   "Rooms": "Ystafelloedd",
   "run-import": "Mewnforio Rhedeg",
   "run-import_description": "Caniatâd i redeg yr mewnforwyr",
-  "run-migration": "Rhedeg Mudo",
-  "run-migration_description": "Caniatâd i redeg y mudo",
   "Running_Instances": "Digwyddiadau Rhedeg",
   "Runtime_Environment": "Amgylchedd Runtime",
   "Same_As_Token_Sent_Via": "Yr un fath â \"Token Sent Via\"",

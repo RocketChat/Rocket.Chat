@@ -2183,8 +2183,6 @@
   "Rooms": "Phòng",
   "run-import": "Chạy Nhập khẩu",
   "run-import_description": "Cho phép chạy các nhà nhập khẩu",
-  "run-migration": "Chạy di chuyển",
-  "run-migration_description": "Cho phép chạy các di chuyển",
   "Running_Instances": "Chạy Các Trường hợp",
   "Runtime_Environment": "Môi trường thực thi",
   "Same_As_Token_Sent_Via": "Tương tự như \"Token Sent Via\"",

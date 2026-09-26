@@ -2113,8 +2113,6 @@
   "Rooms": "пакоя",
   "run-import": "выканаць імпарт",
   "run-import_description": "Дазвол запуску імпарцёраў",
-  "run-migration": "запуск міграцыі",
-  "run-migration_description": "Дазвол запуску міграцыі",
   "Running_Instances": "запуск асобнікаў",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Тое ж, што «токенаў пасланы праз»",

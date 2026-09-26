@@ -1904,8 +1904,6 @@
   "Rooms": "Собе",
   "run-import": "Покрените увоз",
   "run-import_description": "Дозвола за покретање увозника",
-  "run-migration": "Покрени миграцију",
-  "run-migration_description": "Дозвола за покретање миграција",
   "Running_Instances": "Покретање инстанци",
   "Runtime_Environment": "Рунтиме Енвиронмент",
   "Same_As_Token_Sent_Via": "Исто као \"Токен послати преко\"",

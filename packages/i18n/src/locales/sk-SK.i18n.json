@@ -2089,8 +2089,6 @@
   "Rooms": "izby",
   "run-import": "Spustite Import",
   "run-import_description": "Povolenie na spustenie dovozcov",
-  "run-migration": "Spustite migráciu",
-  "run-migration_description": "Povolenie na spustenie migrácie",
   "Running_Instances": "Spúšťanie inštancií",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Rovnaké ako \"Token poslaný cez\"",

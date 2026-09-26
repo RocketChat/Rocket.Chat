@@ -2091,8 +2091,6 @@
   "Rooms": "Room",
   "run-import": "Jalankan Impor",
   "run-import_description": "Izin untuk menjalankan importir",
-  "run-migration": "Jalankan Migrasi",
-  "run-migration_description": "Izin untuk menjalankan migrasi",
   "Running_Instances": "menjalankan Contoh",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Sama seperti \"Token Sent Via\"",

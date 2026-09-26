@@ -3103,8 +3103,6 @@
   "Run_only_once_for_each_visitor": "Kør kun én gang for hver besøgende",
   "run-import": "Kør import",
   "run-import_description": "Tilladelse til at køre importørerne",
-  "run-migration": "Kør migrering",
-  "run-migration_description": "Tilladelse til at køre migrationerne",
   "Running_Instances": "Running instances",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Samme som \"Token Send Via\"",

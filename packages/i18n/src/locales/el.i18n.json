@@ -2089,8 +2089,6 @@
   "Rooms": "Δωμάτια",
   "run-import": "Εκτέλεση εισαγωγής",
   "run-import_description": "Άδεια για τη λειτουργία των εισαγωγέων",
-  "run-migration": "Εκτέλεση μετεγκατάστασης",
-  "run-migration_description": "Άδεια για τη διεξαγωγή των μεταναστεύσεων",
   "Running_Instances": "Εκτέλεση παρουσιών",
   "Runtime_Environment": "Περιβάλλον χρόνου εκτέλεσης",
   "Same_As_Token_Sent_Via": "Το ίδιο με το \"Token Sent Via\"",
