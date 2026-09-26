@@ -3234,7 +3234,7 @@
   "Title_bar_color": "სათაურის ზოლის ფერი",
   "To": "ვის",
   "To_additional_emails": "დამატებითი ელ.ფოსტებისკენ",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Rocket.Chat Livechat  თქვენს საიტზე დასაყენებლად დააკოპირეთ & ჩასვით ეს კოდი ბოლო თაგი ზევით თქვენს საიტზე  <bold>{{bodyTag}}</bold>",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Rocket.Chat Livechat თქვენს საიტზე დასაყენებლად დააკოპირეთ & ჩასვით ეს კოდი ბოლო თაგი ზევით თქვენს საიტზე <bold>{{bodyTag}}</bold>",
   "to_see_more_details_on_how_to_integrate": "მეტი დეტალების სანახავად თუ როგორ ინტეგრირდება",
   "To_users": "მომხმარებლებს",
   "Today": "დღეს",

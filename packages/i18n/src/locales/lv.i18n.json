@@ -778,7 +778,7 @@
   "Custom_Emoji_Info": "Pielāgotā emoji informācija",
   "Custom_Emoji_Updated_Successfully": "Pielāgotais emoji ir veiksmīgi atjaunināts",
   "Custom_Fields": "Pielāgotie lauki",
-  "Custom_oauth_helper": " Uzstādot OAuth nodrošinātāju, jums būs jāinformē Callback URL. Izmantojiet <code>{{url}}</code>.",
+  "Custom_oauth_helper": "Uzstādot OAuth nodrošinātāju, jums būs jāinformē Callback URL. Izmantojiet <code>{{url}}</code>.",
   "Custom_Script_Logged_In": "Pielāgots skripts lietotājiem kuri ir pierakstījušies",
   "Custom_Script_Logged_Out": "Pielāgots skripts lietotājiem kuri ir izrakstījušies",
   "Custom_Scripts": "Pielāgotie skripti",
