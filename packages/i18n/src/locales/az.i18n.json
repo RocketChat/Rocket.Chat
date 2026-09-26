@@ -2406,7 +2406,7 @@
   "Title_bar_color_offline": "Başlıq çubuğunun rengi offline",
   "Title_offline": "Mövzu offline",
   "To_additional_emails": "Əlavə e-poçtlara",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Veb saytınıza Rocket.Chat Livechat qurmaq üçün, surəti &amp; bu kodun sonuncu <strong>&lt; / body &gt; Sitenizde</strong> etiketi.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Veb saytınıza Rocket.Chat Livechat qurmaq üçün, surəti & bu kodun sonuncu <bold>{{bodyTag}}</bold> etiketi.",
   "to_see_more_details_on_how_to_integrate": "İnteqrasiya etməklə bağlı daha ətraflı məlumatı görmək.",
   "To_users": "İstifadəçilər üçün",
   "Toggle_original_translated": "Orijinal / tərcümə keçid",

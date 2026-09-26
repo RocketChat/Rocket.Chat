@@ -2402,7 +2402,7 @@
   "Title_bar_color_offline": "தலைப்பு பட்டியில் வண்ண ஆஃப்லைன்",
   "Title_offline": "தலைப்பு ஆஃப்லைன்",
   "To_additional_emails": "கூடுதல் மின்னஞ்சல்களுக்கு",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "உங்கள் இணையதளத்தில் Rocket.Chat livechat நிறுவ நகல் மற்றும் கடந்த <strong>&lt;/body&gt;</strong> உங்கள் தளத்தில் டேக் மேலே இந்த குறியீடு ஒட்டவும்.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "உங்கள் இணையதளத்தில் Rocket.Chat livechat நிறுவ நகல் மற்றும் கடந்த <bold>{{bodyTag}}</bold> உங்கள் தளத்தில் டேக் மேலே இந்த குறியீடு ஒட்டவும்.",
   "to_see_more_details_on_how_to_integrate": "ஒருங்கிணைக்க எப்படி மேலும் விவரங்களுக்கு பார்க்க.",
   "To_users": "பயனர்களுக்கு",
   "Toggle_original_translated": "அசல் / மொழிபெயர்த்தலை மாற்று",

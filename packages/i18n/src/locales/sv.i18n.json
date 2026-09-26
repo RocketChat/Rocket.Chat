@@ -6386,7 +6386,7 @@
   "Title_offline": "Titel offline",
   "To": "Till",
   "To_additional_emails": "Till ytterligare e-postmeddelanden",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "För att installera Rocket.Chat Livechat på din webbplats, kopiera och klistra in koden ovanför den sista <strong>&lt;/body&gt;</strong> på din webbplats.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "För att installera Rocket.Chat Livechat på din webbplats, kopiera och klistra in koden ovanför den sista <bold>{{bodyTag}}</bold> på din webbplats.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Du förhindrar att meddelandet visas igen genom att se till att webbläsaren är inställd på att tillåta att popup-meddelanden öppnas från arbetsytans URL: ",
   "to_see_more_details_on_how_to_integrate": "för att se mer information om hur man kan integrera.",
   "To_users": "Till användare",

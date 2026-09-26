@@ -6414,7 +6414,7 @@
   "Title_offline": "Título quando offline",
   "To": "Para",
   "To_additional_emails": "Para e-mails adicionais",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Para instalar o livechat Rocket.Chat no seu site, copie e cole este código acima da última tag <strong>&lt;/ body&gt;</strong> em seu site.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Para instalar o livechat Rocket.Chat no seu site, copie e cole este código acima da última tag <bold>{{bodyTag}}</bold> em seu site.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Para evitar ver essa mensagem novamente, verifique se as configurações do navegador permitem que pop-ups sejam abertos a partir do URL do espaço de trabalho:",
   "to_see_more_details_on_how_to_integrate": "para ver mais detalhes sobre como integrar.",
   "To_users": "Para usuários",

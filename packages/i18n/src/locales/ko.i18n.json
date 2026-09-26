@@ -3562,7 +3562,7 @@
   "Title_offline": "오프라인 제목",
   "To": "수신",
   "To_additional_emails": "추가 이메일",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "귀하의 웹 사이트에 Rocket.Chat Livechat을 설치하려면, 사이트의 마지막 <strong>&lt;/body&gt;</strong> 태그 위에 이 코드를 붙여 넣습니다.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "귀하의 웹 사이트에 Rocket.Chat Livechat을 설치하려면, 사이트의 마지막 <bold>{{bodyTag}}</bold> 태그 위에 이 코드를 붙여 넣습니다.",
   "to_see_more_details_on_how_to_integrate": "통합하는 방법에 대한 자세한 내용을 볼 수 있습니다.",
   "To_users": "받을 사용자",
   "Today": "오늘",

@@ -1075,7 +1075,7 @@
   "Title_bar_color": "ماۋزۇ بۆلىكى رەڭگى",
   "Title_bar_color_offline": "تورسىز ماۋزۇبۆلىكى رەڭگى",
   "Title_offline": "تورسىز ماۋزۇ",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "خەتكۈشنىڭ ئۈستىگە چاپلاڭ.<strong>&lt;/body&gt;</strong> توردا پاراڭلىشىش قاچىلاندى ، ،تۆۋەنكى كودنى سىزنىڭ تور بېتىڭىزدىكى ئەڭ ئاخىرقى Rocket.Cha سىزنىڭ تور بېتىڭىزدە",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "خەتكۈشنىڭ ئۈستىگە چاپلاڭ.<bold>{{bodyTag}}</bold> توردا پاراڭلىشىش قاچىلاندى ، ،تۆۋەنكى كودنى سىزنىڭ تور بېتىڭىزدىكى ئەڭ ئاخىرقى Rocket.Cha سىزنىڭ تور بېتىڭىزدە",
   "to_see_more_details_on_how_to_integrate": "كۆپلىگەن توپلاشتۇرۇشنىڭ ئىنچىكە مەزمۇنىنى كۆرۈشكە قولايلىق.",
   "To_users": "ئەزاغا بېرىش",
   "Topic": "سۆھبەتنىڭ تېمىسى",

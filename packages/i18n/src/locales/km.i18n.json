@@ -2727,7 +2727,7 @@
   "Title_offline": "ចំណងជើងក្រៅបណ្តាញ",
   "To": "ទៅ",
   "To_additional_emails": "ទៅកាន់អ៊ីម៉ែលបន្ថែម",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "ដើម្បីដំឡើង Rocket.Chat Livechat នៅក្នុងគេហទំព័ររបស់អ្នក, ចម្លងនិងបិទភ្ជាប់កូដខាងលើ <strong>&lt;/body&gt;</strong> tag ចុងក្រោយនៅលើតំបន់បណ្ដាញរបស់អ្នកនេះ។",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "ដើម្បីដំឡើង Rocket.Chat Livechat នៅក្នុងគេហទំព័ររបស់អ្នក, ចម្លងនិងបិទភ្ជាប់កូដខាងលើ <bold>{{bodyTag}}</bold> tag ចុងក្រោយនៅលើតំបន់បណ្ដាញរបស់អ្នកនេះ។",
   "to_see_more_details_on_how_to_integrate": "ដើម្បីមើលលម្អិតបន្ថែមទៀតលើរបៀបបញ្ចូល។",
   "To_users": "ដល់អ្នកប្រើ",
   "Today": "ថ្ងៃនេះ",

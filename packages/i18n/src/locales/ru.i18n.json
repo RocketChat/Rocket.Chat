@@ -4431,7 +4431,7 @@
   "Title_offline": "Заголовок при отсутствии подключения",
   "To": "от",
   "To_additional_emails": "Дополнительные email адресаты",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Для того, чтобы установить Rocket.Chat Livechat на вашем сайте, скопируйте и вставьте этот код выше последнего <strong>&lt;/body&gt;</strong> тега на вашем сайте.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Для того, чтобы установить Rocket.Chat Livechat на вашем сайте, скопируйте и вставьте этот код выше последнего <bold>{{bodyTag}}</bold> тега на вашем сайте.",
   "to_see_more_details_on_how_to_integrate": "чтобы увидеть более подробную информацию о том, как интегрировать.",
   "To_users": "Пользователям",
   "Today": "Сегодня",

@@ -5266,7 +5266,7 @@
   "Title_offline": "शीर्षक ऑफ़लाइन",
   "To": "को",
   "To_additional_emails": "अतिरिक्त ईमेल के लिए",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "अपनी वेबसाइट में Rocket.Chat लाइवचैट स्थापित करने के लिए, इस कोड को अपनी साइट पर अंतिम <strong>&lt;/body&gt;</strong> टैग के ऊपर कॉपी और पेस्ट करें।",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "अपनी वेबसाइट में Rocket.Chat लाइवचैट स्थापित करने के लिए, इस कोड को अपनी साइट पर अंतिम <bold>{{bodyTag}}</bold> टैग के ऊपर कॉपी और पेस्ट करें।",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "इस संदेश को दोबारा देखने से रोकने के लिए, सुनिश्चित करें कि आपकी ब्राउज़र सेटिंग्स कार्यस्थान URL से पॉप-अप खोलने की अनुमति देती हैं:",
   "to_see_more_details_on_how_to_integrate": "एकीकृत करने के तरीके के बारे में अधिक विवरण देखने के लिए।",
   "To_users": "उपयोगकर्ताओं के लिए",

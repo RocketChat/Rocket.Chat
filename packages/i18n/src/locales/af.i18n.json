@@ -2402,7 +2402,7 @@
   "Title_bar_color_offline": "Titelbalk kleur vanlyn",
   "Title_offline": "Titel vanlyn",
   "To_additional_emails": "Bykomende e-posse",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Om Rocket.Chat Livechat in jou webwerf te installeer, kopieer &amp; plak hierdie kode bo die laaste <strong>&lt;/body&gt;</strong> tag op jou webwerf.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Om Rocket.Chat Livechat in jou webwerf te installeer, kopieer & plak hierdie kode bo die laaste <bold>{{bodyTag}}</bold> tag op jou webwerf.",
   "to_see_more_details_on_how_to_integrate": "Om meer besonderhede te sien oor hoe om te integreer.",
   "To_users": "Aan gebruikers",
   "Toggle_original_translated": "Wissel oorspronklike / vertaal",

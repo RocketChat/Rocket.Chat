@@ -2409,7 +2409,7 @@
   "Title_bar_color_offline": "Title bar warna offline",
   "Title_offline": "Title offline",
   "To_additional_emails": "Untuk e-mel tambahan",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Untuk memasang Rocket.Chat LiveChat di laman web anda, copy & paste kod ini di atas terakhir <strong>&lt;/body&gt;</strong> tag pada laman anda.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Untuk memasang Rocket.Chat LiveChat di laman web anda, copy & paste kod ini di atas terakhir <bold>{{bodyTag}}</bold> tag pada laman anda.",
   "to_see_more_details_on_how_to_integrate": "untuk melihat maklumat lanjut mengenai bagaimana untuk mengintegrasikan.",
   "To_users": "kepada Pengguna",
   "Toggle_original_translated": "Togol asal / diterjemahkan",

@@ -2388,7 +2388,7 @@
   "Title_bar_color_offline": "Title color bar offline",
   "Title_offline": "title offline",
   "To_additional_emails": "Ji bo emailsên din",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ji bo sazkirina Rocket.Chat livechat di malpera xwe, copy & paste ev Koda jor dawî <strong>&lt;/body&gt;</strong> tag li ser malpera te.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ji bo sazkirina Rocket.Chat livechat di malpera xwe, copy & paste ev Koda jor dawî <bold>{{bodyTag}}</bold> tag li ser malpera te.",
   "to_see_more_details_on_how_to_integrate": "ji bo dîtina bêtir agahîya li ser ka wê ji bo întegra.",
   "To_users": "Bikarhêner li",
   "Toggle_original_translated": "Toggle original / werger",

@@ -1324,7 +1324,7 @@
   "Title_bar_color": "צבע בר הכותרת",
   "Title_bar_color_offline": "מחובר צבע שורת כותרת",
   "Title_offline": "מחובר כותרת",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "כדי להתקין Rocket.Chat LiveChat באתר האינטרנט שלך, העתק והדבק את הקוד הזה מעל <strong>&lt;/body&gt;</strong> האחרון באתר שלך.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "כדי להתקין Rocket.Chat LiveChat באתר האינטרנט שלך, העתק והדבק את הקוד הזה מעל <bold>{{bodyTag}}</bold> האחרון באתר שלך.",
   "to_see_more_details_on_how_to_integrate": "כדי לראות פרטים נוספים על כיצד לשלב.",
   "To_users": "למשתמשים",
   "Topic": "נושא",

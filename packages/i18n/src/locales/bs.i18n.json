@@ -2395,7 +2395,7 @@
   "Title_bar_color_offline": "Boja naslovne trake",
   "Title_offline": "Naslov izvan mreže",
   "To_additional_emails": "Dodatne poruke e-pošte",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Kako bi namjestili Rocket.Chat Livechat na vašu webstranicu, prekopirajte i zalijepite ovaj kod iznad <strong>&lt;/body&gt;</strong> taga na stranici.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Kako bi namjestili Rocket.Chat Livechat na vašu webstranicu, prekopirajte i zalijepite ovaj kod iznad <bold>{{bodyTag}}</bold> taga na stranici.",
   "to_see_more_details_on_how_to_integrate": "kako bi vidjeli više detalja o integraciji",
   "To_users": "Korisnicima",
   "Toggle_original_translated": "Prebacivanje izvornika / prevedeno",

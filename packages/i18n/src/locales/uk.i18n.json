@@ -2952,7 +2952,7 @@
   "Title_bar_color_offline": "Рядок заголовка колір форуму",
   "Title_offline": "Назва форуму",
   "To_additional_emails": "До додаткових листів",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Щоб встановити Rocket.Chat Livechat на вашому сайті, скопіюйте і вставте цей код вище останнього <strong>&lt;/body&gt;</strong> тега на вашому сайті.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Щоб встановити Rocket.Chat Livechat на вашому сайті, скопіюйте і вставте цей код вище останнього <bold>{{bodyTag}}</bold> тега на вашому сайті.",
   "to_see_more_details_on_how_to_integrate": "щоб побачити більш детальну інформацію про те, як інтегрувати.",
   "To_users": "для користувачів",
   "Today": "Сьогодні",

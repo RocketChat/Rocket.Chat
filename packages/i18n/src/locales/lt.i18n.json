@@ -2453,7 +2453,7 @@
   "Title_bar_color_offline": "Antraštės juostos spalva neprisijungus",
   "Title_offline": "Pavadinimas neprisijungęs",
   "To_additional_emails": "Papildomiems el. Laiškams",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Norėdami įdiegti \"Rocket.Chat Livechat\" savo svetainėje, kopijuokite &amp; įklijuokite šį kodą virš paskutinio <strong>&lt;/body&gt;</strong> pažymėkite savo svetainėje.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Norėdami įdiegti \"Rocket.Chat Livechat\" savo svetainėje, kopijuokite & įklijuokite šį kodą virš paskutinio <bold>{{bodyTag}}</bold> pažymėkite savo svetainėje.",
   "to_see_more_details_on_how_to_integrate": "norėdami pamatyti daugiau informacijos apie tai, kaip integruoti.",
   "To_users": "Vartotojams",
   "Toggle_original_translated": "Perjungti originalų / verčiamą",

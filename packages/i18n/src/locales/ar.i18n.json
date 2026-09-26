@@ -4266,7 +4266,7 @@
   "Title_offline": "العنوان من دون اتصال",
   "To": "إلى",
   "To_additional_emails": "إلى رسائل البريد الإلكتروني الإضافية",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "لتثبيت Rocket.Chat Livechat في موقع الويب الخاص بك، انسخ &amp; وألصق هذا الرمز فوق علامة <strong>&lt;/body&gt;</strong> الأخيرة على موقعك.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "لتثبيت Rocket.Chat Livechat في موقع الويب الخاص بك، انسخ & وألصق هذا الرمز فوق علامة <bold>{{bodyTag}}</bold> الأخيرة على موقعك.",
   "to_see_more_details_on_how_to_integrate": "للاطلاع على مزيد من التفاصيل حول كيفية الدمج.",
   "To_users": "إلى المستخدمين",
   "Today": "اليوم",

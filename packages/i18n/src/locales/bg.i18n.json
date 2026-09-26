@@ -2397,7 +2397,7 @@
   "Title_bar_color_offline": "Цвят на заглавната лента офлайн",
   "Title_offline": "Заглавие офлайн",
   "To_additional_emails": "Към допълнителни имейли",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "За да инсталирате Rocket.Chat Livechat във вашия уеб сайт, копирайте &amp; поставете този код над последното <strong>&lt; / body &gt;</strong>маркер в сайта Ви.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "За да инсталирате Rocket.Chat Livechat във вашия уеб сайт, копирайте & поставете този код над последното <bold>{{bodyTag}}</bold>маркер в сайта Ви.",
   "to_see_more_details_on_how_to_integrate": "за да видите повече подробности как да се интегрирате.",
   "To_users": "За потребители",
   "Toggle_original_translated": "Превключване на оригинала / превеждането",

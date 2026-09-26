@@ -6453,7 +6453,7 @@
   "Title_offline": "Titel wenn offline",
   "To": "Bis",
   "To_additional_emails": "Zu zusätzlichen E-Mails",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-LiveChat auf Ihrer Webseite zu installieren, kopieren und fügen Sie den Code oberhalb des letzten <strong>&lt;/body&gt;</strong>-Tags Ihrer Seite ein.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-LiveChat auf Ihrer Webseite zu installieren, kopieren und fügen Sie den Code oberhalb des letzten <bold>{{bodyTag}}</bold>-Tags Ihrer Seite ein.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Um zu verhindern, dass diese Meldung erneut angezeigt wird, vergewissern Sie sich, dass Ihre Browsereinstellungen das Öffnen von Popup-Fenstern über diese URL zulassen:",
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen",
   "To_users": "An Benutzer",

@@ -2430,7 +2430,7 @@
   "Title_bar_color_offline": "Радок загалоўка колер форуму",
   "Title_offline": "Назва форуму",
   "To_additional_emails": "Для дадатковых лістоў",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Каб усталяваць Rocket.Chat Livechat на вашым сайце, скапіруйце і ўзмацняльнік; ўставіць гэты код вышэй апошняга <strong>& лт; / цела &gt; Тэг</strong>на вашым сайце.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Каб усталяваць Rocket.Chat Livechat на вашым сайце, скапіруйце і ўстаўце гэты код вышэй апошняга <bold>{{bodyTag}}</bold> тэга на вашым сайце.",
   "to_see_more_details_on_how_to_integrate": "каб убачыць больш падрабязную інфармацыю аб тым, як інтэграваць.",
   "To_users": "для карыстальнікаў",
   "Toggle_original_translated": "Пераключыць арыгінал / перакладзены",

@@ -4958,7 +4958,7 @@
   "Title_offline": "Offline-otsikko",
   "To": "Kohde",
   "To_additional_emails": "Lisäsähköposteihin",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Asenna Rocket.Chat Livechat sivustoosi kopioimalla ja liittämällä tämä koodi sivustosi viimeisen <strong>&lt;/body&gt;</strong>-tunnisteen yläpuolelle.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Asenna Rocket.Chat Livechat sivustoosi kopioimalla ja liittämällä tämä koodi sivustosi viimeisen <bold>{{bodyTag}}</bold>-tunnisteen yläpuolelle.",
   "To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL": "Voit estää tämän viestin näkemisen uudelleen varmistamalla, että selaimesi asetukset sallivat ponnahdusikkunoiden avaamisen työtilan URL-osoitteesta:",
   "to_see_more_details_on_how_to_integrate": "jotta näet lisätietoja integroinnista.",
   "To_users": "Käyttäjille",

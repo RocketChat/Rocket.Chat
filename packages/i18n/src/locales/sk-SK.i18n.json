@@ -2405,7 +2405,7 @@
   "Title_bar_color_offline": "Bar titulkov je offline",
   "Title_offline": "Názov je offline",
   "To_additional_emails": "Na ďalšie e-maily",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ak chcete na svojom webe nainštalovať Rocket.Chat Livechat, skopírujte &amp; prilepte tento kód nad posledný znak <strong>&lt; / body &gt; Značku</strong> na svojich stránkach.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Ak chcete na svojom webe nainštalovať Rocket.Chat Livechat, skopírujte & prilepte tento kód nad poslednú značku <bold>{{bodyTag}}</bold> na svojich stránkach.",
   "to_see_more_details_on_how_to_integrate": "ak chcete vidieť viac podrobností o tom, ako integrovať.",
   "To_users": "Používateľom",
   "Toggle_original_translated": "Prepnúť pôvodný / preložený",

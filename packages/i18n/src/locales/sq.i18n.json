@@ -2402,7 +2402,7 @@
   "Title_bar_color_offline": "Titulli ngjyra bar në linjë",
   "Title_offline": "Titulli në linjë",
   "To_additional_emails": "Për email shtesë",
-  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Për të instaluar Rocket.Chat LiveChat në web faqen tuaj, kopjoni dhe ngjisni këtë kod lart e fundit <strong>&lt;/body&gt;</strong> tag në faqen tuaj.",
+  "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Për të instaluar Rocket.Chat LiveChat në web faqen tuaj, kopjoni dhe ngjisni këtë kod lart e fundit <bold>{{bodyTag}}</bold> tag në faqen tuaj.",
   "to_see_more_details_on_how_to_integrate": "për të parë më shumë detaje se si të integrohen.",
   "To_users": "të Përdoruesit",
   "Toggle_original_translated": "Toggle original / translated",
