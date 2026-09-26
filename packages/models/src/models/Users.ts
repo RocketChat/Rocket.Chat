@@ -388,6 +388,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			exceptions = [exceptions];
 		}
 
+		const normalizedSearchTerm = searchTerm.trim();
+
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const orStmt = (searchFields || []).reduce(
@@ -407,7 +409,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						...(exceptions.length > 0 && { $nin: exceptions }),
 					},
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+					...(normalizedSearchTerm && orStmt.length > 0 && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
@@ -436,7 +438,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const normalizedSearchTerm = searchTerm.trim();
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(normalizedSearchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const orStmt = (searchFields || []).reduce(
 			(acc, el) => {
@@ -455,7 +459,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						...(exceptions.length > 0 && { $nin: exceptions }),
 					},
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+					...(normalizedSearchTerm  && orStmt.length > 0 && { $or: orStmt }),
 				},
 				...extraQuery,
 			],
