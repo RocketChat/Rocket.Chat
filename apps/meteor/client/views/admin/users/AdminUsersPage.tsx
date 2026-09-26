@@ -1,6 +1,7 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
 	ExternalLink,
@@ -15,7 +16,7 @@ import {
 	PageHeader,
 	PageContent,
 } from '@rocket.chat/ui-client';
-import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -31,6 +32,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
+import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
@@ -38,6 +40,7 @@ import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 export type UsersFilters = {
 	text: string;
 	roles: OptionProp[];
+	statusManagement?: UsersListStatusParamsGET['statusManagement'];
 };
 
 export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
@@ -71,6 +74,10 @@ const AdminUsersPage = () => {
 	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
+	const canManageUserStatus = useCanManageUserStatus();
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const canFilterByUserStatus = canManageUserStatus && userStatusEnabled;
+
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
 	const prevSearchTerm = useRef('');
 
@@ -81,6 +88,7 @@ const AdminUsersPage = () => {
 		paginationData,
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+		statusManagement: canFilterByUserStatus ? userFilters.statusManagement : undefined,
 	});
 
 	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
@@ -161,6 +169,7 @@ const AdminUsersPage = () => {
 						isSuccess={filteredUsersQueryResult.isSuccess}
 						total={filteredUsersQueryResult.data?.total || 0}
 						setUserFilters={setUserFilters}
+						canFilterByUserStatus={canFilterByUserStatus}
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}

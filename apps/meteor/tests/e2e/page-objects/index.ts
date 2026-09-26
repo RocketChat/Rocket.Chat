@@ -8,6 +8,7 @@ export * from './admin-email-inboxes';
 export * from './admin-rooms';
 export * from './admin-users';
 export * from './admin-settings';
+export * from './admin-status-and-presence';
 export * from './admin-engagement';
 export * from './admin-info';
 export * from './admin-integrations';
