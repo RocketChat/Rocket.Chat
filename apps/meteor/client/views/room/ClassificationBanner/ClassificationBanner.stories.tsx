@@ -104,7 +104,7 @@ const withBanner = (bannerConfig: ClassificationBannersConfig, room: Partial<IRo
 		.withJohnDoe()
 		.withSetting('ABAC_Enabled', true)
 		.withSetting('ABAC_Classification_Banners_Enabled', true)
-		.withSetting('ABAC_Classification_Banners_Config', JSON.stringify(bannerConfig))
+		.withEndpoint('GET', '/v1/abac/config', () => ({ bannersConfig: JSON.stringify(bannerConfig) }))
 		.withEndpoint('GET', '/v1/licenses.info', () => ({
 			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
 		}))
