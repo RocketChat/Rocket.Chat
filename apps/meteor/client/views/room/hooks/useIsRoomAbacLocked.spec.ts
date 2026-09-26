@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useIsRoomAbacLocked } from './useIsRoomAbacLocked';
 import { createFakeRoom } from '../../../../tests/mocks/data';
@@ -11,13 +11,12 @@ jest.mock('../../../hooks/useHasLicenseModule', () => ({
 }));
 
 const booleanSetting = { packageValue: false, blocked: false, public: true, type: 'boolean' as const };
-const multiLookupSetting = { packageValue: [], blocked: false, public: true, type: 'multiLookup' as const };
 
 const buildAppRoot = ({ abacEnabled = true, enforceAllRooms = true, requiredAttributeKeys = [] as string[] } = {}) =>
 	mockAppRoot()
 		.withSetting('ABAC_Enabled', abacEnabled, booleanSetting)
 		.withSetting('ABAC_Enforce_All_Rooms', enforceAllRooms, booleanSetting)
-		.withSetting('ABAC_Required_Attributes', requiredAttributeKeys, multiLookupSetting)
+		.withEndpoint('GET', '/v1/abac/config', () => ({ bannersConfig: '', requiredAttributes: requiredAttributeKeys }))
 		.build();
 
 const privateRoomWithoutAttributes = createFakeRoom({ t: 'p', abacAttributes: [] });
@@ -57,7 +56,7 @@ describe('useIsRoomAbacLocked', () => {
 		expect(result.current).toBe(false);
 	});
 
-	it('should read the required keys from ABAC_Required_Attributes', () => {
+	it('should read the required keys from the ABAC configuration endpoint', async () => {
 		const room = createFakeRoom({ t: 'p', abacAttributes: [{ key: 'clearance', values: ['SECRET'] }] });
 
 		const { result: compliant } = renderHook(() => useIsRoomAbacLocked(room), {
@@ -67,8 +66,8 @@ describe('useIsRoomAbacLocked', () => {
 			wrapper: buildAppRoot({ requiredAttributeKeys: ['clearance', 'releasability'] }),
 		});
 
+		await waitFor(() => expect(missingOne.current).toBe(true));
 		expect(compliant.current).toBe(false);
-		expect(missingOne.current).toBe(true);
 	});
 
 	it('should not lock a room the client has not loaded yet', () => {
