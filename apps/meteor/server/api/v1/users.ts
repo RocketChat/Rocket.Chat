@@ -1563,6 +1563,11 @@ API.v1.get(
 
 		const { from, ids } = this.queryParams;
 
+		// Max users returned per page in the "full" sync path to prevent OOM crashes.
+		const MAX_PRESENCE_COUNT = 500;
+		const offset = Math.max(0, Number(this.queryParams.offset) || 0);
+		const count = Math.min(MAX_PRESENCE_COUNT, Math.max(1, Number(this.queryParams.count) || MAX_PRESENCE_COUNT));
+
 		const options = {
 			projection: {
 				username: 1,
@@ -1602,11 +1607,20 @@ API.v1.get(
 			}
 		}
 
-		const users = await Users.findUsersNotOffline(options).toArray();
+		// "Full" sync path: fetch all non-offline users for initial presence bootstrap.
+		// This MUST be paginated to prevent unbounded memory allocation and OOM crashes.
+		const presenceOptions = { ...options, skip: offset, limit: count };
+		const [users, total] = await Promise.all([
+			Users.findUsersNotOffline(presenceOptions).toArray(),
+			Users.countUsersNotOffline(),
+		]);
 
 		return API.v1.success({
 			users: filterHiddenUsers(users, hidden),
 			full: true,
+			offset,
+			count: users.length,
+			total,
 		});
 	},
 );
