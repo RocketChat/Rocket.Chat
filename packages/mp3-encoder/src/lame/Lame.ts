@@ -724,8 +724,7 @@ export class Lame {
 			let bunch = mf_needed - gfc.mf_size;
 			const frame_num = gfp.frameNum;
 
-			bunch *= gfp.in_samplerate;
-			bunch /= gfp.out_samplerate;
+			bunch = Math.trunc((bunch * gfp.in_samplerate) / gfp.out_samplerate);
 			if (bunch > 1152) bunch = 1152;
 			if (bunch < 1) bunch = 1;
 
@@ -937,6 +936,7 @@ export class Lame {
 		filter_l += intratio;
 
 		const BLACKSIZE = filter_l + 1;
+		const halfFilter = Math.trunc(filter_l / 2);
 
 		if (!gfc.fill_buffer_resample_init) {
 			gfc.inbuf_old[0] = new Float32Array(BLACKSIZE);
@@ -965,7 +965,7 @@ export class Lame {
 
 			j = Math.floor(time0 - gfc.itime[ch]);
 
-			if (filter_l + j - filter_l / 2 >= len) break;
+			if (filter_l + j - halfFilter >= len) break;
 
 			const offset = time0 - gfc.itime[ch] - (j + 0.5 * (filter_l % 2));
 			assert(Math.abs(offset) <= 0.501);
@@ -973,7 +973,7 @@ export class Lame {
 			const joff = Math.floor(offset * 2 * bpc + bpc + 0.5);
 			let xvalue = 0;
 			for (i = 0; i <= filter_l; ++i) {
-				const j2 = Math.trunc(i + j - filter_l / 2);
+				const j2 = i + j - halfFilter;
 				assert(j2 < len);
 				assert(j2 + BLACKSIZE >= 0);
 				const y = j2 < 0 ? inbuf_old[BLACKSIZE + j2] : inbuf[in_bufferPos + j2];
@@ -982,7 +982,7 @@ export class Lame {
 			outbuf[outbufPos + k] = xvalue;
 		}
 
-		num_used.num_used = Math.min(len, filter_l + j - filter_l / 2);
+		num_used.num_used = Math.min(len, filter_l + j - halfFilter);
 
 		gfc.itime[ch] += num_used.num_used - k * gfc.resample_ratio;
 
