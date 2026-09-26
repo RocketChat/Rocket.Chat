@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,6 +19,8 @@ import {
 	useDraggableWidget,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isExternalPeer } from '../../utils/isExternalPeer';
 
 const OngoingCall = () => {
@@ -41,6 +43,7 @@ const OngoingCall = () => {
 
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
+	const appActions = useVisibleAppActions();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -65,6 +68,8 @@ const OngoingCall = () => {
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{!isInline && dialpadOpen && <Dialpad />}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					{!isInline && (
 						<ActionButton

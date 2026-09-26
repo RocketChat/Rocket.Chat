@@ -1,8 +1,10 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 
 const IncomingCall = () => {
 	const { t } = useTranslation();
@@ -11,6 +13,8 @@ const IncomingCall = () => {
 	const { peerInfo, connectionState } = sessionState;
 
 	const connecting = connectionState === 'CONNECTING';
+
+	const appActions = useVisibleAppActions();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -27,6 +31,8 @@ const IncomingCall = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup stretch>
 					{connecting ? (
 						<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
