@@ -22,4 +22,9 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		now: Date;
 		offset?: number;
 	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
+	findServerSyncedByUserIdBetweenDates(
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime: Date,
+	): FindCursor<Pick<ICalendarEvent, '_id' | 'externalId' | 'provider'>>;
 }
