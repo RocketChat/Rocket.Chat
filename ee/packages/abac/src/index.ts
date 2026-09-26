@@ -41,8 +41,7 @@ import {
 	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
-	AbacRequiredAttributesRemovedError,
-	AbacRoomAttributesClearedError,
+	AbacContractError,
 } from './errors';
 import {
 	getAbacRoom,
@@ -846,7 +845,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (!next.length) {
 			if (room.abacAttributes?.length) {
-				throw new AbacRoomAttributesClearedError();
+				throw new AbacContractError(AbacErrorCode.RoomAttributesCleared);
 			}
 			return;
 		}
@@ -858,7 +857,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			.map(({ key }) => key);
 
 		if (removed.length) {
-			throw new AbacRequiredAttributesRemovedError({ keys: removed });
+			throw new AbacContractError(AbacErrorCode.RequiredAttributesRemoved, { keys: removed });
 		}
 	}
 
@@ -1483,7 +1482,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
-export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError } from './errors';
+export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError, AbacErrorCode, AbacContractError } from './errors';
 export { buildClassificationBanner, parseClassificationBannersConfig } from './classification-banner/engine';
 export type { ClassificationBannersConfig } from './classification-banner/types';
 

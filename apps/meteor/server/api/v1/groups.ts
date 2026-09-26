@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import {
 	isRoomNativeFederated,
@@ -497,7 +498,7 @@ API.v1.post(
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 		if (this.bodyParams.abacAttributes && !settings.get('ABAC_Enabled')) {
-			return API.v1.failure('error-abac-not-enabled');
+			throw new AbacContractError(AbacErrorCode.NotEnabled);
 		}
 
 		try {
