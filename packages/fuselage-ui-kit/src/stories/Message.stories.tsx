@@ -90,6 +90,12 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> 
 
 export const Divider = createStory(payloads.divider);
 
+export const Header = createStory(payloads.header);
+
+export const Video = createStory(payloads.video);
+
+export const Markdown = createStory(payloads.markdown);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
