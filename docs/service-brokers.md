@@ -27,17 +27,25 @@ implementation it got.
 | broker            | where                                               | used when                     | dispatch                                                |
 | ----------------- | --------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
 | `LocalBroker`     | `packages/core-services/src/LocalBroker.ts`         | monolith                      | in process only                                         |
-| `MoleculerBroker` | `ee/packages/network-broker/src/MoleculerBroker.ts` | microservices                 | in process when local, over the transporter when remote |
+| `MoleculerBroker` | `ee/packages/network-broker/src/MoleculerBroker.ts` | microservices, `BROKER` unset | in process when local, over the transporter when remote |
+| `NatsBroker`      | `ee/packages/network-broker/src/NatsBroker.ts`      | microservices, `BROKER=nats`  | in process when local, over NATS when remote            |
 
-The monolith installs `LocalBroker` at `apps/meteor/server/startup/localServices.ts`
-unless it runs in microservices mode, in which case
-`apps/meteor/ee/server/startup/index.ts` installs the network broker returned by
-`startBroker()` (`ee/packages/network-broker/src/moleculer.ts`) instead. Standalone
-services (`ee/apps/*`) call `startBroker()` directly.
+The monolith installs `LocalBroker` unconditionally at
+`apps/meteor/server/startup/localServices.ts`. In microservices mode
+`apps/meteor/ee/server/startup/index.ts` replaces it with a network broker, and
+`startBroker()` picks between the two implementations:
+
+```ts
+// ee/packages/network-broker/src/startBroker.ts
+const { BROKER = 'moleculer' } = process.env;
+```
+
+Standalone services (`ee/apps/*`) always call `startBroker()` directly, so they
+follow the same switch.
 
 ## LocalBroker
 
-The simpler of the two: a `Map` of services and an `EventEmitter`. It exists so
+The simplest of the three: a `Map` of services and an `EventEmitter`. It exists so
 that the monolith pays nothing for an abstraction it does not need — a call is a
 method call, an event is an emit.
 
@@ -86,12 +94,179 @@ every non-internal service.
 sends the stream itself as `ctx.params` — the only shape Moleculer's stream
 detection recognises — and moves the remaining fields into `meta`. The action
 handler reassembles `{ streamParam, details }` on the far side. This exists for
-`Upload.uploadFileFromStream` and nothing else.
+`Upload.uploadFileFromStream` and nothing else. `NatsBroker` takes a different
+route: it carries a stream wherever one appears in the payload, in either
+direction — see [streams are chunked over a dedicated subject](#4-streams-are-chunked-over-a-dedicated-subject).
 
 > One sharp edge: when a call is made outside an existing Moleculer context and the
 > target service is not in `$node.services`, `call()` **returns** an `Error`
 > instead of throwing it. Callers that only `await` the result get an `Error`
 > object as their value.
+
+## NatsBroker
+
+The newer implementation, selected with `BROKER=nats`. It talks to NATS directly
+using the [services protocol](https://docs.nats.io/using-nats/developer/services)
+rather than reproducing Moleculer's registry.
+
+### Subjects
+
+Events and methods must not share a subject space, because several event names are
+identical to a `<service>.<method>` pair (`accounts.login`). Without distinct
+prefixes a broadcast would invoke the method and a call would be delivered to the
+event listeners:
+
+- `rpc.<service>.<method>` — calls, load balanced by NATS across every node running the service
+- `node.<nodeID>.<service>.<method>` — calls pinned to one instance, backing `CallingOptions.nodeID`
+- `event.<name>` — broadcasts
+
+A node id is reduced to a single NATS subject token (`.`, `*`, `>` and whitespace
+become `_`), and that reduced form is what `nodeList()` reports, so an id handed
+back to `call()` always addresses the same subject.
+
+### Discovery
+
+There is no registry. `$node.list` and `$node.services` are answered from a
+`$SRV.PING` request-many round trip, with each service carrying a
+`rocketchat-node-id` metadata entry. A short TTL collapses back to back lookups
+into a single ping.
+
+### What had to be rebuilt
+
+Moleculer provides several behaviours that call sites depend on without saying so.
+
+#### 1. Local calls are dispatched in process
+
+Moleculer invokes a locally registered service directly, and call sites rely on it:
+`apps/meteor/ee/server/configuration/abac.ts` hands `LDAPEnterprise` a mongo
+cursor, which only works because the argument arrives by reference.
+
+`NatsBroker` originally sent everything over the wire, so EJSON met the cursor and
+threw `Converting circular structure to JSON`. It now routes through a
+`LocalServiceRegistry` that indexes the services running in this process by
+`<service>.<method>`.
+
+The registry lives in `packages/core-services/src/lib/LocalServiceRegistry.ts`
+rather than in the broker package, because `LocalBroker` had grown its own copy of
+the same mechanism. All three brokers now share it, and `getCallableMethods`
+defines what a service answers to in exactly one place, so the local and remote
+paths cannot expose different method sets.
+
+Set `BROKER_LOCAL_ROUTING=false` to disable it and send every call over NATS.
+
+#### 2. A call that reaches no responder is retried
+
+Moleculer holds a registry and can wait for a service to appear. NATS has no such
+thing: a request to a subject nobody is listening on fails immediately with `503`.
+That is the normal state of affairs while a peer boots or is being rolled.
+
+`call()` backs off and retries for a few seconds. Only `503` is retried — it means
+nothing received the request, so a second attempt cannot duplicate a side effect.
+Any other failure, a timeout above all, may well have been delivered and is
+surfaced to the caller unchanged.
+
+> `isNatsError` is declared by the nats typings but is not exported at runtime, so
+> the check uses `NatsError` itself.
+
+#### 3. Services wait for their dependencies, lifecycle failures are not fatal
+
+Every service depends on `settings` and `license` (`settings` itself excluded, as
+under Moleculer), plus whatever it passes to `api.registerService`:
+omnichannel-transcript waits for `queue-worker`, and ddp-streamer for `meteor`,
+which serves the client versions it publishes. Services rely on this without
+saying so — a standalone service reads settings in `started()`, which only works
+because `started()` runs once the settings service is reachable. `NatsBroker`
+originally ignored dependencies, so those reads lost the race with the monolith.
+It now reproduces Moleculer's `waitForServices`:
+
+- A service is registered — endpoints, event subscriptions, local routing and
+  discovery — only once every dependency is available, and its hooks run after
+  that. An unregistered service is invisible to discovery, so waiting is
+  transitive: nothing sees `license` before `license` has seen `settings`.
+- A dependency in the same process is noticed as soon as it registers. A remote
+  one is looked for through discovery every second, Moleculer's
+  `dependencyInterval`.
+- `start()` resolves once every service has registered, so `api.start()`, and the
+  health endpoints the standalone services open after it, wait as well.
+- It waits forever by default, like Moleculer's `dependencyTimeout: 0`. The
+  constructor's `dependencyTimeout` bounds the wait, after which `start()` rejects
+  naming each service and what it was missing. Tests set it so that a dependency
+  that is never met fails in milliseconds instead of hanging.
+
+A service that fails `created()` or `started()` is logged and left running.
+Endpoints are registered before any hook runs, so it still answers with whatever
+defaults it holds. Previously the rejection propagated out of `api.start()`, and
+the unhandled rejection killed the container silently, taking every other service
+hosted in the same process with it. Moleculer is no stricter: the lifecycle
+wrapper in `MoleculerBroker.ts` drops the hook's promise, so it never awaits
+`started()` or sees it reject.
+
+One lesson from the adaptation, worth applying to any service that is adapted
+next:
+
+- **Never let a boot read gate the thing the service exists to do.** ddp-streamer
+  fetched client versions and then created its socket server inside the same
+  `try`, so one 503 left the process up but not listening, and every realtime
+  feature disappeared. Bring the server up first; load configuration last and
+  non fatally.
+
+#### 4. Streams are chunked over a dedicated subject
+
+A `Readable` cannot be serialised, so `NatsBroker` never puts one in a payload.
+`ee/packages/network-broker/src/streams.ts` walks every outgoing payload — call
+arguments and replies alike — replaces each stream with a `__rcStream` marker
+naming a fresh inbox subject, and leaves a chunk server subscribed there. The far
+side turns the marker back into a `Readable` whose `_read` requests one chunk from
+that subject.
+
+Pulling, rather than the sender publishing as fast as it reads, is what gives
+backpressure, and it removes the subscribe/publish race: the consumer only asks for
+a chunk once its own subscription is in place. Node will not call `_read` again
+until a `push` lands, so a single chunk is in flight at a time without an explicit
+gate. Chunks are capped at 256KB, well under the 1MB `max_payload` NATS defaults
+to — buffering the whole payload into one message was never an option, transcripts
+exceed that on their own.
+
+Both directions are covered by the same walk, so `Upload.uploadFileFromStream`
+(stream in) and `Upload.streamUploadedFile` (stream out) work over NATS.
+
+A consumer that goes away — its process dies, or the call it was an argument to
+failed before the handler read anything — would strand the subscription and the
+source stream, so a chunk server that is not pulled from within `REQUEST_TIMEOUT`
+unsubscribes and destroys its stream.
+
+**A stream is consumed once.** Two calls sharing one `Readable` used to work under
+Moleculer, which attaches `on('data')` listeners and so tees to every consumer.
+Chunking distributes the chunks between them instead, so
+`OmnichannelTranscript.uploadFiles` — which uploads the same transcript to two
+rooms — now pipes the render into one `PassThrough` per upload. Piping to several
+destinations writes every chunk to all of them and pauses the source when any one
+falls behind, so the pdf is teed rather than held in memory; `renderToStream` is a
+real incremental render and buffering it would give that up.
+
+Note that [the apps-engine migration](./apps-engine-migration.md) is separately
+restructuring the upload flow so that file contents do not have to cross NATS at
+all.
+
+#### 5. Async context propagation
+
+`ServiceClass.context` is not decoration. ddp-streamer's `created()` reads it for
+the broker's node id and returns early without one — and that method body is what
+registers the `LOGGED` handler that sends a client its own user document and
+records its presence. `NatsBroker` originally invoked lifecycle hooks and method
+handlers directly, so under NATS every login left the client without user data.
+
+Lifecycle hooks, remote handlers and locally dispatched calls now all run inside
+`asyncLocalStorage.run`, so `context` is populated on both paths.
+
+The same `created()` also gave up when the broker exposed no metrics, which
+`NatsBroker` does not. Metrics registration is now conditional rather than a guard
+clause in front of the DDP handlers — a second instance of the same mistake as
+[gating the socket server on a boot read](#3-services-wait-for-their-dependencies-lifecycle-failures-are-not-fatal): an
+optional concern was gating the thing the service exists to do.
+
+**Tracing is still missing.** `LocalBroker` and `MoleculerBroker` wrap handlers in a
+tracer span as well; `NatsBroker` does not.
 
 ## What crosses a process boundary
 
@@ -100,17 +275,17 @@ serializer when the two ends are genuinely in different processes. That makes it
 easy to write a call that works everywhere it is currently exercised and breaks the
 day its service is extracted.
 
-`MoleculerBroker` uses EJSON, which is quieter about failure than it looks:
+Both network brokers use EJSON, which is quieter about failure than it looks:
 
-| value                         | round-trips as                     |                                  |
-| ----------------------------- | ---------------------------------- | -------------------------------- |
-| mongo cursor                  | **throws** — circular structure    | fatal, loud                      |
-| Node stream                   | out of band, only as `streamParam` | handled in that one shape        |
-| `Map` / `Set`                 | `{}`                               | fatal, silent                    |
-| function                      | `{}`                               | fatal, silent                    |
-| class instance                | plain object, methods gone         | fatal, silent                    |
-| `Buffer`                      | `Uint8Array`                       | degrades, loses `Buffer` methods |
-| `Date`, `RegExp`, `undefined` | intact                             | fine                             |
+| value                         | round-trips as                  |                                  |
+| ----------------------------- | ------------------------------- | -------------------------------- |
+| mongo cursor                  | **throws** — circular structure | fatal, loud                      |
+| Node stream                   | carried out of band, not by EJSON | handled                        |
+| `Map` / `Set`                 | `{}`                            | fatal, silent                    |
+| function                      | `{}`                            | fatal, silent                    |
+| class instance                | plain object, methods gone      | fatal, silent                    |
+| `Buffer`                      | `Uint8Array`                    | degrades, loses `Buffer` methods |
+| `Date`, `RegExp`, `undefined` | intact                          | fine                             |
 
 The calls below pass or return something in that table.
 
@@ -148,18 +323,28 @@ Exposure without a caller — delete from the interface or retype:
 
 ## Configuration
 
+Shared:
+
 | variable                 | default     | effect                                                           |
 | ------------------------ | ----------- | ---------------------------------------------------------------- |
+| `BROKER`                 | `moleculer` | `nats` selects `NatsBroker`                                      |
+| `TRANSPORTER`            | —           | Moleculer transporter string; also the fallback NATS server list |
 | `REQUEST_TIMEOUT`        | `60`        | seconds to wait for a reply                                      |
 | `LICENSE_CHECK_INTERVAL` | `20`        | seconds between license checks                                   |
 | `MAX_FAILS`              | `2`         | failed license checks before a service shuts itself down         |
+
+`NatsBroker` only:
+
+| variable               | default                                     | effect                                                                    |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
+| `NATS_URL`             | `TRANSPORTER`, then `nats://localhost:4222` | server list                                                               |
+| `BROKER_LOCAL_ROUTING` | enabled                                     | `false` sends every call over NATS, including to services in this process |
 
 `MoleculerBroker` only — see `ee/packages/network-broker/src/moleculer.ts` for the
 full set:
 
 | variable                                   | default          | effect                                                                                             |
 | ------------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------- |
-| `TRANSPORTER`                              | —                | Moleculer transporter string                                                                       |
 | `MS_NAMESPACE`                             | —                | Moleculer namespace                                                                                |
 | `SERIALIZER`                               | `EJSON`          | anything else is passed to Moleculer by name                                                       |
 | `BALANCE_STRATEGY`                         | `RoundRobin`     | registry strategy                                                                                  |
