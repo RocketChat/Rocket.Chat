@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { normalizeId } from './normalizeId';
+
 export interface IDocumentMapStore<T extends { _id: string }> {
 	readonly records: ReadonlyMap<T['_id'], T>;
 	/**
@@ -160,6 +162,15 @@ export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 	onInvalidateAll?: () => void;
 }
 
+const normalizeKey = (id: unknown): string => (typeof id === 'string' ? id : normalizeId(id));
+
+const normalizeDoc = <T extends { _id: string }>(doc: T): T => {
+	if (typeof doc._id === 'string') {
+		return doc;
+	}
+	return { ...doc, _id: normalizeId(doc._id) };
+};
+
 /**
  * Factory function to create a Zustand store that holds a map of documents.
  *
@@ -169,8 +180,8 @@ export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate, onInvalidateAll }: IDocumentMapStoreHooks<T> = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
-		has: (id: T['_id']) => get().records.has(id),
-		get: (id: T['_id']) => get().records.get(id),
+		has: (id: T['_id']) => get().records.has(normalizeKey(id)),
+		get: (id: T['_id']) => get().records.get(normalizeKey(id)),
 		some: (predicate: (record: T) => boolean) => {
 			for (const record of get().records.values()) {
 				if (predicate(record)) return true;
@@ -213,31 +224,43 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			return index;
 		},
 		replaceAll: (records: T[]) => {
-			set({ records: new Map(records.map((record) => [record._id, record])) });
+			set({
+				records: new Map(
+					records.map((record) => {
+						const doc = normalizeDoc(record);
+						return [doc._id, doc];
+					}),
+				),
+			});
 			onInvalidateAll?.();
 		},
 		store: (doc) => {
-			set((state) => ({ records: new Map(state.records).set(doc._id, doc) }));
-			onInvalidate?.(doc);
+			const item = normalizeDoc(doc);
+			set((state) => ({ records: new Map(state.records).set(item._id, item) }));
+			onInvalidate?.(item);
 		},
 		storeMany: (docs) => {
+			const normalizedDocs: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
 
 				for (const doc of docs) {
-					records.set(doc._id, doc);
+					const item = normalizeDoc(doc);
+					records.set(item._id, item);
+					normalizedDocs.push(item);
 				}
 
 				return { records };
 			});
-			onInvalidate?.(...docs);
+			onInvalidate?.(...normalizedDocs);
 		},
 		delete: (_id) => {
+			const id = normalizeKey(_id);
 			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
-				if (onInvalidate) affected.push(state.records.get(_id)!);
-				records.delete(_id);
+				if (onInvalidate && state.records.has(id)) affected.push(state.records.get(id)!);
+				records.delete(id);
 				return { records };
 			});
 			onInvalidate?.(...affected);

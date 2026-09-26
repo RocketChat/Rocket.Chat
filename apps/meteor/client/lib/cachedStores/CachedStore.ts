@@ -8,6 +8,7 @@ import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
+import { normalizeId } from './normalizeId';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { hasPendingMethods } from '../../meteor/connection';
 import { sdk } from '../SDKClient';
@@ -133,6 +134,9 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 		return {
 			...(record as unknown as T),
+			...('_id' in record && {
+				_id: normalizeId((record as any)._id),
+			}),
 			...(hasUnserializedUpdatedAt(record) && {
 				_updatedAt: new Date(record._updatedAt),
 			}),
@@ -174,6 +178,12 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	protected mapRecord(record: U): T {
+		if (typeof record === 'object' && record !== null && '_id' in record) {
+			return {
+				...(record as unknown as T),
+				_id: normalizeId((record as any)._id),
+			};
+		}
 		return record as unknown as T;
 	}
 
