@@ -58,7 +58,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		[`${fileType}_type`]: fileToUpload.file.type,
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
-			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)).catch(() => undefined),
 			image_alt: fileToUpload.altText,
 		}),
 	};
