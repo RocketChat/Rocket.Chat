@@ -2503,7 +2503,7 @@
   "User__username__removed_from__room_name__leaders": "Pengguna {{username}} dikeluarkan daripada pemimpin {{room_name}}",
   "User__username__removed_from__room_name__moderators": "{{username}} Pengguna dikeluarkan dari moderator {{room_name}}",
   "User_activity_typing": {
-    "other": "{{users, list}} yang menaip"
+    "other": "{{users, list}} sedang menaip"
   },
   "User_added": "Pengguna ditambah.",
   "User_added_by": "Pengguna {{user_added}} ditambah oleh {{user_by}}.",
