@@ -378,6 +378,8 @@
   "Delete_my_account": "מחק את חשבוני",
   "Delete_User_Warning": "מחיקת משתמש תמחק את כל הודעותיו. פעולה זו בלתי הפיכה.",
   "Delete_User_Warning_Delete": "מחיקת משתמש תמחק את כל הודעותיו. פעולה זו בלתי הפיכה.",
+  "Delete_User_Warning_Keep": "המשתמש יימחק, אך ההודעות שלו יישארו גלויות. פעולה זו בלתי הפיכה.",
+  "Delete_User_Warning_Unlink": "מחיקת משתמש תסיר את שם המשתמש מכל ההודעות שלו. פעולה זו בלתי הפיכה.",
   "delete-message": "מחיקת הודעה",
   "Deleted": "נמחק",
   "Department_not_found": "המחלקה לא נמצאה",
