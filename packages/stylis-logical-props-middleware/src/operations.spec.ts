@@ -184,6 +184,8 @@ describe.each(['float', 'clear', 'text-align'])('%s', (property) => {
 		['end', 'right', 'left'],
 		['inline-end', 'right', 'left'],
 	])('falls back from the %s value to %s in ltr and %s in rtl', (value, ltrValue, rtlValue) => {
-		expect(renderValue(property, value, false)).toBe(`[dir=rtl] .a{${property}:${rtlValue};}.a{${property}:${ltrValue};}`);
+		expect(renderValue(property, value, false)).toBe(
+			`html:not([dir=rtl]) .a{${property}:${ltrValue};}[dir=rtl] .a{${property}:${rtlValue};}`,
+		);
 	});
 });
