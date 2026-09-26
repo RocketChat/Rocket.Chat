@@ -21,7 +21,7 @@
 		"unified": "9.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "~24.13.2",
+		"@types/node": "~26.6.2",
 		"esbuild": "~0.28.2",
 		"eslint": "~9.39.5",
 		"typescript": "~5.9.3"
