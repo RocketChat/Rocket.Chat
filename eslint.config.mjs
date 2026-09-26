@@ -474,7 +474,7 @@ export default [
 		},
 	},
 	{
-		files: ['packages/mp3-encoder/src/**/*.ts'],
+		files: ['packages/mp3-encoder/src/lame/**/*.ts'],
 		rules: {
 			'@typescript-eslint/naming-convention': 'off',
 			'new-cap': 'off',

@@ -6,7 +6,7 @@ import type { LameInternalFlags } from './LameInternalFlags';
 import { QuantizePVT } from './QuantizePVT';
 import * as tables from './Tables';
 import { fillArray } from './arrays';
-import { assert } from './assert';
+import { assert, assertDefined } from './assert';
 import { NORM_TYPE, SBMAX_l, SBPSY_l, SHORT_TYPE } from './constants';
 
 export class Takehiro {
@@ -295,7 +295,7 @@ export class Takehiro {
 	private count_bit_noESC(ix: Int32Array, ixPos: number, end: number, s: Bits) {
 		let sum1 = 0;
 		const hlen1 = tables.ht[1].hlen;
-		assert(hlen1 !== undefined);
+		assertDefined(hlen1);
 
 		do {
 			const x = ix[ixPos + 0] * 2 + ix[ixPos + 1];
@@ -341,9 +341,9 @@ export class Takehiro {
 		const hlen2 = tables.ht[t1 + 1].hlen;
 		const hlen3 = tables.ht[t1 + 2].hlen;
 
-		assert(hlen1 !== undefined);
-		assert(hlen2 !== undefined);
-		assert(hlen3 !== undefined);
+		assertDefined(hlen1);
+		assertDefined(hlen2);
+		assertDefined(hlen3);
 
 		do {
 			const x = ix[ixPos + 0] * xlen + ix[ixPos + 1];
@@ -958,7 +958,7 @@ export class Takehiro {
 			}
 		}
 		if (!over) {
-			assert(cod_info.sfb_partition_table !== null);
+			assertDefined(cod_info.sfb_partition_table);
 			cod_info.part2_length = 0;
 			for (partition = 0; partition < 4; partition++)
 				cod_info.part2_length += cod_info.slen[partition] * cod_info.sfb_partition_table[partition];
