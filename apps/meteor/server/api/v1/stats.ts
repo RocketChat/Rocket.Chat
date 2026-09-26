@@ -24,7 +24,7 @@ const statisticsResponseSchema = ajv.compile<IStats>({
 const statisticsListResponseSchema = ajv.compile<{ statistics: IStats[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		statistics: { type: 'array' },
+		statistics: { type: 'array', items: {} },
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
