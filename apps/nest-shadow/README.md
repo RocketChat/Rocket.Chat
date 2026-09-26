@@ -11,6 +11,9 @@ services of `@rocket.chat/core-services`, and reads the models of
 shadow a probe: every place where it had to use a model, or copy a rule, is a
 seam that the services do not offer yet. See [Seam gaps](#seam-gaps).
 
+[EXPLORATION.md](EXPLORATION.md) compares NestJS with the current REST stack,
+and lists ideas that the codebase can adopt without NestJS.
+
 ## Endpoints
 
 | Endpoint                    | Handler                                    | Seam                                                           |
