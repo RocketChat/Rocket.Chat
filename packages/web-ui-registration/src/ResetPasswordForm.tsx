@@ -63,7 +63,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 									},
 								})}
 								error={errors.email?.message}
-								aria-invalid={Boolean(errors.email)}
+								aria-invalid={errors.email ? 'true' : undefined}
 								aria-required='true'
 								aria-describedby={`${emailId}-error`}
 								placeholder={t('registration.component.form.emailPlaceholder')}
