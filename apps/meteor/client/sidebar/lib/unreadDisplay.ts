@@ -33,12 +33,19 @@ const getUnreadTitle = (
 	return title.join(', ');
 };
 
+export type UnreadVariant = 'primary' | 'warning' | 'danger' | 'secondary';
+
 export type UnreadData = Pick<
 	SubscriptionWithRoom,
 	'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'hideMentionStatus' | 'hideUnreadStatus'
 >;
 
-export const getSubscriptionUnreadData = (
+/**
+ * What a room's unread state looks like once said out loud: how many, which colour it earns, what a
+ * reader is told, and whether the whole row should stand out. Takes its translator rather than
+ * reaching for one, so a list can ask this per row without a context read per row.
+ */
+export const getUnreadDisplay = (
 	{ userMentions, tunreadUser, tunread, unread, groupMentions, hideMentionStatus, hideUnreadStatus, alert }: UnreadData,
 	t: TFunction,
 ) => {
@@ -51,7 +58,7 @@ export const getSubscriptionUnreadData = (
 
 	const unreadTitle = getUnreadTitle(unreadCount, t);
 
-	const unreadVariant: 'primary' | 'warning' | 'danger' | 'secondary' =
+	const unreadVariant: UnreadVariant =
 		(unreadCount.mentions && 'danger') || (unreadCount.threads && 'primary') || (unreadCount.groupMentions && 'warning') || 'secondary';
 
 	const showUnread =
@@ -62,3 +69,5 @@ export const getSubscriptionUnreadData = (
 
 	return { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread };
 };
+
+export type UnreadDisplay = ReturnType<typeof getUnreadDisplay>;

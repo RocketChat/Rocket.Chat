@@ -1,4 +1,3 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
@@ -6,18 +5,15 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
+import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
-import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
-import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
-import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
-import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
+import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
+import type { SidebarRoomAvatar } from '../Item/templates';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
+import { useRoomListItem } from '../hooks/useRoomListItem';
+import { hasRoomChanged } from '../lib/sidebarRowChanges';
 
 type RoomListRowProps = {
 	extended: boolean;
@@ -29,7 +25,7 @@ type RoomListRowProps = {
 			avatar: ReactNode;
 			actions: ReactNode;
 			href: string;
-			time?: Date;
+			timeLabel?: string;
 			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
@@ -41,7 +37,9 @@ type RoomListRowProps = {
 			is?: string;
 		} & AllHTMLAttributes<HTMLElement>
 	>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+	AvatarTemplate: SidebarRoomAvatar | null;
+	formatTime: (time: string | Date | number) => string;
+	isPriorityEnabled: boolean;
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
@@ -72,16 +70,22 @@ const SidebarItemTemplateWithData = ({
 	isAnonymous,
 	videoConfActions,
 	userId,
+	formatTime,
+	isPriorityEnabled,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
-	const title = roomCoordinator.getRoomName(room.t, room) || '';
-
-	const dmUserId = getUidDirectMessage(room, userId);
-	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
-
-	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const {
+		href,
+		title,
+		ariaLabel,
+		dmStatusTooltipHandlers,
+		isQueued,
+		draftHint,
+		messagePreviewHtml,
+		unread: unreadInfo,
+	} = useRoomListItem(room, { userId, t, extended });
+	const { highlighted } = unreadInfo;
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
@@ -92,9 +96,7 @@ const SidebarItemTemplateWithData = ({
 		/>
 	);
 
-	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
-	) : undefined;
+	const titleIcon = draftHint ? <Icon name='pencil' size='x12' title={draftHint} /> : undefined;
 
 	const actions = useMemo(
 		() =>
@@ -107,11 +109,9 @@ const SidebarItemTemplateWithData = ({
 		[videoConfActions],
 	);
 
-	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
-	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-
-	const message = extended && getMessagePreview(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = messagePreviewHtml ? (
+		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: messagePreviewHtml }} />
+	) : null;
 
 	return (
 		<SidebarItemTemplate
@@ -125,14 +125,21 @@ const SidebarItemTemplateWithData = ({
 			onClick={(): void => {
 				if (!selected) sidebar.toggle();
 			}}
-			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			aria-label={ariaLabel}
 			title={title}
-			time={lastMessage?.ts}
+			timeLabel={lastMessage?.ts ? formatTime(lastMessage.ts) : undefined}
 			subtitle={subtitle}
 			icon={icon}
 			titleIcon={titleIcon}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={
+				<SidebarItemBadges
+					room={room}
+					unread={unreadInfo}
+					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
+					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
+				/>
+			}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
@@ -140,7 +147,7 @@ const SidebarItemTemplateWithData = ({
 					? () => (
 							<RoomMenu
 								alert={alert}
-								threadUnread={unreadCount.threads > 0}
+								threadUnread={unreadInfo.threads > 0}
 								rid={rid}
 								unread={!!unread}
 								roomOpen={selected}
@@ -157,13 +164,6 @@ const SidebarItemTemplateWithData = ({
 	);
 };
 
-function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
-	if (!a || !b) {
-		return a !== b;
-	}
-	return new Date(a).toISOString() !== new Date(b).toISOString();
-}
-
 const keys: (keyof RoomListRowProps)[] = [
 	'id',
 	'style',
@@ -174,52 +174,11 @@ const keys: (keyof RoomListRowProps)[] = [
 	't',
 	'sidebarViewMode',
 	'videoConfActions',
+	'formatTime',
+	'isPriorityEnabled',
 ];
 
-export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
-	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
-		return false;
-	}
-
-	if (prevProps.room === nextProps.room) {
-		return true;
-	}
-
-	if (prevProps.room._id !== nextProps.room._id) {
-		return false;
-	}
-	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
-		return false;
-	}
-	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
-		return false;
-	}
-	if (prevProps.room.lastMessage?.msg !== nextProps.room.lastMessage?.msg) {
-		return false;
-	}
-	if (prevProps.room.alert !== nextProps.room.alert) {
-		return false;
-	}
-	if (prevProps.room.draft !== nextProps.room.draft) {
-		return false;
-	}
-	if (prevProps.room.threadDrafts !== nextProps.room.threadDrafts) {
-		return false;
-	}
-	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
-		return false;
-	}
-	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
-		return false;
-	}
-
-	if (
-		isOmnichannelRoom(prevProps.room) &&
-		isOmnichannelRoom(nextProps.room) &&
-		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
-	) {
-		return false;
-	}
-
-	return true;
-});
+export default memo(
+	SidebarItemTemplateWithData,
+	(prevProps, nextProps) => !keys.some((key) => prevProps[key] !== nextProps[key]) && !hasRoomChanged(prevProps.room, nextProps.room),
+);

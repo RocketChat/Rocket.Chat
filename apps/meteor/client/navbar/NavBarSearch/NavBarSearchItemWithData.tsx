@@ -4,10 +4,12 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItem from './NavBarSearchItem';
+import InvitationBadge from '../../components/InvitationBadge';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import { getUnreadDisplay } from '../../sidebar/lib/unreadDisplay';
+import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 
 export type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
@@ -21,7 +23,9 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const { unreadTitle, unreadVariant, unreadCount, showUnread, highlightUnread: highlighted } = getUnreadDisplay(room, t);
+
+	const unreadLabel = t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title });
 
 	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
 
@@ -30,10 +34,17 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			{...props}
 			unread={highlighted}
 			href={href}
-			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			aria-label={showUnread ? unreadLabel : title}
 			title={title}
 			icon={icon}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={
+				<SidebarItemBadges
+					room={room}
+					unread={{ show: showUnread, title: unreadTitle, label: unreadLabel, total: unreadCount.total, variant: unreadVariant }}
+					renderOmnichannelBadges={(room) => <OmnichannelBadges room={room} />}
+					renderInvitationBadge={(invitationDate) => <InvitationBadge marginBlockStart={2} invitationDate={invitationDate} />}
+				/>
+			}
 			avatar={AvatarTemplate}
 		/>
 	);

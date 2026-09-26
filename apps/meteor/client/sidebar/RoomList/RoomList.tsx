@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,48 +7,34 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useOpenedRoom } from '../../lib/RoomManager';
-import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
+import { itemTemplateByViewMode, roomAvatarForViewMode } from '../Item/templates';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
-import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import {
+	useRoomListActions,
+	useRoomListCollapse,
+	useRoomListGroups,
+	useRoomListPresentation,
+	useRoomListRingingCalls,
+	useRoomListViewer,
+} from '../contexts/RoomListContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-
-const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
-	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
-	if (direction === 'down') return index + 1 < groups.length;
-	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
-};
-
-type SidebarViewMode = 'extended' | 'medium' | 'condensed';
-
-const sidebarRowHeight: Record<SidebarViewMode, number> = {
-	condensed: 28,
-	medium: 36,
-	extended: 48,
-};
+import { canMoveGroup } from '../lib/reorderableGroups';
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
 
 const RoomList = () => {
 	const { t } = useTranslation();
-	const userId = useUserId();
-	const isAnonymous = !userId;
 
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
-	const moveCategory = useMoveCategoryPosition();
-	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
-	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
-	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
-
-	const extended = sidebarViewMode === 'extended';
+	const groups = useRoomListGroups();
+	const { toggle: handleClick, onKeyDown: handleKeyDown } = useRoomListCollapse();
+	const { moveCategory } = useRoomListActions();
+	const ringingCalls = useRoomListRingingCalls();
+	const { userId, isAnonymous, openedRoom, isPriorityEnabled, canCustomiseGroups, formatTime } = useRoomListViewer();
+	const { viewMode: sidebarViewMode, extended, showAvatar, rowHeight } = useRoomListPresentation();
+	const sideBarItemTemplate = itemTemplateByViewMode[sidebarViewMode];
+	const avatarTemplate = useMemo(() => (showAvatar ? roomAvatarForViewMode(sidebarViewMode) : null), [showAvatar, sidebarViewMode]);
+	const bufferSize = rowHeight * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 	const itemData = useMemo(
 		() => ({
 			extended,
@@ -60,8 +45,10 @@ const RoomList = () => {
 			sidebarViewMode,
 			isAnonymous,
 			userId,
+			formatTime,
+			isPriorityEnabled,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
+		[avatarTemplate, extended, formatTime, isAnonymous, isPriorityEnabled, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
@@ -90,6 +77,7 @@ const RoomList = () => {
 				renderGroup={(group, index) => (
 					<RoomListCollapser
 						group={group}
+						canCustomiseGroups={canCustomiseGroups}
 						canMoveUp={canMoveGroup(groups, index, 'up')}
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
@@ -100,7 +88,7 @@ const RoomList = () => {
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
+						<RoomListRow data={itemData} item={item} videoConfActions={ringingCalls.get(item.rid)} />
 					</RoomListRowWrapper>
 				)}
 			/>
