@@ -40,8 +40,6 @@ export class NotificationsModule {
 
 	public readonly streamApps: IStreamer<'apps'>;
 
-	public readonly streamAppsEngine: IStreamer<'apps-engine'>;
-
 	public readonly streamCannedResponses: IStreamer<'canned-responses'>;
 
 	public readonly streamIntegrationHistory: IStreamer<'integrationHistory'>;
@@ -66,7 +64,6 @@ export class NotificationsModule {
 		this.streamImporters = new this.Streamer('importers', { retransmit: false });
 		this.streamRoles = new this.Streamer('roles');
 		this.streamApps = new this.Streamer('apps', { retransmit: false });
-		this.streamAppsEngine = new this.Streamer('apps-engine', { retransmit: false });
 		this.streamCannedResponses = new this.Streamer('canned-responses');
 		this.streamIntegrationHistory = new this.Streamer('integrationHistory');
 		this.streamLivechatRoom = new this.Streamer('livechat-room');
@@ -330,11 +327,6 @@ export class NotificationsModule {
 		this.streamApps.allowRead('all');
 		this.streamApps.allowEmit('all');
 		this.streamApps.allowWrite('none');
-
-		this.streamAppsEngine.serverOnly = true;
-		this.streamAppsEngine.allowRead('none');
-		this.streamAppsEngine.allowEmit('all');
-		this.streamAppsEngine.allowWrite('none');
 
 		this.streamCannedResponses.allowWrite('none');
 		this.streamCannedResponses.allowRead(async function () {
