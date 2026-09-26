@@ -1617,6 +1617,153 @@ describe('[Rooms]', () => {
 					});
 			});
 		});
+
+		describe('rooms the caller is not a member of', () => {
+			let owner: TestUser<IUser>;
+			let ownerCredentials: Credentials;
+			let outsider: TestUser<IUser>;
+			let outsiderCredentials: Credentials;
+			let ownerGroup: IRoom;
+			let ownerDM: IRoom;
+			let ownerTeam: ITeam;
+			let ownerTeamChannel: IRoom;
+
+			before(async () => {
+				// Earlier specs in the run leave `edit-room` in an arbitrary state, and the
+				// fixture below edits rooms, so pin both permissions instead of inheriting them.
+				await Promise.all([restorePermissionToRoles('view-room-administration'), restorePermissionToRoles('edit-room')]);
+
+				[owner, outsider] = await Promise.all([createUser(), createUser()]);
+				[ownerCredentials, outsiderCredentials] = await Promise.all([login(owner.username, password), login(outsider.username, password)]);
+
+				ownerGroup = (await createRoom({ type: 'p', name: `rooms.info.admin.${Date.now()}`, credentials: ownerCredentials })).body.group;
+				ownerDM = (await createRoom({ type: 'd', username: outsider.username, credentials: ownerCredentials })).body.room;
+
+				// A public channel inside a private team is the only public room canAccessRoom
+				// already denies to a non-member, so it is what exercises the isPublicRoom branch.
+				ownerTeam = await createTeam(ownerCredentials, `rooms.info.admin.team.${Date.now()}`, TeamType.PRIVATE);
+				ownerTeamChannel = (await createRoom({ type: 'c', name: `rooms.info.admin.channel.${Date.now()}`, credentials: ownerCredentials }))
+					.body.channel;
+
+				await request
+					.post(api('channels.setJoinCode'))
+					.set(credentials)
+					.send({ roomId: ownerTeamChannel._id, joinCode: 'super-secret-password' })
+					.expect(200);
+				await request
+					.post(api('teams.addRooms'))
+					.set(ownerCredentials)
+					.send({ rooms: [ownerTeamChannel._id], teamId: ownerTeam._id })
+					.expect(200);
+
+				await request
+					.post(api('rooms.saveRoomSettings'))
+					.set(credentials)
+					.send({ rid: ownerGroup._id, roomCustomFields: { ssn: 'abc' }, systemMessages: ['uj'] })
+					.expect(200);
+				await sendSimpleMessage({ roomId: ownerGroup._id, userCredentials: ownerCredentials });
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('view-room-administration');
+				await Promise.all([
+					deleteRoom({ type: 'p', roomId: ownerGroup._id }),
+					deleteRoom({ type: 'd', roomId: ownerDM._id }),
+					deleteRoom({ type: 'c', roomId: ownerTeamChannel._id }),
+				]);
+				await deleteTeam(ownerCredentials, ownerTeam.name);
+				await Promise.all([deleteUser(owner), deleteUser(outsider)]);
+			});
+
+			it('should return the whole private group to an admin by roomId', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.room).to.have.property('_id', ownerGroup._id);
+				expect(res.body.room).to.have.nested.property('u.username', owner.username);
+				expect(res.body.room).to.have.deep.property('customFields', { ssn: 'abc' });
+				expect(res.body.room).to.have.deep.property('sysMes', ['uj']);
+				expect(res.body.room).to.include.all.keys('_updatedAt', 'ts', 'msgs', 'usersCount', 'lastMessage');
+			});
+
+			it('should return a private group to an admin by roomName', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomName: ownerGroup.name })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('_id', ownerGroup._id);
+			});
+
+			it('should return a public channel of a private team to an admin without leaking its join code', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerTeamChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('_id', ownerTeamChannel._id);
+				expect(res.body.room).to.not.have.property('joinCode');
+			});
+
+			it('should keep returning the whole room to members', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(ownerCredentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.room).to.have.property('lastMessage').that.is.an('object');
+			});
+
+			it('should not return a direct message the admin is not part of', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: ownerDM._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('error', 'not-allowed');
+			});
+
+			it('should not return a private group to a user without view-room-administration', async () => {
+				const res = await request
+					.get(api('rooms.info'))
+					.set(outsiderCredentials)
+					.query({ roomId: ownerGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('error', 'not-allowed');
+			});
+
+			it('should not return a private group to an admin once view-room-administration is revoked', async () => {
+				await updatePermission('view-room-administration', []);
+
+				try {
+					const res = await request
+						.get(api('rooms.info'))
+						.set(credentials)
+						.query({ roomId: ownerGroup._id })
+						.expect('Content-Type', 'application/json')
+						.expect(400);
+
+					expect(res.body).to.have.property('error', 'not-allowed');
+				} finally {
+					await restorePermissionToRoles('view-room-administration');
+				}
+			});
+		});
 	});
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;
