@@ -35,7 +35,7 @@ import { createRichTextComposerAPI } from '../../../../lib/createRichTextCompose
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
+import { getContentEndOffset, getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
 import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
@@ -249,7 +249,8 @@ const RichTextMessageBox = ({
 		popup.clear();
 
 		// Sets the cursor position to the end after resetting an edited message
-		setSelectionRange(input, input.innerText.length, input.innerText.length);
+		const end = getContentEndOffset(input);
+		setSelectionRange(input, end, end);
 		input.focus();
 	};
 

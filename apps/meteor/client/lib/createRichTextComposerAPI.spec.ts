@@ -318,6 +318,18 @@ describe('RichText Composer API - insertText', () => {
 		expect(input.textContent).toBe('*bold* 😄\n');
 	});
 
+	it('appends on the same line when the composer is blurred by the emoji picker', () => {
+		const { composer, input } = setupComposer('', { start: 0, end: 0 });
+
+		composer.setText('sd');
+		composer.setCursorToEnd();
+		window.getSelection()?.removeAllRanges();
+
+		composer.insertText(' 😃 ');
+
+		expect(stripLineEnd(input.textContent)).toBe('sd 😃 ');
+	});
+
 	it('still inserts when execCommand reports success but changes nothing', () => {
 		const { execCommand } = document as unknown as { execCommand: () => boolean };
 		(document as unknown as { execCommand: () => boolean }).execCommand = () => true;
@@ -332,6 +344,27 @@ describe('RichText Composer API - insertText', () => {
 		} finally {
 			(document as unknown as { execCommand: () => boolean }).execCommand = execCommand;
 		}
+	});
+});
+
+describe('RichText Composer API - setCursorToEnd', () => {
+	it('parks the caret before the newline the paragraph renderer appends', () => {
+		const { composer, input } = setupComposer('', { start: 0, end: 0 });
+
+		composer.setText('sd');
+		composer.setCursorToEnd();
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 2, selectionEnd: 2 });
+	});
+
+	it('keeps typing after opening an edit on the original line', () => {
+		const { composer, input } = setupComposer('', { start: 0, end: 0 });
+
+		composer.setText('sd');
+		composer.setCursorToEnd();
+		composer.insertText('x');
+
+		expect(stripLineEnd(input.textContent)).toBe('sdx');
 	});
 });
 
