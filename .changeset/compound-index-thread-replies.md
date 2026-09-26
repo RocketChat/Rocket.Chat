@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Speed up paginated thread reply loads on large workspaces by adding a compound index `{ tmid: 1, ts: -1 }` on the messages collection. Without it, the query planner can fall back to scanning the `ts_1` index in time order and filtering by `tmid` in memory, which becomes very expensive on collections with millions of messages.
+Speed up paginated thread reply loads on large workspaces by replacing the sparse `{ tmid: 1 }` index on the messages collection with a compound `{ tmid: 1, ts: -1 }` index, partial on `tmid` existing. Without it, loading a page of a large thread fetches every reply through `tmid_1` and sorts them in memory by `ts`. The index is partial rather than sparse because a sparse compound index includes every document that has `ts`, i.e. the whole collection.
