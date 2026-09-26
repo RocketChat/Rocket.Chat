@@ -10375,7 +10375,7 @@ __metadata:
     chai-datetime: "npm:^1.8.1"
     chai-dom: "npm:^1.12.1"
     chai-spies: "npm:~1.1.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^6.0.0"
     change-case: "npm:^4.1.2"
     chart.js: "npm:^3.9.1"
     codemirror: "npm:~5.65.21"
@@ -19070,6 +19070,13 @@ __metadata:
   version: 5.4.1
   resolution: "chalk@npm:5.4.1"
   checksum: 10/29df3ffcdf25656fed6e95962e2ef86d14dfe03cd50e7074b06bad9ffbbf6089adbb40f75c00744d843685c8d008adaf3aed31476780312553caf07fa86e5bc7
+  languageName: node
+  linkType: hard
+
+"chalk@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "chalk@npm:6.0.0"
+  checksum: 10/bdcb895b9c848ddbce38f38df5a10a3e272d6c04d759161789c4a2fa5a1fa78bf9eecf4eef73433a2a3be7324d6da96c3c9baf5c80862f37683cc0b890597831
   languageName: node
   linkType: hard
 

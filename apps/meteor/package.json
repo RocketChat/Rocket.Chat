@@ -184,7 +184,7 @@
 		"body-parser": "^1.20.6",
 		"bson": "^6.7.1",
 		"busboy": "^1.6.0",
-		"chalk": "^4.1.2",
+		"chalk": "^6.0.0",
 		"change-case": "^4.1.2",
 		"chart.js": "^3.9.1",
 		"codemirror": "~5.65.21",
