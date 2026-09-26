@@ -31,27 +31,31 @@ export const createSidebarItems = (
 	subscribeToSidebarItems: (callback: () => void) => () => void;
 } => {
 	let items = initialItems;
-	let updateCb: () => void = () => undefined;
+	const updateCbs = new Set<() => void>();
 
 	const getSidebarItems = (): SidebarItem[] => items;
 
 	const subscribeToSidebarItems = (cb: () => void): (() => void) => {
-		updateCb = cb;
+		updateCbs.add(cb);
 		return (): void => {
-			updateCb = (): void => undefined;
+			updateCbs.delete(cb);
 		};
+	};
+
+	const notify = (): void => {
+		updateCbs.forEach((cb) => cb());
 	};
 
 	// Snapshots feed useSyncExternalStore, which bails out when the reference is
 	// unchanged, so every mutation has to produce a new array.
 	const registerSidebarItem = (item: SidebarItem): void => {
 		items = [...items, item];
-		updateCb();
+		notify();
 	};
 
 	const unregisterSidebarItem = (i18nLabel: SidebarItem['i18nLabel']): void => {
 		items = items.filter((item) => item.i18nLabel !== i18nLabel);
-		updateCb();
+		notify();
 	};
 
 	return {
