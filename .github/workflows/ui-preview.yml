@@ -1,0 +1,131 @@
+name: UI Preview
+
+# Builds the standalone web client for a PR and publishes it to ghcr.io, where Rocket.Chat Desktop pulls it
+# anonymously (`rocketchat://ui-preview?pr=<number>`).
+on:
+  pull_request:
+    paths:
+      - 'apps/meteor/client/**'
+      - 'apps/meteor/app/**'
+      - 'apps/meteor/ee/client/**'
+      - 'apps/meteor/public/**'
+      - 'apps/meteor/vite/**'
+      - 'packages/**'
+      - 'ee/packages/**'
+      - 'yarn.lock'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  IMAGE: ghcr.io/rocketchat/rocket.chat-web
+
+permissions: {}
+
+jobs:
+  build:
+    name: Build UI preview
+    # Publishing needs CR_PAT, which fork and Dependabot PRs do not receive.
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          cache-modules: true
+          install: true
+
+      - uses: rharkor/caching-for-turbo@2238fae6eb9a9936f92356f54cb3660200d105e7 # v2.5.1
+
+      # Same package set `yarn dev:next` builds against a remote server.
+      - name: Build packages the client reads from dist
+        run: |
+          mapfile -t filters < <(node --input-type=module -e "
+            import { distOnlyWorkspacePackages, publicAssetWorkspacePackages } from './apps/meteor/vite/workspacePackages.mjs';
+            console.log([...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => '--filter=' + name + '...').join('\n'));
+          ")
+          yarn turbo run build "${filters[@]}"
+
+      - name: Build standalone client
+        run: yarn workspace @rocket.chat/meteor build:vite
+
+      - name: Package bundle
+        run: |
+          mkdir -p ui-preview
+          # The rest of dist/ is public/, which the Rocket.Chat server already serves.
+          tar --format=ustar -czf ui-preview/ui-preview.tar.gz -C apps/meteor/vite/dist index.html bundle
+          du -h ui-preview/ui-preview.tar.gz
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-preview
+          path: ui-preview
+          retention-days: 3
+
+  # Kept apart from the build so the job holding CR_PAT never runs the PR's code.
+  publish:
+    name: Publish UI preview
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ui-preview
+          path: ui-preview
+
+      - uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
+
+      - name: Push to ghcr.io
+        env:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "$CR_PAT" | oras login ghcr.io -u "$CR_USER" --password-stdin
+          cd ui-preview
+          oras push "$IMAGE:pr-$NUMBER,$HEAD_SHA" \
+            --artifact-type application/vnd.rocketchat.ui-preview.v1 \
+            --annotation "org.opencontainers.image.source=https://github.com/$REPO" \
+            --annotation "org.opencontainers.image.revision=$HEAD_SHA" \
+            ui-preview.tar.gz:application/vnd.oci.image.layer.v1.tar+gzip
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          marker='<!-- ui-preview -->'
+          body="$marker
+          ### 🖥️ UI preview
+
+          Built from \`${HEAD_SHA:0:7}\` and published to \`$IMAGE:pr-$NUMBER\`.
+
+          In Rocket.Chat Desktop with **Developer Mode** on, open one of these links to load this PR's UI into the workspace in focus:
+
+          | | |
+          |---|---|
+          | Latest build of this PR | \`rocketchat://ui-preview?pr=$NUMBER\` |
+          | This exact build | \`rocketchat://ui-preview?pr=$NUMBER&sha=$HEAD_SHA\` |
+
+          To pick the workspace, add \`&host=https://your.server\`. Use **View > Restore server UI**, or restart the app, to go back."
+
+          comment_id=$(gh api "repos/$REPO/issues/$NUMBER/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -f body="$body"
+          else
+            gh api "repos/$REPO/issues/$NUMBER/comments" -f body="$body"
+          fi
