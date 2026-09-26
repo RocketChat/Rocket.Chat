@@ -5,10 +5,12 @@ import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typing
 import {
 	ajv,
 	ajvQuery,
-	validateNotFoundErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { ensureArray } from '../../../lib/utils/arrayUtils';
@@ -25,12 +27,7 @@ type CallHistoryList = PaginatedRequest<{
 const CallHistoryListSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -66,18 +63,7 @@ const callHistoryListEndpoints = API.v1.get(
 				additionalProperties: false,
 				type: 'object',
 				properties: {
-					count: {
-						type: 'number',
-						description: 'The number of history items returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of history items that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of history items that match the query.',
-					},
+					...paginatedResponseProperties,
 					success: {
 						type: 'boolean',
 						description: 'Indicates if the request was successful.',

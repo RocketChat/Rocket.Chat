@@ -283,3 +283,4 @@ export type * from './experimental';
 
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';
+export * from './v1/pagination';
