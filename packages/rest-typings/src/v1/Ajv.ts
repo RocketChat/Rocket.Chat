@@ -25,11 +25,13 @@ ajv.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajv.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajvQuery.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajvQuery.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+ajvQuery.addFormat('basic_phone_number', /^\+?[1-9]\d{1,14}$/);
 ajv.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',
@@ -39,6 +41,40 @@ ajvQuery.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
+});
+
+// Strips whitespace from the property before it's checked against a `format`
+ajv.addKeyword({
+	keyword: 'transformStripWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
+});
+ajvQuery.addKeyword({
+	keyword: 'transformStripWhitespaces',
+	type: 'string',
+	schemaType: 'boolean',
+	modifying: true,
+	before: 'format',
+	validate: (schema, data, _parentSchema, dataCxt): boolean => {
+		if (!schema || typeof data !== 'string' || !dataCxt?.parentData) {
+			return true;
+		}
+
+		dataCxt.parentData[dataCxt.parentDataProperty] = data.replace(/\s+/g, '');
+
+		return true;
+	},
 });
 export { ajv, ajvQuery };
 
