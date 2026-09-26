@@ -19,62 +19,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.31.0](https://github.com/RocketChat/fuselage/compare/v0.30.1...v0.31.0) (2021-12-28)
+## [0.31.0](https://github.com/RocketChat/fuselage/compare/v0.30.1...v0.31.0) (2021-12-28)
 
 ### Features
 
 - New hooks for element size tracking ([#413](https://github.com/RocketChat/fuselage/issues/413)) ([8ca682c](https://github.com/RocketChat/fuselage/commit/8ca682c636d2e4813f7d346cb881513382be63cf))
 
-# [0.30.0](https://github.com/RocketChat/fuselage/compare/v0.29.0...v0.30.0) (2021-10-06)
+## [0.30.0](https://github.com/RocketChat/fuselage/compare/v0.29.0...v0.30.0) (2021-10-06)
 
 ### Bug Fixes
 
 - **jest:** Adjust jest and ts-jest dependencies ([#547](https://github.com/RocketChat/fuselage/issues/547)) ([91a4fa1](https://github.com/RocketChat/fuselage/commit/91a4fa1365394001afe1bd46480bda3bafed5505))
 
-# [0.29.0](https://github.com/RocketChat/fuselage/compare/v0.28.0...v0.29.0) (2021-08-31)
+## [0.29.0](https://github.com/RocketChat/fuselage/compare/v0.28.0...v0.29.0) (2021-08-31)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.28.0](https://github.com/RocketChat/fuselage/compare/v0.27.0...v0.28.0) (2021-07-30)
+## [0.28.0](https://github.com/RocketChat/fuselage/compare/v0.27.0...v0.28.0) (2021-07-30)
 
 ### Features
 
 - **onboarding-ui:** Administrator information form and Organization information form ([#489](https://github.com/RocketChat/fuselage/issues/489)) ([b289f68](https://github.com/RocketChat/fuselage/commit/b289f68676954b91c792d8d97680314178bf2c60))
 - styled API; monorepo grooming ([#482](https://github.com/RocketChat/fuselage/issues/482)) ([1b6b70c](https://github.com/RocketChat/fuselage/commit/1b6b70cf67ec16927b1566adc2350295a8927223))
 
-# [0.27.0](https://github.com/RocketChat/fuselage/compare/v0.26.0...v0.27.0) (2021-06-28)
+## [0.27.0](https://github.com/RocketChat/fuselage/compare/v0.26.0...v0.27.0) (2021-06-28)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.26.0](https://github.com/RocketChat/fuselage/compare/v0.25.0...v0.26.0) (2021-05-28)
+## [0.26.0](https://github.com/RocketChat/fuselage/compare/v0.25.0...v0.26.0) (2021-05-28)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.25.0](https://github.com/RocketChat/fuselage/compare/v0.24.0...v0.25.0) (2021-05-19)
+## [0.25.0](https://github.com/RocketChat/fuselage/compare/v0.24.0...v0.25.0) (2021-05-19)
 
 ### Features
 
 - [@rocket](https://github.com/rocket).chat/message-parser ([#443](https://github.com/RocketChat/fuselage/issues/443)) ([4722cdf](https://github.com/RocketChat/fuselage/commit/4722cdff46f5987f335d989be59649c7652bb12a))
 
-# [0.24.0](https://github.com/RocketChat/fuselage/compare/v0.23.0...v0.24.0) (2021-04-28)
+## [0.24.0](https://github.com/RocketChat/fuselage/compare/v0.23.0...v0.24.0) (2021-04-28)
 
 ### Features
 
 - [@rocket](https://github.com/rocket).chat/string-helpers ([#431](https://github.com/RocketChat/fuselage/issues/431)) ([2509d6a](https://github.com/RocketChat/fuselage/commit/2509d6acdbe5ec8b216e8d4430373797c5f5dfe2))
 
-# [0.23.0](https://github.com/RocketChat/fuselage/compare/v0.22.0...v0.23.0) (2021-04-01)
+## [0.23.0](https://github.com/RocketChat/fuselage/compare/v0.22.0...v0.23.0) (2021-04-01)
 
 ### Bug Fixes
 
 - **npm:** Wrong paths in "files" field of package.json ([6d3c811](https://github.com/RocketChat/fuselage/commit/6d3c811f6fd747de7f47aff145902d88476272ee))
 
-# [0.22.0](https://github.com/RocketChat/fuselage/compare/v0.21.0...v0.22.0) (2021-02-26)
+## [0.22.0](https://github.com/RocketChat/fuselage/compare/v0.21.0...v0.22.0) (2021-02-26)
 
 ### Features
 
 - Type Emitter Implementation ([#399](https://github.com/RocketChat/fuselage/issues/399)) ([cd0d3fc](https://github.com/RocketChat/fuselage/commit/cd0d3fc7b50d911dbacbc122d09745fa9fb4d921))
 
-# [0.21.0](https://github.com/RocketChat/fuselage/compare/v0.20.3...v0.21.0) (2021-01-31)
+## [0.21.0](https://github.com/RocketChat/fuselage/compare/v0.20.3...v0.21.0) (2021-01-31)
 
 ### Features
 
@@ -84,15 +84,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.20.0](https://github.com/RocketChat/fuselage/compare/v0.19.0...v0.20.0) (2020-12-21)
+## [0.20.0](https://github.com/RocketChat/fuselage/compare/v0.19.0...v0.20.0) (2020-12-21)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.19.0](https://github.com/RocketChat/fuselage/compare/v0.18.0...v0.19.0) (2020-11-28)
+## [0.19.0](https://github.com/RocketChat/fuselage/compare/v0.18.0...v0.19.0) (2020-11-28)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
-# [0.18.0](https://github.com/RocketChat/fuselage/compare/v0.17.3...v0.18.0) (2020-11-16)
+## [0.18.0](https://github.com/RocketChat/fuselage/compare/v0.17.3...v0.18.0) (2020-11-16)
 
 **Note:** Version bump only for package @rocket.chat/emitter
 
@@ -106,7 +106,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Emitter: Created events method ([#311](https://github.com/RocketChat/fuselage/issues/311)) ([e36240f](https://github.com/RocketChat/fuselage/commit/e36240f396a33bd68a2d71c6b00e845e6e22604d))
 
-# [0.17.0](https://github.com/RocketChat/fuselage/compare/v0.16.0...v0.17.0) (2020-10-25)
+## [0.17.0](https://github.com/RocketChat/fuselage/compare/v0.16.0...v0.17.0) (2020-10-25)
 
 ### Features
 
