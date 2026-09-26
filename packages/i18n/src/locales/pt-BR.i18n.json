@@ -1206,8 +1206,6 @@
   "Certificates_and_Keys": "Certificados e chaves",
   "Change_E2EE_password": "Alterar a senha E2EE",
   "Change_Room_Type": "Mudando o Tipo de Sala",
-  "change-livechat-room-visitor": "Alterar visitantes da Sala Livechat",
-  "change-livechat-room-visitor_description": "Permissão para incluir informações adicionais ao visitante de sala livechat",
   "Changed_from": "Mudou de",
   "changed_room_announcement_to__room_announcement_": "mudou o anúncio da sala para: {{room_announcement}}",
   "changed_room_description_to__room_description_": "alterou a descrição da sala para: {{room_description}}",

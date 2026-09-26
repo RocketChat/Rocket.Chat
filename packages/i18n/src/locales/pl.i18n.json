@@ -853,8 +853,6 @@
   "CDN_PREFIX_ALL": "Używaj prefiksu CDN dla wszystkich zasobów",
   "Certificates_and_Keys": "Certyfikaty i klucze",
   "Change_Room_Type": "Zmiana typu pokoju",
-  "change-livechat-room-visitor": "Zmień gości w pokoju Livechat",
-  "change-livechat-room-visitor_description": "Uprawnienie do dodawania dodatkowych informacji do gościa pokoju Livechat",
   "changed_room_announcement_to__room_announcement_": "zmieniono ogłoszenie o pokoju na: {{room_announcement}}",
   "changed_room_description_to__room_description_": "zmieniono opis pokoju na: {{room_description}}",
   "Changing_email": "Zmiana adresu e-mail",

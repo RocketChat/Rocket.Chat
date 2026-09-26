@@ -848,8 +848,6 @@
   "CDN_PREFIX_ALL": "Использовать Префикс CDN для всех активов",
   "Certificates_and_Keys": "Ключи и сертификаты",
   "Change_Room_Type": "Изменение типа канала",
-  "change-livechat-room-visitor": "Изменить посетителей чата Livechat",
-  "change-livechat-room-visitor_description": "Разрешение на добавление дополнительной информации для посетителя комнаты livechat",
   "Changing_email": "Изменение адреса электронной почты",
   "Channel": "Канал",
   "channel": "канал",

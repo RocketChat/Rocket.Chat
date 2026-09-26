@@ -1209,8 +1209,6 @@
   "Certificates_and_Keys": "Zertifikate und Schlüssel",
   "Change_E2EE_password": "E2EE-Passwort ändern",
   "Change_Room_Type": "Ändere den Typ des Room",
-  "change-livechat-room-visitor": "Livechat Room-Besucher ändern",
-  "change-livechat-room-visitor_description": "Berechtigung, dem Besucher des Livechat-Raums zusätzliche Informationen hinzuzufügen",
   "Changed_from": "Geändert von",
   "changed_room_announcement_to__room_announcement_": "hat die Raumankündigung geändert zu: {{room_announcement}}",
   "changed_room_description_to__room_description_": "hat die Raumbeschreibung geändert zu: {{room_description}}",

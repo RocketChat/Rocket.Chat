@@ -910,8 +910,6 @@
   "CDN_PREFIX_ALL": "सभी संपत्तियों के लिए सीडीएन उपसर्ग का उपयोग करें",
   "Certificates_and_Keys": "प्रमाणपत्र और चाबियाँ",
   "Change_Room_Type": "कमरे का प्रकार बदलना",
-  "change-livechat-room-visitor": "लाइवचैट रूम विज़िटर बदलें",
-  "change-livechat-room-visitor_description": "लाइवचैट रूम विज़िटर के लिए अतिरिक्त जानकारी जोड़ने की अनुमति",
   "changed_room_announcement_to__room_announcement_": "कमरे की घोषणा को इसमें बदला गया: {{room_announcement}}",
   "changed_room_description_to__room_description_": "कमरे के विवरण को इसमें बदल दिया गया: {{room_description}}",
   "Changing_email": "ईमेल बदलना",

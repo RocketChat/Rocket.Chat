@@ -1313,8 +1313,6 @@
   "Challenge_expired_please_try_again_later": "Challenge expired. Please try again later.",
   "Change_E2EE_password": "Change E2EE password",
   "Change_Room_Type": "Changing the room type",
-  "change-livechat-room-visitor": "Change livechat room visitors",
-  "change-livechat-room-visitor_description": "Permission to add additional information to the livechat room visitor",
   "Changed_from": "Changed from",
   "changed_room_announcement_to__room_announcement_": "changed room announcement to: {{room_announcement}}",
   "changed_room_description_to__room_description_": "changed room description to: {{room_description}}",
