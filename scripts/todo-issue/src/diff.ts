@@ -3,7 +3,7 @@ import type { Change } from 'parse-diff';
 import type { TodoItem } from './types';
 
 const KEYWORD = 'TODO';
-const EXCLUDE_PATTERN = /(^|\/)node_modules\//;
+const EXCLUDE_PATTERN = /(^|\/)(node_modules|\.yarn\/patches)\//;
 const DEFAULT_LABEL = 'todo';
 
 const MENTION_REGEX = /\B@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})/g;
