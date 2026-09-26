@@ -4,6 +4,9 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
+import { useCloseOnTrackMessageDeleted } from './useCloseOnTrackMessageDeleted';
+import { useCloseOnTrackRoomLeft } from './useCloseOnTrackRoomLeft';
+import { useRefreshTrackFromRoomMessages } from './useRefreshTrackFromRoomMessages';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 
@@ -57,6 +60,23 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		audio.play().catch((err) => console.warn('Failed to start audio playback:', err));
 	});
 
+	const updateTrack = useStableCallback((next: PersistentAudioTrack) => {
+		setTrack((current) => {
+			if (!current || current.id !== next.id) {
+				return current;
+			}
+
+			const pinned = next.pinned ?? current.pinned;
+			const drid = next.drid ?? current.drid;
+
+			if (current.pinned === pinned && current.drid === drid) {
+				return current;
+			}
+
+			return { ...current, pinned, drid };
+		});
+	});
+
 	const toggle = useStableCallback(() => {
 		const audio = audioRef.current;
 		if (!audio || !trackRef.current) {
@@ -103,9 +123,13 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
+	useRefreshTrackFromRoomMessages(track, updateTrack);
+	useCloseOnTrackMessageDeleted(track, close);
+	useCloseOnTrackRoomLeft(track, close);
+
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, updateTrack, isActive }),
+		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, updateTrack, isActive],
 	);
 
 	return (
