@@ -2619,8 +2619,6 @@
   "Rooms": "кімнати",
   "run-import": "Запустити імпорт",
   "run-import_description": "Дозвіл на запуск імпортерів",
-  "run-migration": "Запустити міграцію",
-  "run-migration_description": "Дозвіл на запуск міграцій",
   "Running_Instances": "Запущено екземплярів",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Той же, що й \"Token Sent Via\"",

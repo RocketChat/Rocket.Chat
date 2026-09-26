@@ -2085,8 +2085,6 @@
   "Rooms": "Dhomat",
   "run-import": "Run import",
   "run-import_description": "Leja për të drejtuar importuesit",
-  "run-migration": "Run migration",
-  "run-migration_description": "Leja për të drejtuar migrimet",
   "Running_Instances": "drejtimin raste",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Njësoj si \"Token Sent Via\"",

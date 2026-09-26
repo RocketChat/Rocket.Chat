@@ -2799,8 +2799,6 @@
   "Run_only_once_for_each_visitor": "გაეშვას მხოლოდ ერთხელ თითოეული სტუმრისთვის",
   "run-import": "იმპორტის გაშვება",
   "run-import_description": "იმპორტიორების გაშვების ნებართვა",
-  "run-migration": "მიგრაციის გაშვება",
-  "run-migration_description": "მიგრაციის გაშვების ნებართვა",
   "Running_Instances": "მიმდინარე პროცესები",
   "Runtime_Environment": "მიმდინარე გარემო",
   "Same_As_Token_Sent_Via": "იგივეა რაც \"ტოკენი გაგზავნილია\" __-ით",

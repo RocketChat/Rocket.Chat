@@ -2093,8 +2093,6 @@
   "Rooms": "Bilik",
   "run-import": "Jalankan Import",
   "run-import_description": "Kebenaran untuk menjalankan pengimport",
-  "run-migration": "Jalankan Migrasi",
-  "run-migration_description": "Kebenaran untuk menjalankan migrasi",
   "Running_Instances": "Running Kejadian",
   "Runtime_Environment": "Persekitaran Masa Runtime",
   "Same_As_Token_Sent_Via": "Sama seperti \"Token Dihantar Melalui\"",

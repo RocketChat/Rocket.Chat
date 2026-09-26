@@ -2328,8 +2328,6 @@
   "Run_only_once_for_each_visitor": "Nur einmal für jeden Besucher ausführen",
   "run-import": "Import ausführen",
   "run-import_description": "Berechtigung, Importe auszuführen",
-  "run-migration": "Migration ausführen",
-  "run-migration_description": "Berechtigung, Migrationen auszuführen",
   "Running_Instances": "Laufende Instanzen",
   "Runtime_Environment": "Laufzeitumgebung",
   "Same_As_Token_Sent_Via": "Wie \"Token Sent Via\"",

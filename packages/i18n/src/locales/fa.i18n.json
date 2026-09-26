@@ -2404,8 +2404,6 @@
   "Rooms": "اتاق",
   "run-import": "اجرای واردات",
   "run-import_description": "مجوز اجرای واردکنندگان",
-  "run-migration": "اجرای مهاجرت",
-  "run-migration_description": "مجوز اجرای مهاجرت",
   "Running_Instances": "اجرای نمونههای",
   "Runtime_Environment": "محیط زیست زمان اجرا",
   "Same_As_Token_Sent_Via": "همانند \"Token Sent Via\"",

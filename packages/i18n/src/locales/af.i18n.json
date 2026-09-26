@@ -2086,8 +2086,6 @@
   "Rooms": "kamers",
   "run-import": "Begin invoer",
   "run-import_description": "Toestemming om die invoerders te bestuur",
-  "run-migration": "Voer migrasie uit",
-  "run-migration_description": "Toestemming om die migrasies te bestuur",
   "Running_Instances": "Running instances",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Dieselfde as \"Token Sent Via\"",

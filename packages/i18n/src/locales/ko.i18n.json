@@ -3084,8 +3084,6 @@
   "Run_only_once_for_each_visitor": "각 방문자에 대해 한 번만 실행하십시오.",
   "run-import": "가져오기 실행",
   "run-import_description": "가져오기 실행할 수 있는 권한",
-  "run-migration": "마이그레이션 실행",
-  "run-migration_description": "마이그레이션을 실행할 수 있는 권한",
   "Running_Instances": "실행 중인 인스턴스",
   "Runtime_Environment": "실행 환경",
   "Same_As_Token_Sent_Via": "\"Token Sent Via\"와 동일합니다.",

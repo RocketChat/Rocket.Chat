@@ -2426,8 +2426,6 @@
   "Run_only_once_for_each_visitor": "Rodar apenas uma vez por visitante",
   "run-import": "Executar importação",
   "run-import_description": "Permissão para executar os importadores",
-  "run-migration": "Executar migração",
-  "run-migration_description": "Permissão para executar as migrações",
   "Running_Instances": "Instâncias em execução",
   "Runtime_Environment": "Ambiente de execução",
   "Same_As_Token_Sent_Via": "O mesmo que \"Token Sent Via\"",

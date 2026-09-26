@@ -2078,8 +2078,6 @@
   "Rooms": "Өрөө",
   "run-import": "Импортыг ажиллуулна уу",
   "run-import_description": "Импортлогчдыг ажиллуулах зөвшөөрөл",
-  "run-migration": "Шилжин суурьшуулах",
-  "run-migration_description": "Нүүдэллэхийг зөвшөөрөх",
   "Running_Instances": "Ажиллаж байгаа тохиолдлууд",
   "Runtime_Environment": "Ажиллах орчин",
   "Same_As_Token_Sent_Via": "\"Токенаар дамжуулан илгээсэн\" адил",

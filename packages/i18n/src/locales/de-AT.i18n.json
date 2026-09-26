@@ -2085,8 +2085,6 @@
   "Rooms": "Räume",
   "run-import": "Führen Sie den Import aus",
   "run-import_description": "Berechtigung zum Ausführen der Importeure",
-  "run-migration": "Führen Sie die Migration aus",
-  "run-migration_description": "Berechtigung zum Ausführen der Migrationen",
   "Running_Instances": "Laufende Instanzen",
   "Runtime_Environment": "Laufzeitumgebung",
   "Same_As_Token_Sent_Via": "Wie \"Token Sent Via\"",

@@ -2079,8 +2079,6 @@
   "Rooms": "Camere",
   "run-import": "Rulați importul",
   "run-import_description": "Permisiunea de a rula importatorii",
-  "run-migration": "Rulați migrarea",
-  "run-migration_description": "Permisiunea de a rula migrațiile",
   "Running_Instances": "alergare Instanțe",
   "Runtime_Environment": "Mediu de rulare",
   "Same_As_Token_Sent_Via": "La fel ca \"Token Trimise Via\"",

@@ -2135,8 +2135,6 @@
   "Rooms": "Kambariai",
   "run-import": "Vykdyti importavimą",
   "run-import_description": "Leidimas paleisti importuotojus",
-  "run-migration": "Paleisti migraciją",
-  "run-migration_description": "Leidimas paleisti migraciją",
   "Running_Instances": "Egzempliorių bėgimas",
   "Runtime_Environment": "Runtime environment",
   "Same_As_Token_Sent_Via": "Tas pats, kaip \"Token Sent Via\"",

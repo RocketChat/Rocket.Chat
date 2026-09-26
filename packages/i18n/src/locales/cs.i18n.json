@@ -3000,8 +3000,6 @@
   "Run_only_once_for_each_visitor": "Spustit pouze jednou pro každého návštěvníka",
   "run-import": "Pustit import",
   "run-import_description": "Právo spustit importovací proces",
-  "run-migration": "Pustit migraci",
-  "run-migration_description": "Právo spustit migraci",
   "Running_Instances": "Spuštěných instancí",
   "Runtime_Environment": "Běhové prostředí",
   "Same_As_Token_Sent_Via": "Stejné jako \"Token odesílány přes\"",
