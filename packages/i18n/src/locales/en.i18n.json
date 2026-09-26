@@ -1011,6 +1011,7 @@
   "Apps_Marketplace_Uninstall_Subscribed_App_Anyway": "Uninstall it anyway",
   "Apps_Marketplace_Uninstall_Subscribed_App_Prompt": "This app has an active subscription and uninstalling will not cancel it. If you'd like to do that, please modify your subscription before uninstalling.",
   "Apps_Permissions_abac_read": "View ABAC attributes assigned to supported entity types",
+  "Apps_Permissions_abac_write": "Assign ABAC attributes to the private rooms it creates",
   "Apps_Permissions_api": "Register new HTTP endpoints",
   "Apps_Permissions_cloud_workspace-token": "Interact with cloud services on behalf of this server",
   "Apps_Permissions_env_read": "Access minimal information about this server environment",

@@ -38,7 +38,7 @@ Returned by `groups.create`, `teams.create` and every other path that creates a 
 | `error-abac-federated-room-attributes` | Attributes were sent for a federated room | |
 | `error-abac-attributes-room-conversion` | `teams.create` was converting an existing room and was sent attributes | |
 | `error-abac-attributes-owner-must-be-caller` | `teams.create` was sent attributes with an `owner` other than the caller | |
-| `error-abac-invalid-attributes` | An attribute or value is not defined in the workspace | `cause`; `key` when one attribute is at fault |
+| `error-abac-invalid-attributes` | An attribute or value is not defined in the workspace, or an app sent attributes that are not a list of attributes | `cause`; `key` when one attribute is at fault |
 | `error-abac-attribute-not-assignable` | The creator is not entitled to assign an attribute value | `cause`; `attributes`, the values that were refused |
 | `error-abac-creator-not-admitted` | The creator would not be admitted to a room with these attributes | `cause` |
 | `error-abac-decision-unavailable` | The policy decision point or attribute store cannot be reached | `cause` |
