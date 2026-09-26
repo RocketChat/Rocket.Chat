@@ -4,14 +4,20 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = { get: sinon.stub() };
-const roomsStub = { findOneByNonValidatedName: sinon.stub() };
+const roomsStub = { findOneByNonValidatedName: sinon.stub(), findPrivateRoomsByIdsWithAbacAttributes: sinon.stub() };
 const subscriptionsStub = { findOneByRoomIdAndUserId: sinon.stub() };
+const teamStub = {
+	listByNames: sinon.stub(),
+	listTeamsBySubscriberUserId: sinon.stub(),
+	insertMemberOnTeams: sinon.stub(),
+	removeMemberFromTeams: sinon.stub(),
+};
 const addUserToRoomStub = sinon.stub();
 const removeUserFromRoomStub = sinon.stub();
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 
 const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
-	'@rocket.chat/core-services': { Abac: {}, Team: {} },
+	'@rocket.chat/core-services': { Abac: {}, Team: teamStub },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
 	'@rocket.chat/models': { Users: {}, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
 	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
@@ -106,5 +112,93 @@ describe('LDAPEEManager syncUserChannels', () => {
 
 		expect(addUserToRoomStub.calledWith('ridA', user)).to.be.true;
 		expect(removeUserFromRoomStub.calledWith('ridB', user)).to.be.true;
+	});
+});
+
+const teamsMap = {
+	groupA: 'team-a',
+	groupB: 'team-b',
+};
+
+const allTeams = [
+	{ _id: 'teamA', name: 'team-a', roomId: 'teamRoomA' },
+	{ _id: 'teamB', name: 'team-b', roomId: 'teamRoomB' },
+];
+
+const setupTeamSettings = () => {
+	settingsStub.get.reset();
+	settingsStub.get.withArgs('LDAP_Enable_LDAP_Groups_To_RC_Teams').returns(true);
+	settingsStub.get.withArgs('LDAP_Validate_Teams_For_Each_Login').returns(true);
+	settingsStub.get.withArgs('LDAP_Teams_BaseDN').returns('dc=example,dc=com');
+	settingsStub.get.withArgs('LDAP_Query_To_Get_User_Teams').returns('(member=#{username})');
+	settingsStub.get.withArgs('LDAP_Teams_Name_Field').returns('ou');
+	settingsStub.get.withArgs('LDAP_Groups_To_Rocket_Chat_Teams').returns(JSON.stringify(teamsMap));
+	settingsStub.get.withArgs('ABAC_Enabled').returns(true);
+};
+
+const abacManagedTeams = (teamIds: string[]) => ({
+	map: (fn: (doc: { teamId: string }) => string) => ({
+		toArray: () => Promise.resolve(teamIds.map((teamId) => fn({ teamId }))),
+	}),
+});
+
+const syncUserTeams = (ldapUserGroups: string[]) => {
+	const groupsStub = sinon.stub(LDAPEEManager as any, 'getLdapGroupsByUsername').resolves(ldapUserGroups);
+	return (LDAPEEManager as any)
+		.syncUserTeams({ options: { baseDN: 'dc=example,dc=com' } }, user, 'dn', false)
+		.finally(() => groupsStub.restore());
+};
+
+const calledWithTeams = (stub: sinon.SinonStub) => stub.getCalls().filter(({ args }) => args[1]?.length);
+
+describe('LDAPEEManager syncUserTeams', () => {
+	beforeEach(() => {
+		teamStub.listByNames.reset();
+		teamStub.listTeamsBySubscriberUserId.reset();
+		teamStub.insertMemberOnTeams.reset();
+		teamStub.removeMemberFromTeams.reset();
+		roomsStub.findPrivateRoomsByIdsWithAbacAttributes.reset();
+		setupTeamSettings();
+
+		teamStub.listByNames.resolves(allTeams);
+		teamStub.insertMemberOnTeams.resolves();
+		teamStub.removeMemberFromTeams.resolves();
+		roomsStub.findPrivateRoomsByIdsWithAbacAttributes.returns(abacManagedTeams([]));
+	});
+
+	it('should remove the user from a team they left in LDAP even when there is nothing to add', async () => {
+		teamStub.listTeamsBySubscriberUserId.resolves([{ teamId: 'teamA' }, { teamId: 'teamB' }]);
+
+		await syncUserTeams(['groupA']);
+
+		expect(teamStub.removeMemberFromTeams.calledWith(user._id, ['teamB'])).to.be.true;
+	});
+
+	it('should add and remove teams in the same sync', async () => {
+		teamStub.listTeamsBySubscriberUserId.resolves([{ teamId: 'teamB' }]);
+
+		await syncUserTeams(['groupA']);
+
+		expect(teamStub.insertMemberOnTeams.calledWith(user._id, ['teamA'])).to.be.true;
+		expect(teamStub.removeMemberFromTeams.calledWith(user._id, ['teamB'])).to.be.true;
+	});
+
+	it('should not write anything when there is nothing to add and nothing to remove', async () => {
+		teamStub.listTeamsBySubscriberUserId.resolves([{ teamId: 'teamA' }]);
+
+		await syncUserTeams(['groupA']);
+
+		expect(calledWithTeams(teamStub.insertMemberOnTeams)).to.have.lengthOf(0);
+		expect(calledWithTeams(teamStub.removeMemberFromTeams)).to.have.lengthOf(0);
+	});
+
+	it('should still remove teams when the ABAC filter drops every team that was going to be added', async () => {
+		teamStub.listTeamsBySubscriberUserId.resolves([{ teamId: 'teamB' }]);
+		roomsStub.findPrivateRoomsByIdsWithAbacAttributes.returns(abacManagedTeams(['teamA']));
+
+		await syncUserTeams(['groupA']);
+
+		expect(calledWithTeams(teamStub.insertMemberOnTeams)).to.have.lengthOf(0);
+		expect(teamStub.removeMemberFromTeams.calledWith(user._id, ['teamB'])).to.be.true;
 	});
 });
