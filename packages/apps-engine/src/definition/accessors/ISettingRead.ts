@@ -15,7 +15,10 @@ export interface ISettingRead {
 
 	/**
 	 * Gets the App's setting value by the provided id.
-	 * Note: this will throw an error if the setting doesn't exist
+	 *
+	 * > [!WARNING]
+	 * > This throws when the setting does not exist. Use {@link ISettingRead.getById}
+	 * > to get `undefined` instead.
 	 *
 	 * @param id the id of the setting value to get
 	 */

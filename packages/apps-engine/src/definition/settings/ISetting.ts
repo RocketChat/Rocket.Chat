@@ -1,5 +1,12 @@
 import type { SettingType } from './SettingType';
 
+/**
+ * A configuration value an App declares and the administrator fills in.
+ *
+ * Register one from `IConfigurationExtend.settings` and read it back with
+ * `IEnvironmentRead.getSettings()`. The App owns the shape; the administrator
+ * owns the value.
+ */
 export interface ISetting {
 	/** The id of this setting. */
 	id: string;
@@ -7,11 +14,12 @@ export interface ISetting {
 	type: SettingType;
 	/** What is the default value (allows a reset button). */
 	packageValue: any;
-	/** Will be the value of this setting. If nothing is set here, then the "packageValue" will be used. */
 	/**
-	 * If the setting type is ROOM_PICK, the value will be an array of room ids.
-	 * @returns ```js
-	 * [{_id: 'rid1'}, {_id: 'rid2'}]
+	 * The value of this setting. When it is not set, `packageValue` is used instead.
+	 *
+	 * For a {@link SettingType.ROOM_PICK} setting the value is an array of room ids:
+	 * ```js
+	 * [{ _id: 'rid1' }, { _id: 'rid2' }]
 	 * ```
 	 */
 	value?: any;
@@ -41,7 +49,10 @@ export interface ISetting {
 	updatedAt?: Date;
 }
 
+/** One option of a {@link SettingType.SELECT} or {@link SettingType.MULTI_SELECT} setting. */
 export interface ISettingSelectValue {
+	/** The value stored when the administrator picks this option. */
 	key: string;
+	/** The i18n string shown for this option. */
 	i18nLabel: string;
 }

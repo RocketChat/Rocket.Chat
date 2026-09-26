@@ -1,6 +1,11 @@
 import type { AccessoryElements, IBlockElement, IImageElement, IInputElement } from './Elements';
 import type { ITextObject } from './Objects';
 
+/**
+ * The kinds of layout block an App can render.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export enum BlockType {
 	SECTION = 'section',
 	DIVIDER = 'divider',
@@ -72,12 +77,25 @@ export interface IInputBlock extends IBlock {
 	optional?: boolean;
 }
 
+/**
+ * The clients that can render a block.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export enum ConditionalBlockFiltersEngine {
+	/** The Rocket.Chat clients. */
 	ROCKETCHAT = 'rocket.chat',
+	/** The Livechat widget. */
 	LIVECHAT = 'livechat',
 }
 
+/**
+ * When an {@link IConditionalBlock} is rendered.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export interface IConditionalBlockFilters {
+	/** The clients that should render the block. Every client does when this is left out. */
 	engine?: Array<ConditionalBlockFiltersEngine>;
 }
 

@@ -27,7 +27,7 @@ export abstract class ApiEndpoint implements IApiEndpoint {
 	/**
 	 * Return a json response adding Content Type header as
 	 * application/json if not already provided
-	 * @param reponse
+	 * @param response the response to send, whose content is serialized as JSON
 	 */
 	protected json(response: IApiResponseJSON): IApiResponse {
 		if (!response?.headers?.['content-type']) {

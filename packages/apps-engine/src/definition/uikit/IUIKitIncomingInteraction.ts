@@ -7,6 +7,7 @@ import type {
 	IUIKitIncomingInteractionModalContainer,
 } from './UIKitIncomingInteractionContainer';
 
+/** What a user did with an App's UIKit blocks. */
 export enum UIKitIncomingInteractionType {
 	BLOCK = 'blockAction',
 	VIEW_SUBMIT = 'viewSubmit',
@@ -28,4 +29,5 @@ export interface IUIKitIncomingInteraction {
 	message?: IMessage;
 }
 
+/** Any interaction the host sends an App, narrowed by its `type`. */
 export type UIKitIncomingInteraction = IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton;

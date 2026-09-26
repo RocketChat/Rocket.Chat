@@ -1,3 +1,4 @@
+/** The heading of an `IMessageAttachment`. */
 export interface IMessageAttachmentTitle {
 	/** Title to display for this attachment, displays under the author. */
 	value?: string;

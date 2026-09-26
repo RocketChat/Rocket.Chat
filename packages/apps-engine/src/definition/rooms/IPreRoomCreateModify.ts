@@ -18,7 +18,7 @@ export interface IPreRoomCreateModify {
 	 * Method which is to be used to prevent a room from being created.
 	 *
 	 * @param room The room about to be created
-	 * @param extend The builder for modifying the room via methods
+	 * @param builder The builder for modifying the room via methods
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 * @param persistence An accessor to the App's persistence storage

@@ -31,6 +31,7 @@ interface IUIKitIncomingInteractionActionButtonMessageBox {
 	};
 }
 
+/** Narrows an action button interaction to one from the message composer. */
 export const isUIKitIncomingInteractionActionButtonMessageBox = (
 	interaction: IUIKitIncomingInteractionActionButtonBase,
 ): interaction is IUIKitIncomingInteractionActionButtonMessageBox => {
@@ -70,6 +71,13 @@ interface IUIKitIncomingInteractionActionButtonUserDropdown extends IUIKitIncomi
 	};
 }
 
+/**
+ * An action button press, narrowed by `payload.context` to the surface the
+ * button was on.
+ *
+ * Each variant carries only what its surface has: a room, a message, or
+ * neither.
+ */
 export type IUIKitIncomingInteractionActionButton =
 	| IUIKitIncomingInteractionActionButtonMessageBox
 	| IUIKitIncomingInteractionActionButtonMessage

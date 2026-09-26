@@ -16,6 +16,12 @@ function isModalInteraction(type: IUIKitInteraction['type']): type is IUIKitModa
 	return [UIKitInteractionType.MODAL_OPEN, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_CLOSE].includes(type);
 }
 
+/**
+ * Turns a modal an App defined into the interaction Rocket.Chat expects,
+ * generating an id for a surface that has none.
+ *
+ * @throws when `context.type` is not one of the modal types.
+ */
 export function formatModalInteraction(view: IUIKitModalViewParam, context: IUIKitInteraction): IUIKitModalInteraction {
 	if (!isModalInteraction(context.type)) {
 		throw new Error(`Invalid type "${context.type}" for modal interaction`);
@@ -43,6 +49,12 @@ function isContextualBarInteraction(type: IUIKitInteraction['type']): type is IU
 	].includes(type);
 }
 
+/**
+ * Turns a contextual bar an App defined into the interaction Rocket.Chat
+ * expects, generating an id for a surface that has none.
+ *
+ * @throws when `context.type` is not one of the contextual bar types.
+ */
 export function formatContextualBarInteraction(
 	view: IUIKitContextualBarViewParam,
 	context: IUIKitInteraction,
@@ -65,6 +77,11 @@ export function formatContextualBarInteraction(
 	};
 }
 
+/**
+ * Turns an App's field errors into the interaction Rocket.Chat expects.
+ *
+ * @throws when `context.type` is not `UIKitInteractionType.ERRORS`.
+ */
 export function formatErrorInteraction(errorInteraction: IUIKitErrorInteractionParam, context: IUIKitInteraction): IUIKitErrorInteraction {
 	if (UIKitInteractionType.ERRORS !== context.type) {
 		throw new Error(`Invalid type "${context.type}" for error interaction`);

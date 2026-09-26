@@ -1,6 +1,11 @@
 import type { IHttp, IPersistence, IRead } from '../accessors';
 import type { IRoom } from './IRoom';
 
+/**
+ * Lets an App stop a room from being deleted.
+ *
+ * This is the last point at which the room's contents can still be read.
+ */
 export interface IPreRoomDeletePrevent {
 	/**
 	 * Checks whether the handler actually shall execute.

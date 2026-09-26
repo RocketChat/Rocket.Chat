@@ -8,13 +8,24 @@ import type { IOAuthAppsModify } from './IOAuthAppsModify';
 import type { ISchedulerModify } from './ISchedulerModify';
 import type { IUIController } from './IUIController';
 
+/**
+ * Everything an App can change in the workspace.
+ *
+ * Handlers receive one of these. Which changes actually go through depends on
+ * the App's permissions and on the handler: a `pre` handler returns its change,
+ * while a `post` handler applies one.
+ */
 export interface IModify {
+	/** Gets the accessor for creating new records. */
 	getCreator(): IModifyCreator;
 
+	/** Gets the accessor for removing records. */
 	getDeleter(): IModifyDeleter;
 
+	/** Gets the accessor for adding to a record without overwriting what is there. */
 	getExtender(): IModifyExtender;
 
+	/** Gets the accessor for changing existing records. */
 	getUpdater(): IModifyUpdater;
 
 	/**

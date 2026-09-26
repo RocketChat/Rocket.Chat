@@ -3,10 +3,13 @@ import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 import type { IMessageBuilder } from './IMessageBuilder';
 
+/** Where a typing indicator is shown. */
 export enum TypingScope {
+	/** In a room, to everyone looking at it. */
 	Room = 'room',
 }
 
+/** Who to show a typing indicator to, and on whose behalf. */
 export interface ITypingOptions {
 	/**
 	 * The typing scope where the typing message should be presented,
@@ -22,18 +25,26 @@ export interface ITypingOptions {
 	/**
 	 * The name of the user who is typing the message
 	 *
-	 * **Note**: If not provided, it will use app assigned
-	 * user's name by default.
+	 * > [!NOTE]
+	 * > The App's own user is used when this is not provided.
 	 */
 	username?: string;
 }
 
+/**
+ * Sends messages that are shown but never stored.
+ *
+ * Nothing here is written to a room: the message reaches whoever is connected
+ * at the time, and is gone when they reload. Use `IModifyCreator` for a
+ * message that has to stay.
+ */
 export interface INotifier {
 	/**
 	 * Notifies the provided user of the provided message.
 	 *
-	 * **Note**: Notifications only are shown to the user if they are
-	 * online and it only stays around for the duration of their session.
+	 * > [!NOTE]
+	 * > The user sees this only if they are online, and only until their
+	 * > session ends. Nothing is stored.
 	 *
 	 * @param user The user who should be notified
 	 * @param message The message with the content to notify the user about
@@ -43,8 +54,9 @@ export interface INotifier {
 	/**
 	 * Notifies all of the users in the provided room.
 	 *
-	 * **Note**: Notifications only are shown to those online
-	 * and it only stays around for the duration of their session.
+	 * > [!NOTE]
+	 * > Only the users who are online see this, and only until their session
+	 * > ends. Nothing is stored.
 	 *
 	 * @param room The room which to notify the users in
 	 * @param message The message content to notify users about
