@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 
 const className = css`
@@ -10,12 +9,10 @@ const className = css`
 export type AttachmentProps = ComponentPropsWithoutRef<typeof Box>;
 
 const Attachment = (props: AttachmentProps) => {
-	const { width } = useAttachmentDimensions();
 	return (
 		<Box
 			rcx-message-attachment
 			marginBlock={4}
-			maxWidth={width}
 			width='full'
 			display='flex'
 			overflow='hidden'
