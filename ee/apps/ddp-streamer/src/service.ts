@@ -50,7 +50,8 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications));
+	// the client versions a subscriber is served come from MeteorService
+	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications), ['meteor']);
 
 	await api.start();
 })();

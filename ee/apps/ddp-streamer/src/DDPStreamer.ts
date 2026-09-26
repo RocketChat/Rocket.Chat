@@ -98,52 +98,52 @@ export class DDPStreamer extends ServiceClass {
 	}, CONNECTION_COUNT_REPORT_INTERVAL_MS);
 
 	override async created(): Promise<void> {
-		if (!this.context) {
+		const nodeID = this.context?.nodeID;
+		if (!nodeID) {
+			// presence is recorded per node, and the login handler below is what sends a
+			// client its own user document, so there is nothing safe to do without one
+			console.error('DDPStreamer has no broker context: presence and post login user data are disabled');
 			return;
 		}
 
-		const { broker, nodeID } = this.context;
-		if (!broker || !nodeID) {
-			return;
+		// metrics are optional - a broker that does not collect them must not stop the
+		// lifecycle handlers below from being registered
+		const metrics = this.context?.broker?.metrics;
+
+		if (metrics) {
+			metrics.register({
+				name: 'rocketchat_subscription',
+				type: 'histogram',
+				labelNames: ['subscription'],
+				description: 'Client subscriptions to Rocket.Chat',
+				unit: 'millisecond',
+				quantiles: true,
+			});
+
+			metrics.register({
+				name: 'users_connected',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users connected by streamer',
+			});
+
+			metrics.register({
+				name: 'users_logged',
+				type: 'gauge',
+				labelNames: ['nodeID'],
+				description: 'Users logged by streamer',
+			});
+
+			this.server.setMetrics(metrics);
 		}
-
-		const { metrics } = broker;
-		if (!metrics) {
-			return;
-		}
-
-		metrics.register({
-			name: 'rocketchat_subscription',
-			type: 'histogram',
-			labelNames: ['subscription'],
-			description: 'Client subscriptions to Rocket.Chat',
-			unit: 'millisecond',
-			quantiles: true,
-		});
-
-		metrics.register({
-			name: 'users_connected',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users connected by streamer',
-		});
-
-		metrics.register({
-			name: 'users_logged',
-			type: 'gauge',
-			labelNames: ['nodeID'],
-			description: 'Users logged by streamer',
-		});
-
-		this.server.setMetrics(metrics);
 
 		this.lifecycle.on('connected', ({ connection }) => {
-			metrics.increment('users_connected', { nodeID }, 1);
+			metrics?.increment('users_connected', { nodeID }, 1);
 			void this.api?.broadcast('socket.connected', connection);
 		});
 
 		this.lifecycle.on('loggedIn', (session) => {
-			metrics.increment('users_logged', { nodeID }, 1);
+			metrics?.increment('users_logged', { nodeID }, 1);
 			void this.onLoggedIn(session, nodeID);
 		});
 
@@ -160,9 +160,9 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		this.lifecycle.on('disconnected', ({ userId, connection }) => {
-			metrics.decrement('users_connected', { nodeID }, 1);
+			metrics?.decrement('users_connected', { nodeID }, 1);
 			if (userId) {
-				metrics.decrement('users_logged', { nodeID }, 1);
+				metrics?.decrement('users_logged', { nodeID }, 1);
 			}
 
 			void this.api?.broadcast('socket.disconnected', connection);
@@ -255,51 +255,44 @@ export class DDPStreamer extends ServiceClass {
 			.then((records = []) => records.forEach((record) => this.collections.loginServices.set(record._id, record)))
 			.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
-		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
-		try {
-			const versions = await MeteorService.getAutoUpdateClientVersions();
-
-			Object.keys(versions || {}).forEach((key) => {
-				this.setClientVersion(versions[key]);
-			});
-
-			this.app = polka()
-				.use(proxy())
-				.get('/health', async (_req, res) => {
-					try {
-						if (!this.api) {
-							throw new Error('API not available');
-						}
-
-						await this.api.nodeList();
-						res.end('ok');
-					} catch (err) {
-						console.error('Service not healthy', err);
-
-						res.writeHead(500);
-						res.end('not healthy');
+		this.app = polka()
+			.use(proxy())
+			.get('/health', async (_req, res) => {
+				try {
+					if (!this.api) {
+						throw new Error('API not available');
 					}
-				})
-				.get('*', function (_req, res) {
-					res.setHeader('Access-Control-Allow-Origin', '*');
-					res.setHeader('Content-Type', 'application/json');
 
-					res.writeHead(200);
+					await this.api.nodeList();
+					res.end('ok');
+				} catch (err) {
+					console.error('Service not healthy', err);
 
-					res.end(
-						`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`,
-					);
-				})
-				.listen(PORT);
+					res.writeHead(500);
+					res.end('not healthy');
+				}
+			})
+			.get('*', function (_req, res) {
+				res.setHeader('Access-Control-Allow-Origin', '*');
+				res.setHeader('Content-Type', 'application/json');
 
-			this.wss = new WebSocket.Server({ server: this.app.server });
+				res.writeHead(200);
 
-			this.wss.on('connection', (ws, req) => new Session(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
+				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
+			})
+			.listen(PORT);
 
-			void InstanceStatus.registerInstance('ddp-streamer', {});
-		} catch (err) {
-			console.error('DDPStreamer did not start correctly', err);
-		}
+		this.wss = new WebSocket.Server({ server: this.app.server });
+
+		this.wss.on('connection', (ws, req) => new Session(this.server, this.lifecycle, ws, req.url !== '/websocket', req));
+
+		void InstanceStatus.registerInstance('ddp-streamer', {});
+
+		// deliberately last and non fatal: traefik routes /websocket to this process, so
+		// one that is up but not listening takes down every realtime feature
+		await MeteorService.getAutoUpdateClientVersions()
+			.then((versions) => Object.values(versions ?? {}).forEach((version) => this.setClientVersion(version)))
+			.catch((err) => console.error('DDPStreamer could not load client versions', err));
 	}
 
 	override async stopped(): Promise<void> {
