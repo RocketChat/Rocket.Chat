@@ -51,7 +51,9 @@ const waitForConnected = (sdk: DDPSDK): Promise<void> => {
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
-			instance = DDPSDK.create(computeDdpUrl());
+			// The stubbed Meteor stream never reconnects on its own, so keep retrying until the server
+			// is back (e.g. a restart) instead of giving up after DDPSDK's default single retry.
+			instance = DDPSDK.create(computeDdpUrl(), { retryCount: Infinity, retryTime: 1000 });
 			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
 			try {
 				instance.storage = createMeteorBackedStorage();
