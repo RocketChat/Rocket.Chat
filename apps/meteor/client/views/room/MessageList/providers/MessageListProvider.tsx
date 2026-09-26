@@ -64,7 +64,7 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const chat = useChat();
 
-	const context: MessageListContextValue = useMemo(
+	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
 			showColors,
 			useUserHasReacted: username
