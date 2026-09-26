@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
@@ -141,15 +142,15 @@ const teamsEndpoints = API.v1
 
 			if (abacAttributes) {
 				if (!settings.get('ABAC_Enabled')) {
-					return API.v1.failure('error-abac-not-enabled');
+					throw new AbacContractError(AbacErrorCode.NotEnabled);
 				}
 				// Converting an existing room creates no room for the attributes to land on.
 				if (room?.id) {
-					return API.v1.failure('error-abac-attributes-room-conversion');
+					throw new AbacContractError(AbacErrorCode.AttributesRoomConversion);
 				}
 				// The creation guard checks the owner's authority, so it has to be the caller's own.
 				if (owner && owner !== this.userId) {
-					return API.v1.failure('error-abac-attributes-owner-must-be-caller');
+					throw new AbacContractError(AbacErrorCode.AttributesOwnerMustBeCaller);
 				}
 			}
 

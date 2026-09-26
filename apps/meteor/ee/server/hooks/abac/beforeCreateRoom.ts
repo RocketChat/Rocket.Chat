@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDiscussion, isOmnichannelRoom, isPublicRoom, isRoomFederated, isPrivateRoom } from '@rocket.chat/core-typings';
@@ -20,20 +21,20 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 	}
 
 	if (!settings.get('ABAC_Enabled') || !License.hasModule('abac')) {
-		throw new Error('error-abac-not-enabled');
+		throw new AbacContractError(AbacErrorCode.NotEnabled);
 	}
 
 	// Remote members cannot be evaluated by the PDP.
 	if (isRoomFederated(room)) {
-		throw new Error('error-abac-federated-room-attributes');
+		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
 	}
 
 	if (isDiscussion(room) || !isPrivateRoom(room)) {
-		throw new Error('error-abac-attributes-private-rooms-only');
+		throw new AbacContractError(AbacErrorCode.AttributesPrivateRoomsOnly);
 	}
 
 	if (!(await hasPermissionAsync(owner._id, 'create-abac-managed-room'))) {
-		throw new Error('error-abac-attributes-not-allowed');
+		throw new AbacContractError(AbacErrorCode.AttributesNotAllowed);
 	}
 
 	const result = await Abac.validateCreationAttributes(room.abacAttributes, toAbacActor(owner), {
@@ -55,15 +56,15 @@ const refuseRoomsEnforcementWouldLock = (room: RoomToCreate): void => {
 
 	// `Discussion_enabled` is also held at false; this covers the callers that bypass it.
 	if (isDiscussion(room)) {
-		throw new Error('error-abac-discussion-creation-blocked');
+		throw new AbacContractError(AbacErrorCode.DiscussionCreationBlocked);
 	}
 
 	if (isPublicRoom(room)) {
-		throw new Error('error-abac-public-room-creation-blocked');
+		throw new AbacContractError(AbacErrorCode.PublicRoomCreationBlocked);
 	}
 
 	if (isRoomAbacLocked(room, lockContext)) {
-		throw new Error('error-abac-attributes-required');
+		throw new AbacContractError(AbacErrorCode.AttributesRequired);
 	}
 };
 
