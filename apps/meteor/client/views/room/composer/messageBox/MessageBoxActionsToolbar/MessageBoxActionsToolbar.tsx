@@ -2,10 +2,10 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
@@ -45,7 +45,7 @@ const MessageBoxActionsToolbar = ({
 	isMicrophoneDenied,
 	isEditing = false,
 }: MessageBoxActionsToolbarProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const chatContext = useChat();
 
 	if (!chatContext) {
@@ -127,7 +127,7 @@ const MessageBoxActionsToolbar = ({
 			}));
 
 		return {
-			title: t(name as TranslationKey),
+			title: t(name),
 			items: items || [],
 		};
 	});

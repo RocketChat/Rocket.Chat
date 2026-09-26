@@ -1,7 +1,6 @@
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { Palette } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +52,7 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 			return '';
 		}
 
-		return dirty ? name : t(i18n as TranslationKey);
+		return dirty ? name : t(i18n!);
 	}, [level, priorities, t]);
 
 	if (!showUnprioritized && level === LivechatPriorityWeight.NOT_SPECIFIED) {

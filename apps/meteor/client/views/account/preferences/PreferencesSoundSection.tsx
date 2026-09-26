@@ -1,14 +1,15 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch, Slider } from '@rocket.chat/fuselage-forms';
-import { type TranslationKey, useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
+import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 const PreferencesSoundSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const customSound = useCustomSound();
-	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name as TranslationKey)]) || [];
+	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name)]) || [];
 	const { control, watch } = useFormContext<{
 		newMessageNotification: string;
 		notificationsSoundVolume: number;

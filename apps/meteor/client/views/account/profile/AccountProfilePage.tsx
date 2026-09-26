@@ -1,19 +1,10 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useUser,
-	useLogout,
-	useEndpoint,
-	useTranslation,
-	useSetting,
-	useLayout,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useSetting, useLayout } from '@rocket.chat/ui-contexts';
 import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -23,7 +14,7 @@ import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
@@ -80,7 +71,7 @@ const AccountProfilePage = () => {
 				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={() => setModal(null)}
-					contentTitle={t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
+					contentTitle={t(`Delete_User_Warning_${erasureType}`)}
 					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}

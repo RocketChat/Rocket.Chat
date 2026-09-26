@@ -1,6 +1,5 @@
 import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
@@ -65,13 +64,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
 						<Callout key={key} type='warning' marginBlock={16}>
-							{t(`Apps_License_Message_${key}` as TranslationKey)}
+							{t(`Apps_License_Message_${key}`)}
 						</Callout>
 					))}
 
 					{Object.entries(app.licenseValidation.errors).map(([key]) => (
 						<Callout key={key} type='danger' marginBlock={16}>
-							{t(`Apps_License_Message_${key}` as TranslationKey)}
+							{t(`Apps_License_Message_${key}`)}
 						</Callout>
 					))}
 				</>
