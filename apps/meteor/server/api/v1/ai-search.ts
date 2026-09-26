@@ -13,7 +13,7 @@ import {
 import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { API } from '../api';

@@ -12,7 +12,7 @@ import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
-import { shortnameToUnicode } from '../../../app/emoji-native/lib/shortnameToUnicode';
+import { shortnameToUnicode } from '../../../lib/emoji-native/shortnameToUnicode';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';

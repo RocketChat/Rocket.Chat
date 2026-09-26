@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, before } from 'mocha';
 
-import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
 import { getEmojisBySearchTerm, updateRecent, removeFromRecent, replaceEmojiInRecent } from '../../../../client/lib/emoji/helpers';
 import { emoji } from '../../../../client/lib/emoji/lib';
+import { getEmojiConfig } from '../../../../lib/emoji-native/getEmojiConfig';
 
 const registerNativeEmojis = () => {
 	const config = getEmojiConfig(emoji);

@@ -9,7 +9,7 @@ import type { Profile } from 'passport-apple';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { handleIdentityToken } from './handleIdentityToken';
-import { config } from '../../../../app/apple/lib/config';
+import { config } from '../../../../lib/apple/config';
 import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';

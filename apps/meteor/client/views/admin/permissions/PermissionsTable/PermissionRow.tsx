@@ -6,7 +6,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoleCell from './RoleCell';
-import { CONSTANTS } from '../../../../../app/authorization/lib';
+import { CONSTANTS } from '../../../../../lib/authorization';
 import { useChangeRole } from '../hooks/useChangeRole';
 
 const getName = (t: TFunction, permission: IPermission): string => {
