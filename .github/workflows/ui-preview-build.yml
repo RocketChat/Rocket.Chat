@@ -46,11 +46,11 @@ jobs:
       # Same package set `yarn dev:next` builds against a remote server.
       - name: Build packages the client reads from dist
         run: |
-          filters=$(node --input-type=module -e "
+          mapfile -t filters < <(node --input-type=module -e "
             import { distOnlyWorkspacePackages, publicAssetWorkspacePackages } from './apps/meteor/vite/workspacePackages.mjs';
-            console.log([...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => '--filter=' + name + '...').join(' '));
+            console.log([...distOnlyWorkspacePackages, ...publicAssetWorkspacePackages].map((name) => '--filter=' + name + '...').join('\n'));
           ")
-          yarn turbo run build $filters
+          yarn turbo run build "${filters[@]}"
 
       - name: Build standalone client
         run: yarn workspace @rocket.chat/meteor build:vite

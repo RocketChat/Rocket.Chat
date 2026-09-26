@@ -67,9 +67,11 @@ jobs:
             exit 0
           fi
 
-          echo "number=$number" >> "$GITHUB_OUTPUT"
-          echo "fork=$fork" >> "$GITHUB_OUTPUT"
-          echo "publish=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "number=$number"
+            echo "fork=$fork"
+            echo "publish=true"
+          } >> "$GITHUB_OUTPUT"
 
       - uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
         if: steps.pr.outputs.publish == 'true'
