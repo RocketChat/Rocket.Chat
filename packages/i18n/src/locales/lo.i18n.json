@@ -325,7 +325,6 @@
   "archive-room": "Archive room",
   "archive-room_description": "ການອະນຸຍາດທີ່ຈະບັນທຶກຊ່ອງທາງ",
   "Archived": "ທີ່ຜ່ານມາ",
-  "are_typing": "ມີການພິມ",
   "Are_you_sure": "ເຈົ້າ​ແນ່​ໃຈ​ບໍ່?",
   "Are_you_sure_you_want_to_delete_your_account": "ທ່ານວ່າທ່ານແມ່ນແນ່ໃຈວ່າຕ້ອງການທີ່ຈະລຶບບັນຊີຂອງທ່ານ?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "ທ່ານແນ່ໃຈວ່າທ່ານຕ້ອງການປິດການເຊື່ອມຕໍ່ເຟສບຸກ?",
@@ -1380,7 +1379,6 @@
   "IRC_Port": "ພອດທີ່ເຊື່ອມໂຍງກັບເຄື່ອງແມ່ຂ່າຍຂອງ IRC.",
   "IRC_Private_Message": "ຜົນໄດ້ຮັບຂອງຄໍາສັ່ງ PRIVMSG.",
   "IRC_Quit": "ຜົນໄດ້ຮັບຕາມການຖອນກອງປະຊຸມ IRC.",
-  "is_typing": "ເປັນການພິມ",
   "Issue_Links": "ບັນຫາການຕິດຕາມຕິດຕາມ",
   "IssueLinks_Incompatible": "ຄໍາເຕືອນ: ບໍ່ໃຫ້ໃຊ້ງານນີ້ແລະ 'Hex Color Preview' ໃນເວລາດຽວກັນ.",
   "IssueLinks_LinkTemplate": "ແມ່ແບບສໍາລັບການເຊື່ອມໂຍງບັນຫາ",
@@ -2529,6 +2527,9 @@
   "User__username__removed_from__room_name__leaders": "{{username}} ຜູ້ໃຊ້ຖືກລຶບອອກຈາກຜູ້ນໍາ {{room_name}}",
   "User__username__removed_from__room_name__moderators": "{{username}} ຜູ້ໃຊ້ໂຍກຍ້າຍອອກຈາກປະດິດ {{room_name}}",
   "User__username__removed_from__room_name__owners": "{{username}} ຜູ້ໃຊ້ໂຍກຍ້າຍອອກຈາກເຈົ້າຂອງ {{room_name}}",
+  "User_activity_typing": {
+    "other": "{{users, list}} ມີການພິມ"
+  },
   "User_added": "ຜູ້ໃຊ້ເຂົ້າມາ",
   "User_added_by": "{{user_added}} ຜູ້ໃຊ້ທີ່ເພີ່ມຂຶ້ນໂດຍ <em>{{user_by}}.</em>",
   "User_added_successfully": "ຜູ້ໃຊ້ເຂົ້າມາສົບຜົນສໍາເລັດ",

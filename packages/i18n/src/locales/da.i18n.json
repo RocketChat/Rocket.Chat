@@ -514,7 +514,6 @@
   "archive-room": "Arkivrum",
   "archive-room_description": "Tilladelse til at arkivere en kanal",
   "Archived": "arkiverede",
-  "are_typing": "skriver",
   "Are_you_sure": "Er du sikker?",
   "Are_you_sure_you_want_to_delete_this_record": "Er du sikker på, at du vil slette denne post?",
   "Are_you_sure_you_want_to_delete_your_account": "Er du sikker på, at du vil slette din konto?",
@@ -2000,7 +1999,6 @@
   "IRC_Port": "Porten der skal forbindes til på IRC-værtsserveren.",
   "IRC_Private_Message": "Output af PRIVMSG-kommandoen.",
   "IRC_Quit": "Output ved afslutning af en IRC-session.",
-  "is_typing": "skriver",
   "Issue_Links": "Issue tracker links",
   "IssueLinks_Incompatible": "Advarsel: Aktiver ikke dette og 'Hex Color Preview' på samme tid.",
   "IssueLinks_LinkTemplate": "Skabelon til issue links",
@@ -3734,6 +3732,10 @@
   "User__username__removed_from__room_name__moderators": "Bruger {{username}} fjernet fra {{room_name}} moderatorer",
   "User__username__removed_from__room_name__owners": "Bruger {{username}} fjernet fra {{room_name}} ejere",
   "User__username__unmuted_in_room__roomName__": "Bruger {{username}} har lyden slået til i rum {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} skriver",
+    "other": "{{users, list}} skriver"
+  },
   "User_added": "Bruger tilføjet",
   "User_added_by": "Bruger {{user_added}}tilføjet af {{user_by}}.",
   "User_added_successfully": "Bruger tilføjet med succes",

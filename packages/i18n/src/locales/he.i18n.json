@@ -201,7 +201,6 @@
   "Archive": "ארכיון",
   "archive-room": "העבר Room לארכיון",
   "Archived": "בארכיון",
-  "are_typing": "מקלידים",
   "Are_you_sure": "האם אתה בטוח?",
   "Are_you_sure_you_want_to_delete_your_account": "האם אתה בטוח שאתה רוצה למחוק את החשבון שלך?",
   "at": "ב-",
@@ -702,7 +701,6 @@
   "Invite_user_to_join_channel_all_from": "הזמן את כל המשתמשים מ-[#channel] לערוץ הנוכחי",
   "Invite_user_to_join_channel_all_to": "הזמן את כל המשתמשים מהערוץ הנוכחי לערוץ [#channel]",
   "Invite_Users": "הזמן משתמשים",
-  "is_typing": "מקליד/ה",
   "It_works": "זה עובד",
   "italics": "נוטה",
   "Join": "הצטרפות",
@@ -1386,6 +1384,11 @@
   "User__username__removed_from__room_name__leaders": "המשתמש {{username}} הוסר ממנהיגי  {{room_name}}",
   "User__username__removed_from__room_name__moderators": "המשתמש {{username}} הוסר ממנחי{{room_name}}",
   "User__username__removed_from__room_name__owners": "המשתמש {{username}} הוסר מבעלי {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} מקליד/ה",
+    "two": "{{users, list}} מקלידים",
+    "other": "{{users, list}} מקלידים"
+  },
   "User_added": "המשתמש נוסף.",
   "User_added_by": "המשתמש {{user_added}} נוסף על ידי {{user_by}}",
   "User_added_successfully": "משתמש נוסף בהצלחה",

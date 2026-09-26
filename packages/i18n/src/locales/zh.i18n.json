@@ -804,10 +804,6 @@
   "archive-room": "归档聊天室",
   "archive-room_description": "归档频道的权限",
   "Archived": "已归档",
-  "are_playing": "正在播放",
-  "are_recording": "正在录制",
-  "are_typing": "正在输入",
-  "are_uploading": "正在上传",
   "Are_you_sure": "你确定吗？",
   "Are_you_sure_delete_contact": "你确定要删除 {{contactName}} 及其全部 {{channelsCount}} 条会话历史记录吗？要确认，请在下方输入 '{{confirmationText}}'。",
   "Are_you_sure_delete_department": "你确定要删除此部门吗？此操作无法撤销。请在下方输入部门名称以确认。",
@@ -3203,10 +3199,6 @@
   "IRC_Port": "要绑定的 IRC 主机服务器的端口。",
   "IRC_Private_Message": "PRIVMSG 命令的输出",
   "IRC_Quit": "在退出一个 IRC 会话时输出。",
-  "is_playing": "正在播放",
-  "is_recording": "正在录制",
-  "is_typing": "正在输入",
-  "is_uploading": "正在上传",
   "Issue_Links": "问题跟踪器链接",
   "IssueLinks_Incompatible": "警告：不要和“十六进制颜色预览”同时启用。",
   "IssueLinks_LinkTemplate": "问题链接模板",
@@ -6504,6 +6496,18 @@
   "User__username__removed_from__room_name__moderators": "用户 {{username}} 不再是 {{room_name}} 的主持",
   "User__username__removed_from__room_name__owners": "用户 {{username}} 不再是 {{room_name}} 的拥有者了",
   "User__username__unmuted_in_room__roomName__": "用户 {{username}} 在聊天室 {{roomName}} 中被取消禁言",
+  "User_activity_playing": {
+    "other": "{{users, list}} 正在播放"
+  },
+  "User_activity_recording": {
+    "other": "{{users, list}} 正在录制"
+  },
+  "User_activity_typing": {
+    "other": "{{users, list}} 正在输入"
+  },
+  "User_activity_uploading": {
+    "other": "{{users, list}} 正在上传"
+  },
   "User_added": "用户已添加",
   "User_added_by": "{{user_by}}添加了{{user_added}}。",
   "User_added_successfully": "添加新用户成功",

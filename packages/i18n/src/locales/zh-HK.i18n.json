@@ -335,7 +335,6 @@
   "archive-room": "档案室",
   "archive-room_description": "允许归档频道",
   "Archived": "存档",
-  "are_typing": "正在输入",
   "Are_you_sure": "你确定吗？",
   "Are_you_sure_you_want_to_delete_your_account": "您确定要删除您的帐户吗？",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "你确定要禁用Facebook集成吗？",
@@ -1363,7 +1362,6 @@
   "IRC_Port": "要在IRC主机服务器上绑定的端口。",
   "IRC_Private_Message": "PRIVMSG命令的输出。",
   "IRC_Quit": "退出IRC会话时的输出。",
-  "is_typing": "正在输入",
   "Issue_Links": "问题跟踪链接",
   "IssueLinks_Incompatible": "警告：不要同时启用此功能和“十六进制颜色预览”。",
   "IssueLinks_LinkTemplate": "问题链接模板",
@@ -2516,6 +2514,9 @@
   "User__username__is_now_a_leader_of__room_name_": "User {{username}}现在是{{room_name}}的领导者",
   "User__username__is_now_a_moderator_of__room_name_": "User {{username}}现在是{{room_name}}的管理员",
   "User__username__is_now_an_owner_of__room_name_": "User {{username}}现在是{{room_name}}的所有者",
+  "User_activity_typing": {
+    "other": "{{users, list}} 正在输入"
+  },
   "User_added_by": " {{user_by}} 添加了 {{user_added}} 。",
   "User_added_successfully": "用户添加成功",
   "User_and_group_mentions_only": "用户和组仅提及",

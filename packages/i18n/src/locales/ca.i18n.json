@@ -531,7 +531,6 @@
   "archive-room": "Arxivar sala",
   "archive-room_description": "Permís per arxivar un canal",
   "Archived": "Arxivada",
-  "are_typing": "estan escrivint",
   "Are_you_sure": "N'estàs segur?",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Esteu segur que voleu esborrar tots els missatges no llegits?",
   "Are_you_sure_you_want_to_close_this_chat": "Estàs segur que vols tancar aquest xat?",
@@ -2211,7 +2210,6 @@
   "IRC_Port": "Port on unir-se al servidor d'IRC.",
   "IRC_Private_Message": "Resposta de la comanda PRIVMSG.",
   "IRC_Quit": "Resposta en sortir de la sessió d'IRC.",
-  "is_typing": "està escrivint",
   "Issue_Links": "Enllaços de seguiment de problemes",
   "IssueLinks_Incompatible": "Advertència: no activeu aquesta opció i la \"Vista preliminar de color Hex\" al mateix temps.",
   "IssueLinks_LinkTemplate": "Plantilla per enllaços de problemes",
@@ -4278,6 +4276,11 @@
   "User__username__removed_from__room_name__moderators": "L'usuari {{username}} ja no és moderador de la sala {{room_name}}",
   "User__username__removed_from__room_name__owners": "L'usuari {{username}} ja no és propietari de {{room_name}}",
   "User__username__unmuted_in_room__roomName__": "Usuari {{username}} sense silenciar a la sala {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} està escrivint",
+    "many": "{{users, list}} estan escrivint",
+    "other": "{{users, list}} estan escrivint"
+  },
   "User_added": "Usuari afegit",
   "User_added_by": "Usuari {{user_added}} afegit per {{user_by}}.",
   "User_added_successfully": "Usuari afegit correctament",

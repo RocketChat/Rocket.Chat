@@ -315,7 +315,6 @@
   "archive-room": "Архивна стая",
   "archive-room_description": "Разрешение за архивиране на канал",
   "Archived": "Архив",
-  "are_typing": "пишат",
   "Are_you_sure": "Сигурен ли си?",
   "Are_you_sure_you_want_to_delete_your_account": "Наистина ли искате да изтриете профила си?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Наистина ли искате да деактивирате интеграцията във Facebook?",
@@ -1344,7 +1343,6 @@
   "IRC_Port": "Портът, с който да се свързва в сървъра за хостване на IRC.",
   "IRC_Private_Message": "Изход на командата PRIVMSG.",
   "IRC_Quit": "Резултат при излизане от IRC сесия.",
-  "is_typing": "пише",
   "Issue_Links": "Издава връзки за проследяване",
   "IssueLinks_Incompatible": "Предупреждение: не позволявайте това и \"Hex Color Preview\" едновременно.",
   "IssueLinks_LinkTemplate": "Шаблон за връзки към изданието",
@@ -2492,6 +2490,10 @@
   "User__username__removed_from__room_name__leaders": "Потребителят {{username}} е премахнат от лидерите {{room_name}}",
   "User__username__removed_from__room_name__moderators": "Потребителят {{username}} е премахнат от модераторите {{room_name}}",
   "User__username__removed_from__room_name__owners": "Потребителят {{username}} е премахнат от собствениците на {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} пише",
+    "other": "{{users, list}} пишат"
+  },
   "User_added": "Потребителят е добавен",
   "User_added_by": "Потребител {{user_added}}добавен от {{user_by}}.",
   "User_added_successfully": "Потребителят е добавен успешно",

@@ -235,7 +235,6 @@
   "archive-room": "Архивирај собу",
   "archive-room_description": "Дозвола за архивирање канала",
   "Archived": "архивиране",
-  "are_typing": "куцају",
   "Are_you_sure": "Да ли сте сигурни?",
   "Are_you_sure_you_want_to_delete_your_account": "Да ли сте сигурни да желите да избришете свој налог?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Да ли сигурно желите да онемогућите интеграцију са Фејсбуком?",
@@ -1190,7 +1189,6 @@
   "Invite_user_to_join_channel_all_from": "Позовите све кориснике из [#channel] да се придруже овом каналу",
   "Invite_user_to_join_channel_all_to": "Позовите све кориснике са овог канала да се придруже [#канал]",
   "Invite_Users": "Позови кориснике",
-  "is_typing": "куца",
   "IssueLinks_LinkTemplate": "Шаблон за проблеме са везама",
   "It_works": "То ради",
   "italics": "курзив",
@@ -2310,6 +2308,11 @@
   "User__username__is_now_a_moderator_of__room_name_": "Корисник {{username}} је сада модератор за {{room_name}}",
   "User__username__is_now_an_owner_of__room_name_": "Корисник {{username}} је сада власник {{room_name}}",
   "User__username__removed_from__room_name__moderators": "Корисник {{username}} уклоњен из модератори {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} куца",
+    "few": "{{users, list}} куцају",
+    "other": "{{users, list}} куцају"
+  },
   "User_added": "Корисник/ца додат(а)",
   "User_added_by": "Корисник/ца {{user_added}} је додат(а) од стране {{user_by}}.",
   "User_added_successfully": "Корисник је успешно додат",

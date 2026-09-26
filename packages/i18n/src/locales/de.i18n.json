@@ -867,10 +867,6 @@
   "archive-room": "Room archivieren",
   "archive-room_description": "Berechtigung, einen Channel zu archivieren",
   "Archived": "Archiviert",
-  "are_playing": "spielen",
-  "are_recording": "nehmen auf",
-  "are_typing": "schreiben",
-  "are_uploading": "laden hoch",
   "Are_you_sure": "Sind Sie sicher?",
   "Are_you_sure_delete_contact": "Möchten Sie {{contactName}} und den gesamten Gesprächsverlauf aus {{channelsCount}} Kanälen wirklich löschen? Geben Sie zur Bestätigung '{{confirmationText}}' in das Feld unten ein.",
   "Are_you_sure_delete_department": "Möchten Sie diese Abteilung wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden. Bitte geben Sie zur Bestätigung den Namen der Abteilung ein.",
@@ -3323,10 +3319,6 @@
   "IRC_Port": "Port des IRC-Host, zu dem verbunden werden soll",
   "IRC_Private_Message": "Ausgabe des PRIVMSG-Befehls",
   "IRC_Quit": "Ausgabe beim Beenden einer IRC-Session",
-  "is_playing": "spielt",
-  "is_recording": "nimmt auf",
-  "is_typing": "schreibt",
-  "is_uploading": "lädt hoch",
   "Issue_Links": "Issue-Tracker-Links",
   "IssueLinks_Incompatible": "Warnung: Aktivieren Sie diese und die 'Hex-Farbvorschau' Einstellung nicht gleichzeitig.",
   "IssueLinks_LinkTemplate": "Vorlage für Issue-Verknüpfungen",
@@ -6750,6 +6742,22 @@
   "User__username__removed_from__room_name__owners": "Benutzer {{username}} ist nicht mehr Besitzer von {{room_name}}",
   "User__username__unbanned_from__roomName__": "Bann von Benutzer {{username}} in {{roomName}} aufgehoben",
   "User__username__unmuted_in_room__roomName__": "Stummschaltung von Benutzer {{username}} in Raum {{roomName}} aufgehoben",
+  "User_activity_playing": {
+    "one": "{{users, list}} spielt",
+    "other": "{{users, list}} spielen"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} nimmt auf",
+    "other": "{{users, list}} nehmen auf"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} schreibt",
+    "other": "{{users, list}} schreiben"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} lädt hoch",
+    "other": "{{users, list}} laden hoch"
+  },
   "User_added": "Benutzer hinzugefügt",
   "User_added_by": "Der Benutzer {{user_added}} wurde von {{user_by}} hinzugefügt",
   "User_added_successfully": "Benutzer erfolgreich hinzugefügt",
