@@ -156,6 +156,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								error={errors?.name?.message}
 								aria-required={requireNameForRegister}
 								aria-invalid={errors.name ? 'true' : 'false'}
+								autoComplete='name'
 								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								aria-describedby={`${nameId}-error`}
 								id={nameId}
@@ -180,6 +181,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 										message: t('registration.component.form.invalidEmail'),
 									},
 								})}
+								autoComplete='email'
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={errors?.email?.message}
 								aria-required='true'
@@ -208,6 +210,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								aria-invalid={errors.username ? 'true' : 'false'}
 								aria-describedby={`${usernameId}-error`}
 								id={usernameId}
+								autoComplete='username'
 								placeholder='jon.doe'
 							/>
 						</FieldRow>
@@ -231,6 +234,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								aria-required='true'
 								aria-invalid={errors.password ? 'true' : undefined}
 								id={passwordId}
+								autoComplete='new-password'
 								placeholder={passwordPlaceholder || t('Create_a_password')}
 								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
 							/>
@@ -259,6 +263,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 									id={passwordConfirmationId}
 									aria-describedby={`${passwordConfirmationId}-error`}
+									autoComplete='new-password'
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 									disabled={!passwordIsValid}
 								/>
