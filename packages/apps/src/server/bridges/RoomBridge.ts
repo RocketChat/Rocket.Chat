@@ -20,7 +20,6 @@ const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
 
 		// This prevents the field being added when a room gets created
 		// since on room creation `isPartial=false` and so these props are spread on the final room object
-		// If we need to allow abac room creation from apps, we would need to remove this.
 		delete (room as any)._unmappedProperties_?.[field];
 	}
 
@@ -30,6 +29,11 @@ const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId)) {
+			if (room.abacAttributes?.length) {
+				this.assertAbacWritePermission(appId);
+				return this.create(room, members, appId);
+			}
+
 			return this.create(stripReadOnlyRoomFields(room), members, appId);
 		}
 	}
@@ -201,6 +205,17 @@ export abstract class RoomBridge extends BaseBridge {
 		);
 
 		return false;
+	}
+
+	private assertAbacWritePermission(appId: string): void {
+		if (AppPermissionManager.hasPermission(appId, AppPermissions.abac.write)) {
+			return;
+		}
+
+		throw new PermissionDeniedError({
+			appId,
+			missingPermissions: [AppPermissions.abac.write],
+		});
 	}
 
 	private hasReadPermission(appId: string): boolean {
