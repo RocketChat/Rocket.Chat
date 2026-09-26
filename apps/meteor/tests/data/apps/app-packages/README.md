@@ -1016,3 +1016,106 @@ function describeOutcome(context: IMediaCallEndedContext): string {
 ```
 
 </details>
+
+#### ABAC room creation
+
+File name: `abac-room-creation-test_0.0.1.zip`
+
+An app that creates a room through `IModifyCreator.finish()`, passing `abacAttributes` in the room it builds, and sends a message to a room as its app user. `tests/end-to-end/apps/abac-room-creation.ts` installs it once with the `abac.write` permission granted and once without, through the `permissions` field of the install request.
+
+**Endpoints:**
+
+- `POST /api/apps/public/:appId/create-room` with `{ "type", "name", "creatorUsername"?, "members"?, "abacAttributes"? }`. Without `creatorUsername` the room is created by the app user. It returns `{ "roomId" }`, or a 400 with `{ "error" }` holding the message of the error `finish()` threw, which is what the tests assert on.
+- `POST /api/apps/public/:appId/send-message` with `{ "roomId", "text" }`. The message is sent as the app user. It returns `{ "messageId" }`, or a 400 with `{ "error" }` as above.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IAppAccessors, IConfigurationExtend, IHttp, ILogger, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+
+class CreateRoomEndpoint extends ApiEndpoint {
+	public path = 'create-room';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { type, name, creatorUsername, members = [], abacAttributes } = request.content;
+
+		const creator = creatorUsername
+			? await read.getUserReader().getByUsername(creatorUsername)
+			: await read.getUserReader().getAppUser();
+
+		if (!creator) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'creator-not-found' } };
+		}
+
+		const room = modify
+			.getCreator()
+			.startRoom({ type, slugifiedName: name, displayName: name, creator, abacAttributes } as IRoom)
+			.setMembersToBeAddedByUsernames(members);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { roomId: await modify.getCreator().finish(room) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+class SendMessageEndpoint extends ApiEndpoint {
+	public path = 'send-message';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { roomId, text } = request.content;
+
+		const room = await read.getRoomReader().getById(roomId);
+
+		if (!room) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'room-not-found' } };
+		}
+
+		const message = modify.getCreator().startMessage().setRoom(room).setText(text);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { messageId: await modify.getCreator().finish(message) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+export class AbacRoomCreationTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new CreateRoomEndpoint(this), new SendMessageEndpoint(this)],
+		});
+	}
+}
+```
+
+</details>
