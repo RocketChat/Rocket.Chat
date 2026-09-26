@@ -1,5 +1,6 @@
 import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
+import { useStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
 
 import type { RoomRoles } from '../../../../hooks/useRoomRolesQuery';
@@ -26,5 +27,8 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 		[roomRoles, userRoles],
 	);
 
-	return Roles.use(useShallow((state) => state.filter(predicate).map(({ description }) => description)));
+	return useStore(
+		Roles.use,
+		useShallow((state) => state.filter(predicate).map(({ description }) => description)),
+	);
 };

@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useStore } from 'zustand';
 
 import { downloadJsonAs } from '../../../../lib/download';
 import { Messages } from '../../../../stores';
@@ -13,7 +14,7 @@ export const useDownloadExportMutation = () => {
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const filterMessages = Messages.use((state) => state.filter);
+	const filterMessages = useStore(Messages.use, (state) => state.filter);
 
 	return useMutation({
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {

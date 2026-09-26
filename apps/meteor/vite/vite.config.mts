@@ -4,7 +4,8 @@ import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import react from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
 import postcssCustomProperties from 'postcss-custom-properties';
 import postcssEasyImport from 'postcss-easy-import';
@@ -211,7 +212,14 @@ const prebundledWorkspaceDeps = [
 export default defineConfig({
 	root: here,
 	publicDir: join(appRoot, 'public'),
-	plugins: [react(), rocketchatInfo(), nativeModules(), devRuntimeConfig()],
+	plugins: [
+		react(),
+		// React Compiler in the dev server only; the production bundle stays as Meteor builds it.
+		babel({ presets: [reactCompilerPreset()] }).then((plugin) => ({ ...plugin, apply: 'serve' as const })),
+		rocketchatInfo(),
+		nativeModules(),
+		devRuntimeConfig(),
+	],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },

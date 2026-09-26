@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useEndpoint, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useStore } from 'zustand';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { AutoTranslate } from '../../../lib/autotranslate';
@@ -26,7 +27,7 @@ export const useViewOriginalTranslationAction = (
 		[message, language],
 	);
 
-	const updateMessages = Messages.use((state) => state.update);
+	const updateMessages = useStore(Messages.use, (state) => state.update);
 
 	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
 		return null;

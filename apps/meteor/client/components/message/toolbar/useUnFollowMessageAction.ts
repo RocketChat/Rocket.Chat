@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
+import { useStore } from 'zustand';
 
 import { t } from '../../../../app/utils/lib/i18n';
 import type { MessageActionContext, MessageActionConfig } from '../../../lib/MessageAction';
@@ -26,7 +27,7 @@ export const useUnFollowMessageAction = (
 	});
 
 	const { tmid, _id } = message;
-	const parentMessage = Messages.use((state) => state.find((record) => record._id === tmid || record._id === _id));
+	const parentMessage = useStore(Messages.use, (state) => state.find((record) => record._id === tmid || record._id === _id));
 
 	if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
 		return null;

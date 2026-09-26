@@ -3,6 +3,7 @@ import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
@@ -30,13 +31,19 @@ export const useReplyInDMAction = (
 	);
 
 	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
-	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
+	const dmRoom = useStore(
+		Rooms.use,
+		useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)),
+	);
 
 	const subsPredicate = useCallback(
 		(record: ISubscription) => record.rid === dmRoom?._id || record.u._id === user?._id,
 		[dmRoom, user?._id],
 	);
-	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));
+	const dmSubs = useStore(
+		Subscriptions.use,
+		useShallow((state) => state.find(subsPredicate)),
+	);
 
 	const tooltip = useMemo(() => {
 		if (encrypted) {

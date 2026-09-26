@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useStore } from 'zustand';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
@@ -11,7 +12,7 @@ export const MESSAGE_NOT_FOUND = 'Message not found';
 
 export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
-	const storeMessage = Messages.use((state) => state.store);
+	const storeMessage = useStore(Messages.use, (state) => state.store);
 
 	return useCallback(
 		async (mid: IMessage['_id']) => {

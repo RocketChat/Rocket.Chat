@@ -3,6 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { useConnectionStatus, useIsLoggingIn, useMethod, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useStore } from 'zustand';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 import { Users } from '../stores';
@@ -120,7 +121,7 @@ export class UserPresence {
 		this.connected = connected;
 		this.goOnline = useMethod('UserPresence:online');
 		this.goAway = useMethod('UserPresence:away');
-		this.storeUser = Users.use((state) => state.store);
+		this.storeUser = useStore(Users.use, (state) => state.store);
 
 		useEffect(() => {
 			if (!RocketChatDesktop) return;
