@@ -7,8 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
+import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 import CallPanel from '../components/CallPanel';
+import CallPresenting from '../components/CallPresenting';
+import CallRaisedHands from '../components/CallRaisedHands';
 import CallTopBar from '../components/CallTopBar';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from '../components/ConferenceIframe';
@@ -32,7 +35,7 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
  * from a fixture — and what keeps the one part it cannot build, the call's chat, a node it is handed.
  */
 const ConferenceWindow = () => {
-	const { room, session, call, actions, slots, thread, viewer, panel } = useConference();
+	const { room, session, call, actions, slots, thread, viewer, panel, media } = useConference();
 	const { t } = useTranslation();
 
 	// Which panel is open is the window's own until the application asks for it — see `panel` on the context.
@@ -99,6 +102,37 @@ const ConferenceWindow = () => {
 		return () => callSounds.stopDialer();
 	}, [someoneRinging, callSounds]);
 
+	// Where a call running in here puts its header and its controls — this window's own bars. Created up front
+	// rather than captured from refs, so they exist on the very first render: an empty ref then would have the
+	// call build a strip of its own before being told not to.
+	const hosts = useMemo(() => {
+		const header = document.createElement('div');
+		header.style.cssText = 'display:flex;flex:1;min-width:0;align-items:center;justify-content:space-between';
+		return { header, controls: document.createElement('div') };
+	}, []);
+	const mountHeader = useCallback(
+		(node: HTMLElement | null) => {
+			node?.appendChild(hosts.header);
+		},
+		[hosts],
+	);
+	const mountControls = useCallback(
+		(node: HTMLElement | null) => {
+			node?.appendChild(hosts.controls);
+		},
+		[hosts],
+	);
+
+	// The call reports hands by member id; the membership is what names them.
+	const hands = useMemo(
+		() =>
+			(media?.raisedHands ?? []).map((id) => {
+				const member = call.members.find(({ _id }) => _id === id);
+				return { id, name: member?.name || member?.username || t('User') };
+			}),
+		[media?.raisedHands, call.members, t],
+	);
+
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
 	// Only a refusal is an answer about the call. Anything else is the server not having been reached, which says
@@ -147,6 +181,7 @@ const ConferenceWindow = () => {
 				canName={call.canRename}
 				participants={{ people: present.slice(0, PREFLIGHT_FACES_SHOWN), total: presentCount, displayAvatars: viewer.displayAvatars }}
 				capabilities={call.capabilities}
+				media={slots.preflightMedia}
 				onConfirm={(preferences, name, ring) => actions.join(preferences, name, ring)}
 				onCancel={actions.leave}
 			/>
@@ -162,48 +197,66 @@ const ConferenceWindow = () => {
 		);
 	}
 
+	// A call that runs in here brings its own header and controls, so the window's bars carry those instead.
+	const renderCall = !session.url && session.embedded ? slots.renderCall : undefined;
+
+	const panelToggles = (
+		<>
+			<IconButton
+				small
+				secondary
+				// The same words in both, because they disagreed: the tooltip said "People" while the accessible
+				// name said how many, so anything looking for the button by the name it appeared to have never
+				// found it.
+				aria-label={t('__count__people_in_the_call', { count: presentCount })}
+				title={t('__count__people_in_the_call', { count: presentCount })}
+				aria-pressed={activePanel === 'members'}
+				onClick={() => togglePanel('members')}
+				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
+			/>
+			<IconButton
+				small
+				secondary
+				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+				title={t('Chat')}
+				aria-pressed={chatVisible}
+				onClick={() => togglePanel('chat')}
+				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+				// for truth.
+				badge={
+					chatBadge !== undefined ? (
+						<Badge variant={unreadVariant} title={unreadTitle}>
+							{chatBadge}
+						</Badge>
+					) : undefined
+				}
+			/>
+		</>
+	);
+
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: 'black' }}>
 			{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
 
-			<CallTopBar startAt={call.createdAt} name={call.name}>
-				<IconButton
-					small
-					secondary
-					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
-					// name said how many, so anything looking for the button by the name it appeared to have never
-					// found it.
-					aria-label={t('__count__people_in_the_call', { count: presentCount })}
-					title={t('__count__people_in_the_call', { count: presentCount })}
-					aria-pressed={activePanel === 'members'}
-					onClick={() => togglePanel('members')}
-					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
-				/>
-				<IconButton
-					small
-					secondary
-					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-					title={t('Chat')}
-					aria-pressed={chatVisible}
-					onClick={() => togglePanel('chat')}
-					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-					// for truth.
-					badge={
-						chatBadge !== undefined ? (
-							<Badge variant={unreadVariant} title={unreadTitle}>
-								{chatBadge}
-							</Badge>
-						) : undefined
-					}
-				/>
-			</CallTopBar>
+			{renderCall ? (
+				<CallTopBar host={<Box ref={mountHeader} display='flex' flexGrow={1} minWidth={0} alignItems='center' />}>
+					{/* Before the toggles, so the queue grows into the bar's own space rather than pushing them. */}
+					<CallPresenting presenters={media?.presenters ?? []} onStopPresenting={media?.stopPresenting} />
+					<CallRaisedHands hands={hands} />
+					{panelToggles}
+				</CallTopBar>
+			) : (
+				<CallTopBar startAt={call.createdAt} name={call.name}>
+					{panelToggles}
+				</CallTopBar>
+			)}
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-					{session.url && <ConferenceIframe url={session.url} />}
+					{session.url ? <ConferenceIframe url={session.url} /> : renderCall?.(hosts)}
 				</Box>
 
 				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
@@ -212,8 +265,12 @@ const ConferenceWindow = () => {
 					    arrives built. What this window owns is the panel it sits in, which is why closing it is
 					    handed down rather than handed in. */}
 					{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
+					{activePanel === 'diagnostics' && slots.diagnostics}
 				</CallPanel>
 			</Box>
+
+			{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
+			{renderCall && <CallBar centre={<Box ref={mountControls} display='flex' alignItems='center' />} />}
 		</Box>
 	);
 };

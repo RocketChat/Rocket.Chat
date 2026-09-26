@@ -26,9 +26,10 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const conference = useConference();
-	const { call, room, actions, provider, viewer } = conference;
+	const { call, room, actions, provider, viewer, media } = conference;
 	const { members } = call;
 	const { rid, chatAccess } = room;
+	const raisedHands = useMemo(() => new Set(media?.raisedHands), [media?.raisedHands]);
 
 	// The plugin says which participant this window joined as — the one pairing a shared display name cannot
 	// settle on its own. No other row can be claimed this way.
@@ -82,6 +83,10 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 					// Until the server's answer comes back, this is what says the ask is already on its way.
 					ringing={ringingMembers.includes(member._id)}
 					controls={controls}
+					// What a call running in this window knows about them — absent for one at an address of its own.
+					handRaised={raisedHands.has(member._id)}
+					muted={media?.mutedMembers.has(member._id)}
+					onMute={media?.muteMember}
 					onRing={ringMember}
 				/>
 			);

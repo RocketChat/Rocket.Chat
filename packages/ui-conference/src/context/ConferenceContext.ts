@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 import type {
 	ConferenceActions,
 	ConferenceCall,
+	ConferenceMedia,
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,
@@ -11,7 +12,7 @@ import type {
 import type { ProviderPluginControls } from '../lib/providerPlugin';
 
 /** What the window can show beside the call. */
-export type ConferencePanel = 'members' | 'chat';
+export type ConferencePanel = 'members' | 'chat' | 'diagnostics';
 
 /**
  * One call, as the window that shows it needs to know it.
@@ -49,6 +50,8 @@ export type ConferenceContextValue = {
 	 * arrives through is the application's, and only the application can hear it.
 	 */
 	provider?: ProviderPluginControls;
+	/** What a call running in this window knows about it — see `ConferenceMedia`. */
+	media?: ConferenceMedia;
 	/**
 	 * Which thread is open over the chat, rather than the thread itself — it is shown inside the room's own
 	 * provider, which is the application's. Kept here because navigation can open one too, and that arrives from
@@ -127,3 +130,5 @@ export const useConferenceSlots = (): ConferenceSlots => useContext(ConferenceCo
 export const useConferenceViewer = (): ConferenceViewer => useContext(ConferenceContext).viewer;
 
 export const useConferenceProvider = (): ProviderPluginControls | undefined => useContext(ConferenceContext).provider;
+
+export const useConferenceMedia = (): ConferenceMedia | undefined => useContext(ConferenceContext).media;
