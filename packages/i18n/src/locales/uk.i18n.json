@@ -3063,9 +3063,9 @@
   "User__username__removed_from__room_name__owners": "{{username}} Користувач вилучений з власників {{room_name}} ",
   "User_activity_typing": {
     "one": "{{users, list}} друкує",
-    "few": "{{users, list}} друкує…",
-    "many": "{{users, list}} друкує…",
-    "other": "{{users, list}} друкує…"
+    "few": "{{users, list}} друкують…",
+    "many": "{{users, list}} друкують…",
+    "other": "{{users, list}} друкують…"
   },
   "User_added": "Користувача додано",
   "User_added_by": "Користувач {{user_added}} доданий {{user_by}}.",

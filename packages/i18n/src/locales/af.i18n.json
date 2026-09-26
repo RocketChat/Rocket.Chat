@@ -2496,8 +2496,8 @@
   "User__username__removed_from__room_name__moderators": "Gebruiker {{username}} verwyder van {{room_name}} moderators",
   "User__username__removed_from__room_name__owners": "Gebruiker {{username}} verwyder van {{room_name}} eienaars",
   "User_activity_typing": {
-    "one": "{{users, list}} besig om te tik",
-    "other": "{{users, list}} is tik"
+    "one": "{{users, list}} is besig om te tik",
+    "other": "{{users, list}} is besig om te tik"
   },
   "User_added": "Gebruiker bygevoeg",
   "User_added_by": "Gebruiker {{user_added}}bygevoeg deur {{user_by}}.",

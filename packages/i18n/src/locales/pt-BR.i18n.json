@@ -6706,7 +6706,7 @@
     "other": "mais {{count}} pessoas"
   },
   "User_activity_playing": {
-    "one": "{{users, list}} está tocando",
+    "one": "{{users, list}} está jogando",
     "many": "{{users, list}} estão jogando",
     "other": "{{users, list}} estão jogando"
   },
@@ -6721,7 +6721,7 @@
     "other": "{{users, list}} estão digitando"
   },
   "User_activity_uploading": {
-    "one": "{{users, list}} está fazendo upload de",
+    "one": "{{users, list}} está fazendo upload",
     "many": "{{users, list}} estão fazendo upload",
     "other": "{{users, list}} estão fazendo upload"
   },
