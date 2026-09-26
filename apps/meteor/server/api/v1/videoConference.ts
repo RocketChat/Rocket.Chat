@@ -22,6 +22,7 @@ import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
+import { applyBreakingChanges } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -83,6 +84,8 @@ const loadAccessibleConference = async (
 
 	return call;
 };
+
+const notFoundConferenceResult = () => (applyBreakingChanges ? API.v1.notFound() : API.v1.failure('invalid-params'));
 
 /**
  * The conference endpoints answer with one value beside `success`, so their schemas differ in a single property.
@@ -237,6 +240,7 @@ API.v1.post(
 			200: joinResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -244,17 +248,12 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: answer 404 when a conference is missing or is not the caller's
-		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
-		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
-		// published and clients depend on the status, so moving it belongs to the next major, with
-		// `applyBreakingChanges`.
 		if (!call) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		if (!(await Authorization.canAccessConference(call, userId))) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		let url: string | undefined;
@@ -295,6 +294,7 @@ API.v1.post(
 			200: cancelResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -302,17 +302,12 @@ API.v1.post(
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
-		// TODO: answer 404 when a conference is missing or is not the caller's
-		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
-		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
-		// published and clients depend on the status, so moving it belongs to the next major, with
-		// `applyBreakingChanges`.
 		if (!call) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		await VideoConf.cancel(userId, callId);
@@ -542,19 +537,15 @@ API.v1.get(
 			200: infoResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
 		const { callId } = this.queryParams;
 
 		const call = await loadAccessibleConference(callId, this.userId);
-		// TODO: answer 404 when a conference is missing or is not the caller's
-		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
-		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
-		// published and clients depend on the status, so moving it belongs to the next major, with
-		// `applyBreakingChanges`.
 		if (!call) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
@@ -602,6 +593,7 @@ API.v1.get(
 			200: listResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			...(applyBreakingChanges ? { 404: validateNotFoundErrorResponse } : {}),
 		},
 	},
 	async function action() {
@@ -610,13 +602,8 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		// TODO: answer 404 when a conference is missing or is not the caller's
-		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —
-		// so 400 describes the wrong thing. The endpoints added alongside this one already answer 404. This one is
-		// published and clients depend on the status, so moving it belongs to the next major, with
-		// `applyBreakingChanges`.
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
-			return API.v1.failure('invalid-params');
+			return notFoundConferenceResult();
 		}
 
 		const data = await VideoConf.list(roomId, { offset, count });

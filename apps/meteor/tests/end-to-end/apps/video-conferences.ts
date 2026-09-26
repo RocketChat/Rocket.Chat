@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import semver from 'semver';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
@@ -10,11 +11,23 @@ import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
+const assertMissingConferenceResponse = (res: Response, expectNotFound: boolean) => {
+	expect(res.status).to.equal(expectNotFound ? 404 : 400);
+	expect(res.body).to.have.property('success', false);
+	expect(res.body).to.have.property('error', expectNotFound ? 'Resource not found' : 'invalid-params');
+};
+
 describe('Apps - Video Conferences', () => {
 	before((done) => getCredentials(done));
 
+	let expectNotFound = false;
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;
+
+	before(async () => {
+		const res = await request.get('/api/info').set(credentials).expect(200);
+		expectNotFound = semver.gte(res.body.info.version, '9.0.0');
+	});
 
 	before(async () => {
 		const res = await createRoom({
@@ -367,6 +380,24 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}/${userId}/mic`);
 					});
 			});
+
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.post(api('video-conference.join'))
+					.set(credentials)
+					.send({ callId: 'missing-video-conference' })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
+			});
+		});
+
+		describe('[/video-conference.cancel]', () => {
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.post(api('video-conference.cancel'))
+					.set(credentials)
+					.send({ callId: 'missing-video-conference' })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
+			});
 		});
 
 		describe('[/video-conference.info]', () => {
@@ -406,6 +437,14 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
 						expect(res.body.createdBy).to.have.a.property('username').equal(adminUsername);
 					});
+			});
+
+			it('should reject a missing videoconference with invalid params', async () => {
+				await request
+					.get(api('video-conference.info'))
+					.set(credentials)
+					.query({ callId: 'missing-video-conference' })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 
@@ -952,6 +991,14 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body.data[0]).to.have.a.property('_id').equal(callId1);
 						});
 				});
+
+				it('should reject an inaccessible room with invalid params', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({ roomId: 'missing-room' })
+						.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
+				});
 			});
 
 			describe('[Persistent Chat Provider]', () => {
@@ -1048,6 +1095,7 @@ describe('Apps - Video Conferences', () => {
 			let readOnlyRoomId: string;
 			let regularUser: Awaited<ReturnType<typeof createUser>>;
 			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+			let inaccessibleCallId: string;
 
 			before(async () => {
 				// Create a regular user
@@ -1066,6 +1114,10 @@ describe('Apps - Video Conferences', () => {
 
 				// Set up video conference provider
 				await updateSetting('VideoConf_Default_Provider', 'test');
+				const callRes = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+				inaccessibleCallId = callRes.body.data.callId;
 			});
 
 			before(async () => {
@@ -1119,6 +1171,22 @@ describe('Apps - Video Conferences', () => {
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 					});
+			});
+
+			it('should reject joining an existing inaccessible conference', async () => {
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId: inaccessibleCallId })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
+			});
+
+			it('should reject cancelling an existing inaccessible conference', async () => {
+				await request
+					.post(api('video-conference.cancel'))
+					.set(regularUserCredentials)
+					.send({ callId: inaccessibleCallId })
+					.expect((res: Response) => assertMissingConferenceResponse(res, expectNotFound));
 			});
 		});
 	});
