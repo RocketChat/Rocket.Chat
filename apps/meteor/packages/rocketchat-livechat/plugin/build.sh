@@ -1,4 +1,6 @@
-# set -x
+#!/bin/bash
+set -x
+
 export NODE_ENV="production"
 export LIVECHAT_DIR="./public/livechat"
 export LIVECHAT_ASSETS_DIR="./private/livechat"
@@ -9,7 +11,7 @@ rm -rf $LIVECHAT_DIR
 mkdir -p $LIVECHAT_DIR
 
 rm -rf $LIVECHAT_ASSETS_DIR
-mkdir $LIVECHAT_ASSETS_DIR
+mkdir -p $LIVECHAT_ASSETS_DIR
 
 #NEW LIVECHAT#
 echo "Installing Livechat ${LATEST_LIVECHAT_VERSION}..."
