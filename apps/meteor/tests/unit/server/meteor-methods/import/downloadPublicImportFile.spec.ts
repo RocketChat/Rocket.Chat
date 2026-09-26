@@ -74,6 +74,13 @@ describe('executeDownloadPublicImportFile', () => {
 		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
 	});
 
+	it('rejects local filesystem paths before creating an import', async () => {
+		await expect(executeDownloadPublicImportFile('user-id', '/tmp/import.zip', 'csv')).to.be.rejectedWith('error-invalid-import-file-url');
+
+		expect(stubs.newOperation.called).to.be.false;
+		expect(stubs.createWriteStream.called).to.be.false;
+	});
+
 	it('marks the import as failed and destroys the writable when the HTTP stream fails', async () => {
 		const responseBody = new PassThrough();
 		stubs.serverFetch.resolves({ ok: true, status: 200, body: responseBody });

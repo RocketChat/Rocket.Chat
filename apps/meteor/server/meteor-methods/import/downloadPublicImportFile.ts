@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import type { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
@@ -31,14 +30,15 @@ async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 	return body;
 }
 
-function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
-	const readStream = fs.createReadStream(filePath);
-	readStream.pipe(writeStream);
-}
-
 export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
 	const importer = Importers.get(importerKey);
-	const isUrl = fileUrl.startsWith('http');
+	let parsedUrl: URL | undefined;
+	try {
+		parsedUrl = new URL(fileUrl);
+	} catch (error) {
+		void error;
+	}
+	const isUrl = parsedUrl?.protocol === 'http:' || parsedUrl?.protocol === 'https:';
 	if (!importer) {
 		throw new Meteor.Error(
 			'error-importer-not-defined',
@@ -46,9 +46,8 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 			'downloadImportFile',
 		);
 	}
-	// Check if it's a valid url or path before creating a new import record
-	if (!isUrl && !fs.existsSync(fileUrl)) {
-		throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
+	if (!isUrl) {
+		throw new Meteor.Error('error-invalid-import-file-url', fileUrl, 'downloadPublicImportFile');
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
@@ -76,34 +75,20 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		void markImportAsFailed();
 	});
 
-	let readStream: Readable | undefined;
-	if (isUrl) {
-		try {
-			readStream = await getHttpFileStream(fileUrl);
-		} catch (error) {
-			writeStream.destroy();
-			await markImportAsFailed();
-			throw error;
-		}
+	let readStream: Readable;
+	try {
+		readStream = await getHttpFileStream(fileUrl);
+	} catch (error) {
+		writeStream.destroy();
+		await markImportAsFailed();
+		throw error;
 	}
 
 	writeStream.on('finish', () => {
 		void instance.updateProgress(ProgressStep.FILE_LOADED);
 	});
 
-	if (readStream) {
-		void pipeline(readStream, writeStream).catch(() => markImportAsFailed());
-		return;
-	}
-
-	// If the url is actually a folder path on the current machine, skip moving it to the file store
-	if (fs.statSync(fileUrl).isDirectory()) {
-		await instance.updateRecord({ file: fileUrl });
-		await instance.updateProgress(ProgressStep.FILE_LOADED);
-		return;
-	}
-
-	copyLocalFile(fileUrl, writeStream);
+	void pipeline(readStream, writeStream).catch(() => markImportAsFailed());
 };
 
 declare module '@rocket.chat/ddp-client' {
