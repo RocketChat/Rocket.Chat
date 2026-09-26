@@ -10528,7 +10528,7 @@ __metadata:
     storybook: "npm:^9.1.20"
     stream-buffers: "npm:^3.0.3"
     strict-uri-encode: "npm:^2.0.0"
-    string-strip-html: "npm:^8.5.0"
+    string-strip-html: "npm:^13.7.3"
     stylelint: "npm:^16.10.0"
     stylelint-config-standard: "npm:^36.0.1"
     stylelint-order: "npm:^6.0.4"
@@ -19461,6 +19461,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"codsen-format-diagnostic-value@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "codsen-format-diagnostic-value@npm:1.1.1"
+  checksum: 10/527f3c248beae783798fbdc695b3d9d3f34a230d824e46e109166d708d2a284f18a9b82d7256171337a092cd23b19c215a1012507383a20f47174ae0eab52921
+  languageName: node
+  linkType: hard
+
+"codsen-utils@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "codsen-utils@npm:1.10.2"
+  dependencies:
+    codsen-format-diagnostic-value: "npm:^1.1.1"
+  checksum: 10/df6fa952bc9237cc1393177f2b36b0aac700bdcce6c3103bdd5643fe6a48fa81d74fe4b81f3debbaf30d60530ea270504635f8c75335b5451033f5f61ae46146
+  languageName: node
+  linkType: hard
+
 "collect-v8-coverage@npm:^1.0.0, collect-v8-coverage@npm:^1.0.2":
   version: 1.0.2
   resolution: "collect-v8-coverage@npm:1.0.2"
@@ -24724,6 +24740,13 @@ __metadata:
   version: 2.5.2
   resolution: "html-entities@npm:2.5.2"
   checksum: 10/4ec12ebdf2d5ba8192c68e1aef3c1e4a4f36b29246a0a88464fe278a54517d0196d3489af46a3145c7ecacb4fc5fd50497be19eb713b810acab3f0efcf36fdc2
+  languageName: node
+  linkType: hard
+
+"html-entity-codec@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "html-entity-codec@npm:1.1.0"
+  checksum: 10/4c1934745bd14e17221a7950458033a3776f792d463ebd3e0e554bde9af10c48d732203f1da70dbaf3bfc7ec80bc3cb5083f14eea7d988ac5bf96c02e7fa468f
   languageName: node
   linkType: hard
 
@@ -32690,6 +32713,46 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ranges-apply@npm:^7.2.5":
+  version: 7.2.5
+  resolution: "ranges-apply@npm:7.2.5"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+    ranges-merge: "npm:^9.2.5"
+  checksum: 10/73350107a12d1ec839da129dee5a16d6bea24af75c1366cf1c8e51d279ef5973851f2fe6984d3c399c54b70b605065036dfeb125cf67fb9af55c781e662a0040
+  languageName: node
+  linkType: hard
+
+"ranges-merge@npm:^9.2.5":
+  version: 9.2.5
+  resolution: "ranges-merge@npm:9.2.5"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+    ranges-sort: "npm:^6.2.4"
+  checksum: 10/7b711891c439eebb1fdbf5aa079bc5fe86bc31795a746735ccc4b2a9b7c7f84840ef18aea958f20500228f61aed2960d8777039c12756b04e8e21b2c703f9bc1
+  languageName: node
+  linkType: hard
+
+"ranges-push@npm:^7.3.2":
+  version: 7.3.2
+  resolution: "ranges-push@npm:7.3.2"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+    ranges-sort: "npm:^6.2.4"
+    string-collapse-leading-whitespace: "npm:^7.3.1"
+  checksum: 10/c4d67a6f9935eb6a7139a7e59d5590d67ec6170ec2b374c40b4eef6df4de885ed9e16ed44283ea95f0b8497f474b096c266e435f691265582d450654103e4ee0
+  languageName: node
+  linkType: hard
+
+"ranges-sort@npm:^6.2.4":
+  version: 6.2.4
+  resolution: "ranges-sort@npm:6.2.4"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+  checksum: 10/7cbae6fe773e9fa104d33677b67f510bbbe6361ffc0c43760e12c4082e912e6bdd15d5e5fd2ef2d1476a6dc0ff18d2918e810b3d58a4d824809bf5e25c6b8664
+  languageName: node
+  linkType: hard
+
 "raw-body@npm:^2.3.3":
   version: 2.5.2
   resolution: "raw-body@npm:2.5.2"
@@ -35432,6 +35495,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"string-collapse-leading-whitespace@npm:^7.3.1":
+  version: 7.3.1
+  resolution: "string-collapse-leading-whitespace@npm:7.3.1"
+  checksum: 10/59eb19c386108825da372529747d702970fedc52afb04ec8369b56d7c62858920dbe86f6f8d26ad105daafdb3c1fe07e4df6893a50ebc68d9af9b502aec93dba
+  languageName: node
+  linkType: hard
+
+"string-left-right@npm:^6.2.4":
+  version: 6.2.4
+  resolution: "string-left-right@npm:6.2.4"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+  checksum: 10/9bb22b8f1bbd02c5089f719210525faee4c48a168e1947ff0be2bbbea4c021ffcd35cfb35d20809b4b6fe43e38cae24ef8a7adb2fef2c9b2c5869a41a60490ab
+  languageName: node
+  linkType: hard
+
 "string-length@npm:^4.0.1, string-length@npm:^4.0.2":
   version: 4.0.2
   resolution: "string-length@npm:4.0.2"
@@ -35452,10 +35531,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-strip-html@npm:^8.5.0":
-  version: 8.5.0
-  resolution: "string-strip-html@npm:8.5.0"
-  checksum: 10/3a6eadd222eb2b623cf69812ac744fa62ae630f34af28a6584164df04d4e1b2bbe48caacf78d901a234356594be713e91116722f40f7068eeffec31da84b43be
+"string-strip-html@npm:^13.7.3":
+  version: 13.7.3
+  resolution: "string-strip-html@npm:13.7.3"
+  dependencies:
+    codsen-utils: "npm:^1.10.2"
+    html-entity-codec: "npm:^1.1.0"
+    ranges-apply: "npm:^7.2.5"
+    ranges-push: "npm:^7.3.2"
+    string-left-right: "npm:^6.2.4"
+  checksum: 10/1b2cf004d18ebe479407057dfec4f5b33402ca4fcb35e5f143ce538c211b3cb5481b14928d0b1815920ded63c7590bff1ea0fde349c5c45b45d670a23eda6b4a
   languageName: node
   linkType: hard
 

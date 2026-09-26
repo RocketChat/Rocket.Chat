@@ -309,7 +309,7 @@
 		"speakeasy": "^2.0.0",
 		"stream-buffers": "^3.0.3",
 		"strict-uri-encode": "^2.0.0",
-		"string-strip-html": "^8.5.0",
+		"string-strip-html": "^13.7.3",
 		"stylis": "~4.4.0",
 		"swagger-ui-express": "^5.0.1",
 		"swc-plugin-coverage-instrument": "0.0.32",
