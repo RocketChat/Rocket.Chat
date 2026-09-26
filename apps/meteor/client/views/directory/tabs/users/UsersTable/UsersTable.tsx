@@ -49,7 +49,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 						active={sortBy === 'email'}
 						onClick={setSort}
 						sort='email'
-						width='x200'
+						width='x250'
 					>
 						{t('Email')}
 					</GenericTableHeaderCell>
