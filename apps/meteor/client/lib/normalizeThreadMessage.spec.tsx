@@ -5,10 +5,10 @@ import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { normalizeThreadMessage } from './normalizeThreadMessage';
-import { filterMarkdown } from '../../app/markdown/lib/parser/filtered/filtered';
+import { filterMarkdown } from '../../lib/markdown/parser/filtered/filtered';
 
 jest.mock('./getMarkdownParserLimit');
-jest.mock('../../app/markdown/lib/parser/filtered/filtered');
+jest.mock('../../lib/markdown/parser/filtered/filtered');
 jest.mock('@rocket.chat/message-parser');
 jest.mock('../../app/utils/rocketchat.info', () => ({}));
 

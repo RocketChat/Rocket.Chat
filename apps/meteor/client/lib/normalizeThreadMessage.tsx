@@ -7,7 +7,7 @@ import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { toPlainTextRoot } from './toPlainTextRoot';
-import { filterMarkdown } from '../../app/markdown/lib/parser/filtered/filtered';
+import { filterMarkdown } from '../../lib/markdown/parser/filtered/filtered';
 import GazzodownText from '../components/GazzodownText';
 
 const tryParseWithLimit = (text: string): Root | undefined => {

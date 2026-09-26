@@ -15,21 +15,21 @@ const parsers = {
 };
 
 class MarkdownClass {
-	parse(text) {
+	parse(text: string) {
 		const message = {
 			html: escapeHTML(text),
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
-	parseNotEscaped(text) {
+	parseNotEscaped(text: string) {
 		const message = {
 			html: text,
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
-	parseMessageNotEscaped(message) {
+	parseMessageNotEscaped(message: any) {
 		const options = {
 			rootUrl: Meteor.absoluteUrl(),
 		};
@@ -37,7 +37,7 @@ class MarkdownClass {
 		return parsers.original(message, options);
 	}
 
-	mountTokensBackRecursively(message, tokenList, useHtml = true) {
+	mountTokensBackRecursively(message: any, tokenList: any[], useHtml = true) {
 		const missingTokens = [];
 
 		if (tokenList.length > 0) {
@@ -57,7 +57,7 @@ class MarkdownClass {
 		}
 	}
 
-	mountTokensBack(message, useHtml = true) {
+	mountTokensBack(message: any, useHtml = true) {
 		if (message.tokens) {
 			this.mountTokensBackRecursively(message, message.tokens, useHtml);
 		}
@@ -65,22 +65,20 @@ class MarkdownClass {
 		return message;
 	}
 
-	code(...args) {
-		return code(...args);
+	code(message: any) {
+		return code(message);
 	}
 }
 
 export const Markdown = new MarkdownClass();
 
-export const createMarkdownMessageRenderer = ({ ...options }) => {
-	const markedParser = parsers.marked;
-	return (message, useMarkedParser = false) => {
+export const createMarkdownMessageRenderer =
+	(options: { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string }) => (message: any) => {
 		if (!message?.html?.trim()) {
 			return message;
 		}
 
-		return useMarkedParser ? markedParser(message, options) : parsers.original(message, options);
+		return parsers.original(message, options);
 	};
-};
 
-export const createMarkdownNotificationRenderer = () => (message) => parsers.filtered(message);
+export const createMarkdownNotificationRenderer = () => (message: any) => parsers.filtered(message);

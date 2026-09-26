@@ -1,9 +1,9 @@
+import { getMarkdownLinkRegexes } from './linkRegexes';
 import { addAsToken, isToken, validateAllowedTokens } from './token';
-import { getMarkdownLinkRegexes } from '../linkRegexes';
 
-const validateUrl = (url, message) => {
+const validateUrl = (url: string, message: any) => {
 	// Don't render markdown inside links
-	if (message?.tokens?.some((token) => url.includes(token.token))) {
+	if (message?.tokens?.some((token: any) => url.includes(token.token))) {
 		return false;
 	}
 
@@ -20,24 +20,25 @@ const validateUrl = (url, message) => {
 	}
 };
 
-const endsWithWhitespace = (text) => text.substring(text.length - 1).match(/\s/);
+const endsWithWhitespace = (text: string) => text.substring(text.length - 1).match(/\s/);
 
-const getParseableMarkersCount = (start, end) => {
+const getParseableMarkersCount = (start: string, end: string) => {
 	const usableMarkers = start.length > 1 ? 2 : 1;
 	return end.length - usableMarkers >= 0 ? usableMarkers : 1;
 };
 
-const getTextWrapper = (marker, tagName) => (textPrepend, wrappedText, textAppend) =>
+const getTextWrapper = (marker: string, tagName: string) => (textPrepend: string, wrappedText: string, textAppend: string) =>
 	`${textPrepend}<span class="copyonly">${marker}</span><${tagName}>${wrappedText}</${tagName}><span class="copyonly">${marker}</span>${textAppend}`;
 
-const getRegexReplacer = (replaceFunction, getRegex) => (marker, tagName) => {
-	const wrapper = getTextWrapper(marker, tagName);
-	// The regex only depends on the marker, so build it once when the parser is
-	// created instead of on every message. Safe with /g because
-	// String.prototype.replace resets lastIndex on each call.
-	const regex = getRegex(marker);
-	return (msg) => msg.replace(regex, (...args) => replaceFunction(wrapper, ...args));
-};
+const getRegexReplacer =
+	(replaceFunction: (...args: any[]) => string, getRegex: (marker: string) => RegExp) => (marker: string, tagName: string) => {
+		const wrapper = getTextWrapper(marker, tagName);
+		// The regex only depends on the marker, so build it once when the parser is
+		// created instead of on every message. Safe with /g because
+		// String.prototype.replace resets lastIndex on each call.
+		const regex = getRegex(marker);
+		return (msg: string) => msg.replace(regex, (...args) => replaceFunction(wrapper, ...args));
+	};
 
 const getParserWithCustomMarker = getRegexReplacer(
 	(wrapper, match, p1, p2, p3) => {
@@ -66,7 +67,10 @@ const parseItalic = getRegexReplacer(
 	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
 )('_', 'em');
 
-const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
+const parseNotEscaped = (
+	message: any,
+	{ supportSchemesForLink, headers, rootUrl }: { supportSchemesForLink: string; headers: boolean; rootUrl: string },
+) => {
 	let msg = message.html;
 	if (!message.tokens) {
 		message.tokens = [];
@@ -77,26 +81,17 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 
 	if (headers) {
 		// Support # Text for h1
-		msg = msg.replace(
-			/^# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm,
-			'<h1>$1</h1>',
-		);
+		msg = msg.replace(/^# (([\S\w\d-_/*.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h1>$1</h1>');
 
 		// Support # Text for h2
-		msg = msg.replace(
-			/^## (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm,
-			'<h2>$1</h2>',
-		);
+		msg = msg.replace(/^## (([\S\w\d-_/*.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h2>$1</h2>');
 
 		// Support # Text for h3
-		msg = msg.replace(
-			/^### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm,
-			'<h3>$1</h3>',
-		);
+		msg = msg.replace(/^### (([\S\w\d-_/*.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h3>$1</h3>');
 
 		// Support # Text for h4
 		msg = msg.replace(
-			/^#### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm,
+			/^#### (([\S\w\d-_/*.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm,
 			'<h4>$1</h4>',
 		);
 	}
@@ -136,7 +131,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(linkRegexes.image, (match, title, url) => {
+	msg = msg.replace(linkRegexes.image, (match: string, title: string, url: string) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
@@ -154,7 +149,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(linkRegexes.link, (match, title, url) => {
+	msg = msg.replace(linkRegexes.link, (match: string, title: string, url: string) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
@@ -174,7 +169,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	});
 
 	// Support <http://link|Text>
-	msg = msg.replace(linkRegexes.pipedLink, (match, url, title) => {
+	msg = msg.replace(linkRegexes.pipedLink, (match: string, url: string, title: string) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
@@ -188,7 +183,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	return msg;
 };
 
-export const markdown = (message, options) => {
+export const markdown = (message: any, options: any) => {
 	message.html = parseNotEscaped(message, options);
 	return message;
 };
