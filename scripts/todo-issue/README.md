@@ -157,7 +157,11 @@ Extracted data:
 const todo = 'strings containing TODO are ignored';
 
 // TODONT -- partial keyword matches are ignored
+
+// Backticked keywords like `TODO` are ignored
 ```
+
+- **Documentation files:** Markdown documents (`.md`, `.markdown`, `.mdx`) and files under `docs/` are excluded so prose and documentation headers do not generate issues.
 
 ## Trigger modes
 
