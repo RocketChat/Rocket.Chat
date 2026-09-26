@@ -90,15 +90,9 @@ const guardABACManagedField = (room: IRoom, value: string | undefined, current: 
 };
 
 const validators: RoomSettingsValidators = {
-	async default({ userId, room, value }) {
+	async default({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Viewing_room_administration',
-			});
-		}
-		if (isABACManagedRoom(room) && value) {
-			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});

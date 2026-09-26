@@ -2,8 +2,10 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
+import { getRoomAbacLockContext } from './getRoomAbacLockContext';
 import { hasPermissionAsync } from './hasPermission';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { isRoomAbacLocked } from '../../../lib/rooms/isRoomAbacLocked';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const subscriptionOptions = {
@@ -28,6 +30,12 @@ export async function validateRoomMessagePermissionsAsync(
 	}
 	if (args.type !== 'app' && !(await canAccessRoomAsync(room, 'uid' in args ? { _id: args.uid } : args, extraData))) {
 		throw new Error('error-not-allowed');
+	}
+
+	// After the access check so a non-member learns nothing about the room's state, and distinct
+	// from `ro` below: locked and read-only are separate states and a room can be both.
+	if (isRoomAbacLocked(room, getRoomAbacLockContext())) {
+		throw new Error('error-abac-room-locked');
 	}
 
 	if (
