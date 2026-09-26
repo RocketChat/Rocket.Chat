@@ -17,6 +17,23 @@ export enum AbacErrorCode {
 	NotAuthorizedToModifyRoom = 'error-abac-not-authorized-to-modify-room',
 	RequiredAttributesRemoved = 'error-abac-required-attributes-removed',
 	RoomAttributesCleared = 'error-abac-room-attributes-cleared',
+	NotEnabled = 'error-abac-not-enabled',
+	AttributesRequired = 'error-abac-attributes-required',
+	InvalidAttributes = 'error-abac-invalid-attributes',
+	AttributeNotAssignable = 'error-abac-attribute-not-assignable',
+	AttributesNotAllowed = 'error-abac-attributes-not-allowed',
+	AttributesPrivateRoomsOnly = 'error-abac-attributes-private-rooms-only',
+	AttributesRoomConversion = 'error-abac-attributes-room-conversion',
+	AttributesOwnerMustBeCaller = 'error-abac-attributes-owner-must-be-caller',
+	FederatedRoomAttributes = 'error-abac-federated-room-attributes',
+	DecisionUnavailable = 'error-abac-decision-unavailable',
+	DecisionInconclusive = 'error-abac-decision-inconclusive',
+	PublicRoomCreationBlocked = 'error-abac-public-room-creation-blocked',
+	DiscussionCreationBlocked = 'error-abac-discussion-creation-blocked',
+	FederatedRoomCreationBlocked = 'error-abac-federated-room-creation-blocked',
+	RoomLocked = 'error-abac-room-locked',
+	CreatorNotAdmitted = 'error-abac-creator-not-admitted',
+	PreviewTooManyMembers = 'error-abac-preview-too-many-members',
 }
 
 export class AbacError extends Error {
@@ -117,22 +134,19 @@ export class AbacNotAuthorizedToModifyRoomError extends AbacError {
 	}
 }
 
-export class AbacRequiredAttributesRemovedError extends AbacError {
-	constructor(details?: unknown) {
-		super(AbacErrorCode.RequiredAttributesRemoved, details);
-	}
-}
-
-export class AbacRoomAttributesClearedError extends AbacError {
-	constructor(details?: unknown) {
-		super(AbacErrorCode.RoomAttributesCleared, details);
-	}
-}
-
 export class PdpHealthCheckError extends MeteorError {
 	constructor(errorCode: string) {
 		super(errorCode, errorCode);
 		this.message = errorCode;
+
+		Object.setPrototypeOf(this, new.target.prototype);
+	}
+}
+
+export class AbacContractError extends MeteorError {
+	constructor(code: AbacErrorCode, details?: Record<string, unknown>) {
+		super(code, code, details);
+		this.message = code;
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}

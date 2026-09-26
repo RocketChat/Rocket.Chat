@@ -666,7 +666,7 @@ describe('AbacService (unit)', () => {
 			it('refuses a room-scoped editor removing every attribute while enforcement is on', async () => {
 				enforce();
 
-				await expect(writeAs({})).rejects.toMatchObject({ code: 'error-abac-room-attributes-cleared' });
+				await expect(writeAs({})).rejects.toMatchObject({ error: 'error-abac-room-attributes-cleared' });
 				expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
 			});
 
@@ -680,7 +680,7 @@ describe('AbacService (unit)', () => {
 				enforce();
 
 				await expect(writeAs({ region: ['emea'] })).rejects.toMatchObject({
-					code: 'error-abac-required-attributes-removed',
+					error: 'error-abac-required-attributes-removed',
 					details: { keys: ['dept'] },
 				});
 				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -724,9 +724,9 @@ describe('AbacService (unit)', () => {
 
 				await expect(
 					service.previewRoomMembers('r1', { region: ['emea'] }, fakeActor, {}, 'edit-room-abac-attributes'),
-				).rejects.toMatchObject({ code: 'error-abac-required-attributes-removed' });
+				).rejects.toMatchObject({ error: 'error-abac-required-attributes-removed' });
 				await expect(service.previewRoomMembers('r1', {}, fakeActor, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
-					code: 'error-abac-room-attributes-cleared',
+					error: 'error-abac-room-attributes-cleared',
 				});
 			});
 		});
