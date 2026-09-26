@@ -142,12 +142,13 @@ const GetAbacConfigResponse = {
 	properties: {
 		success: { type: 'boolean', enum: [true] },
 		bannersConfig: { type: 'string' },
+		requiredAttributes: { type: 'array', items: { type: 'string' } },
 	},
-	required: ['bannersConfig'],
+	required: ['bannersConfig', 'requiredAttributes'],
 	additionalProperties: false,
 };
 
-export const GETAbacConfigResponseSchema = ajv.compile<{ bannersConfig: string }>(GetAbacConfigResponse);
+export const GETAbacConfigResponseSchema = ajv.compile<{ bannersConfig: string; requiredAttributes: string[] }>(GetAbacConfigResponse);
 
 const GetAbacAttributeByIdResponse = {
 	type: 'object',

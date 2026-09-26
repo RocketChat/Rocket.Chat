@@ -498,7 +498,10 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			return API.v1.success({ bannersConfig: settings.get<string>('ABAC_Classification_Banners_Config') });
+			return API.v1.success({
+				bannersConfig: settings.get<string>('ABAC_Classification_Banners_Config'),
+				requiredAttributes: settings.get<string[]>('ABAC_Required_Attributes'),
+			});
 		},
 	);
 
