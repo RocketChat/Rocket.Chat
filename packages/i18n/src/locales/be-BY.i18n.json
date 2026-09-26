@@ -2525,9 +2525,9 @@
   "User__username__removed_from__room_name__owners": "{{username}} Карыстальнік выдалены з {{room_name}} уладальнікаў",
   "User_activity_typing": {
     "one": "{{users, list}} друкуе",
-    "few": "{{users, list}} набіраеце",
-    "many": "{{users, list}} набіраеце",
-    "other": "{{users, list}} набіраеце"
+    "few": "{{users, list}} друкуюць",
+    "many": "{{users, list}} друкуюць",
+    "other": "{{users, list}} друкуюць"
   },
   "User_added": "Карыстальнік дададзены",
   "User_added_by": "Карыстальнік {{user_added}}дададзены {{user_by}}.",

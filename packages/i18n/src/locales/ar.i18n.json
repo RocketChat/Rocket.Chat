@@ -4448,12 +4448,12 @@
   "User__username__removed_from__room_name__owners": "تمت إزالة المستخدم {{username}} من مالكي {{room_name}}",
   "User__username__unmuted_in_room__roomName__": "تم إلغاء كتم صوت المستخدم {{username}} في الغرفة {{roomName}}",
   "User_activity_typing": {
-    "zero": "{{users, list}} يكتب",
+    "zero": "{{users, list}} يكتبون",
     "one": "{{users, list}} يكتب",
-    "two": "{{users, list}} يكتب",
-    "few": "{{users, list}} يكتب",
-    "many": "{{users, list}} يكتب",
-    "other": "{{users, list}} يكتب"
+    "two": "{{users, list}} يكتبان",
+    "few": "{{users, list}} يكتبون",
+    "many": "{{users, list}} يكتبون",
+    "other": "{{users, list}} يكتبون"
   },
   "User_added": "تمت إضافة المستخدم",
   "User_added_by": "تمت إضافة المستخدم {{user_added}} من قِبل {{user_by}}.",

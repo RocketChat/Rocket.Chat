@@ -3121,8 +3121,8 @@
   },
   "User_activity_typing": {
     "one": "{{users, list}} sta scrivendo",
-    "many": "{{users, list}} sta scrivendo",
-    "other": "{{users, list}} sta scrivendo"
+    "many": "{{users, list}} stanno scrivendo",
+    "other": "{{users, list}} stanno scrivendo"
   },
   "User_activity_uploading": {
     "one": "{{users, list}} sta caricando",

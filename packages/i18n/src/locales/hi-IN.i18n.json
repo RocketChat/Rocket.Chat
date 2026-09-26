@@ -5495,7 +5495,7 @@
   "User__username__removed_from__room_name__owners": "उपयोगकर्ता {{username}} को {{room_name}} स्वामियों से हटा दिया गया",
   "User__username__unmuted_in_room__roomName__": "उपयोगकर्ता {{username}} को कमरे में अनम्यूट किया गया है {{roomName}}",
   "User_activity_playing": {
-    "one": "{{users, list}} खेल रहे है",
+    "one": "{{users, list}} खेल रहा है",
     "other": "{{users, list}} खेल रहे हैं"
   },
   "User_activity_recording": {

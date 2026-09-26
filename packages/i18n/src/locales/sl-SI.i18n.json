@@ -2487,7 +2487,7 @@
   "User__username__removed_from__room_name__owners": "Uporabnik {{username}} ni več lastnik sobe {{room_name}}",
   "User_activity_typing": {
     "one": "{{users, list}} piše",
-    "two": "{{users, list}} pišejo",
+    "two": "{{users, list}} pišeta",
     "few": "{{users, list}} pišejo",
     "other": "{{users, list}} pišejo"
   },
