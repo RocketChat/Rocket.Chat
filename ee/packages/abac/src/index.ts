@@ -815,6 +815,80 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
+	async filterUsersAllowedInRoom(userIds: string[], room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>): Promise<string[]> {
+		const attributes = room.abacAttributes ?? [];
+		if (!userIds.length || !attributes.length) {
+			return userIds;
+		}
+
+		const { pdp } = this;
+		if (!pdp || !(await pdp.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
+			return [];
+		}
+
+		try {
+			const subjects = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
+			const { compliant } = await pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
+			const allowed = new Set(compliant);
+
+			subjects
+				.filter(({ _id }) => allowed.has(_id))
+				.forEach(({ _id, username }) => {
+					void Audit.actionPerformed({ _id, username }, { _id: room._id, name: room.name }, 'system', 'granted-object-access');
+				});
+
+			return userIds.filter((id) => allowed.has(id));
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate users against the ABAC room', rid: room._id, err });
+			return [];
+		}
+	}
+
+	async filterRoomsAllowedForUser(userId: string, rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[]): Promise<string[]> {
+		const attributed = rooms.filter((room) => room.abacAttributes?.length);
+		if (!attributed.length) {
+			return rooms.map(({ _id }) => _id);
+		}
+
+		const allowed = new Set(rooms.filter((room) => !room.abacAttributes?.length).map(({ _id }) => _id));
+		const keepAllowed = () => rooms.filter(({ _id }) => allowed.has(_id)).map(({ _id }) => _id);
+
+		const { pdp } = this;
+		if (!pdp || !(await pdp.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no ABAC room admits the user', uid: userId });
+			return keepAllowed();
+		}
+
+		try {
+			const subject = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'emails'>>(userId, {
+				projection: { _id: 1, username: 1, emails: 1 },
+			});
+			if (!subject) {
+				return keepAllowed();
+			}
+
+			const { compliant } = await pdp.evaluateSubjectAgainstRooms(subject, attributed);
+			const permitted = new Set(compliant);
+
+			attributed
+				.filter(({ _id }) => permitted.has(_id))
+				.forEach((room) => {
+					allowed.add(room._id);
+					void Audit.actionPerformed(
+						{ _id: subject._id, username: subject.username },
+						{ _id: room._id, name: room.name },
+						'system',
+						'granted-object-access',
+					);
+				});
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate the ABAC rooms for the user', uid: userId, err });
+		}
+
+		return keepAllowed();
+	}
+
 	private pdpType: AbacPdpType = 'local';
 
 	private async ensurePdpAvailable(): Promise<void> {
