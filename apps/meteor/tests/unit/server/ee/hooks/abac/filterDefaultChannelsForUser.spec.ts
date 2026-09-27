@@ -9,20 +9,8 @@ const licenseMock = { hasModule: sinon.stub() };
 const ldapMock = { syncUsersAbacAttributesByIds: sinon.stub() };
 const getRoomAbacLockContextMock = sinon.stub();
 const isRoomAbacLockedMock = sinon.stub();
-const isUserAllowedInRoomMock = sinon.stub();
+const abacMock = { filterRoomsAllowedForUser: sinon.stub() };
 const loggerMock = { info: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), debug: sinon.stub() };
-
-const filterInSlices = async <T>(items: T[], allowed: (item: T) => Promise<boolean>): Promise<T[]> => {
-	const kept: T[] = [];
-
-	for await (const item of items) {
-		if (await allowed(item)) {
-			kept.push(item);
-		}
-	}
-
-	return kept;
-};
 
 type Options = { refreshUserAttributes?: boolean };
 
@@ -36,7 +24,7 @@ type Patched = (
 let filterDefaultChannels: Patched;
 
 p.noCallThru().load('../../../../../../ee/server/hooks/abac/filterDefaultChannelsForUser.ts', {
-	'@rocket.chat/core-services': { LDAPEnterprise: ldapMock },
+	'@rocket.chat/core-services': { Abac: abacMock, LDAPEnterprise: ldapMock },
 	'@rocket.chat/license': { License: licenseMock },
 	'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
 	'../../../../lib/rooms/isRoomAbacLocked': { isRoomAbacLocked: isRoomAbacLockedMock },
@@ -49,7 +37,6 @@ p.noCallThru().load('../../../../../../ee/server/hooks/abac/filterDefaultChannel
 		},
 	},
 	'../../../../server/settings': { settings: settingsMock },
-	'../../lib/abac/isUserAllowedInRoom': { filterInSlices, isUserAllowedInRoom: isUserAllowedInRoomMock },
 });
 
 const publicRoom = { _id: 'c1', t: 'c' } as IRoom;
@@ -74,14 +61,14 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		ldapMock.syncUsersAbacAttributesByIds.reset();
 		getRoomAbacLockContextMock.reset();
 		isRoomAbacLockedMock.reset();
-		isUserAllowedInRoomMock.reset();
+		abacMock.filterRoomsAllowedForUser.reset();
 		loggerMock.error.reset();
 
 		settingsMock.get.withArgs('ABAC_Enabled').returns(true);
 		licenseMock.hasModule.withArgs('abac').returns(true);
 		getRoomAbacLockContextMock.returns(lockContext);
 		isRoomAbacLockedMock.callsFake((room: IRoom) => room.t !== 'p' || !room.abacAttributes?.length);
-		isUserAllowedInRoomMock.resolves(true);
+		abacMock.filterRoomsAllowedForUser.callsFake(async (_uid: string, rooms: IRoom[]) => idsOf(rooms));
 		ldapMock.syncUsersAbacAttributesByIds.resolves();
 	});
 
@@ -92,14 +79,14 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 
 		expect(idsOf(await run(rooms))).to.deep.equal(['c1', 'p1', 'p2']);
 		expect(ldapMock.syncUsersAbacAttributesByIds.called).to.be.false;
-		expect(isUserAllowedInRoomMock.called).to.be.false;
+		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
 	it('should leave the rooms untouched without the abac license module', async () => {
 		licenseMock.hasModule.withArgs('abac').returns(false);
 
 		expect(idsOf(await run([publicRoom, privateWithAttributes]))).to.deep.equal(['c1', 'p2']);
-		expect(isUserAllowedInRoomMock.called).to.be.false;
+		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
 	it('should skip the rooms enforcement locks, resolving the workspace policy once', async () => {
@@ -124,7 +111,7 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 	it('should evaluate without refreshing the attributes unless the caller asks for it', async () => {
 		expect(idsOf(await run([privateWithAttributes], user, {}))).to.deep.equal(['p2']);
 		expect(ldapMock.syncUsersAbacAttributesByIds.called).to.be.false;
-		expect(isUserAllowedInRoomMock.calledOnce).to.be.true;
+		expect(abacMock.filterRoomsAllowedForUser.calledOnce).to.be.true;
 	});
 
 	it('should hand the options on to the next filter', async () => {
@@ -150,14 +137,20 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 
 		expect(idsOf(await run(rooms, { _id: 'u2' } as IUser))).to.deep.equal(['p1']);
 		expect(ldapMock.syncUsersAbacAttributesByIds.called).to.be.false;
-		expect(isUserAllowedInRoomMock.called).to.be.false;
+		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
-	it('should drop the unlocked rooms the membership rule refuses', async () => {
+	it('should evaluate the unlocked rooms in one call and drop the ones it refuses', async () => {
 		isRoomAbacLockedMock.returns(false);
-		isUserAllowedInRoomMock.callsFake(async (_user: IUser, room: IRoom) => room._id !== 'p2');
+		abacMock.filterRoomsAllowedForUser.resolves(['p1']);
 
 		expect(idsOf(await run([privateWithoutAttributes, privateWithAttributes]))).to.deep.equal(['p1']);
-		expect(isUserAllowedInRoomMock.alwaysCalledWith(user, sinon.match.any, lockContext)).to.be.true;
+		expect(abacMock.filterRoomsAllowedForUser.calledOnceWith('u1', [privateWithoutAttributes, privateWithAttributes])).to.be.true;
+	});
+
+	it('should not send the rooms enforcement locks to the PDP', async () => {
+		await run([publicRoom, privateWithoutAttributes, privateWithAttributes]);
+
+		expect(abacMock.filterRoomsAllowedForUser.calledOnceWith('u1', [privateWithAttributes])).to.be.true;
 	});
 });
