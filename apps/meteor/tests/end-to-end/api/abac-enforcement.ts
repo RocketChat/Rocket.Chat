@@ -191,6 +191,14 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setRequiredAttributes([]);
 			await deleteRoom({ type: 'p', roomId: compliantRoomId });
 			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], []);
+
+			for (const key of [carriedKey, laterKey]) {
+				const res = await request.get(`${v1}/abac/attributes`).query({ key }).set(credentials).expect(200);
+				const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === key);
+				if (attribute) {
+					await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials).expect(200);
+				}
+			}
 		});
 
 		it('allows a message while the room carries every required attribute', async () => {
