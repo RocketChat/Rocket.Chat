@@ -1,5 +1,5 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
+import { NotAllowedError, eventSchemas, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
@@ -136,8 +136,6 @@ export const getMatrixInviteRoutes = () => {
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			// TODO: add schema from room package. `event` is a PDU whose format varies by room
-			// version, so it stays unconstrained here; room_version and event are required per spec.
 			body: ajv.compile({
 				type: 'object',
 				properties: {
@@ -162,6 +160,35 @@ export const getMatrixInviteRoutes = () => {
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+
+			// NEW: validate `event` against the room package's PduSchema (format varies by room_version)
+
+			// (format varies by room version, so look up the schema dynamically; fall back to
+			// the room version's `default` schema when the event type has no specific one)
+			const schemasForVersion = eventSchemas[roomVersion];
+
+			if (!schemasForVersion) {
+				return {
+					body: {
+						errcode: 'M_UNSUPPORTED_ROOM_VERSION',
+						error: `Unsupported room version: ${roomVersion}`,
+					},
+					statusCode: 400,
+				};
+			}
+
+			const pduSchema = schemasForVersion[event?.type] ?? schemasForVersion.default;
+			const pduResult = pduSchema.safeParse(event);
+
+			if (!pduResult.success) {
+				return {
+					body: {
+						errcode: 'M_BAD_JSON',
+						error: 'The event does not match a valid PDU schema for this room version',
+					},
+					statusCode: 400,
+				};
+			}
 
 			const userToCheck = event.state_key;
 
