@@ -11,7 +11,7 @@ import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionP
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	await callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = await filterDefaultChannelsForUser(await getDefaultChannels(), user);
+	const defaultRooms = await filterDefaultChannelsForUser(await getDefaultChannels(), user, { refreshUserAttributes: true });
 
 	for (const room of defaultRooms) {
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
