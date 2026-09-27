@@ -27,6 +27,23 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 		M_UNAUTHORIZED: { errcode: 'M_UNAUTHORIZED', error: 'Unauthorized', status: 401 },
 		M_UNKNOWN: { errcode: 'M_UNKNOWN', error: 'Unknown error' },
 	},
+  	// fixture: any room_version / event type returns a schema whose safeParse
+	// always succeeds, so existing tests keep exercising the route instead of
+	// failing at the new PDU validation lookup
+	eventSchemas: new Proxy(
+		{},
+		{
+			get: () =>
+				new Proxy(
+					{},
+					{
+						get: () => ({
+							safeParse: (data: unknown) => ({ success: true, data }),
+						}),
+					},
+				),
+		},
+	),
 }));
 
 const mockVerifyRequestSignature = federationSDK.verifyRequestSignature as jest.MockedFunction<typeof federationSDK.verifyRequestSignature>;
