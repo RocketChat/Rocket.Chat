@@ -228,6 +228,15 @@ describe('isIndexable', () => {
 });
 
 describe('equals', () => {
+	it.each([new Date(0), /test/, [], new Uint8Array()])('distinguishes BSON types from empty objects (%p)', (value) => {
+		expect(equals<unknown>({}, value)).toBe(false);
+		expect(equals<unknown>(value, {})).toBe(false);
+	});
+	it('compares regular expression source and flags', () => {
+		expect(equals(/one/i, /two/i)).toBe(false);
+		expect(equals(/one/i, /one/g)).toBe(false);
+		expect(equals(/one/i, new RegExp('one', 'i'))).toBe(true);
+	});
 	it('should return true if two numbers are equal', () => {
 		expect(equals(1, 1)).toBe(true);
 	});
