@@ -24,7 +24,14 @@ const filterInSlices = async <T>(items: T[], allowed: (item: T) => Promise<boole
 	return kept;
 };
 
-type Patched = (next: (rooms: IRoom[], user: IUser) => Promise<IRoom[]>, rooms: IRoom[], user: IUser) => Promise<IRoom[]>;
+type Options = { refreshUserAttributes?: boolean };
+
+type Patched = (
+	next: (rooms: IRoom[], user: IUser, options?: Options) => Promise<IRoom[]>,
+	rooms: IRoom[],
+	user: IUser,
+	options?: Options,
+) => Promise<IRoom[]>;
 
 let filterDefaultChannels: Patched;
 
@@ -53,9 +60,10 @@ const user = { _id: 'u1', username: 'user.one' } as IUser;
 
 const lockContext = { enforcementOn: true, requiredAttributeKeys: [] };
 
-const next = async (rooms: IRoom[]): Promise<IRoom[]> => rooms;
+const next = async (rooms: IRoom[], _user?: IUser, _options?: Options): Promise<IRoom[]> => rooms;
 
-const run = (rooms: IRoom[], actor: IUser = user): Promise<IRoom[]> => filterDefaultChannels(next, rooms, actor);
+const run = (rooms: IRoom[], actor: IUser = user, options: Options = { refreshUserAttributes: true }): Promise<IRoom[]> =>
+	filterDefaultChannels(next, rooms, actor, options);
 
 const idsOf = (rooms: IRoom[]): string[] => rooms.map((room) => room._id);
 
@@ -111,6 +119,21 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		await run([privateWithAttributes]);
 
 		expect(ldapMock.syncUsersAbacAttributesByIds.calledOnceWith(['u1'])).to.be.true;
+	});
+
+	it('should evaluate without refreshing the attributes unless the caller asks for it', async () => {
+		expect(idsOf(await run([privateWithAttributes], user, {}))).to.deep.equal(['p2']);
+		expect(ldapMock.syncUsersAbacAttributesByIds.called).to.be.false;
+		expect(isUserAllowedInRoomMock.calledOnce).to.be.true;
+	});
+
+	it('should hand the options on to the next filter', async () => {
+		const nextSpy = sinon.spy(next);
+		const options = { refreshUserAttributes: true };
+
+		await filterDefaultChannels(nextSpy, [privateWithAttributes], user, options);
+
+		expect(nextSpy.calledOnceWith([privateWithAttributes], user, options)).to.be.true;
 	});
 
 	it('should keep evaluating when the attribute refresh fails', async () => {
