@@ -1,3 +1,5 @@
+import type { Sort, SortDirection } from 'mongodb';
+
 import { createComparatorFromSort } from './sort';
 
 describe('createComparatorFromSort', () => {
@@ -206,5 +208,35 @@ describe('createComparatorFromSort', () => {
 			expect(sorter(b, c)).toBeLessThan(0); // undefined is less than 0
 			expect(sorter(a, b)).toBeGreaterThan(0); // undefined is less than null
 		});
+	});
+});
+
+describe('MongoDB sort representations', () => {
+	const directions = [1, 'asc', 'ascending', -1, 'desc', 'descending'] as const;
+	const documents = [{ score: 3 }, { score: 1 }, { score: 2 }];
+	const formats: ((direction: SortDirection) => Sort)[] = [
+		(direction) => ({ score: direction }),
+		(direction) => [['score', direction]],
+		(direction) => ['score', direction],
+		(direction) => new Map([['score', direction]]),
+	];
+	it.each(directions)('honors direction %s in every supported representation', (direction) => {
+		const expected = direction === 1 || direction === 'asc' || direction === 'ascending' ? [1, 2, 3] : [3, 2, 1];
+		for (const format of formats) {
+			expect([...documents].sort(createComparatorFromSort(format(direction))).map(({ score }) => score)).toEqual(expected);
+		}
+	});
+	it('accepts a single field name', () => {
+		expect([...documents].sort(createComparatorFromSort('score')).map(({ score }) => score)).toEqual([1, 2, 3]);
+	});
+	it('handles a dotted path through an empty array as missing', () => {
+		const sorter = createComparatorFromSort({ 'items.score': 1 });
+		expect(sorter({ items: [] }, { items: [{ score: 1 }] })).toBeLessThan(0);
+		expect(sorter({ items: [] }, { items: [] })).toBe(0);
+	});
+	it('rejects unsupported metadata sorting consistently', () => {
+		for (const format of formats) {
+			expect(() => createComparatorFromSort(format({ $meta: 'textScore' }))).toThrow('$meta sort is not supported');
+		}
 	});
 });
