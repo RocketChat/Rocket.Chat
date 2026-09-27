@@ -228,7 +228,7 @@ describe('isIndexable', () => {
 });
 
 describe('equals', () => {
-	it.each([new Date(0), /test/, [], new Uint8Array()])('distinguishes BSON types from empty objects (%p)', (value) => {
+	it.each([[new Date(0)], [/test/], [[]], [new Uint8Array()]])('distinguishes BSON types from empty objects (%p)', (value) => {
 		expect(equals<unknown>({}, value)).toBe(false);
 		expect(equals<unknown>(value, {})).toBe(false);
 	});
