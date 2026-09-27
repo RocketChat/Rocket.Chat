@@ -30,6 +30,16 @@ export interface IGetDecisionBulkResponse {
 
 export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
+export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails'>;
+
+export type SubjectEvaluation = {
+	compliant: string[];
+	nonCompliant: string[];
+	inconclusive: string[];
+};
+
+export type RoomEvaluation = SubjectEvaluation;
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -46,6 +56,14 @@ export interface IPolicyDecisionPoint {
 	): Promise<{ granted: boolean; userToRemove?: IUser }>;
 
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+
+	evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		object: Pick<IRoom, '_id'>,
+	): Promise<SubjectEvaluation>;
+
+	evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation>;
 
 	onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
