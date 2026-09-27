@@ -1,6 +1,7 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
+		"rootDir": ".",
 		"module": "commonjs",
     "target": "es2015",
     "esModuleInterop": true
