@@ -1,4 +1,3 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 
@@ -14,6 +13,7 @@ import {
 	license,
 	tags,
 } from './_shared';
+import { getLocalUserProfile } from '../../../helpers/getLocalUserProfile';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const ProfileGetResponseSchema = {
@@ -67,10 +67,9 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const userId = c.req.param('userId');
+				const userId = c.req.param('userId') as string;
 				try {
-					// TODO maybe this can be a query to our models instead of going through the federation-sdk
-					const profile = await federationSDK.queryProfile(userId);
+					const profile = await getLocalUserProfile(userId);
 					if (!profile) {
 						return {
 							statusCode: 404,
@@ -110,7 +109,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				const userId = c.req.param('userId');
+				const userId = c.req.param('userId') as string;
 				const field = c.req.param('field');
 
 				if (!field || !ALLOWED_PROFILE_FIELDS.includes(field)) {
@@ -121,8 +120,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				}
 
 				try {
-					// TODO maybe this can be a query to our models instead of going through the federation-sdk
-					const profile = await federationSDK.queryProfile(userId);
+					const profile = await getLocalUserProfile(userId);
 					if (!profile) {
 						return {
 							statusCode: 404,
