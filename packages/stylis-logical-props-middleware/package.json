@@ -39,7 +39,7 @@
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
 		"stylis": "~4.4.0",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"stylis": "~4.4.0"

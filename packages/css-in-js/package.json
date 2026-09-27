@@ -52,7 +52,7 @@
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
 		"rollup": "~4.62.4",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

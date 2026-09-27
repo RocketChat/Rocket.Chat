@@ -20,7 +20,7 @@
 		"@types/react": "~19.2.17",
 		"eslint": "~9.39.3",
 		"react": "~19.2.7",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/message-parser": "workspace:^",
