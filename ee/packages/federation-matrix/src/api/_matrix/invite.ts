@@ -165,19 +165,15 @@ export const getMatrixInviteRoutes = () => {
 
 			// (format varies by room version, so look up the schema dynamically; fall back to
 			// the room version's `default` schema when the event type has no specific one)
-			const schemasForVersion = eventSchemas[roomVersion];
+			const hasOwn = Object.prototype.hasOwnProperty;
 
-			if (!schemasForVersion) {
-				return {
-					body: {
-						errcode: 'M_UNSUPPORTED_ROOM_VERSION',
-						error: `Unsupported room version: ${roomVersion}`,
-					},
-					statusCode: 400,
-				};
-			}
+if (!hasOwn.call(eventSchemas, roomVersion)) {
+  return { body: { errcode: 'M_UNSUPPORTED_ROOM_VERSION', error: `Unsupported room version: ${roomVersion}` }, statusCode: 400 };
+}
+const schemasForVersion = eventSchemas[roomVersion];
 
-			const pduSchema = schemasForVersion[event?.type] ?? schemasForVersion.default;
+const eventType = event?.type;
+const pduSchema = eventType && hasOwn.call(schemasForVersion, eventType) ? schemasForVersion[eventType] : schemasForVersion.default;
 			const pduResult = pduSchema.safeParse(event);
 
 			if (!pduResult.success) {
