@@ -1,6 +1,16 @@
 import { createPredicateFromFilter } from './filter';
 
 describe('createPredicateFromFilter', () => {
+	it.each(['$bitsAllSet', '$bitsAnySet', '$bitsAllClear', '$bitsAnyClear'])('%s respects binary view offsets and lengths', (operator) => {
+		const values = [new Uint8Array([255, 1, 255]).subarray(1, 2), new Uint8Array([255, 0, 255]).subarray(1, 2)];
+		const mask = new Uint8Array([255, 1, 255]).subarray(1, 2);
+		const matchesView = createPredicateFromFilter({ value: { [operator]: mask } });
+		const matchesCopy = createPredicateFromFilter({ value: { [operator]: new Uint8Array(mask) } });
+		for (const value of values) {
+			expect(matchesView({ value })).toBe(matchesCopy({ value: new Uint8Array(value) }));
+			expect(matchesCopy({ value })).toBe(matchesCopy({ value: new Uint8Array(value) }));
+		}
+	});
 	it('matches simple equality', () => {
 		const fn = createPredicateFromFilter({ foo: 'bar' });
 		expect(fn({ foo: 'bar' })).toBe(true);
