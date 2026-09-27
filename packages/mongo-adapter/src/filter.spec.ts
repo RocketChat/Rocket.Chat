@@ -7,7 +7,7 @@ describe('createPredicateFromFilter', () => {
 		['$bitsAllClear', false, true],
 		['$bitsAnyClear', false, true],
 	] as const)('%s respects binary view offsets and lengths', (operator, matchesOne, matchesZero) => {
-		const values = [new Uint8Array([0, 1, 0]).subarray(1, 2), new Uint8Array([0, 0, 0]).subarray(1, 2)];
+		const values = [new Uint8Array([0, 1, 0]).subarray(1, 2), new Uint8Array([255, 0, 0]).subarray(1, 2)];
 		const mask = new Uint8Array([255, 1, 255]).subarray(1, 2);
 		const matchesView = createPredicateFromFilter({ value: { [operator]: mask } });
 		const matchesCopy = createPredicateFromFilter({ value: { [operator]: new Uint8Array(mask) } });
