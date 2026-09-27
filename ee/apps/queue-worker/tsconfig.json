@@ -1,6 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"strictPropertyInitialization": false,
 		"outDir": "./dist/ee/apps/queue-worker/src",
 	},
