@@ -1,9 +1,10 @@
+import { Abac } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
+import { isRoomAbacLocked } from '../../../../lib/rooms/isRoomAbacLocked';
 import { getRoomAbacLockContext } from '../../../../server/lib/authorization/getRoomAbacLockContext';
 import { filterUsersAllowedInRoom } from '../../../../server/lib/rooms/filterUsersAllowedInRoom';
 import { settings } from '../../../../server/settings';
-import { filterInSlices, isUserAllowedInRoom } from '../../lib/abac/isUserAllowedInRoom';
 
 filterUsersAllowedInRoom.patch(async (next, users, room) => {
 	const candidates = await next(users, room);
@@ -12,7 +13,16 @@ filterUsersAllowedInRoom.patch(async (next, users, room) => {
 		return candidates;
 	}
 
-	const lockContext = getRoomAbacLockContext();
+	if (isRoomAbacLocked(room, getRoomAbacLockContext())) {
+		return [];
+	}
 
-	return filterInSlices(candidates, (user) => isUserAllowedInRoom(user, room, lockContext));
+	if (!room.abacAttributes?.length) {
+		return candidates;
+	}
+
+	const evaluable = candidates.filter(({ username }) => username).map(({ _id }) => _id);
+	const allowed = new Set(await Abac.filterUsersAllowedInRoom(evaluable, room));
+
+	return candidates.filter(({ _id }) => allowed.has(_id));
 });
