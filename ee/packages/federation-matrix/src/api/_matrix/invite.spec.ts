@@ -27,6 +27,10 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 		M_UNAUTHORIZED: { errcode: 'M_UNAUTHORIZED', error: 'Unauthorized', status: 401 },
 		M_UNKNOWN: { errcode: 'M_UNKNOWN', error: 'Unknown error' },
 	},
+	// fixture: room_version '10' has a real schema for m.room.member (and a
+	// default fallback), so existing tests keep exercising the route past the
+	// PDU validation step. Any other room_version is treated as unsupported,
+	// and events that don't match the schema shape are rejected.
 	eventSchemas: {
 		'10': {
 			'm.room.member': {
