@@ -10,8 +10,8 @@ import { filterInSlices, isUserAllowedInRoom } from '../../lib/abac/isUserAllowe
 
 const logger = new Logger('AbacDefaultChannels');
 
-filterDefaultChannelsForUser.patch(async (next, rooms, user) => {
-	const candidates = await next(rooms, user);
+filterDefaultChannelsForUser.patch(async (next, rooms, user, options) => {
+	const candidates = await next(rooms, user, options);
 
 	if (!candidates.length || !settings.get('ABAC_Enabled') || !License.hasModule('abac')) {
 		return candidates;
@@ -32,10 +32,12 @@ filterDefaultChannelsForUser.patch(async (next, rooms, user) => {
 
 	// The attributes come from the LDAP background sync, which only sees users that already existed
 	// when it last ran, so a user created a moment ago carries none until this refreshes them.
-	try {
-		await LDAPEnterprise.syncUsersAbacAttributesByIds([user._id]);
-	} catch (err) {
-		logger.error({ msg: 'Failed to refresh ABAC attributes before joining the default rooms', uid: user._id, err });
+	if (options?.refreshUserAttributes) {
+		try {
+			await LDAPEnterprise.syncUsersAbacAttributesByIds([user._id]);
+		} catch (err) {
+			logger.error({ msg: 'Failed to refresh ABAC attributes before joining the default rooms', uid: user._id, err });
+		}
 	}
 
 	return filterInSlices(unlocked, (room) => isUserAllowedInRoom(user, room, lockContext));
