@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { memo, useLayoutEffect } from 'react';
+import { memo, useLayoutEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const ensureAnchorElement = (id: string): HTMLElement => {
@@ -8,7 +8,6 @@ const ensureAnchorElement = (id: string): HTMLElement => {
 
 	const newAnchor = document.createElement('div');
 	newAnchor.id = id;
-	document.body.appendChild(newAnchor);
 	return newAnchor;
 };
 
@@ -44,15 +43,19 @@ export type ToastBarPortalProps = {
 };
 
 const ToastBarPortal = ({ children }: ToastBarPortalProps) => {
-	const toastBarRoot = ensureAnchorElement('toastBarRoot');
+	const [toastBarRoot, setToastBarRoot] = useState<HTMLElement | null>(null);
 
 	useLayoutEffect(() => {
-		refAnchorElement(toastBarRoot);
+		const anchorElement = ensureAnchorElement('toastBarRoot');
+		refAnchorElement(anchorElement);
+		setToastBarRoot(anchorElement);
 
 		return () => {
-			unrefAnchorElement(toastBarRoot);
+			unrefAnchorElement(anchorElement);
 		};
-	}, [toastBarRoot]);
+	}, []);
+
+	if (!toastBarRoot) return null;
 
 	return createPortal(children, toastBarRoot);
 };
