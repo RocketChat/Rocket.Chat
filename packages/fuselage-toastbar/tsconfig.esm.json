@@ -1,14 +1,9 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist/esm"
-  },
-  "include": ["./src"],
-  "exclude": [
-    "**/*.spec.*",
-    "**/*.stories.tsx",
-    "./jest.config.ts",
-    "./jest-setup.ts"
-  ]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist/esm"
+	},
+	"include": ["./src"],
+	"exclude": ["**/*.spec.*", "**/*.stories.tsx", "./jest.config.ts", "./jest-setup.ts"]
 }
