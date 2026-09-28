@@ -10,6 +10,7 @@ import './apps/uikit';
 import './engagementDashboard';
 import './audit';
 import './abac';
+import './contacts';
 import './exchange';
 import './mcp';
 import './videoConferenceCallConfig';
