@@ -1,0 +1,22 @@
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  s_2e9dcf5930405c::t_d32e95abf34fe2 201
+  s_2e9dcf5930405c::t_660523bc1f42f0 50-51
+  s_2e9dcf5930405c::t_3d13f1c159f1ca 860
+  s_2e9dcf5930405c::t_0ba27d19091d08 70-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "41639c5fb4cee8b1ca9d255bc483898b30f44efd",
+  "prompts": {},
+  "sessions": {
+    "s_2e9dcf5930405c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "482fb15f-fe2f-4704-b3c2-ddff0c8449e0",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
