@@ -25,6 +25,10 @@ const topStartStyle = {
 	left: '0',
 };
 
+afterEach(() => {
+	document.body.removeAttribute('dir');
+});
+
 describe('[fuselage-toastbar rendering]', () => {
 	test('should display ToastBar on the top right of the screen by default', async () => {
 		render(<TopEnd />);
