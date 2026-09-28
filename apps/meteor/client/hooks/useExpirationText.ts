@@ -1,5 +1,5 @@
 import { useLanguage } from '@rocket.chat/ui-contexts';
-import { isSameDay } from 'date-fns';
+import { isSameDay } from 'date-fns/isSameDay';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -9,6 +9,7 @@ export const subscriptionFields = {
 	code: 1,
 	f: 1,
 	u: 1,
+	category: 1,
 	open: 1,
 	alert: 1,
 	roles: 1,

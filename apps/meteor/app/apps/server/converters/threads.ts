@@ -1,4 +1,11 @@
-import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type {
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppThreadsConverter,
+	IAppUsersConverter,
+	IAppsMessage,
+	IAppsUser,
+} from '@rocket.chat/apps';
 import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { isEditedMessage, isFileAttachment } from '@rocket.chat/core-typings';
@@ -21,13 +28,7 @@ interface Orchestrator {
 }
 
 export class AppThreadsConverter implements IAppThreadsConverter {
-	constructor(
-		private readonly orch: {
-			getConverters: () => {
-				get: <O extends keyof Orchestrator>(key: O) => ReturnType<Orchestrator[O]>;
-			};
-		},
-	) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 

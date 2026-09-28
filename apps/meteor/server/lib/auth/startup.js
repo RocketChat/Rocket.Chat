@@ -1,8 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
+import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

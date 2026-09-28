@@ -414,6 +414,58 @@ describe('[Channels]', () => {
 			} = await request.get(api('channels.list')).set(credentials).query({ offset: 1 });
 			expect(channels1).to.not.deep.equal(channels2);
 		});
+
+		it('should accept the `fields` query param', async () => {
+			await request
+				.get(api('channels.list'))
+				.set(credentials)
+				.query({
+					fields: JSON.stringify({ name: 1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channels').that.is.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should accept the `fields` query param alongside the other supported params', async () => {
+			await request
+				.get(api('channels.list'))
+				.set(credentials)
+				.query({
+					_id: testChannel._id,
+					query: JSON.stringify({}),
+					fields: JSON.stringify({ name: 1 }),
+					sort: JSON.stringify({ name: 1 }),
+					count: 1,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channels').that.is.an('array');
+				});
+		});
+
+		it('should reject unknown query params', async () => {
+			await request
+				.get(api('channels.list'))
+				.set(credentials)
+				.query({
+					invalidParam: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'must NOT have additional properties');
+				});
+		});
 	});
 
 	it('/channels.list.joined', async () => {
@@ -429,6 +481,60 @@ describe('[Channels]', () => {
 		expect(res.body).to.have.property('success', true);
 		expect(res.body).to.have.property('count');
 		expect(res.body).to.have.property('total');
+	});
+
+	describe('[/channels.list.joined]', () => {
+		it('should accept the `fields` query param', async () => {
+			const res = await request
+				.get(api('channels.list.joined'))
+				.set(credentials)
+				.query({
+					fields: JSON.stringify({ name: 1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('channels').that.is.an('array');
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+		});
+
+		it('should accept the `fields` query param alongside the other supported params', async () => {
+			const res = await request
+				.get(api('channels.list.joined'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					roomName: channel.name,
+					_id: channel._id,
+					query: JSON.stringify({}),
+					fields: JSON.stringify({ name: 1 }),
+					sort: JSON.stringify({ name: 1 }),
+					count: 1,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('channels').that.is.an('array');
+		});
+
+		it('should reject unknown query params', async () => {
+			await request
+				.get(api('channels.list.joined'))
+				.set(credentials)
+				.query({
+					invalidParam: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'must NOT have additional properties');
+				});
+		});
 	});
 
 	describe('/channels.counters', () => {
@@ -784,6 +890,39 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
 				});
+		});
+
+		describe('E2E forced encryption for private rooms', () => {
+			let createdRoomId: IRoom['_id'] | undefined;
+
+			before(async () => {
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('E2E_Enable', false),
+					updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
+					...(createdRoomId ? [deleteRoom({ type: 'c', roomId: createdRoomId })] : []),
+				]);
+			});
+
+			it('should not force encryption on public channels when private room encryption is forced', async () => {
+				await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `forced-e2e-public-${Date.now()}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						createdRoomId = res.body.channel?._id;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('channel.t', 'c');
+						expect(res.body).to.not.have.nested.property('channel.encrypted', true);
+					});
+			});
 		});
 	});
 

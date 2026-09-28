@@ -33,6 +33,7 @@ import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useOAuthLogin } from './hooks/useOAuthLogin';
+import { useOAuthPopupCommands } from './hooks/useOAuthPopupCommands';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
@@ -76,6 +77,7 @@ const AppLayout = () => {
 	useLoginViaQuery();
 	useLoginOtherClients();
 	useOAuthLogin();
+	useOAuthPopupCommands();
 	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
 	useDesktopFavicon();

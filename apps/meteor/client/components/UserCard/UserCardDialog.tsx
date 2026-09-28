@@ -19,7 +19,7 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			elevation='2'
 			padding={24}
 			display='flex'
-			borderRadius='x4'
+			borderRadius='medium'
 			width='439px'
 			{...props}
 			{...dialogProps}

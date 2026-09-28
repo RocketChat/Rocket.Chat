@@ -12,13 +12,10 @@ export async function getResourceLanguages() {
 }
 
 export const getLanguagePlurals = (language: string): string[] => {
-	// @ts-expect-error - faulty module resolution from ESM package
 	if (!i18next.isInitialized) {
-		i18next.init({ initImmediate: false });
+		i18next.init({ initAsync: false });
 	}
 
-	// @ts-expect-error - faulty module resolution from ESM package
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 	return i18next.services.pluralResolver.getSuffixes(language).map((suffix: string) => suffix.slice(1));
 };
 

@@ -14,8 +14,10 @@ const AICenterOverview = (): ReactElement => {
 	const router = useRouter();
 	const { data: hasAILicense, isPending } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
+	const mcpEnabled = useSetting('MCP_Enabled', false);
 	const searchSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'search' } });
 	const llmSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'llm-providers' } });
+	const mcpSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'mcp' } });
 	const subscriptionHref = router.buildRoutePath({ name: 'subscription' });
 
 	if (isPending) {
@@ -24,12 +26,15 @@ const AICenterOverview = (): ReactElement => {
 
 	let aiSearchStatus: ReactNode;
 	let llmProviderStatus: ReactNode;
+	let mcpStatus: ReactNode;
 	if (hasAILicense === false) {
 		aiSearchStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 		llmProviderStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
+		mcpStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 	} else if (hasAILicense) {
 		aiSearchStatus = intelligentSearchEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 		llmProviderStatus = <Tag>{t('Available')}</Tag>;
+		mcpStatus = mcpEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 	}
 
 	return (
@@ -64,6 +69,14 @@ const AICenterOverview = (): ReactElement => {
 							status={llmProviderStatus}
 							actionLabel={t('Manage')}
 							href={llmSettingsHref}
+						/>
+						<AICenterCapabilityCard
+							icon='link'
+							title={t('MCP')}
+							description={t('AI_Center_MCP_card_description')}
+							status={mcpStatus}
+							actionLabel={t('Configure')}
+							href={mcpSettingsHref}
 						/>
 					</CardGrid>
 				</Box>

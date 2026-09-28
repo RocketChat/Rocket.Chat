@@ -44,7 +44,7 @@ const MultiSelectCustomList = ({
 			elevation='2'
 			width='full'
 			backgroundColor='light'
-			borderRadius={2}
+			borderRadius='small'
 			maxHeight='50vh'
 		>
 			{searchBarText && (

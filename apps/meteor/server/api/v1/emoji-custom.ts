@@ -2,7 +2,7 @@ import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { ajv, isEmojiCustomList, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 

@@ -3,9 +3,9 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect } from 'react';
 
 import { useApps } from './useApps';
-import type { ISettings } from '../../../apps/@types/IOrchestrator';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import type { AppInfo } from '../definitions/AppInfo';
+import type { ISettings } from '../definitions/ISettings';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	const { bundledIn = [] } = app;
@@ -64,8 +64,8 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 							appVersion: appId,
 						})
 							.then(({ app }: any) => {
-								(appResult as App).tosLink = app.tosLink;
-								(appResult as App).privacyLink = app.privacyLink;
+								appResult.tosLink = app.tosLink;
+								appResult.privacyLink = app.privacyLink;
 								return getBundledInApp(app);
 							})
 							.catch(() => ({

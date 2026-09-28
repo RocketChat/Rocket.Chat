@@ -1,6 +1,7 @@
 import type {
 	CallPreferences,
 	DirectCallData,
+	IRole,
 	IRoom,
 	ISetting,
 	IUser,
@@ -94,6 +95,9 @@ export type StreamControllerRef<N extends StreamNames> = {
 
 const empty = [] as const;
 
+const mockedVideoConfCapabilities: ProviderCapabilities = { mic: true, cam: true };
+const mockedVideoConfPreferences: CallPreferences = { mic: true, cam: true };
+
 export class MockedAppRootBuilder {
 	private _settings: Map<string, ISetting> = new Map();
 
@@ -176,7 +180,12 @@ export class MockedAppRootBuilder {
 	};
 
 	private videoConf: ContextType<typeof VideoConfContext> = {
-		queryIncomingCalls: () => [() => () => undefined, () => []],
+		// Overwritten in `build`, from whatever `withSetting` was told, so a spec turns the call window on the
+		// same way it turns on any other setting.
+		conferenceWindowEnabled: false,
+		// `empty` rather than a fresh array: `useSyncExternalStore` compares snapshots by identity, and a new one
+		// every read is an endless re-render.
+		queryIncomingCalls: () => [() => () => undefined, () => empty as unknown as DirectCallData[]],
 		queryRinging: () => [() => () => undefined, () => false],
 		queryCalling: () => [() => () => undefined, () => false],
 		dispatchOutgoing(_options: Omit<VideoConfPopupPayload, 'id'>): void {
@@ -209,12 +218,19 @@ export class MockedAppRootBuilder {
 		loadCapabilities(): Promise<void> {
 			throw new Error('Function not implemented.');
 		},
-		queryCapabilities(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] {
-			throw new Error('Function not implemented.');
-		},
-		queryPreferences(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] {
-			throw new Error('Function not implemented.');
-		},
+		// The actions above throw so that a test triggering one has to say what it expects to happen. These two
+		// are reads, and every video-conf popup does them just by rendering — throwing would fail such a test on
+		// the render rather than on anything it means to assert.
+		// Both snapshots are module constants, not fresh objects: `useSyncExternalStore` compares them by identity
+		// and a new object every read is an endless re-render.
+		queryCapabilities: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] => [
+			() => () => undefined,
+			() => mockedVideoConfCapabilities,
+		],
+		queryPreferences: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] => [
+			() => () => undefined,
+			() => mockedVideoConfPreferences,
+		],
 	};
 
 	private room: IRoom | undefined = undefined;
@@ -236,18 +252,18 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = (() => {
-		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+	// Mutated by `withRoleDefinition` before render, then held stable, so the identity is
+	// a safe `useSyncExternalStore` snapshot.
+	private rolesMap = new Map<IRole['_id'], IRole>();
 
-		return {
-			queryPermission: () => [() => () => undefined, () => false],
-			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-			queryAllPermissions: () => [() => () => undefined, () => false],
-			queryRole: () => [() => () => undefined, () => false],
-			getRoles: () => dummyRolesMap,
-			subscribeToRoles: () => () => undefined,
-		};
-	})();
+	private authorization: ContextType<typeof AuthorizationContext> = {
+		queryPermission: () => [() => () => undefined, () => false],
+		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+		queryAllPermissions: () => [() => () => undefined, () => false],
+		queryRole: () => [() => () => undefined, () => false],
+		getRoles: () => this.rolesMap,
+		subscribeToRoles: () => () => undefined,
+	};
 
 	private authServices: LoginService[] = [];
 
@@ -532,6 +548,48 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	/**
+	 * Grants a role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — in a single room. Unlike {@link withRole}, the grant is not workspace-wide: a
+	 * check only passes when it carries that room as its scope, which is how the real
+	 * provider resolves a subscription role. The role is deliberately kept out of the user's
+	 * `roles`, where only a `Users`-scoped grant belongs.
+	 */
+	withRoleScoped(role: string, scope: IRoom['_id']): this {
+		const innerFn = this.authorization.queryRole;
+
+		const outerFn = (
+			innerRole: string | ObjectId,
+			innerScope?: string | undefined,
+		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
+			if (innerRole === role && innerScope === scope) {
+				return [() => () => undefined, () => true];
+			}
+
+			return innerFn(innerRole, innerScope);
+		};
+
+		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
+	/**
+	 * Registers a role in the workspace roles map without granting it. A custom role
+	 * has an id that differs from its name, so pass both to exercise code that
+	 * resolves a name to an id. Chain `withRole(_id)` to grant it to the user.
+	 */
+	withRoleDefinition(role: Pick<IRole, '_id' | 'name'> & Partial<IRole>): this {
+		this.rolesMap.set(role._id, {
+			description: '',
+			protected: false,
+			scope: 'Users',
+			...role,
+		} as IRole);
+
+		return this;
+	}
+
 	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
 			...settingStructure,
@@ -658,7 +716,7 @@ export class MockedAppRootBuilder {
 		interpolation: {
 			escapeValue: false,
 		},
-		initImmediate: false,
+		initAsync: false,
 	}).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
@@ -719,6 +777,13 @@ export class MockedAppRootBuilder {
 			authentication,
 			toastMessages,
 		} = this;
+
+		// The call window is gated on a setting, but every site that changes with it reads the answer off this
+		// context — so a spec that says `withSetting` gets the behaviour it asked for without also knowing that.
+		if (videoConf) {
+			const [, getConferenceWindowSetting] = settings.querySetting('VideoConf_Conference_Window_Enabled');
+			videoConf.conferenceWindowEnabled = Boolean(getConferenceWindowSetting()?.value);
+		}
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {

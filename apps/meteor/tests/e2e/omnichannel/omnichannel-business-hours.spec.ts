@@ -45,7 +45,7 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test('OC - Manage Business Hours - Create Business Hours', async () => {
-		await poOmnichannelBusinessHours.goTo();
+		await poOmnichannelBusinessHours.goto();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
@@ -85,7 +85,7 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await poOmnichannelBusinessHours.goTo();
+		await poOmnichannelBusinessHours.goto();
 
 		await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
@@ -132,7 +132,7 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await poOmnichannelBusinessHours.goTo();
+		await poOmnichannelBusinessHours.goto();
 
 		await test.step('expect to disable business hours', async () => {
 			await poOmnichannelBusinessHours.search(BHName);

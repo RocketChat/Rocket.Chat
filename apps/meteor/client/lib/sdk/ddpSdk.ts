@@ -1,10 +1,9 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { onEmailVerificationLink, onPageLoadLogin, setConnectionUserId } from '../../meteor/accounts';
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';
 import { userIdStore } from '../user';
@@ -171,7 +170,7 @@ export const clearStoredCredentials = (): void => {
 	removeStoredItem(STORAGE_KEYS.USER_ID);
 	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
-	Meteor.connection.setUserId(null);
+	setConnectionUserId(null);
 };
 
 export const isAuthError = (error: unknown): boolean => {
@@ -323,10 +322,10 @@ if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
 	// resolution (page load login). Register one bridge per event; AccountImpl's
 	// emitter fans out to whatever consumers attached via onEmailVerificationLink
 	// / onPageLoadLogin.
-	Accounts.onEmailVerificationLink((token: string) => {
+	onEmailVerificationLink((token: string) => {
 		sdk.account.emit('emailVerificationLink', token);
 	});
-	Accounts.onPageLoadLogin((loginAttempt: unknown) => {
+	onPageLoadLogin((loginAttempt: unknown) => {
 		sdk.account.emit('pageLoadLogin', loginAttempt);
 	});
 }

@@ -35,6 +35,7 @@ import {
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import DOMPurify from 'dompurify';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -43,7 +44,6 @@ import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
@@ -475,7 +475,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														control={control}
 														name='hideSysMes'
 														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+															<ToggleSwitch
+																id={hideSysMesField}
+																{...field}
+																checked={value}
+																disabled={isFederated}
+																aria-describedby={`${hideSysMesField}-hint`}
+															/>
 														)}
 													/>
 												</FieldRow>
@@ -490,9 +496,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
 																aria-label={t('Select_messages_to_hide')}
+																aria-describedby={`${hideSysMesField}-hint`}
 															/>
 														)}
 													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${hideSysMesField}-hint`}>{t('Hide_System_Messages_Hint')}</FieldHint>
 												</FieldRow>
 											</Field>
 										)}
@@ -529,7 +539,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
+													<span
+														dangerouslySetInnerHTML={{
+															__html: DOMPurify.sanitize(
+																t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy }),
+															),
+														}}
+													/>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>

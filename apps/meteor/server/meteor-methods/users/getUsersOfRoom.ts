@@ -1,5 +1,4 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -8,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,9 +53,12 @@ Meteor.methods<ServerMethods>({
 		// TODO this is currently counting deactivated users
 		const total = await Subscriptions.countByRoomIdWhenUsernameExists(rid);
 
-		const { cursor } = findUsersOfRoom({
+		const hidden = await getUsersHiddenFrom(userId);
+
+		const { cursor } = await findUsersOfRoom({
 			rid,
-			status: !showAll ? { $ne: UserStatus.OFFLINE } : undefined,
+			...(!showAll && { status: 'not-offline' as const }),
+			hidden,
 			limit,
 			skip,
 			filter,
@@ -63,7 +66,7 @@ Meteor.methods<ServerMethods>({
 
 		return {
 			total,
-			records: await cursor.toArray(),
+			records: redactHiddenUsers(await cursor.toArray(), hidden),
 		};
 	},
 });

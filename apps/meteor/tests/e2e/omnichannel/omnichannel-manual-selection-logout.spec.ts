@@ -29,7 +29,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 	// Create page object and redirect to home
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await page.goto('/home');
+		await poOmnichannel.goto();
 
 		await poOmnichannel.navbar.logout();
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').waitFor({ state: 'visible' });

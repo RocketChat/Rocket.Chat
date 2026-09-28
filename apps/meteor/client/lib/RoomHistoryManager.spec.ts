@@ -1,5 +1,5 @@
+import { RoomHistoryManager } from './RoomHistoryManager';
 import { callWithErrorHandling } from './utils/callWithErrorHandling';
-import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 jest.mock('./onClientMessageReceived', () => ({
 	onClientMessageReceived: jest.fn((message) => message),

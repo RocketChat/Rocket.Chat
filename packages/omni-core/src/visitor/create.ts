@@ -55,7 +55,7 @@ export const registerGuest = makeFunction(
 			}
 		}
 
-		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1, department: 1, token: 1 } });
 
 		if (department && livechatVisitor?.department !== department) {
 			logger.debug({ msg: 'Attempt to find a department with id/name', department });

@@ -7,13 +7,17 @@ const defaultHeaders = {
 	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 };
 
+const getAllowedHeaders = (settings: CachedSettings): string =>
+	`${defaultHeaders['Access-Control-Allow-Headers']}${settings.get('MCP_Enabled') ? ', MCP-Protocol-Version' : ''}`;
+
 export const cors =
 	(settings: CachedSettings): MiddlewareHandler =>
 	async (c, next) => {
 		const { req, res } = c;
+		const allowedHeaders = getAllowedHeaders(settings);
 		if (req.method !== 'OPTIONS') {
 			res.headers.set('Access-Control-Allow-Origin', '*');
-			res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
+			res.headers.set('Access-Control-Allow-Headers', allowedHeaders);
 
 			await next();
 			return;
@@ -34,7 +38,7 @@ export const cors =
 		if (CORSOriginSetting === '*') {
 			res.headers.set('Access-Control-Allow-Origin', '*');
 			res.headers.set('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
-			res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
+			res.headers.set('Access-Control-Allow-Headers', allowedHeaders);
 			await next();
 			return;
 		}
@@ -53,6 +57,6 @@ export const cors =
 		res.headers.set('Vary', 'Origin');
 		res.headers.set('Access-Control-Allow-Origin', originHeader);
 		res.headers.set('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
-		res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
+		res.headers.set('Access-Control-Allow-Headers', allowedHeaders);
 		await next();
 	};

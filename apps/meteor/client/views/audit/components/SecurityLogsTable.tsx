@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

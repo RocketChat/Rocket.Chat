@@ -1,7 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getMe } from '../../data/users.helper';
+import { URL_MONGODB } from '../../e2e/config/constants';
 
 describe('banners', () => {
 	before((done) => getCredentials(done));
@@ -48,6 +52,99 @@ describe('banners', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
+		});
+
+		describe('banners stored in the user record', () => {
+			let connection: MongoClient;
+
+			const bannerId = 'alert-user-banner-test';
+
+			const getUserBanners = async () => (await getMe<IUser>(credentials)).banners;
+
+			before(async () => {
+				connection = await MongoClient.connect(URL_MONGODB);
+
+				await connection
+					.db()
+					.collection<IUser>('users')
+					.updateOne(
+						{ _id: 'rocketchat.internal.admin.test' },
+						{
+							$set: {
+								[`banners.${bannerId}`]: {
+									id: bannerId,
+									priority: 10,
+									title: 'Banner_Title',
+									text: 'Banner_Text',
+									textArguments: [],
+									modifiers: [],
+									link: 'https://rocket.chat',
+								},
+							},
+						},
+					);
+			});
+
+			after(async () => {
+				await connection
+					.db()
+					.collection<IUser>('users')
+					.updateOne(
+						{ _id: 'rocketchat.internal.admin.test' },
+						{
+							$unset: { [`banners.${bannerId}`]: 1 },
+						},
+					);
+				await connection.close();
+			});
+
+			it('should mark the banner as read on the user record', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(credentials)
+					.send({
+						bannerId,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+
+				const banners = await getUserBanners();
+
+				expect(banners).to.have.nested.property(`${bannerId}.read`, true);
+			});
+
+			it('should succeed if the banner was already dismissed', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(credentials)
+					.send({
+						bannerId,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+
+				const banners = await getUserBanners();
+
+				expect(banners).to.have.nested.property(`${bannerId}.read`, true);
+			});
+
+			it('should not add an unknown banner to the user record', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(credentials)
+					.send({
+						bannerId: 'an-unknown-banner-id',
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+
+				const banners = await getUserBanners();
+
+				expect(banners).to.not.have.property('an-unknown-banner-id');
+			});
 		});
 	});
 

@@ -24,7 +24,7 @@ export class ConfirmMuteModal extends Modal {
 
 export class RemoveTeamMemberModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Removing Member' }));
+		super(page.getByRole('dialog', { name: 'Removing member' }));
 	}
 
 	get description() {
@@ -126,7 +126,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	private get btnInviteLink() {
-		return this.root.getByRole('button', { name: 'Invite Link' });
+		return this.root.getByRole('button', { name: 'Invite link' });
 	}
 
 	async inviteUser() {

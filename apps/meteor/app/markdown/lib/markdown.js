@@ -2,7 +2,7 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { filtered } from './parser/filtered/filtered';
@@ -68,17 +68,9 @@ class MarkdownClass {
 	code(...args) {
 		return code(...args);
 	}
-
-	/** @param {string} message */
-	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message);
-	}
 }
 
 export const Markdown = new MarkdownClass();
-
-/** @param {string} message */
-export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
 export const createMarkdownMessageRenderer = ({ ...options }) => {
 	const markedParser = parsers.marked;

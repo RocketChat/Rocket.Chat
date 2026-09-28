@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../lib/logger/system';
@@ -44,3 +45,15 @@ Meteor.methods<ServerMethods>({
 		return sendForgotPasswordEmail(to);
 	},
 });
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'sendForgotPasswordEmail',
+		clientAddress() {
+			return true;
+		},
+	},
+	10,
+	60000,
+);

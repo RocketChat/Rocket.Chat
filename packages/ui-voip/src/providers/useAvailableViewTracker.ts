@@ -5,45 +5,40 @@ import type { AvailableViews } from '../context/MediaCallInstanceContext';
 const filter = (view: AvailableViews, _index: number, array: AvailableViews[]) => {
 	switch (view) {
 		case 'widget':
-			return !array.includes('room');
+			return !array.includes('room') && !array.includes('inline-widget');
 		case 'popout':
 		case 'room':
+		case 'inline-widget':
 		default:
 			return true;
 	}
 };
 
+const withFilteredViews = (currentViews: Set<AvailableViews>) => ({
+	currentViews,
+	filteredViews: new Set(Array.from(currentViews).filter(filter)),
+});
+
 const useAvailableViewTracker = () => {
-	// keep in mind views.currentViews is a stable set, so please if you are going to use it in a useEffect, make sure to create a new set from it, otherwise you will not be able to track changes in the set.
 	const [views, setViews] = useState<{
 		currentViews: Set<AvailableViews>;
 		filteredViews: Set<AvailableViews>;
-	}>({
-		currentViews: new Set<AvailableViews>(),
-		filteredViews: new Set<AvailableViews>(),
-	});
+	}>(() => withFilteredViews(new Set<AvailableViews>()));
 
 	const registerView = useCallback((view: AvailableViews) => {
-		setViews((prev) => {
-			if (prev.currentViews.has(view)) return prev;
-
-			prev.currentViews.add(view);
-			return {
-				currentViews: prev.currentViews,
-				filteredViews: new Set(Array.from(prev.currentViews).filter(filter)),
-			};
-		});
+		// the updater must not touch prev: StrictMode calls it twice, and a mutated set would make the second call bail out
+		setViews((prev) => (prev.currentViews.has(view) ? prev : withFilteredViews(new Set(prev.currentViews).add(view))));
 	}, []);
 
 	const unregisterView = useCallback((view: AvailableViews) => {
 		setViews((prev) => {
-			if (!prev.currentViews.has(view)) return prev;
+			if (!prev.currentViews.has(view)) {
+				return prev;
+			}
 
-			prev.currentViews.delete(view);
-			return {
-				currentViews: prev.currentViews,
-				filteredViews: new Set(Array.from(prev.currentViews).filter(filter)),
-			};
+			const currentViews = new Set(prev.currentViews);
+			currentViews.delete(view);
+			return withFilteredViews(currentViews);
 		});
 	}, []);
 

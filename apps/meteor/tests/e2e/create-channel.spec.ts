@@ -12,7 +12,7 @@ test.describe.serial('create-channel', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test('expect create a public channel', async ({ page }) => {

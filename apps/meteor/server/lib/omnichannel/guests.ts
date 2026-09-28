@@ -123,7 +123,7 @@ async function cleanGuestHistory(_id: string) {
 
 	await LivechatRooms.removeByVisitorId(_id);
 
-	const livechatInquiries = await LivechatInquiry.findIdsByVisitorId(_id).toArray();
+	const livechatInquiries = await LivechatInquiry.findByVisitorIds([_id]).toArray();
 	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
 	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }

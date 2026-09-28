@@ -3,12 +3,12 @@
  * @remarks
  */
 enum LogLevel {
-	'fatal',
-	'error',
-	'warn',
-	'info',
-	'debug',
-	'verbose',
+	fatal,
+	error,
+	warn,
+	info,
+	debug,
+	verbose,
 }
 
 export class ClientLogger {

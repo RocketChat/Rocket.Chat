@@ -1,6 +1,6 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
+import colorTokens from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import type { ComponentProps, MouseEventHandler } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,8 +23,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			alignItems='center'
 			backgroundColor={selectedCategoriesCount ? colorTokens.b500 : 'light'}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
-			borderRadius='x4'
-			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
+			borderRadius='medium'
+			borderWidth={selectedCategoriesCount ? 'none' : 'default'}
 			display='flex'
 			flexGrow={1}
 			flexShrink={1}
@@ -42,7 +42,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					is='span'
 					alignItems='center'
 					backgroundColor='light'
-					borderRadius='x32'
+					borderRadius='full'
 					color='info'
 					display='flex'
 					fontSize='micro'

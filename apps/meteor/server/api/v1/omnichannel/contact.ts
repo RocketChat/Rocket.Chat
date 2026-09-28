@@ -14,8 +14,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { removeEmpty } from '@rocket.chat/tools';
+import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -61,7 +60,7 @@ API.v1.addRoute(
 				contactId: String,
 			});
 
-			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId);
+			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId, { projection: { token: 0 } });
 
 			return API.v1.success({ contact });
 		},
@@ -108,7 +107,7 @@ API.v1.addRoute(
 				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
 			})();
 
-			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF, { projection: { token: 0 } });
 			return API.v1.success({ contact });
 		},
 	},

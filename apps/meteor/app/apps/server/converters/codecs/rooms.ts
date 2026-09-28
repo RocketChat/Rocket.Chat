@@ -147,7 +147,7 @@ async function getVisitor({ visitor: roomVisitor, visitorChannelInfo }: any) {
 		username: visitor.username,
 		token: visitor.token,
 		status: visitor.status || 'online',
-		activity: visitor.activity,
+		...(visitor.activity?.length && { activity: visitor.activity }),
 		...(lastMessageTs && { lastMessageTs }),
 		...(phone && { phone }),
 	};

@@ -1,6 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { settings } from '../../settings';

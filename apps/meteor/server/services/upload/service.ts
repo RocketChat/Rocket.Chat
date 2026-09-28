@@ -57,7 +57,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
+	async canDeleteFile(
+		user: Pick<IUser, '_id' | 'username'>,
+		file: Pick<IUpload, '_id' | 'userId' | 'rid' | 'expiresAt' | 'uploadedAt'>,
+		msg: IMessage | null,
+	): Promise<boolean> {
 		if (msg) {
 			return canDeleteMessageAsync(user, msg);
 		}
@@ -181,8 +185,12 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		const writeStream = fs.createWriteStream(tempFilePath);
 		streamParam.pipe(writeStream);
 
-		const cleanup = (err: unknown) => {
-			fs.promises.unlink(tempFilePath).catch(() => undefined);
+		const writeStreamClosed = () =>
+			writeStream.closed ? Promise.resolve() : new Promise<void>((resolve) => writeStream.once('close', () => resolve()));
+
+		const cleanup = async (err: unknown) => {
+			await writeStreamClosed();
+			await fs.promises.unlink(tempFilePath).catch(() => undefined);
 			resolver.reject(err);
 		};
 
@@ -199,12 +207,12 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 				.catch(cleanup);
 		});
 
-		streamParam.on('error', async (err) => {
+		streamParam.on('error', (err) => {
 			writeStream.destroy();
-			cleanup(err);
+			void cleanup(err);
 		});
 
-		writeStream.on('error', cleanup);
+		writeStream.on('error', (err) => void cleanup(err));
 
 		return resolver.promise;
 	}

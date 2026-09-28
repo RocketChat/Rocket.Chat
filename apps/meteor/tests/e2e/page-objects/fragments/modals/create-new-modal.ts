@@ -32,7 +32,7 @@ export abstract class CreateNewModal extends Modal {
 	}
 
 	get btnCreate(): Locator {
-		return this.root.getByRole('button', { name: 'Create' });
+		return this.root.getByRole('button', { name: 'Create', exact: true });
 	}
 
 	get inputAddMembers(): Locator {
@@ -110,5 +110,20 @@ export class CreateNewDiscussionModal extends CreateNewModal {
 
 	get inputMessage(): Locator {
 		return this.root.getByRole('textbox', { name: 'Message', exact: true });
+	}
+}
+
+export class CreateNewCategoryModal extends CreateNewModal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Create category', exact: true }), page);
+	}
+
+	private get btnCreateAndMove() {
+		return this.root.getByRole('button', { name: 'Create and move', exact: true });
+	}
+
+	override async create(hasRoom = false) {
+		await (hasRoom ? this.btnCreateAndMove.click() : this.btnCreate.click());
+		await this.waitForDismissal();
 	}
 }

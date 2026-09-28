@@ -41,8 +41,8 @@ slashCommands.add({
 		if (room != null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_already_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channelStr],
+					interpolation: { escapeValue: false },
+					channelName: channelStr,
 					lng: settings.get('Language') || 'en',
 				}),
 			});

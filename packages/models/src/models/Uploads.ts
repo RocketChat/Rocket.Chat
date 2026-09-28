@@ -1,6 +1,6 @@
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
-import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
+import type { FindPaginated, IUploadsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -64,7 +64,10 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		);
 	}
 
-	findAllByOriginalFileId(originalFileId: string, options: FindOptions<IUpload> = {}): FindCursor<IUpload> {
-		return this.find({ originalFileId }, options);
+	findAllByOriginalFileId<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		originalFileId: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ originalFileId }, options);
 	}
 }

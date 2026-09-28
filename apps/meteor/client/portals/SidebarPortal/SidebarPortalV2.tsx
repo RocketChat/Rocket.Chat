@@ -28,7 +28,7 @@ const SidebarPortal = ({ children }: SidebarPortalProps) => {
 		<>
 			{createPortal(
 				<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
-					<Box className='rcx-sidebar flex-nav'>{children}</Box>
+					<Box className='flex-nav'>{children}</Box>
 				</AnimatedVisibility>,
 				sidebarRoot,
 			)}

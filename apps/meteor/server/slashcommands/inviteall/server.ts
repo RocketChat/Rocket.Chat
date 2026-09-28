@@ -49,8 +49,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		if (!baseChannel) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
+					interpolation: { escapeValue: false },
+					channelName: channel,
 					lng,
 				}),
 			});
@@ -84,8 +84,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
-						postProcess: 'sprintf',
-						sprintf: [channel],
+						interpolation: { escapeValue: false },
+						channelName: channel,
 						lng,
 					}),
 				});

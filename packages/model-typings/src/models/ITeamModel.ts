@@ -1,7 +1,8 @@
 import type { ITeam, TeamType } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Filter, Document } from 'mongodb';
+import type { FindCursor, UpdateResult, DeleteResult, Filter, Document, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ITeamModel extends IBaseModel<ITeam> {
 	findByNames(names: Array<string>): FindCursor<ITeam>;
@@ -12,26 +13,20 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	findByNames<P extends Document>(
 		names: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
-	findByIds(ids: Array<string>, query?: Filter<ITeam>): FindCursor<ITeam>;
-
-	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
-
-	findByIds<P extends Document>(
+	findByIds<P extends Document = ITeam, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		ids: Array<string>,
-		options: FindOptions<P extends ITeam ? ITeam : P>,
+		options?: O,
 		query?: Filter<ITeam>,
-	): FindCursor<P>;
+	): FindCursor<DocumentWithProjection<P, O>>;
 
-	findByIds<P extends Document>(
+	findByIdsPaginated<T extends Document = ITeam, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: O,
 		query?: Filter<ITeam>,
-	): FindCursor<P> | FindCursor<ITeam>;
-
-	findByIdsPaginated(ids: Array<string>, options?: undefined | FindOptions<ITeam>, query?: Filter<ITeam>): FindPaginated<FindCursor<ITeam>>;
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;
 
@@ -46,7 +41,7 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
 		type: TeamType,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
 	findByType(type: number): FindCursor<ITeam>;
@@ -57,7 +52,7 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	findByType<P extends Document>(
 		type: number,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<ITeam> | FindCursor<P>;
 
 	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): FindCursor<ITeam>;
@@ -73,7 +68,7 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
 		teamIds: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
 	findOneByName(name: string | RegExp): Promise<ITeam | null>;
@@ -84,7 +79,7 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	findOneByName<P extends Document>(
 		name: string | RegExp,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null>;
 
 	findOneByMainRoomId(roomId: string): Promise<ITeam | null>;
@@ -95,7 +90,7 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	findOneByMainRoomId<P extends Document>(
 		roomId: string,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null>;
 
 	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateResult>;

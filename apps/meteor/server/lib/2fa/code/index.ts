@@ -6,7 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
-import type { ICodeCheck } from './ICodeCheck';
+import type { ICodeCheck, TwoFactorUser } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
 import { settings } from '../../../settings';
@@ -27,7 +27,7 @@ const checkMethods = new Map<string, ICodeCheck>();
 checkMethods.set(totpCheck.name, totpCheck);
 checkMethods.set(emailCheck.name, emailCheck);
 
-function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
+function getMethodByNameOrFirstActiveForUser(user: TwoFactorUser, name?: string): ICodeCheck | undefined {
 	if (name && checkMethods.has(name)) {
 		return checkMethods.get(name);
 	}
@@ -35,7 +35,7 @@ function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeC
 	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
-function getAvailableMethodNames(user: IUser): string[] {
+function getAvailableMethodNames(user: TwoFactorUser): string[] {
 	return (
 		Array.from(checkMethods)
 			.filter(([, method]) => method.isEnabled(user))
@@ -43,9 +43,10 @@ function getAvailableMethodNames(user: IUser): string[] {
 	);
 }
 
-export async function getUserForCheck(userId: string): Promise<IUser | null> {
+export async function getUserForCheck(userId: string): Promise<TwoFactorUser | null> {
 	return Users.findOneById(userId, {
 		projection: {
+			username: 1,
 			emails: 1,
 			language: 1,
 			createdAt: 1,
@@ -76,7 +77,7 @@ export function getRememberDate(from: Date = new Date()): Date | undefined {
 	return expires;
 }
 
-function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
+function isAuthorizedForToken(connection: IMethodConnection, user: TwoFactorUser, options: ITwoFactorOptions): boolean {
 	// Resolve the current login token from both transports:
 	// - DDP: the login flow registers it in `Accounts._accountData`, read via `_getLoginToken`.
 	// - REST: it is not registered in account data, so it is carried on `connection.token`.
@@ -140,7 +141,7 @@ export async function rememberAuthorizationByToken(token: string, userId: IUser[
 	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, token, getFingerprintFromConnection(connection), expires);
 }
 
-async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
+async function rememberAuthorization(connection: IMethodConnection, user: TwoFactorUser): Promise<void> {
 	// Same dual-transport resolution as `isAuthorizedForToken`: DDP reads from `Accounts._accountData`
 	// via `_getLoginToken`, REST falls back to the token carried on `connection.token`.
 	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
@@ -163,14 +164,18 @@ async function rememberAuthorization(connection: IMethodConnection, user: IUser)
 }
 
 interface ICheckCodeForUser {
-	user: IUser | string;
+	user: TwoFactorUser | string;
 	code?: string;
 	method?: string;
 	options?: ITwoFactorOptions;
 	connection?: IMethodConnection;
 }
 
-export const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+export const getSecondFactorMethod = (
+	user: TwoFactorUser,
+	method: string | undefined,
+	options: ITwoFactorOptions,
+): ICodeCheck | undefined => {
 	// try first getting one of the available methods or the one that was already provided
 	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 	if (selectedMethod) {
@@ -197,7 +202,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		return true;
 	}
 
-	let existingUser: IUser | null;
+	let existingUser: TwoFactorUser | null;
 	if (typeof user === 'string') {
 		existingUser = await getUserForCheck(user);
 	} else {

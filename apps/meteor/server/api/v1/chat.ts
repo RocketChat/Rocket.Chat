@@ -11,6 +11,7 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
+	isChatGetMessagesProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -25,13 +26,15 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -260,6 +263,7 @@ const chatEndpoints = API.v1
 		'chat.readThread',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			body: isChatReadThreadProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -457,6 +461,7 @@ const chatEndpoints = API.v1
 		'chat.followMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 5000 },
 			body: isChatFollowMessageLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -490,6 +495,7 @@ const chatEndpoints = API.v1
 		'chat.unfollowMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 5000 },
 			body: isChatUnfollowMessageLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -709,7 +715,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+			const { roomId, lastUpdate, fromTs, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
 				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
@@ -725,6 +731,7 @@ const chatEndpoints = API.v1
 
 			const getMessagesQuery = {
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(fromTs && { fromTs: new Date(fromTs) }),
 				...(next && { next }),
 				...(previous && { previous }),
 				...(count && { count }),
@@ -894,6 +901,7 @@ const chatEndpoints = API.v1
 		'chat.sendMessage',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 1000, bypassPermissions: ['send-many-messages'] },
 			body: isChatSendMessageProps,
 			response: {
 				200: ajv.compile<{ message: IMessage }>({
@@ -1056,6 +1064,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadsListProps,
 			response: {
 				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
@@ -1184,6 +1193,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadMessages',
 		{
 			authRequired: true,
+			rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 10000 },
 			query: isChatGetThreadMessagesProps,
 			response: {
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
@@ -1233,13 +1243,13 @@ const chatEndpoints = API.v1
 					if (target?.tmid !== tmid || !target.ts) {
 						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ ...query, tmid, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid },
+				{ ...query, tmid, _hidden: { $ne: true } },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,
@@ -1468,6 +1478,45 @@ const chatEndpoints = API.v1
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });
+		},
+	)
+	.post(
+		'chat.getMessages',
+		{
+			authRequired: true,
+			body: isChatGetMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[] }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
+			const { messageIds } = this.bodyParams;
+
+			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+			if (!messages.length) {
+				return API.v1.notFound();
+			}
+
+			const rids = [...new Set(messages.map(({ rid }) => rid))];
+
+			// The batch spans rooms, so one unreadable room rejects the whole request.
+			if (!(await canAccessRoomIdsAsync(rids, this.user))) {
+				return API.v1.forbidden();
+			}
+
+			return API.v1.success({ messages: await normalizeMessagesForUser(messages, this.userId) });
 		},
 	);
 

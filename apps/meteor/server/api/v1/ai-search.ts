@@ -13,7 +13,7 @@ import {
 import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -132,6 +132,13 @@ const parseCommaList = (value: string | undefined): string[] => {
 };
 
 const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
+const parseSearchType = (value: string | undefined): 'semantic' | 'keyword' | 'hybrid' | undefined => {
+	if (value === 'semantic' || value === 'keyword' || value === 'hybrid') {
+		return value;
+	}
+
+	return undefined;
+};
 
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
@@ -254,6 +261,7 @@ API.v1.get(
 		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
 		const startDate = parseQueryDate(this.queryParams.startDate);
 		const endDate = parseQueryDate(this.queryParams.endDate);
+		const searchType = parseSearchType(this.queryParams.searchType);
 		const aiSearchStatus = await AISearch.status().catch((error) => {
 			this.logger.warn({ msg: 'AI search status unavailable', err: error });
 
@@ -283,6 +291,7 @@ API.v1.get(
 						startDate: startDate?.toISOString(),
 						endDate: endDate?.toISOString(),
 					},
+					searchType,
 					limit: intelligentLimit,
 				});
 			} catch (error) {

@@ -1,7 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter } from 'mongodb';
 
 export const findAllDepartmentsAvailable = async (

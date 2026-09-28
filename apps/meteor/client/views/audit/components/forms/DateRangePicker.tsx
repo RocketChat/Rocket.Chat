@@ -1,7 +1,16 @@
 import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { endOfWeek } from 'date-fns/endOfWeek';
+import { parseISO } from 'date-fns/parseISO';
+import { startOfDay } from 'date-fns/startOfDay';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
+import { subWeeks } from 'date-fns/subWeeks';
 import type { ComponentProps, SetStateAction, ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

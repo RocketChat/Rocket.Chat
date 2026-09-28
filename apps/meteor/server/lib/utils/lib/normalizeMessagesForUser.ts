@@ -3,7 +3,9 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings';
 
-const filterStarred = <T extends IMessage = IMessage>(message: T, uid?: string): T => {
+type NormalizableMessage = Pick<IMessage, 'u' | 'starred' | 'mentions' | 'reactions'>;
+
+const filterStarred = <T extends Pick<IMessage, 'starred'>>(message: T, uid?: string): T => {
 	// if Allow_anonymous_read is enabled, uid will be undefined
 	if (!uid) return message;
 
@@ -20,7 +22,7 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 	return users.get(username) || username;
 }
 
-export const normalizeMessagesForUser = async <T extends IMessage = IMessage>(messages: T[], uid?: string): Promise<T[]> => {
+export const normalizeMessagesForUser = async <T extends NormalizableMessage = IMessage>(messages: T[], uid?: string): Promise<T[]> => {
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return messages.map((message) => filterStarred(message, uid));
@@ -58,7 +60,7 @@ export const normalizeMessagesForUser = async <T extends IMessage = IMessage>(me
 		names.set(user.username, user.name);
 	});
 
-	messages.forEach((message: IMessage) => {
+	messages.forEach((message) => {
 		if (!message.u) {
 			return;
 		}

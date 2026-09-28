@@ -1,11 +1,19 @@
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, DeleteResult } from 'mongodb';
+import type { FindCursor, DeleteResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IWebdavAccountsModel extends IBaseModel<IWebdavAccount> {
-	findOneByIdAndUserId(_id: string, userId: string, options: FindOptions<IWebdavAccount>): Promise<IWebdavAccount | null>;
-	findOneByUserIdServerUrlAndUsername(
+	findOneByIdAndUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string,
+		userId: string,
+		options: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByUserIdServerUrlAndUsername<
+		T extends Document = IWebdavAccount,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		{
 			userId,
 			serverURL,
@@ -15,10 +23,13 @@ export interface IWebdavAccountsModel extends IBaseModel<IWebdavAccount> {
 			serverURL: string;
 			username: string;
 		},
-		options: FindOptions<IWebdavAccount>,
-	): Promise<IWebdavAccount | null>;
+		options: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 
-	findWithUserId(userId: string, options: FindOptions<IWebdavAccount>): FindCursor<IWebdavAccount>;
+	findWithUserId<T extends Document = IWebdavAccount, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: string,
+		options: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	removeByUserAndId(_id: string, userId: string): Promise<DeleteResult>;
 }

@@ -54,6 +54,26 @@ export type ThreadMessagesPage = {
 
 export type ThreadMessagesInfiniteData = InfiniteData<ThreadMessagesPage, number>;
 
+const dedupeThreadMessagesById = (messages: IThreadMessage[]): IThreadMessage[] => {
+	const byId = new Map<string, IThreadMessage>();
+
+	for (const message of messages) {
+		const existing = byId.get(message._id);
+		if (!existing) {
+			byId.set(message._id, message);
+			continue;
+		}
+
+		const messageTime = new Date(message._updatedAt ?? message.ts).getTime();
+		const existingTime = new Date(existing._updatedAt ?? existing.ts).getTime();
+		if (messageTime > existingTime) {
+			byId.set(message._id, message);
+		}
+	}
+
+	return Array.from(byId.values());
+};
+
 export const mutateThreadMessagesInfiniteData = (
 	client: QueryClient,
 	queryKey: readonly unknown[],
@@ -64,9 +84,11 @@ export const mutateThreadMessagesInfiniteData = (
 			return old;
 		}
 
-		const items = old.pages.flatMap((page) => page.items);
+		const items = dedupeThreadMessagesById(old.pages.flatMap((page) => page.items));
 		const originalPageLengths = old.pages.map((page) => page.items.length);
 		const oldTotal = old.pages.at(-1)?.itemCount ?? 0;
+		const oldIds = new Set(items.map((message) => message._id));
+		const oldMaxTs = items.reduce((max, message) => Math.max(max, new Date(message.ts).getTime()), -Infinity);
 
 		const beforeMutationItemsLength = items.length;
 		mutation(items);
@@ -74,6 +96,8 @@ export const mutateThreadMessagesInfiniteData = (
 
 		const itemCountDelta = beforeMutationItemsLength - afterMutationItemsLength;
 		const newTotal = Math.max(0, oldTotal - itemCountDelta);
+
+		const newerInsertedCount = items.filter((message) => !oldIds.has(message._id) && new Date(message.ts).getTime() >= oldMaxTs).length;
 
 		const pages: ThreadMessagesPage[] = [];
 		let cursor = 0;
@@ -87,7 +111,10 @@ export const mutateThreadMessagesInfiniteData = (
 
 		return {
 			pages,
-			pageParams: old.pageParams,
+			pageParams:
+				newerInsertedCount > 0
+					? old.pageParams.map((pageParam) => (pageParam > 0 ? pageParam + newerInsertedCount : pageParam))
+					: old.pageParams,
 		};
 	});
 };

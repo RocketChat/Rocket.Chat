@@ -13,7 +13,7 @@ import {
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { deleteReportedMessages } from '../../lib/moderation/deleteReportedMessages';
 import { API } from '../api';

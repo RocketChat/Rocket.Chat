@@ -1,16 +1,8 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, SettingValue } from '@rocket.chat/core-typings';
-import type {
-	FindCursor,
-	UpdateFilter,
-	UpdateResult,
-	Document,
-	FindOptions,
-	FindOneAndUpdateOptions,
-	WithId,
-	UpdateOptions,
-} from 'mongodb';
+import type { FindCursor, UpdateFilter, UpdateResult, Document, FindOneAndUpdateOptions, WithId, UpdateOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface ISettingsModel extends IBaseModel<ISetting> {
 	getValueById<T extends SettingValue = SettingValue>(_id: string): Promise<T | undefined>;
@@ -19,7 +11,10 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 
 	findOneNotHiddenById(_id: string): Promise<ISetting | null>;
 
-	findByIds(_id?: string[] | string, options?: FindOptions<ISetting>): FindCursor<ISetting>;
+	findByIds<T extends Document = ISetting, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id?: string[] | string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 
 	updateValueById(
 		_id: string,

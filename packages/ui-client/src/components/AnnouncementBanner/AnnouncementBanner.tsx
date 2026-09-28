@@ -8,10 +8,12 @@ export type AnnouncementBannerProps = {
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 const AnnouncementBanner = ({ children, className, onClick, ...props }: AnnouncementBannerProps) => {
+	const clickable = Boolean(onClick);
+
 	const announcementBar = css`
 		background-color: ${Palette.status['status-background-info'].theme('announcement-background')};
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
-		cursor: pointer;
+		cursor: ${clickable ? 'pointer' : 'default'};
 		transition: transform 0.2s ease-out;
 		a:link {
 			color: ${Palette.text['font-pure-black'].theme('announcement-text')};
@@ -21,7 +23,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			flex: auto;
 		}
 		&:hover {
-			text-decoration: underline;
+			text-decoration: ${clickable ? 'underline' : 'none'};
 		}
 	`;
 
@@ -34,7 +36,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			display='flex'
 			fontScale='p2m'
 			textAlign='center'
-			borderRadius={0}
+			borderRadius='none'
 			className={[announcementBar, className]}
 			tabIndex={onClick ? 0 : -1}
 			role={onClick ? 'button' : 'banner'}

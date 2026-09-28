@@ -1,11 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useDebouncedCallback, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
@@ -73,6 +73,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		hasPreviousPage,
 		isFetchingPreviousPage,
 		loadMessageAround,
+		jumpToRecent,
 	} = useThreadMessagesQuery(mainMessage._id);
 	const messages = useMemo(() => data?.messages ?? [], [data?.messages]);
 
@@ -160,26 +161,26 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		});
 	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround, hasPreviousPage]);
 
-	const interactionRef = useSafeRefCallback(
-		useCallback((element: HTMLDivElement) => {
-			const markInteracted = () => {
+	const interactionRef = useCallback((element: HTMLDivElement) => {
+		const markInteracted = () => {
+			userInteractedRef.current = true;
+		};
+		const handleKeydown = (e: KeyboardEvent) => {
+			if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
 				userInteractedRef.current = true;
-			};
-			const handleKeydown = (e: KeyboardEvent) => {
-				if (['PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
-					userInteractedRef.current = true;
-				}
-			};
-			element.addEventListener('wheel', markInteracted, { passive: true });
-			element.addEventListener('touchmove', markInteracted, { passive: true });
-			element.addEventListener('keydown', handleKeydown);
-			return () => {
-				element.removeEventListener('wheel', markInteracted);
-				element.removeEventListener('touchmove', markInteracted);
-				element.removeEventListener('keydown', handleKeydown);
-			};
-		}, []),
-	);
+			}
+		};
+		const parent = element.parentElement;
+
+		parent?.addEventListener('pointerdown', markInteracted);
+		element.addEventListener('wheel', markInteracted, { passive: true });
+		element.addEventListener('keydown', handleKeydown);
+		return () => {
+			parent?.removeEventListener('pointerdown', markInteracted);
+			element.removeEventListener('wheel', markInteracted);
+			element.removeEventListener('keydown', handleKeydown);
+		};
+	}, []);
 
 	const mergedRefs = useMergedRefsV2(messageListRef, keepAtBottomRef, interactionRef);
 
@@ -257,7 +258,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		prevItemsLengthRef.current = items.length;
 		if (items.length > prev && uid) {
 			const lastItem = items.at(-1);
-			if (lastItem?.temp && lastItem.u._id === uid) {
+			if (lastItem?.temp && lastItem.u._id === uid && !hasNextPage) {
 				setShouldJumpToBottom(true);
 			}
 		}
@@ -285,6 +286,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		uid,
 		isFetchingPreviousPage,
 		isFetchingNextPage,
+		hasNextPage,
 	]);
 
 	useEffect(() => {
@@ -352,6 +354,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 					return;
 				}
 				if (msg.u._id === uid) {
+					if (hasNextPage) {
+						void jumpToRecent().then(() => setShouldJumpToBottom(true));
+						return;
+					}
 					setShouldJumpToBottom(true);
 				}
 			},
@@ -362,7 +368,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		return () => {
 			clientCallbacks.remove('streamNewMessage', handlerId);
 		};
-	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom]);
+	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom, hasNextPage, jumpToRecent]);
 
 	const keepMountedMessages = useKeepMountedMessages(items);
 
@@ -406,12 +412,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						}}
 					>
 						{loading ? (
-							<li className='load-more'>
+							<div className='load-more' role='presentation'>
 								<LoadingMessagesIndicator />
-							</li>
+							</div>
 						) : null}
 						{!loading && hasPreviousPage ? (
-							<li className='load-more'>{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}</li>
+							<div className='load-more' role='presentation'>
+								{isFetchingPreviousPage ? <LoadingMessagesIndicator /> : null}
+							</div>
 						) : null}
 						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
@@ -436,9 +444,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								);
 							})}
 						{!loading && hasNextPage ? (
-							<li className='load-more'>
+							<div className='load-more' role='presentation'>
 								{isFetchingNextPage ? <LoadingMessagesIndicator /> : <InfiniteListAnchor loadMore={loadMoreMessages} />}
-							</li>
+							</div>
 						) : null}
 					</VList>
 				</MessageListProvider>

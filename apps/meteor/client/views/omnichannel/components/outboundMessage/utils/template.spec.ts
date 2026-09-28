@@ -1,5 +1,5 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/apps-engine/definition/outboundCommunication';
-import { capitalize } from '@rocket.chat/string-helpers';
+import { capitalize } from '@rocket.chat/tools';
 
 import { extractParameterMetadata, processTemplatePreviewText } from './template';
 import type { TemplateMediaParameter, TemplateComponent, TemplateParameterMetadata } from '../types/template';
@@ -55,7 +55,7 @@ describe('processTemplatePreviewText', () => {
 		expect(text).toBe('Hello World');
 	});
 
-	it('it should keep the placeholder in case the parameter is an empty string', () => {
+	it('should keep the placeholder in case the parameter is an empty string', () => {
 		const text = processTemplatePreviewText('Hello {{1}}', [{ type: 'text', value: '', format: 'text' }]);
 
 		expect(text).toBe('Hello {{1}}');

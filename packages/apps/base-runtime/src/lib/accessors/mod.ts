@@ -50,6 +50,7 @@ import { OAuthAppsModify } from './modify/OAuthAppsModify';
 import { SchedulerModify } from './modify/SchedulerModify';
 import { UIController } from './modify/UIController';
 import { Notifier } from './notifier';
+import { CallHistoryRead } from './read/CallHistoryRead';
 import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
 import { ContactRead } from './read/ContactRead';
 import { ExperimentalRead } from './read/ExperimentalRead';
@@ -102,8 +103,9 @@ export class AppAccessors {
 	private notifier?: INotifier;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		// `getReader()` bakes the notifier into the Reader, so the notifier has to be
+		// resolvable before this line runs -- `getNotifier()` creates it on demand.
 		this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
-		this.notifier = new Notifier(this.getSenderFn());
 	}
 
 	public getSenderFn() {
@@ -301,6 +303,7 @@ export class AppAccessors {
 				new ThreadRead(this.senderFn),
 				new RoleRead(this.senderFn),
 				new ExperimentalRead(this.senderFn),
+				new CallHistoryRead(this.senderFn),
 			);
 		}
 
@@ -361,7 +364,11 @@ export class AppAccessors {
 		return this.extender;
 	}
 
-	private getNotifier() {
+	private getNotifier(): INotifier {
+		if (!this.notifier) {
+			this.notifier = new Notifier(this.senderFn);
+		}
+
 		return this.notifier;
 	}
 }

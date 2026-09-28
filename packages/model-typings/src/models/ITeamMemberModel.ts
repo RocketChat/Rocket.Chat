@@ -12,7 +12,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 
 	findByUserId<P extends Document>(
 		userId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember>;
 
 	findOneByUserIdAndTeamId(userId: string, teamId: string): Promise<ITeamMember | null>;
@@ -24,7 +24,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 	findOneByUserIdAndTeamId<P extends Document>(
 		userId: string,
 		teamId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P | null | ITeamMember>;
 
 	findByTeamId(teamId: string): FindCursor<ITeamMember>;
@@ -35,7 +35,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 
 	findByTeamId<P extends Document>(
 		teamId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember>;
 
 	countByTeamId(teamId: string): Promise<number>;
@@ -47,7 +47,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 
 	findByTeamIds<P extends Document>(
 		teamIds: Array<string>,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember>;
 
 	countByTeamIdAndRole(teamId: string, role: IRole['_id']): Promise<number>;
@@ -59,7 +59,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 		limit: number,
 		skip: number,
 		query?: Filter<ITeamMember>,
-	): FindPaginated<FindCursor<ITeamMember>>;
+	): FindPaginated<FindCursor<Pick<ITeamMember, '_id' | 'userId' | 'roles' | 'createdBy' | 'createdAt'>>>;
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<ITeamMember>): Promise<UpdateResult>;
 	createOneByTeamIdAndUserId(

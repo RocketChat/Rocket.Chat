@@ -43,6 +43,8 @@ export async function addManager(username: string) {
 }
 
 export async function addAgent(username: string) {
+	// `status` is deliberately not projected: this endpoint has always turned the new agent available
+	// regardless of the user's presence, and `afterAgentAdded` relies on the field being absent to do so.
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {

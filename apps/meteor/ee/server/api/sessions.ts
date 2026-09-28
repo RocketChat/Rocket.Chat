@@ -11,7 +11,7 @@ import {
 	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';

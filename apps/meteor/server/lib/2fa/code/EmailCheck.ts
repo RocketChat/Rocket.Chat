@@ -1,10 +1,10 @@
-import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
+import { isOAuthUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
-import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult, TwoFactorUser } from './ICodeCheck';
 import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import * as Mailer from '../../notifications/email/api';
@@ -12,14 +12,14 @@ import * as Mailer from '../../notifications/email/api';
 export class EmailCheck implements ICodeCheck {
 	public readonly name: string = 'email';
 
-	private getUserVerifiedEmails(user: IUser): string[] {
+	private getUserVerifiedEmails(user: TwoFactorUser): string[] {
 		if (!Array.isArray(user.emails)) {
 			return [];
 		}
 		return user.emails.filter(({ verified }) => verified).map((e) => e.address);
 	}
 
-	public isEnabled(user: IUser): boolean {
+	public isEnabled(user: TwoFactorUser): boolean {
 		if (!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
 			return false;
 		}
@@ -35,7 +35,7 @@ export class EmailCheck implements ICodeCheck {
 		return this.getUserVerifiedEmails(user).length > 0;
 	}
 
-	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
+	private async send2FAEmail(address: string, random: string, user: TwoFactorUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
 		const t = i18n.getFixedT(language);
@@ -68,7 +68,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		});
 	}
 
-	public async verify(user: IUser, codeFromEmail: string): Promise<boolean> {
+	public async verify(user: TwoFactorUser, codeFromEmail: string): Promise<boolean> {
 		if (!this.isEnabled(user)) {
 			return false;
 		}
@@ -96,7 +96,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		return false;
 	}
 
-	public async sendEmailCode(user: IUser): Promise<void> {
+	public async sendEmailCode(user: TwoFactorUser): Promise<void> {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
@@ -112,7 +112,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		}
 	}
 
-	public async processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult> {
+	public async processInvalidCode(user: TwoFactorUser): Promise<IProcessInvalidCodeResult> {
 		await Users.removeExpiredEmailCodeOfUserId(user._id);
 
 		// Generate new code if the there isn't any code with more than 5 minutes to expire
@@ -143,7 +143,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		};
 	}
 
-	public async maxFaildedAttemtpsReached(user: IUser) {
+	public async maxFaildedAttemtpsReached(user: TwoFactorUser) {
 		const maxAttempts = settings.get<number>('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts');
 		return Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts);
 	}

@@ -67,7 +67,7 @@ const config: StorybookConfig = {
 			},
 		},
 		'@storybook/addon-webpack5-compiler-swc',
-		'storybook-dark-mode',
+		'@rocket.chat/storybook-dark-mode',
 	],
 
 	framework: {

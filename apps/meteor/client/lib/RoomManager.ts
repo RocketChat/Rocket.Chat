@@ -1,23 +1,36 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useMemo, useSyncExternalStore } from 'react';
+import type { CacheSnapshot } from 'virtua';
 
+import { LegacyRoomManager } from './LegacyRoomManager';
+import { RoomHistoryManager } from './RoomHistoryManager';
 import { getConfig } from './utils/getConfig';
-import { LegacyRoomManager } from '../../app/ui-utils/client';
-import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
+type CollapsibleKey = `collapsibleToggled-${string}`;
+
+export const getCollapsibleEventKey = (key: string): CollapsibleKey => `collapsibleToggled-${key}`;
+
 class RoomStore extends Emitter<{
 	changed: undefined;
+	[key: CollapsibleKey]: undefined;
 }> {
 	lastTime?: Date;
 
 	scroll?: number;
 
+	cache?: CacheSnapshot;
+
+	// Message count the cache snapshot was taken against, since virtua's cache is positional.
+	cacheMessageCount?: number;
+
 	lm?: Date;
 
 	atBottom = true;
+
+	private readonly toggledCollapsibles = new Set<string>();
 
 	constructor(readonly rid: string) {
 		super();
@@ -25,7 +38,19 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime, atBottom }: { scroll?: number; lastTime?: Date; atBottom?: boolean }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+		cache,
+		cacheMessageCount,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+		cache?: CacheSnapshot;
+		cacheMessageCount?: number;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
@@ -36,9 +61,28 @@ class RoomStore extends Emitter<{
 		if (atBottom !== undefined) {
 			this.atBottom = atBottom;
 		}
+		if (cache !== undefined) {
+			this.cache = cache;
+			this.cacheMessageCount = cacheMessageCount;
+		}
 		if (scroll || lastTime) {
 			this.emit('changed');
 		}
+	}
+
+	toggleCollapsible(key: string): void {
+		if (this.toggledCollapsibles.has(key)) {
+			this.toggledCollapsibles.delete(key);
+			this.emit(getCollapsibleEventKey(key));
+			return;
+		}
+
+		this.toggledCollapsibles.add(key);
+		this.emit(getCollapsibleEventKey(key));
+	}
+
+	isCollapsibleToggled(key: string): boolean {
+		return this.toggledCollapsibles.has(key);
 	}
 }
 

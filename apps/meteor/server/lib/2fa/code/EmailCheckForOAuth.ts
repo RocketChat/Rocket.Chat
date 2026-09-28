@@ -1,21 +1,21 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
+import type { TwoFactorUser } from './ICodeCheck';
 
 export class EmailCheckForOAuth extends EmailCheck {
 	public override readonly name = 'email-oauth';
 
 	public readonly method = 'email';
 
-	public async sendTwoFactorChallenge(user: IUser): Promise<string> {
+	public async sendTwoFactorChallenge(user: TwoFactorUser): Promise<string> {
 		const challengeId = await TwoFactorChallenges.createTwoFactorChallenge(user._id, 'email');
 		await this.sendEmailCode(user);
 		return challengeId;
 	}
 
-	public async verifyEmailTwoFactorChallenge(user: IUser, challengeId: string, code: string): Promise<boolean> {
+	public async verifyEmailTwoFactorChallenge(user: TwoFactorUser, challengeId: string, code: string): Promise<boolean> {
 		const challenge = await TwoFactorChallenges.findOneByPendingChallengeId(challengeId);
 		if (!challenge) {
 			return false;

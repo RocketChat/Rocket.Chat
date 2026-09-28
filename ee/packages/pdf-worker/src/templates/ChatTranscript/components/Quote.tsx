@@ -1,11 +1,13 @@
 import { View, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import type { ReactNode } from 'react';
 
 import type { PDFQuote } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { MessageHeader } from './MessageHeader';
+
+const { fontScale } = typography;
 
 const styles = StyleSheet.create({
 	wrapper: {
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
 	quoteMessage: {
 		paddingTop: 6,
 		paddingBottom: 6,
-		fontSize: fontScales.p2.fontSize,
+		fontSize: fontScale.p2.fontSize,
 	},
 });
 

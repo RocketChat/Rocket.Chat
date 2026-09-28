@@ -12,7 +12,7 @@ const baseConfig = (customConfig?: Partial<StorybookConfig>): StorybookConfig =>
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
 			getAbsolutePath('@storybook/addon-docs'),
-			getAbsolutePath('storybook-dark-mode'),
+			getAbsolutePath('@rocket.chat/storybook-dark-mode'),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],

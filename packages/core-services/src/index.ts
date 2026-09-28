@@ -7,6 +7,7 @@ import type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 } from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
@@ -43,6 +44,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -96,6 +98,9 @@ export type {
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
 
+export { getInstanceMethods } from './lib/getInstanceMethods';
+export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry';
+export type { LocalHandler } from './lib/LocalServiceRegistry';
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
@@ -163,12 +168,14 @@ export type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
 	IMessageService,
 	ISettingsService,
+	IStatusVisibilityService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
@@ -205,6 +212,7 @@ export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
+export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');
 export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');

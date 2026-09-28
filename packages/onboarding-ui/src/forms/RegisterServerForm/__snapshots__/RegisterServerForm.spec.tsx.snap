@@ -1,0 +1,358 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders _RegisterServerForm without crashing 1`] = `
+<body>
+  <div>
+    <form
+      aria-describedby="_r_0_-informed-disclaimer _r_0_-engagement-disclaimer"
+      aria-labelledby="_r_0_-title"
+      class="rcx-box rcx-box--full rcx-tile--elevation-1 rcx-tile rcx-css-h7ntyn"
+      tabindex="-1"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-heem01"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-d369k0"
+        >
+          Step 1 of 1
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-18gg2kh"
+          id="_r_0_-title"
+        >
+          Register your workspace
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <fieldset
+          class="rcx-box rcx-box--full rcx-field-group"
+          role="group"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+              for="_r_1_"
+            >
+              Admin email
+              <span
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+              >
+                *
+              </span>
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby="_r_1_-error"
+                aria-invalid="false"
+                aria-required="true"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
+                id="_r_1_"
+                name="email"
+                placeholder="Insert your email to continue"
+                size="1"
+                type="email"
+                value=""
+              />
+            </span>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-6qd6i7"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-field__row rcx-css-gj79e2"
+            >
+              <label
+                class="rcx-box rcx-box--full rcx-check-box"
+              >
+                <input
+                  aria-describedby="_r_2_-error"
+                  aria-invalid="false"
+                  aria-required="true"
+                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  id="_r_2_"
+                  name="agreement"
+                  type="checkbox"
+                />
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                />
+              </label>
+              <label
+                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-1nlo49l"
+                for="_r_2_"
+              >
+                I agree with 
+                <a
+                  class="rcx-box rcx-box--full"
+                  href="https://rocket.chat/terms"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Terms and Conditions
+                </a>
+                 and 
+                <a
+                  class="rcx-box rcx-box--full"
+                  href="https://rocket.chat/privacy"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </a>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                >
+                  *
+                </span>
+              </label>
+            </span>
+          </div>
+          <input
+            class="rcx-field-group__item"
+            name="updates"
+            type="hidden"
+            value="true"
+          />
+        </fieldset>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-c21cfe"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1dl0zzg"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Register workspace
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            id="_r_0_-engagement-disclaimer"
+          >
+            Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            id="_r_0_-informed-disclaimer"
+          >
+            By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our 
+            <a
+              href="https://rocket.chat/privacy"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              privacy policy
+            </a>
+            . You may unsubscribe at any time.
+          </div>
+        </div>
+      </footer>
+    </form>
+  </div>
+</body>
+`;
+
+exports[`renders _RegisterServerFormOffline without crashing 1`] = `
+<body>
+  <div>
+    <form
+      aria-describedby="_r_3_-informed-disclaimer _r_3_-engagement-disclaimer"
+      aria-labelledby="_r_3_-title"
+      class="rcx-box rcx-box--full rcx-tile--elevation-1 rcx-tile rcx-css-h7ntyn"
+      tabindex="-1"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-heem01"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-d369k0"
+        >
+          Step 1 of 1
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-18gg2kh"
+          id="_r_3_-title"
+        >
+          Register your workspace
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <fieldset
+          class="rcx-box rcx-box--full rcx-field-group"
+          role="group"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-127j9mz"
+              for="_r_4_"
+            >
+              Admin email
+              <span
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+              >
+                *
+              </span>
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby="_r_4_-error"
+                aria-invalid="false"
+                aria-required="true"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
+                id="_r_4_"
+                name="email"
+                placeholder="Insert your email to continue"
+                size="1"
+                type="email"
+                value=""
+              />
+            </span>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-css-6qd6i7"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-field__row rcx-css-gj79e2"
+            >
+              <label
+                class="rcx-box rcx-box--full rcx-check-box"
+              >
+                <input
+                  aria-describedby="_r_5_-error"
+                  aria-invalid="false"
+                  aria-required="true"
+                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  id="_r_5_"
+                  name="agreement"
+                  type="checkbox"
+                />
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                />
+              </label>
+              <label
+                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-1nlo49l"
+                for="_r_5_"
+              >
+                I agree with 
+                <a
+                  class="rcx-box rcx-box--full"
+                  href="https://rocket.chat/terms"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Terms and Conditions
+                </a>
+                 and 
+                <a
+                  class="rcx-box rcx-box--full"
+                  href="https://rocket.chat/privacy"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </a>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                >
+                  *
+                </span>
+              </label>
+            </span>
+          </div>
+          <input
+            class="rcx-field-group__item"
+            name="updates"
+            type="hidden"
+            value="true"
+          />
+        </fieldset>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-c21cfe"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1dl0zzg"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--vertical rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              disabled=""
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Register workspace
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Register offline
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            id="_r_3_-engagement-disclaimer"
+          >
+            Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            id="_r_3_-informed-disclaimer"
+          >
+            By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our 
+            <a
+              href="https://rocket.chat/privacy"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              privacy policy
+            </a>
+            . You may unsubscribe at any time.
+          </div>
+        </div>
+      </footer>
+    </form>
+  </div>
+</body>
+`;

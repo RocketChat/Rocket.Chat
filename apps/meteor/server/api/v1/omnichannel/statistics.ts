@@ -49,7 +49,7 @@ API.v1.addRoute(
 				throw new Error('invalid-chart-name');
 			}
 
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1, utcOffset: 1 } });
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1, utcOffset: 1, language: 1 } });
 			const language = user?.language || settings.get('Language') || 'en';
 
 			return API.v1.success(

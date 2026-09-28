@@ -1,4 +1,4 @@
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

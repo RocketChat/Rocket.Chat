@@ -55,7 +55,7 @@ const getValueBitmask = (value: unknown, length: number): Uint8Array | false => 
 		const buffer = new ArrayBuffer(Math.max(length, 2 * Uint32Array.BYTES_PER_ELEMENT));
 
 		let view: Uint32Array | Uint8Array = new Uint32Array(buffer, 0, 2);
-		view[0] = value % ((1 << 16) * (1 << 16)) | 0;
+		view[0] = (value % ((1 << 16) * (1 << 16))) | 0;
 		view[1] = (value / ((1 << 16) * (1 << 16))) | 0;
 
 		if (value < 0) {

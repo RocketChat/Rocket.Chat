@@ -1,7 +1,11 @@
 import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { format } from 'date-fns/format';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
 import type { ComponentProps, ChangeEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

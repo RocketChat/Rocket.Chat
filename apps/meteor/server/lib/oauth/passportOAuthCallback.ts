@@ -40,7 +40,7 @@ const handlePopupStyleOAuth = async (res: Response, oAuthUser: IUser, loginClien
 	if (secondFactorMethod) {
 		const challengeId = await secondFactorMethod.sendTwoFactorChallenge(oAuthUser);
 		sendPopupMessage(res, {
-			externalCommand: 'go',
+			oauthPopupCommand: 'redirect',
 			path: `/2fa/${secondFactorMethod.method}/${challengeId}${loginClient ? `?loginClient=${loginClient}` : ''}`,
 		});
 		return;
@@ -50,13 +50,13 @@ const handlePopupStyleOAuth = async (res: Response, oAuthUser: IUser, loginClien
 
 	if (loginClient) {
 		sendPopupMessage(res, {
-			externalCommand: 'go',
+			oauthPopupCommand: 'redirect',
 			path: `home?resumeToken=${token}&userId=${oAuthUser._id}&loginClient=${loginClient}`,
 		});
 		return;
 	}
 
-	sendPopupMessage(res, { externalCommand: 'login-with-token', token });
+	sendPopupMessage(res, { oauthPopupCommand: 'oauth-login-with-token', token });
 };
 
 export const passportOAuthCallback =

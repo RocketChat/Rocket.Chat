@@ -1,4 +1,4 @@
-import { SidebarV2Action } from '@rocket.chat/fuselage';
+import { SidebarAction } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const NavBarItemCreateNew = (props: CreateRoomProps) => {
 
 	const sections = useCreateNewMenu();
 
-	return <GenericMenu icon='plus' sections={sections} title={t('Create_new')} is={SidebarV2Action} {...props} />;
+	return <GenericMenu icon='plus' sections={sections} title={t('Create_new')} is={SidebarAction} {...props} />;
 };
 
 export default NavBarItemCreateNew;

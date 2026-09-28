@@ -1,4 +1,4 @@
-import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
+import colorTokens from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 

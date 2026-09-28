@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFMessage } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
@@ -9,6 +9,8 @@ import { MessageHeader } from './MessageHeader';
 import Quotes from './Quotes';
 import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
 
+const { fontScale } = typography;
+
 const styles = StyleSheet.create({
 	wrapper: {
 		marginBottom: 16,
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
 	},
 	message: {
 		marginTop: 1,
-		fontSize: fontScales.p2.fontSize,
+		fontSize: fontScale.p2.fontSize,
 	},
 	systemMessage: {
 		fontStyle: 'italic',

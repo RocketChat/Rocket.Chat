@@ -13,9 +13,9 @@ import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
-import { emoji } from '../../../../../../app/emoji/client';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
 export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
 	onChange: (value: string) => void;
