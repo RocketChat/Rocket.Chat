@@ -12,3 +12,16 @@ exports[`renders Default without crashing 1`] = `
   </div>
 </body>
 `;
+
+exports[`renders WithFontScale without crashing 1`] = `
+<body>
+  <div>
+    <a
+      class="rcx-box rcx-box--full rcx-css-15096h2"
+      href="#"
+    >
+      With font scale
+    </a>
+  </div>
+</body>
+`;

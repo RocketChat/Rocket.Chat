@@ -8,7 +8,7 @@ export type ActionLinkProps = {
 	fontScale?: ComponentProps<typeof Box>['fontScale'];
 } & AnchorHTMLAttributes<HTMLAnchorElement>;
 
-const ActionLink = ({ children, href = '#', onClick, ...props }: ActionLinkProps) => {
+const ActionLink = ({ children, href = '#', fontScale = 'p2', onClick, ...props }: ActionLinkProps) => {
 	const handleClick = useCallback(
 		(event: MouseEvent<HTMLAnchorElement>) => {
 			if (onClick) {
@@ -20,7 +20,7 @@ const ActionLink = ({ children, href = '#', onClick, ...props }: ActionLinkProps
 	);
 
 	return (
-		<Box {...props} is='a' fontScale='p2' href={href} color='info' onClick={handleClick}>
+		<Box {...props} is='a' fontScale={fontScale} href={href} color='info' onClick={handleClick}>
 			{children}
 		</Box>
 	);

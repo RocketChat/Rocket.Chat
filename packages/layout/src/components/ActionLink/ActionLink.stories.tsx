@@ -8,3 +8,5 @@ export default {
 } satisfies Meta<typeof ActionLink>;
 
 export const Default: StoryFn<typeof ActionLink> = () => <ActionLink>Default</ActionLink>;
+
+export const WithFontScale: StoryFn<typeof ActionLink> = () => <ActionLink fontScale='h4'>With font scale</ActionLink>;
