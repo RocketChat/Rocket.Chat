@@ -128,6 +128,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 
 		await poHomeChannel.toastMessage.waitForDisplay({ type: 'error' });
+		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
