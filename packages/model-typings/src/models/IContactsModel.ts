@@ -24,7 +24,7 @@ export interface IContactsModel extends IBaseModel<IContact> {
 		options: FindOptions<IContact>,
 		source?: IContact['source'],
 	): FindPaginated<FindCursor<IContact>>;
-	findByUserIdAndPhone(uid: IUser['_id'], e164: string): FindCursor<IContact>;
+	findOneByUserIdAndPhone(uid: IUser['_id'], e164: string, source?: IContact['source']): Promise<IContact | null>;
 	countImportedByUserId(uid: IUser['_id']): Promise<number>;
 	createLocal(contact: LocalContact): Promise<IContact | null>;
 	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult>;

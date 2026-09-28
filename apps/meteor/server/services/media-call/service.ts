@@ -30,6 +30,7 @@ import {
 } from './appEvents';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
+import { resolveCallerName } from '../../../ee/server/lib/contacts/resolveCallerName';
 import { turnServersSchema } from '../../../ee/server/settings/turnServersSchema';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -430,7 +431,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
-		void api.broadcast('user.media-signal', { userId: toUid, signal });
+		void api.broadcast('user.media-signal', { userId: toUid, signal: await this.resolveCallerContactName(toUid, signal) });
+	}
+
+	private async resolveCallerContactName(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<ServerMediaSignal> {
+		if (signal.type !== 'new' || signal.contact.type !== 'sip' || !signal.contact.id) {
+			return signal;
+		}
+
+		try {
+			const displayName = await resolveCallerName(toUid, signal.contact.id);
+
+			return displayName ? { ...signal, contact: { ...signal.contact, displayName } } : signal;
+		} catch (err) {
+			logger.warn({ msg: 'Failed to resolve a caller name from contacts', err });
+			return signal;
+		}
 	}
 
 	private configureMediaCallServer(): void {

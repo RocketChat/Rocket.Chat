@@ -57,8 +57,9 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		return this.findPaginated(query, options);
 	}
 
-	public findByUserIdAndPhone(uid: IUser['_id'], e164: string): FindCursor<IContact> {
-		return this.find({ uid, 'phones.e164': e164 }, { sort: { displayName: 1 } });
+	/** Sorted so a number saved on more than one contact always answers with the same name. */
+	public findOneByUserIdAndPhone(uid: IUser['_id'], e164: string, source?: IContact['source']): Promise<IContact | null> {
+		return this.findOne({ uid, 'phones.e164': e164, ...(source && { source }) }, { sort: { displayName: 1 } });
 	}
 
 	public countImportedByUserId(uid: IUser['_id']): Promise<number> {
