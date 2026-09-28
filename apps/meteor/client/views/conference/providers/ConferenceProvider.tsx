@@ -183,6 +183,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: conference.loading,
 				error: failureFor(conference.error),
 				retry: conference.retry,
+				// Pexip cannot be told which camera or microphone to use, so there is nothing to ask before the
+				// call — only a button between the reader and the one they already said yes to.
+				autoJoin: isPexip,
 				// Pexip keeps its own roster and its own controls in its page, and its chat is what this window is
 				// opened for — so the chat sits on the side the reader reads from, and is the only panel offered.
 				panelDock: isPexip ? 'start' : 'end',
