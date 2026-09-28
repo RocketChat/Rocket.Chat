@@ -8,12 +8,13 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 	const input = document.createElement('textarea');
 	document.body.appendChild(input);
 
-	const composer = createComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
+	const discardDraft = jest.fn();
+	const composer = createComposerAPI(input, jest.fn(), discardDraft, '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
 
 	input.value = initialValue;
 	input.setSelectionRange(cursor.start, cursor.end);
 
-	return { composer, input };
+	return { composer, input, discardDraft };
 };
 
 describe('ChatMessages Composer API - replaceText', () => {
@@ -57,5 +58,27 @@ describe('ChatMessages Composer API - replaceText', () => {
 		composer.replaceText('@john ', { start: 0, end: 2 });
 
 		expect(input.selectionStart).toBe(input.selectionEnd);
+	});
+});
+
+describe('ChatMessages Composer API - clear', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('should discard the stored draft, since clearing means the text was consumed', () => {
+		const { composer, discardDraft } = setupComposer('a message', { start: 0, end: 0 });
+
+		composer.clear();
+
+		expect(discardDraft).toHaveBeenCalledTimes(1);
+	});
+
+	it('should keep the stored draft when the composer is only being torn down', () => {
+		const { composer, discardDraft } = setupComposer('a message', { start: 0, end: 0 });
+
+		composer.clear({ keepDraft: true });
+
+		expect(discardDraft).not.toHaveBeenCalled();
 	});
 });

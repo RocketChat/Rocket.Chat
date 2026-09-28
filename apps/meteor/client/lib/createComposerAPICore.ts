@@ -35,6 +35,7 @@ type ComposerAPICoreParams = {
 	room: { rid: string; tmid?: string };
 	initialValue: string;
 	save: () => void;
+	discardDraft: () => void;
 	setText: SetText;
 	focus: ComposerAPI['focus'];
 	prepareQuotedMessage?: (message: IMessage) => IMessage;
@@ -72,6 +73,7 @@ export const createComposerAPICore = ({
 	room: { rid, tmid },
 	initialValue,
 	save,
+	discardDraft,
 	setText,
 	focus,
 	prepareQuotedMessage = (message) => message,
@@ -103,8 +105,12 @@ export const createComposerAPICore = ({
 		});
 	};
 
-	const clear = (): void => {
+	const clear = ({ keepDraft = false }: { keepDraft?: boolean } = {}): void => {
 		setText('');
+
+		if (!keepDraft) {
+			discardDraft();
+		}
 	};
 
 	const insertNewLine = (): void => insertText('\n');

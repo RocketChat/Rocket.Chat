@@ -185,7 +185,7 @@ export class ChatMessages implements ChatAPI {
 				await this.currentEditingMessage.cancel();
 				await this.currentEditingMessage.stop();
 			}
-			this.composer?.clear();
+			this.composer?.clear({ keepDraft: true });
 		}
 	}
 }
