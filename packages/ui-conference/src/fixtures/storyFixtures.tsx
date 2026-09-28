@@ -37,11 +37,15 @@ const CallActions = ({ children }: { children: ReactNode }) => {
 	const value = useMemo(
 		(): VideoConfContextValue => ({
 			...(parent as VideoConfContextValue),
-			joinCall: action('joinCall'),
+			joinCall: async () => {
+				action('joinCall');
+			},
 			acceptCall: action('acceptCall'),
 			dismissCall: action('dismissCall'),
 			rejectIncomingCall: action('rejectIncomingCall'),
-			startCall: action('startCall'),
+			startCall: async () => {
+				action('startCall');
+			},
 			setPreferences: action('setPreferences'),
 		}),
 		[parent],
