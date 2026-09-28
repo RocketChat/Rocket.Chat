@@ -35,7 +35,7 @@
 		"@testing-library/react": "~16.3.3",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",

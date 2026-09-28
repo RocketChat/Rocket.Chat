@@ -50,7 +50,7 @@
 		"@types/katex": "~0.16.8",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"i18next": "~26.4.2",
 		"identity-obj-proxy": "^3.0.0",
 		"jest": "~30.2.0",
