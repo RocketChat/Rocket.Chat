@@ -2371,7 +2371,6 @@
   "error-business-hour-finish-time-equals-start-time": "O horário de início e de término não pode ser o mesmo",
   "error-business-hours-are-closed": "Horário de expediente fechado",
   "error-canned-response-not-found": "Resposta automática não encontrada",
-  "error-cannot-convert-default-room-to-abac": "Padrão e padrão de equipe sala não podem ser convertidos em controle de acesso baseado em atributos sala.",
   "error-cannot-delete-app-user": "Excluir um usuário de aplicativo não é permitido, desinstale o app correspondente para removê-lo.",
   "error-cannot-place-chat-on-hold": "Você não pode colocar a conversa em espera",
   "error-cant-add-federated-users": "Não é possível adicionar usuários federados a uma sala não federada",
