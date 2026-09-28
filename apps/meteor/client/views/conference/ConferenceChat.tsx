@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import {
+	AddParticipantsModal,
 	CallPanelHeader,
 	ChatAccessModal,
 	ConferenceContext,
@@ -42,8 +43,9 @@ const ConferenceChat = () => {
 	const setModal = useSetModal();
 	const storesReady = useMainReady();
 	const conference = useConference();
-	const { room, thread } = conference;
+	const { room, thread, session } = conference;
 	const { close } = useConferenceChatPanel();
+	const offersMembersPanel = session.offersMembersPanel ?? true;
 
 	const { rid, tmid, name: roomName, type: roomType, loading, chatAccess } = room;
 
@@ -82,6 +84,24 @@ const ConferenceChat = () => {
 			    `aria-hidden`, so the icon in the middle of the sentence contributes nothing to that name. The
 			    label existed to work around an icon that was never in the name to begin with. */}
 			<CallPanelHeader title={title} onClose={close}>
+				{/* Only where there is no members panel to reach it from — otherwise adding people has two doors. */}
+				{!offersMembersPanel && (
+					<IconButton
+						icon='user-plus'
+						small
+						aria-label={t('Add_people')}
+						title={t('Add_people')}
+						// Carried across for the same reason as the modal below: the app's modal region is mounted
+						// above this window, outside the conference's provider.
+						onClick={() =>
+							setModal(
+								<ConferenceContext.Provider value={conference}>
+									<AddParticipantsModal onClose={() => setModal(null)} />
+								</ConferenceContext.Provider>,
+							)
+						}
+					/>
+				)}
 				{presentWithoutAccess > 0 && chatAccess && (
 					<IconButton
 						icon='balloon-exclamation'

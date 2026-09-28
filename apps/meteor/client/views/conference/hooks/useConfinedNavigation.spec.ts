@@ -176,3 +176,80 @@ describe('useConfinedNavigation', () => {
 		});
 	});
 });
+
+describe('useConfinedNavigation handing routes to the main window', () => {
+	let openSpy: jest.SpyInstance;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		window.history.replaceState({}, '', CONFERENCE_PATH);
+		mockRouter.navigate = jest.fn();
+		mockRouter.buildRoutePath = jest.fn((to) => (typeof to === 'string' ? to : (to?.pathname ?? '/')));
+		openSpy = jest.spyOn(window, 'open').mockReturnValue(null);
+	});
+
+	afterEach(() => {
+		openSpy.mockRestore();
+		document.body.innerHTML = '';
+		delete (window as { videoCallWindow?: unknown }).videoCallWindow;
+		Object.defineProperty(window, 'opener', { value: null, configurable: true, writable: true });
+	});
+
+	// In the desktop app the call is a window of its own with no opener, so the bridge stands in for one.
+	it('should use the desktop bridge when there is one', () => {
+		const openInMainWindow = jest.fn();
+		(window as { videoCallWindow?: unknown }).videoCallWindow = { openInMainWindow };
+
+		renderHook(() => useConfinedNavigation());
+		clickAnchor(createAnchor('/channel/general'));
+
+		expect(openInMainWindow).toHaveBeenCalledWith('/channel/general');
+		expect(openSpy).not.toHaveBeenCalled();
+	});
+
+	it('should ask the opener to navigate, and raise it', () => {
+		const postMessage = jest.fn();
+		const opener = { closed: false, name: '', postMessage };
+		Object.defineProperty(window, 'opener', { value: opener, configurable: true, writable: true });
+
+		renderHook(() => useConfinedNavigation());
+		clickAnchor(createAnchor('/channel/general'));
+
+		expect(postMessage).toHaveBeenCalledWith({ type: 'rocketchat:navigate-to-route', path: '/channel/general' }, window.location.origin);
+		// Named so it can be raised, then opened by name with no URL — which focuses it without navigating it.
+		expect(opener.name).toBe('rocketchat-main');
+		expect(openSpy).toHaveBeenCalledWith('', 'rocketchat-main');
+	});
+
+	it('should leave an opener that already has a name alone', () => {
+		const opener = { closed: false, name: 'something-else', postMessage: jest.fn() };
+		Object.defineProperty(window, 'opener', { value: opener, configurable: true, writable: true });
+
+		renderHook(() => useConfinedNavigation());
+		clickAnchor(createAnchor('/channel/general'));
+
+		expect(opener.name).toBe('something-else');
+		expect(openSpy).toHaveBeenCalledWith('', 'something-else');
+	});
+
+	it('should fall back to a tab when the opener is gone', () => {
+		Object.defineProperty(window, 'opener', { value: { closed: true }, configurable: true, writable: true });
+
+		renderHook(() => useConfinedNavigation());
+		clickAnchor(createAnchor('/channel/general'));
+
+		expect(openSpy).toHaveBeenCalledWith(...tabFor('/channel/general'));
+	});
+
+	// Somebody else's address is nobody's to hand to the workspace's router.
+	it('should send an external link to a tab, never to the opener', () => {
+		const postMessage = jest.fn();
+		Object.defineProperty(window, 'opener', { value: { closed: false, name: '', postMessage }, configurable: true, writable: true });
+
+		renderHook(() => useConfinedNavigation());
+		clickAnchor(createAnchor('https://example.com/somewhere'));
+
+		expect(postMessage).not.toHaveBeenCalled();
+		expect(openSpy).toHaveBeenCalledWith('https://example.com/somewhere', '_blank', 'noopener');
+	});
+});
