@@ -29,7 +29,8 @@ async function runJob({ packagePath, testRunner, targets }) {
 			process.off('SIGINT', onInt);
 			process.off('SIGTERM', onTerm);
 			const cancelled = interrupted ?? signal;
-			done(cancelled ? 128 + constants.signals[cancelled] : (code ?? 3));
+			const exitCode = code == null || code < 0 ? 3 : code;
+			done(cancelled ? 128 + constants.signals[cancelled] : exitCode);
 		});
 	});
 }

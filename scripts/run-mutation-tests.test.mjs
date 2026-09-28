@@ -226,6 +226,23 @@ test('runner failures set the command exit code while allowing the next runner t
 	});
 });
 
+test('worker startup failures return a nonzero exit code', async (t) => {
+	const directory = await commandFixture(
+		t,
+		`import { rmSync } from 'node:fs';
+console.log('worker: ' + process.argv[2]);
+rmSync(process.cwd(), { recursive: true, force: true });`,
+	);
+	await write(directory, '.mocharc.js', 'module.exports = {};');
+	await assert.rejects(run(directory, 'packages/example', '--mutate', 'src/isPositive.ts'), (error) => {
+		assert.equal(error.code, 3);
+		assert.match(error.stderr, /ENOENT/);
+		assert.match(error.stdout, /worker: jest/);
+		assert.doesNotMatch(error.stdout, /worker: mocha/);
+		return true;
+	});
+});
+
 test('SIGTERM reaches the worker and cancels without starting the next runner', { timeout: 10_000 }, async (t) => {
 	const directory = await commandFixture(
 		t,
