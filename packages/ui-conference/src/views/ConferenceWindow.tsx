@@ -104,6 +104,16 @@ const ConferenceWindow = () => {
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
+	// Guarded on the join not being in flight and not having failed, or a refusal would be asked again forever.
+	const { autoJoin, joined, loading: joining, error: joinError } = session;
+	const { join } = actions;
+	const { name: callName } = call;
+	useEffect(() => {
+		if (autoJoin && !joined && !joining && !joinError) {
+			join({ mic: true, cam: false }, callName, false);
+		}
+	}, [autoJoin, joined, joining, joinError, join, callName]);
+
 	// Only a refusal is an answer about the call. Anything else is the server not having been reached, which says
 	// nothing about it — and sending someone away from a call that is still running is the worse mistake.
 	if (room.error) {
@@ -138,6 +148,10 @@ const ConferenceWindow = () => {
 	}
 
 	if (!session.joined) {
+		if (session.autoJoin) {
+			return <>{slots.loading}</>;
+		}
+
 		return (
 			// No `confirming`: joining takes this screen down with it — `session.loading` is that very request, and
 			// it returns the loading slot above — so there is no button left to report it on.
