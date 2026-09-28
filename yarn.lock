@@ -9920,12 +9920,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/layout@workspace:packages/layout"
   dependencies:
+    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.92.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
+    "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -9944,7 +9947,6 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/logo": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"

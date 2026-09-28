@@ -31,11 +31,16 @@
 		"test": "jest",
 		"testunit": "jest"
 	},
+	"dependencies": {
+		"@rocket.chat/emitter": "workspace:~",
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/logo": "^0.33.2",
+		"@rocket.chat/styled": "~0.34.1"
+	},
 	"devDependencies": {
 		"@rocket.chat/fuselage": "^0.92.0",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/logo": "^0.33.2",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/storybook-dark-mode": "~4.2.1",
 		"@rocket.chat/tsconfig": "workspace:~",
@@ -57,7 +62,6 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/logo": "*",
 		"react": "*",
 		"react-dom": "*",
 		"react-i18next": "*"
