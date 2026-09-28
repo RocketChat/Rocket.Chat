@@ -1,43 +1,45 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 
 import ToastBarPortal from './ToastBarPortal';
 
-const getAnchor = () => document.getElementById('toastBarRoot');
-
-afterEach(() => {
-	getAnchor()?.remove();
-});
+// eslint-disable-next-line testing-library/no-node-access -- the anchor element's lifecycle is what these tests cover
+const queryAnchors = () => document.querySelectorAll('#toastBarRoot');
 
 describe('ToastBarPortal', () => {
 	test('leaves the DOM untouched when rendered without committing', () => {
 		expect(renderToString(<ToastBarPortal>toast</ToastBarPortal>)).toBe('');
-		expect(getAnchor()).toBeNull();
+		expect(queryAnchors()).toHaveLength(0);
 	});
 
 	test('renders children into an anchor on the body while mounted', () => {
 		const { unmount } = render(<ToastBarPortal>toast</ToastBarPortal>);
 
-		expect(getAnchor()?.parentElement).toBe(document.body);
-		expect(getAnchor()).toHaveTextContent('toast');
+		expect(document.body).toContainElement(screen.getByText('toast'));
+		expect(queryAnchors()).toHaveLength(1);
 
 		unmount();
 
-		expect(getAnchor()).toBeNull();
+		expect(screen.queryByText('toast')).not.toBeInTheDocument();
+		expect(queryAnchors()).toHaveLength(0);
 	});
 
 	test('keeps the anchor until the last portal unmounts', () => {
-		const first = render(<ToastBarPortal>first</ToastBarPortal>);
-		const second = render(<ToastBarPortal>second</ToastBarPortal>);
+		const { unmount: unmountFirst } = render(<ToastBarPortal>first</ToastBarPortal>);
+		const { unmount: unmountSecond } = render(<ToastBarPortal>second</ToastBarPortal>);
 
-		expect(document.querySelectorAll('#toastBarRoot')).toHaveLength(1);
+		expect(queryAnchors()).toHaveLength(1);
 
-		first.unmount();
-		expect(getAnchor()).toHaveTextContent('second');
+		unmountFirst();
 
-		second.unmount();
-		expect(getAnchor()).toBeNull();
+		expect(screen.queryByText('first')).not.toBeInTheDocument();
+		expect(screen.getByText('second')).toBeInTheDocument();
+		expect(queryAnchors()).toHaveLength(1);
+
+		unmountSecond();
+
+		expect(queryAnchors()).toHaveLength(0);
 	});
 
 	test('survives StrictMode effect replays', () => {
@@ -47,11 +49,11 @@ describe('ToastBarPortal', () => {
 			</StrictMode>,
 		);
 
-		expect(document.querySelectorAll('#toastBarRoot')).toHaveLength(1);
-		expect(getAnchor()).toHaveTextContent('toast');
+		expect(screen.getByText('toast')).toBeInTheDocument();
+		expect(queryAnchors()).toHaveLength(1);
 
 		unmount();
 
-		expect(getAnchor()).toBeNull();
+		expect(queryAnchors()).toHaveLength(0);
 	});
 });

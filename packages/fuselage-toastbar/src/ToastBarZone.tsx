@@ -40,7 +40,9 @@ type ToastBarZoneProps = {
 };
 
 const ToastBarZone = ({ children, position = 'top-end' }: ToastBarZoneProps) => (
-	<ToastBarContainer position={position}>{children}</ToastBarContainer>
+	<ToastBarContainer position={position} data-testid={`toastbar-zone-${position}`}>
+		{children}
+	</ToastBarContainer>
 );
 
 export default ToastBarZone;

@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { getByRole, screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as stories from './ToastBar.stories';
@@ -29,38 +29,38 @@ const topStartStyle = {
 describe('[fuselage-toastbar rendering]', () => {
 	test('should display ToastBar on the top right of the screen by default', async () => {
 		render(<TopEnd />);
-		const toast = screen.queryByRole('status');
-		const toastContainer = toast?.parentElement?.parentElement?.parentElement;
+		const zone = screen.getByTestId('toastbar-zone-top-end');
 
-		expect(toastContainer).toHaveStyle(topEndStyle);
+		expect(within(zone).getByRole('status')).toBeInTheDocument();
+		expect(zone).toHaveStyle(topEndStyle);
 	});
 
 	test('should display ToastBar on the top right of the screen', async () => {
 		document.body.setAttribute('dir', 'ltr');
 		render(<TopEnd />);
-		const toast = screen.queryByRole('status');
-		const toastContainer = toast?.parentElement?.parentElement?.parentElement;
+		const zone = screen.getByTestId('toastbar-zone-top-end');
 
-		expect(toastContainer).toHaveStyle(topEndStyle);
+		expect(within(zone).getByRole('status')).toBeInTheDocument();
+		expect(zone).toHaveStyle(topEndStyle);
 	});
 
 	test('should display ToastBar on the top left of the screen', async () => {
 		document.body.setAttribute('dir', 'rtl');
 		render(<TopEnd />);
-		const toast = screen.queryByRole('status');
-		const toastContainer = toast?.parentElement?.parentElement?.parentElement;
+		const zone = screen.getByTestId('toastbar-zone-top-end');
 
-		expect(toastContainer).toHaveStyle(topStartStyle);
+		expect(within(zone).getByRole('status')).toBeInTheDocument();
+		expect(zone).toHaveStyle(topStartStyle);
 	});
 });
 
 describe('[fuselage-toastbar interacting]', () => {
 	test('should dispatch the ToastBar on click', async () => {
-		const { container } = render(<Default />);
-		const button = getByRole(container, 'button');
+		render(<Default />);
 
-		await userEvent.click(button);
-		const toasts = screen.queryAllByRole('alert');
-		toasts.forEach((toast) => expect(toast).toBeInTheDocument());
+		await userEvent.click(screen.getByRole('button', { name: 'Dispatch ToastBar' }));
+
+		expect(within(screen.getByTestId('toastbar-zone-top-end')).getByRole('status')).toBeInTheDocument();
+		expect(within(screen.getByTestId('toastbar-zone-bottom-start')).getByRole('alert')).toBeInTheDocument();
 	});
 });
