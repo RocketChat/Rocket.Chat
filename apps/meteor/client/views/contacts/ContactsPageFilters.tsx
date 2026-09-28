@@ -1,10 +1,10 @@
 import { Box, Button, ButtonGroup, Icon, TextInput } from '@rocket.chat/fuselage';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import type { ChangeEvent, SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useContactsSync } from './hooks/useContactsSync';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 export type ContactsPageFiltersProps = {
 	onChangeText: (text: string) => void;
@@ -24,7 +24,8 @@ export const useContactsPageFilters = () => {
 const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: ContactsPageFiltersProps) => {
 	const { t } = useTranslation();
 	const syncContacts = useContactsSync();
-	const { data: licensed = false } = useHasLicenseModule('outlook-calendar');
+	const isExchangeIntegrationEnabled = useSetting('Outlook_Calendar_Enabled', false);
+	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 
 	return (
 		<Box
@@ -49,7 +50,7 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 			</Box>
 			<Box display='flex' margin='x4' alignItems='center'>
 				<ButtonGroup>
-					{licensed && (
+					{isExchangeIntegrationEnabled && isServerManaged && (
 						<Button icon='reload' loading={syncContacts.isPending} onClick={() => syncContacts.mutate()}>
 							{`${t('Sync')} (${total})`}
 						</Button>
