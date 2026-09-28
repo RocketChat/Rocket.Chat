@@ -258,9 +258,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		before(async () => {
 			await updateSetting('ABAC_Classification_Banners_Enabled', true);
 			await updateSetting('ABAC_Classification_Banners_Config', bannersConfig);
+			await updateSetting('ABAC_Required_Attributes', ['clearance']);
 		});
 
 		after(async () => {
+			await updateSetting('ABAC_Required_Attributes', []);
 			await updateSetting('ABAC_Classification_Banners_Config', '');
 			await updateSetting('ABAC_Classification_Banners_Enabled', false);
 		});
@@ -269,7 +271,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request.get(`${v1}/abac/config`).expect(401);
 		});
 
-		it('should return the banners config to a user without any ABAC permission', async () => {
+		it('should return the banners config and required attributes to a user without any ABAC permission', async () => {
 			await request
 				.get(`${v1}/abac/config`)
 				.set(unauthorizedCredentials)
@@ -277,13 +279,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('bannersConfig', bannersConfig);
+					expect(res.body).to.have.property('requiredAttributes').that.deep.equals(['clearance']);
 				});
 		});
 
-		it('should not list the banners config in settings.public', async () => {
+		it('should not list the banners config or required attributes in settings.public', async () => {
 			await request
 				.get(api('settings.public'))
-				.query({ _id: 'ABAC_Classification_Banners_Config' })
+				.query({ _id: 'ABAC_Classification_Banners_Config,ABAC_Required_Attributes' })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.settings).to.be.an('array').that.is.empty;
