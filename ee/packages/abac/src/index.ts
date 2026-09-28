@@ -810,9 +810,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
-		usernames.forEach((username) => {
-			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
-		});
+		void Audit.actionsPerformed(
+			usernames.map((username) => ({
+				subject: { username },
+				object: { _id: object._id, name: object.name },
+				reason: 'system',
+				actionPerformed: 'granted-object-access',
+			})),
+		);
 	}
 
 	async filterUsersAllowedInRoom(userIds: string[], room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>): Promise<string[]> {
@@ -832,11 +837,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const { compliant } = await pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
 			const allowed = new Set(compliant);
 
-			subjects
-				.filter(({ _id }) => allowed.has(_id))
-				.forEach(({ _id, username }) => {
-					void Audit.actionPerformed({ _id, username }, { _id: room._id, name: room.name }, 'system', 'granted-object-access');
-				});
+			void Audit.actionsPerformed(
+				subjects
+					.filter(({ _id }) => allowed.has(_id))
+					.map(({ _id, username }) => ({
+						subject: { _id, username },
+						object: { _id: room._id, name: room.name },
+						reason: 'system',
+						actionPerformed: 'granted-object-access',
+					})),
+			);
 
 			return userIds.filter((id) => allowed.has(id));
 		} catch (err) {
@@ -871,17 +881,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const { compliant } = await pdp.evaluateSubjectAgainstRooms(subject, attributed);
 			const permitted = new Set(compliant);
 
-			attributed
-				.filter(({ _id }) => permitted.has(_id))
-				.forEach((room) => {
-					allowed.add(room._id);
-					void Audit.actionPerformed(
-						{ _id: subject._id, username: subject.username },
-						{ _id: room._id, name: room.name },
-						'system',
-						'granted-object-access',
-					);
-				});
+			const granted = attributed.filter(({ _id }) => permitted.has(_id));
+			granted.forEach(({ _id }) => allowed.add(_id));
+
+			void Audit.actionsPerformed(
+				granted.map((room) => ({
+					subject: { _id: subject._id, username: subject.username },
+					object: { _id: room._id, name: room.name },
+					reason: 'system',
+					actionPerformed: 'granted-object-access',
+				})),
+			);
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate the ABAC rooms for the user', uid: userId, err });
 		}
