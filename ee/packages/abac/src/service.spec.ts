@@ -56,6 +56,7 @@ const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
 const mockAbacFindOneAndUpdate = jest.fn();
 const mockCreateAuditServerEvent = jest.fn();
+const mockCreateAuditServerEvents = jest.fn();
 const mockRoomsFindAllPrivateAbac = jest.fn();
 const mockUsersFindActiveByRoomIds = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn();
@@ -100,6 +101,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	ServerEvents: {
 		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
+		createAuditServerEvents: (...args: any[]) => mockCreateAuditServerEvents(...args),
 	},
 	Settings: {
 		updateValueById: (...args: any[]) => mockSettingsSet(...args),
@@ -137,6 +139,8 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 	};
 });
+
+const auditedEvents = () => mockCreateAuditServerEvents.mock.calls.flatMap(([events]: any[]) => events);
 
 jest.mock('mem', () => {
 	return jest.fn((fn: any) => fn);
@@ -1189,8 +1193,8 @@ describe('AbacService (unit)', () => {
 				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
 			).resolves.toBeUndefined();
 
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledTimes(usernames.length);
-			const calledUsernames = mockCreateAuditServerEvent.mock.calls.map(([, payload]: any[]) => payload?.subject?.username).filter(Boolean);
+			expect(mockCreateAuditServerEvents).toHaveBeenCalledTimes(1);
+			const calledUsernames = auditedEvents().map(({ data }: any) => data.subject.username);
 			expect(calledUsernames.sort()).toEqual(usernames.sort());
 		});
 
@@ -1210,7 +1214,7 @@ describe('AbacService (unit)', () => {
 				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 			});
 
-			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+			expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 		});
 	});
 
@@ -1239,7 +1243,7 @@ describe('AbacService (unit)', () => {
 					code: 'error-pdp-unavailable',
 				});
 				expect(pdp.checkUsernamesMatchAttributes).not.toHaveBeenCalled();
-				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 
 			it('propagates the error (invite blocked) and writes no audit when the decision call fails', async () => {
@@ -1247,7 +1251,7 @@ describe('AbacService (unit)', () => {
 
 				await expect(service.checkUsernamesMatchAttributes(['alice'], attributes as any, room)).rejects.toThrow('virtru down');
 				expect(pdp.checkUsernamesMatchAttributes).toHaveBeenCalled();
-				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1311,13 +1315,12 @@ describe('AbacService (unit)', () => {
 			return pdp;
 		};
 
-		const auditedPairs = () =>
-			mockCreateAuditServerEvent.mock.calls.map(([, payload]: any[]) => `${payload?.subject?.username}@${payload?.object?._id}`);
+		const auditedPairs = () => auditedEvents().map(({ data }: any) => `${data.subject.username}@${data.object._id}`);
 
 		beforeEach(() => {
 			mockUsersFind.mockReset();
 			mockUsersFindOneById.mockReset();
-			mockCreateAuditServerEvent.mockReset();
+			mockCreateAuditServerEvents.mockReset();
 		});
 
 		describe('filterUsersAllowedInRoom', () => {
@@ -1373,6 +1376,7 @@ describe('AbacService (unit)', () => {
 
 				await service.filterUsersAllowedInRoom(['u1', 'u2', 'u3'], room);
 
+				expect(mockCreateAuditServerEvents).toHaveBeenCalledTimes(1);
 				expect(auditedPairs().sort()).toEqual(['alice@r1', 'carol@r1']);
 			});
 
@@ -1394,7 +1398,7 @@ describe('AbacService (unit)', () => {
 				usePdp({ evaluateSubjectsAgainstAttributes: jest.fn().mockRejectedValue(new Error('virtru down')) });
 
 				await expect(service.filterUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual([]);
-				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1438,6 +1442,7 @@ describe('AbacService (unit)', () => {
 
 				await service.filterRoomsAllowedForUser('u1', [room, plainRoom, otherRoom]);
 
+				expect(mockCreateAuditServerEvents).toHaveBeenCalledTimes(1);
 				expect(auditedPairs().sort()).toEqual(['alice@r1', 'alice@r2']);
 			});
 
@@ -1466,7 +1471,7 @@ describe('AbacService (unit)', () => {
 				usePdp({ evaluateSubjectAgainstRooms: jest.fn().mockRejectedValue(new Error('virtru down')) });
 
 				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom])).resolves.toEqual(['r0']);
-				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 		});
 	});
