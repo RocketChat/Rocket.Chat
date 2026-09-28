@@ -174,11 +174,11 @@ export async function cleanRoomHistory({
 				ignoreThreads,
 				batch,
 			);
+			selectedMessageIds?.push(...batch);
 			await ReadReceipts.removeByMessageIds(batch);
 			await ReadReceiptsArchive.removeByMessageIds(batch);
 
 			remaining -= batch.length;
-			selectedMessageIds?.push(...batch);
 		}
 	} finally {
 		if (count) {

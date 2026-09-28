@@ -56,6 +56,7 @@ describe('cleanRoomHistory', () => {
 			...Object.values(modelsMock.Subscriptions),
 			modelsMock.Rooms.resetLastMessageById,
 			modelsMock.ReadReceipts.removeByMessageIds,
+			modelsMock.ReadReceiptsArchive.removeByMessageIds,
 			broadcastMock,
 			notifyOnSubscriptionChangedByIdMock,
 		].forEach((stub) => stub.reset());
@@ -74,6 +75,7 @@ describe('cleanRoomHistory', () => {
 		expect(count).to.equal(2005);
 		expect(modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[7])).to.deep.equal(batches);
 		expect(modelsMock.ReadReceipts.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
+		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(broadcastMock.calledOnceWith('notify.deleteMessageBulk', 'rid', sinon.match({ ids: undefined }))).to.be.true;
 	});
 

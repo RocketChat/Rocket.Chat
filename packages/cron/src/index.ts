@@ -200,7 +200,9 @@ export class AgendaCronJobs {
 
 			const interval = setInterval(() => {
 				if (Date.now() < renewUntil) {
-					renewal = job.touch().catch((err) => logger.warn({ msg: 'Failed to renew the cron job lock', jobName, err }));
+					renewal = Promise.resolve(renewal)
+						.then(() => job.touch())
+						.catch((err) => logger.warn({ msg: 'Failed to renew the cron job lock', jobName, err }));
 				}
 			}, 60 * 1000);
 
