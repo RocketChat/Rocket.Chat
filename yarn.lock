@@ -9947,8 +9947,8 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    react: "*"
-    react-dom: "*"
+    react: ">=19"
+    react-dom: ">=19"
     react-i18next: "*"
   languageName: unknown
   linkType: soft
