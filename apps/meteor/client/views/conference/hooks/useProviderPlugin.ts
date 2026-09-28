@@ -7,7 +7,9 @@ import type {
 	ProviderPluginControls,
 } from '@rocket.chat/ui-conference';
 import { PLUGIN_FEATURES } from '@rocket.chat/ui-conference';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * The namespace every message of this protocol carries, in both directions.
@@ -82,6 +84,13 @@ type UseProviderPluginOptions = {
 	 * for why only a deliberate leave gets here.
 	 */
 	onLeave: () => void;
+	/**
+	 * The call ended without the provider saying whether the user meant it.
+	 *
+	 * Pexip reports a disconnection and nothing else, so neither reading is safe to act on alone — see the
+	 * `disconnected` case below. A provider that says which it was reaches `onLeave` instead.
+	 */
+	onDropped?: () => void;
 };
 
 const isPluginFeature = (value: unknown): value is PluginFeature => PLUGIN_FEATURES.includes(value as PluginFeature);
@@ -165,6 +174,7 @@ export const useProviderPlugin = ({
 	onToggleChat,
 	onToggleParticipants,
 	onLeave,
+	onDropped,
 }: UseProviderPluginOptions): ProviderPluginControls => {
 	// Learned from the messages it sends, not from the iframe this page renders: a plugin may run in a frame
 	// *inside* the provider's page, where a message posted to the provider's own window would never reach it.
@@ -188,10 +198,25 @@ export const useProviderPlugin = ({
 	onToggleParticipantsRef.current = onToggleParticipants;
 	const onLeaveRef = useRef(onLeave);
 	onLeaveRef.current = onLeave;
+	const onDroppedRef = useRef(onDropped);
+	onDroppedRef.current = onDropped;
 
 	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
 	// would end the call for everyone still on their way into it.
 	const wasConnectedRef = useRef(false);
+
+	// Held in a ref like everything else the listener reads, so a language change does not rebind it.
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const reportDialOutRef = useRef<(dialled: boolean, detail: string) => void>(() => undefined);
+	reportDialOutRef.current = (dialled, detail) => {
+		if (dialled) {
+			dispatchToastMessage({ type: 'success', message: t('Calling__roomName__', { roomName: detail }) });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message: detail || t('Error') });
+	};
 
 	const [features, setFeatures] = useState<ReadonlySet<PluginFeature>>(NO_FEATURES);
 	const [self, setSelf] = useState<PluginSelf>();
@@ -275,13 +300,25 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'disconnected':
-					// Only a deliberate leave from someone who joined: an involuntary drop is the provider's to
-					// recover, and closing the window under it turns a blip into a departure. Pexip says nothing
-					// about which this was, so every drop after a connection is taken at its word — the one thing
-					// worse than ending a call on a blip is leaving a dead frame with nobody able to say so.
-					if (wasConnectedRef.current && (spoken.dialect === 'pexip' || data.userInitiated === true)) {
+					// Nothing from a prejoin screen, where nobody has joined: reporting a leave from there would
+					// end the call for everyone still on their way into it.
+					if (!wasConnectedRef.current) {
+						break;
+					}
+
+					// A deliberate leave is acted on; an involuntary drop is the provider's to recover, and closing
+					// the window under it turns a blip into a departure.
+					if (data.userInitiated === true) {
 						wasConnectedRef.current = false;
 						onLeaveRef.current();
+						break;
+					}
+
+					// Pexip says only that the connection ended, so neither reading is safe on its own — that goes
+					// to whoever can ask the reader which it was.
+					if (spoken.dialect === 'pexip') {
+						wasConnectedRef.current = false;
+						onDroppedRef.current?.();
 					}
 					break;
 
@@ -296,6 +333,16 @@ export const useProviderPlugin = ({
 
 				case 'self':
 					setSelf(toSelf(data));
+					break;
+
+				// A number is dialled into the call rather than invited to it, so nothing appears anywhere to say
+				// it worked — the provider's answer is the only account of it there is.
+				case 'dial-out-success':
+					reportDialOutRef.current(true, typeof data.displayName === 'string' ? data.displayName : '');
+					break;
+
+				case 'dial-out-error':
+					reportDialOutRef.current(false, typeof data.message === 'string' ? data.message : '');
 					break;
 
 				case 'roster':
