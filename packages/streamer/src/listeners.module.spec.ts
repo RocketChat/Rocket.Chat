@@ -51,9 +51,9 @@ describe('ListenersModule', () => {
 
 			fire('room.video-conference', { rid: 'room1', callId: 'call1' });
 
+			expect(emit).toHaveBeenCalledTimes(2);
 			expect(emit).toHaveBeenCalledWith('room1/call1', [], undefined, false);
 			expect(emit).toHaveBeenCalledWith('room1/videoconf', ['call1'], undefined, false);
-			expect(emit).not.toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), true);
 		});
 
 		it('delivers video-conference.updated to this instance only', () => {
