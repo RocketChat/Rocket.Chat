@@ -1,0 +1,59 @@
+packages/cron/src/index.ts
+  s_8f6d48f13a0796::t_6ab6fb3dc1fedf 198,200,206
+  s_8f6d48f13a0796::t_3b033a7d9a6eab 195
+  h_a14d455b9c5e4f 196
+  s_8f6d48f13a0796::t_556026cca60a42 194,197,199,201-205,207-212
+packages/models/src/models/Messages.ts
+  s_8f6d48f13a0796::t_64ccc95517598d 1507-1511,1521-1525,1527-1528
+packages/models/src/models/BaseRaw.ts
+  s_8f6d48f13a0796::t_643994acba04c7 403
+  s_8f6d48f13a0796::t_28fb3653308278 16,401-402,404,415,428-439,444-445
+apps/meteor/server/lib/rooms/retention/cronPruneMessages.ts
+  s_8f6d48f13a0796::t_75c3704aeeb3ec 103,108,111
+  s_8f6d48f13a0796::t_59940ae4059b9c 3,10-11,31-38,64,89
+  s_8f6d48f13a0796::t_643994acba04c7 104,106
+  h_a14d455b9c5e4f 107
+.changeset/retention-prune-batches.md
+  s_8f6d48f13a0796::t_0644addeb1cf68 8
+  s_8f6d48f13a0796::t_4e6ff7b177d3b3 1-3,5-7
+  s_8f6d48f13a0796::t_5f66fce2696edf 4
+apps/meteor/server/lib/rooms/cleanRoomHistory.ts
+  s_8f6d48f13a0796::t_8fb4c3c9cf3b34 126,132,135-136
+  s_8f6d48f13a0796::t_64ccc95517598d 138,141,148-150,152-165,167-185,187,189,191-201
+apps/meteor/tests/unit/server/lib/rooms/cleanRoomHistory.spec.ts
+  s_8f6d48f13a0796::t_5c0f8237d3e0ac 1-9,12-17,22-26,28-34,36,41-42,51-53,66-67,71,73-74,77-80,84-87,89,112-113
+  s_8f6d48f13a0796::t_03e0d33b1c1b96 10,27,39,60,65,75,105,111
+  s_8f6d48f13a0796::t_cdedfaa0a6a798 83
+  s_8f6d48f13a0796::t_fce970d1bf10ea 11,18-21,44-45,47-50,54-56,58-59,61-62,72,90-91,107-110
+  s_8f6d48f13a0796::t_5ed3a7b21ac047 92,96,98,100-102
+  s_8f6d48f13a0796::t_53a5d593f04769 37-38,40
+  s_8f6d48f13a0796::t_77105a3ad7c848 43,46,57,63-64,68-70,76,81-82,88,93-95,97,99,103-104,106
+  s_8f6d48f13a0796::t_c6fbf7c1bdbfea 35
+packages/model-typings/src/models/IBaseModel.ts
+  s_8f6d48f13a0796::t_28fb3653308278 123-124,126
+  s_8f6d48f13a0796::t_643994acba04c7 125
+packages/models/src/models/BaseRaw.spec.ts
+  s_8f6d48f13a0796::t_3ba84e5d54807b 87-90
+  s_8f6d48f13a0796::t_0fc3d1618ede74 53-86,91-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "da352c2b6184a8837f99a056fb9c38568c70e75b",
+  "prompts": {},
+  "humans": {
+    "h_a14d455b9c5e4f": {
+      "author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_8f6d48f13a0796": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffdd38e1-f774-4e5f-8f3a-8114a6055372",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
