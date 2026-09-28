@@ -47,6 +47,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private serverName: string;
 
+	private serviceEnabled: boolean;
+
 	private processEDUTyping: boolean;
 
 	private processEDUPresence: boolean;
@@ -62,6 +64,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'string') {
 				this.serverName = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Enabled', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.serviceEnabled = value;
 			}
 		});
 
@@ -189,6 +198,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	override async started(): Promise<void> {
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.serviceEnabled = (await Settings.get<boolean>('Federation_Service_Enabled')) || false;
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
@@ -847,7 +857,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	private async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
-		if (!this.processEDUTyping) {
+		if (!this.serviceEnabled || !this.processEDUTyping) {
 			return;
 		}
 
