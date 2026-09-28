@@ -52,7 +52,7 @@
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-client": "34.0.0",
+		"@rocket.chat/ui-client": "workspace:^",
 		"react": "*",
 		"react-dom": "*"
 	},

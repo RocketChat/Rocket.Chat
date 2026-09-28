@@ -48,7 +48,7 @@
     "@rocket.chat/layout": "~0.36.3",
     "@rocket.chat/logo": "^0.33.2",
     "@rocket.chat/storybook-config": "workspace:~",
-    "@rocket.chat/storybook-dark-mode": "~4.2.1",
+    "@rocket.chat/storybook-dark-mode": "workspace:^",
     "@rocket.chat/styled": "~0.34.1",
     "@rocket.chat/tsconfig": "workspace:~",
     "@testing-library/dom": "~10.4.1",

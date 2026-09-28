@@ -9384,7 +9384,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.33.0, @rocket.chat/css-in-js@npm:^0.33.1, @rocket.chat/css-in-js@workspace:packages/css-in-js, @rocket.chat/css-in-js@workspace:~":
+"@rocket.chat/css-in-js@npm:^0.33.0, @rocket.chat/css-in-js@npm:^0.33.1, @rocket.chat/css-in-js@workspace:^, @rocket.chat/css-in-js@workspace:packages/css-in-js, @rocket.chat/css-in-js@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/css-in-js@workspace:packages/css-in-js"
   dependencies:
@@ -9807,10 +9807,10 @@ __metadata:
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
-    "@rocket.chat/message-parser": 0.32.0
+    "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -10240,7 +10240,7 @@ __metadata:
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": "npm:^0.37.3"
+    "@rocket.chat/onboarding-ui": "workspace:^"
     "@rocket.chat/passport-x": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
@@ -10804,7 +10804,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:^0.37.3, @rocket.chat/onboarding-ui@npm:~0.37.3, @rocket.chat/onboarding-ui@workspace:packages/onboarding-ui":
+"@rocket.chat/onboarding-ui@workspace:^, @rocket.chat/onboarding-ui@workspace:packages/onboarding-ui":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/onboarding-ui@workspace:packages/onboarding-ui"
   dependencies:
@@ -10816,7 +10816,7 @@ __metadata:
     "@rocket.chat/layout": "npm:~0.36.3"
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
+    "@rocket.chat/storybook-dark-mode": "workspace:^"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.1"
@@ -11174,7 +11174,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-dark-mode@npm:~4.2.1, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
+"@rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode"
   dependencies:
@@ -11324,7 +11324,7 @@ __metadata:
     "@rocket.chat/logo": "npm:^0.33.2"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
-    "@rocket.chat/onboarding-ui": "npm:~0.37.3"
+    "@rocket.chat/onboarding-ui": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tools": "workspace:~"
@@ -11353,7 +11353,7 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@react-aria/toolbar": "*"
-    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
@@ -11402,7 +11402,7 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-client": 34.0.0
+    "@rocket.chat/ui-client": "workspace:^"
     react: "*"
     react-dom: "*"
   languageName: unknown
@@ -11415,7 +11415,7 @@ __metadata:
     "@react-aria/focus": "npm:^3.21.1"
     "@react-aria/visually-hidden": "npm:^3.8.27"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.92.0"
     "@rocket.chat/fuselage-forms": "npm:~1.5.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
@@ -11452,7 +11452,7 @@ __metadata:
     "@react-aria/focus": "*"
     "@react-aria/visually-hidden": "*"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-forms": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -11561,7 +11561,7 @@ __metadata:
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
   peerDependencies:
-    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
@@ -11623,7 +11623,7 @@ __metadata:
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
-    "@rocket.chat/css-in-js": "*"
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
@@ -11719,8 +11719,8 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.4.0
-    "@rocket.chat/ui-contexts": 34.0.0
+    "@rocket.chat/tools": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
