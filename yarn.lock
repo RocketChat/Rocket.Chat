@@ -9920,7 +9920,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/layout@workspace:packages/layout"
   dependencies:
-    "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.92.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
