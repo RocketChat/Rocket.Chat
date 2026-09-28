@@ -14,7 +14,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 // Mirrors the options RichTextMessageBox feeds the parser: emoticons, KaTeX and colors are all off
 // there, so nodes gated behind them never reach ComposerMarkup.
-const parseOptions: Options = { emoticons: false };
+const parseOptions: Options = { emoticons: false, customDomains: [] };
 
 const markdownSample = [
 	'# Heading one',
@@ -95,7 +95,7 @@ const RealTimeComposer = ({ source, placeholder }: RealTimeComposerProps) => (
 				))}
 			</MessageComposerToolbarActions>
 			<MessageComposerToolbarSubmit>
-				<MessageComposerAction aria-label='Send' icon='send' secondary={source !== ''} info={source !== ''} />
+				<MessageComposerAction aria-label='Send' icon='send' disabled={source === ''} secondary={source !== ''} info={source !== ''} />
 			</MessageComposerToolbarSubmit>
 		</MessageComposerToolbar>
 	</MessageComposer>
