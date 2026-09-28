@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- ([#41718](https://github.com/RocketChat/Rocket.Chat/pull/41718)) Use federation room version 11 by default
+- ([#41718](https://github.com/RocketChat/Rocket.Chat/pull/41718)) Use federation room version 11 by default _(changed in a later 8.9.0 release candidate: version 11 is supported, but 10 remains the default)_
 
 ### Patch Changes
 
