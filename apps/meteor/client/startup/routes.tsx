@@ -24,7 +24,7 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const CallHistoryRoute = lazy(() => import('../views/mediaCallHistory/CallHistoryRoute'));
 const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
 const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
@@ -253,7 +253,7 @@ router.defineRoutes([
 		id: 'call-history',
 		element: appLayout.wrap(
 			<MainLayout>
-				<CallHistoryPage />
+				<CallHistoryRoute />
 				<SidebarRailCallPanel />
 			</MainLayout>,
 		),

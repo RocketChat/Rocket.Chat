@@ -53,6 +53,24 @@ export const firstByTag = (scope: Document | Element, ns: string, tag: string): 
 export const allByTag = (scope: Document | Element, ns: string, tag: string): Element[] =>
 	Array.from(scope.getElementsByTagNameNS(ns, tag) as unknown as ArrayLike<Element>);
 
+export const attributeOf = (scope: Document | Element | undefined, tag: string, attribute: string): string | undefined => {
+	const found = scope && firstByTag(scope, TYPES_NS, tag);
+	return found?.getAttribute(attribute) ?? undefined;
+};
+
+/** Several contact fields are keyed dictionaries rather than plain lists */
+export const dictionaryEntries = (scope: Element, tag: string): { key: string; value: string }[] => {
+	const dictionary = firstByTag(scope, TYPES_NS, tag);
+
+	if (!dictionary) {
+		return [];
+	}
+
+	return allByTag(dictionary, TYPES_NS, 'Entry')
+		.map((entry) => ({ key: entry.getAttribute('Key') ?? '', value: textOf(entry) ?? '' }))
+		.filter(({ value }) => value);
+};
+
 export const parseEwsDateTime = (value: string | undefined): Date | undefined => {
 	if (!value) {
 		return undefined;
