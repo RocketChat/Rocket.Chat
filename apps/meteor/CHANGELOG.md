@@ -1,5 +1,19 @@
 # @rocket.chat/meteor
 
+## 8.9.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#42360](https://github.com/RocketChat/Rocket.Chat/pull/42360)) Restores the room list sidebar rows and group headers to their previous look, undoing the restyle introduced by the Fuselage upgrade
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.2
+  - @rocket.chat/rest-typings@8.9.0-rc.2
+
+  </details>
+
 ## 8.9.0-rc.1
 
 ### Patch Changes
