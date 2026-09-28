@@ -229,6 +229,14 @@ describe('MongoDB sort representations', () => {
 	it('accepts a single field name', () => {
 		expect([...documents].sort(createComparatorFromSort('score')).map(({ score }) => score)).toEqual([1, 2, 3]);
 	});
+	it('sorts by each field in a string list when the second is not a direction', () => {
+		const values = [
+			{ status: 2, priority: 2 },
+			{ status: 1, priority: 2 },
+			{ status: 1, priority: 1 },
+		];
+		expect([...values].sort(createComparatorFromSort(['status', 'priority']))).toEqual([values[2], values[1], values[0]]);
+	});
 	it('handles a dotted path through an empty array as missing', () => {
 		const sorter = createComparatorFromSort({ 'items.score': 1 });
 		expect(sorter({ items: [] }, { items: [{ score: 1 }] })).toBeLessThan(0);
