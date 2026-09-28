@@ -1,0 +1,18 @@
+{
+  "extends": "@rocket.chat/tsconfig/client.json",
+  "compilerOptions": {
+    "rootDirs": ["./src", "./.storybook"],
+    "outDir": "./dist"
+  },
+  "include": [
+    "./src",
+    "./.storybook/**/*",
+    "./jest.config.ts",
+    "./jest-setup.ts"
+  ],
+  "exclude": ["./dist"],
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
+    "out": "../../static/fuselage-toastbar"
+  }
+}
