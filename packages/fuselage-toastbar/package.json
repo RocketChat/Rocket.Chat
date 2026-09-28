@@ -45,11 +45,8 @@
 	"devDependencies": {
 		"@rocket.chat/fuselage": "^0.92.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/layout": "~0.36.3",
 		"@rocket.chat/storybook-config": "workspace:~",
-		"@rocket.chat/storybook-dark-mode": "~4.2.1",
 		"@rocket.chat/styled": "~0.34.1",
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@testing-library/dom": "~10.4.1",
