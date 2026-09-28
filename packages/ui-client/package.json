@@ -18,7 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/onboarding-ui": "~0.37.3",
+		"@rocket.chat/onboarding-ui": "workspace:^",
 		"@rocket.chat/tools": "workspace:~",
 		"dompurify": "~3.4.14"
 	},
@@ -63,7 +63,7 @@
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
-		"@rocket.chat/css-in-js": "*",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
