@@ -5,7 +5,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "rootDir": "./src",
-    "outDir": "./dist/cjs"
+    "outDir": "./dist/cjs",
+    "declaration": false,
+    "declarationMap": false
   },
   "include": ["./src"],
   "exclude": [
