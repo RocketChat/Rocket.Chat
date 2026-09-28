@@ -11350,9 +11350,7 @@ __metadata:
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.220.0"
     "@opentelemetry/sdk-node": "npm:^0.220.0"
     "@opentelemetry/sdk-trace-base": "npm:^2.7.1"
-    "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.5"
-    jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
