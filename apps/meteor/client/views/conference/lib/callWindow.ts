@@ -7,7 +7,7 @@ const CLOSE_GRACE = 500;
 export const NEW_CONFERENCE_ID = 'new';
 
 /** The internal Pexip integration, whose page is the frame inside our own rather than somewhere to send people. */
-const PEXIP_PROVIDER_NAME = 'core.pexip';
+export const PEXIP_PROVIDER_NAME = 'core.pexip';
 
 /**
  * Whether a call opens in the conference window rather than at the provider's own address.

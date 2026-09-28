@@ -360,6 +360,7 @@ export const speakingProvider = ({
 		disconnect: action('disconnect'),
 		spotlight: action('spotlight'),
 		setRole: action('setRole'),
+		dialOut: action('dialOut'),
 		raiseHand: action('raiseHand'),
 	},
 });

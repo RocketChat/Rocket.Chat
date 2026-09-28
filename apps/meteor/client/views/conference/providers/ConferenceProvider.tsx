@@ -20,6 +20,7 @@ import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
@@ -41,6 +42,8 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  */
 const ConferenceProvider = ({ callId, children }: { callId: string; children: ReactNode }) => {
 	const { call, room, conference } = useConferenceEmbedded(callId);
+
+	const isPexip = conference.providerName === PEXIP_PROVIDER_NAME;
 	const queryClient = useQueryClient();
 
 	const ring = useEndpoint('POST', '/v1/video-conference.ring');
@@ -118,8 +121,10 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			ringMember: async (memberId) => {
 				await ring({ callId, userId: memberId });
 			},
-			shareChat: async (mode) => {
-				await shareChatEndpoint({ callId, mode });
+			shareChat: async (mode, users) => {
+				// Named nobody, the server works out which members cannot read the chat. Named people, it brings
+				// those people into the conversation whether or not anyone was locked out.
+				await shareChatEndpoint({ callId, mode, ...(users?.length ? { users } : {}) });
 				// The server broadcasts the change to every participant, but the one who asked for it should not
 				// wait for the round trip to see their own notice go away.
 				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
@@ -178,6 +183,9 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: conference.loading,
 				error: failureFor(conference.error),
 				retry: conference.retry,
+				// Pexip's chat is what this window is opened for, so it sits on the side the reader reads from.
+				panelDock: isPexip ? 'start' : 'end',
+				providerOwnsChatToggle: provider.features.has('chat'),
 			},
 			actions,
 			slots: {
@@ -202,6 +210,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			conference,
 			canRingUsers,
 			displayAvatars,
+			isPexip,
 			panel,
 			provider,
 			renderMemberStatus,

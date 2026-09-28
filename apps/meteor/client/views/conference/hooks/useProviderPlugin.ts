@@ -17,6 +17,49 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
  */
 const PLUGIN_NS = 'rocketchat:videoconf';
 
+/**
+ * Pexip's plugin speaks a namespace and a vocabulary of its own, and is not ours to change.
+ *
+ * So it is translated on the way in and out rather than adapted to: everything below works in the protocol
+ * above, and the two `pexip` branches are the whole of what knows there is another one.
+ */
+const PEXIP_NS = 'pexip:plugin:external-chat';
+
+type PluginDialect = 'rocketchat' | 'pexip';
+
+/** Pexip announces nothing about itself, so what its plugin can do is what its plugin has always done. */
+const PEXIP_FEATURES: ReadonlySet<PluginFeature> = new Set<PluginFeature>(['chat', 'dial-out']);
+
+/** The namespace a message arrived in, and the bare action under it. */
+const readAction = (action: string): { dialect: PluginDialect; name: string } | undefined => {
+	if (action.startsWith(`${PLUGIN_NS}/`)) {
+		return { dialect: 'rocketchat', name: action.slice(PLUGIN_NS.length + 1) };
+	}
+
+	if (action.startsWith(`${PEXIP_NS}/`)) {
+		return { dialect: 'pexip', name: action.slice(PEXIP_NS.length + 1) };
+	}
+
+	return undefined;
+};
+
+/** What each thing the window says is called, and carries, in the dialect being spoken. */
+const outbound = {
+	rocketchat: {
+		'chat-state': (active: boolean) => ({ action: 'chat-state', data: { active } }),
+		'chat-unread': (unread: boolean) => ({ action: 'chat-unread', data: { unread } }),
+		'dial-out': (destination: string) => ({ action: 'dial-out', data: { destination } }),
+	},
+	pexip: {
+		'chat-state': (active: boolean) => ({ action: 'toggle-chat-button-state', data: { active } }),
+		'chat-unread': (unread: boolean) => ({ action: 'toggle-chat-badge', data: { visible: unread } }),
+		'dial-out': (destination: string) => ({
+			action: 'dial-out',
+			data: { role: 'GUEST', destination, protocol: 'auto', call_type: 'audio' },
+		}),
+	},
+} as const;
+
 type UseProviderPluginOptions = {
 	/**
 	 * The provider page in the iframe, and the origin its messages have to come from. Undefined for a provider
@@ -129,6 +172,8 @@ export const useProviderPlugin = ({
 	// Answered to the origin it spoke from, since `transfer` carries a conference PIN. A sandboxed frame reports
 	// the opaque `null`, which no concrete target origin can name, and only there is the wildcard the only way.
 	const targetOriginRef = useRef('*');
+	// Answered in whatever the plugin spoke first, so nothing has to be configured to match it.
+	const dialectRef = useRef<PluginDialect>('rocketchat');
 
 	// Read inside the listener, which is bound once per call rather than on every panel toggle.
 	const chatVisibleRef = useRef(chatVisible);
@@ -153,8 +198,19 @@ export const useProviderPlugin = ({
 	const [participants, setParticipants] = useState<PluginParticipant[]>(NO_PARTICIPANTS);
 
 	const postToPlugin = useCallback((action: string, data: Record<string, unknown> = {}) => {
-		pluginWindowRef.current?.postMessage({ action: `${PLUGIN_NS}/${action}`, ...data }, targetOriginRef.current);
+		const ns = dialectRef.current === 'pexip' ? PEXIP_NS : PLUGIN_NS;
+		pluginWindowRef.current?.postMessage({ action: `${ns}/${action}`, ...data }, targetOriginRef.current);
 	}, []);
+
+	/** The three things the window tells a plugin, each said the way the dialect in use says it. */
+	const say = useCallback(
+		(key: keyof (typeof outbound)['rocketchat'], value: boolean | string) => {
+			const build = outbound[dialectRef.current][key] as (value: boolean | string) => { action: string; data: Record<string, unknown> };
+			const { action, data } = build(value);
+			postToPlugin(action, data);
+		},
+		[postToPlugin],
+	);
 
 	useEffect(() => {
 		let expectedOrigin: string;
@@ -176,7 +232,12 @@ export const useProviderPlugin = ({
 			}
 
 			const { action } = data;
-			if (typeof action !== 'string' || !action.startsWith(`${PLUGIN_NS}/`)) {
+			if (typeof action !== 'string') {
+				return;
+			}
+
+			const spoken = readAction(action);
+			if (!spoken) {
 				return;
 			}
 
@@ -189,20 +250,23 @@ export const useProviderPlugin = ({
 			if (event.source) {
 				pluginWindowRef.current = event.source as Window;
 				targetOriginRef.current = event.origin === 'null' ? '*' : event.origin;
+				dialectRef.current = spoken.dialect;
 			}
 
-			switch (action.slice(PLUGIN_NS.length + 1)) {
+			switch (spoken.name) {
 				case 'ready':
 					// Said once per page, so a reload is a new session whose old roster describes nobody.
-					setFeatures(toFeatures(data.features));
+					setFeatures(spoken.dialect === 'pexip' ? PEXIP_FEATURES : toFeatures(data.features));
 					setSelf(undefined);
 					setParticipants(NO_PARTICIPANTS);
 
 					// The plugin's control renders before it hears anything, so this is the one message that must
 					// be answered.
-					postToPlugin('chat-state', { active: chatVisibleRef.current });
-					postToPlugin('participants-state', { active: participantsVisibleRef.current });
-					postToPlugin('chat-unread', { unread: hasUnreadRef.current });
+					say('chat-state', chatVisibleRef.current);
+					if (spoken.dialect === 'rocketchat') {
+						postToPlugin('participants-state', { active: participantsVisibleRef.current });
+					}
+					say('chat-unread', hasUnreadRef.current);
 					break;
 
 				case 'connected':
@@ -212,8 +276,10 @@ export const useProviderPlugin = ({
 
 				case 'disconnected':
 					// Only a deliberate leave from someone who joined: an involuntary drop is the provider's to
-					// recover, and closing the window under it turns a blip into a departure.
-					if (wasConnectedRef.current && data.userInitiated === true) {
+					// recover, and closing the window under it turns a blip into a departure. Pexip says nothing
+					// about which this was, so every drop after a connection is taken at its word — the one thing
+					// worse than ending a call on a blip is leaving a dead frame with nobody able to say so.
+					if (wasConnectedRef.current && (spoken.dialect === 'pexip' || data.userInitiated === true)) {
 						wasConnectedRef.current = false;
 						onLeaveRef.current();
 					}
@@ -241,20 +307,23 @@ export const useProviderPlugin = ({
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [conferenceUrl, postToPlugin]);
+	}, [conferenceUrl, postToPlugin, say]);
 
 	// Pushed rather than answered, so every way of moving the panel keeps the provider's control honest.
 	useEffect(() => {
-		postToPlugin('chat-state', { active: chatVisible });
-	}, [chatVisible, postToPlugin]);
+		say('chat-state', chatVisible);
+	}, [chatVisible, say]);
 
+	// Only the dialect that has a people panel to keep in step; Pexip's plugin has no such control to tell.
 	useEffect(() => {
-		postToPlugin('participants-state', { active: participantsVisible });
+		if (dialectRef.current === 'rocketchat') {
+			postToPlugin('participants-state', { active: participantsVisible });
+		}
 	}, [participantsVisible, postToPlugin]);
 
 	useEffect(() => {
-		postToPlugin('chat-unread', { unread: hasUnread });
-	}, [hasUnread, postToPlugin]);
+		say('chat-unread', hasUnread);
+	}, [hasUnread, say]);
 
 	const actions = useMemo(
 		(): ProviderPluginActions => ({
@@ -265,8 +334,9 @@ export const useProviderPlugin = ({
 			spotlight: (participantUuid, active) => postToPlugin('spotlight', { participantUuid, active }),
 			raiseHand: (participantUuid, raised) => postToPlugin('raise-hand', { participantUuid, raised }),
 			setRole: (participantUuid, role) => postToPlugin('set-role', { participantUuid, role }),
+			dialOut: (destination) => say('dial-out', destination),
 		}),
-		[postToPlugin],
+		[postToPlugin, say],
 	);
 
 	return { features, self, participants, actions };
