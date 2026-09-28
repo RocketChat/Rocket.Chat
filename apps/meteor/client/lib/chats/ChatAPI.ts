@@ -30,7 +30,7 @@ export type ComposerAPI = {
 	};
 	insertText(text: string): void;
 	insertNewLine(): void;
-	clear(options?: { keepDraft?: boolean }): void;
+	clear(): void;
 	focus(): void;
 	blur(): void;
 

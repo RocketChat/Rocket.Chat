@@ -105,12 +105,9 @@ export const createComposerAPICore = ({
 		});
 	};
 
-	const clear = ({ keepDraft = false }: { keepDraft?: boolean } = {}): void => {
+	const clear = (): void => {
 		setText('');
-
-		if (!keepDraft) {
-			discardDraft();
-		}
+		discardDraft();
 	};
 
 	const insertNewLine = (): void => insertText('\n');

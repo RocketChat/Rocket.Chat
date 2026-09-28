@@ -73,12 +73,4 @@ describe('ChatMessages Composer API - clear', () => {
 
 		expect(discardDraft).toHaveBeenCalledTimes(1);
 	});
-
-	it('should keep the stored draft when the composer is only being torn down', () => {
-		const { composer, discardDraft } = setupComposer('a message', { start: 0, end: 0 });
-
-		composer.clear({ keepDraft: true });
-
-		expect(discardDraft).not.toHaveBeenCalled();
-	});
 });
