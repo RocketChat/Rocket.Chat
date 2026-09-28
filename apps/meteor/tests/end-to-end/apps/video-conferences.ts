@@ -1176,7 +1176,10 @@ describe('Apps - Video Conferences', () => {
 			});
 
 			it('should join a call as a regular user with only videoconf-join-call, but still fail to start one', async () => {
-				await updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator', 'user']);
+				await Promise.all([
+					updatePermission('call-management', ['admin', 'owner', 'moderator']),
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator', 'user']),
+				]);
 
 				await request
 					.post(api('video-conference.join'))
@@ -1242,6 +1245,10 @@ describe('Apps - Video Conferences', () => {
 			});
 
 			it('should join a call with authenticated user without call-management or videoconf-join-call when Accounts_AllowAnonymousRead is enabled', async () => {
+				await Promise.all([
+					updatePermission('call-management', ['admin', 'owner', 'moderator']),
+					updatePermission('videoconf-join-call', ['admin', 'owner', 'moderator']),
+				]);
 				await updateSetting('Accounts_AllowAnonymousRead', true);
 
 				await request
