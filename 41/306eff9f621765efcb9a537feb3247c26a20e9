@@ -1,0 +1,19 @@
+docs/adr/0005-stream-fan-out-rides-the-service-broker.md
+  s_2b0eded95c2435::t_595e6242b0d1a4 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "41306eff9f621765efcb9a537feb3247c26a20e9",
+  "prompts": {},
+  "sessions": {
+    "s_2b0eded95c2435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7a05115-5a53-4853-82c7-0d37436775af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

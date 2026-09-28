@@ -1,0 +1,25 @@
+apps/meteor/ee/server/apps/orchestrator.ts
+  s_2becb22f9f60ff::t_96b824346f412c 142
+packages/streamer/src/notifications.module.ts
+  s_2becb22f9f60ff::t_4685a8152231a5 44-45
+  s_2becb22f9f60ff::t_865886351838e2 373-376
+  s_2becb22f9f60ff::t_e48ed9ef139374 80
+apps/meteor/ee/server/apps/communication/websockets.ts
+  s_2becb22f9f60ff::t_96b824346f412c 2,6,9-11,14-137,139-156,166-170,175-182,187-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fa13367bfad580167952a14628c159d3489af101",
+  "prompts": {},
+  "sessions": {
+    "s_2becb22f9f60ff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d5239ed-eb9e-4586-b607-1a4698b06d4c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

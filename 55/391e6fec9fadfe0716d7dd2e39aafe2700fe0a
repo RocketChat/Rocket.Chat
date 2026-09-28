@@ -1,0 +1,31 @@
+ee/apps/ddp-streamer/src/service.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 48
+packages/streamer/src/notifications.module.spec.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 57
+packages/streamer/src/notifications.module.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 76-77
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 48
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 28
+packages/streamer/src/index.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 3
+packages/streamer/src/listeners.module.spec.ts
+  s_2b0eded95c2435::t_5d16ec8fe1ff97 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "55391e6fec9fadfe0716d7dd2e39aafe2700fe0a",
+  "prompts": {},
+  "sessions": {
+    "s_2b0eded95c2435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a7a05115-5a53-4853-82c7-0d37436775af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
