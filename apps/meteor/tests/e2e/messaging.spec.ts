@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { BASE_API_URL, DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -14,20 +14,16 @@ test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+	test.beforeAll(async ({ api, request }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		targetChannel = channel.name as string;
 
 		// Navigation and message edition tests need existing messages authored by user1.
-		const userApi = await api.login({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password });
-		try {
-			for (const text of ['msg1', 'msg2']) {
-				const response = await userApi.post(`${BASE_API_URL}/chat.postMessage`, { data: { channel: targetChannel, text } });
-				expect(response.ok()).toBeTruthy();
-				expect((await response.json()).success).toBe(true);
-			}
-		} finally {
-			await userApi.dispose();
-		}
+		const firstMessage = await sendMessageFromUser(request, Users.user1, channel._id, 'msg1');
+		expect(firstMessage.success).toBe(true);
+
+		const secondMessage = await sendMessageFromUser(request, Users.user1, channel._id, 'msg2');
+		expect(secondMessage.success).toBe(true);
 	});
 
 	test.beforeEach(async ({ page }) => {

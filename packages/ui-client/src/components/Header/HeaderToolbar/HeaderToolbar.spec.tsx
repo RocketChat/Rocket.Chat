@@ -17,12 +17,15 @@ const renderToolbar = () =>
 		</>,
 	);
 
-it('navigates between toolbar actions using arrow keys', async () => {
+it('navigates between toolbar actions using arrow keys and stops at the edges', async () => {
 	const user = userEvent.setup();
 	renderToolbar();
 
 	await user.tab();
 	await user.tab();
+	expect(screen.getByRole('button', { name: 'Call' })).toHaveFocus();
+
+	await user.keyboard('{ArrowLeft}');
 	expect(screen.getByRole('button', { name: 'Call' })).toHaveFocus();
 
 	await user.keyboard('{ArrowRight}');
@@ -31,6 +34,25 @@ it('navigates between toolbar actions using arrow keys', async () => {
 	await user.keyboard('{ArrowRight}');
 	expect(screen.getByRole('button', { name: 'Threads' })).toHaveFocus();
 
+	await user.keyboard('{ArrowRight}');
+	expect(screen.getByRole('button', { name: 'Threads' })).toHaveFocus();
+
 	await user.keyboard('{ArrowLeft}');
 	expect(screen.getByRole('button', { name: 'Search' })).toHaveFocus();
+});
+
+it.each([
+	{ key: 'Tab', shift: false, target: 'After toolbar' },
+	{ key: 'Shift+Tab', shift: true, target: 'Before toolbar' },
+])('leaves the toolbar with $key from a middle action', async ({ shift, target }) => {
+	const user = userEvent.setup();
+	renderToolbar();
+
+	await user.tab();
+	await user.tab();
+	await user.keyboard('{ArrowRight}');
+	expect(screen.getByRole('button', { name: 'Search' })).toHaveFocus();
+
+	await user.tab({ shift });
+	expect(screen.getByRole('button', { name: target })).toHaveFocus();
 });
