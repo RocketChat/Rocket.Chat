@@ -75,6 +75,12 @@ describe('deleteMany with a trash collection', () => {
 		await new TrashedModel().deleteMany({});
 
 		expect(trash.updateOne).toHaveBeenCalledTimes(2);
+		expect(trash.updateOne).toHaveBeenNthCalledWith(
+			1,
+			{ _id: 'a' },
+			{ $set: expect.objectContaining({ name: 'A', __collection__: 'test' }) },
+			{ upsert: true, session: undefined },
+		);
 		expect(trash.bulkWrite).not.toHaveBeenCalled();
 		expect(deleteMany.mock.calls[0][0]).toEqual({ _id: { $in: ['a', 'b'] } });
 	});

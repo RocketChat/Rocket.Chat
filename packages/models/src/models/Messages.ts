@@ -1520,6 +1520,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			(
 				await this.deleteMany(
 					{
+						...query,
 						_id: {
 							$in: selectedMessageIds,
 						},
