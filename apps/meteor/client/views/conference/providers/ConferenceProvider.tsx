@@ -1,6 +1,14 @@
 import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
-import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	usePermission,
+	useSetting,
+	useUserId,
+	useUserPreference,
+	useUserSubscription,
+	useSetModal,
+} from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Suspense, useCallback, useMemo, useState } from 'react';
@@ -12,6 +20,7 @@ import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCall
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
+import ConferenceDisconnectedModal from '../ConferenceDisconnectedModal';
 import ConferencePageError from '../ConferencePageError';
 import ConferenceUnauthorizedPage from '../ConferenceUnauthorizedPage';
 import ConferenceUserPicker from '../components/ConferenceUserPicker';
@@ -47,6 +56,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 
 	const isPexip = conference.providerName === PEXIP_PROVIDER_NAME;
 	const queryClient = useQueryClient();
+	const setModal = useSetModal();
 
 	const ring = useEndpoint('POST', '/v1/video-conference.ring');
 	const shareChatEndpoint = useEndpoint('POST', '/v1/video-conference.share-chat');
@@ -59,6 +69,20 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	useConfinedNavigation({ onOpenThread: room.tmid ? undefined : setOpenThread });
 
 	const { leaveNow } = useLeaveConferenceOnClose(callId, conference.departure);
+
+	// The call is treated as over, and the reader is given a few seconds to say it was the network rather than
+	// them. Leaving is what the countdown arrives at on its own, so nothing is lost by saying nothing.
+	const handleDropped = useCallback(() => {
+		setModal(
+			<ConferenceDisconnectedModal
+				onCancel={() => setModal(null)}
+				onClose={() => {
+					setModal(null);
+					leaveNow();
+				}}
+			/>,
+		);
+	}, [setModal, leaveNow]);
 
 	useConferencePresenceLease(callId, conference.joined);
 	useConferenceSubscription(room.rid);
@@ -105,6 +129,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		// The same thing hanging up does for a provider that runs the call in here: report the departure and
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
+		onDropped: handleDropped,
 	});
 
 	// A provider that runs the call in here wraps the window from before the join, so joining connects it rather than
