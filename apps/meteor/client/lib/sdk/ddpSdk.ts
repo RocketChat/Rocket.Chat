@@ -29,7 +29,8 @@ const applyEjsonEncoding = (sdk: DDPSDK): void => {
 };
 
 const startConnect = (sdk: DDPSDK): Promise<unknown> => {
-	if (connectPromise) return connectPromise;
+	// Only share an in-flight attempt; a settled promise from an earlier connection would turn a manual reconnect into a no-op.
+	if (connectPromise && sdk.connection.status === 'connecting') return connectPromise;
 	connectPromise = sdk.connection.connect().catch((err) => {
 		console.warn('[ddpSdk] connect failed', err);
 		// Allow a retry on the next call.

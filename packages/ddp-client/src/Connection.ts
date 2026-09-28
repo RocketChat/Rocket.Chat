@@ -42,6 +42,8 @@ export interface Connection extends Emitter<{
 
 	status: ConnectionStatus;
 
+	ws?: WebSocket;
+
 	connect(): Promise<boolean>;
 
 	reconnect(): Promise<boolean>;
