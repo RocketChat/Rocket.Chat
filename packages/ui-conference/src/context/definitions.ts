@@ -104,6 +104,14 @@ export type ConferenceSession = {
 	error?: ConferenceFailure;
 	/** Clears a failed join, which puts the reader back on the preflight with the choice they made intact. */
 	retry: () => void;
+	/**
+	 * Walk into the call without asking first.
+	 *
+	 * The screen this skips exists to collect a camera and a microphone. A provider that can be told about
+	 * neither has nothing to ask, so it would be a single button between the reader and the call they have
+	 * already said yes to. Only the joining screen: creating a conference is somewhere else entirely.
+	 */
+	autoJoin?: boolean;
 	/** Which side of the call the panels open on. Defaults to the trailing side, as every panel here has. */
 	panelDock?: 'start' | 'end';
 	/**
