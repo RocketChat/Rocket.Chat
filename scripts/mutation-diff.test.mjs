@@ -72,7 +72,18 @@ test('diff checks renamed files and reports deletions, excluded files, and unsup
 	symlinkSync(resolve(root, 'packages/first/src/value.ts'), resolve(root, 'packages/first/src/link.ts'));
 	const { jobs, skipped } = planDiff(root, 'base');
 	assert.deepEqual(jobs, [{ packagePath: 'ee/packages/second', testRunner: 'jest', targets: ['moved.ts'] }]);
-	assert.equal(skipped.length, 10);
+	assert.deepEqual(skipped.map(({ file }) => file).sort(), [
+		'packages/first/src/__mocks__/data.ts',
+		'packages/first/src/deleted.ts',
+		'packages/first/src/deletionOnly.ts',
+		'packages/first/src/link.ts',
+		'packages/first/src/moved.ts',
+		'packages/first/src/types.d.ts',
+		'packages/first/src/value.spec.ts',
+		'packages/no-jest/package.json',
+		'packages/no-jest/src/a.ts',
+		'scripts/a.ts',
+	]);
 	assert.match(skipped.find(({ file }) => file.endsWith('deletionOnly.ts')).reason, /deletion-only/);
 	assert.match(skipped.find(({ file }) => file.endsWith('deleted.ts')).reason, /deleted/);
 	assert.match(skipped.find(({ file }) => file.includes('no-jest/src')).reason, /no jest/);

@@ -231,7 +231,9 @@ test('worker startup failures return a nonzero exit code', async (t) => {
 		t,
 		`import { rmSync } from 'node:fs';
 console.log('worker: ' + process.argv[2]);
-rmSync(process.cwd(), { recursive: true, force: true });`,
+const directory = process.cwd();
+process.chdir('..');
+rmSync(directory, { recursive: true, force: true });`,
 	);
 	await write(directory, '.mocharc.js', 'module.exports = {};');
 	await assert.rejects(run(directory, 'packages/example', '--mutate', 'src/isPositive.ts'), (error) => {
