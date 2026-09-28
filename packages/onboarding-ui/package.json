@@ -63,7 +63,6 @@
     "react-dom": "~19.2.8",
     "react-i18next": "~17.0.15",
     "storybook": "~9.1.20",
-    "ts-jest": "~29.4.14",
     "typescript": "~5.9.3"
   },
   "peerDependencies": {

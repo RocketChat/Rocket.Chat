@@ -37,7 +37,6 @@
 		"@rocket.chat/tsconfig": "workspace:~",
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
-		"ts-jest": "~29.4.14",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

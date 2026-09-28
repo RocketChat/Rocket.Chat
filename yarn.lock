@@ -9539,7 +9539,6 @@ __metadata:
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
     rollup: "npm:~4.62.5"
-    ts-jest: "npm:~29.4.14"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9892,7 +9891,6 @@ __metadata:
     jest: "npm:~30.2.0"
     qs: "npm:^6.15.3"
     supertest: "npm:~7.1.4"
-    ts-jest: "npm:~29.4.14"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10182,7 +10180,6 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
-    ts-jest: "npm:~29.4.14"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10907,7 +10904,6 @@ __metadata:
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.15"
     storybook: "npm:~9.1.20"
-    ts-jest: "npm:~29.4.14"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -11357,7 +11353,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
-    ts-jest: "npm:~29.4.14"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -11606,7 +11601,6 @@ __metadata:
     jest: "npm:~30.2.0"
     npm-run-all: "npm:~4.1.5"
     rimraf: "npm:~6.0.1"
-    ts-jest: "npm:~29.4.14"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
