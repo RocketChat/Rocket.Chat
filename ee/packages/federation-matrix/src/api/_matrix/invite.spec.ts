@@ -39,7 +39,7 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 						? { success: true, data }
 						: { success: false },
 			},
-			default: {
+			'default': {
 				safeParse: (data: any) => (data && typeof data === 'object' ? { success: true, data } : { success: false }),
 			},
 		},
@@ -50,7 +50,9 @@ const mockVerifyRequestSignature = federationSDK.verifyRequestSignature as jest.
 const mockGetConfig = federationSDK.getConfig as jest.MockedFunction<typeof federationSDK.getConfig>;
 const mockProcessInvite = federationSDK.processInvite as jest.MockedFunction<typeof federationSDK.processInvite>;
 const mockFindOneByUsername = Users.findOneByUsername as jest.MockedFunction<typeof Users.findOneByUsername>;
-const mockCanUserAccessFederation = FederationMatrix.canUserAccessFederation as jest.MockedFunction<typeof FederationMatrix.canUserAccessFederation>;
+const mockCanUserAccessFederation = FederationMatrix.canUserAccessFederation as jest.MockedFunction<
+	typeof FederationMatrix.canUserAccessFederation
+>;
 
 const OUR_SERVER_NAME = 'rocketchat.local';
 
