@@ -9,7 +9,7 @@ export default {
 } satisfies Meta<typeof TooltipWrapper>;
 
 export const WithRenderProp: StoryFn<typeof TooltipWrapper> = () => (
-	<TooltipWrapper text='A example tooltip'>
+	<TooltipWrapper text='An example tooltip'>
 		{({ ref, toggle, id }) => (
 			<Box
 				ref={ref}
@@ -30,7 +30,7 @@ WithRenderProp.parameters = {
 };
 
 export const WithElement: StoryFn<typeof TooltipWrapper> = () => (
-	<TooltipWrapper text='A example tooltip'>
+	<TooltipWrapper text='An example tooltip'>
 		<Box tabIndex={0}>Text</Box>
 	</TooltipWrapper>
 );
