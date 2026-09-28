@@ -8,7 +8,6 @@ import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services'
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
-import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import type { ImportedCalendarEvent, InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent, Users } from '@rocket.chat/models';
@@ -110,8 +109,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findOne({ _id: eventId });
 	}
 
-	public async list(uid: IUser['_id'], date: Date, options?: { excludeImported?: boolean }): Promise<ICalendarEvent[]> {
-		return CalendarEvent.findByUserIdAndDate(uid, date, options).toArray();
+	public async list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]> {
+		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
 	}
 
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null> {
@@ -446,10 +445,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	private async sendEventNotification(event: ICalendarEvent): Promise<void> {
 		if (!(await getUserPreference(event.uid, 'notifyCalendarEvents'))) {
-			return;
-		}
-
-		if (typeof event.externalId === 'string' && !License.hasModule('outlook-calendar')) {
 			return;
 		}
 
