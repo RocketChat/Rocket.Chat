@@ -413,6 +413,7 @@ export abstract class BaseRaw<
 
 		const ids: T['_id'][] = [];
 		const trashOperations: AnyBulkWriteOperation<TDeleted>[] = [];
+		let deletedCount = 0;
 		for await (const doc of cursor) {
 			const { _id, ...record } = doc as T;
 
@@ -427,6 +428,10 @@ export abstract class BaseRaw<
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			if (options?.bulkTrash) {
 				trashOperations.push({ updateOne: { filter: { _id } as Filter<TDeleted>, update: { $set: trash }, upsert: true } });
+				if (trashOperations.length === 1000) {
+					await this.trash?.bulkWrite(trashOperations.splice(0), { session: options.session });
+					deletedCount += (await this.col.deleteMany({ _id: { $in: ids.splice(0) } } as unknown as Filter<T>, options)).deletedCount;
+				}
 			} else {
 				await this.trash?.updateOne(
 					{ _id } as Filter<TDeleted>,
@@ -446,7 +451,8 @@ export abstract class BaseRaw<
 		}
 
 		if (options) {
-			return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+			const result = await this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+			return { ...result, deletedCount: result.deletedCount + deletedCount };
 		}
 		return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
