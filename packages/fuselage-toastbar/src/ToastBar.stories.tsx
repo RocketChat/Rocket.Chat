@@ -2,6 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { useEffect, useState } from 'react';
 
+import type { ToastBarContextValue } from './ToastBarContext';
 import { useToastBarDispatch } from './ToastBarContext';
 
 export default {
@@ -53,7 +54,7 @@ export const Default: StoryFn = () => {
 	);
 };
 
-const Template: StoryFn<typeof useToastBarDispatch> = (args) => {
+const Template: StoryFn<Partial<Parameters<ToastBarContextValue['dispatch']>[0]>> = (args) => {
 	const dispatchToastMessage = useToastBarDispatch();
 
 	useEffect(() => {
