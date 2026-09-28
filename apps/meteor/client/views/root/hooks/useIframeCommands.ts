@@ -4,6 +4,7 @@ import { type LocationPathname, UserContext, useLoginWithToken, useSetting } fro
 import { useContext, useEffect } from 'react';
 
 import { ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { useLoginWithCustomOauth } from '../../../hooks/useLoginWithCustomOauth';
 import { AccountBox } from '../../../lib/AccountBox';
 import { baseURI } from '../../../lib/baseURI';
 import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
@@ -13,6 +14,7 @@ export const useIframeCommands = () => {
 	const iframeReceiveEnabled = useSetting('Iframe_Integration_receive_enable');
 	const iframeReceiveOrigin = useSetting('Iframe_Integration_receive_origin', '*');
 	const loginWithToken = useLoginWithToken();
+	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
 
 	useEffect(() => {
@@ -47,15 +49,7 @@ export const useIframeCommands = () => {
 			},
 
 			'call-custom-oauth-login'(data: { service: string }) {
-				const loginClient = new URL(window.location.href).searchParams.get('loginClient');
-
-				const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
-
-				if (loginClient) {
-					redirectUrl.searchParams.set('loginClient', loginClient);
-				}
-
-				window.location.href = redirectUrl.toString();
+				loginWithCustomOauth(data.service);
 			},
 
 			'login-with-token'(data: { token: string }) {
@@ -100,5 +94,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, logout]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout]);
 };
