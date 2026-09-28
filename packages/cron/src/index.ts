@@ -191,8 +191,25 @@ export class AgendaCronJobs {
 			throw new Error('Scheduler is not running.');
 		}
 
-		this.scheduler.define(jobName, async () => {
-			await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+		this.scheduler.define(jobName, async (job: Job) => {
+			// keeps other instances from starting this job while it runs,
+			// but lets a hung run release its lock after an hour
+			const renewUntil = Date.now() + 60 * 60 * 1000;
+
+			let renewal: Promise<void> | undefined;
+
+			const interval = setInterval(() => {
+				if (Date.now() < renewUntil) {
+					renewal = job.touch().catch((err) => logger.warn({ msg: 'Failed to renew the cron job lock', jobName, err }));
+				}
+			}, 60 * 1000);
+
+			try {
+				await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+			} finally {
+				clearInterval(interval);
+				await renewal;
+			}
 		});
 	}
 }

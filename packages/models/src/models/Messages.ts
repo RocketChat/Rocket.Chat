@@ -1504,13 +1504,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const notCountedMessages = await this.countDocuments(
-			{
-				...query,
-				$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
-			},
-			{ ...(limit ? { limit } : {}) },
-		);
+		const notCountedMessages = await this.countDocuments({
+			...query,
+			...(limit && { _id: { $in: selectedMessageIds } }),
+			$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+		});
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
@@ -1520,11 +1518,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const count =
 			(
-				await this.deleteMany({
-					_id: {
-						$in: selectedMessageIds,
+				await this.deleteMany(
+					{
+						_id: {
+							$in: selectedMessageIds,
+						},
 					},
-				})
+					{ bulkTrash: true },
+				)
 			).deletedCount - notCountedMessages;
 
 		return count;

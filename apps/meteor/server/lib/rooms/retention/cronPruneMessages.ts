@@ -1,10 +1,13 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms } from '@rocket.chat/models';
 
 import { getCronAdvancedTimerFromPrecisionSetting } from '../../../../lib/getCronAdvancedTimerFromPrecisionSetting';
 import { settings } from '../../../settings';
 import { cleanRoomHistory } from '../cleanRoomHistory';
+
+const logger = new Logger('RetentionPolicy');
 
 type RetentionRoomTypes = 'c' | 'p' | 'd';
 
@@ -24,6 +27,14 @@ let types: RetentionRoomTypes[] = [];
 const oldest = new Date('0001-01-01T00:00:00Z');
 
 const toDays = (d: number): number => d * 1000 * 60 * 60 * 24;
+
+async function pruneRoom(params: Parameters<typeof cleanRoomHistory>[0]): Promise<void> {
+	try {
+		await cleanRoomHistory(params);
+	} catch (err) {
+		logger.error({ msg: 'Failed to prune room', rid: params.rid, err });
+	}
+}
 
 async function job(): Promise<void> {
 	const now = new Date();
@@ -50,7 +61,7 @@ async function job(): Promise<void> {
 		).toArray();
 
 		for await (const { _id: rid } of rooms) {
-			await cleanRoomHistory({
+			await pruneRoom({
 				rid,
 				latest,
 				oldest,
@@ -75,7 +86,7 @@ async function job(): Promise<void> {
 	for await (const { _id: rid, retention } of rooms) {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
-		await cleanRoomHistory({
+		await pruneRoom({
 			rid,
 			latest,
 			oldest,
@@ -89,10 +100,15 @@ async function job(): Promise<void> {
 
 const pruneCronName = 'Prune old messages by retention policy';
 
+let currentSchedule: string | undefined;
+
 async function deployCron(precision: string): Promise<void> {
-	if (await cronJobs.has(pruneCronName)) {
+	// a run in progress would write its old schedule back,
+	// so a new one needs a new job; otherwise keep the job and its lock
+	if (currentSchedule && currentSchedule !== precision) {
 		await cronJobs.remove(pruneCronName);
 	}
+	currentSchedule = precision;
 	await cronJobs.add(pruneCronName, precision, async () => job());
 }
 
