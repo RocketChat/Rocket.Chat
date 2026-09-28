@@ -12,6 +12,7 @@ const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 Meteor.startup(async () => {
 	let stopWatcher: () => void;
 	let stopCronWatcher: () => void;
+	let stopEnforcementWatcher: () => void;
 
 	License.onToggledFeature('abac', {
 		up: async () => {
@@ -54,10 +55,24 @@ Meteor.startup(async () => {
 				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'],
 				() => void configureVirtruPdpSync(),
 			);
+
+			const { applyDiscussionEnforcementOverride } = await import('../lib/abac/discussionEnforcementOverride');
+
+			stopEnforcementWatcher = settings.watchMultiple(
+				['ABAC_Enabled', 'ABAC_Enforce_All_Rooms'],
+				() => void applyDiscussionEnforcementOverride(),
+			);
 		},
 		down: async () => {
 			stopWatcher?.();
 			stopCronWatcher?.();
+			stopEnforcementWatcher?.();
+
+			// Before `onInvalidateLicense` resets `ABAC_Enforce_All_Rooms` to its `invalidValue`,
+			// which would otherwise leave the workspace with discussions off and nothing left
+			// watching to turn them back on.
+			const { restoreDiscussionEnabled } = await import('../lib/abac/discussionEnforcementOverride');
+			await restoreDiscussionEnabled();
 
 			if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
 				await cronJobs.remove(VIRTRU_PDP_SYNC_JOB);

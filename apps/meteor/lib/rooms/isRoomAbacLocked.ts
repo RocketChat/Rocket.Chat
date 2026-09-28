@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDiscussion, isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 
-export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated'>;
+export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid'>;
 
 export type RoomAbacLockContext = {
 	/** `ABAC_Enabled` and `ABAC_Enforce_All_Rooms`, both. */
@@ -22,6 +22,14 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 	// PDP (ABAC-P4/D8). Checked first because it outranks every rule below.
 	if (isRoomFederated(room)) {
 		return false;
+	}
+
+	// ABAC-P4/D7 — enforcement blocks discussion creation workspace-wide by holding
+	// `Discussion_enabled` at `false`, so a discussion that predates enforcement stays locked
+	// whatever it carries. Above the room-type rules because a discussion is public or private like
+	// any other room, and both are locked for the same reason.
+	if (isDiscussion(room)) {
+		return true;
 	}
 
 	// ABAC-P4/D6 — enforcement forces ABAC-managed on, which forces Private on, so a public channel
