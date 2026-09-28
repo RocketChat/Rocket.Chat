@@ -1,10 +1,9 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as stories from './ToastBar.stories';
 import ToastBarProvider from './ToastBarProvider';
-import { render } from './testing';
 
 const { Default, TopEnd } = composeStories(stories, {
 	decorators: [
