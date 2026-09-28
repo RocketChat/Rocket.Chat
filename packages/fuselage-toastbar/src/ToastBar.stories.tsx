@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react-webpack5';
 import { useEffect, useState } from 'react';
 
 import type { ToastBarContextValue } from './ToastBarContext';
@@ -54,16 +54,18 @@ export const Default: StoryFn = () => {
 	);
 };
 
-const Template: StoryFn<Partial<Parameters<ToastBarContextValue['dispatch']>[0]>> = (args) => {
+type ToastArgs = Partial<Parameters<ToastBarContextValue['dispatch']>[0]>;
+
+const Dispatcher = ({ toast }: { toast: ToastArgs }) => {
 	const dispatchToastMessage = useToastBarDispatch();
 
 	useEffect(() => {
 		dispatchToastMessage({
 			type: 'success',
 			message: DEFAULT_MESSAGE,
-			...args,
+			...toast,
 		});
-	}, [args, dispatchToastMessage]);
+	}, [toast, dispatchToastMessage]);
 
 	return (
 		<Button
@@ -72,7 +74,7 @@ const Template: StoryFn<Partial<Parameters<ToastBarContextValue['dispatch']>[0]>
 				dispatchToastMessage({
 					type: 'success',
 					message: DEFAULT_MESSAGE,
-					...args,
+					...toast,
 				})
 			}
 		>
@@ -81,27 +83,41 @@ const Template: StoryFn<Partial<Parameters<ToastBarContextValue['dispatch']>[0]>
 	);
 };
 
-export const TopStart = Template.bind({});
-TopStart.args = {
-	position: 'top-start',
+type Story = StoryObj<ToastArgs>;
+
+const render: Story['render'] = (args) => <Dispatcher toast={args} />;
+
+export const TopStart: Story = {
+	render,
+	args: {
+		position: 'top-start',
+	},
 };
 
-export const TopEnd = Template.bind({});
-TopEnd.args = {
-	position: 'top-end',
+export const TopEnd: Story = {
+	render,
+	args: {
+		position: 'top-end',
+	},
 };
 
-export const BottomStart = Template.bind({});
-BottomStart.args = {
-	position: 'bottom-start',
+export const BottomStart: Story = {
+	render,
+	args: {
+		position: 'bottom-start',
+	},
 };
 
-export const BottomEnd = Template.bind({});
-BottomEnd.args = {
-	position: 'bottom-end',
+export const BottomEnd: Story = {
+	render,
+	args: {
+		position: 'bottom-end',
+	},
 };
 
-export const Persistent = Template.bind({});
-Persistent.args = {
-	isPersistent: true,
+export const Persistent: Story = {
+	render,
+	args: {
+		isPersistent: true,
+	},
 };
