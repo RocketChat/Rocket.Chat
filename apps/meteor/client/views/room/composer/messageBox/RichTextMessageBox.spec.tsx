@@ -14,7 +14,6 @@ test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) =>
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 
-	// TODO: Adjust realtime composer aria
-	const results = await axe(container, { rules: { 'aria-prohibited-attr': { enabled: false } } });
+	const results = await axe(container);
 	expect(results).toHaveNoViolations();
 });

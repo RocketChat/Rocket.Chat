@@ -18,9 +18,11 @@ exports[`renders Empty without crashing 1`] = `
         </div>
         <span
           aria-label="Message"
+          aria-multiline="true"
           class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
           contenteditable="true"
           name="msg"
+          role="textbox"
           style="display: block; white-space: pre-wrap; word-break: normal; overflow-wrap: break-word; cursor: text; overflow-y: scroll;"
         />
       </div>
@@ -198,9 +200,11 @@ exports[`renders WithText without crashing 1`] = `
         </div>
         <span
           aria-label="Message"
+          aria-multiline="true"
           class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
           contenteditable="true"
           name="msg"
+          role="textbox"
           style="display: block; white-space: pre-wrap; word-break: normal; overflow-wrap: break-word; cursor: text; overflow-y: scroll;"
         >
           <span
@@ -403,19 +407,24 @@ exports[`renders WithText without crashing 1`] = `
             
 
           </span>
-          <span
-            style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
-          >
-            <span>
-              Spoiler block line one
-              
+          <span>
+            ||
 
-            </span>
-            <span>
-              Spoiler block line two
-              
+            <span
+              style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
+            >
+              <span>
+                Spoiler block line one
+                
 
+              </span>
+              <span>
+                Spoiler block line two
+                
+
+              </span>
             </span>
+            ||
           </span>
           <span>
             
