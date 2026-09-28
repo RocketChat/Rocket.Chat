@@ -3,5 +3,5 @@ import type { Config } from 'jest';
 
 export default {
 	preset: client.preset,
-	setupFilesAfterEnv: [...client.setupFilesAfterEnv, '<rootDir>/jest-setup.ts'],
+	setupFilesAfterEnv: client.setupFilesAfterEnv,
 } satisfies Config;

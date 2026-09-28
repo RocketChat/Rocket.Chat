@@ -10,5 +10,5 @@
 		"declarationMap": false
 	},
 	"include": ["./src"],
-	"exclude": ["**/*.spec.*", "**/*.stories.tsx", "./jest.config.ts", "./jest-setup.ts"]
+	"exclude": ["**/*.spec.*", "**/*.stories.tsx", "./jest.config.ts"]
 }
