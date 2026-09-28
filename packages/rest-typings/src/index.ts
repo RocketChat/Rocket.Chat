@@ -13,6 +13,7 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
+import type { ContactsEndpoints } from './v1/contacts';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -95,6 +96,7 @@ export interface Endpoints
 		ImportEndpoints,
 		FederationEndpoints,
 		CalendarEndpoints,
+		ContactsEndpoints,
 		AuthEndpoints,
 		ImportEndpoints,
 		ServerEventsEndpoints,
@@ -270,6 +272,7 @@ export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
+export * from './v1/contacts';
 export * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
