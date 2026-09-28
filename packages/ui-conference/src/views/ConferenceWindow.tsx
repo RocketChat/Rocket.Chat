@@ -41,6 +41,9 @@ const ConferenceWindow = () => {
 	const setActivePanel = panel?.set ?? setOwnPanel;
 	const chatVisible = activePanel === 'chat';
 
+	// A provider that keeps its own roster is not offered a second one; adding people moves into the chat panel.
+	const offersMembersPanel = session.offersMembersPanel ?? true;
+
 	const togglePanel = useCallback(
 		(target: ConferencePanel) => setActivePanel(activePanel === target ? undefined : target),
 		[activePanel, setActivePanel],
@@ -167,38 +170,42 @@ const ConferenceWindow = () => {
 			{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
 
 			<CallTopBar startAt={call.createdAt} name={call.name}>
-				<IconButton
-					small
-					secondary
-					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
-					// name said how many, so anything looking for the button by the name it appeared to have never
-					// found it.
-					aria-label={t('__count__people_in_the_call', { count: presentCount })}
-					title={t('__count__people_in_the_call', { count: presentCount })}
-					aria-pressed={activePanel === 'members'}
-					onClick={() => togglePanel('members')}
-					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
-				/>
-				<IconButton
-					small
-					secondary
-					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-					title={t('Chat')}
-					aria-pressed={chatVisible}
-					onClick={() => togglePanel('chat')}
-					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-					// for truth.
-					badge={
-						chatBadge !== undefined ? (
-							<Badge variant={unreadVariant} title={unreadTitle}>
-								{chatBadge}
-							</Badge>
-						) : undefined
-					}
-				/>
+				{offersMembersPanel && (
+					<IconButton
+						small
+						secondary
+						// The same words in both, because they disagreed: the tooltip said "People" while the accessible
+						// name said how many, so anything looking for the button by the name it appeared to have never
+						// found it.
+						aria-label={t('__count__people_in_the_call', { count: presentCount })}
+						title={t('__count__people_in_the_call', { count: presentCount })}
+						aria-pressed={activePanel === 'members'}
+						onClick={() => togglePanel('members')}
+						icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+						badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
+					/>
+				)}
+				{!session.providerOwnsChatToggle && (
+					<IconButton
+						small
+						secondary
+						aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+						title={t('Chat')}
+						aria-pressed={chatVisible}
+						onClick={() => togglePanel('chat')}
+						icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+						// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+						// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+						// for truth.
+						badge={
+							chatBadge !== undefined ? (
+								<Badge variant={unreadVariant} title={unreadTitle}>
+									{chatBadge}
+								</Badge>
+							) : undefined
+						}
+					/>
+				)}
 			</CallTopBar>
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
@@ -206,8 +213,8 @@ const ConferenceWindow = () => {
 					{session.url && <ConferenceIframe url={session.url} />}
 				</Box>
 
-				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
-					{activePanel === 'members' && <CallMembersPanel onClose={() => togglePanel('members')} />}
+				<CallPanel visible={!!activePanel} sheet={sheetPanel} dock={session.panelDock}>
+					{offersMembersPanel && activePanel === 'members' && <CallMembersPanel onClose={() => togglePanel('members')} />}
 					{/* The call's chat is the product's room — its provider, its message list, its composer — so it
 					    arrives built. What this window owns is the panel it sits in, which is why closing it is
 					    handed down rather than handed in. */}

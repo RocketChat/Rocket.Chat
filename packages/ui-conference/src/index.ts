@@ -26,6 +26,7 @@ export { default as CallPanel } from './components/CallPanel';
 export { default as CallPanelHeader } from './components/CallPanelHeader';
 export { default as CallParticipants } from './components/CallParticipants';
 export { default as CallTopBar, CALL_TOP_BAR_MIN_HEIGHT } from './components/CallTopBar';
+export { default as AddParticipantsModal } from './components/AddParticipantsModal/AddParticipantsModal';
 export { default as ChatAccessModal } from './components/ChatAccessModal/ChatAccessModal';
 export { default as ChatAccessNotice } from './components/ChatAccessNotice/ChatAccessNotice';
 export { default as ConferenceChatNotShared } from './components/ConferenceChatNotShared';

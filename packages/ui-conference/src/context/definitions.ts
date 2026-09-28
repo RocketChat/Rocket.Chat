@@ -104,6 +104,23 @@ export type ConferenceSession = {
 	error?: ConferenceFailure;
 	/** Clears a failed join, which puts the reader back on the preflight with the choice they made intact. */
 	retry: () => void;
+	/** Which side of the call the panels open on. Defaults to the trailing side, as every panel here has. */
+	panelDock?: 'start' | 'end';
+	/**
+	 * Whether this window offers a members panel of its own.
+	 *
+	 * False for a provider that keeps its own roster in its page: two lists of the same call disagree the moment
+	 * anyone the provider knows about is not a member here. Adding people moves into the chat panel, which is
+	 * then the only one left to put it in.
+	 */
+	offersMembersPanel?: boolean;
+	/**
+	 * Whether the provider draws a chat control of its own, in which case this window drops the one in its bar.
+	 *
+	 * Only true while that control is on screen — before the reader connects and after they drop out the
+	 * provider's toolbar is gone, and this window's button is the only one left.
+	 */
+	providerOwnsChatToggle?: boolean;
 };
 
 /**
@@ -120,7 +137,7 @@ export type ConferenceActions = {
 	/** Asks the server to ring one member again. Rejects if it refused, which the row is left to show. */
 	ringMember: (memberId: string) => Promise<void>;
 	/** Resolves "some members cannot read the chat" the one way the reader picked. Rejects if it failed. */
-	shareChat: (mode: 'invite' | 'discussion') => Promise<void>;
+	shareChat: (mode: 'invite' | 'discussion', users?: string[]) => Promise<void>;
 	/**
 	 * Associates people with the call, which is what lets them join it — deliberately putting them in no room.
 	 * Answers how many were actually added, since anyone already associated is skipped and a selection can come
