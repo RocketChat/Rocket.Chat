@@ -575,7 +575,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
-		return this.deleteMany({ rid: roomId });
+		return this.deleteMany({ rid: roomId }, { bulkTrash: true });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
@@ -1402,7 +1402,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// REMOVE
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
-		return this.deleteMany({ rid: { $in: rids } });
+		return this.deleteMany({ rid: { $in: rids } }, { bulkTrash: true });
 	}
 
 	findThreadsByRoomIdPinnedTimestampAndUsers<
