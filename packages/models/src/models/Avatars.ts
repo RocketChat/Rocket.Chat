@@ -30,7 +30,12 @@ export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 		return this.findOne({ etag }, options);
 	}
 
-	findOneContactAvatar(userId: IUser['_id'], folderId: string, externalId: string, options?: FindOptions<IAvatar>): Promise<IAvatar | null> {
+	findOneContactAvatar(
+		userId: IUser['_id'],
+		folderId: string,
+		externalId: string,
+		options?: FindOptions<IAvatar>,
+	): Promise<IAvatar | null> {
 		return this.findOne({ userId, folderId, externalId }, options);
 	}
 
