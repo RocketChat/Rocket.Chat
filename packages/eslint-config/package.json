@@ -24,7 +24,6 @@
 		"@babel/eslint-parser": "~7.29.9",
 		"@eslint/js": "~10.0.1",
 		"@types/eslint": "~9.6.1",
-		"@types/prettier": "^2.7.3",
 		"eslint": "~10.7.0",
 		"eslint-config-prettier": "~10.1.8",
 		"eslint-import-resolver-typescript": "~4.4.5",

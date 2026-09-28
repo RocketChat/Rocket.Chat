@@ -9552,7 +9552,6 @@ __metadata:
     "@babel/eslint-parser": "npm:~7.29.9"
     "@eslint/js": "npm:~10.0.1"
     "@types/eslint": "npm:~9.6.1"
-    "@types/prettier": "npm:^2.7.3"
     eslint: "npm:~10.7.0"
     eslint-config-prettier: "npm:~10.1.8"
     eslint-import-resolver-typescript: "npm:~4.4.5"
@@ -10572,7 +10571,6 @@ __metadata:
     postcss-nested: "npm:^7.0.2"
     postcss-url: "npm:^10.1.4"
     postis: "npm:^2.2.0"
-    prettier: "npm:~3.9.9"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     proxy-from-env: "npm:^1.1.0"
@@ -10904,7 +10902,6 @@ __metadata:
     i18next: "npm:~26.4.2"
     jest: "npm:~30.2.0"
     jest-environment-jsdom: "npm:~30.2.0"
-    prettier: "npm:~3.9.9"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
@@ -15512,13 +15509,6 @@ __metadata:
     "@types/node": "npm:*"
     "@types/trouter": "npm:*"
   checksum: 10/022d90435c7b11d48cc3e8db982500a2c904ac461dfab2ae2c10f053ef32a38e03a7b99bb960061f22be0f5590caa5cdfaa675941d6f8c0535e2893333c22416
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:^2.7.3":
-  version: 2.7.3
-  resolution: "@types/prettier@npm:2.7.3"
-  checksum: 10/cda84c19acc3bf327545b1ce71114a7d08efbd67b5030b9e8277b347fa57b05178045f70debe1d363ff7efdae62f237260713aafc2d7217e06fc99b048a88497
   languageName: node
   linkType: hard
 

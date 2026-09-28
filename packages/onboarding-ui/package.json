@@ -59,7 +59,6 @@
     "eslint": "~9.39.5",
     "jest": "~30.2.0",
     "jest-environment-jsdom": "~30.2.0",
-    "prettier": "~3.9.9",
     "react": "~19.2.8",
     "react-dom": "~19.2.8",
     "react-i18next": "~17.0.15",
