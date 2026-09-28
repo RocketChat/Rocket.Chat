@@ -183,25 +183,27 @@ const ConferenceWindow = () => {
 				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
 				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 			/>
-			<IconButton
-				small
-				secondary
-				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-				title={t('Chat')}
-				aria-pressed={chatVisible}
-				onClick={() => togglePanel('chat')}
-				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-				// for truth.
-				badge={
-					chatBadge !== undefined ? (
-						<Badge variant={unreadVariant} title={unreadTitle}>
-							{chatBadge}
-						</Badge>
-					) : undefined
-				}
-			/>
+			{!session.providerOwnsChatToggle && (
+				<IconButton
+					small
+					secondary
+					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+					title={t('Chat')}
+					aria-pressed={chatVisible}
+					onClick={() => togglePanel('chat')}
+					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+					// for truth.
+					badge={
+						chatBadge !== undefined ? (
+							<Badge variant={unreadVariant} title={unreadTitle}>
+								{chatBadge}
+							</Badge>
+						) : undefined
+					}
+				/>
+			)}
 		</>
 	);
 
@@ -232,7 +234,7 @@ const ConferenceWindow = () => {
 					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
 				</Box>
 
-				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
+				<CallPanel visible={!!activePanel} sheet={sheetPanel} dock={session.panelDock}>
 					{activePanel === 'members' &&
 						(embeddedCall ? (
 							<EmbeddedCallMembersPanel onClose={() => togglePanel('members')} />
