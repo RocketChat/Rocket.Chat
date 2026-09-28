@@ -127,6 +127,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 		});
 
+		this.onSettingChanged('ABAC_Classification_Banners_Config', async (): Promise<void> => {
+			void api.broadcast('abac.config.changed');
+		});
+
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
 			const { value } = setting;
 			if (typeof value !== 'number') {

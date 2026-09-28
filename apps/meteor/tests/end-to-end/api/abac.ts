@@ -223,6 +223,74 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('GET /abac/config', () => {
+		const bannersConfig = JSON.stringify({
+			version: 1,
+			enabled: true,
+			banner: {
+				style: 'classic',
+				uppercase: true,
+				monospace: false,
+				delimiter: ' // ',
+				colorMode: 'highest',
+				fallbackText: 'UNMARKED',
+				fallbackColor: '#6C727A',
+			},
+			attributes: [
+				{
+					id: 'classification',
+					source: 'clearance',
+					label: 'Classification',
+					showInBanner: true,
+					showLabel: false,
+					bannerLabel: '',
+					labelSeparator: '',
+					valueSeparator: '/',
+					sortAlpha: false,
+					groupThreshold: 0,
+					multipleLabel: '',
+					drivesColor: true,
+					values: [{ source: 'S', label: 'SECRET', color: '#c8102e' }],
+				},
+			],
+		});
+
+		before(async () => {
+			await updateSetting('ABAC_Classification_Banners_Enabled', true);
+			await updateSetting('ABAC_Classification_Banners_Config', bannersConfig);
+		});
+
+		after(async () => {
+			await updateSetting('ABAC_Classification_Banners_Config', '');
+			await updateSetting('ABAC_Classification_Banners_Enabled', false);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request.get(`${v1}/abac/config`).expect(401);
+		});
+
+		it('should return the banners config to a user without any ABAC permission', async () => {
+			await request
+				.get(`${v1}/abac/config`)
+				.set(unauthorizedCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('bannersConfig', bannersConfig);
+				});
+		});
+
+		it('should not list the banners config in settings.public', async () => {
+			await request
+				.get(api('settings.public'))
+				.query({ _id: 'ABAC_Classification_Banners_Config' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.settings).to.be.an('array').that.is.empty;
+				});
+		});
+	});
+
 	describe('Attribute Definition - Validations & CRUD', () => {
 		it('POST should fail with invalid key pattern (space)', async () => {
 			await request

@@ -6,13 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { buildClassificationBanner, parseClassificationBannersConfig } from './lib/engine';
 import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
+import { useAbacConfigQuery } from '../hooks/useAbacConfigQuery';
 
 const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const rawConfig = useSetting('ABAC_Classification_Banners_Config', '');
+	const { data: abacConfig } = useAbacConfigQuery();
+	const rawConfig = abacConfig?.bannersConfig ?? '';
 	const enabled = bannersEnabled && isABACRoom;
 
 	const banner = useMemo(() => {

@@ -37,6 +37,7 @@ export class ListenersModule {
 
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
 		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));
+		service.onEvent('abac.config.changed', () => notifications.notifyLoggedInThisInstance('abac-config-changed'));
 
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
