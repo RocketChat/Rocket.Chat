@@ -1,0 +1,25 @@
+packages/models/src/models/BaseRaw.spec.ts
+  s_8f6d48f13a0796::t_346615ccb1aad3 55,68-70,74-78,92-95,98,100-104,106-107
+packages/models/src/models/BaseRaw.ts
+  s_8f6d48f13a0796::t_346615ccb1aad3 416,431-434,454-455
+packages/models/src/models/Messages.ts
+  s_8f6d48f13a0796::t_e43f60f5254be7 578,1405
+.changeset/retention-prune-batches.md
+  s_8f6d48f13a0796::t_ff233102452449 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "17958ab257243741f20504772cf2a34f690f1263",
+  "prompts": {},
+  "sessions": {
+    "s_8f6d48f13a0796": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffdd38e1-f774-4e5f-8f3a-8114a6055372",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
