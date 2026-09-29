@@ -14,7 +14,7 @@
 	"scripts": {
 		"build": "yarn clean && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
 		"build-storybook": "storybook build",
-		"clean": "rimraf dist",
+		"clean": "rm -rf dist",
 		"dev": "yarn build",
 		"eslint": "eslint .",
 		"lint": "yarn run eslint && yarn run stylelint",
@@ -97,7 +97,6 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"resolve-url-loader": "~5.0.0",
-		"rimraf": "^6.0.1",
 		"sass": "~1.80.7",
 		"sass-loader": "~16.0.8",
 		"storybook": "^9.1.20",

@@ -40,7 +40,7 @@
 	],
 	"scripts": {
 		"build": "run-s build:clean build:default",
-		"build:clean": "rimraf definition",
+		"build:clean": "rm -rf definition",
 		"build:default": "tsc -p tsconfig.json",
 		"dev": "yarn build:default --watch",
 		"gen-doc": "typedoc",
@@ -72,7 +72,6 @@
 		"@types/node": "~24.13.6",
 		"eslint": "~10.7.0",
 		"npm-run-all": "^4.1.5",
-		"rimraf": "^6.0.1",
 		"typedoc": "~0.28.20",
 		"typescript": "~5.9.3"
 	},
