@@ -55,7 +55,7 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 							{`${t('Sync')} (${total})`}
 						</Button>
 					)}
-					<Button icon='address-book' onClick={onCreate}>
+					<Button icon='address-book-plus' onClick={onCreate}>
 						{t('Create')}
 					</Button>
 				</ButtonGroup>
