@@ -166,7 +166,17 @@ test.describe('Messaging', () => {
 
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
+			const waitForEdit = () =>
+				page.waitForResponse(
+					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+				);
+
 			await channelPage.navbar.openChat(targetChannel);
+
+			await test.step('send messages to edit', async () => {
+				await channelPage.content.sendMessage('msg1');
+				await channelPage.content.sendMessage('msg2');
+			});
 
 			await test.step('focus on the second message', async () => {
 				await expect(channelPage.composer.inputMessage).toBeFocused();
@@ -176,30 +186,20 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('send edited message', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
-				await channelPage.content.sendMessage('edited msg2', false);
-				await editPromise;
+				await Promise.all([waitForEdit(), channelPage.content.sendMessage('edited msg2', false)]);
 
 				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2');
 			});
 
 			await test.step('stress test on message editions', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
 					await expect(channelPage.composer.inputMessage).toBeFocused();
 					await page.keyboard.press('ArrowUp');
+					await expect(channelPage.composer.inputMessage).not.toHaveValue('');
 
-					await channelPage.content.sendMessage(element, false);
+					await Promise.all([waitForEdit(), channelPage.content.sendMessage(element, false)]);
+					await expect(channelPage.content.lastUserMessageBody).toHaveText(element);
 				}
-
-				await editPromise;
-				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
 	});
