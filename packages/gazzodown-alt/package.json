@@ -12,14 +12,19 @@
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
 		"@types/react": "~19.2.17",
 		"@types/react-dom": "~19.2.5",
 		"eslint": "~9.39.3",
+		"fast-check": "~4.6.0",
+		"jest": "~30.2.0",
 		"react": "~19.2.7",
 		"react-dom": "~19.2.8",
 		"typescript": "~5.9.3"
