@@ -1,4 +1,5 @@
 import type { CallDevices, CallPreferences } from '@rocket.chat/ui-conference';
+import { useMediaDevices } from '@rocket.chat/ui-conference';
 import { useEffect, useMemo, useState } from 'react';
 
 type CallDevicePreview = {
@@ -26,38 +27,14 @@ type CallDevicePreview = {
  *
  * Everything is released when this unmounts, so the call gets the devices back rather than finding them busy.
  */
-export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPreferences, { micId, camId }: CallDevices): CallDevicePreview => {
+export const useCallDevicePreview = ({ mic, cam }: CallPreferences, { micId, camId }: CallDevices): CallDevicePreview => {
 	const [stream, setStream] = useState<MediaStream | null>(null);
-	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+	const { devices, refresh } = useMediaDevices();
 	const [error, setError] = useState(false);
 
 	// Nothing is asked of the browser unless the microphone is actually on. The camera is not this hook's concern any
 	// more, but `cam` still matters to the *labels*: permission for either is what puts names on the device lists.
-	const wanted = enabled && (mic || cam);
-
-	// The lists, kept current on their own. `devicechange` covers a headset arriving or leaving mid-decision.
-	useEffect(() => {
-		if (!enabled || !navigator.mediaDevices?.enumerateDevices) {
-			return;
-		}
-
-		let cancelled = false;
-		const refresh = () => {
-			void navigator.mediaDevices.enumerateDevices().then((list) => {
-				if (!cancelled) {
-					setDevices(list);
-				}
-			});
-		};
-
-		refresh();
-		navigator.mediaDevices.addEventListener?.('devicechange', refresh);
-
-		return () => {
-			cancelled = true;
-			navigator.mediaDevices.removeEventListener?.('devicechange', refresh);
-		};
-	}, [enabled]);
+	const wanted = mic || cam;
 
 	useEffect(() => {
 		if (!wanted || !navigator.mediaDevices?.getUserMedia) {
@@ -82,7 +59,7 @@ export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPrefere
 
 		navigator.mediaDevices
 			.getUserMedia(constraints)
-			.then(async (next) => {
+			.then((next) => {
 				opened = next;
 				if (cancelled) {
 					next.getTracks().forEach((track) => track.stop());
@@ -91,7 +68,7 @@ export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPrefere
 				setError(false);
 				setStream(next);
 				// Only now are the labels populated, so this waits for the permission rather than racing it.
-				setDevices(await navigator.mediaDevices.enumerateDevices());
+				refresh();
 			})
 			.catch(() => {
 				if (!cancelled) {
@@ -104,7 +81,7 @@ export const useCallDevicePreview = (enabled: boolean, { mic, cam }: CallPrefere
 			cancelled = true;
 			opened?.getTracks().forEach((track) => track.stop());
 		};
-	}, [wanted, mic, cam, micId, camId]);
+	}, [wanted, mic, cam, micId, camId, refresh]);
 
 	const videoInputs = useMemo(() => devices.filter(({ kind }) => kind === 'videoinput'), [devices]);
 	const audioInputs = useMemo(() => devices.filter(({ kind }) => kind === 'audioinput'), [devices]);

@@ -51,7 +51,7 @@ export const orderDevices = <T extends { deviceId: string; groupId?: string }>(d
  *
  * `groupIds` is how the duplicate gets found here: a label cannot tell a duplicate from a coincidence, since two
  * microphones of the same model are listed twice for a completely different reason than the system default is. Pass
- * the browser's own `deviceId → groupId` map — see `useDeviceGroups` — and the alias's twin goes, exactly as it does
+ * the browser's own `deviceId → groupId` map — see `deviceGroupsOf` — and the alias's twin goes, exactly as it does
  * for a `MediaDeviceInfo`. Without the map, ordering still applies and nothing is collapsed: better a duplicate than
  * a device silently missing from the list.
  */
@@ -86,3 +86,13 @@ export const isSameDevice = (a: string | undefined, b: string | undefined, group
 	const groupA = groupIds?.get(a);
 	return Boolean(groupA) && groupA === groupIds?.get(b);
 };
+
+/**
+ * Which hardware each device id belongs to, as `deviceId → groupId`.
+ *
+ * The audio devices the app hands around carry an id and a label and nothing else, and a label cannot tell a
+ * duplicate from a coincidence: the system default is listed twice, and so are two microphones of the same model.
+ * Only the browser's `groupId` separates the two cases.
+ */
+export const deviceGroupsOf = (devices: readonly Pick<MediaDeviceInfo, 'deviceId' | 'groupId'>[]): Map<string, string> =>
+	new Map(devices.filter(({ groupId }) => groupId).map(({ deviceId, groupId }) => [deviceId, groupId]));

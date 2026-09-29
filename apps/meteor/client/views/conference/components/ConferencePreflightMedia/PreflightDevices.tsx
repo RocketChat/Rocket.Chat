@@ -1,93 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
-import {
-	activateVirtualBackground,
-	deactivateVirtualBackground,
-	getVirtualBackgroundSnapshot,
-	selectVirtualBackground,
-	subscribeVirtualBackground,
-	supportsBackgroundBlur,
-} from '@rocket.chat/media-processors';
-import type { BlurLevel, BlurModel, NoiseMethod, VideoQuality } from '@rocket.chat/ui-conference';
-import {
-	useBackgroundBlurPreference,
-	useCallDevicesInitialState,
-	useNoiseSuppressionPreference,
-	useVideoQualityPreference,
-} from '@rocket.chat/ui-conference';
-import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
-import { useTranslation } from 'react-i18next';
 
+import CameraMenu from './CameraMenu';
+import MicrophoneMenu from './MicrophoneMenu';
 import { usePreviewMedia } from './PreviewMediaContext';
-import CallDeviceMenu from '../CallDeviceMenu';
+import SpeakerMenu from './SpeakerMenu';
 
-/** The methods offered before a call, weakest first. */
-const NOISE_CHOICES: { id: NoiseMethod; label: string; note?: string }[] = [
-	{ id: 'none', label: 'Noise_cancellation_off' },
-	{ id: 'browser', label: 'Noise_cancellation_standard' },
-	{ id: 'rnnoise', label: 'Noise_cancellation_rnnoise', note: 'Noise_cancellation_on_this_device' },
-];
-
-const BLUR_CHOICES: { id: BlurLevel; label: string }[] = [
-	{ id: 'none', label: 'Background_blur_none' },
-	{ id: 'light', label: 'Background_blur_light' },
-	{ id: 'medium', label: 'Background_blur_medium' },
-	{ id: 'strong', label: 'Background_blur_strong' },
-];
-
-const BLUR_MODEL_CHOICES: { id: BlurModel; label: string }[] = [
-	{ id: 'quality', label: 'Background_blur_model_quality' },
-	{ id: 'performance', label: 'Background_blur_model_performance' },
-];
-
-const QUALITY_CHOICES: { id: VideoQuality; label: string }[] = [
-	{ id: 'auto', label: 'Video_quality_auto' },
-	{ id: 'h1080', label: 'Video_quality_1080p' },
-	{ id: 'h720', label: 'Video_quality_720p' },
-	{ id: 'h360', label: 'Video_quality_360p' },
-	{ id: 'h180', label: 'Video_quality_180p' },
-];
-
-const BACKGROUND_IMAGE_USE = 'background-image:use';
-const BACKGROUND_IMAGE_CHOOSE = 'background-image:choose';
-
+/** The devices to arrive on, one menu per kind the provider can be told about. */
 const PreflightDevices = () => {
-	const { t } = useTranslation();
-	const { capabilities, preview } = usePreviewMedia();
-	const { devices, selectDevice } = useCallDevicesInitialState(capabilities);
-	const { noiseMethod, selectNoiseMethod } = useNoiseSuppressionPreference();
-	const { videoQuality, selectVideoQuality } = useVideoQualityPreference();
-	const { blurLevel, selectBlurLevel, blurModel, selectBlurModel } = useBackgroundBlurPreference();
-	const virtualBackground = useSyncExternalStore(subscribeVirtualBackground, getVirtualBackgroundSnapshot);
-	const backgroundImageInput = useRef<HTMLInputElement>(null);
-	const canSelectBackgroundImage = useMemo(supportsBackgroundBlur, []);
-
-	const backgroundChoices = useMemo(
-		() => [
-			...BLUR_CHOICES.map(({ id, label }) => ({ id, name: t(label) })),
-			...(canSelectBackgroundImage && virtualBackground.image
-				? [{ id: BACKGROUND_IMAGE_USE, name: `${t('Background_image')} — ${virtualBackground.name ?? ''}` }]
-				: []),
-			...(canSelectBackgroundImage ? [{ id: BACKGROUND_IMAGE_CHOOSE, name: t('Background_image_choose') }] : []),
-		],
-		[canSelectBackgroundImage, t, virtualBackground.image, virtualBackground.name],
-	);
-
-	const selectBackgroundEffect = useCallback(
-		(id: string) => {
-			if (id === BACKGROUND_IMAGE_CHOOSE) {
-				backgroundImageInput.current?.click();
-				return;
-			}
-			if (id === BACKGROUND_IMAGE_USE) {
-				selectBlurLevel('none');
-				activateVirtualBackground();
-				return;
-			}
-			deactivateVirtualBackground();
-			selectBlurLevel(id as BlurLevel);
-		},
-		[selectBlurLevel],
-	);
+	const { capabilities } = usePreviewMedia();
 
 	return (
 		<Box
@@ -100,79 +20,9 @@ const PreflightDevices = () => {
 			// forcing three cut every device name down to nothing.
 			style={{ gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
 		>
-			<input
-				ref={backgroundImageInput}
-				type='file'
-				accept='image/*'
-				hidden
-				onChange={(event) => {
-					const input = event.currentTarget;
-					const file = input.files?.[0];
-					input.value = '';
-					if (file) {
-						void selectVirtualBackground(file)
-							.then(() => selectBlurLevel('none'))
-							.catch((err: unknown) => console.warn('virtual background image could not be selected', err));
-					}
-				}}
-			/>
-			{capabilities.mic && (
-				<CallDeviceMenu
-					icon='mic'
-					label={t('Microphone')}
-					devices={preview.audioInputs}
-					selectedId={devices.micId}
-					onSelect={(deviceId) => selectDevice('mic', deviceId)}
-					sections={[
-						{
-							title: t('Noise_cancellation'),
-							choices: NOISE_CHOICES.map(({ id, label: name, note }) => ({ id, name: t(name), note })),
-							selectedId: noiseMethod,
-							onSelect: (method) => selectNoiseMethod(method as NoiseMethod),
-						},
-					]}
-				/>
-			)}
-			<CallDeviceMenu
-				icon='volume'
-				label={t('Speaker')}
-				devices={preview.audioOutputs}
-				selectedId={devices.speakerId}
-				onSelect={(deviceId) => selectDevice('speaker', deviceId)}
-			/>
-			{capabilities.cam && (
-				<CallDeviceMenu
-					icon='video'
-					label={t('Camera')}
-					devices={preview.videoInputs}
-					selectedId={devices.camId}
-					onSelect={(deviceId) => selectDevice('cam', deviceId)}
-					sections={[
-						{
-							title: t('Video_quality'),
-							choices: QUALITY_CHOICES.map(({ id, label: name }) => ({ id, name: t(name) })),
-							selectedId: videoQuality,
-							onSelect: (quality) => selectVideoQuality(quality as VideoQuality),
-						},
-						{
-							title: t('Background_effects'),
-							choices: backgroundChoices,
-							selectedId: virtualBackground.active ? BACKGROUND_IMAGE_USE : blurLevel,
-							onSelect: selectBackgroundEffect,
-						},
-						...(blurLevel !== 'none' || virtualBackground.active
-							? [
-									{
-										title: t('Background_blur_model'),
-										choices: BLUR_MODEL_CHOICES.map(({ id, label: name }) => ({ id, name: t(name) })),
-										selectedId: blurModel,
-										onSelect: (model: string) => selectBlurModel(model as BlurModel),
-									},
-								]
-							: []),
-					]}
-				/>
-			)}
+			{capabilities.mic && <MicrophoneMenu />}
+			<SpeakerMenu />
+			{capabilities.cam && <CameraMenu />}
 		</Box>
 	);
 };

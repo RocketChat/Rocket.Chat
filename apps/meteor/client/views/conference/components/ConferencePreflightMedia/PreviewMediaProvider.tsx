@@ -20,7 +20,7 @@ const PreviewMediaProvider = ({ capabilities, children }: { capabilities: VideoC
 	const { blurLevel, blurModel } = useBackgroundBlurPreference();
 	const assets = useMediaProcessorAssets();
 
-	const preview = useCallDevicePreview(true, preferences, devices);
+	const preview = useCallDevicePreview(preferences, devices);
 
 	// The camera as a LiveKit track, so the blur chosen below is the blur the call will send.
 	const [previewVideo, setPreviewVideo] = useState(NO_PREVIEW_VIDEO);

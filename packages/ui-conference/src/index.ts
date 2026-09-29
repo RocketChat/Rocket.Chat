@@ -111,3 +111,12 @@ export type {
 export { default as VoiceActivity } from './call/VoiceActivity';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
 export { deviceName, isSameDevice, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
+export { useMediaDevices } from './call/hooks/useMediaDevices';
+export {
+	BLUR_LEVEL_LABELS,
+	BLUR_MODEL_LABELS,
+	NOISE_METHOD_LABELS,
+	NOISE_METHOD_NOTES,
+	VIDEO_QUALITY_LABELS,
+	choicesOf,
+} from './call/lib/mediaChoiceLabels';

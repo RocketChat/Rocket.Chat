@@ -1,4 +1,4 @@
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, isSameDevice, orderAudioDevices, orderDevices } from './deviceLabels';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices, orderDevices } from './deviceLabels';
 
 describe('deviceName', () => {
 	// The vendor:product pair identifies the hardware to the machine, not to the person choosing it.
@@ -148,5 +148,23 @@ describe('isSameDevice', () => {
 	it('matches nothing when either side is missing', () => {
 		expect(isSameDevice(undefined, 'usb', groups)).toBe(false);
 		expect(isSameDevice('usb', undefined, groups)).toBe(false);
+	});
+});
+
+describe('deviceGroupsOf', () => {
+	// Browsers withhold the group of a device they will not describe yet; an empty group would match every other one.
+	it('maps each device to its hardware, leaving out devices with no group', () => {
+		expect(
+			deviceGroupsOf([
+				{ deviceId: SYSTEM_DEFAULT_DEVICE_ID, groupId: 'group-1' },
+				{ deviceId: 'built-in', groupId: 'group-1' },
+				{ deviceId: 'unnamed', groupId: '' },
+			]),
+		).toEqual(
+			new Map([
+				[SYSTEM_DEFAULT_DEVICE_ID, 'group-1'],
+				['built-in', 'group-1'],
+			]),
+		);
 	});
 });

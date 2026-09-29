@@ -4,11 +4,13 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { ActionButton } from '@rocket.chat/ui-voip';
 import type { ComponentProps } from 'react';
-import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallDeviceSelection, useCallMediaProcessing } from './context';
+import { useMediaDevices } from './hooks/useMediaDevices';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/deviceLabels';
+import { BLUR_LEVEL_LABELS, BLUR_MODEL_LABELS, VIDEO_QUALITY_LABELS } from './lib/mediaChoiceLabels';
 
 type CameraPickerButtonProps = {
 	small?: boolean;
@@ -23,62 +25,11 @@ const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps
 	return <ActionButton secondary flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-up' ref={ref} />;
 });
 
-// Lightweight in-component enumeration: ui-contexts' useAvailableDevices only
-// covers audio, but the in-call view needs videoinput selection so we go to
-// the platform directly. In an active call the camera permission is already
-// granted (or will have been when the user toggled the camera on), so labels
-// are populated.
-const useAvailableVideoInputs = () => {
-	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-	useEffect(() => {
-		if (!navigator.mediaDevices?.enumerateDevices) return undefined;
-		let cancelled = false;
-		const refresh = () => {
-			navigator.mediaDevices
-				.enumerateDevices()
-				.then((list) => {
-					if (cancelled) return;
-					setDevices(list.filter((d) => d.kind === 'videoinput'));
-				})
-				.catch(() => undefined);
-		};
-		refresh();
-		// Browsers fire `devicechange` on hot-plug / disconnect / OS-level
-		// default changes; refresh so the menu reflects reality.
-		navigator.mediaDevices.addEventListener?.('devicechange', refresh);
-		return () => {
-			cancelled = true;
-			navigator.mediaDevices.removeEventListener?.('devicechange', refresh);
-		};
-	}, []);
-	return devices;
-};
-
 /** Prefixed ids, so the rows in the menu that are not cameras are not mistaken for cameras. */
 const BLUR_LEVEL_PREFIX = 'blur-level:';
 const BLUR_MODEL_PREFIX = 'blur-model:';
 const BACKGROUND_IMAGE_PREFIX = 'background-image:';
 const VIDEO_QUALITY_PREFIX = 'video-quality:';
-
-const VIDEO_QUALITY_LABELS: Record<string, string> = {
-	auto: 'Video_quality_auto',
-	h1080: 'Video_quality_1080p',
-	h720: 'Video_quality_720p',
-	h360: 'Video_quality_360p',
-	h180: 'Video_quality_180p',
-};
-
-const BLUR_LEVEL_LABELS: Record<string, string> = {
-	none: 'Background_blur_none',
-	light: 'Background_blur_light',
-	medium: 'Background_blur_medium',
-	strong: 'Background_blur_strong',
-};
-
-const BLUR_MODEL_LABELS: Record<string, string> = {
-	quality: 'Background_blur_model_quality',
-	performance: 'Background_blur_model_performance',
-};
 
 export type CameraPickerProps = {
 	danger?: boolean;
@@ -92,11 +43,11 @@ const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 	const { t } = useTranslation();
 	const { selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
 	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
-	const devices = useAvailableVideoInputs();
+	const { devices } = useMediaDevices();
 	const backgroundImageInput = useRef<HTMLInputElement>(null);
 
 	// The system default first, its duplicate dropped, and every name without the USB id the browser tacks on.
-	const ordered = useMemo(() => orderDevices(devices), [devices]);
+	const ordered = useMemo(() => orderDevices(devices.filter(({ kind }) => kind === 'videoinput')), [devices]);
 
 	// What is in use when nothing has been picked is the first on offer, which is what makes clicking it a no-op
 	// below rather than a switch to the camera already running.
@@ -130,11 +81,11 @@ const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 	// much" is a choice like any other — a switch could only ever say on, and on is not an amount.
 	const blurItems: GenericMenuItemProps[] = backgroundBlur.levels.map((blurLevel) => ({
 		id: `${BLUR_LEVEL_PREFIX}${blurLevel}`,
-		textValue: t(BLUR_LEVEL_LABELS[blurLevel] ?? 'Background_blur'),
+		textValue: t(BLUR_LEVEL_LABELS[blurLevel]),
 		content: (
 			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
 				<Box is='span' withTruncatedText>
-					{t(BLUR_LEVEL_LABELS[blurLevel] ?? 'Background_blur')}
+					{t(BLUR_LEVEL_LABELS[blurLevel])}
 				</Box>
 				{/* Said once, on the level in use, because it is a fact about what is doing the work rather than about
 				    the choice — the same place a device says it is the system default. */}
@@ -191,11 +142,11 @@ const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 		backgroundBlur.blur === 'processor' && (backgroundBlur.level !== 'none' || backgroundBlur.backgroundImage.active)
 			? backgroundBlur.models.map((model) => ({
 					id: `${BLUR_MODEL_PREFIX}${model}`,
-					textValue: t(BLUR_MODEL_LABELS[model] ?? model),
+					textValue: t(BLUR_MODEL_LABELS[model]),
 					content: (
 						<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
 							<Box is='span' withTruncatedText>
-								{t(BLUR_MODEL_LABELS[model] ?? model)}
+								{t(BLUR_MODEL_LABELS[model])}
 							</Box>
 						</Box>
 					),
@@ -209,11 +160,11 @@ const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 	// the one in use says what the camera actually gave — they are not always the same number.
 	const qualityItems: GenericMenuItemProps[] = videoQuality.qualities.map((quality) => ({
 		id: `${VIDEO_QUALITY_PREFIX}${quality}`,
-		textValue: t(VIDEO_QUALITY_LABELS[quality] ?? 'Video_quality'),
+		textValue: t(VIDEO_QUALITY_LABELS[quality]),
 		content: (
 			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
 				<Box is='span' withTruncatedText>
-					{t(VIDEO_QUALITY_LABELS[quality] ?? 'Video_quality')}
+					{t(VIDEO_QUALITY_LABELS[quality])}
 				</Box>
 				{videoQuality.quality === quality && videoQuality.height && (
 					<Box is='span' fontScale='c1' color='hint'>

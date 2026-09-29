@@ -5,14 +5,15 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import { ActionButton, stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
 import type { ComponentProps, MouseEvent } from 'react';
-import { forwardRef, useCallback, useState } from 'react';
+import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from './VoiceActivity';
 import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { useAudioLevel } from './hooks/useAudioLevel';
-import { useDeviceGroups } from './hooks/useDeviceGroups';
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
+import { useMediaDevices } from './hooks/useMediaDevices';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
+import { NOISE_METHOD_LABELS, NOISE_METHOD_NOTES } from './lib/mediaChoiceLabels';
 
 type AudioDevicePickerButtonProps = {
 	small?: boolean;
@@ -63,17 +64,6 @@ export type AudioDevicePickerProps = {
 /** Prefixed ids, so the rows in the menu that are not devices are not mistaken for devices. */
 const NOISE_METHOD_PREFIX = 'noise-method:';
 
-/** Named by what they give you, with the vendor in brackets where there is one. */
-const NOISE_METHOD_LABELS: Record<string, string> = {
-	none: 'Noise_cancellation_off',
-	browser: 'Noise_cancellation_standard',
-	rnnoise: 'Noise_cancellation_rnnoise',
-};
-
-const NOISE_METHOD_NOTES: Record<string, string> = {
-	rnnoise: 'Noise_cancellation_on_this_device',
-};
-
 /** The microphone and speaker of a call running in this window, with the noise cancelling done to the microphone. */
 // eslint-disable-next-line react/no-multi-comp
 const AudioDevicePicker = ({ danger = false, large = false }: AudioDevicePickerProps) => {
@@ -91,7 +81,8 @@ const AudioDevicePicker = ({ danger = false, large = false }: AudioDevicePickerP
 
 	// Which hardware each id belongs to, so the system default's duplicate can be told from a second device that
 	// merely shares its name.
-	const deviceGroups = useDeviceGroups();
+	const { devices } = useMediaDevices();
+	const deviceGroups = useMemo(() => deviceGroupsOf(devices), [devices]);
 
 	// The system default first, wherever the browser happened to put it: it is what will be used if nothing is
 	// picked, so it is what should be under the cursor.
@@ -190,11 +181,11 @@ const AudioDevicePicker = ({ danger = false, large = false }: AudioDevicePickerP
 	// and this is what is done to whichever is chosen.
 	const noiseItems: GenericMenuItemProps[] = noiseSuppression.methods.map((noiseMethod) => ({
 		id: `${NOISE_METHOD_PREFIX}${noiseMethod}`,
-		textValue: t(NOISE_METHOD_LABELS[noiseMethod] ?? 'Noise_cancellation'),
+		textValue: t(NOISE_METHOD_LABELS[noiseMethod]),
 		content: (
 			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
 				<Box is='span' withTruncatedText>
-					{t(NOISE_METHOD_LABELS[noiseMethod] ?? 'Noise_cancellation')}
+					{t(NOISE_METHOD_LABELS[noiseMethod])}
 				</Box>
 				{NOISE_METHOD_NOTES[noiseMethod] && (
 					<Box is='span' fontScale='c1' color='hint'>
