@@ -6,6 +6,7 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type {
 	CallActions,
@@ -28,6 +29,7 @@ import {
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { LocalAudioTrack, LocalVideoTrack, Participant, RemoteParticipant } from 'livekit-client';
 import { ConnectionState, ParticipantKind, Room, RoomEvent, Track } from 'livekit-client';
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBackgroundBlur } from './useBackgroundBlur';
@@ -39,8 +41,19 @@ import { useNoiseSuppression } from './useNoiseSuppression';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
-import type { EmbeddedCallProviderProps } from '../../../lib/videoConference/embeddedCallProviders';
-import { useMediaProcessorAssets } from '../../conference/hooks/useMediaProcessorAssets';
+
+export type LiveKitCallProviderProps = {
+	callId: string;
+	/** Whether to be in the call. The provider is mounted before the join, so this flips while its tree stays put. */
+	connect: boolean;
+	/** How the preflight left the devices, read as the call connects. */
+	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
+	/** The call ended for this user, whoever ended it. */
+	onEnded: () => void;
+	/** Where the workspace serves the blur and noise suppression runtime files. */
+	assets: MediaProcessorAssets;
+	children: ReactNode;
+};
 
 /** New arrivals are announced only while each face in the call still matters. */
 const JOIN_CHIME_MAX_PARTICIPANTS = 6;
@@ -70,7 +83,7 @@ const connectionStateFor = (state: ConnectionState): CallConnectionState => {
 };
 
 /** The preflight's choices as they stood when the call connected: what changes during the call is the room's to apply. */
-const useArrivalPreferences = (preferences: EmbeddedCallProviderProps['preferences'], connect: boolean) => {
+const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preferences'], connect: boolean) => {
 	const [arrival, setArrival] = useState(preferences);
 	if (!connect && arrival !== preferences) {
 		setArrival(preferences);
@@ -79,13 +92,13 @@ const useArrivalPreferences = (preferences: EmbeddedCallProviderProps['preferenc
 };
 
 /**
- * A LiveKit call running in the conference window, and the only module in the client that pulls the LiveKit SDK —
- * registered lazily, so the SDK is fetched for a call rather than on every page load.
+ * A LiveKit call running in the conference window. Meant to be loaded lazily, so the SDK is fetched for a call
+ * rather than on every page load.
  *
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: EmbeddedCallProviderProps) => {
+export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, assets, children }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
@@ -194,9 +207,8 @@ const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
-	const mediaProcessorAssets = useMediaProcessorAssets();
-	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined, mediaProcessorAssets);
-	const backgroundBlur = useBackgroundBlur(localCameraTrack, mediaProcessorAssets);
+	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined, assets);
+	const backgroundBlur = useBackgroundBlur(localCameraTrack, assets);
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
 

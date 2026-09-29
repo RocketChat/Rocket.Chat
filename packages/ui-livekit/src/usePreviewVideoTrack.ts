@@ -1,13 +1,17 @@
-import type { BackgroundBlurProcessor } from '@rocket.chat/media-processors';
+import type { BackgroundBlurProcessor, MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { loadBackgroundBlurProcessor } from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel, VideoQuality } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useMediaProcessorAssets } from './useMediaProcessorAssets';
-import { BLUR_STRENGTH } from '../../videoConference/livekit/useBackgroundBlur';
-import { useVirtualBackground } from '../../videoConference/livekit/useVirtualBackground';
+import { BLUR_STRENGTH } from './useBackgroundBlur';
+import { useVirtualBackground } from './useVirtualBackground';
+
+export type PreviewVideoOptions = { deviceId?: string; quality: VideoQuality; blurLevel: BlurLevel; blurModel?: BlurModel };
+
+/** The preflight's camera, once it is open, and whether opening it failed. */
+export type PreviewVideo = { track?: LocalVideoTrack; error: boolean };
 
 /** The same presets the in-call picker uses, so a resolution means the same thing on both screens. */
 const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height: number }> = {
@@ -34,15 +38,10 @@ const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height
  */
 export const usePreviewVideoTrack = (
 	enabled: boolean,
-	{
-		deviceId,
-		quality,
-		blurLevel,
-		blurModel = 'quality',
-	}: { deviceId?: string; quality: VideoQuality; blurLevel: BlurLevel; blurModel?: BlurModel },
-): { track?: LocalVideoTrack; error: boolean } => {
+	{ deviceId, quality, blurLevel, blurModel = 'quality' }: PreviewVideoOptions,
+	assets: MediaProcessorAssets,
+): PreviewVideo => {
 	const virtualBackground = useVirtualBackground();
-	const assets = useMediaProcessorAssets();
 	const [track, setTrack] = useState<LocalVideoTrack | undefined>();
 	const [error, setError] = useState(false);
 	const qualityRef = useRef(quality);
@@ -179,5 +178,5 @@ export const usePreviewVideoTrack = (
 		};
 	}, [track, blurLevel, blurModel, virtualBackground.active, virtualBackground.image, assets]);
 
-	return { track, error };
+	return useMemo(() => ({ track, error }), [track, error]);
 };

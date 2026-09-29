@@ -2,7 +2,9 @@ import { Box } from '@rocket.chat/fuselage';
 import {
 	activateVirtualBackground,
 	deactivateVirtualBackground,
+	getVirtualBackgroundSnapshot,
 	selectVirtualBackground,
+	subscribeVirtualBackground,
 	supportsBackgroundBlur,
 } from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel, NoiseMethod, VideoQuality } from '@rocket.chat/ui-conference';
@@ -12,11 +14,10 @@ import {
 	useNoiseSuppressionPreference,
 	useVideoQualityPreference,
 } from '@rocket.chat/ui-conference';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreviewMedia } from './PreviewMediaContext';
-import { useVirtualBackground } from '../../../videoConference/livekit/useVirtualBackground';
 import CallDeviceMenu from '../CallDeviceMenu';
 
 /** The methods offered before a call, weakest first. */
@@ -56,7 +57,7 @@ const PreflightDevices = () => {
 	const { noiseMethod, selectNoiseMethod } = useNoiseSuppressionPreference();
 	const { videoQuality, selectVideoQuality } = useVideoQualityPreference();
 	const { blurLevel, selectBlurLevel, blurModel, selectBlurModel } = useBackgroundBlurPreference();
-	const virtualBackground = useVirtualBackground();
+	const virtualBackground = useSyncExternalStore(subscribeVirtualBackground, getVirtualBackgroundSnapshot);
 	const backgroundImageInput = useRef<HTMLInputElement>(null);
 	const canSelectBackgroundImage = useMemo(supportsBackgroundBlur, []);
 

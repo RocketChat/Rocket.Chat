@@ -32,6 +32,11 @@
 		"@sapphi-red/web-noise-suppressor": "*",
 		"livekit-client": "*"
 	},
+	"peerDependenciesMeta": {
+		"livekit-client": {
+			"optional": true
+		}
+	},
 	"volta": {
 		"extends": "../../package.json"
 	}

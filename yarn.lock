@@ -10174,7 +10174,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/media-processors@workspace:^, @rocket.chat/media-processors@workspace:packages/media-processors":
+"@rocket.chat/media-processors@workspace:^, @rocket.chat/media-processors@workspace:packages/media-processors, @rocket.chat/media-processors@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/media-processors@workspace:packages/media-processors"
   dependencies:
@@ -10191,6 +10191,9 @@ __metadata:
     "@mediapipe/tasks-vision": "*"
     "@sapphi-red/web-noise-suppressor": "*"
     livekit-client: "*"
+  peerDependenciesMeta:
+    livekit-client:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -10284,7 +10287,6 @@ __metadata:
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.21.0"
     "@kaciras/deasync": "npm:^1.1.0"
-    "@livekit/components-react": "npm:2.9.23"
     "@mediapipe/tasks-vision": "npm:0.10.14"
     "@nivo/bar": "npm:0.88.0"
     "@nivo/core": "npm:0.88.0"
@@ -10380,6 +10382,7 @@ __metadata:
     "@rocket.chat/ui-conference": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
+    "@rocket.chat/ui-livekit": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
@@ -10560,7 +10563,6 @@ __metadata:
     ldap-escape: "npm:^2.0.6"
     ldapjs: "npm:^2.3.3"
     limax: "npm:^3.0.0"
-    livekit-client: "npm:^2.5.0"
     localforage: "npm:^1.10.0"
     lodash.clonedeep: "npm:^4.5.0"
     lodash.debounce: "npm:^4.0.8"
@@ -11619,6 +11621,47 @@ __metadata:
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
   peerDependencies:
     "@rocket.chat/icons": "*"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ui-livekit@workspace:^, @rocket.chat/ui-livekit@workspace:packages/ui-livekit":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-livekit@workspace:packages/ui-livekit"
+  dependencies:
+    "@livekit/components-react": "npm:2.9.23"
+    "@mediapipe/tasks-vision": "npm:0.10.14"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/media-processors": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-conference": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-video-conf": "workspace:^"
+    "@sapphi-red/web-noise-suppressor": "npm:^0.4.0"
+    "@tanstack/react-query": "npm:~5.65.1"
+    "@testing-library/dom": "npm:~10.4.1"
+    "@testing-library/react": "npm:~16.3.3"
+    "@types/jest": "npm:~30.0.0"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.5"
+    eslint: "npm:~9.39.5"
+    i18next: "npm:~26.4.2"
+    jest: "npm:~30.2.0"
+    livekit-client: "npm:^2.5.0"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    react-i18next: "npm:~17.0.14"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    "@mediapipe/tasks-vision": "*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-conference": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-video-conf": "workspace:^"
+    "@sapphi-red/web-noise-suppressor": "*"
+    react: "*"
+    react-dom: "*"
+    react-i18next: "*"
   languageName: unknown
   linkType: soft
 
