@@ -45,7 +45,7 @@ class MessageSearchQueryParser {
 			from.push(username);
 
 			this.query['u.username'] = {
-				$regex: from.join('|'),
+				$regex: `^(?:${from.map((u) => escapeRegExp(u)).join('|')})$`,
 				$options: 'i',
 			};
 
@@ -60,7 +60,7 @@ class MessageSearchQueryParser {
 			mentions.push(username);
 
 			this.query['mentions.username'] = {
-				$regex: mentions.join('|'),
+				$regex: `^(?:${mentions.map((u) => escapeRegExp(u)).join('|')})$`,
 				$options: 'i',
 			};
 
