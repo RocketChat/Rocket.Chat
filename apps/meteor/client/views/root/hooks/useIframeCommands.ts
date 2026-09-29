@@ -82,8 +82,10 @@ export const useIframeCommands = () => {
 							return;
 						}
 
-						if (config.loginStyle === 'popup') {
-							replyOnLoginRef.current = () => replyToParent();
+						if (config.loginStyle === 'popup' && !userId) {
+							replyOnLoginRef.current = replyToParent;
+						} else {
+							replyOnLoginRef.current = undefined;
 						}
 					})
 					.catch(replyToParent);
