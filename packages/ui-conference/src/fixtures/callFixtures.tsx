@@ -13,7 +13,6 @@ export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	muted: false,
 	cameraOn: false,
 	screenSharing: false,
-	speakingWhileMuted: false,
 	...overrides,
 });
 

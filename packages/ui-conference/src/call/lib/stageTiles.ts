@@ -9,7 +9,6 @@ export type StageSelf = {
 	held: boolean;
 	cameraStream?: MediaStream | null;
 	screenStream?: MediaStream | null;
-	audioStream?: MediaStream | null;
 };
 
 /** What a tile shows of anyone in the call. */
@@ -19,8 +18,6 @@ export type TileParticipant = {
 	muted: boolean;
 	held: boolean;
 	cameraStream?: MediaStream | null;
-	/** Drives the speaking indicator. */
-	audioStream?: MediaStream | null;
 };
 
 /** The reader's tile is drawn as a mirror; everyone else's is not. */
@@ -38,7 +35,6 @@ export const buildStageTiles = (self: StageSelf, remoteParticipants: RemoteParti
 		muted: self.muted,
 		held: self.held,
 		cameraStream: self.cameraStream,
-		audioStream: self.audioStream,
 		kind: 'self',
 	},
 	...remoteParticipants.map((p): StageTile => ({
@@ -49,7 +45,6 @@ export const buildStageTiles = (self: StageSelf, remoteParticipants: RemoteParti
 		muted: p.muted,
 		held: p.held,
 		cameraStream: p.cameraStream,
-		audioStream: p.audioStream,
 	})),
 ];
 

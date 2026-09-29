@@ -15,7 +15,6 @@ const MainTile = ({ tile }: MainTileProps) =>
 			muted={tile.muted}
 			held={tile.held}
 			cameraStream={tile.cameraStream}
-			audioStream={tile.audioStream}
 		/>
 	) : (
 		<ParticipantTile
@@ -24,7 +23,6 @@ const MainTile = ({ tile }: MainTileProps) =>
 			muted={tile.muted}
 			held={tile.held}
 			cameraStream={tile.cameraStream}
-			audioStream={tile.audioStream}
 		/>
 	);
 

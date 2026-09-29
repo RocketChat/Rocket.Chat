@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import AudioDevicePickerButton from './AudioDevicePickerButton';
 import { useCallDeviceSelection, useCallState } from './context';
-import { useAudioLevel } from './hooks/useAudioLevel';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
@@ -29,9 +28,6 @@ const AudioDevicePicker = () => {
 
 	const { self } = useCallState();
 	const { devices, selectAudioDevice } = useCallDeviceSelection();
-
-	// A muted mic never moves, whatever it is still hearing.
-	const micLevel = useAudioLevel(self.muted ? null : (self.microphoneStream ?? null));
 
 	const availableDevices = useAvailableDevices();
 	const selectedAudioDevices = useSelectedDevices();
@@ -173,7 +169,7 @@ const AudioDevicePicker = () => {
 
 				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
 			}}
-			button={<AudioDevicePickerButton level={micLevel} micMuted={self.muted} />}
+			button={<AudioDevicePickerButton micMuted={self.muted} />}
 		/>
 	);
 };

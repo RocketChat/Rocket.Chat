@@ -36,11 +36,6 @@ export const Muted: Story = {
 	decorators: [withCall({ state: { self: { muted: true }, remoteParticipants } })],
 };
 
-/** Talking into a muted microphone raises the notice above the row. */
-export const SpeakingWhileMuted: Story = {
-	decorators: [withCall({ state: { self: { muted: true, speakingWhileMuted: true }, remoteParticipants } })],
-};
-
 export const CameraOnAndSharing: Story = {
 	decorators: [withCall({ state: { self: { cameraOn: true, screenSharing: true }, remoteParticipants } })],
 };

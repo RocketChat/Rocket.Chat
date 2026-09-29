@@ -19,9 +19,8 @@ const CallStageArea = () => {
 			held: false,
 			cameraStream: self.cameraStream ?? null,
 			screenStream: self.screenStream ?? null,
-			audioStream: self.microphoneStream ?? null,
 		}),
-		[self.id, self.displayName, self.avatarUrl, self.muted, self.cameraStream, self.screenStream, self.microphoneStream],
+		[self.id, self.displayName, self.avatarUrl, self.muted, self.cameraStream, self.screenStream],
 	);
 
 	return (
