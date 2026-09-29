@@ -1,5 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, borderRadius } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
@@ -23,8 +25,12 @@ const deviceControlStyles = css`
 	}
 `;
 
-/** The controls of a call running in this window: devices, sharing and leaving. */
-const CallControls = () => {
+export type CallControlsProps = {
+	onOpenDiagnostics: () => void;
+};
+
+/** The controls of a call running in this window: devices, sharing, connection info and leaving. */
+const CallControls = ({ onOpenDiagnostics }: CallControlsProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants } = useCallState();
 	const { toggleMic, toggleCamera, toggleScreenShare, leave } = useCallActions();
@@ -32,6 +38,10 @@ const CallControls = () => {
 	// A call with one other person is left *with* them, so it can name them; a group call has no single other side.
 	const hangupLabel =
 		remoteParticipants.length === 1 ? t('Voice_call__user__hangup', { user: remoteParticipants[0].displayName }) : t('Leave_call');
+
+	const moreItems: GenericMenuItemProps[] = [
+		{ id: 'diagnostics', icon: 'info-circled', content: t('Connection_info'), onClick: onOpenDiagnostics },
+	];
 
 	return (
 		<ButtonGroup>
@@ -74,6 +84,12 @@ const CallControls = () => {
 				pressed={self.screenSharing}
 				large
 				onToggle={toggleScreenShare}
+			/>
+			<GenericMenu
+				title={t('More')}
+				sections={[{ items: moreItems }]}
+				placement='top-end'
+				button={<ActionButton secondary label={t('More')} icon='kebab' large />}
 			/>
 			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={leave} />
 		</ButtonGroup>

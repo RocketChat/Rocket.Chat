@@ -8,7 +8,13 @@ import {
 } from '@livekit/components-react';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import {
+	CallActionsProvider,
+	CallDeviceSelectionProvider,
+	CallDiagnosticsProvider,
+	CallStateProvider,
+	useUpdateCallPreferences,
+} from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { Room, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
@@ -16,6 +22,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
+import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
 
 export type LiveKitCallProviderProps = {
@@ -106,6 +113,13 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 
+	const diagnostics = useCallDiagnostics(
+		room,
+		allParticipants.filter((p) => p !== localParticipant),
+		credentials?.serverUrl ?? '',
+		connectionState === 'connected',
+	);
+
 	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
 	const [outputElement] = useState(() => new Audio());
 	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
@@ -152,8 +166,10 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
 				<CallDeviceSelectionProvider value={deviceSelection}>
-					{children}
-					<RoomAudioRenderer room={room} />
+					<CallDiagnosticsProvider value={diagnostics ?? null}>
+						{children}
+						<RoomAudioRenderer room={room} />
+					</CallDiagnosticsProvider>
 				</CallDeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>

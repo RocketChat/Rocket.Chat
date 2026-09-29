@@ -10,6 +10,7 @@ import ConferenceStatePage from './ConferenceStatePage';
 import CallControls from '../call/CallControls';
 import CallHeader from '../call/CallHeader';
 import CallStageArea from '../call/CallStageArea';
+import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel';
 import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 import CallPanel from '../components/CallPanel';
@@ -239,11 +240,12 @@ const ConferenceWindow = () => {
 					    arrives built. What this window owns is the panel it sits in, which is why closing it is
 					    handed down rather than handed in. */}
 					{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
+					{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
 				</CallPanel>
 			</Box>
 
 			{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
-			{embeddedCall && <CallBar centre={<CallControls />} />}
+			{embeddedCall && <CallBar centre={<CallControls onOpenDiagnostics={() => togglePanel('diagnostics')} />} />}
 		</Box>
 	);
 };

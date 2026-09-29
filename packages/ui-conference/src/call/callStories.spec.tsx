@@ -9,6 +9,7 @@ import * as callHeader from './CallHeader.stories';
 import * as callStageArea from './CallStageArea.stories';
 import * as cameraPicker from './CameraPicker.stories';
 import * as voiceActivity from './VoiceActivity.stories';
+import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.stories';
 import * as participantTile from './tile/ParticipantTile.stories';
 import * as callBar from '../components/CallBar.stories';
 
@@ -23,6 +24,7 @@ const testCases = [
 	...casesOf('AudioDevicePicker', composeStories(audioDevicePicker)),
 	...casesOf('CallBar', composeStories(callBar)),
 	...casesOf('CallControls', composeStories(callControls)),
+	...casesOf('CallDiagnosticsPanel', composeStories(callDiagnosticsPanel)),
 	...casesOf('CallHeader', composeStories(callHeader)),
 	...casesOf('CallStageArea', composeStories(callStageArea)),
 	...casesOf('CameraPicker', composeStories(cameraPicker)),
