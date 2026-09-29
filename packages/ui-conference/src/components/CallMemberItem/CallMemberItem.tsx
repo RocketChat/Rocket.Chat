@@ -2,6 +2,7 @@ import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayNames } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
@@ -24,6 +25,10 @@ type CallMemberItemProps = {
 	 * the provider does not have is one no request could name.
 	 */
 	controls?: Omit<CallParticipantControlsProps, 'name'>;
+	/** Whether their microphone is off, in which case there is no level to show. */
+	muted?: boolean;
+	/** Their microphone level, for a call whose audio this window holds. */
+	activity?: ReactNode;
 	onRing: (memberId: string) => void;
 };
 
@@ -34,7 +39,15 @@ const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	invited: 'Waiting_for_answer',
 };
 
-const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false, controls, onRing }: CallMemberItemProps) => {
+const CallMemberItem = ({
+	member,
+	hasChatAccess,
+	ringing: ringRequested = false,
+	controls,
+	muted,
+	activity,
+	onRing,
+}: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
 	const { useRealName, canRingUsers } = useConferenceViewer();
@@ -76,6 +89,12 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 					</Box>
 				)}
 			</OptionContent>
+			{/* A live microphone's level. A muted one says nothing: silence is what everyone already hears. */}
+			{status === 'joined' && !muted && activity && (
+				<OptionColumn>
+					<Box display='flex'>{activity}</Box>
+				</OptionColumn>
+			)}
 			{canRingUsers && canRing && (
 				<OptionColumn>
 					{/* The button stays until the server says the phone is ringing, which is a round trip away — so

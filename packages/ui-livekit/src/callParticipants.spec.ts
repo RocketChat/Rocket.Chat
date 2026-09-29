@@ -5,6 +5,7 @@ import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipan
 
 const camera = { id: 'camera' } as MediaStream;
 const screen = { id: 'screen' } as MediaStream;
+const microphone = { id: 'microphone' } as MediaStream;
 
 const person = (identity: string, kind = ParticipantKind.STANDARD) => ({ identity, kind });
 
@@ -54,6 +55,7 @@ describe('toRemoteParticipantInfo', () => {
 			{
 				camera: [trackFor('bob', screen), trackFor('ada', camera)],
 				screen: [trackFor('ada', screen)],
+				microphone: [trackFor('ada', microphone)],
 			},
 			'/avatar/ada',
 		);
@@ -66,6 +68,7 @@ describe('toRemoteParticipantInfo', () => {
 			held: false,
 			cameraStream: camera,
 			screenStream: screen,
+			audioStream: microphone,
 		});
 	});
 
@@ -73,7 +76,7 @@ describe('toRemoteParticipantInfo', () => {
 	it('drops the streams of muted publications and counts a missing microphone as muted', () => {
 		const info = toRemoteParticipantInfo(
 			remote('ada', ''),
-			{ camera: [trackFor('ada', camera, true)], screen: [trackFor('ada', screen, true)] },
+			{ camera: [trackFor('ada', camera, true)], screen: [trackFor('ada', screen, true)], microphone: [] },
 			'/avatar/ada',
 		);
 
@@ -82,6 +85,7 @@ describe('toRemoteParticipantInfo', () => {
 			muted: true,
 			cameraStream: undefined,
 			screenStream: undefined,
+			audioStream: undefined,
 		});
 	});
 });
