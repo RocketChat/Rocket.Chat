@@ -1,0 +1,25 @@
+ee/packages/network-broker/src/NatsBroker.ts
+  s_a3d0eb8bd3caff::t_514762a855da60 31-33,363-372,501-506
+  s_a3d0eb8bd3caff::t_cf3b3c496b64f8 507-508
+ee/packages/network-broker/src/fakeNatsConnection.ts
+  s_a3d0eb8bd3caff::t_7cd65e3dcd9bac 5-6,16,39,41,58,60-71
+ee/packages/network-broker/src/NatsBroker.test.ts
+  s_a3d0eb8bd3caff::t_ecf02bf4f32283 164,586,600-639
+  s_a3d0eb8bd3caff::t_1a1ea1452deeb6 640-641
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c78ba918a71221e269e45ce8e67370391ddfabb2",
+  "prompts": {},
+  "sessions": {
+    "s_a3d0eb8bd3caff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7dca468-7cff-4f29-878e-3e0b0f3b6d9b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
