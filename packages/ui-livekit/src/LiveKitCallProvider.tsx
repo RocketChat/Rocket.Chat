@@ -7,7 +7,7 @@ import {
 	useTracks,
 } from '@livekit/components-react';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
+import type { CallActions, CallDeviceSelection, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
 	CallDeviceSelectionProvider,
@@ -17,7 +17,7 @@ import {
 	useUpdateCallPreferences,
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { RemoteParticipant } from 'livekit-client';
+import type { LocalVideoTrack, RemoteParticipant } from 'livekit-client';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -25,7 +25,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
+import { useVideoQuality } from './useVideoQuality';
 
 export type LiveKitCallProviderProps = {
 	callId: string;
@@ -123,9 +125,14 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
-	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
+	const localCameraTrack = localCameraPub?.track as LocalVideoTrack | undefined;
+
+	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
+
+	const videoQuality = useVideoQuality(localCameraTrack);
+	const sendResolution = useSendResolution(localCameraTrack);
 
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled);
 
@@ -155,7 +162,8 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 
 	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
 	const [outputElement] = useState(() => new Audio());
-	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
+	const deviceSwitching = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
+	const deviceSelection = useMemo((): CallDeviceSelection => ({ ...deviceSwitching, videoQuality }), [deviceSwitching, videoQuality]);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -169,6 +177,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			cameraOn: Boolean(cameraStream),
 			screenSharing: Boolean(screenStream),
 			speakingWhileMuted,
+			sendResolution,
 			cameraStream,
 			screenStream,
 			microphoneStream,
@@ -182,6 +191,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			cameraStream,
 			screenStream,
 			speakingWhileMuted,
+			sendResolution,
 			microphoneStream,
 		],
 	);

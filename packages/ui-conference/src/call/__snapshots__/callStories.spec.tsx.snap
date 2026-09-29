@@ -1718,6 +1718,12 @@ exports[`call stories renders ParticipantTile Self without crashing 1`] = `
               John Doe
             </div>
             <div
+              class="rcx-box rcx-box--full rcx-css-10ikj1k rcx-css-16uxknr"
+            >
+              720
+              p
+            </div>
+            <div
               class="rcx-box rcx-box--full rcx-css-h0y5qh"
             >
               <div

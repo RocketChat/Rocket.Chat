@@ -1,5 +1,6 @@
 import type { Device } from '@rocket.chat/ui-contexts';
 
+import type { VideoQuality } from '../hooks/useCallDevicesInitialState';
 import { createRequiredContext } from '../lib/createRequiredContext';
 
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
@@ -12,6 +13,8 @@ export type CallSelf = {
 	screenSharing: boolean;
 	/** Whether they are talking into a muted microphone. */
 	speakingWhileMuted: boolean;
+	/** What the encoder is actually sending, which is not what the camera captures. Undefined until it has sent a frame. */
+	sendResolution?: { width: number; height: number };
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
 	microphoneStream?: MediaStream;
@@ -53,6 +56,16 @@ export type CallDeviceSelection = {
 	selectAudioDevice: (device: Device) => void;
 	selectCamera: (deviceId: string) => void;
 	currentCameraId?: string;
+	videoQuality: CallVideoQuality;
+};
+
+export type CallVideoQuality = {
+	quality: VideoQuality;
+	qualities: VideoQuality[];
+	/** What the camera actually gave, which is not always what was asked for. */
+	height?: number;
+	pending: boolean;
+	select: (quality: VideoQuality) => void;
 };
 
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');
