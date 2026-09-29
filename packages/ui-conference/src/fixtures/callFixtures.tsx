@@ -4,22 +4,8 @@ import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { JOHN_DOE_ID } from './storyFixtures';
-import type {
-	CallActions,
-	CallDeviceSelection,
-	CallDiagnosticsData,
-	CallMediaProcessing,
-	CallSelf,
-	CallState,
-	RemoteParticipantInfo,
-} from '../call/context';
-import {
-	CallActionsProvider,
-	CallDeviceSelectionProvider,
-	CallDiagnosticsProvider,
-	CallMediaProcessingProvider,
-	CallStateProvider,
-} from '../call/context';
+import type { CallActions, CallDeviceSelection, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
+import { CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,
@@ -82,30 +68,6 @@ export const buildDeviceSelection = (overrides: Partial<CallDeviceSelection> = {
 	selectAudioDevice: action('selectAudioDevice'),
 	selectCamera: action('selectCamera'),
 	currentCameraId: 'facetime',
-	...overrides,
-});
-
-/** Every processing choice offered, with the weakest of each in use. */
-export const buildMediaProcessing = (): CallMediaProcessing => ({
-	noiseSuppression: { methods: ['none', 'browser', 'rnnoise'], method: 'browser', pending: false, select: action('selectNoiseMethod') },
-	backgroundBlur: {
-		available: true,
-		level: 'none',
-		levels: ['none', 'light', 'medium', 'strong'],
-		blur: 'processor',
-		pending: false,
-		model: 'quality',
-		models: ['quality', 'performance'],
-		select: action('selectBlurLevel'),
-		selectModel: action('selectBlurModel'),
-		backgroundImage: {
-			available: true,
-			active: false,
-			hasImage: false,
-			select: async (file) => action('selectBackgroundImage')(file),
-			activate: action('activateBackgroundImage'),
-		},
-	},
 	videoQuality: {
 		quality: 'auto',
 		qualities: ['auto', 'h1080', 'h720', 'h360', 'h180'],
@@ -113,6 +75,7 @@ export const buildMediaProcessing = (): CallMediaProcessing => ({
 		pending: false,
 		select: action('selectVideoQuality'),
 	},
+	...overrides,
 });
 
 export const diagnosticsSample: CallDiagnosticsData = {
@@ -156,15 +119,12 @@ const CallContexts = ({ state, deviceSelection, diagnostics = null, children }: 
 	const [callState] = useState(() => buildCallState(state));
 	const [actions] = useState(buildCallActions);
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
-	const [mediaProcessing] = useState(buildMediaProcessing);
 
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
 				<CallDeviceSelectionProvider value={devices}>
-					<CallMediaProcessingProvider value={mediaProcessing}>
-						<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
-					</CallMediaProcessingProvider>
+					<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
 				</CallDeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>

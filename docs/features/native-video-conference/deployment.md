@@ -111,9 +111,6 @@ Under **Administration → Settings → Conference Call**:
 The provider appears as soon as all of them are filled. `OVERWRITE_SETTING_<key>` in the `rocketchat` service's
 environment sets them from the compose file instead, at the cost of making them read-only in the admin UI.
 
-Background blur and noise suppression need nothing else: their runtime and models are served by Rocket.Chat itself,
-so airgapped workspaces work as is.
-
 ## 5. Verify
 
 1. Start a call in a DM, pass the preflight, and check your own tile appears.

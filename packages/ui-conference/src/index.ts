@@ -38,21 +38,11 @@ export { default as SwitchCallModal } from './components/SwitchCallModal';
 export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
-	useNoiseSuppressionPreference,
 	useVideoQualityPreference,
-	useBackgroundBlurPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
 } from './hooks/useCallDevicesInitialState';
-export type {
-	CallPreferences,
-	CallRingPreference,
-	CallDevices,
-	NoiseMethod,
-	VideoQuality,
-	BlurLevel,
-	BlurModel,
-} from './hooks/useCallDevicesInitialState';
+export type { CallPreferences, CallRingPreference, CallDevices, VideoQuality } from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -84,13 +74,7 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
 
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
-export {
-	CallStateProvider,
-	CallActionsProvider,
-	CallDeviceSelectionProvider,
-	CallMediaProcessingProvider,
-	CallDiagnosticsProvider,
-} from './call/context';
+export { CallStateProvider, CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider } from './call/context';
 export type {
 	CallState,
 	CallSelf,
@@ -99,7 +83,6 @@ export type {
 	ActiveReaction,
 	CallActions,
 	CallDeviceSelection,
-	CallMediaProcessing,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
 } from './call/context';
@@ -107,11 +90,4 @@ export { default as VoiceActivity } from './call/VoiceActivity';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
 export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
-export {
-	BLUR_LEVEL_LABELS,
-	BLUR_MODEL_LABELS,
-	NOISE_METHOD_LABELS,
-	NOISE_METHOD_NOTES,
-	VIDEO_QUALITY_LABELS,
-	choicesOf,
-} from './call/lib/mediaChoiceLabels';
+export { VIDEO_QUALITY_LABELS, choicesOf } from './call/lib/mediaChoiceLabels';
