@@ -703,7 +703,7 @@ export const FileUpload = {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
 		const { range, 'if-range': ifRange } = req.headers;
-		const headers: http.OutgoingHttpHeaders = { ...(range && { range }), ...(ifRange && { 'if-range': ifRange }) };
+		const headers: http.OutgoingHttpHeaders = { ...(range && { range }), ...(typeof ifRange === 'string' && { 'if-range': ifRange }) };
 
 		request.get(fileUrl, { headers }, (fileRes) => {
 			const { statusCode = 500 } = fileRes;
