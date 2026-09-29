@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds support to federation rooms version 11
+Adds support for federation room version 11 (version 10 remains the default)
