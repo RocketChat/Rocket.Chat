@@ -121,6 +121,10 @@ export class PasswordPolicy {
 			return [];
 		}
 
+		if (typeof password !== 'string' || !password.trim().length) {
+			return [];
+		}
+
 		if (this.minLength >= 1) {
 			validationReturn.push({
 				name: 'get-password-policy-minLength',
