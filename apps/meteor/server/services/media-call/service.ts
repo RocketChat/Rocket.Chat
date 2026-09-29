@@ -426,23 +426,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		);
 	}
 
-	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
-		void api.broadcast('user.media-signal', { userId: toUid, signal: await this.resolveCallerContactName(toUid, signal) });
-	}
-
-	private async resolveCallerContactName(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<ServerMediaSignal> {
-		if (signal.type !== 'new' || signal.contact.type !== 'sip' || !signal.contact.id) {
-			return signal;
-		}
-
-		try {
-			const displayName = await resolveCallerName(toUid, signal.contact.id);
-
-			return displayName ? { ...signal, contact: { ...signal.contact, displayName } } : signal;
-		} catch (err) {
-			logger.warn({ msg: 'Failed to resolve a caller name from contacts', err });
-			return signal;
-		}
+	private sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
+		void api.broadcast('user.media-signal', { userId: toUid, signal });
 	}
 
 	private configureMediaCallServer(): void {
@@ -471,6 +456,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
 				},
 			},
+			resolveCallerName,
 			mobileRinging,
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
