@@ -40,6 +40,8 @@ const UsersMock = {
 
 const getUserPreferenceMock = sinon.stub();
 
+const LicenseMock = { hasModule: sinon.stub() };
+
 const serviceMocks = {
 	'../../settings': { settings: settingsMock },
 	'@rocket.chat/core-services': {
@@ -49,6 +51,7 @@ const serviceMocks = {
 	},
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
+	'@rocket.chat/license': { License: LicenseMock },
 	'../../lib/utils/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
 	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
@@ -141,6 +144,9 @@ describe('CalendarService', () => {
 
 		getUserPreferenceMock.reset();
 		getUserPreferenceMock.resolves(true);
+
+		LicenseMock.hasModule.reset();
+		LicenseMock.hasModule.returns(true);
 	}
 
 	afterEach(() => {
@@ -789,6 +795,44 @@ describe('CalendarService', () => {
 
 			sinon.assert.notCalled(PresenceMock.setActiveState);
 			sinon.assert.notCalled(PresenceMock.endActiveState);
+		});
+	});
+
+	describe('Private: sendEventNotification', () => {
+		const reminder = (over: Record<string, unknown> = {}) => ({
+			_id: fakeEventId,
+			uid: fakeUserId,
+			subject: fakeSubject,
+			startTime: fakeStartTime,
+			...over,
+		});
+
+		beforeEach(() => {
+			service.sendEventNotification.restore();
+		});
+
+		it('delivers a reminder for an event the user created, licensed or not', async () => {
+			LicenseMock.hasModule.returns(false);
+
+			await service.sendEventNotification(reminder());
+
+			sinon.assert.called(api.broadcast as sinon.SinonStub);
+		});
+
+		it('holds back a reminder for a synced event once the license is gone', async () => {
+			LicenseMock.hasModule.returns(false);
+
+			await service.sendEventNotification(reminder({ externalId: fakeExternalId, source: 'outlook' }));
+
+			sinon.assert.notCalled(api.broadcast as sinon.SinonStub);
+		});
+
+		it('delivers a reminder for a synced event while the license is there', async () => {
+			LicenseMock.hasModule.returns(true);
+
+			await service.sendEventNotification(reminder({ externalId: fakeExternalId, source: 'outlook' }));
+
+			sinon.assert.called(api.broadcast as sinon.SinonStub);
 		});
 	});
 });
