@@ -10,7 +10,7 @@ export const useLoginWithCustomOauth = () => {
 	const loginClient = useSearchParameter('loginClient');
 
 	return useCallback(
-		(service: string, { loginStyle }: LoginWithCustomOauthOptions = {}) => {
+		(service: string, { loginStyle }: LoginWithCustomOauthOptions = {}): boolean => {
 			const loginUrl = new URL(`/oauth/${service}`, window.location.origin);
 
 			if (loginClient) {
@@ -18,11 +18,11 @@ export const useLoginWithCustomOauth = () => {
 			}
 
 			if (loginStyle === 'popup') {
-				window.open(loginUrl.toString(), 'oauth', 'popup=yes,width=500,height=700,left=100,top=100');
-				return;
+				return window.open(loginUrl.toString(), 'oauth', 'popup=yes,width=500,height=700,left=100,top=100') !== null;
 			}
 
 			window.location.href = loginUrl.toString();
+			return true;
 		},
 		[loginClient],
 	);
