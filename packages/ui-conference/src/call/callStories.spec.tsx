@@ -11,6 +11,7 @@ import * as cameraPicker from './CameraPicker.stories';
 import * as voiceActivity from './VoiceActivity.stories';
 import * as participantTile from './tile/ParticipantTile.stories';
 import * as callBar from '../components/CallBar.stories';
+import * as callPresenting from '../components/CallPresenting.stories';
 
 /**
  * The call's parts are drawn from what their contexts say, so each story is a state of the call and the snapshot
@@ -24,6 +25,7 @@ const testCases = [
 	...casesOf('CallBar', composeStories(callBar)),
 	...casesOf('CallControls', composeStories(callControls)),
 	...casesOf('CallHeader', composeStories(callHeader)),
+	...casesOf('CallPresenting', composeStories(callPresenting)),
 	...casesOf('CallStageArea', composeStories(callStageArea)),
 	...casesOf('CameraPicker', composeStories(cameraPicker)),
 	...casesOf('ParticipantTile', composeStories(participantTile)),

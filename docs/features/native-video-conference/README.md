@@ -84,6 +84,4 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - Shipping in follow-ups:
   - background blur and noise suppression;
   - reactions, raised hands and remote mute requests, and the data channel that carries them;
-  - the connection info panel (call diagnostics);
-  - the spotlight and sidebar layouts with active-speaker detection, and screen shares featured on the stage with
-    pinning and thumbnails. The call itself shows each shared screen as a tile of the grid.
+  - the connection info panel (call diagnostics).

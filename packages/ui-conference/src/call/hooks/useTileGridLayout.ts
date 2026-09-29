@@ -6,7 +6,8 @@ import { tileGridLayout } from '../lib/tileGrid';
 /**
  * The grid for `count` tiles in the container, kept current as it resizes.
  *
- * Takes the element rather than a ref, so a callback ref in the caller re-observes whenever the element remounts.
+ * Takes the element rather than a ref, so a callback ref in the caller re-observes whenever the element remounts —
+ * switching from spotlight back to grid, say.
  */
 export const useTileGridLayout = (container: HTMLElement | null, count: number): TileGridLayout => {
 	const [size, setSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
