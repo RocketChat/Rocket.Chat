@@ -679,6 +679,7 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 			worker.addEventListener('error', () => reject(new Error('background blur worker could not start')), { once: true });
 			worker.postMessage({
 				type: 'init',
+				visionBundleUrl: this.assets.visionBundleUrl,
 				wasmUrl: this.assets.wasmBaseUrl,
 				modelUrl: this.assets.modelUrls[this.modelKey],
 				width: model.input.width,

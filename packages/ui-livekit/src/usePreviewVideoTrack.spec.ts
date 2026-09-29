@@ -7,6 +7,7 @@ import { usePreviewVideoTrack } from './usePreviewVideoTrack';
 
 const assets = {
 	workerUrl: '/worker.js',
+	visionBundleUrl: '/vision_bundle.mjs',
 	wasmBaseUrl: '/wasm',
 	modelUrls: { quality: '/quality.tflite', performance: '/performance.tflite' },
 	rnnoiseBaseUrl: '/rnnoise',

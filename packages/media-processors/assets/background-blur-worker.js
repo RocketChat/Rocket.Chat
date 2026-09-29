@@ -1,3 +1,4 @@
+/* global self, OffscreenCanvas */
 let segmenter;
 
 // MediaPipe checks this only to select an Apple touch-device readPixels workaround. Workers have no document.
@@ -8,7 +9,7 @@ const message = (value, transfer) => self.postMessage(value, transfer ?? []);
 self.addEventListener('message', async ({ data }) => {
 	try {
 		if (data.type === 'init') {
-			const { FilesetResolver, ImageSegmenter } = await import('./vision_bundle.mjs');
+			const { FilesetResolver, ImageSegmenter } = await import(data.visionBundleUrl);
 			const files = await FilesetResolver.forVisionTasks(data.wasmUrl);
 			segmenter = await ImageSegmenter.createFromOptions(files, {
 				baseOptions: { modelAssetPath: data.modelUrl, delegate: 'GPU' },
