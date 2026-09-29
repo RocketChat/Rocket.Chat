@@ -13,27 +13,18 @@ type CallDevicePreview = {
 };
 
 /**
- * A live look at the devices the user is about to arrive on, for a provider that can actually be told which
- * ones to use.
+ * The microphone the user is about to arrive on, and every device they could choose, for a provider that can be
+ * told which ones to use. Released on unmount, so the call finds the devices free.
  *
- * The point is that this screen stops guessing. Before, it could only say *that* the camera would be on, because
- * a URL-based provider takes no device — so a self-view would have promised a choice the screen couldn't make.
- * A provider running the call in here takes both, so the honest thing is to show what will be sent.
- *
- * Enumeration is deliberately separate from the preview: a device can be *chosen* while it is switched off — a
- * user who arrives muted may still care which microphone gets unmuted later — so the lists do not depend on
- * anything being open. Opening the preview is what earns the permission that puts *names* on those entries;
- * until then the browser returns them unnamed, which is why the list can populate twice.
- *
- * Everything is released when this unmounts, so the call gets the devices back rather than finding them busy.
+ * The lists do not depend on anything being open — a device can be chosen while it is off — but the browser only
+ * names them once permission is granted, so they can populate twice.
  */
 export const useCallDevicePreview = ({ mic, cam }: CallPreferences, { micId, camId }: CallDevices): CallDevicePreview => {
 	const [stream, setStream] = useState<MediaStream | null>(null);
 	const { devices, refresh } = useMediaDevices();
 	const [error, setError] = useState(false);
 
-	// Nothing is asked of the browser unless the microphone is actually on. The camera is not this hook's concern any
-	// more, but `cam` still matters to the *labels*: permission for either is what puts names on the device lists.
+	// `cam` counts too: permission for either device is what puts names on the lists.
 	const wanted = mic || cam;
 
 	useEffect(() => {
@@ -53,8 +44,7 @@ export const useCallDevicePreview = ({ mic, cam }: CallPreferences, { micId, cam
 			return deviceId ? { deviceId: { exact: deviceId } } : true;
 		};
 
-		// Audio only. The camera is opened by `usePreviewVideoTrack` as a LiveKit track, because a track is what a blur
-		// processor can attach to — opening it here as well would light the camera twice for one preview.
+		// Audio only: the preview's camera is a separate track, and opening it here too would light it twice.
 		const constraints: MediaStreamConstraints = { audio: wantDevice(mic, micId), video: false };
 
 		navigator.mediaDevices

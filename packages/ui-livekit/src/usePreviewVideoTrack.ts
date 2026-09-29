@@ -22,19 +22,11 @@ const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height
 };
 
 /**
- * The camera for the preflight, as a **LiveKit track** rather than a bare `getUserMedia` stream.
+ * The camera for the preflight, as a LiveKit track rather than a bare `getUserMedia` stream: blur is a
+ * `TrackProcessor`, which needs a `LocalTrack` to attach to, so the preview runs the same processor at the same
+ * strength and resolution the call will send.
  *
- * This is what lets the preflight tell the truth about background blur. Blur is a `TrackProcessor`, and a processor
- * needs a `LocalTrack` to attach to — no room required, since MediaPipe blur has nothing to ask a server. Built this
- * way, the preview runs the *same* processor with the *same* radius the call will use, so what is on this screen is
- * what the call sends. A raw stream could only ever have shown an unblurred picture next to a blurred promise.
- *
- * It is also what makes the resolution choice real here rather than notional: the track is created with it.
- *
- * The track is stopped when this unmounts, so the camera light goes out if the user walks away. Handing it to the
- * room instead — `publishTrack` takes a pre-created track — would remove the re-acquire between this screen and the
- * call, and with it the flicker on entry and the need to re-apply blur on join. That is the next step, and it is why
- * this returns the track itself rather than a stream.
+ * The track is stopped when this unmounts, so the camera light goes out when the preflight does.
  */
 export const usePreviewVideoTrack = (
 	enabled: boolean,
@@ -120,7 +112,7 @@ export const usePreviewVideoTrack = (
 	}, [track, quality]);
 
 	// Blur, applied to whichever track is current. Switched where a processor is already loaded, so moving between
-	// strengths costs nothing after the first — the same arrangement as in the call.
+	// strengths costs nothing after the first.
 	useEffect(() => {
 		if (!track) {
 			return;
@@ -148,8 +140,8 @@ export const usePreviewVideoTrack = (
 						return;
 					}
 
-					// Fast refresh cannot alter the capture mode of a processor that is already running. Replace that
-					// development-only stale instance so testing this fix does not require restarting the whole app.
+					// Fast refresh cannot alter a processor that is already running, so a stale development-only instance is
+					// replaced.
 					await track.stopProcessor();
 					if (!cancelled && (strength || backgroundImage)) {
 						await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
@@ -168,7 +160,7 @@ export const usePreviewVideoTrack = (
 
 				await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
 			} catch (err) {
-				// MediaPipe comes from a CDN. Failing here means an unblurred preview, which is the truth.
+				// Failing here means an unblurred preview, which is the truth.
 				console.warn('background blur could not be previewed', err);
 			}
 		})();

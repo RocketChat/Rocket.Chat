@@ -8,12 +8,8 @@ import { useCallback } from 'react';
 import { DeviceMenuContext } from './DeviceMenuContext';
 
 /**
- * The device on the left, its name beside it, the chevron pushed to the far right — a control that says what it
- * is, what it is set to, and that there is more behind it, read left to right.
- *
- * Built on a plain button rather than `GenericMenu` because that one clones its trigger: it injects its own
- * chevron as a *leading* icon and replaces the button's `className`, so neither the icon's place nor the name's
- * alignment was ours to set. Owning the open state is also what lets the chevron turn over when it opens.
+ * The device icon, its name, and the chevron at the far end. A plain button rather than `GenericMenu`, which
+ * decides its trigger's icon and class itself.
  */
 const triggerStyles = css`
 	width: 100%;

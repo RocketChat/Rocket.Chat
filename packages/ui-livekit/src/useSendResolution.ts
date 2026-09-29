@@ -5,16 +5,10 @@ import { useEffect, useState } from 'react';
 const INTERVAL_MS = 3000;
 
 /**
- * The resolution actually going out, asked of the encoder rather than of the camera.
+ * The resolution actually going out, asked of the encoder rather than of the camera: the camera may capture 1080p
+ * while the encoder sends a smaller simulcast layer because of bandwidth, CPU or how large the far side shows it.
  *
- * These are different numbers and the difference matters: the camera may be capturing 1080p while the encoder sends a
- * 540p simulcast layer because of bandwidth, CPU, or how large the far side is displaying you. A badge built from the
- * capture settings would confidently show 1080p to someone whose picture is arriving at a quarter of that — which is
- * precisely the sort of claim this call UI has been getting wrong all along.
- *
- * `getStats()` on the sender is the only thing that knows. Outbound video stats carry `frameWidth`/`frameHeight` per
- * layer, so the highest of them is what is being sent; nothing is reported until the encoder has produced a frame,
- * which is why this can be undefined for the first second or two of a call.
+ * Read from the sender's outbound `getStats()`, so it stays undefined until the encoder has produced a frame.
  */
 export const useSendResolution = (videoTrack: LocalVideoTrack | undefined): { width: number; height: number } | undefined => {
 	const [resolution, setResolution] = useState<{ width: number; height: number } | undefined>();

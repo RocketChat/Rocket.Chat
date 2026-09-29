@@ -4,12 +4,9 @@ const SAMPLE_INTERVAL_MS = 100;
 const SPEAKING_THRESHOLD = 0.08;
 const SUSTAINED_MS = 400;
 /**
- * How long the answer holds after the last sample above the threshold.
- *
- * Slow to fall, quick to rise. Speech dips below any threshold between words and even between syllables, so an
- * answer that dropped on the first quiet sample made whatever it drove blink word by word — which is what the
- * muted-while-talking notice did until this existed. `SUSTAINED_MS` still governs how long it takes to say that
- * someone *is* talking; this governs only how long it keeps saying so once they pause.
+ * How long the answer holds after the last sample above the threshold: speech dips below any threshold between
+ * words, and an answer that dropped on the first quiet sample would blink word by word. `SUSTAINED_MS` governs how
+ * long it takes to start saying someone is talking; this only how long it keeps saying so once they pause.
  */
 const RELEASE_MS = 3000;
 

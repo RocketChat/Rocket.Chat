@@ -16,15 +16,8 @@ export type CallRaisedHandsProps = {
 };
 
 /**
- * Who is waiting to speak, next in line first.
- *
- * A raised hand used to be visible only as a badge on the raiser's own tile, which stops working the moment a
- * call is bigger than the tiles it can show — the very calls where a queue matters most. So the front of the
- * queue is stated next to the participants button, where it is legible however many people are in the call, and
- * the rest of the line is a click away rather than spread across tiles that may not be on screen.
- *
- * Nothing is rendered when nobody has their hand up: an empty queue is not a thing to say, and a permanent
- * control that is usually blank teaches people to stop reading it.
+ * Who is waiting to speak, next in line first: the front of the queue named in the top bar, legible however many
+ * tiles are on screen, and the rest of the line a click away. Nothing is rendered when nobody has their hand up.
  */
 const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 	const { t } = useTranslation();

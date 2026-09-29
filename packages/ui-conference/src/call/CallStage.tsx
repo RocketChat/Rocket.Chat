@@ -34,7 +34,6 @@ const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShar
 
 	const screens = useFeaturedScreen(localParticipant, remoteParticipants);
 
-	// Falls back to the first remote participant when nobody is speaking.
 	const audioParticipants = useMemo(() => remoteParticipants.map((p) => ({ id: p.id, audioStream: p.audioStream })), [remoteParticipants]);
 	const activeSpeakerId = useActiveSpeakerId(audioParticipants, remoteParticipants[0]?.id ?? localParticipant.id);
 

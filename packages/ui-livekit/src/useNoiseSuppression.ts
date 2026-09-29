@@ -6,13 +6,8 @@ import type { LocalAudioTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
- * The ways a microphone can be cleaned up, weakest first — which is the order a menu should offer them in, reading
- * from "leave it alone" up to the best this workspace can actually manage.
- *
- * - **none** — the microphone as it is.
- * - **browser** — the browser's own `noiseSuppression`. Free, everywhere, removes steady hiss and not much else.
- * - **rnnoise** — Xiph's RNNoise in an AudioWorklet, served from this workspace. Removes typing, chairs, the road
- *   outside. What Jitsi ships.
+ * The ways a microphone can be cleaned up, weakest first, which is the order a menu offers them in: untouched, the
+ * browser's own `noiseSuppression` (steady hiss only), and RNNoise (transient noise too).
  */
 const ORDER: NoiseMethod[] = ['none', 'browser', 'rnnoise'];
 

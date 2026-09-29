@@ -21,8 +21,6 @@ const AudioDevicePickerButton = forwardRef<HTMLButtonElement, AudioDevicePickerB
 ) {
 	const { t } = useTranslation();
 
-	// A live microphone shows what it is hearing rather than a chevron: the one thing a caller wondering whether they
-	// are being heard wants to know. A muted mic has nothing to show, so there the chevron stays.
 	return (
 		<ActionButton
 			secondary

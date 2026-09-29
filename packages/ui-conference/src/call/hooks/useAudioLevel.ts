@@ -3,14 +3,9 @@ import { useEffect, useState } from 'react';
 const SAMPLE_INTERVAL_MS = 80;
 
 /**
- * Returns a normalised audio level (0–1) for the given MediaStream, derived
- * from a Web Audio AnalyserNode reading the time-domain RMS. Returns 0 when
- * the stream is null or has no audio tracks. Updates ~12Hz to keep render
- * pressure low while still feeling responsive for a speaking indicator.
+ * How loud the stream is, from 0 to 1, sampled about twelve times a second; 0 without an audio track.
  *
- * The raw RMS is put through a sublinear curve (power 0.65, then scaled)
- * so that quiet signals — typical of remote audio after WebRTC decoding —
- * produce visible movement instead of barely registering on a linear scale.
+ * Sublinear, so quiet signals — typical of remote audio after WebRTC decoding — still move a speaking indicator.
  */
 export const useAudioLevel = (stream?: MediaStream | null): number => {
 	const [level, setLevel] = useState(0);

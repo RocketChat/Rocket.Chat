@@ -9,16 +9,10 @@ export type CallReaction = {
 };
 
 /**
- * Reactions rising from the corner of the call, each carrying the name of whoever sent it.
+ * Reactions rising from the corner of the call, each carrying the name of whoever sent it — anchored to the call
+ * rather than to a tile, so a sender without a tile on screen is still seen.
  *
- * They used to float inside the sender's own tile, which reads well right up until the sender has no tile: a call
- * large enough to show only some of the people in it — or one where a tile is hidden for any other reason — would
- * swallow their reaction entirely. Anchoring them to the call instead of to a tile means every reaction lands
- * somewhere the whole call can see, and the name is what keeps it attributable now that position no longer says
- * who sent it.
- *
- * The corner is the bottom left: the controls own the middle of that edge, and rising through them would put an
- * emoji over the hang-up button.
+ * Bottom left: the controls own the middle of that edge, and rising through them would cover the hang-up button.
  */
 const layerStyles = css`
 	position: absolute;

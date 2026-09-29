@@ -17,16 +17,8 @@ import { useVirtualBackground } from './useVirtualBackground';
 type Blur = 'camera' | 'processor';
 
 /**
- * How strong each level is, as a fraction of the frame's height.
- *
- * A fraction rather than a number of pixels: the same track is watched at whatever size the other end's tile happens
- * to be, so what has to hold across resolutions is the blur *relative to the picture*. Twelve pixels on a 360p frame
- * and thirty-six on 1080p are the same photograph; pinning it to pixels would make every level three times lighter
- * as the camera got better.
- *
- * Three, because "on" is not a useful amount: a little softens a room, a lot hides it, and people want different
- * ones of those. Tuned by eye against Meet at the same resolution — light is a hint of separation, strong hides the
- * room behind you.
+ * How strong each level is, as a fraction of the frame's height: the same track is watched at any tile size, so the
+ * blur has to hold relative to the picture rather than in pixels.
  */
 export const BLUR_STRENGTH: Record<Exclude<BlurLevel, 'none'>, number> = { light: 0.016, medium: 0.032, strong: 0.064 };
 
@@ -47,16 +39,10 @@ export const cameraBlurCapability = (values: boolean[] | undefined): CameraBlurC
 /**
  * Blurring the background of the local camera, at a strength the user picks.
  *
- * Two ways of doing it, and which one runs is whichever can:
- *
- * **The camera's own**, via the `backgroundBlur` constraint — free, done by the platform before the frames reach
- * us. Some platforms make it controllable and others only let us observe the OS setting. It is asked for through
- * `getCapabilities()` rather than by trying it, because `applyConstraints` resolves happily for an unknown constraint.
- * It has no strength to choose: it is on or off, so picking any level turns it on where control is available.
- *
- * **Ours**, via {@link BackgroundBlurProcessor}: MediaPipe confidence segmentation refined and composited on WebGL2.
- * This one takes a strength, and changing it is a number on the running processor — no rebuild or re-publish — so
- * only the first choice in a call is slow.
+ * The camera's own blur (the `backgroundBlur` constraint) is used where the platform has one; it is on or off, and
+ * some platforms only let it be observed. It is detected through `getCapabilities()` because `applyConstraints`
+ * resolves even for an unknown constraint. Otherwise {@link BackgroundBlurProcessor} runs, whose strength changes
+ * on the running processor without re-publishing.
  */
 export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined, assets: MediaProcessorAssets) => {
 	const { blurLevel: preferred, selectBlurLevel, blurModel, selectBlurModel } = useBackgroundBlurPreference();
@@ -95,7 +81,6 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined, asset
 			const processor = processorRef.current;
 			processorRef.current = null;
 			if (processor) {
-				// Track is already gone; just drop the processor reference.
 				processor.setStrength(0);
 			}
 			return;
@@ -258,8 +243,7 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined, asset
 					processorRef.current = processor;
 					setLevel(next);
 				} catch (err) {
-					// The model and the WASM come from a CDN, so this is where a workspace with no way out lands —
-					// with blur off, which is the truth, rather than a level claiming to be applied.
+					// Blur off, which is the truth, rather than a level claiming to be applied.
 					console.warn('background blur could not be started', err);
 					setLevel('none');
 				} finally {

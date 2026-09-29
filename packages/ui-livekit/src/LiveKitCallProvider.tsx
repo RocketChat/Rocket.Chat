@@ -156,7 +156,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		localProcessedStream.current = null;
 		return localCameraTrack?.mediaStream;
 		// Keyed on the publication's sid rather than the publication object, which is re-derived whenever any local
-		// track changes — the microphone included — and made the camera blink every time the mic was touched.
+		// track changes, the microphone included: keying on it would restart the camera each time.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localCameraPub?.trackSid, localCameraTrack?.mediaStream, processedCameraTrack, camEnabled]);
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;

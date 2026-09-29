@@ -3,17 +3,11 @@ import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-clien
 import type { MediaProcessorAssets } from './assets';
 
 /**
- * Noise suppression with RNNoise.
+ * Noise suppression with RNNoise, which removes transient noise (typing, chairs, traffic) that the browser's own
+ * suppression leaves in.
  *
- * RNNoise is a small recurrent network (about 85KB of weights) that Xiph built for exactly this, and it is what
- * Jitsi ships. It is a great deal better than the browser's own: the browser suppresses steady hiss, while this one
- * removes typing, chairs, and the road outside.
- *
- * It runs in an **AudioWorklet**, on the audio thread, which is the only place a per-frame filter belongs — doing
- * it on the main thread would mean audio dropping out whenever React re-rendered. The graph is the simplest thing
- * that works: the microphone in, the worklet, and a destination whose track is what gets published.
- *
- * Its assets are served by the workspace rather than a CDN, since many self-hosted deployments cannot reach one.
+ * It runs in an AudioWorklet, on the audio thread, so main-thread work cannot make the audio drop out. The graph is
+ * the microphone, the worklet, and a destination whose track is what gets published.
  */
 export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
 	readonly name = 'rnnoise-noise-filter';

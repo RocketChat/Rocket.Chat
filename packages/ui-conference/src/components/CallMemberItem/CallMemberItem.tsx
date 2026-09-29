@@ -25,7 +25,7 @@ type CallMemberItemProps = {
 	 * the provider does not have is one no request could name.
 	 */
 	controls?: Omit<CallParticipantControlsProps, 'name'>;
-	/** Whether they are waiting to speak. The queue's order is stated by the call's own header, not here. */
+	/** Whether they are waiting to speak. */
 	handRaised?: boolean;
 	/** Whether their microphone is already off, in which case there is nothing to ask for. */
 	muted?: boolean;
@@ -79,8 +79,7 @@ const CallMemberItem = ({
 							{displayUsername}
 						</Box>
 					)}
-					{/* What a provider running in its own frame says about them — inert for a call running in here,
-					    which answers the same questions below out of the media it already holds. */}
+					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
 						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.
@@ -103,9 +102,8 @@ const CallMemberItem = ({
 					</Box>
 				)}
 			</OptionContent>
-			{/* A live microphone, and — for anyone but the reader — a way to ask it for silence. A muted one says nothing:
-			    silence is what everyone already hears, so a crossed-out mic per row would only repeat it. The reader gets
-			    the level alone, since muting yourself is the call's own bar's job. */}
+			{/* A live microphone, and for anyone but the reader a way to ask it for silence. A muted one says nothing:
+			    silence is what everyone already hears. */}
 			{status === 'joined' && !muted && (
 				<>
 					{member._id !== ownUserId && onMute && (

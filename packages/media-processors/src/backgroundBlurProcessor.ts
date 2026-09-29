@@ -5,16 +5,11 @@ import { BackgroundBlurRenderer } from './backgroundBlurRenderer';
 import { supportsBackgroundBlur } from './backgroundBlurSupport';
 
 /**
- * The two MediaPipe segmenters worth using here, and which one we use.
+ * The two MediaPipe segmenters on offer. `input` is the size the model works at: frames are scaled to it before
+ * segmenting (see `segment`), so the mask comes back at this size rather than the camera's.
  *
- * `input` is the size the model itself works at. It matters because we hand the segmenter a frame scaled to exactly
- * that — see the note in `render` — so the mask comes back at this size rather than the camera's, and the difference
- * is the difference between blur costing 20ms a frame and 94ms.
- *
- * - **multiclass** names six things (background, hair, body-skin, face-skin, clothes, others) at 256×256. It holds an
- *   edge around hair far better than the two-class model, which is what makes it worth the other two costs: it is
- *   **15.6 MB** against 244 KB, and roughly twice the work per frame.
- * - **selfie** is one class at 256×144 — the landscape shape a call actually is, cheap, and blunter around hair.
+ * - **multiclass** (256×256, 15.6 MB) holds an edge around hair far better, at roughly twice the work per frame.
+ * - **selfie** (256×144, 244 KB) is the landscape shape of a call: cheap, and blunter around hair.
  *
  * Where each model is fetched from is the caller's to say, in {@link MediaProcessorAssets}.
  */
@@ -132,15 +127,10 @@ const selectSubjectComponent = (components: SubjectComponent[], previous?: Prima
 };
 
 /**
- * Retains the one connected foreground component most likely to be the caller.
- *
- * Selfie segmentation describes every person in the frame, but a meeting effect should follow the participant at
- * the camera rather than somebody passing behind them. Strong matte pixels form the components; soft pixels within
- * two model pixels of the chosen component are retained so hair and anti-aliased edges do not become hard cut-outs.
- * The previous centroid makes the selection sticky as the caller moves. Initial acquisition requires a component in
- * the broad central 70% of the frame; after that it must remain close to the last centroid. A person entering at the
- * border therefore cannot take over when the caller leaves, while normal movement can carry the tracked caller all
- * the way to an edge over consecutive masks.
+ * Retains the one connected foreground component most likely to be the caller, so the effect follows the person at
+ * the camera rather than someone passing behind them. Soft pixels next to the chosen component are kept, so hair
+ * and edges stay soft. The first pick must sit in the central 70% of the frame and later picks near the previous
+ * centroid: someone entering at the border cannot take over, while the caller can still move to an edge.
  */
 export const isolatePrimarySubject = (
 	values: Uint8Array,
@@ -282,16 +272,11 @@ export const requestCapturedFrame = (track: MediaStreamTrack | undefined): void 
 };
 
 /**
- * How often the mask is worked out again, in milliseconds.
+ * How often the mask is worked out again, in milliseconds; `0` segments every frame.
  *
- * Not every frame. A segmentation is the expensive part of this by an order of magnitude — about 20ms of the 22ms a
- * blurred 1080p frame costs with the multiclass model — and it is the one part that does not have to happen at the
- * frame rate: between segmentations the last mask is reused, which is invisible on a talking head and shows only as
- * a soft edge trailing a fast wave. The initial 20Hz target adapts downward when measured model work would occupy too
- * much of the worker. Camera callbacks ultimately quantize it to about 15Hz on a 30fps track, which keeps motion
- * noticeably tighter without allowing inference requests to overlap.
- *
- * `0` segments every frame.
+ * Segmentation is by far the most expensive step and the one that need not run at the frame rate: between runs the
+ * last mask is reused, which shows only as a soft edge trailing fast motion. {@link BackgroundBlurFrameBudget}
+ * lengthens it when the model is slower than this machine can absorb.
  */
 export const SEGMENT_INTERVAL = 50;
 
@@ -427,25 +412,12 @@ export class BackgroundBlurFrameBudget {
 }
 
 /**
- * Blurs the background of a camera track, and nothing else.
+ * Blurs, or replaces, the background of a camera track: a MediaPipe confidence matte composited by
+ * {@link BackgroundBlurRenderer} on WebGL2.
  *
- * MediaPipe provides a low-resolution confidence matte and {@link BackgroundBlurRenderer} refines and composites it
- * on WebGL2. The renderer keeps the important stages on GPU: a joint bilateral upsample aligns the matte with camera
- * edges, a weighted separable blur excludes foreground colours, and the final blend happens at full frame size.
- *
- * This differs from both earlier implementations:
- *
- * - a binary category mask threw away partial coverage around hair before compositing began;
- * - blurring the complete frame let the person's colours bleed outwards into a halo;
- * - enlarging the blurred source to hide its canvas border moved the background relative to the sharp subject.
- *
- * Strength is a fraction of frame height — what has to look the same across resolutions is the blur *relative to
- * the picture*, since the same track is watched at whatever size the other end's tile happens to be. It can be
- * changed at any time with {@link setStrength} — the next frame uses it, so moving between levels costs nothing and
- * never re-publishes.
- *
- * Strength `0` is pass-through: frames keep flowing, untouched, and the segmenter is left alone. That is what
- * "no blur" does while the processor stays attached, since detaching a processor re-publishes the camera.
+ * Strength is a fraction of frame height, so the blur looks the same whatever size the track is watched at, and
+ * {@link setStrength} applies from the next frame without re-publishing. Strength `0` passes frames through
+ * untouched with the segmenter idle — how "no blur" is done while attached, since detaching re-publishes the camera.
  */
 export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video, VideoProcessorOptions> {
 	/** Bump when an existing development-session processor must be reconstructed rather than updated in place. */
@@ -512,7 +484,7 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 		this.backgroundImage = backgroundImage;
 	}
 
-	/** Whether this browser can do it. The asking is in {@link supportsBackgroundBlur}, which a menu can call cheaply. */
+	/** Whether this browser can do it. */
 	static get isSupported(): boolean {
 		return supportsBackgroundBlur();
 	}
@@ -775,12 +747,9 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 	/**
 	 * Works out where the person is, if it is time to.
 	 *
-	 * The frame is scaled down to the model's own input size first, and *that* is what gets segmented. It costs a draw
-	 * and saves an enormous amount: MediaPipe hands back a mask the size of what it was given, and reading a
-	 * 1920×1080 mask off the GPU took 60ms a frame where a 256×256 one is far cheaper. Nothing is lost by it — the
-	 * model resizes its input to exactly this size anyway, so a frame-sized mask was only ever its own output
-	 * stretched back up, and we stretch it ourselves when compositing. The resized ImageBitmap is transferred to a
-	 * dedicated worker so the remaining synchronous model inference and mask readback do not interrupt UI or encoding.
+	 * The frame is scaled to the model's input size first: MediaPipe returns a mask the size of its input, and a
+	 * frame-sized one is expensive to read back while adding nothing, since the model resizes to this size anyway.
+	 * Inference runs in a worker so it does not interrupt the UI or the encoder.
 	 */
 	private segment(): void {
 		const { source, segmenterWorker } = this;

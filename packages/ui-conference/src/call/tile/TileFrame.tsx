@@ -21,12 +21,8 @@ const tileStyles = css`
 `;
 
 /**
- * The name over the tile: plain text on the picture, with a shadow to hold it there.
- *
- * No plate behind it. A dark pill under every name put a permanent rectangle over the bottom of everyone's camera,
- * and the shadow does the one job the plate was there for — keeping the name legible over whatever the camera
- * happens to be showing, light or dark — without covering any of it. The padding stays even with nothing to pad,
- * so the name holds its position when a raised hand gives it a plate again rather than shifting under the reader.
+ * The name over the tile: plain text with a shadow to keep it legible over any picture, without covering it. The
+ * padding stays with nothing to pad, so the name holds its position when a raised hand gives it a plate.
  */
 const labelStyles = css`
 	position: absolute;
@@ -128,28 +124,19 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 				)}
 				{displayName}
 			</Box>
-			{/* The corner always says something about the microphone: crossed through when it is off, and moving with
-		    the voice when it is on. A crossed mic that simply disappears when someone unmutes leaves the two
-		    states told by an absence, and an absence is not something a reader notices — where a mic that moves
-		    when they talk also answers the question a static icon never could, which is whether it is picking
-		    anything up. */}
-			{/* Opposite corner from the microphone, so the two facts about this tile do not stack. What is *sent* rather
-		    than what is captured: the encoder drops to a smaller layer when bandwidth or CPU says so, and a badge
-		    built from the camera's setting would keep saying 1080p right through it. */}
+			{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}
 			{sendHeight && (
 				<Box className={sendBadgeStyles} fontScale='c1'>
 					{sendHeight}p
 				</Box>
 			)}
 			<Box className={indicatorRowStyles}>
+				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
 					<Box className={indicatorBadgeStyles}>
 						<Icon name='mic-off' size='x16' />
 					</Box>
 				) : (
-					// Blue, like the ring this tile lights when they speak and like every other call product's own
-					// version of this: it is the one thing in the corner that means "live", and the dark disc a muted
-					// mic wears would say the opposite.
 					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (

@@ -2,10 +2,7 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
 import { settings } from '../settings';
 
-// `appId === 'core'` marks a built-in provider (e.g. LiveKit) — registered
-// directly from server bootstrap rather than via an apps-engine app. The
-// only behavioural impact is when callers look up the owning app to dispatch
-// provider hooks; built-ins have no app to dispatch to.
+/** The `appId` of a provider built into Rocket.Chat rather than supplied by an app, which has no app hooks to call. */
 export const CORE_PROVIDER_APP_ID = 'core';
 
 const providers = new Map<string, { capabilities: VideoConferenceCapabilities; label: string; appId: string }>();

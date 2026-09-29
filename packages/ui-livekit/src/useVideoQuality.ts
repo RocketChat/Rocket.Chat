@@ -20,15 +20,10 @@ const PRESETS: Record<Exclude<VideoQuality, 'auto'>, VideoCaptureOptions> = {
 const ORDER: VideoQuality[] = ['auto', 'h1080', 'h720', 'h360', 'h180'];
 
 /**
- * The most detail to send.
+ * The most detail to send. A camera's default is often far below what it can do, while more costs bandwidth and,
+ * with background blur on, compositing work on every frame.
  *
- * Worth offering because the camera's default is often far less than it can do — 640×480 out of a camera that
- * manages 1080p — and because asking for more is not free. Every extra pixel is bandwidth, and where background blur
- * is on, it is also a frame to segment: at 1080p that is four times the work of 540p, on every frame of every call.
- *
- * Changing it restarts the track, which is a visible flicker. That is inherent — resolution is a property of the
- * capture, not something that can be changed downstream of it — and it is why this is a setting rather than
- * something to fiddle with mid-sentence.
+ * Changing it restarts the track, a visible flicker: resolution is a property of the capture.
  */
 export const useVideoQuality = (videoTrack: LocalVideoTrack | undefined) => {
 	const { videoQuality: preferred, selectVideoQuality } = useVideoQualityPreference();

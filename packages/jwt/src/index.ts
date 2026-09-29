@@ -28,9 +28,6 @@ export async function getPairs(): Promise<[string, string]> {
 	return [spki, pkcs8];
 }
 
-// ---- HS256 (shared-secret) JWTs ----
-// Used for systems like LiveKit that authenticate with an API key/secret pair.
-
 export type HS256SignOptions = {
 	secret: string;
 	issuer?: string;
@@ -41,6 +38,7 @@ export type HS256SignOptions = {
 	notBefore?: string | number | Date;
 };
 
+/** Signs a JWT with a shared secret (HS256), for services that authenticate with an API key/secret pair. */
 export async function signHS256(payload: JWTPayload, options: HS256SignOptions): Promise<string> {
 	const secretBytes = new TextEncoder().encode(options.secret);
 	const builder = new SignJWT(payload).setProtectedHeader({ alg: 'HS256', typ: 'JWT' }).setIssuedAt();

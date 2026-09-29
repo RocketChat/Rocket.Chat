@@ -24,7 +24,6 @@ const CameraPicker = () => {
 	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
 	const backgroundImageInput = useRef<HTMLInputElement>(null);
 
-	// The system default first, its duplicate dropped, and every name without the USB id the browser tacks on.
 	const ordered = useMemo(() => orderDevices(devices.filter(({ kind }) => kind === 'videoinput')), [devices]);
 
 	// What is in use when nothing has been picked is the first on offer, which is what makes clicking it a no-op
@@ -54,9 +53,8 @@ const CameraPicker = () => {
 		};
 	});
 
-	// Blurring the background belongs with the camera, but not among the cameras: those are a choice of *which* one,
-	// and this is something done to whichever is chosen. Offered the same way, as one row per choice, because "how
-	// much" is a choice like any other — a switch could only ever say on, and on is not an amount.
+	// A section of its own: which camera is one choice, what is done to its picture another. One row per level,
+	// because "how much" is not something a switch can say.
 	const blurItems: GenericMenuItemProps[] = backgroundBlur.levels.map((blurLevel) => ({
 		id: `${BLUR_LEVEL_PREFIX}${blurLevel}`,
 		textValue: t(BLUR_LEVEL_LABELS[blurLevel]),
@@ -207,8 +205,7 @@ const CameraPicker = () => {
 					}
 					if (!deviceId.endsWith('-videoinput')) return;
 					const id = deviceId.slice(0, -'-videoinput'.length);
-					// Picking the camera already in use is not a change, and putting it through the switch anyway tore the
-					// running track down and came back with a black frame. Nothing to do is nothing to do.
+					// Switching to the camera already in use restarts its track, which comes back as a black frame.
 					if (id === currentId) return;
 					selectCamera(id);
 				}}

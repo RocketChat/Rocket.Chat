@@ -1,27 +1,11 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Returns true while the given stream has at least one video track that is
- * actually producing frames — `enabled`, not `muted`, and `live`. This is the
- * signal a UI should use to decide whether to render the `<video>` element or
- * fall back to an avatar.
+ * Whether this track is producing frames.
  *
- * A MediaStream object can outlive its useful video state: LiveKit (and the
- * MediaStreamTrack API in general) flips `track.muted`/`track.enabled` when
- * the camera is paused, but the stream reference doesn't change. Subscribers
- * to mute/unmute/ended events on each track + addtrack/removetrack on the
- * stream keep this hook accurate.
- */
-/**
- * Whether this particular track is producing frames.
- *
- * `muted` is the awkward one. A camera reports it while paused, which is exactly what this hook is for — but a
- * *synthetic* track, the kind a processor hands back after transforming each frame, reports `muted` until its first
- * frame arrives and does not reliably announce when that happens. Waiting for an unmute that never comes is how a
- * blurred self-view ends up as an empty tile.
- *
- * Synthetic tracks are told apart by having no device behind them: a real camera track always names one, so a paused
- * camera still correctly falls back to the avatar.
+ * A paused camera reports `muted`, but so does a synthetic track — what a processor hands back — until its first
+ * frame, and it does not reliably announce the unmute. Synthetic tracks have no device behind them, so `muted` is
+ * only trusted for tracks that name one.
  */
 const isProducingFrames = (track: MediaStreamTrack): boolean => {
 	if (!track.enabled || track.readyState !== 'live') {
@@ -32,6 +16,10 @@ const isProducingFrames = (track: MediaStreamTrack): boolean => {
 	return isSynthetic || !track.muted;
 };
 
+/**
+ * Whether the stream has a video track producing frames — what decides between its `<video>` and the avatar. Kept
+ * current as tracks pause, end or come and go, since the stream itself stays the same object throughout.
+ */
 export const useStreamHasLiveVideo = (stream?: MediaStream | null): boolean => {
 	const [hasLive, setHasLive] = useState(false);
 

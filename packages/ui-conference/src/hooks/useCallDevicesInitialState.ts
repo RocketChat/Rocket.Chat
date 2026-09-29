@@ -185,9 +185,7 @@ const useRingIn = (stored: StoredCallPreferences, setStored: SetStoredCallPrefer
 export const useNoiseSuppressionPreference = () => {
 	const [stored, setStored] = useStoredCallPreferences();
 
-	// Undefined rather than a default: nothing chosen means "the best you can do", which is a better answer than any
-	// particular method — and it is what someone who has never opened this menu wants. A method this version no
-	// longer offers counts as nothing chosen.
+	// Undefined means "the best you can do", which is also what a method this version no longer offers falls back to.
 	const noiseMethod = isNoiseMethod(stored.noiseMethod) ? stored.noiseMethod : undefined;
 	const selectNoiseMethod = useCallback(
 		(method: NoiseMethod) => setStored((current) => ({ ...current, noiseMethod: method })),

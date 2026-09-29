@@ -1,10 +1,8 @@
 /**
  * Picks the (rows, cols) grid for N call tiles in a container of a given size, keeping each tile's aspect ratio in a
- * band between mildly portrait and widescreen.
- *
- * CSS `repeat(auto-fit, minmax(W, 1fr))` gives wide, short tiles on a short viewport and tall, narrow ones on a
- * narrow viewport; a video tile outside that band reads as squashed. Every column count is scored on how close its
- * tile aspect is to 16:9 — gently inside the band, steeply outside it — plus a small bonus for leaving no cell empty.
+ * band between mildly portrait and widescreen, where a video tile does not read as squashed. Each column count is
+ * scored on how close its tile aspect is to 16:9 — gently inside the band, steeply outside it — plus a small bonus
+ * for leaving no cell empty.
  */
 const TARGET_ASPECT = 16 / 9;
 // Mildly portrait: taller than 4:3 sideways looks broken for a video tile.

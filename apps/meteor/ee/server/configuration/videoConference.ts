@@ -14,15 +14,8 @@ import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';
 
 /**
- * Whether LiveKit is offered as a provider at all.
- *
- * Only when it is *fully* configured — enabled, with a URL, an API key and a secret — because a provider in the
- * registry is a provider the camera button offers, and offering one that can't connect turns a misconfiguration
- * into a call that fails at the moment someone tries to place it. And only with the conference window on, which is
- * the one place its call renders.
- *
- * Re-evaluated on every relevant setting change rather than only at startup, so filling in a missing key takes
- * effect without a restart.
+ * Offers LiveKit as a provider only while it is fully configured and the conference window, where its call renders,
+ * is on: a registered provider is one the camera button offers, and one that cannot connect would fail the call.
  */
 const refreshLiveKitProviderRegistration = (): void => {
 	if (isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {

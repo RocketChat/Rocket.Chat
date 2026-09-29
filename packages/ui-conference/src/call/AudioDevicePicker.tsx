@@ -45,8 +45,6 @@ const AudioDevicePicker = () => {
 	// merely shares its name.
 	const deviceGroups = useMemo(() => deviceGroupsOf(devices), [devices]);
 
-	// The system default first, wherever the browser happened to put it: it is what will be used if nothing is
-	// picked, so it is what should be under the cursor.
 	const availableInputDevice = orderAudioDevices(availableDevices?.audioInput ?? [], deviceGroups).map<GenericMenuItemProps>((device) => {
 		if (!device.id || !device.label) {
 			return getDefaultDeviceItem(t('Default'), 'input');
