@@ -8,6 +8,7 @@ export type CallSelf = {
 	muted: boolean;
 	cameraOn: boolean;
 	screenSharing: boolean;
+	handRaised: boolean;
 	/** Whether they are talking into a muted microphone. */
 	speakingWhileMuted: boolean;
 	/** What the encoder is actually sending, which is not what the camera captures. Undefined until it has sent a frame. */
@@ -30,11 +31,17 @@ export type RemoteParticipantInfo = {
 	audioStream?: MediaStream;
 };
 
+/** A reaction on screen; the provider drops it after `expiresAt`. */
+export type ActiveReaction = { id: string; participantId: string; emoji: string; sentAt: number; expiresAt: number };
+
 export type CallConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
 
 export type CallState = {
 	self: CallSelf;
 	remoteParticipants: RemoteParticipantInfo[];
+	/** Every raised hand, oldest first: the index is the queue position. */
+	raisedHands: { id: string; raisedAt: number }[];
+	activeReactions: ActiveReaction[];
 	startedAt: Date;
 	connectionState: CallConnectionState;
 };
@@ -43,6 +50,10 @@ export type CallActions = {
 	toggleMic: () => void;
 	toggleCamera: () => void;
 	toggleScreenShare: () => void;
+	toggleHand: () => void;
+	sendReaction: (emoji: string) => void;
+	/** Asks another participant to mute: their own client honours it, since nobody else can reach their microphone. */
+	muteParticipant: (participantId: string) => void;
 	leave: () => void;
 };
 

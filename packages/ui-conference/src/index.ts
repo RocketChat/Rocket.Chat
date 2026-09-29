@@ -80,13 +80,14 @@ export type {
 	CallSelf,
 	CallConnectionState,
 	RemoteParticipantInfo,
+	ActiveReaction,
 	CallActions,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
 } from './call/context';
 export { VideoQualityProvider } from './devices/VideoQualityContext';
 export type { VideoQualitySelection } from './devices/VideoQualityContext';
-export { playJoinChime, playMutedReminder } from './call/lib/callChimes';
+export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
 export { PreviewVideoContext } from './call/previewVideo';
 export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

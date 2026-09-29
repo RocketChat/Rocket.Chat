@@ -25,8 +25,12 @@ type CallMemberItemProps = {
 	 * the provider does not have is one no request could name.
 	 */
 	controls?: Omit<CallParticipantControlsProps, 'name'>;
-	/** Whether their microphone is off, in which case there is no level to show. */
+	/** Whether they are waiting to speak. */
+	handRaised?: boolean;
+	/** Whether their microphone is already off, in which case there is nothing to ask for. */
 	muted?: boolean;
+	/** Asks them to mute. Absent where the call cannot carry the request. */
+	onMute?: (memberId: string) => void;
 	/** Their microphone level, for a call whose audio this window holds. */
 	activity?: ReactNode;
 	onRing: (memberId: string) => void;
@@ -44,13 +48,15 @@ const CallMemberItem = ({
 	hasChatAccess,
 	ringing: ringRequested = false,
 	controls,
+	handRaised,
 	muted,
 	activity,
 	onRing,
+	onMute,
 }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
-	const { useRealName, canRingUsers } = useConferenceViewer();
+	const { uid: ownUserId, useRealName, canRingUsers } = useConferenceViewer();
 	const { renderMemberStatus } = useConferenceSlots();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
 	const status = getConferenceMemberStatus(member);
@@ -82,6 +88,14 @@ const CallMemberItem = ({
 							<VisuallyHidden>{t('No_chat_access')}</VisuallyHidden>
 						</Box>
 					)}
+					{handRaised && (
+						<Box marginInlineStart={4} display='flex' title={t('Raised_hand')}>
+							<Box is='span' aria-hidden>
+								✋
+							</Box>
+							<VisuallyHidden>{t('Raised_hand')}</VisuallyHidden>
+						</Box>
+					)}
 				</Box>
 				{status !== 'joined' && (
 					<Box fontScale='c1' color='hint'>
@@ -89,11 +103,28 @@ const CallMemberItem = ({
 					</Box>
 				)}
 			</OptionContent>
-			{/* A live microphone's level. A muted one says nothing: silence is what everyone already hears. */}
-			{status === 'joined' && !muted && activity && (
-				<OptionColumn>
-					<Box display='flex'>{activity}</Box>
-				</OptionColumn>
+			{/* A live microphone, and for anyone but the reader a way to ask it for silence. A muted one says nothing:
+			    silence is what everyone already hears. */}
+			{status === 'joined' && !muted && (
+				<>
+					{member._id !== ownUserId && onMute && (
+						<OptionColumn>
+							<IconButton
+								secondary
+								small
+								icon='mic-off'
+								title={t('Mute__name__', { name: nameOrUsername })}
+								aria-label={t('Mute__name__', { name: nameOrUsername })}
+								onClick={() => onMute(member._id)}
+							/>
+						</OptionColumn>
+					)}
+					{activity && (
+						<OptionColumn>
+							<Box display='flex'>{activity}</Box>
+						</OptionColumn>
+					)}
+				</>
 			)}
 			{canRingUsers && canRing && (
 				<OptionColumn>

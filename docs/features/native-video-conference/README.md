@@ -70,6 +70,17 @@ The camera menu offers *Auto / 1080p / 720p / 360p / 180p*, and the local tile s
 Choosing restarts the camera at the new preset, and the choice is remembered only once the restart succeeded. Chosen
 with the camera off, it is remembered straight away and applied when the camera comes back on.
 
+## Data-channel messages
+
+| Type | Reliable | Payload | Meaning |
+| --- | --- | --- | --- |
+| `hand` | yes | `{ raised, raisedAt, rebroadcast? }` | Raised hands. `rebroadcast` restates a hand for someone who arrived later; only new hands chime. |
+| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions, 3.5s on receivers. |
+| `mute` | yes | `{ target }` | Asks one participant to mute. Only the target acts on it, by muting itself; nothing reaches into anyone's machine. |
+
+Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
+because a call can be larger than the tiles it shows.
+
 ## Who gets rung
 
 | Room | Rings | Why |
@@ -86,6 +97,4 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Shipping in follow-ups:
-  - background blur and noise suppression;
-  - reactions, raised hands and remote mute requests, and the data channel that carries them.
+- Background blur and noise suppression ship in a follow-up.

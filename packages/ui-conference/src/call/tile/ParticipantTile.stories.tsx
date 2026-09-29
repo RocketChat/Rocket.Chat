@@ -9,8 +9,8 @@ import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles';
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
- * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail — and for the
- * reader, mirrored and saying what it sends.
+ * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail. The reader's own
+ * tile is mirrored and says what it sends; see `Self`.
  */
 const meta = {
 	component: ParticipantTile,
@@ -48,6 +48,11 @@ export const Muted: Story = {
 /** On hold: the corner says so beside the microphone. */
 export const Held: Story = {
 	args: { held: true },
+};
+
+/** Third in the queue: the name gets a plate, and the plate the position. */
+export const HandRaised: Story = {
+	args: { handPosition: 3 },
 };
 
 /** The reader's own tile, which alone says what its encoder is sending. */

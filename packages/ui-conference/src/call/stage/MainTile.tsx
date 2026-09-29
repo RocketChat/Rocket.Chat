@@ -16,6 +16,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			held={tile.held}
 			cameraStream={tile.cameraStream}
 			audioStream={tile.audioStream}
+			handPosition={tile.handPosition}
 			sendHeight={tile.sendHeight}
 		/>
 	) : (
@@ -26,6 +27,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			held={tile.held}
 			cameraStream={tile.cameraStream}
 			audioStream={tile.audioStream}
+			handPosition={tile.handPosition}
 		/>
 	);
 

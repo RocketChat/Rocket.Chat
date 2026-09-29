@@ -26,6 +26,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
@@ -175,6 +176,11 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		};
 	}, [room]);
 
+	const { raisedHands, localHandRaised, activeReactions, toggleHand, sendReaction, muteParticipant } = useCallDataChannel(
+		room,
+		localParticipant,
+	);
+
 	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder, deviceSelection.selectedIds.audioinput);
@@ -190,6 +196,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			muted: !micEnabled,
 			cameraOn: Boolean(cameraStream),
 			screenSharing: Boolean(screenStream),
+			handRaised: localHandRaised,
 			speakingWhileMuted,
 			sendResolution,
 			cameraStream,
@@ -204,6 +211,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			micEnabled,
 			cameraStream,
 			screenStream,
+			localHandRaised,
 			speakingWhileMuted,
 			sendResolution,
 			microphoneStream,
@@ -211,8 +219,8 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	);
 
 	const state = useMemo(
-		(): CallState => ({ self, remoteParticipants, startedAt, connectionState }),
-		[self, remoteParticipants, startedAt, connectionState],
+		(): CallState => ({ self, remoteParticipants, raisedHands, activeReactions, startedAt, connectionState }),
+		[self, remoteParticipants, raisedHands, activeReactions, startedAt, connectionState],
 	);
 
 	const actions = useMemo(
@@ -227,9 +235,23 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			toggleScreenShare: () => {
 				localParticipant.setScreenShareEnabled(!screenEnabled).catch(onToggleError);
 			},
+			toggleHand,
+			sendReaction,
+			muteParticipant,
 			leave: onEnded,
 		}),
-		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, onEnded, onToggleError],
+		[
+			persistDevicePreference,
+			micEnabled,
+			camEnabled,
+			screenEnabled,
+			localParticipant,
+			toggleHand,
+			sendReaction,
+			muteParticipant,
+			onEnded,
+			onToggleError,
+		],
 	);
 
 	return (

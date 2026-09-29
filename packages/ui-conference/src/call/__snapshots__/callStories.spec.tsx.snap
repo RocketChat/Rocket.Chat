@@ -216,6 +216,40 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               </i>
             </button>
             <button
+              aria-label="Raise hand"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Raise hand"
+              title="Raise hand"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+            >
+              <button
+                aria-expanded="false"
+                aria-label="Send reaction"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                label="Send reaction"
+                title="Send reaction"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="More"
@@ -387,6 +421,40 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
             </i>
           </button>
           <button
+            aria-label="Raise hand"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="More"
@@ -557,6 +625,40 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
             </i>
           </button>
           <button
+            aria-label="Raise hand"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="More"
@@ -594,7 +696,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
 </body>
 `;
 
-exports[`call stories renders CallControls Muted without crashing 1`] = `
+exports[`call stories renders CallControls HandRaised without crashing 1`] = `
 <body>
   <div>
     <div
@@ -618,18 +720,33 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="true"
                 aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_m_"
                 label="Device options"
                 title="Device settings"
                 type="button"
               >
-                <i
+                <div
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 24px;"
                 >
-                  
-                </i>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
               </button>
             </div>
             <div
@@ -637,17 +754,17 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             >
               <button
                 aria-label="Mute"
-                aria-pressed="true"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                aria-pressed="false"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
-                title="Unmute"
+                title="Mute"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
                 >
-                  
+                  
                 </i>
               </button>
             </div>
@@ -712,6 +829,40 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             </i>
           </button>
           <button
+            aria-label="Raise hand"
+            aria-pressed="true"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Lower hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1px5el2"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="More"
@@ -749,7 +900,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
 </body>
 `;
 
-exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
+exports[`call stories renders CallControls Muted without crashing 1`] = `
 <body>
   <div>
     <div
@@ -773,33 +924,18 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="true"
                 aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_s_"
                 label="Device options"
                 title="Device settings"
                 type="button"
               >
-                <div
+                <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
                 >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
+                  
+                </i>
               </button>
             </div>
             <div
@@ -807,17 +943,17 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             >
               <button
                 aria-label="Mute"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                aria-pressed="true"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
-                title="Mute"
+                title="Unmute"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
                 >
-                  
+                  
                 </i>
               </button>
             </div>
@@ -882,6 +1018,40 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             </i>
           </button>
           <button
+            aria-label="Raise hand"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="More"
@@ -899,10 +1069,10 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="End call with Ada Lovelace"
+            aria-label="Leave call"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-            label="End call with Ada Lovelace"
-            title="End call with Ada Lovelace"
+            label="Leave call"
+            title="Leave call"
             type="button"
           >
             <i
@@ -919,7 +1089,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
 </body>
 `;
 
-exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1`] = `
+exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
 <body>
   <div>
     <div
@@ -943,18 +1113,33 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
                 aria-expanded="false"
                 aria-haspopup="true"
                 aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_12_"
                 label="Device options"
                 title="Device settings"
                 type="button"
               >
-                <i
+                <div
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 24px;"
                 >
-                  
-                </i>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
               </button>
             </div>
             <div
@@ -962,17 +1147,17 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
             >
               <button
                 aria-label="Mute"
-                aria-pressed="true"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                aria-pressed="false"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
-                title="You are muted — click to unmute"
+                title="Mute"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
                 >
-                  
+                  
                 </i>
               </button>
             </div>
@@ -1037,11 +1222,234 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
             </i>
           </button>
           <button
+            aria-label="Raise hand"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="More"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             id="react-aria-_r_16_"
+            label="More"
+            title="More"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="End call with Ada Lovelace"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            label="End call with Ada Lovelace"
+            title="End call with Ada Lovelace"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+          style="position: relative;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-yaiuut"
+          >
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device options"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_18_"
+                label="Device options"
+                title="Device settings"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-label="Mute"
+                aria-pressed="true"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                label="Mute"
+                title="You are muted — click to unmute"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-yaiuut"
+          >
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Camera options"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_1a_"
+                label="Camera options"
+                title="Camera"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-label="Camera"
+                aria-pressed="false"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                label="Camera"
+                title="Start camera"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
+                >
+                  ❴
+                </i>
+              </button>
+            </div>
+          </div>
+          <button
+            aria-label="Share screen"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Share screen"
+            title="Share screen"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Raise hand"
+            aria-pressed="false"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-expanded="false"
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="More"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            id="react-aria-_r_1c_"
             label="More"
             title="More"
             type="button"
@@ -1688,6 +2096,406 @@ exports[`call stories renders CallPresenting SomeoneElse without crashing 1`] = 
 </body>
 `;
 
+exports[`call stories renders CallRaisedHands OneHand without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-label="Alan Turing raised their hand"
+          class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
+          id="react-aria-_r_1e_"
+          title="Alan Turing raised their hand"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-16qr4e"
+          >
+            ✋
+          </span>
+          <span
+            class="rcx-box rcx-box--full rcx-css-1te28na"
+          >
+            Alan Turing
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallRaisedHands Queue without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-label="Alan Turing raised their hand"
+          class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
+          id="react-aria-_r_1g_"
+          title="Alan Turing raised their hand"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-16qr4e"
+          >
+            ✋
+          </span>
+          <span
+            class="rcx-box rcx-box--full rcx-css-1te28na"
+          >
+            Alan Turing
+          </span>
+          <span
+            class="rcx-box rcx-box--full rcx-css-ue04py"
+          >
+            +
+            2
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
+<body>
+  <div
+    aria-hidden="true"
+  >
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <button
+          aria-controls="react-aria-_r_1j_"
+          aria-expanded="true"
+          aria-haspopup="true"
+          aria-label="Alan Turing raised their hand"
+          class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
+          id="react-aria-_r_1i_"
+          title="Alan Turing raised their hand"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-16qr4e"
+          >
+            ✋
+          </span>
+          <span
+            class="rcx-box rcx-box--full rcx-css-1te28na"
+          >
+            Alan Turing
+          </span>
+          <span
+            class="rcx-box rcx-box--full rcx-css-ue04py"
+          >
+            +
+            2
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-start="true"
+    hidden=""
+  />
+  <div
+    aria-hidden="true"
+  />
+  <div
+    style="position: absolute; z-index: 100000; max-height: -24px; left: 12px; top: 4px;"
+  >
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_1k_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-6qwf9c"
+      data-testid="dropdown"
+      style="bottom: 0px; left: 0px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-xvdgy9"
+      >
+        <div
+          aria-labelledby="react-aria-_r_1i_"
+          id="react-aria-_r_1j_"
+          role="menu"
+          tabindex="0"
+        >
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_1l_"
+              role="presentation"
+            >
+              Raised hands
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_1l_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="alan"
+                id="react-aria-_r_1p_"
+                role="menuitem"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xwhh89"
+                      title="Alan Turing"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-n0dfyq"
+                      >
+                        1
+                        .
+                      </span>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Alan Turing
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="ada"
+                id="react-aria-_r_1t_"
+                role="menuitem"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xwhh89"
+                      title="Ada Lovelace"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-n0dfyq"
+                      >
+                        2
+                        .
+                      </span>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Ada Lovelace
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="grace"
+                id="react-aria-_r_21_"
+                role="menuitem"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xwhh89"
+                      title="Grace Hopper"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-n0dfyq"
+                      >
+                        3
+                        .
+                      </span>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Grace Hopper
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span
+      style="display: contents;"
+    />
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_22_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-end="true"
+    hidden=""
+  />
+</body>
+`;
+
+exports[`call stories renders CallReactions Several without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 20rem; overflow: hidden;"
+      >
+        <div
+          style="position: relative; flex-grow: 1;"
+        >
+          <div
+            aria-live="polite"
+            aria-relevant="additions"
+            class="rcx-box rcx-box--full rcx-css-1isbrhp"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                👍
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Ada Lovelace
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                🎉
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Grace Hopper
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                😂
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Alan Turing
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallReactions Unattributed without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 20rem; overflow: hidden;"
+      >
+        <div
+          style="position: relative; flex-grow: 1;"
+        >
+          <div
+            aria-live="polite"
+            aria-relevant="additions"
+            class="rcx-box rcx-box--full rcx-css-1isbrhp"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                ❤️
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`call stories renders CallStageArea Alone without crashing 1`] = `
 <body>
   <div>
@@ -1702,60 +2510,64 @@ exports[`call stories renders CallStageArea Alone without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-174yuuf"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-x9nh3t"
+            class="rcx-box rcx-box--full rcx-css-11n6835"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-9izsmb"
+              class="rcx-box rcx-box--full rcx-css-x9nh3t"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-i5jt5w"
-                style="grid-template-columns: repeat(1, 0px); grid-template-rows: repeat(1, 0px);"
+                class="rcx-box rcx-box--full rcx-css-9izsmb"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  class="rcx-box rcx-box--full rcx-css-i5jt5w"
+                  style="grid-template-columns: repeat(1, 0px); grid-template-rows: repeat(1, 0px);"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                    >
-                      
-                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
                     >
-                      John Doe
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        John Doe
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
                       >
                         <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1763,6 +2575,11 @@ exports[`call stories renders CallStageArea Alone without crashing 1`] = `
                 </div>
               </div>
             </div>
+            <div
+              aria-live="polite"
+              aria-relevant="additions"
+              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            />
           </div>
         </section>
       </div>
@@ -1785,67 +2602,667 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-174yuuf"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-x9nh3t"
+            class="rcx-box rcx-box--full rcx-css-11n6835"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-9izsmb"
+              class="rcx-box rcx-box--full rcx-css-x9nh3t"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-i5jt5w"
-                style="grid-template-columns: repeat(5, 0px); grid-template-rows: repeat(1, 0px);"
+                class="rcx-box rcx-box--full rcx-css-9izsmb"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  class="rcx-box rcx-box--full rcx-css-i5jt5w"
+                  style="grid-template-columns: repeat(5, 0px); grid-template-rows: repeat(1, 0px);"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                    >
-                      
-                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
                     >
-                      John Doe
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        John Doe
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
                       >
                         <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Ada Lovelace
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Grace Hopper
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="Microphone muted"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            Microphone muted
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Alan Turing
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Katherine Johnson
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="On hold"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                          <div
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            On hold
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div
+              aria-live="polite"
+              aria-relevant="additions"
+              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            />
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallStageArea HandsAndReactions without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;"
+      >
+        <section
+          aria-label="Conference call"
+          class="rcx-box rcx-box--full rcx-css-174yuuf"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-11n6835"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-x9nh3t"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-9izsmb"
+              >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  class="rcx-box rcx-box--full rcx-css-i5jt5w"
+                  style="grid-template-columns: repeat(5, 0px); grid-template-rows: repeat(1, 0px);"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        John Doe
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
+                      >
+                        <span
+                          aria-hidden="true"
+                        >
+                          ✋
+                        </span>
+                        <div
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          Raised hand
+                        </div>
+                         (
+                        2
+                        )
+                          
+                        Ada Lovelace
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Grace Hopper
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="Microphone muted"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                          <div
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            Microphone muted
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
+                      >
+                        <span
+                          aria-hidden="true"
+                        >
+                          ✋
+                        </span>
+                        <div
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          Raised hand
+                        </div>
+                         (
+                        1
+                        )
+                          
+                        Alan Turing
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Katherine Johnson
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="On hold"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                          <div
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            On hold
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              aria-live="polite"
+              aria-relevant="additions"
+              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-4darkt"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-173vxlm"
+                >
+                  👍
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+                >
+                  Ada Lovelace
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-4darkt"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-173vxlm"
+                >
+                  🎉
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+                >
+                  Grace Hopper
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallStageArea Sidebar without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;"
+      >
+        <section
+          aria-label="Conference call"
+          class="rcx-box rcx-box--full rcx-css-174yuuf"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-11n6835"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-x9nh3t"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1u88bp9"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-12zndvr"
                 >
                   <div
                     class="rcx-box rcx-box--full rcx-css-1997hga"
@@ -1895,155 +3312,211 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                   </div>
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
+                  class="rcx-box rcx-box--full rcx-css-12z895g"
+                  data-thumb-orientation="row"
+                  style="overflow: hidden;"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
+                    class="rcx-box rcx-box--full rcx-css-1qkhpf6"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                    >
-                      
-                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
                     >
-                      Grace Hopper
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-t6ng91"
-                        title="Microphone muted"
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1g87xs3"
-                        >
-                          
-                        </i>
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        John Doe
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
                         <div
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
                         >
-                          Microphone muted
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
-                >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
+                    class="rcx-box rcx-box--full rcx-css-1qkhpf6"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                    >
-                      
-                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
                     >
-                      Alan Turing
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
+                      >
+                        
+                      </i>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Grace Hopper
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
                       >
                         <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="Microphone muted"
                         >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            Microphone muted
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-15z62zt"
-                >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
+                    class="rcx-box rcx-box--full rcx-css-1qkhpf6"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                    >
-                      
-                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
                     >
-                      Katherine Johnson
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
                       >
-                        <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                        </div>
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Alan Turing
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-t6ng91"
-                        title="On hold"
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
                       >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-1g87xs3"
-                        >
-                          
-                        </i>
                         <div
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
                         >
-                          On hold
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-1qkhpf6"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1997hga"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
+                      >
+                        
+                      </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                      >
+                        Katherine Johnson
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-h0y5qh"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                          data-testid="voice-activity-badge"
+                          style="width: 28px; height: 28px;"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-css-fmd200"
+                            style="height: 18px;"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-llqk8q"
+                              data-testid="voice-activity-bar"
+                              style="height: 3px;"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-t6ng91"
+                          title="On hold"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                          <div
+                            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                          >
+                            On hold
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2051,6 +3524,11 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                 </div>
               </div>
             </div>
+            <div
+              aria-live="polite"
+              aria-relevant="additions"
+              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            />
           </div>
         </section>
       </div>
@@ -2059,7 +3537,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
 </body>
 `;
 
-exports[`call stories renders CallStageArea Sidebar without crashing 1`] = `
+exports[`call stories renders CallStageArea Spotlight without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2073,68 +3551,66 @@ exports[`call stories renders CallStageArea Sidebar without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-174yuuf"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-x9nh3t"
+            class="rcx-box rcx-box--full rcx-css-11n6835"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1u88bp9"
+              class="rcx-box rcx-box--full rcx-css-x9nh3t"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-12zndvr"
+                class="rcx-box rcx-box--full rcx-css-1f4irk5"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-1997hga"
+                  class="rcx-box rcx-box--full rcx-css-12zndvr"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                  >
-                    
-                  </i>
                   <div
-                    class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                    class="rcx-box rcx-box--full rcx-css-1997hga"
                   >
-                    Ada Lovelace
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+                    >
+                      
+                    </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                      data-testid="voice-activity-badge"
-                      style="width: 28px; height: 28px;"
+                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+                    >
+                      Ada Lovelace
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
                     >
                       <div
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-css-fmd200"
-                        style="height: 18px;"
+                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                        data-testid="voice-activity-badge"
+                        style="width: 28px; height: 28px;"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-css-fmd200"
+                          style="height: 18px;"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-llqk8q"
+                            data-testid="voice-activity-bar"
+                            style="height: 3px;"
+                          />
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-llqk8q"
+                            data-testid="voice-activity-bar"
+                            style="height: 3px;"
+                          />
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-llqk8q"
+                            data-testid="voice-activity-bar"
+                            style="height: 3px;"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="rcx-box rcx-box--full rcx-css-12z895g"
-                data-thumb-orientation="row"
-                style="overflow: hidden;"
-              >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-1qkhpf6"
+                  class="rcx-box rcx-box--full rcx-css-2073ne"
                 >
                   <div
                     class="rcx-box rcx-box--full rcx-css-1997hga"
@@ -2183,291 +3659,13 @@ exports[`call stories renders CallStageArea Sidebar without crashing 1`] = `
                     </div>
                   </div>
                 </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1qkhpf6"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
-                    >
-                      
-                    </i>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
-                    >
-                      Grace Hopper
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-t6ng91"
-                        title="Microphone muted"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1g87xs3"
-                        >
-                          
-                        </i>
-                        <div
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          Microphone muted
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1qkhpf6"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
-                    >
-                      
-                    </i>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
-                    >
-                      Alan Turing
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
-                      >
-                        <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1qkhpf6"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1997hga"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
-                    >
-                      
-                    </i>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
-                    >
-                      Katherine Johnson
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                        data-testid="voice-activity-badge"
-                        style="width: 28px; height: 28px;"
-                      >
-                        <div
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-fmd200"
-                          style="height: 18px;"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-llqk8q"
-                            data-testid="voice-activity-bar"
-                            style="height: 3px;"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-t6ng91"
-                        title="On hold"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-1g87xs3"
-                        >
-                          
-                        </i>
-                        <div
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          On hold
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-</body>
-`;
-
-exports[`call stories renders CallStageArea Spotlight without crashing 1`] = `
-<body>
-  <div>
-    <div
-      class="rcx-box rcx-box--full rcx-css-owlgau"
-    >
-      <div
-        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;"
-      >
-        <section
-          aria-label="Conference call"
-          class="rcx-box rcx-box--full rcx-css-174yuuf"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-x9nh3t"
-          >
             <div
-              class="rcx-box rcx-box--full rcx-css-1f4irk5"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-12zndvr"
-              >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1997hga"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
-                  >
-                    
-                  </i>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
-                  >
-                    Ada Lovelace
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                      data-testid="voice-activity-badge"
-                      style="width: 28px; height: 28px;"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-css-fmd200"
-                        style="height: 18px;"
-                      >
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="rcx-box rcx-box--full rcx-css-2073ne"
-              >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1997hga"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-d884y5"
-                  >
-                    
-                  </i>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
-                  >
-                    John Doe
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-h0y5qh"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1ob2k5e"
-                      data-testid="voice-activity-badge"
-                      style="width: 28px; height: 28px;"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-css-fmd200"
-                        style="height: 18px;"
-                      >
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                        <div
-                          class="rcx-box rcx-box--full rcx-css-llqk8q"
-                          data-testid="voice-activity-bar"
-                          style="height: 3px;"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              aria-live="polite"
+              aria-relevant="additions"
+              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            />
           </div>
         </section>
       </div>
@@ -2490,7 +3688,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_18_"
+          id="react-aria-_r_23_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -2522,7 +3720,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_1a_"
+          id="react-aria-_r_25_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -2582,12 +3780,12 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_1d_"
+          aria-controls="react-aria-_r_28_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_1c_"
+          id="react-aria-_r_27_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -2618,7 +3816,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_1e_"
+        id="react-aria-_r_29_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -2632,8 +3830,8 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_1c_"
-          id="react-aria-_r_1d_"
+          aria-labelledby="react-aria-_r_27_"
+          id="react-aria-_r_28_"
           role="menu"
           tabindex="0"
         >
@@ -2642,13 +3840,13 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
           >
             <div
               class="rcx-option__title"
-              id="react-aria-_r_1f_"
+              id="react-aria-_r_2a_"
               role="presentation"
             >
               Camera
             </div>
             <div
-              aria-labelledby="react-aria-_r_1f_"
+              aria-labelledby="react-aria-_r_2a_"
               class="rcx-box rcx-box--full rcx-css-8q5c1d"
               role="group"
             >
@@ -2658,7 +3856,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="facetime-videoinput"
-                id="react-aria-_r_1j_"
+                id="react-aria-_r_2e_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2704,7 +3902,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="brio-videoinput"
-                id="react-aria-_r_1n_"
+                id="react-aria-_r_2i_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2754,13 +3952,13 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
           >
             <div
               class="rcx-option__title"
-              id="react-aria-_r_1o_"
+              id="react-aria-_r_2j_"
               role="presentation"
             >
               Send resolution (maximum)
             </div>
             <div
-              aria-labelledby="react-aria-_r_1o_"
+              aria-labelledby="react-aria-_r_2j_"
               class="rcx-box rcx-box--full rcx-css-8q5c1d"
               role="group"
             >
@@ -2770,7 +3968,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="choice:0:auto"
-                id="react-aria-_r_1s_"
+                id="react-aria-_r_2n_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2821,7 +4019,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="choice:0:h1080"
-                id="react-aria-_r_20_"
+                id="react-aria-_r_2r_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2866,7 +4064,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="choice:0:h720"
-                id="react-aria-_r_24_"
+                id="react-aria-_r_2v_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2911,7 +4109,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="choice:0:h360"
-                id="react-aria-_r_28_"
+                id="react-aria-_r_33_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -2956,7 +4154,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 aria-selected="false"
                 class="rcx-option"
                 data-key="choice:0:h180"
-                id="react-aria-_r_2c_"
+                id="react-aria-_r_37_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -3008,7 +4206,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_2d_"
+        id="react-aria-_r_38_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3046,6 +4244,85 @@ exports[`call stories renders ParticipantTile Default without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
             >
+              Ada Lovelace
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-h0y5qh"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                data-testid="voice-activity-badge"
+                style="width: 28px; height: 28px;"
+              >
+                <div
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 18px;"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders ParticipantTile HandRaised without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <div
+          style="width: 20rem; aspect-ratio: 16 / 9;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1997hga"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
+            >
+              <span
+                aria-hidden="true"
+              >
+                ✋
+              </span>
+              <div
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                Raised hand
+              </div>
+               (
+              3
+              )
+                
               Ada Lovelace
             </div>
             <div

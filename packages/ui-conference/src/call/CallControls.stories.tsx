@@ -45,3 +45,7 @@ export const SpeakingWhileMuted: Story = {
 export const CameraOnAndSharing: Story = {
 	decorators: [withCall({ state: { self: { cameraOn: true, screenSharing: true }, remoteParticipants } })],
 };
+
+export const HandRaised: Story = {
+	decorators: [withCall({ state: { self: { handRaised: true }, remoteParticipants } })],
+};
