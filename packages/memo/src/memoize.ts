@@ -5,10 +5,7 @@ export type Options = {
 	maxAge: number;
 };
 
-const store = new WeakMap<MemoizableFunction<unknown, unknown, unknown>, Map<unknown, unknown>>();
-
-const isCachedValue = <A, R>(cachedValue: R | undefined, arg: A, cache: Map<A, R>): cachedValue is R =>
-	cache.has(arg) && cache.get(arg) === cachedValue;
+const store = new WeakMap<MemoizableFunction<unknown, unknown, unknown>, () => void>();
 
 export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Options): MemoizedFunction<T, A, R> => {
 	const cache = new Map<A, R>();
@@ -20,9 +17,7 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 			cacheTimers.delete(arg);
 		};
 
-		const cachedValue = cache.get(arg);
-
-		if (isCachedValue(cachedValue, arg, cache)) {
+		if (cache.has(arg)) {
 			const oldTimer = cacheTimers.get(arg);
 			if (oldTimer) {
 				clearTimeout(oldTimer);
@@ -33,7 +28,7 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 				cacheTimers.set(arg, timer);
 			}
 
-			return cachedValue;
+			return cache.get(arg) as R;
 		}
 
 		const result = fn.call(this, arg);
@@ -48,12 +43,15 @@ export const memoize = <T, A, R>(fn: MemoizableFunction<T, A, R>, _options?: Opt
 		return result;
 	};
 
-	store.set(memoized as MemoizableFunction<unknown, unknown, unknown>, cache);
+	store.set(memoized as MemoizableFunction<unknown, unknown, unknown>, () => {
+		cacheTimers.forEach((timer) => clearTimeout(timer));
+		cacheTimers.clear();
+		cache.clear();
+	});
 
 	return memoized;
 };
 
-export const clear = (fn: MemoizedFunction<unknown, unknown, unknown>): void => {
-	const cache = store.get(fn);
-	cache?.clear();
+export const clear = <T, A, R>(fn: MemoizedFunction<T, A, R>): void => {
+	store.get(fn as MemoizableFunction<unknown, unknown, unknown>)?.();
 };

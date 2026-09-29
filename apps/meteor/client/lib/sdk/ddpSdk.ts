@@ -29,7 +29,8 @@ const applyEjsonEncoding = (sdk: DDPSDK): void => {
 };
 
 const startConnect = (sdk: DDPSDK): Promise<unknown> => {
-	if (connectPromise) return connectPromise;
+	// Only share an in-flight attempt; a settled promise from an earlier connection would turn a manual reconnect into a no-op.
+	if (connectPromise && sdk.connection.status === 'connecting') return connectPromise;
 	connectPromise = sdk.connection.connect().catch((err) => {
 		console.warn('[ddpSdk] connect failed', err);
 		// Allow a retry on the next call.
@@ -51,7 +52,9 @@ const waitForConnected = (sdk: DDPSDK): Promise<void> => {
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
-			instance = DDPSDK.create(computeDdpUrl());
+			// The stubbed Meteor stream never reconnects on its own, so keep retrying until the server
+			// is back (e.g. a restart) instead of giving up after DDPSDK's default single retry.
+			instance = DDPSDK.create(computeDdpUrl(), { retryCount: Infinity, retryTime: 1000 });
 			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
 			try {
 				instance.storage = createMeteorBackedStorage();

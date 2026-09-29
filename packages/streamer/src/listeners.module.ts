@@ -48,6 +48,8 @@ export class ListenersModule {
 
 		const logger = new Logger('ListenersModule');
 
+		service.onEvent('stream', (relayed) => notifications.deliverRelayed(relayed));
+
 		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
 		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));
 
@@ -164,9 +166,9 @@ export class ListenersModule {
 
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
-			(notifications.notifyRoom as any)(rid, callId);
+			(notifications.notifyRoomInThisInstance as any)(rid, callId);
 
-			notifications.notifyRoom(rid, 'videoconf', callId);
+			notifications.notifyRoomInThisInstance(rid, 'videoconf', callId);
 		});
 
 		service.onEvent('presence.invalidateVisibility', ({ targets, viewers }) => {
@@ -191,7 +193,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('video-conference.updated', ({ callId }) => {
-			notifications.notifyVideoConferenceUpdated(callId);
+			notifications.notifyVideoConferenceUpdatedInThisInstance(callId);
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
