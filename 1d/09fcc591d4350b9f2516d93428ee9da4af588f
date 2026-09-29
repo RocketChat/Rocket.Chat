@@ -1,0 +1,21 @@
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.spec.ts
+  s_a4fb658d580fcb::t_243ecf44745f34 79-90
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_a4fb658d580fcb::t_21d101f3479837 40-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1d09fcc591d4350b9f2516d93428ee9da4af588f",
+  "prompts": {},
+  "sessions": {
+    "s_a4fb658d580fcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6d38dbb3-adab-43c7-a5eb-3c6e85dee101",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
