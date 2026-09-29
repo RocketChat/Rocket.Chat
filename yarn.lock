@@ -10489,7 +10489,7 @@ __metadata:
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^9.1.1"
+    nodemailer: "npm:^10.0.2"
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
@@ -11197,7 +11197,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
+"@rocket.chat/storybook-dark-mode@npm:~4.2.1, @rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode"
   dependencies:
@@ -29969,10 +29969,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:9.1.1, nodemailer@npm:^9.1.1":
+"nodemailer@npm:9.1.1":
   version: 9.1.1
   resolution: "nodemailer@npm:9.1.1"
   checksum: 10/d84fd16456a8b1e1f979e65f78f3963819ed0500aaf51544d5da04634ceb0364e5ad7c784793bf7dd7b0028d4bee1d48e5b316394c5c538dbda99f4fc5aa7502
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "nodemailer@npm:10.0.2"
+  checksum: 10/0de9c36a0c542634fe767c63ae8c66ed160bd82a15c247f0bb53e21777506476138722b7cdd2d49793bb3a58f66f90846b2093198ae9f252952b019d476f4ad7
   languageName: node
   linkType: hard
 
