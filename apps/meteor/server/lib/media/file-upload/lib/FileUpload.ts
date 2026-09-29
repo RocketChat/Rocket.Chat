@@ -691,7 +691,6 @@ export const FileUpload = {
 		);
 	},
 
-	// Serves the file behind fileUrl as if it were stored here, byte ranges included: without them browsers can't size or seek audio and video.
 	proxyFile(
 		fileName: string,
 		fileUrl: string,
@@ -745,7 +744,7 @@ export const FileUpload = {
 			});
 
 			res.statusCode = statusCode;
-			fileRes.pipe(res);
+			stream.pipeline(fileRes, res, () => undefined);
 		});
 	},
 

@@ -1,3 +1,4 @@
+import { once } from 'node:events';
 import { PassThrough, Readable } from 'node:stream';
 import { text } from 'node:stream/consumers';
 
@@ -560,6 +561,17 @@ describe('FileUpload', () => {
 			expect(res.statusCode).to.equal(500);
 			expect(headers.get('x-rc-proxyfile-status')).to.equal('403');
 			expect(headers.has('content-type')).to.be.false;
+		});
+
+		it('should release the storage response when the client goes away', async () => {
+			const fileRes = Object.assign(new PassThrough(), { statusCode: 200, headers: {} });
+			const res = Object.assign(new PassThrough(), { setHeader: sinon.stub() });
+
+			FileUpload.proxyFile('audio.mp3', fileUrl, false, { get: sinon.stub().yields(fileRes) }, { headers: {} } as any, res);
+			res.destroy();
+			await once(res, 'close');
+
+			expect(fileRes.destroyed).to.be.true;
 		});
 	});
 });
