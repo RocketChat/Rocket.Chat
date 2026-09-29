@@ -252,3 +252,54 @@ describe('markup the renderer cannot reproduce', () => {
 		expect(stripLineEnd(mountComposer(text).textContent ?? '')).toBe(stripLineEnd(text));
 	});
 });
+
+describe('user mention resolution', () => {
+	const mountWithResolver = (text: string, resolveUserMention?: (mention: string) => { _id: string; username?: string; name?: string } | undefined): HTMLDivElement => {
+		const input = document.createElement('div');
+		input.innerHTML = renderComposerMarkup(parse(text, {}), text, { resolveUserMention });
+		document.body.appendChild(input);
+		return input;
+	};
+
+	it('renders @all with relevant highlight class', () => {
+		const input = mountWithResolver('hello @all');
+		const span = input.querySelector('span.rcx-message__highlight--relevant');
+
+		expect(span).not.toBeNull();
+		expect(span?.textContent).toBe('@all');
+	});
+
+	it('renders @here with relevant highlight class', () => {
+		const input = mountWithResolver('hello @here');
+		const span = input.querySelector('span.rcx-message__highlight--relevant');
+
+		expect(span).not.toBeNull();
+		expect(span?.textContent).toBe('@here');
+	});
+
+	it('renders resolved user mention with other highlight class', () => {
+		const resolveUserMention = (mention: string) => (mention === 'rocket.cat' ? { _id: 'cat_id', username: 'rocket.cat' } : undefined);
+		const input = mountWithResolver('hello @rocket.cat', resolveUserMention);
+		const span = input.querySelector('span.rcx-message__highlight--other');
+
+		expect(span).not.toBeNull();
+		expect(span?.textContent).toBe('@rocket.cat');
+	});
+
+	it('renders unresolved user mention as plain text without highlight span', () => {
+		const resolveUserMention = (_mention: string) => undefined;
+		const input = mountWithResolver('hello @unknown.user', resolveUserMention);
+		const span = input.querySelector('span.rcx-message__highlight');
+
+		expect(span).toBeNull();
+		expect(stripLineEnd(input.textContent ?? '')).toBe('hello @unknown.user');
+	});
+
+	it('renders user mention with other highlight when resolver is not provided (default fallback)', () => {
+		const input = mountWithResolver('hello @rocket.cat');
+		const span = input.querySelector('span.rcx-message__highlight--other');
+
+		expect(span).not.toBeNull();
+		expect(span?.textContent).toBe('@rocket.cat');
+	});
+});
