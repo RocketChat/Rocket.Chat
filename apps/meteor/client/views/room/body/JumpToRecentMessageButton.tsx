@@ -15,6 +15,9 @@ const buttonStyle = css`
 	left: 50%;
 	user-select: none;
 	transform: translate(-50%, 0);
+	transition:
+		transform 0.5s linear,
+		visibility 0s;
 
 	&.not {
 		visibility: hidden;
