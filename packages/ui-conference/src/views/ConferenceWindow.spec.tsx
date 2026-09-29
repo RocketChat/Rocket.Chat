@@ -9,31 +9,24 @@ import type { ConferenceContextValue, ConferencePanel } from '../context/Confere
 import { ConferenceContext } from '../context/ConferenceContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
-const buildCallState = (overrides: Partial<CallState> = {}): CallState => ({
+const callState: CallState = {
 	self: {
 		id: 'john.doe',
 		displayName: 'John Doe',
 		muted: false,
 		cameraOn: false,
 		screenSharing: false,
-		handRaised: false,
 		speakingWhileMuted: false,
 	},
 	remoteParticipants: [],
-	raisedHands: [],
-	activeReactions: [],
 	startedAt: new Date(),
 	connectionState: 'connected',
-	...overrides,
-});
+};
 
 const actions = {
 	toggleMic: jest.fn(),
 	toggleCamera: jest.fn(),
 	toggleScreenShare: jest.fn(),
-	toggleHand: jest.fn(),
-	sendReaction: jest.fn(),
-	muteParticipant: jest.fn(),
 	leave: jest.fn(),
 };
 
@@ -45,8 +38,8 @@ const deviceSelection: CallDeviceSelection = {
 };
 
 /** What a provider running the call in this window provides around it. */
-const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
-	<CallStateProvider value={state}>
+const CallContexts = ({ children }: { children: ReactNode }) => (
+	<CallStateProvider value={callState}>
 		<CallActionsProvider value={actions}>
 			<CallDeviceSelectionProvider value={deviceSelection}>
 				<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
@@ -110,11 +103,8 @@ it('closes the thread when every panel is shut', () => {
 });
 
 describe('a call that runs in this window', () => {
-	const renderNative = ({ state, ...overrides }: Partial<ConferenceContextValue> & { state?: CallState } = {}) => {
-		const AppRoot = mockAppRoot()
-			.withJohnDoe()
-			.withTranslations('en', 'core', { __name__raised_their_hand: '{{name}} raised their hand' })
-			.build();
+	const renderNative = (overrides: Partial<ConferenceContextValue> = {}) => {
+		const AppRoot = mockAppRoot().withJohnDoe().build();
 
 		const value = buildConferenceContext({
 			session: { joined: true, embedded: true, loading: false },
@@ -124,7 +114,7 @@ describe('a call that runs in this window', () => {
 
 		const wrapper = ({ children }: { children: ReactNode }) => (
 			<AppRoot>
-				<CallContexts state={state}>
+				<CallContexts>
 					<ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>
 				</CallContexts>
 			</AppRoot>
@@ -165,15 +155,5 @@ describe('a call that runs in this window', () => {
 		renderNative({ panel: { active: 'diagnostics', set: jest.fn() } });
 
 		expect(screen.getByRole('heading', { name: 'Connection_info' })).toBeInTheDocument();
-	});
-
-	// The call reports a hand by participant id; the window is what knows who that is.
-	it('names the raised hands from the membership', () => {
-		renderNative({
-			call: { ...buildConferenceContext().call, members: [{ _id: 'ada', username: 'ada', name: 'Ada Lovelace' }] },
-			state: buildCallState({ raisedHands: [{ id: 'ada', raisedAt: 1 }] }),
-		});
-
-		expect(screen.getByRole('button', { name: 'Ada Lovelace raised their hand' })).toBeInTheDocument();
 	});
 });

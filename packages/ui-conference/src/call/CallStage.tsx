@@ -19,18 +19,13 @@ export type CallStageProps = {
 	localParticipant: StageSelf;
 	remoteParticipants: RemoteParticipantInfo[];
 	onStopLocalScreenShare?: () => void;
-	/** Map from participantId → 1-based queue position for the raise-hand badge. */
-	handPositions?: Record<string, number>;
 	/** Which layout to use when no screen share is active. Defaults to `'grid'`. */
 	layout?: StageLayout;
 };
 
 /** Everyone's tiles in the chosen layout, or, while anyone shares a screen, that screen with the tiles beside it. */
-const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShare, handPositions, layout = 'grid' }: CallStageProps) => {
-	const tiles = useMemo(
-		() => buildStageTiles(localParticipant, remoteParticipants, handPositions),
-		[localParticipant, remoteParticipants, handPositions],
-	);
+const CallStage = ({ localParticipant, remoteParticipants, onStopLocalScreenShare, layout = 'grid' }: CallStageProps) => {
+	const tiles = useMemo(() => buildStageTiles(localParticipant, remoteParticipants), [localParticipant, remoteParticipants]);
 
 	const screens = useFeaturedScreen(localParticipant, remoteParticipants);
 

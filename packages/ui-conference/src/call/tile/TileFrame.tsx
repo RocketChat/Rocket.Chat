@@ -20,10 +20,7 @@ const tileStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-/**
- * The name over the tile: plain text with a shadow to keep it legible over any picture, without covering it. The
- * padding stays with nothing to pad, so the name holds its position when a raised hand gives it a plate.
- */
+/** The name over the tile: plain text with a shadow to keep it legible over any picture, without covering it. */
 const labelStyles = css`
 	position: absolute;
 	left: 0.5rem;
@@ -74,15 +71,7 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-const handRaisedLabelStyles = css`
-	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
-	background-color: var(--rcx-color-button-background-success-default);
-	padding: 0.25rem 0.75rem;
-	border-radius: ${borderRadius('full')};
-	text-shadow: none;
-`;
-
-export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream' | 'handPosition'> & {
+export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream'> & {
 	/** How wide the speaking ring gets at full volume. */
 	ringWidth: number;
 	/**
@@ -94,8 +83,8 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 	children: ReactNode;
 };
 
-/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand. */
-const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWidth, sendHeight, children }: TileFrameProps) => {
+/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone. */
+const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, sendHeight, children }: TileFrameProps) => {
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
 	const ringColor = Palette.stroke['stroke-highlight'].toString();
@@ -116,12 +105,7 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 				/>
 			)}
 			{children}
-			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]} fontScale='p1'>
-				{handPosition !== undefined && (
-					<>
-						<span aria-hidden>✋</span> ({handPosition}){'  '}
-					</>
-				)}
+			<Box className={labelStyles} fontScale='p1'>
 				{displayName}
 			</Box>
 			{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}

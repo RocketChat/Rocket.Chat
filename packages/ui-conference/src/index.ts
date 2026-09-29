@@ -80,14 +80,13 @@ export type {
 	CallSelf,
 	CallConnectionState,
 	RemoteParticipantInfo,
-	ActiveReaction,
 	CallActions,
 	CallDeviceSelection,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
 } from './call/context';
 export { default as VoiceActivity } from './call/VoiceActivity';
-export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
+export { playJoinChime, playMutedReminder } from './call/lib/callChimes';
 export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
 export { VIDEO_QUALITY_LABELS, choicesOf } from './call/lib/mediaChoiceLabels';

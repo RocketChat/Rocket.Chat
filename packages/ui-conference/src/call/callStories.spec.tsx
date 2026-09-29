@@ -6,7 +6,6 @@ import type { ComponentType } from 'react';
 import * as audioDevicePicker from './AudioDevicePicker.stories';
 import * as callControls from './CallControls.stories';
 import * as callHeader from './CallHeader.stories';
-import * as callReactions from './CallReactions.stories';
 import * as callStageArea from './CallStageArea.stories';
 import * as cameraPicker from './CameraPicker.stories';
 import * as voiceActivity from './VoiceActivity.stories';
@@ -14,7 +13,6 @@ import * as callDiagnosticsPanel from './diagnostics/CallDiagnosticsPanel.storie
 import * as participantTile from './tile/ParticipantTile.stories';
 import * as callBar from '../components/CallBar.stories';
 import * as callPresenting from '../components/CallPresenting.stories';
-import * as callRaisedHands from '../components/CallRaisedHands.stories';
 
 /**
  * The call's parts are drawn from what their contexts say, so each story is a state of the call and the snapshot
@@ -30,8 +28,6 @@ const testCases = [
 	...casesOf('CallDiagnosticsPanel', composeStories(callDiagnosticsPanel)),
 	...casesOf('CallHeader', composeStories(callHeader)),
 	...casesOf('CallPresenting', composeStories(callPresenting)),
-	...casesOf('CallRaisedHands', composeStories(callRaisedHands)),
-	...casesOf('CallReactions', composeStories(callReactions)),
 	...casesOf('CallStageArea', composeStories(callStageArea)),
 	...casesOf('CameraPicker', composeStories(cameraPicker)),
 	...casesOf('ParticipantTile', composeStories(participantTile)),

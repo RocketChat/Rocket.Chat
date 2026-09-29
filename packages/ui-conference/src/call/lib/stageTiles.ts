@@ -24,8 +24,6 @@ export type TileParticipant = {
 	cameraStream?: MediaStream | null;
 	/** Drives the speaking indicator. */
 	audioStream?: MediaStream | null;
-	/** Their place in the raised-hand queue, from 1, while their hand is up. */
-	handPosition?: number;
 };
 
 /** The reader's tile says what it sends; nobody else's can. */
@@ -51,11 +49,7 @@ const COLUMN_THUMB_HEIGHT = COLUMN_THUMB_WIDTH * (9 / 16);
 const STAGE_PADDING = 16;
 
 /** Everyone's tile, the reader first. */
-export const buildStageTiles = (
-	self: StageSelf,
-	remoteParticipants: RemoteParticipantInfo[],
-	handPositions: Record<string, number> | undefined,
-): StageTile[] => [
+export const buildStageTiles = (self: StageSelf, remoteParticipants: RemoteParticipantInfo[]): StageTile[] => [
 	{
 		id: self.id,
 		displayName: self.displayName,
@@ -65,7 +59,6 @@ export const buildStageTiles = (
 		cameraStream: self.cameraStream,
 		audioStream: self.audioStream,
 		kind: 'self',
-		handPosition: handPositions?.[self.id],
 		sendHeight: self.sendHeight,
 	},
 	...remoteParticipants.map((p): StageTile => ({
@@ -77,7 +70,6 @@ export const buildStageTiles = (
 		held: p.held,
 		cameraStream: p.cameraStream,
 		audioStream: p.audioStream,
-		handPosition: handPositions?.[p.id],
 	})),
 ];
 

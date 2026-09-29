@@ -9,22 +9,12 @@ import type { TileParticipant } from '../lib/stageTiles';
 export type SelfThumbnailProps = TileParticipant & Pick<TileFrameProps, 'sendHeight'>;
 
 /** The reader's own view in a strip, a column or the corner of the stage. */
-const SelfThumbnail = ({
-	displayName,
-	avatarUrl,
-	muted,
-	held,
-	cameraStream,
-	audioStream,
-	handPosition,
-	sendHeight,
-}: SelfThumbnailProps) => (
+const SelfThumbnail = ({ displayName, avatarUrl, muted, held, cameraStream, audioStream, sendHeight }: SelfThumbnailProps) => (
 	<TileFrame
 		displayName={displayName}
 		muted={muted}
 		held={held}
 		audioStream={audioStream}
-		handPosition={handPosition}
 		ringWidth={THUMBNAIL_RING_WIDTH}
 		sendHeight={sendHeight}
 	>
