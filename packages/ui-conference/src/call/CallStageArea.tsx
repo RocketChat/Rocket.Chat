@@ -2,18 +2,13 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallStage, { type StageLayout } from './CallStage';
-import { useCallActions, useCallState } from './context';
-
-export type CallStageAreaProps = {
-	layout: StageLayout;
-};
+import CallStage from './CallStage';
+import { useCallState } from './context';
 
 /** The tiles of a call running in this window. */
-const CallStageArea = ({ layout }: CallStageAreaProps) => {
+const CallStageArea = () => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants } = useCallState();
-	const { toggleScreenShare } = useCallActions();
 
 	const localParticipant = useMemo(
 		() => ({
@@ -52,12 +47,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 			flexDirection='column'
 			minHeight={0}
 		>
-			<CallStage
-				localParticipant={localParticipant}
-				remoteParticipants={remoteParticipants}
-				onStopLocalScreenShare={toggleScreenShare}
-				layout={layout}
-			/>
+			<CallStage localParticipant={localParticipant} remoteParticipants={remoteParticipants} />
 		</Box>
 	);
 };

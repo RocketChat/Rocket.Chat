@@ -1,42 +1,46 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
+import ScreenViewer from './ScreenViewer';
 import { gridMeasureStyles, gridStyles } from './stageStyles';
-import { useTileFlip } from '../hooks/useTileFlip';
 import { useTileGridLayout } from '../hooks/useTileGridLayout';
+import type { ScreenShare } from '../lib/screenShares';
 import type { StageTile } from '../lib/stageTiles';
-import { MAX_VISIBLE_TILES, absorbLonelyTile, gridCellKeys, gridColumnStartFor, splitByPriority } from '../lib/stageTiles';
+import { MAX_VISIBLE_TILES, absorbLonelyTile, gridColumnStartFor, splitByPriority } from '../lib/stageTiles';
 import { gridBox } from '../lib/tileGrid';
 
 export type GridLayoutProps = {
+	screens: ScreenShare[];
 	tiles: StageTile[];
-	activeSpeakerId: string | null;
 	selfId: string;
 };
 
-/** Everyone in equal tiles, as many as fit, and one saying how many more there are. */
-const GridLayout = ({ tiles, activeSpeakerId, selfId }: GridLayoutProps) => {
-	const split = useMemo(() => splitByPriority(tiles, MAX_VISIBLE_TILES, activeSpeakerId, selfId), [tiles, activeSpeakerId, selfId]);
+/** The shared screens, then everyone in equal tiles, as many as fit, and one saying how many more there are. */
+const GridLayout = ({ screens, tiles, selfId }: GridLayoutProps) => {
+	const { t } = useTranslation();
+
+	// A screen always gets a cell: it is what its sharer wants everyone to see.
+	const split = useMemo(
+		() => splitByPriority(tiles, Math.max(1, MAX_VISIBLE_TILES - screens.length), selfId),
+		[tiles, screens.length, selfId],
+	);
 
 	const [measureEl, setMeasureEl] = useState<HTMLDivElement | null>(null);
 	const measureRef = useCallback((node: HTMLDivElement | null) => setMeasureEl(node), []);
-	const layout = useTileGridLayout(measureEl, split.visible.length + (split.hidden.length > 0 ? 1 : 0));
+	const layout = useTileGridLayout(measureEl, screens.length + split.visible.length + (split.hidden.length > 0 ? 1 : 0));
 	const { cols, rows, cellWidth, cellHeight } = layout;
 
-	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols);
-	const cellCount = visible.length + (hidden.length > 0 ? 1 : 0);
-
-	const gridRef = useRef<HTMLDivElement | null>(null);
-	useTileFlip(gridRef, gridCellKeys(visible, hidden), cols);
+	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols, screens.length);
+	const cellCount = screens.length + visible.length + (hidden.length > 0 ? 1 : 0);
 
 	const { width, height } = gridBox(layout);
 
 	return (
 		<Box ref={measureRef} className={gridMeasureStyles}>
 			<Box
-				ref={gridRef}
 				className={gridStyles}
 				style={{
 					width,
@@ -45,13 +49,37 @@ const GridLayout = ({ tiles, activeSpeakerId, selfId }: GridLayoutProps) => {
 					gridTemplateRows: `repeat(${rows}, ${cellHeight}px)`,
 				}}
 			>
-				{visible.map((t, i) => (
-					<Box key={t.id} style={{ gridColumnStart: gridColumnStartFor(i, cellCount, cols) }} minWidth={0} minHeight={0}>
-						<MainTile tile={t} />
+				{screens.map((screen, i) => (
+					<Box
+						key={`screen-${screen.id}`}
+						display='flex'
+						style={{ gridColumnStart: gridColumnStartFor(i, cellCount, cols) }}
+						minWidth={0}
+						minHeight={0}
+					>
+						<ScreenViewer
+							stream={screen.stream}
+							label={screen.isLocal || !screen.name ? t('Your_screen') : t('__name__screen', { name: screen.name })}
+						/>
+					</Box>
+				))}
+				{visible.map((tile, i) => (
+					<Box
+						key={tile.id}
+						style={{ gridColumnStart: gridColumnStartFor(screens.length + i, cellCount, cols) }}
+						minWidth={0}
+						minHeight={0}
+					>
+						<MainTile tile={tile} />
 					</Box>
 				))}
 				{hidden.length > 0 && (
-					<Box key='overflow' style={{ gridColumnStart: gridColumnStartFor(visible.length, cellCount, cols) }} minWidth={0} minHeight={0}>
+					<Box
+						key='overflow'
+						style={{ gridColumnStart: gridColumnStartFor(screens.length + visible.length, cellCount, cols) }}
+						minWidth={0}
+						minHeight={0}
+					>
 						<OverflowTile hidden={hidden} />
 					</Box>
 				)}

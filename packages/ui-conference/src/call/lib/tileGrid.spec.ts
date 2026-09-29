@@ -1,4 +1,3 @@
-import { flipOffset } from './tileFlip';
 import { clampCellToAspectBand, gridBox, pickTileGridLayout, tileGridLayout } from './tileGrid';
 
 describe('pickTileGridLayout', () => {
@@ -34,12 +33,5 @@ describe('tileGridLayout and gridBox', () => {
 
 	it('has no size until the cells have been measured', () => {
 		expect(gridBox({ rows: 1, cols: 1, cellWidth: 0, cellHeight: 0 })).toEqual({ width: undefined, height: undefined });
-	});
-});
-
-describe('flipOffset', () => {
-	it('says how far a tile moved, and nothing for a move too small to see', () => {
-		expect(flipOffset({ left: 100, top: 50 }, { left: 20, top: 50 })).toEqual({ dx: 80, dy: 0 });
-		expect(flipOffset({ left: 100, top: 50 }, { left: 99.5, top: 50.5 })).toBeNull();
 	});
 });
