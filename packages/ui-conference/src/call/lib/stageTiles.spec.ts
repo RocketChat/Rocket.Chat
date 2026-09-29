@@ -24,13 +24,15 @@ const tile = (id: string, extra: Partial<TileParticipant> = {}): StageTile => ({
 const tiles = (count: number) => Array.from({ length: count }, (_, i) => tile(`p${i}`));
 
 describe('buildStageTiles', () => {
-	it('puts the reader first, with their send height', () => {
-		const [self, remote] = buildStageTiles({ id: 'me', displayName: 'Me', muted: true, held: false, sendHeight: 720 }, [
-			{ id: 'ada', displayName: 'Ada', muted: false, held: false },
-		]);
+	it('puts the reader first, with their hand position and send height', () => {
+		const [self, remote] = buildStageTiles(
+			{ id: 'me', displayName: 'Me', muted: true, held: false, sendHeight: 720 },
+			[{ id: 'ada', displayName: 'Ada', muted: false, held: false }],
+			{ ada: 1 },
+		);
 
-		expect(self).toMatchObject({ kind: 'self', id: 'me', sendHeight: 720 });
-		expect(remote).toMatchObject({ kind: 'participant', id: 'ada' });
+		expect(self).toMatchObject({ kind: 'self', id: 'me', sendHeight: 720, handPosition: undefined });
+		expect(remote).toMatchObject({ kind: 'participant', id: 'ada', handPosition: 1 });
 		// A claim about someone else's encoder is not one this client can make.
 		expect(remote).not.toHaveProperty('sendHeight');
 	});

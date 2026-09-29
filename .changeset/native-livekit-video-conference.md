@@ -9,4 +9,4 @@
 '@rocket.chat/ui-voip': minor
 ---
 
-Adds LiveKit as an enterprise native video conference provider that runs calls inside the conference window, with a multi-party grid and spotlight and screen sharing.
+Adds LiveKit as an enterprise native video conference provider that runs calls inside the conference window, with a multi-party grid and spotlight, screen sharing, hand raising and reactions.

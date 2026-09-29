@@ -13,6 +13,7 @@ export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	muted: false,
 	cameraOn: false,
 	screenSharing: false,
+	handRaised: false,
 	speakingWhileMuted: false,
 	...overrides,
 });
@@ -35,6 +36,8 @@ export const buildCallState = ({
 }: Omit<Partial<CallState>, 'self'> & { self?: Partial<CallSelf> } = {}): CallState => ({
 	self: buildCallSelf(self),
 	remoteParticipants: [],
+	raisedHands: [],
+	activeReactions: [],
 	startedAt: new Date(),
 	connectionState: 'connected',
 	...overrides,
@@ -44,6 +47,9 @@ export const buildCallActions = (): CallActions => ({
 	toggleMic: action('toggleMic'),
 	toggleCamera: action('toggleCamera'),
 	toggleScreenShare: action('toggleScreenShare'),
+	toggleHand: action('toggleHand'),
+	sendReaction: action('sendReaction'),
+	muteParticipant: action('muteParticipant'),
 	leave: action('leave'),
 });
 

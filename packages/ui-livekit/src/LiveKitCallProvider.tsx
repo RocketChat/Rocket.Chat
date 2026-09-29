@@ -24,6 +24,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
@@ -169,6 +170,11 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		};
 	}, [room]);
 
+	const { raisedHands, localHandRaised, activeReactions, toggleHand, sendReaction, muteParticipant } = useCallDataChannel(
+		room,
+		localParticipant,
+	);
+
 	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
 	const [outputElement] = useState(() => new Audio());
 	const deviceSwitching = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
@@ -185,6 +191,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			muted: !micEnabled,
 			cameraOn: Boolean(cameraStream),
 			screenSharing: Boolean(screenStream),
+			handRaised: localHandRaised,
 			speakingWhileMuted,
 			sendResolution,
 			cameraStream,
@@ -199,6 +206,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			micEnabled,
 			cameraStream,
 			screenStream,
+			localHandRaised,
 			speakingWhileMuted,
 			sendResolution,
 			microphoneStream,
@@ -206,8 +214,8 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	);
 
 	const state = useMemo(
-		(): CallState => ({ self, remoteParticipants, startedAt, connectionState }),
-		[self, remoteParticipants, startedAt, connectionState],
+		(): CallState => ({ self, remoteParticipants, raisedHands, activeReactions, startedAt, connectionState }),
+		[self, remoteParticipants, raisedHands, activeReactions, startedAt, connectionState],
 	);
 
 	const actions = useMemo(
@@ -221,9 +229,12 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 				void localParticipant.setCameraEnabled(!camEnabled);
 			},
 			toggleScreenShare: () => void localParticipant.setScreenShareEnabled(!screenEnabled),
+			toggleHand,
+			sendReaction,
+			muteParticipant,
 			leave: onEnded,
 		}),
-		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, onEnded],
+		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, toggleHand, sendReaction, muteParticipant, onEnded],
 	);
 
 	return (

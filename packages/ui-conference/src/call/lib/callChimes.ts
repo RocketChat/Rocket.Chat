@@ -45,6 +45,12 @@ export const playJoinChime = (): void => {
 	playTone(880, 0, 0.09);
 };
 
+/** Someone raised their hand: two rising notes, which read as a question and stay distinct from the join chime by ear. */
+export const playHandRaiseChime = (): void => {
+	playTone(660, 0, 0.08);
+	playTone(990, 0.09, 0.11);
+};
+
 /** The reader is talking while muted: two short identical tones that say "blocked" without startling. */
 export const playMutedReminder = (): void => {
 	playTone(440, 0, 0.06);

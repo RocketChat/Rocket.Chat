@@ -42,6 +42,11 @@ export const Held: Story = {
 	args: { held: true },
 };
 
+/** Third in the queue: the name gets a plate, and the plate the position. */
+export const HandRaised: Story = {
+	args: { handPosition: 3 },
+};
+
 /** The reader's own tile, which alone says what its encoder is sending. */
 export const Self: Story = {
 	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} />,
