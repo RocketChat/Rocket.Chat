@@ -81,6 +81,4 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
   - the spotlight and sidebar layouts with active-speaker detection, and screen shares featured on the stage with
     pinning and thumbnails. The call itself shows each shared screen as a tile of the grid;
   - choosing the send resolution (preflight and in-call camera menu), and the badge on the reader's own tile saying
-    what the encoder is actually sending;
-  - the speaking-while-muted notice and reminder, the join chime, and live voice activity on the microphone button,
-    the members panel and the tiles (the speaking ring). The preflight keeps its microphone meter.
+    what the encoder is actually sending.

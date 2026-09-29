@@ -8,15 +8,24 @@ import {
 } from '@livekit/components-react';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import {
+	CallActionsProvider,
+	CallDeviceSelectionProvider,
+	CallStateProvider,
+	playJoinChime,
+	playMutedReminder,
+	useUpdateCallPreferences,
+} from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { Room, Track } from 'livekit-client';
+import type { RemoteParticipant } from 'livekit-client';
+import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { connectionStateFor, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 
 export type LiveKitCallProviderProps = {
 	callId: string;
@@ -28,6 +37,9 @@ export type LiveKitCallProviderProps = {
 	onEnded: () => void;
 	children: ReactNode;
 };
+
+/** New arrivals are announced only while each face in the call still matters. */
+const JOIN_CHIME_MAX_PARTICIPANTS = 6;
 
 /** The preflight's choices as they stood when the call connected: what changes during the call is the room's to apply. */
 const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preferences'], connect: boolean) => {
@@ -75,7 +87,9 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		onDisconnected: onEnded,
 	});
 
-	const connectionState = connectionStateFor(useConnectionState(room));
+	const roomState = useConnectionState(room);
+	const connected = roomState === ConnectionState.Connected;
+	const connectionState = connectionStateFor(roomState);
 
 	const persistDevicePreference = useUpdateCallPreferences();
 	const {
@@ -89,6 +103,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remotes = useMemo(() => otherPeople(allParticipants, localParticipant.identity), [allParticipants, localParticipant.identity]);
 	const remoteCameraTracks = useTracks([Track.Source.Camera], { room, onlySubscribed: true });
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
+	const remoteAudioTracks = useTracks([Track.Source.Microphone], { room, onlySubscribed: true });
 
 	// A participant's identity is their user id, which is what names their avatar.
 	const getUserAvatarPath = useUserAvatarPath();
@@ -96,15 +111,47 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remoteParticipants = useMemo(
 		(): RemoteParticipantInfo[] =>
 			remotes.map((p) =>
-				toRemoteParticipantInfo(p, { camera: remoteCameraTracks, screen: remoteScreenTracks }, getUserAvatarPath({ userId: p.identity })),
+				toRemoteParticipantInfo(
+					p,
+					{ camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks },
+					getUserAvatarPath({ userId: p.identity }),
+				),
 			),
-		[remotes, remoteCameraTracks, remoteScreenTracks, getUserAvatarPath],
+		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath],
 	);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
+	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
+	const microphoneStream = localMicPub?.track?.mediaStream;
+
+	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled);
+
+	const mutedReminderPlayed = useRef(false);
+	useEffect(() => {
+		mutedReminderPlayed.current = false;
+	}, [micEnabled]);
+	useEffect(() => {
+		if (!speakingWhileMuted || mutedReminderPlayed.current) return;
+		mutedReminderPlayed.current = true;
+		playMutedReminder();
+	}, [speakingWhileMuted]);
+
+	useEffect(() => {
+		const onConnect = (participant: RemoteParticipant) => {
+			if (isAgentParticipant(participant)) return;
+			// Includes the reader, so the chime sounds while the call grows to six and is silent from the seventh.
+			if (room.numParticipants <= JOIN_CHIME_MAX_PARTICIPANTS) {
+				playJoinChime();
+			}
+		};
+		room.on(RoomEvent.ParticipantConnected, onConnect);
+		return () => {
+			room.off(RoomEvent.ParticipantConnected, onConnect);
+		};
+	}, [room]);
 
 	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
 	const [outputElement] = useState(() => new Audio());
@@ -121,10 +168,22 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			muted: !micEnabled,
 			cameraOn: Boolean(cameraStream),
 			screenSharing: Boolean(screenStream),
+			speakingWhileMuted,
 			cameraStream,
 			screenStream,
+			microphoneStream,
 		}),
-		[user?._id, localParticipant.identity, selfDisplayName, getUserAvatarPath, micEnabled, cameraStream, screenStream],
+		[
+			user?._id,
+			localParticipant.identity,
+			selfDisplayName,
+			getUserAvatarPath,
+			micEnabled,
+			cameraStream,
+			screenStream,
+			speakingWhileMuted,
+			microphoneStream,
+		],
 	);
 
 	const state = useMemo(

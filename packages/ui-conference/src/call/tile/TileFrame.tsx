@@ -2,6 +2,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
+import VoiceActivity from '../VoiceActivity';
+import { useSpeakingRing } from '../hooks/useSpeakingRing';
+import { speakingRingThickness } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
 const tileStyles = css`
@@ -56,31 +59,55 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held'> & {
+export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream'> & {
+	/** How wide the speaking ring gets at full volume. */
+	ringWidth: number;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
-/** Everything a tile says over the picture: who it is, and whether their microphone is off or they are on hold. */
-const TileFrame = ({ displayName, muted, held, children }: TileFrameProps) => (
-	<Box className={tileStyles}>
-		{children}
-		<Box className={labelStyles} fontScale='p1'>
-			{displayName}
-		</Box>
-		<Box className={indicatorRowStyles}>
-			{muted && (
-				<Box className={indicatorBadgeStyles}>
-					<Icon name='mic-off' size='x16' />
-				</Box>
+/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone. */
+const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, children }: TileFrameProps) => {
+	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
+	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
+	const ringColor = Palette.stroke['stroke-highlight'].toString();
+
+	return (
+		<Box className={tileStyles}>
+			{displayLevel > 0 && (
+				<Box
+					style={{
+						position: 'absolute',
+						inset: 0,
+						borderRadius: 'inherit',
+						border: `${ringThickness}px solid ${ringColor}`,
+						boxShadow: `inset 0 0 ${ringThickness * 3}px color-mix(in srgb, ${ringColor} 25%, transparent)`,
+						pointerEvents: 'none',
+						zIndex: 1,
+					}}
+				/>
 			)}
-			{held && (
-				<Box className={indicatorBadgeStyles}>
-					<Icon name='pause-shape-unfilled' size='x16' />
-				</Box>
-			)}
+			{children}
+			<Box className={labelStyles} fontScale='p1'>
+				{displayName}
+			</Box>
+			<Box className={indicatorRowStyles}>
+				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
+				{muted ? (
+					<Box className={indicatorBadgeStyles}>
+						<Icon name='mic-off' size='x16' />
+					</Box>
+				) : (
+					<VoiceActivity level={rawLevel} size={18} badge />
+				)}
+				{held && (
+					<Box className={indicatorBadgeStyles}>
+						<Icon name='pause-shape-unfilled' size='x16' />
+					</Box>
+				)}
+			</Box>
 		</Box>
-	</Box>
-);
+	);
+};
 
 export default TileFrame;
