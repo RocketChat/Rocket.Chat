@@ -80,6 +80,12 @@ export async function removeGuest({ _id }: { _id: string }) {
 	return LivechatVisitors.disableById(_id);
 }
 
+/**
+ * Removes all contacts and cleans up associated guests and channels for a given visitor ID.
+ *
+ * @param params - Object containing the visitor ID.
+ * @param params._id - The unique identifier of the visitor.
+ */
 export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 	// A visitor shouldn't have many contacts associated, so we can remove them like this
 	const contacts = await LivechatContacts.findAllByVisitorId(_id).toArray();
