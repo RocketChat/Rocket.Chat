@@ -1,5 +1,5 @@
 export type { MediaProcessorAssets } from './assets';
-export type { BackgroundBlurPerformance, BackgroundBlurProcessor, SegmenterModelKey } from './backgroundBlurProcessor';
+export type { BackgroundBlurProcessor } from './backgroundBlurProcessor';
 export { supportsBackgroundBlur } from './backgroundBlurSupport';
 export { RnnoiseProcessor } from './rnnoiseProcessor';
 export type { VirtualBackgroundSnapshot } from './virtualBackground';

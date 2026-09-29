@@ -30,4 +30,15 @@ export const useAutoLowerHand = (handRaised: boolean, microphoneStream: MediaStr
 			timerRef.current = null;
 		}
 	}, [level, handRaised, lowerHand]);
+
+	// A countdown still running when the controls go away would lower a hand in a call this window has left.
+	useEffect(
+		() => () => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+				timerRef.current = null;
+			}
+		},
+		[],
+	);
 };

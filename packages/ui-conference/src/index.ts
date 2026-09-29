@@ -48,7 +48,6 @@ export type {
 	CallPreferences,
 	CallRingPreference,
 	CallDevices,
-	CallDeviceKind,
 	NoiseMethod,
 	VideoQuality,
 	BlurLevel,
@@ -101,16 +100,12 @@ export type {
 	CallActions,
 	CallDeviceSelection,
 	CallMediaProcessing,
-	CallNoiseSuppression,
-	CallBackgroundBlur,
-	CallVideoQuality,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
-	BackgroundBlurDiagnostics,
 } from './call/context';
 export { default as VoiceActivity } from './call/VoiceActivity';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
-export { deviceName, isSameDevice, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
+export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
 export {
 	BLUR_LEVEL_LABELS,
