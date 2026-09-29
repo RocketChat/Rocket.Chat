@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
 import { LiveKitCallProvider } from './LiveKitCallProvider';
 
-const room = { state: ConnectionState.Disconnected };
+const room = { state: ConnectionState.Disconnected, on: jest.fn(), off: jest.fn() };
 const localParticipant = {
 	identity: 'me',
 	getTrackPublication: () => undefined,
@@ -47,12 +47,16 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 		actions = value;
 		return children;
 	},
+	playJoinChime: jest.fn(),
+	playMutedReminder: jest.fn(),
 	useUpdateCallPreferences: () => jest.fn(),
 }));
 
 jest.mock('@rocket.chat/ui-media', () => ({
 	DeviceSelectionProvider: ({ children }: { children: ReactNode }) => children,
 }));
+
+jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false }));
 
 jest.mock('./useLiveKitTransport', () => ({
 	useLiveKitTransport: () => ({ data: { serverUrl: 'wss://lk', token: 'token' }, error: null }),

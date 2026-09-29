@@ -8,8 +8,11 @@ export type CallSelf = {
 	muted: boolean;
 	cameraOn: boolean;
 	screenSharing: boolean;
+	/** Whether they are talking into a muted microphone. */
+	speakingWhileMuted: boolean;
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
+	microphoneStream?: MediaStream;
 };
 
 /** One other participant in the call. */
@@ -21,6 +24,8 @@ export type RemoteParticipantInfo = {
 	held: boolean;
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
+	/** Drives the per-tile speaking indicator. */
+	audioStream?: MediaStream;
 };
 
 export type CallConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';

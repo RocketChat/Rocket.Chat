@@ -4,6 +4,9 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoiceActivity from '../VoiceActivity';
+import { useSpeakingRing } from '../hooks/useSpeakingRing';
+import { speakingRingThickness } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
 const tileStyles = css`
@@ -58,27 +61,48 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held'> & {
+export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream'> & {
+	/** How wide the speaking ring gets at full volume. */
+	ringWidth: number;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
-/** Everything a tile says over the picture: who it is, and whether their microphone is off or they are on hold. */
-const TileFrame = ({ displayName, muted, held, children }: TileFrameProps) => {
+/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone. */
+const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, children }: TileFrameProps) => {
 	const { t } = useTranslation();
+	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
+	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
+	const ringColor = Palette.stroke['stroke-highlight'].toString();
 
 	return (
 		<Box className={tileStyles}>
+			{displayLevel > 0 && (
+				<Box
+					style={{
+						position: 'absolute',
+						inset: 0,
+						borderRadius: 'inherit',
+						border: `${ringThickness}px solid ${ringColor}`,
+						boxShadow: `inset 0 0 ${ringThickness * 3}px color-mix(in srgb, ${ringColor} 25%, transparent)`,
+						pointerEvents: 'none',
+						zIndex: 1,
+					}}
+				/>
+			)}
 			{children}
 			<Box className={labelStyles} fontScale='p1'>
 				{displayName}
 			</Box>
 			<Box className={indicatorRowStyles}>
-				{muted && (
+				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
+				{muted ? (
 					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
 						<Icon name='mic-off' size='x16' />
 						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
 					</Box>
+				) : (
+					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (
 					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>

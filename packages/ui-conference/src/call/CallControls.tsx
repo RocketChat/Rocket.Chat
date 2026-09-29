@@ -1,11 +1,54 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, borderRadius } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, borderRadius } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import AudioDevicePicker from './AudioDevicePicker';
 import CameraPicker from './CameraPicker';
 import { useCallActions, useCallState } from './context';
+
+const speakingWhileMutedTooltip = css`
+	@keyframes swm-fade-in {
+		from {
+			opacity: 0;
+			transform: translateY(0.25rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	padding: 0.5rem 0.75rem;
+	border-radius: ${borderRadius('medium')};
+	background: ${Palette.badge['badge-background-level-4'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
+	white-space: nowrap;
+	pointer-events: auto;
+	cursor: pointer;
+	animation: swm-fade-in 200ms ease-out;
+`;
+
+/** What a control can raise above the strip: the muted-while-talking notice, centred on the row so it stays on screen. */
+const controlNoticesStyles = css`
+	position: absolute;
+	bottom: calc(100% + 0.5rem);
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+
+	/* Above the buttons in the row, and below the side panels (100), which it must not paint over. */
+	z-index: 10;
+
+	pointer-events: none;
+
+	& > * {
+		pointer-events: auto;
+	}
+`;
 
 // A device toggle and its selector fused into one control, the selector first and a shade quieter.
 const deviceControlStyles = css`
@@ -34,7 +77,7 @@ const CallControls = () => {
 		remoteParticipants.length === 1 ? t('Voice_call__user__hangup', { user: remoteParticipants[0].displayName }) : t('Leave_call');
 
 	return (
-		<ButtonGroup>
+		<ButtonGroup style={{ position: 'relative' }}>
 			<Box className={deviceControlStyles}>
 				<Box>
 					<AudioDevicePicker />
@@ -43,7 +86,7 @@ const CallControls = () => {
 					<ToggleButton
 						label={t('Mute')}
 						icons={['mic', 'mic-off']}
-						titles={[t('Mute'), t('Unmute')]}
+						titles={self.speakingWhileMuted ? [t('You_are_muted'), t('You_are_muted')] : [t('Mute'), t('Unmute')]}
 						pressed={self.muted}
 						aria-pressed={self.muted}
 						dangerWhenPressed
@@ -80,6 +123,13 @@ const CallControls = () => {
 				onToggle={toggleScreenShare}
 			/>
 			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={leave} />
+			{self.speakingWhileMuted && (
+				<Box className={controlNoticesStyles}>
+					<Box className={speakingWhileMutedTooltip} fontScale='c1' onClick={toggleMic}>
+						{t('You_are_muted')}
+					</Box>
+				</Box>
+			)}
 		</ButtonGroup>
 	);
 };

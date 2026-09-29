@@ -18,6 +18,7 @@ const callState: CallState = {
 		muted: false,
 		cameraOn: false,
 		screenSharing: false,
+		speakingWhileMuted: false,
 	},
 	remoteParticipants: [],
 	startedAt: new Date(),

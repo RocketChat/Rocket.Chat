@@ -75,6 +75,7 @@ export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fix
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
 export { CallStateProvider, CallActionsProvider } from './call/context';
 export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions } from './call/context';
+export { playJoinChime, playMutedReminder } from './call/lib/callChimes';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
 export { PreviewVideoContext } from './call/previewVideo';
 export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

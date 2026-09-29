@@ -55,3 +55,42 @@ it('does not offer to ring where the workspace would not let this caller ring', 
 
 	expect(screen.queryByRole('button', { name: `Ring__name__` })).not.toBeInTheDocument();
 });
+
+describe('in a call that runs in this window', () => {
+	const joined: ConferenceMember = { ...base, joined: true };
+
+	const renderInCall = ({ muted = false }: { muted?: boolean } = {}) => {
+		const AppRoot = mockAppRoot().withJohnDoe().build();
+		const conference = buildConferenceContext();
+
+		const wrapper = ({ children }: { children: ReactNode }) => (
+			<AppRoot>
+				<ConferenceContext.Provider value={conference}>{children}</ConferenceContext.Provider>
+			</AppRoot>
+		);
+
+		render(
+			<CallMemberItem
+				member={joined}
+				hasChatAccess
+				muted={muted}
+				activity={<span role='meter' aria-label={`level of ${joined._id}`} aria-valuenow={0} />}
+				onRing={jest.fn()}
+			/>,
+			{ wrapper },
+		);
+	};
+
+	it("draws the member's microphone level", () => {
+		renderInCall();
+
+		expect(screen.getByRole('meter', { name: `level of ${base._id}` })).toBeInTheDocument();
+	});
+
+	// Silence is what everyone already hears, so a muted row says nothing.
+	it('says nothing about a member who is already muted', () => {
+		renderInCall({ muted: true });
+
+		expect(screen.queryByRole('meter', { name: `level of ${base._id}` })).not.toBeInTheDocument();
+	});
+});
