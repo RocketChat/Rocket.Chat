@@ -161,7 +161,7 @@ describe('NatsBroker subjects', () => {
 		const { nc } = await start();
 
 		expect([...nc.endpoints.keys()]).toEqual(expect.arrayContaining(['rpc.accounts.login', 'node.node-a.accounts.login']));
-		expect([...nc.subscriptions.keys()]).toContain('event.accounts.login');
+		expect([...nc.subscriptions.keys()]).toEqual(expect.arrayContaining(['event.accounts.login', 'emit.accounts.login']));
 	});
 
 	it('should not invoke a service method when an event of the same name is broadcast', async () => {
@@ -583,7 +583,7 @@ describe('NatsBroker.destroyService', () => {
 
 		expect(stopped).toHaveBeenCalled();
 		expect(nc.stoppedServices).toEqual(['device-management']);
-		expect(nc.drainedSubscriptions).toBe(1);
+		expect(nc.drainedSubscriptions).toBe(2);
 		expect(nc.endpoints.has('rpc.device-management.login')).toBe(false);
 	});
 
@@ -594,6 +594,48 @@ describe('NatsBroker.destroyService', () => {
 		await broker.broadcastLocal('accounts.login', { userId: 'uid' } as never);
 
 		expect(onAccountsLogin).not.toHaveBeenCalled();
+	});
+});
+
+describe('NatsBroker.emitToOne', () => {
+	/** A second node on the same NATS connection, running only another instance of device-management. */
+	const startSecondNode = async (nc: FakeNatsConnection): Promise<void> => {
+		(connect as jest.Mock).mockResolvedValue(nc);
+		const broker = new NatsBroker({}, 'node-b', QUICK_START);
+		const deviceManagement = new DeviceManagement();
+
+		await createCore(broker);
+		await broker.createService(deviceManagement);
+		await broker.start();
+
+		running.push({ broker, services: [deviceManagement] });
+	};
+
+	it('should deliver to one instance of each listening service', async () => {
+		const { broker, nc } = await start();
+		await startSecondNode(nc);
+
+		await broker.emitToOne('accounts.login', { userId: 'uid' } as never);
+
+		expect(onAccountsLogin).toHaveBeenCalledTimes(1);
+		expect(onAccountsLogin).toHaveBeenCalledWith({ userId: 'uid' });
+	});
+
+	it('should leave broadcast reaching every instance', async () => {
+		const { broker, nc } = await start();
+		await startSecondNode(nc);
+
+		await broker.broadcast('accounts.login', { userId: 'uid' } as never);
+
+		expect(onAccountsLogin).toHaveBeenCalledTimes(2);
+	});
+
+	it('should not invoke a service method of the same name', async () => {
+		const { broker } = await start();
+
+		await broker.emitToOne('accounts.login', { userId: 'uid' } as never);
+
+		expect(loginStub).not.toHaveBeenCalled();
 	});
 });
 

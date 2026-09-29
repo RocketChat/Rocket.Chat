@@ -28,6 +28,9 @@ const SERVICE_VERSION = '0.1.0';
 const RPC_PREFIX = 'rpc';
 const EVENT_PREFIX = 'event';
 
+/** `emit.<name>`, subscribed in a queue group per service, so `emitToOne` reaches one instance of each listening service. */
+const EMIT_PREFIX = 'emit';
+
 /** `node.<nodeID>.<service>.<method>`, used to honour `CallingOptions.nodeID`. */
 const NODE_PREFIX = 'node';
 
@@ -357,13 +360,16 @@ export class NatsBroker implements IBroker {
 
 		// one subscription per event routed through `emit`, so listeners registered
 		// after this point are still reached
-		const subscriptions = instance.getEvents().map(({ eventName }) =>
-			nc.subscribe(`${EVENT_PREFIX}.${String(eventName)}`, {
-				callback: (_error, msg): void => {
-					instance.emit(eventName, ...(decodeParams(msg.data) as Parameters<EventSignatures[typeof eventName]>));
-				},
-			}),
-		);
+		const subscriptions = instance.getEvents().flatMap(({ eventName }) => {
+			const callback = (_error: unknown, msg: Msg): void => {
+				instance.emit(eventName, ...(decodeParams(msg.data) as Parameters<EventSignatures[typeof eventName]>));
+			};
+
+			return [
+				nc.subscribe(`${EVENT_PREFIX}.${String(eventName)}`, { callback }),
+				nc.subscribe(`${EMIT_PREFIX}.${String(eventName)}`, { callback, queue: name }),
+			];
+		});
 
 		const shared = service.addGroup(`${RPC_PREFIX}.${name}`);
 		const scoped = service.addGroup(`${NODE_PREFIX}.${this.nodeID}.${name}`);
@@ -490,6 +496,14 @@ export class NatsBroker implements IBroker {
 		}
 
 		this.nc.publish(`${EVENT_PREFIX}.${String(event)}`, encodePayload(args));
+	}
+
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		if (!this.started || !this.nc) {
+			return;
+		}
+
+		this.nc.publish(`${EMIT_PREFIX}.${String(event)}`, encodePayload(args));
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {

@@ -2,6 +2,8 @@ import EJSON from 'ejson';
 import type { Msg, MsgHdrs, PublishOptions, ServiceHandler, ServiceIdentity, ServiceMsg } from 'nats';
 import { Empty, ErrorCode, NatsError, ServiceErrorCodeHeader, ServiceErrorHeader, headers } from 'nats';
 
+type Listener = ((msg: Msg) => void) & { queue?: string };
+
 /**
  * In memory stand in for a NatsConnection, covering only what NatsBroker uses:
  * subject routing, request/reply, the micro service registry and discovery.
@@ -11,7 +13,7 @@ import { Empty, ErrorCode, NatsError, ServiceErrorCodeHeader, ServiceErrorHeader
 export class FakeNatsConnection {
 	readonly endpoints = new Map<string, ServiceHandler>();
 
-	readonly subscriptions = new Map<string, Set<(msg: Msg) => void>>();
+	readonly subscriptions = new Map<string, Set<Listener>>();
 
 	/** Every subject a request was sent to, in order. */
 	readonly requested: string[] = [];
@@ -34,9 +36,9 @@ export class FakeNatsConnection {
 
 	subscribe(
 		subject: string,
-		{ callback }: { callback: (error: null, msg: Msg) => void },
+		{ callback, queue }: { callback: (error: null, msg: Msg) => void; queue?: string },
 	): { drain: () => Promise<void>; unsubscribe: () => void } {
-		const listener = (msg: Msg): void => callback(null, msg);
+		const listener: Listener = Object.assign((msg: Msg): void => callback(null, msg), { queue });
 
 		const listeners = this.subscriptions.get(subject) ?? new Set();
 		listeners.add(listener);
@@ -53,8 +55,20 @@ export class FakeNatsConnection {
 		};
 	}
 
+	/** Like NATS, a queue group receives each message once, on the member that subscribed first here. */
 	publish(subject: string, data: Uint8Array): void {
-		this.subscriptions.get(subject)?.forEach((listener) => listener(this.toMsg(subject, data)));
+		const reachedQueues = new Set<string>();
+
+		this.subscriptions.get(subject)?.forEach((listener) => {
+			if (listener.queue) {
+				if (reachedQueues.has(listener.queue)) {
+					return;
+				}
+				reachedQueues.add(listener.queue);
+			}
+
+			listener(this.toMsg(subject, data));
+		});
 	}
 
 	async request(subject: string, data: Uint8Array): Promise<Msg> {
