@@ -2512,6 +2512,7 @@
   "error-business-hour-finish-time-before-start-time": "Finish time must be after start time",
   "error-business-hour-finish-time-equals-start-time": "Start and finish time cannot be the same",
   "error-business-hours-are-closed": "Business hours are closed",
+  "error-calendar-event-owned-by-outlook-sync": "This event belongs to the Outlook server-to-server sync, so it can only be changed or removed in Outlook.",
   "error-calendar-managed-by-server-sync": "This calendar is managed by the server-to-server Outlook integration, so per-user sync is disabled.",
   "error-canned-response-not-found": "Canned response not found",
   "error-cannot-convert-default-room-to-abac": "Default and team default rooms cannot be converted into attribute-based access control rooms.",

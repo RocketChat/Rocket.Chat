@@ -1,5 +1,6 @@
 import { Calendar } from '@rocket.chat/core-services';
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	ajv,
 	isCalendarEventListProps,
@@ -14,8 +15,6 @@ import {
 
 import { settings } from '../../settings';
 import { API } from '../api';
-
-const isImported = (event: ICalendarEvent) => typeof event.externalId === 'string';
 
 const successWithDataSchema = ajv.compile<{ data: ICalendarEvent[] }>({
 	type: 'object',
@@ -56,6 +55,10 @@ const successSchema = ajv.compile<void>({
 
 const isServerManaged = (): boolean => settings.get<string>('Exchange_Mode') === 'server';
 
+const isOutlookImported = (event: ICalendarEvent) => event.source === 'outlook';
+
+const hasOutlookLicense = (): boolean => License.hasModule('outlook-calendar');
+
 API.v1.get(
 	'calendar-events.list',
 	{
@@ -72,7 +75,7 @@ API.v1.get(
 		const { userId } = this;
 		const { date } = this.queryParams;
 
-		const data = await Calendar.list(userId, new Date(date));
+		const data = await Calendar.list(userId, new Date(date), { excludeOutlook: !hasOutlookLicense() });
 
 		return API.v1.success({ data });
 	},
@@ -96,7 +99,7 @@ API.v1.get(
 
 		const event = await Calendar.get(id);
 
-		if (event?.uid !== userId) {
+		if (event?.uid !== userId || (isOutlookImported(event) && !hasOutlookLicense())) {
 			return API.v1.failure();
 		}
 
@@ -195,8 +198,8 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
-		if (isImported(event) && isServerManaged()) {
-			return API.v1.failure('error-calendar-managed-by-server-sync');
+		if (isOutlookImported(event)) {
+			return API.v1.failure('error-calendar-event-owned-by-outlook-sync');
 		}
 
 		await Calendar.update(eventId, {
@@ -234,8 +237,8 @@ API.v1.post(
 			throw new Error('invalid-calendar-event');
 		}
 
-		if (isImported(event) && isServerManaged()) {
-			return API.v1.failure('error-calendar-managed-by-server-sync');
+		if (isOutlookImported(event)) {
+			return API.v1.failure('error-calendar-event-owned-by-outlook-sync');
 		}
 
 		await Calendar.delete(eventId);
