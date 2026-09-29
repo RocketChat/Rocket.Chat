@@ -24,10 +24,10 @@ const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
 				<AgentAvatar name={agent.name || ''} username={agent.username || ''} />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				<NumberInput title={t('Count')} maxWidth='100%' {...register(`agentList.${index}.count`, { valueAsNumber: true })} />
+				<NumberInput title={t('Count')} maxWidth='100%' {...register(`agentList.${index}.count`, { valueAsNumber: true, min: 0 })} />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				<NumberInput title={t('Order')} maxWidth='100%' {...register(`agentList.${index}.order`, { valueAsNumber: true })} />
+				<NumberInput title={t('Order')} maxWidth='100%' {...register(`agentList.${index}.order`, { valueAsNumber: true, min: 0 })} />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='hint'>
 				<RemoveAgentButton agentId={agent.agentId} onRemove={onRemove} />
@@ -35,4 +35,5 @@ const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
 		</GenericTableRow>
 	);
 };
+
 export default memo(AgentRow);
