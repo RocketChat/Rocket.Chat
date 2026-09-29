@@ -42,6 +42,7 @@ export {
 	useVideoQualityPreference,
 	useBackgroundBlurPreference,
 	callPreferencesStorageKey,
+	useUpdateCallPreferences,
 } from './hooks/useCallDevicesInitialState';
 export type {
 	CallPreferences,

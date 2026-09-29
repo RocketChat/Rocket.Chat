@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
+import { useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useAvailableDevices,
@@ -89,16 +90,7 @@ const InnerProvider = ({
 	// What has already been written, so re-running on a new device list can't turn into a write-and-rerender loop.
 	const recorded = useRef<Partial<Record<'audioinput' | 'audiooutput', string>>>({});
 
-	const persistDevicePreference = useCallback((updates: Record<string, string | boolean>) => {
-		try {
-			const key = 'fuselage-localStorage-videoconf-call-preferences';
-			const raw = localStorage.getItem(key);
-			const stored = raw ? JSON.parse(raw) : {};
-			localStorage.setItem(key, JSON.stringify({ ...stored, ...updates }));
-		} catch {
-			/* localStorage unavailable */
-		}
-	}, []);
+	const persistDevicePreference = useUpdateCallPreferences();
 	const { localParticipant } = useLocalParticipant();
 	const allParticipants = useParticipants();
 	const startedAt = useRef(new Date()).current;

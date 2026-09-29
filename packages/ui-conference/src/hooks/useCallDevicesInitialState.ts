@@ -157,6 +157,16 @@ const useStoredCallPreferences = () => {
 	return [stored, setStored] as const;
 };
 
+/** Merges what changed during a call into the same record the preflight reads, so the next call starts from it. */
+export const useUpdateCallPreferences = () => {
+	const [, setStored] = useStoredCallPreferences();
+
+	return useCallback(
+		(updates: Partial<CallPreferences & CallDevices>) => setStored((current) => ({ ...current, ...updates })),
+		[setStored],
+	);
+};
+
 const useRingIn = (stored: StoredCallPreferences, setStored: SetStoredCallPreferences) => {
 	const { ring } = stored;
 	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !current.ring })), [setStored]);
