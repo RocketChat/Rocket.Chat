@@ -253,12 +253,11 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const isEmbeddedProvider = (await VideoConf.listProviderCapabilities(call.providerName)).embedded;
+		const canAccessConference = (await VideoConf.listProviderCapabilities(call.providerName)).embedded
+			? await Authorization.canAccessConference(call, userId)
+			: await canAccessRoomIdAsync(call.rid, userId);
 
-		if (
-			(isEmbeddedProvider && !(await Authorization.canAccessConference(call, userId))) ||
-			!(await canAccessRoomIdAsync(call.rid, userId))
-		) {
+		if (!canAccessConference) {
 			return API.v1.failure('invalid-params');
 		}
 
