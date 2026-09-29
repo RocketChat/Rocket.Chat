@@ -20,19 +20,8 @@ const CallStageArea = () => {
 			cameraStream: self.cameraStream ?? null,
 			screenStream: self.screenStream ?? null,
 			audioStream: self.microphoneStream ?? null,
-			// Said on the reader's own tile only: a claim about someone else's encoder is not one this client can make.
-			sendHeight: self.sendResolution?.height,
 		}),
-		[
-			self.id,
-			self.displayName,
-			self.avatarUrl,
-			self.muted,
-			self.cameraStream,
-			self.screenStream,
-			self.microphoneStream,
-			self.sendResolution?.height,
-		],
+		[self.id, self.displayName, self.avatarUrl, self.muted, self.cameraStream, self.screenStream, self.microphoneStream],
 	);
 
 	return (

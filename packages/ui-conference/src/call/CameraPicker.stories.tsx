@@ -5,7 +5,7 @@ import CameraPicker from './CameraPicker';
 import { withCall } from '../fixtures/callFixtures';
 import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
 
-/** The camera menu of a call running in this window: which camera, how much detail, and what is done to the background. */
+/** The camera menu of a call running in this window. */
 const meta = {
 	component: CameraPicker,
 	parameters: { layout: 'centered' },
@@ -32,7 +32,7 @@ export const CameraOff: Story = {
 	decorators: [withCall()],
 };
 
-/** The menu itself: the cameras, then the choices about their picture. */
+/** The menu itself: the cameras. */
 export const Open: Story = {
 	decorators: [withCall({ state: { self: { cameraOn: true } } })],
 	play: async ({ canvasElement }) => {

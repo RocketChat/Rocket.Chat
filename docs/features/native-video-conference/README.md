@@ -58,12 +58,7 @@ Changes made during a call are written back to the same record, so the next pref
 - **The room is asked which device is in use.** The app's device store is only written from inside a call, so on arrival
   it answers with the first device the browser enumerated. The call listens for `ActiveDeviceChanged` and corrects the
   store from `getActiveDevice`, which is the device obtained rather than the one requested.
-- **The preflight camera is a LiveKit track**, so resolution is previewed exactly as the call will send it.
-
-## Send resolution
-
-The camera menu offers *Auto / 1080p / 720p / 360p / 180p*, and the local tile shows what is actually being sent
-(the tallest `outbound-rtp` layer). The encoder picks simulcast layers for the bandwidth available, so the two differ.
+- **The preflight camera is a LiveKit track**, opened the way the call opens it: the camera's default resolution.
 
 ## Who gets rung
 
@@ -78,12 +73,12 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 
 ## Known limitations
 
-- The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
-  the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
 - Shipping in follow-ups:
   - background blur and noise suppression;
   - reactions, raised hands and remote mute requests, and the data channel that carries them;
   - the connection info panel (call diagnostics);
   - the spotlight and sidebar layouts with active-speaker detection, and screen shares featured on the stage with
-    pinning and thumbnails. The call itself shows each shared screen as a tile of the grid.
+    pinning and thumbnails. The call itself shows each shared screen as a tile of the grid;
+  - choosing the send resolution (preflight and in-call camera menu), and the badge on the reader's own tile saying
+    what the encoder is actually sending.

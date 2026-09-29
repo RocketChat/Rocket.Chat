@@ -21,15 +21,10 @@ export type CallDevices = {
 /** The three things there are to choose. The speaker is output-only, so it has no on/off of its own. */
 export type CallDeviceKind = 'mic' | 'cam' | 'speaker';
 
-/** The most detail to send: `auto` leaves it to the camera and the connection, and the rest are ceilings. */
-export type VideoQuality = 'auto' | 'h1080' | 'h720' | 'h360' | 'h180';
-
-export type CallVideoQualityPreference = { videoQuality: VideoQuality };
-
-type StoredCallPreferences = CallPreferences & CallDevices & CallRingPreference & CallVideoQualityPreference;
+type StoredCallPreferences = CallPreferences & CallDevices & CallRingPreference;
 
 /** Muted and unseen is the safe way in: it can only surprise in the harmless direction. */
-const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto' };
+const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true };
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
@@ -149,19 +144,6 @@ const useRingIn = (stored: StoredCallPreferences, setStored: SetStoredCallPrefer
 	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !current.ring })), [setStored]);
 
 	return { ring, toggleRing };
-};
-
-/** Which resolution to ask the camera for, remembered like the rest of it. */
-export const useVideoQualityPreference = () => {
-	const [stored, setStored] = useStoredCallPreferences();
-
-	const videoQuality = stored.videoQuality ?? 'auto';
-	const selectVideoQuality = useCallback(
-		(quality: VideoQuality) => setStored((current) => ({ ...current, videoQuality: quality })),
-		[setStored],
-	);
-
-	return { videoQuality, selectVideoQuality };
 };
 
 /** Whether to ring the people being called — one habit, the same answer in the preflight and when adding someone. */

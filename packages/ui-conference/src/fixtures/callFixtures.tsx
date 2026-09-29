@@ -62,13 +62,6 @@ export const buildDeviceSelection = (overrides: Partial<CallDeviceSelection> = {
 	selectAudioDevice: action('selectAudioDevice'),
 	selectCamera: action('selectCamera'),
 	currentCameraId: 'facetime',
-	videoQuality: {
-		quality: 'auto',
-		qualities: ['auto', 'h1080', 'h720', 'h360', 'h180'],
-		height: 720,
-		pending: false,
-		select: action('selectVideoQuality'),
-	},
 	...overrides,
 });
 

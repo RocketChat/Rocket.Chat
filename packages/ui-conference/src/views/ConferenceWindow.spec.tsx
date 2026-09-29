@@ -34,7 +34,6 @@ const deviceSelection: CallDeviceSelection = {
 	devices: [],
 	selectAudioDevice: jest.fn(),
 	selectCamera: jest.fn(),
-	videoQuality: { quality: 'auto', qualities: [], pending: false, select: jest.fn() },
 };
 
 /** What a provider running the call in this window provides around it. */

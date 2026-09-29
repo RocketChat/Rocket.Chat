@@ -39,18 +39,6 @@ const labelStyles = css`
 	pointer-events: none;
 `;
 
-const sendBadgeStyles = css`
-	position: absolute;
-	top: 0.25rem;
-	left: 0.25rem;
-	padding: 0.125rem 0.25rem;
-	border-radius: ${borderRadius('medium')};
-	background-color: ${Palette.surface['surface-overlay'].toString()};
-	color: ${Palette.text['font-pure-white'].toString()};
-	font-variant-numeric: tabular-nums;
-	pointer-events: none;
-`;
-
 const indicatorRowStyles = css`
 	position: absolute;
 	top: 0.25rem;
@@ -74,17 +62,12 @@ const indicatorBadgeStyles = css`
 export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream'> & {
 	/** How wide the speaking ring gets at full volume. */
 	ringWidth: number;
-	/**
-	 * The height of the picture actually being sent, shown as a badge. Only for the reader's own tile: what someone
-	 * else's encoder is doing is not something this client can honestly claim.
-	 */
-	sendHeight?: number;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
 /** Everything a tile says over the picture: who it is, whether they are speaking, their microphone. */
-const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, sendHeight, children }: TileFrameProps) => {
+const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, children }: TileFrameProps) => {
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
 	const ringColor = Palette.stroke['stroke-highlight'].toString();
@@ -108,12 +91,6 @@ const TileFrame = ({ displayName, muted, held, audioStream, ringWidth, sendHeigh
 			<Box className={labelStyles} fontScale='p1'>
 				{displayName}
 			</Box>
-			{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}
-			{sendHeight && (
-				<Box className={sendBadgeStyles} fontScale='c1'>
-					{sendHeight}p
-				</Box>
-			)}
 			<Box className={indicatorRowStyles}>
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
