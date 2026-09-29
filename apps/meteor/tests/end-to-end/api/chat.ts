@@ -5364,6 +5364,17 @@ describe('Threads', () => {
 			expect(res.body.messages.map((message: IMessage) => message._id)).to.deep.equal([firstMessageId]);
 		});
 
+		it('should return an empty array when none of the message ids resolve to a message', async () => {
+			const res = await request
+				.post(api('chat.getMessages'))
+				.set(credentials)
+				.send({ messageIds: ['does-not-exist'] })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array').that.is.empty;
+		});
+
 		it('should reject the whole batch when any message belongs to an unreadable room', async () => {
 			const res = await request
 				.post(api('chat.getMessages'))
