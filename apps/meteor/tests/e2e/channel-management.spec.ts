@@ -340,9 +340,8 @@ test.describe.serial('channel-management', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('message after being unignored');
 		});
 
-		test('should readOnlyChannel show join button', async () => {
-			const channelName = faker.string.uuid();
-			await poHomeChannel.navbar.createNew('Channel', channelName, { private: false, readOnly: true });
+		test('should readOnlyChannel show join button', async ({ api }) => {
+			const channelName = await createTargetChannel(api, { readOnly: true });
 
 			const channel = new HomeChannel(user1Page);
 
