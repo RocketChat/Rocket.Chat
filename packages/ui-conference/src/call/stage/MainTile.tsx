@@ -15,6 +15,7 @@ const MainTile = ({ tile }: MainTileProps) =>
 			muted={tile.muted}
 			held={tile.held}
 			cameraStream={tile.cameraStream}
+			sendHeight={tile.sendHeight}
 		/>
 	) : (
 		<ParticipantTile

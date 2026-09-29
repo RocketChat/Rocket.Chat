@@ -39,11 +39,12 @@ export type DeviceMenuProps = {
 	/** The name of what the device is set to; the label stands in while there is none. */
 	current?: string;
 	disabled: boolean;
+	/** The options, and the sections of choices about the device under them. */
 	children: ReactNode;
 };
 
 /**
- * A dropdown for choosing one device on the preflight.
+ * A dropdown for choosing one device on the preflight, and what is done to it.
  *
  * Separate from the in-call pickers on purpose: those switch a device mid-call through the call's own contexts, and
  * there is no call here yet. This only records a choice for the join to carry.
