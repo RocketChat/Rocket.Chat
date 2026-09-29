@@ -1,25 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider } from '@rocket.chat/fuselage';
-import { CallPanelHeader } from '@rocket.chat/ui-conference';
-import type { CallDiagnosticsData } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
 import CallDiagnosticsParticipantCard from './CallDiagnosticsParticipantCard';
 import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
+import CallPanelHeader from '../../components/CallPanelHeader';
+import { useCallDiagnostics } from '../context';
 
-type CallDiagnosticsPanelProps = {
-	// ui-voip's source type carries this field. Keep the intersection while Meteor typechecks against a previously
-	// built workspace-package declaration, which can lag behind that source until the package is rebuilt.
-	diagnostics?: CallDiagnosticsData & {
-		backgroundBlur?: {
-			fps?: number;
-			frameMs?: number;
-			compositorMs?: number;
-			segmentationMs?: number;
-			segmentIntervalMs: number;
-			qualityReduction: 0 | 1 | 2;
-		};
-	};
+export type CallDiagnosticsPanelProps = {
 	onClose: () => void;
 };
 
@@ -71,8 +59,10 @@ const fmt = (value: number | undefined, suffix: string): string => (value != nul
 const fmtDecimal = (value: number | undefined, suffix = ''): string => (value != null ? `${Math.round(value * 10) / 10}${suffix}` : '—');
 const fmtKbps = (value: number | undefined): string => (value != null ? `${Math.round(value / 10) * 10} kbps` : '—');
 
-const CallDiagnosticsPanel = ({ diagnostics, onClose }: CallDiagnosticsPanelProps) => {
+/** How the connection of the call running in this window is doing, sampled by its provider. */
+const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 	const { t } = useTranslation();
+	const diagnostics = useCallDiagnostics();
 
 	return (
 		<>

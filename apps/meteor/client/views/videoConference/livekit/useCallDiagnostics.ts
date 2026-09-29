@@ -1,58 +1,9 @@
+import type { CallDiagnosticsData, ParticipantTrackStats } from '@rocket.chat/ui-conference';
 import type { LocalAudioTrack, LocalVideoTrack, Participant, LocalTrack, RemoteTrack } from 'livekit-client';
 import { Track } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 
 const POLL_MS = 2000;
-
-export type ParticipantTrackStats = {
-	id: string;
-	displayName: string;
-	videoWidth?: number;
-	videoHeight?: number;
-	videoCodec?: string;
-	fps?: number;
-	videoBitrateKbps?: number;
-	audioBitrateKbps?: number;
-	packetsLost?: number;
-	jitterMs?: number;
-};
-
-export type CallDiagnosticsData = {
-	serverUrl: string;
-	connectionState: string;
-	connectionQuality: string;
-	roundTripTimeMs?: number;
-	/** Local upload bitrate in kbps (audio + video). */
-	uploadKbps?: number;
-	/** Total download bitrate in kbps (audio + video). */
-	downloadKbps?: number;
-	/** Total bytes sent since call start. */
-	totalBytesSent?: number;
-	/** Total bytes received since call start. */
-	totalBytesReceived?: number;
-	/** Local video send resolution. */
-	sendWidth?: number;
-	sendHeight?: number;
-	sendFps?: number;
-	sendCodec?: string;
-	/** Why the encoder is limiting quality. */
-	qualityLimitationReason?: string;
-	/** Measured local blur-pipeline stages, when the WebGL processor is attached. */
-	backgroundBlur?: {
-		fps?: number;
-		frameMs?: number;
-		compositorMs?: number;
-		segmentationMs?: number;
-		segmentIntervalMs: number;
-		qualityReduction: 0 | 1 | 2;
-	};
-	/** Per-remote-participant receive stats. */
-	participants: ParticipantTrackStats[];
-	/** Audio packets concealed (gaps filled by the decoder). */
-	audioConcealment?: number;
-	/** Timestamp of last stats read. */
-	timestamp: number;
-};
 
 type PrevSnapshot = {
 	timestamp: number;
@@ -222,6 +173,8 @@ export const useCallDiagnostics = (
 	room: { state: string; localParticipant: Participant },
 	remoteParticipants: Participant[],
 	serverUrl: string,
+	/** Sampled only while connected: before that there is nothing to measure. */
+	active: boolean,
 ): CallDiagnosticsData | undefined => {
 	const [diagnostics, setDiagnostics] = useState<CallDiagnosticsData | undefined>();
 	const prev = useRef<PrevSnapshot | null>(null);
@@ -234,6 +187,10 @@ export const useCallDiagnostics = (
 	serverUrlRef.current = serverUrl;
 
 	useEffect(() => {
+		if (!active) {
+			return;
+		}
+
 		let cancelled = false;
 
 		const read = async () => {
@@ -340,7 +297,7 @@ export const useCallDiagnostics = (
 			cancelled = true;
 			clearInterval(timer);
 		};
-	}, []);
+	}, [active]);
 
 	return diagnostics;
 };

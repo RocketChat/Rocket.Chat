@@ -2,6 +2,7 @@ import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayNames } from '@rocket.chat/core-typings';
 import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
@@ -30,6 +31,8 @@ type CallMemberItemProps = {
 	muted?: boolean;
 	/** Asks them to mute. Absent where the call cannot carry the request. */
 	onMute?: (memberId: string) => void;
+	/** Their microphone level, for a call whose audio this window holds. */
+	activity?: ReactNode;
 	onRing: (memberId: string) => void;
 };
 
@@ -47,13 +50,14 @@ const CallMemberItem = ({
 	controls,
 	handRaised,
 	muted,
+	activity,
 	onRing,
 	onMute,
 }: CallMemberItemProps) => {
 	const { t } = useTranslation();
 	// `video-conference.ring` refuses without the permission, so a caller who lacks it is offered nothing to press.
 	const { uid: ownUserId, useRealName, canRingUsers } = useConferenceViewer();
-	const { renderMemberStatus, renderMemberActivity } = useConferenceSlots();
+	const { renderMemberStatus } = useConferenceSlots();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(member.name, member.username, useRealName);
 	const status = getConferenceMemberStatus(member);
 
@@ -116,9 +120,9 @@ const CallMemberItem = ({
 							/>
 						</OptionColumn>
 					)}
-					{renderMemberActivity && (
+					{activity && (
 						<OptionColumn>
-							<Box display='flex'>{renderMemberActivity(member._id)}</Box>
+							<Box display='flex'>{activity}</Box>
 						</OptionColumn>
 					)}
 				</>

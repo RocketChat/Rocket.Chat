@@ -8,8 +8,8 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../server/lib/callbacks';
 import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
-import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
 import { settings } from '../../../server/settings';
+import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';
 
@@ -18,13 +18,14 @@ import { addSettings } from '../settings/video-conference';
  *
  * Only when it is *fully* configured — enabled, with a URL, an API key and a secret — because a provider in the
  * registry is a provider the camera button offers, and offering one that can't connect turns a misconfiguration
- * into a call that fails at the moment someone tries to place it.
+ * into a call that fails at the moment someone tries to place it. And only with the conference window on, which is
+ * the one place its call renders.
  *
  * Re-evaluated on every relevant setting change rather than only at startup, so filling in a missing key takes
  * effect without a restart.
  */
 const refreshLiveKitProviderRegistration = (): void => {
-	if (isLiveKitFullyConfigured()) {
+	if (isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
 		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
@@ -69,6 +70,8 @@ Meteor.startup(async () => {
 
 		// Inside the EE licence gate already, and every step is idempotent.
 		refreshLiveKitProviderRegistration();
-		settings.watchByRegex(/^VideoConf_LiveKit_(Enabled|Url|Api_Key|Api_Secret)$/, () => refreshLiveKitProviderRegistration());
+		settings.watchByRegex(/^VideoConf_(LiveKit_(Enabled|Url|Api_Key|Api_Secret)|Conference_Window_Enabled)$/, () =>
+			refreshLiveKitProviderRegistration(),
+		);
 	});
 });

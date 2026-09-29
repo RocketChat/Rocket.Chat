@@ -28,11 +28,7 @@ const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 				{leftSlot}
 			</Box>
 			<Box is='span' display='flex' justifyContent='center' alignItems='center' flexGrow={1} flexBasis='60%'>
-				{/* `relative` so a popover a control opens — the reaction picker — can centre itself over the row
-				    rather than over its own button, which put it off the edge of a phone. */}
-				<ButtonGroup large style={{ position: 'relative' }}>
-					{children}
-				</ButtonGroup>
+				<ButtonGroup large>{children}</ButtonGroup>
 			</Box>
 			<Box is='span' display='flex' justifyContent='end' alignItems='center' flexGrow={0} flexBasis='20%'>
 				{rightSlot}

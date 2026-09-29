@@ -8,7 +8,6 @@ export type {
 	ConferenceCall,
 	ConferenceChatAccess,
 	ConferenceFailure,
-	ConferenceMedia,
 	ConferenceMember,
 	ConferenceRoom,
 	ConferenceSession,
@@ -83,5 +82,31 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 
 // Shared with the application's own specs, which build the same calls and members this package's do.
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
-export type { Presenter } from './components/CallPresenting';
-export type { RaisedHand } from './components/CallRaisedHands';
+
+// A call running in this window: the provider that runs it fills these, and the window's call parts read them.
+export {
+	CallStateProvider,
+	CallActionsProvider,
+	CallDeviceSelectionProvider,
+	CallMediaProcessingProvider,
+	CallDiagnosticsProvider,
+} from './call/context';
+export type {
+	CallState,
+	CallSelf,
+	CallConnectionState,
+	RemoteParticipantInfo,
+	ActiveReaction,
+	CallActions,
+	CallDeviceSelection,
+	CallMediaProcessing,
+	CallNoiseSuppression,
+	CallBackgroundBlur,
+	CallVideoQuality,
+	CallDiagnosticsData,
+	ParticipantTrackStats,
+	BackgroundBlurDiagnostics,
+} from './call/context';
+export { default as VoiceActivity } from './call/VoiceActivity';
+export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
+export { deviceName, isSameDevice, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';

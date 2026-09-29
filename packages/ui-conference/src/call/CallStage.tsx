@@ -1,12 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon, IconButton, Palette } from '@rocket.chat/fuselage';
+import { usePlayMediaStream } from '@rocket.chat/ui-voip';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import CallTile from './CallTile';
-import type { RemoteParticipantInfo } from '../../context/MediaCallViewContext';
-import { useActiveSpeakerId } from '../../providers/useActiveSpeakerId';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
-import { useTileGridLayout } from '../../providers/useTileGridLayout';
+import type { RemoteParticipantInfo } from './context';
+import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
+import { useTileGridLayout } from './hooks/useTileGridLayout';
 
 type LocalParticipant = {
 	id: string;

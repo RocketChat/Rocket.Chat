@@ -1,12 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { usePlayMediaStream } from '@rocket.chat/ui-voip';
 import { memo, useEffect, useRef, useState } from 'react';
 
-import VoiceActivity from '../../components/VoiceActivity';
-import { useAudioLevel } from '../../providers/useAudioLevel';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
-import { useStreamHasLiveVideo } from '../../providers/useStreamHasLiveVideo';
+import VoiceActivity from './VoiceActivity';
+import { useAudioLevel } from './hooks/useAudioLevel';
+import { useStreamHasLiveVideo } from './hooks/useStreamHasLiveVideo';
 
 // Above this normalised audio level the speaking ring becomes visible. Keeps
 // background noise / fan hum from constantly lighting the border. Tuned for

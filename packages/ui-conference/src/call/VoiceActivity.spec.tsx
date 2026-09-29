@@ -4,7 +4,7 @@ import VoiceActivity from './VoiceActivity';
 
 const mockUseAudioLevel = jest.fn();
 
-jest.mock('../providers/useAudioLevel', () => ({
+jest.mock('./hooks/useAudioLevel', () => ({
 	useAudioLevel: (stream?: MediaStream | null) => mockUseAudioLevel(stream),
 }));
 

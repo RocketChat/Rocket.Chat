@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Dropdown, Icon, Option, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useDropdownVisibility } from '@rocket.chat/ui-client';
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '@rocket.chat/ui-voip';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '@rocket.chat/ui-conference';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,8 +57,8 @@ const nameStyles = css`
 /**
  * Picks which camera, microphone or speaker to arrive on, from the preflight.
  *
- * Separate from `ui-voip`'s in-call pickers on purpose: those dispatch through the call's own view context to
- * switch a device mid-call, and there is no call here yet. This one only records a choice for the join to carry.
+ * Separate from the in-call pickers on purpose: those switch a device mid-call through the call's own contexts, and
+ * there is no call here yet. This one only records a choice for the join to carry.
  */
 const CallDeviceMenu = ({ icon, label, devices, selectedId, onSelect, sections }: CallDeviceMenuProps) => {
 	const { t } = useTranslation();

@@ -1,17 +1,22 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
-import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
+import CallControls from '../call/CallControls';
+import CallHeader from '../call/CallHeader';
+import type { StageLayout } from '../call/CallStage';
+import CallStageArea from '../call/CallStageArea';
+import CallTopBarStatus from '../call/CallTopBarStatus';
+import EmbeddedCallMembersPanel from '../call/EmbeddedCallMembersPanel';
+import CallDiagnosticsPanel from '../call/diagnostics/CallDiagnosticsPanel';
 import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 import CallPanel from '../components/CallPanel';
-import CallPresenting from '../components/CallPresenting';
-import CallRaisedHands from '../components/CallRaisedHands';
 import CallTopBar from '../components/CallTopBar';
 import ChatAccessNotice from '../components/ChatAccessNotice/ChatAccessNotice';
 import ConferenceIframe from '../components/ConferenceIframe';
@@ -35,7 +40,7 @@ const withBadgeCount = (label: string, unread: number, unreadTitle: string, hasU
  * from a fixture — and what keeps the one part it cannot build, the call's chat, a node it is handed.
  */
 const ConferenceWindow = () => {
-	const { room, session, call, actions, slots, thread, viewer, panel, media } = useConference();
+	const { room, session, call, actions, slots, thread, viewer, panel } = useConference();
 	const { t } = useTranslation();
 
 	// Which panel is open is the window's own until the application asks for it — see `panel` on the context.
@@ -102,36 +107,7 @@ const ConferenceWindow = () => {
 		return () => callSounds.stopDialer();
 	}, [someoneRinging, callSounds]);
 
-	// Where a call running in here puts its header and its controls — this window's own bars. Created up front
-	// rather than captured from refs, so they exist on the very first render: an empty ref then would have the
-	// call build a strip of its own before being told not to.
-	const hosts = useMemo(() => {
-		const header = document.createElement('div');
-		header.style.cssText = 'display:flex;flex:1;min-width:0;align-items:center;justify-content:space-between';
-		return { header, controls: document.createElement('div') };
-	}, []);
-	const mountHeader = useCallback(
-		(node: HTMLElement | null) => {
-			node?.appendChild(hosts.header);
-		},
-		[hosts],
-	);
-	const mountControls = useCallback(
-		(node: HTMLElement | null) => {
-			node?.appendChild(hosts.controls);
-		},
-		[hosts],
-	);
-
-	// The call reports hands by member id; the membership is what names them.
-	const hands = useMemo(
-		() =>
-			(media?.raisedHands ?? []).map((id) => {
-				const member = call.members.find(({ _id }) => _id === id);
-				return { id, name: member?.name || member?.username || t('User') };
-			}),
-		[media?.raisedHands, call.members, t],
-	);
+	const [stageLayout, setStageLayout] = useLocalStorage<StageLayout>('videoconf-stage-layout', 'grid');
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -197,8 +173,9 @@ const ConferenceWindow = () => {
 		);
 	}
 
-	// A call that runs in here brings its own header and controls, so the window's bars carry those instead.
-	const renderCall = !session.url && session.embedded ? slots.renderCall : undefined;
+	// A call that runs in here brings its own header and controls, so the window's bars carry those instead. Only then
+	// does the application provide the call's own contexts, which is what everything behind this flag reads.
+	const embeddedCall = !session.url && session.embedded;
 
 	const panelToggles = (
 		<>
@@ -241,11 +218,16 @@ const ConferenceWindow = () => {
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: 'black' }}>
 			{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
 
-			{renderCall ? (
-				<CallTopBar host={<Box ref={mountHeader} display='flex' flexGrow={1} minWidth={0} alignItems='center' />}>
+			{embeddedCall ? (
+				<CallTopBar
+					host={
+						<Box display='flex' flexGrow={1} minWidth={0} alignItems='center'>
+							<CallHeader name={call.name} />
+						</Box>
+					}
+				>
 					{/* Before the toggles, so the queue grows into the bar's own space rather than pushing them. */}
-					<CallPresenting presenters={media?.presenters ?? []} onStopPresenting={media?.stopPresenting} />
-					<CallRaisedHands hands={hands} />
+					<CallTopBarStatus />
 					{panelToggles}
 				</CallTopBar>
 			) : (
@@ -256,21 +238,32 @@ const ConferenceWindow = () => {
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-					{session.url ? <ConferenceIframe url={session.url} /> : renderCall?.(hosts)}
+					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
 				</Box>
 
 				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
-					{activePanel === 'members' && <CallMembersPanel onClose={() => togglePanel('members')} />}
+					{activePanel === 'members' &&
+						(embeddedCall ? (
+							<EmbeddedCallMembersPanel onClose={() => togglePanel('members')} />
+						) : (
+							<CallMembersPanel onClose={() => togglePanel('members')} />
+						))}
 					{/* The call's chat is the product's room — its provider, its message list, its composer — so it
 					    arrives built. What this window owns is the panel it sits in, which is why closing it is
 					    handed down rather than handed in. */}
 					{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
-					{activePanel === 'diagnostics' && slots.diagnostics}
+					{activePanel === 'diagnostics' && embeddedCall && <CallDiagnosticsPanel onClose={() => togglePanel('diagnostics')} />}
 				</CallPanel>
 			</Box>
 
 			{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
-			{renderCall && <CallBar centre={<Box ref={mountControls} display='flex' alignItems='center' />} />}
+			{embeddedCall && (
+				<CallBar
+					centre={
+						<CallControls layout={stageLayout} onLayoutChange={setStageLayout} onOpenDiagnostics={() => togglePanel('diagnostics')} />
+					}
+				/>
+			)}
 		</Box>
 	);
 };

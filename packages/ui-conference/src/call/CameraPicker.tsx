@@ -2,26 +2,25 @@ import { Box, RadioButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { ActionButton } from '@rocket.chat/ui-voip';
 import type { ComponentProps } from 'react';
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionButton } from '.';
-import { useMediaCallView } from '../context/MediaCallViewContext';
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '../utils/deviceLabels';
+import { useCallDeviceSelection, useCallMediaProcessing } from './context';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/deviceLabels';
 
 type CameraPickerButtonProps = {
-	secondary?: boolean;
 	small?: boolean;
 } & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
 
-// Mirrors DevicePicker's button-wrapper trick: strip the rogue `small: true`
-// GenericMenu passes when disabled and stamp our own chevron-down icon.
+// GenericMenu passes `small: true` when the button is disabled, and clones the button with the props that open the
+// menu, which is why they are forwarded as they come.
 const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps>(function CameraPickerButton(
-	{ secondary = false, small: _small, ...props },
+	{ small: _small, ...props },
 	ref,
 ) {
-	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-up' ref={ref} />;
+	return <ActionButton secondary flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-up' ref={ref} />;
 });
 
 // Lightweight in-component enumeration: ui-contexts' useAvailableDevices only
@@ -81,21 +80,18 @@ const BLUR_MODEL_LABELS: Record<string, string> = {
 	performance: 'Background_blur_model_performance',
 };
 
-// eslint-disable-next-line react/no-multi-comp
-const CameraPicker = ({
-	secondary = true,
-	danger = false,
-	large = false,
-	className,
-}: {
-	secondary?: boolean;
+export type CameraPickerProps = {
 	danger?: boolean;
-	/** Matches the larger variant of the camera toggle this picker is fused to — see `DevicePicker`. */
+	/** Matches the larger variant of the camera toggle this picker is fused to. */
 	large?: boolean;
-	className?: string;
-}) => {
+};
+
+/** The camera of a call running in this window, with what is done to its picture: quality, blur, background. */
+// eslint-disable-next-line react/no-multi-comp
+const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 	const { t } = useTranslation();
-	const { onVideoInputChange, currentCameraDeviceId, backgroundBlur, videoQuality } = useMediaCallView();
+	const { selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
+	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
 	const devices = useAvailableVideoInputs();
 	const backgroundImageInput = useRef<HTMLInputElement>(null);
 
@@ -132,7 +128,7 @@ const CameraPicker = ({
 	// Blurring the background belongs with the camera, but not among the cameras: those are a choice of *which* one,
 	// and this is something done to whichever is chosen. Offered the same way, as one row per choice, because "how
 	// much" is a choice like any other — a switch could only ever say on, and on is not an amount.
-	const blurItems: GenericMenuItemProps[] = (backgroundBlur?.levels ?? []).map((blurLevel) => ({
+	const blurItems: GenericMenuItemProps[] = backgroundBlur.levels.map((blurLevel) => ({
 		id: `${BLUR_LEVEL_PREFIX}${blurLevel}`,
 		textValue: t(BLUR_LEVEL_LABELS[blurLevel] ?? 'Background_blur'),
 		content: (
@@ -142,7 +138,7 @@ const CameraPicker = ({
 				</Box>
 				{/* Said once, on the level in use, because it is a fact about what is doing the work rather than about
 				    the choice — the same place a device says it is the system default. */}
-				{backgroundBlur?.level === blurLevel && blurLevel !== 'none' && backgroundBlur.blur && (
+				{backgroundBlur.level === blurLevel && blurLevel !== 'none' && backgroundBlur.blur && (
 					<Box is='span' fontScale='c1' color='hint'>
 						{t(backgroundBlur.blur === 'camera' ? 'Background_blur_by_camera' : 'Background_blur_by_processing')}
 					</Box>
@@ -151,14 +147,14 @@ const CameraPicker = ({
 		),
 		addon: (
 			<RadioButton
-				checked={!backgroundBlur?.backgroundImage?.active && backgroundBlur?.level === blurLevel}
-				disabled={backgroundBlur?.pending}
+				checked={!backgroundBlur.backgroundImage.active && backgroundBlur.level === blurLevel}
+				disabled={backgroundBlur.pending}
 				readOnly
 			/>
 		),
 	}));
 
-	const backgroundImageItems: GenericMenuItemProps[] = backgroundBlur?.backgroundImage?.available
+	const backgroundImageItems: GenericMenuItemProps[] = backgroundBlur.backgroundImage.available
 		? [
 				...(backgroundBlur.backgroundImage.hasImage
 					? [
@@ -192,9 +188,7 @@ const CameraPicker = ({
 	const backgroundSection = { title: t('Background_effects'), items: [...blurItems, ...backgroundImageItems] };
 
 	const modelItems: GenericMenuItemProps[] =
-		backgroundBlur?.blur === 'processor' &&
-		(backgroundBlur.level !== 'none' || backgroundBlur.backgroundImage?.active) &&
-		backgroundBlur.models
+		backgroundBlur.blur === 'processor' && (backgroundBlur.level !== 'none' || backgroundBlur.backgroundImage.active)
 			? backgroundBlur.models.map((model) => ({
 					id: `${BLUR_MODEL_PREFIX}${model}`,
 					textValue: t(BLUR_MODEL_LABELS[model] ?? model),
@@ -213,7 +207,7 @@ const CameraPicker = ({
 
 	// The most detail to send: a ceiling rather than a promise, which is why each row says the size it asks for and
 	// the one in use says what the camera actually gave — they are not always the same number.
-	const qualityItems: GenericMenuItemProps[] = (videoQuality?.qualities ?? []).map((quality) => ({
+	const qualityItems: GenericMenuItemProps[] = videoQuality.qualities.map((quality) => ({
 		id: `${VIDEO_QUALITY_PREFIX}${quality}`,
 		textValue: t(VIDEO_QUALITY_LABELS[quality] ?? 'Video_quality'),
 		content: (
@@ -221,14 +215,14 @@ const CameraPicker = ({
 				<Box is='span' withTruncatedText>
 					{t(VIDEO_QUALITY_LABELS[quality] ?? 'Video_quality')}
 				</Box>
-				{videoQuality?.quality === quality && videoQuality.height && (
+				{videoQuality.quality === quality && videoQuality.height && (
 					<Box is='span' fontScale='c1' color='hint'>
 						{t('Video_quality_sending__height__p', { height: videoQuality.height })}
 					</Box>
 				)}
 			</Box>
 		),
-		addon: <RadioButton checked={videoQuality?.quality === quality} disabled={videoQuality?.pending} readOnly />,
+		addon: <RadioButton checked={videoQuality.quality === quality} disabled={videoQuality.pending} readOnly />,
 	}));
 
 	const qualitySection = { title: t('Video_quality'), items: qualityItems };
@@ -237,15 +231,13 @@ const CameraPicker = ({
 	const sections = [
 		cameraSection,
 		...(qualityItems.length ? [qualitySection] : []),
-		...((backgroundBlur?.available || backgroundBlur?.backgroundImage?.available) && (blurItems.length || backgroundImageItems.length)
+		...((backgroundBlur.available || backgroundBlur.backgroundImage.available) && (blurItems.length || backgroundImageItems.length)
 			? [backgroundSection]
 			: []),
 		...(modelItems.length ? [modelSection] : []),
 	];
 
-	// Hide entirely if the transport doesn't expose camera switching (P2P
-	// today) — rendering a chevron that does nothing is worse than no chevron.
-	const disabled = !onVideoInputChange || items.length === 0;
+	const disabled = items.length === 0;
 
 	const [isOpen, setIsOpen] = useSafely(useState(false));
 
@@ -259,23 +251,25 @@ const CameraPicker = ({
 				selectionMode='single'
 				isOpen={isOpen}
 				onOpenChange={setIsOpen}
-				className={className}
 				onAction={(deviceId) => {
 					if (typeof deviceId !== 'string') return;
 					if (deviceId.startsWith(VIDEO_QUALITY_PREFIX)) {
-						videoQuality?.select(deviceId.slice(VIDEO_QUALITY_PREFIX.length));
+						const quality = videoQuality.qualities.find((quality) => `${VIDEO_QUALITY_PREFIX}${quality}` === deviceId);
+						if (quality) videoQuality.select(quality);
 						return;
 					}
 					if (deviceId.startsWith(BLUR_LEVEL_PREFIX)) {
-						backgroundBlur?.select(deviceId.slice(BLUR_LEVEL_PREFIX.length));
+						const level = backgroundBlur.levels.find((level) => `${BLUR_LEVEL_PREFIX}${level}` === deviceId);
+						if (level) backgroundBlur.select(level);
 						return;
 					}
 					if (deviceId.startsWith(BLUR_MODEL_PREFIX)) {
-						backgroundBlur?.selectModel?.(deviceId.slice(BLUR_MODEL_PREFIX.length));
+						const model = backgroundBlur.models.find((model) => `${BLUR_MODEL_PREFIX}${model}` === deviceId);
+						if (model) backgroundBlur.selectModel(model);
 						return;
 					}
 					if (deviceId === `${BACKGROUND_IMAGE_PREFIX}use`) {
-						backgroundBlur?.backgroundImage?.activate();
+						backgroundBlur.backgroundImage.activate();
 						return;
 					}
 					if (deviceId === `${BACKGROUND_IMAGE_PREFIX}choose`) {
@@ -287,9 +281,9 @@ const CameraPicker = ({
 					// Picking the camera already in use is not a change, and putting it through the switch anyway tore the
 					// running track down and came back with a black frame. Nothing to do is nothing to do.
 					if (id === currentId) return;
-					onVideoInputChange?.(id);
+					selectCamera(id);
 				}}
-				button={<CameraPickerButton secondary={secondary} danger={danger} large={large} />}
+				button={<CameraPickerButton danger={danger} large={large} />}
 			/>
 			<input
 				ref={backgroundImageInput}
@@ -301,7 +295,7 @@ const CameraPicker = ({
 					const file = input.files?.[0];
 					input.value = '';
 					if (file) {
-						void backgroundBlur?.backgroundImage?.select(file);
+						void backgroundBlur.backgroundImage.select(file);
 					}
 				}}
 			/>

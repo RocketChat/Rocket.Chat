@@ -29,7 +29,8 @@ export const useActiveSpeakerId = (
 	const holdRef = useRef<{ id: string | null; changedAt: number }>({ id: null, changedAt: 0 });
 
 	useEffect(() => {
-		const AC: typeof AudioContext | undefined = (window as any).AudioContext || (window as any).webkitAudioContext;
+		const AC: typeof AudioContext | undefined =
+			window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
 		if (!AC) return undefined;
 
 		const ctx = new AC();

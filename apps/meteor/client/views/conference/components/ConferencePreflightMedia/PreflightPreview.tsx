@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useCallDevicesInitialState } from '@rocket.chat/ui-conference';
-import { VoiceActivity } from '@rocket.chat/ui-voip';
+import { VoiceActivity, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

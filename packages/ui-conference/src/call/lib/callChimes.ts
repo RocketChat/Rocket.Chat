@@ -13,7 +13,10 @@ const PEAK_GAIN = 0.18;
 const playTone = (frequency: number, startOffset: number, duration: number) => {
 	let ctx: AudioContext | null = null;
 	try {
-		ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+		const AC: typeof AudioContext | undefined =
+			window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+		if (!AC) return;
+		ctx = new AC();
 	} catch {
 		return;
 	}

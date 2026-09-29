@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { ParticipantTrackStats } from '@rocket.chat/ui-voip';
 
 import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
+import type { ParticipantTrackStats } from '../context';
 
 const participantCardStyles = css`
 	padding: 8px 12px;

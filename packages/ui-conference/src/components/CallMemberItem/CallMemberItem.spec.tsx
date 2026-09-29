@@ -61,9 +61,8 @@ describe('in a call that runs in this window', () => {
 
 	const renderInCall = ({ muted = false, viewerId = 'someone-else' }: { muted?: boolean; viewerId?: string } = {}) => {
 		const AppRoot = mockAppRoot().withJohnDoe().build();
-		const renderMemberActivity = jest.fn((uid: string) => <span>level of {uid}</span>);
 		const onMute = jest.fn();
-		const conference = buildConferenceContext({ viewer: { uid: viewerId }, slots: { renderMemberActivity } });
+		const conference = buildConferenceContext({ viewer: { uid: viewerId } });
 
 		const wrapper = ({ children }: { children: ReactNode }) => (
 			<AppRoot>
@@ -71,7 +70,17 @@ describe('in a call that runs in this window', () => {
 			</AppRoot>
 		);
 
-		render(<CallMemberItem member={joined} hasChatAccess muted={muted} onMute={onMute} onRing={jest.fn()} />, { wrapper });
+		render(
+			<CallMemberItem
+				member={joined}
+				hasChatAccess
+				muted={muted}
+				activity={<span>level of {joined._id}</span>}
+				onMute={onMute}
+				onRing={jest.fn()}
+			/>,
+			{ wrapper },
+		);
 
 		return { onMute };
 	};
@@ -82,8 +91,7 @@ describe('in a call that runs in this window', () => {
 		expect(screen.getByRole('button', { name: 'Mute__name__' })).toBeInTheDocument();
 	});
 
-	// The level meter is drawn by the application, which is what holds the audio; the row only says where it goes.
-	it("draws the member's microphone level through the application's slot", () => {
+	it("draws the member's microphone level", () => {
 		renderInCall();
 
 		expect(screen.getByText(`level of ${base._id}`)).toBeInTheDocument();

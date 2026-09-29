@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 
-import { useAudioLevel } from '../providers/useAudioLevel';
+import { useAudioLevel } from './hooks/useAudioLevel';
 
 /**
  * Three bars that rise and fall with how loudly someone is talking.

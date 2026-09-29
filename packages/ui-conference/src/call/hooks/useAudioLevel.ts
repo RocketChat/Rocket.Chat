@@ -33,7 +33,8 @@ export const useAudioLevel = (stream?: MediaStream | null): number => {
 			return;
 		}
 
-		const AC: typeof AudioContext | undefined = (window as any).AudioContext || (window as any).webkitAudioContext;
+		const AC: typeof AudioContext | undefined =
+			window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
 		if (!AC) return;
 
 		const ctx = new AC();

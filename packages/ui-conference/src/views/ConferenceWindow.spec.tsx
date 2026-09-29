@@ -3,9 +3,74 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
+import type { CallMediaProcessing, CallState } from '../call/context';
+import {
+	CallActionsProvider,
+	CallDeviceSelectionProvider,
+	CallDiagnosticsProvider,
+	CallMediaProcessingProvider,
+	CallStateProvider,
+} from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
+
+const buildCallState = (overrides: Partial<CallState> = {}): CallState => ({
+	self: {
+		id: 'john.doe',
+		displayName: 'John Doe',
+		muted: false,
+		cameraOn: false,
+		screenSharing: false,
+		handRaised: false,
+		speakingWhileMuted: false,
+	},
+	remoteParticipants: [],
+	raisedHands: [],
+	activeReactions: [],
+	startedAt: new Date(),
+	connectionState: 'connected',
+	...overrides,
+});
+
+const actions = {
+	toggleMic: jest.fn(),
+	toggleCamera: jest.fn(),
+	toggleScreenShare: jest.fn(),
+	toggleHand: jest.fn(),
+	sendReaction: jest.fn(),
+	muteParticipant: jest.fn(),
+	leave: jest.fn(),
+};
+
+const mediaProcessing: CallMediaProcessing = {
+	noiseSuppression: { methods: [], method: 'none', pending: false, select: jest.fn() },
+	backgroundBlur: {
+		available: false,
+		level: 'none',
+		levels: [],
+		pending: false,
+		model: 'quality',
+		models: [],
+		select: jest.fn(),
+		selectModel: jest.fn(),
+		backgroundImage: { available: false, active: false, hasImage: false, select: jest.fn(), activate: jest.fn() },
+	},
+	videoQuality: { quality: 'auto', qualities: [], pending: false, select: jest.fn() },
+};
+
+/** What a provider running the call in this window provides around it. */
+const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
+	<CallStateProvider value={state}>
+		<CallActionsProvider value={actions}>
+			<CallDeviceSelectionProvider value={{ selectAudioDevice: jest.fn(), selectCamera: jest.fn() }}>
+				<CallMediaProcessingProvider value={mediaProcessing}>
+					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+				</CallMediaProcessingProvider>
+			</CallDeviceSelectionProvider>
+		</CallActionsProvider>
+	</CallStateProvider>
+);
 
 /**
  * A thread is shown inside the chat panel, so it cannot outlive it. The window is not the only thing that can
@@ -28,7 +93,9 @@ const renderWindow = (activePanel: ConferencePanel | undefined) => {
 
 	const wrapper = ({ children }: { children: ReactNode }) => (
 		<AppRoot>
-			<ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>
+			<CallContexts>
+				<ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>
+			</CallContexts>
 		</AppRoot>
 	);
 
@@ -60,58 +127,65 @@ it('closes the thread when every panel is shut', () => {
 });
 
 describe('a call that runs in this window', () => {
-	const renderNative = (overrides: Partial<ConferenceContextValue> = {}) => {
+	const renderNative = ({ state, ...overrides }: Partial<ConferenceContextValue> & { state?: CallState } = {}) => {
 		const AppRoot = mockAppRoot().withJohnDoe().build();
-		const renderCall = jest.fn(() => <div>the call</div>);
 
 		const value = buildConferenceContext({
 			session: { joined: true, embedded: true, loading: false },
 			room: { rid: 'room-id', loading: false },
 			...overrides,
-			slots: { renderCall, diagnostics: <div>connection info</div>, ...overrides.slots },
 		});
 
 		const wrapper = ({ children }: { children: ReactNode }) => (
 			<AppRoot>
-				<ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>
+				<CallContexts state={state}>
+					<ConferenceContext.Provider value={value}>{children}</ConferenceContext.Provider>
+				</CallContexts>
 			</AppRoot>
 		);
 
-		return { ...render(<ConferenceWindow />, { wrapper }), renderCall };
+		return render(<ConferenceWindow />, { wrapper });
 	};
 
-	// The call brings its own header and controls, and they belong in this window's bars rather than in a strip of
-	// the call's own — so the call is handed the two places, and both have to be on the page by the time it is.
-	it('hands the call the header and controls hosts, already mounted in the window', () => {
-		const { renderCall } = renderNative();
+	// The call's header and controls belong in this window's bars, not in a strip of the call's own.
+	it("puts the call's stage in the window and its controls in the window's bar", () => {
+		renderNative();
 
-		expect(screen.getByText('the call')).toBeInTheDocument();
-		const [[hosts]] = renderCall.mock.calls as unknown as [[{ header: HTMLElement; controls: HTMLElement }]];
-		expect(document.body.contains(hosts.header)).toBe(true);
-		expect(document.body.contains(hosts.controls)).toBe(true);
+		expect(screen.getByRole('region', { name: 'Voice_call' })).toBeInTheDocument();
+		expect(screen.getByRole('contentinfo')).toContainElement(screen.getByRole('button', { name: 'Leave_call' }));
 	});
 
-	// A provider at an address of its own draws its call inside the frame, controls and all; handing it hosts too
-	// would give it two places to put the same buttons.
-	it('asks nothing of the slot for a provider at an address of its own', () => {
-		const { renderCall } = renderNative({
+	// A provider at an address of its own draws its call inside the frame, controls and all, and provides no call
+	// contexts — so nothing of the call's own may be rendered for it.
+	it('renders none of the call for a provider at an address of its own', () => {
+		const AppRoot = mockAppRoot().withJohnDoe().build();
+		const value = buildConferenceContext({
 			session: { url: 'https://provider.example/call', joined: true, embedded: false, loading: false, retry: jest.fn() },
+			room: { rid: 'room-id', loading: false },
 		});
 
-		expect(renderCall).not.toHaveBeenCalled();
+		render(
+			<AppRoot>
+				<ConferenceContext.Provider value={value}>
+					<ConferenceWindow />
+				</ConferenceContext.Provider>
+			</AppRoot>,
+		);
+
+		expect(screen.queryByRole('button', { name: 'Leave_call' })).not.toBeInTheDocument();
 	});
 
-	it('opens the connection panel the application builds', () => {
+	it('opens the connection panel', () => {
 		renderNative({ panel: { active: 'diagnostics', set: jest.fn() } });
 
-		expect(screen.getByText('connection info')).toBeInTheDocument();
+		expect(screen.getByText('Connection_info')).toBeInTheDocument();
 	});
 
-	// The call reports a hand by member id; the window is what knows who that is.
+	// The call reports a hand by participant id; the window is what knows who that is.
 	it('names the raised hands from the membership', () => {
 		renderNative({
 			call: { ...buildConferenceContext().call, members: [{ _id: 'ada', username: 'ada', name: 'Ada Lovelace' }] },
-			media: { raisedHands: ['ada'], mutedMembers: new Set(), presenters: [] },
+			state: buildCallState({ raisedHands: [{ id: 'ada', raisedAt: 1 }] }),
 		});
 
 		expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();

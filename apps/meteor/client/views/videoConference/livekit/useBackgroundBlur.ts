@@ -24,6 +24,10 @@ type Blur = 'camera' | 'processor';
  */
 export const BLUR_STRENGTH: Record<Exclude<BlurLevel, 'none'>, number> = { light: 0.016, medium: 0.032, strong: 0.064 };
 
+/** A camera blurs by one fixed amount, so it is on or off; ours can do each strength. */
+const CAMERA_BLUR_LEVELS: BlurLevel[] = ['none', 'medium'];
+const PROCESSOR_BLUR_LEVELS: BlurLevel[] = ['none', 'light', 'medium', 'strong'];
+
 export type CameraBlurCapability = 'none' | 'fixed' | 'controllable';
 
 /** A one-value capability can be observed, but only `[false, true]` can be changed by the application. */
@@ -324,7 +328,7 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 		() => ({
 			available,
 			level,
-			levels: blur === 'camera' ? ['none', 'medium'] : ['none', 'light', 'medium', 'strong'],
+			levels: blur === 'camera' ? CAMERA_BLUR_LEVELS : PROCESSOR_BLUR_LEVELS,
 			blur,
 			pending,
 			preferred,
