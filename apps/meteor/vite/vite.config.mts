@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +12,8 @@ import postcssMediaMinmax from 'postcss-media-minmax';
 import postcssNested from 'postcss-nested';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
+
+import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, '..');
@@ -61,6 +63,7 @@ const nativeModules = (): Plugin => {
 			'client/lib/sdk/sdkTransportEnabled.ts': 'sdkTransportEnabled.ts',
 			'client/lib/sdk/ddpProtocol.ts': 'ddpProtocol.ts',
 			'client/lib/customOAuth/CustomOAuth.ts': 'CustomOAuth.ts',
+			'client/lib/getURL.ts': 'getURL.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
 
@@ -123,8 +126,46 @@ const proxyTo = (options: { ws?: boolean } = {}) => ({
 	...options,
 });
 
-// Workspace packages are linked, so the dev server serves them as source and does not convert their CommonJS
-// dist to ESM unless they are listed here. The production build handles the interop on its own.
+const distOnly = new Set(distOnlyWorkspacePackages);
+
+// Every other workspace package is compiled from its source, so the client needs no package build and edits to
+// them hot-reload like app code. RC_WORKSPACE_DIST=1 reads them from dist instead.
+const findWorkspaceSources = (): { name: string; root: string; entry: string | undefined }[] => {
+	if (process.env.RC_WORKSPACE_DIST === '1') {
+		return [];
+	}
+
+	const workspaceRoot = resolve(appRoot, '../..');
+	return ['packages', 'ee/packages'].flatMap((dir) =>
+		readdirSync(join(workspaceRoot, dir)).flatMap((folder) => {
+			const root = join(workspaceRoot, dir, folder);
+			const manifest = join(root, 'package.json');
+			if (!existsSync(manifest) || !existsSync(join(root, 'src'))) return [];
+
+			const { name } = JSON.parse(readFileSync(manifest, 'utf8'));
+			if (distOnly.has(name)) return [];
+
+			const entry = ['src/index.ts', 'src/index.tsx'].map((file) => join(root, file)).find((file) => existsSync(file));
+			return [{ name, root, entry }];
+		}),
+	);
+};
+
+const workspaceSources = findWorkspaceSources();
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+
+// A package's own entry, and deep imports into its dist (`@rocket.chat/x/dist/y`), both land on its source.
+const workspaceSourceAliases = workspaceSources.flatMap(({ name, root, entry }) => [
+	...(entry ? [{ find: new RegExp(`^${escapeRegExp(name)}$`), replacement: entry }] : []),
+	{ find: new RegExp(`^${escapeRegExp(name)}/dist/(.+)$`), replacement: `${join(root, 'src')}/$1` },
+]);
+
+const isServedFromSource = (dep: string) =>
+	workspaceSources.some(({ name, entry }) => (dep === name && entry) || dep.startsWith(`${name}/dist/`));
+
+// Linked workspace packages read from dist are CommonJS, which the dev server does not convert to ESM unless they
+// are listed here. The production build handles the interop on its own.
 const prebundledWorkspaceDeps = [
 	'@rocket.chat/ai-search',
 	'@rocket.chat/api-client',
@@ -179,6 +220,7 @@ export default defineConfig({
 			{ find: /^swiper\/modules\/index\.mjs$/, replacement: join(swiperRoot, 'modules/index.mjs') },
 			{ find: /^swiper\/swiper\.css$/, replacement: join(swiperRoot, 'swiper.css') },
 			{ find: /^swiper\/modules\/zoom\.css$/, replacement: join(swiperRoot, 'modules/zoom.css') },
+			...workspaceSourceAliases,
 		],
 		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage'],
 	},
@@ -192,7 +234,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: prebundledWorkspaceDeps,
+		include: prebundledWorkspaceDeps.filter((dep) => !isServedFromSource(dep)),
 	},
 	server: {
 		port: Number(process.env.PORT) || 3000,
@@ -207,7 +249,11 @@ export default defineConfig({
 	},
 	build: {
 		outDir: join(here, 'dist'),
+		// `/assets` is a server route (logos, favicons), proxied in dev and preview.
+		assetsDir: 'bundle',
 		emptyOutDir: true,
+		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
+		cssMinify: 'esbuild',
 		sourcemap: true,
 	},
 });

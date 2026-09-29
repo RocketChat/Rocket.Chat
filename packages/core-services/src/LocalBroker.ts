@@ -12,6 +12,10 @@ import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
 
+export type ClusterTransport = {
+	publish(event: string, args: unknown[]): void;
+};
+
 const logger = new Logger('LocalBroker');
 
 const INTERVAL = 1000;
@@ -29,6 +33,8 @@ export class LocalBroker implements IBroker {
 	private pendingServices: Set<string> = new Set();
 
 	private defaultDependencies = ['settings'];
+
+	private clusterTransport?: ClusterTransport;
 
 	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
 		if (options) {
@@ -98,18 +104,27 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
-	onBroadcast(callback: (eventName: string, args: unknown[]) => void): void {
-		this.events.on('broadcast', callback);
+	/**
+	 * Installs what carries `broadcast()` to the other instances of this deployment. Without one, a broadcast stays
+	 * in this process.
+	 */
+	setClusterTransport(transport: ClusterTransport): void {
+		this.clusterTransport = transport;
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		void this.broadcastLocal(event, ...args);
 
-		this.events.emit('broadcast', event, args);
+		this.clusterTransport?.publish(event, args);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.events.emit(event, ...args);
+	}
+
+	/** Service names are unique within a process, so every listener here is the one instance of its service. */
+	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broadcastLocal(event, ...args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(

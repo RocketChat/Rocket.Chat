@@ -1,4 +1,5 @@
 import { createRichTextComposerAPI } from './createRichTextComposerAPI';
+import { formattingButtons } from './messageBoxFormatting';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import { ORDERED_LINE_PREFIX, UNORDERED_LINE_PREFIX, toggleLinePrefix } from './toggleLinePrefix';
 
@@ -458,5 +459,32 @@ describe('RichText Composer API - wrapSelection', () => {
 
 		expect(input.textContent).toContain('*123\n456\n\n789*');
 		expect(input.textContent).not.toContain('456\n789');
+	});
+});
+
+describe('RichText Composer API - wrapSelection with the multi-line code pattern', () => {
+	const multiLineCodePattern = formattingButtons.reduce<string>(
+		(found, button) => (button.label === 'Multi_line_code' && 'pattern' in button ? button.pattern : found),
+		'',
+	);
+
+	it('renders the wrapped selection as a code block', () => {
+		const { composer, input } = setupComposer('first\nsecond', { start: 0, end: 12 });
+
+		composer.wrapSelection(multiLineCodePattern);
+
+		expect(stripLineEnd(input.textContent)).toBe('```\nfirst\nsecond\n```');
+		expect(input.querySelectorAll('code')).toHaveLength(1);
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 4, selectionEnd: 16 });
+	});
+
+	it('unwraps a selection that is already fenced', () => {
+		const { composer, input } = setupComposer('```\ncode\n```', { start: 4, end: 8 });
+
+		composer.wrapSelection(multiLineCodePattern);
+
+		expect(stripLineEnd(input.textContent)).toBe('code');
+		expect(input.querySelectorAll('code')).toHaveLength(0);
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 0, selectionEnd: 4 });
 	});
 });
