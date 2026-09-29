@@ -39,6 +39,7 @@ const EMPTY: CalendarSyncOutcome = {
 const toCalendarEvent = (uid: IUser['_id'], event: ExchangeEventUpsert): Omit<InsertionModel<ICalendarEvent>, 'notificationSent'> => ({
 	uid,
 	externalId: event.externalId,
+	source: 'outlook',
 	subject: event.subject,
 	description: event.description,
 	startTime: event.startTime,
