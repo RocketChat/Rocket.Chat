@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@rocket.chat/onboarding-ui": "workspace:^",
 		"@rocket.chat/tools": "workspace:~",
-		"dompurify": "~3.4.14"
+		"dompurify": "~3.4.16"
 	},
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
@@ -42,11 +42,11 @@
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@storybook/react": "^9.1.20",
-		"@testing-library/dom": "~10.4.1",
+		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@types/jest": "~30.0.0",
 		"@types/react": "~19.2.18",
-		"@types/react-dom": "~19.2.5",
+		"@types/react-dom": "~19.2.7",
 		"eslint": "~9.39.5",
 		"i18next": "~26.4.2",
 		"jest": "~30.2.0",
@@ -56,8 +56,8 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-hook-form": "~7.54.2",
-		"react-i18next": "~17.0.14",
-		"react-virtuoso": "~4.18.12",
+		"react-i18next": "~17.0.15",
+		"react-virtuoso": "~4.18.16",
 		"storybook": "^9.1.20",
 		"typescript": "~5.9.3"
 	},

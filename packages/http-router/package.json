@@ -22,7 +22,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.20.0",
 		"express": "^4.21.2",
-		"hono": "4.13.5",
+		"hono": "4.13.11",
 		"qs": "^6.15.3"
 	},
 	"devDependencies": {
@@ -34,7 +34,7 @@
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
 		"supertest": "~7.1.4",
-		"ts-jest": "~29.4.12",
+		"ts-jest": "~29.4.14",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
