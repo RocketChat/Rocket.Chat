@@ -1,6 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-
-import { callLoginMethod, handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -49,4 +48,4 @@ const loginWithLDAPAndTOTP = (
 	});
 };
 
-Meteor.loginWithLDAP = handleLogin(loginWithLDAP, loginWithLDAPAndTOTP);
+registerLoginWithMethod('loginWithLDAP', handleLogin(loginWithLDAP, loginWithLDAPAndTOTP));

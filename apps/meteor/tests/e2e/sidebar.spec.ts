@@ -113,11 +113,11 @@ test.describe.serial('Sidebar', () => {
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
 
-			await poHomeChannel.navbar.getDisplayMenuItem('Compact').focus();
+			await poHomeChannel.navbar.getDisplayMenuItem('Medium').focus();
 
 			await page.keyboard.press('Space');
 
-			await expect(poHomeChannel.navbar.getDisplayMenuItem('Compact').getByRole('radio')).toBeChecked();
+			await expect(poHomeChannel.navbar.getDisplayMenuItem('Medium').getByRole('radio')).toBeChecked();
 			await page.keyboard.press('Escape');
 		});
 

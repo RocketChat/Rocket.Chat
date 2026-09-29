@@ -5,7 +5,6 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { StreamerCentral } from '@rocket.chat/streamer';
 
 import { i18n } from '../../../server/lib/i18n';
 import { slashCommands } from '../../../server/lib/utils/slashCommand';
@@ -14,11 +13,8 @@ import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
 
-let serviceEnabled = false;
-
 const configureFederation = async () => {
-	// only registers the typing listener if the service is enabled
-	serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
+	const serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
 	if (!serviceEnabled) {
 		return;
 	}
@@ -49,19 +45,6 @@ export const startFederationService = async (): Promise<void> => {
 	api.registerService(new FederationMatrix());
 
 	await registerFederationRoutes();
-
-	// TODO move to service/setup?
-	StreamerCentral.on('broadcast', (name, eventName, args) => {
-		if (!serviceEnabled) {
-			return;
-		}
-
-		if (name === 'notify-room' && eventName.endsWith('user-activity')) {
-			const [rid] = eventName.split('/');
-			const [user, activity] = args;
-			void FederationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
-		}
-	});
 
 	// `setupFederationMatrix()` runs the SDK's `init()`, which registers the DB
 	// collections (including `AppServiceStateCollection`). It must complete

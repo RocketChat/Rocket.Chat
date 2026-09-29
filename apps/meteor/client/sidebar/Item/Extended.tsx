@@ -54,12 +54,12 @@ const Extended = ({
 
 	return (
 		<SidebarItem level={2} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			<SidebarItemCol>
 				<SidebarItemRow>
-					{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 					{icon}
 					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{time && <SidebarItemTimestamp unread={unread}>{formatDate(time)}</SidebarItemTimestamp>}
+					{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
 				</SidebarItemRow>
 				<SidebarItemRow>
 					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>

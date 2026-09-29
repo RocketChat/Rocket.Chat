@@ -19,6 +19,7 @@ import {
 	license,
 	tags,
 } from './_shared';
+import { getActivityDisplayName } from '../../../helpers/getActivityDisplayName';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const SendEventParamsSchema = {
@@ -342,11 +343,14 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						};
 					}
 
-					void api.broadcast('user.activity', {
-						user: user.name || user.username,
-						isTyping: body.typing,
-						roomId: matrixRoom._id,
-					});
+					const displayName = await getActivityDisplayName(user);
+					if (displayName) {
+						void api.broadcast('user.activity', {
+							user: displayName,
+							isTyping: body.typing,
+							roomId: matrixRoom._id,
+						});
+					}
 
 					await federationSDK.sendTypingNotification(roomId, username, body.typing === true);
 					return {

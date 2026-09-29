@@ -47,6 +47,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private serverName: string;
 
+	private serviceEnabled: boolean;
+
 	private processEDUTyping: boolean;
 
 	private processEDUPresence: boolean;
@@ -62,6 +64,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'string') {
 				this.serverName = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Enabled', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.serviceEnabled = value;
 			}
 		});
 
@@ -133,6 +142,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		);
 
+		this.onEvent('room.user-activity', async ({ rid, uid, activities }): Promise<void> => {
+			try {
+				await this.notifyUserTyping(rid, uid, activities.includes('user-typing'));
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+			}
+		});
+
 		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
 			if (!username || username.includes(':')) {
 				return;
@@ -181,6 +198,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	override async started(): Promise<void> {
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.serviceEnabled = (await Settings.get<boolean>('Federation_Service_Enabled')) || false;
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
@@ -838,19 +856,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
-		if (!this.processEDUTyping) {
+	private async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
+		if (!this.serviceEnabled || !this.processEDUTyping) {
 			return;
 		}
 
-		if (!rid || !user) {
+		if (!rid || !uid) {
 			return;
 		}
 		const room = await Rooms.findOneById(rid, { projection: { _id: 1, federation: 1, federated: 1 } });
 		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
+
+		const localUser = await Users.findOneById(uid, {
 			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
 		});
 
@@ -865,7 +884,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
 
-		void federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
+		await federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
 
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {

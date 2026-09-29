@@ -1,27 +1,27 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { StreamerEvents } from '@rocket.chat/ddp-client';
+import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
 
-import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
+import type {
+	IPublication,
+	Rule,
+	Connection,
+	DDPSubscription,
+	IStreamer,
+	IRules,
+	StreamerOptions,
+	StreamRelay,
+	TransformMessage,
+} from './types';
 
 const logger = new Logger('Streamer');
-
-class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
-	public instances: Record<string, Streamer<N>> = {};
-
-	constructor() {
-		super();
-	}
-}
 
 type ActivePublication = IPublication & {
 	_session: NonNullable<IPublication['_session']> & { socket: NonNullable<NonNullable<IPublication['_session']>['socket']> };
 };
 
-export const StreamerCentral = new StreamerCentralClass();
-
-export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmitter implements IStreamer<N> {
+export abstract class Streamer<N extends StreamNames> extends EventEmitter implements IStreamer<N> {
 	public subscriptions = new Set<DDPSubscription>();
 
 	protected subscriptionsByEventName = new Map<string, Set<DDPSubscription>>();
@@ -30,29 +30,23 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 
 	public retransmitToSelf = false;
 
-	public serverOnly = false;
-
 	private _allowRead: IRules = {};
 
 	private _allowWrite: IRules = {};
 
 	private _allowEmit: IRules = {};
 
+	private readonly relay?: StreamRelay;
+
 	constructor(
 		public name: string,
-		{ retransmit = true, retransmitToSelf = false }: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
+		{ retransmit = true, retransmitToSelf = false, relay }: StreamerOptions = {},
 	) {
 		super();
 
-		if (StreamerCentral.instances[name]) {
-			console.warn('Streamer instance already exists:', name);
-			return StreamerCentral.instances[name];
-		}
-
-		StreamerCentral.instances[name] = this;
-
 		this.retransmit = retransmit;
 		this.retransmitToSelf = retransmitToSelf;
+		this.relay = relay;
 
 		this.iniPublication();
 		// DDPStreamer doesn't have this
@@ -242,12 +236,18 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		const isWriteAllowed = this.isWriteAllowed.bind(this);
 		const __emit = this.__emit.bind(this);
 		const _emit = this._emit.bind(this);
-		const { retransmit } = this;
+		const { name, retransmit } = this;
 
 		const method: Record<string, (eventName: string, ...args: any[]) => any> = {
 			async [this.subscriptionName](this: IPublication, eventName, ...args): Promise<void> {
 				if ((await isWriteAllowed(this, eventName, args)) !== true) {
 					return;
+				}
+
+				try {
+					__emit('_afterWrite', eventName, args, this.userId);
+				} catch (err) {
+					logger.error({ msg: 'Error handling a client write', name, eventName, err });
 				}
 
 				__emit(eventName, ...args);
@@ -269,7 +269,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 
 	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
 		if (broadcast === true) {
-			StreamerCentral.emit('broadcast', this.name, eventName, args);
+			this.relay?.(this.name, eventName, args);
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);

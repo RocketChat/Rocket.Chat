@@ -174,6 +174,10 @@ test.describe('Messaging', () => {
 		});
 
 		test('should edit messages', async ({ page }) => {
+			const waitForEdit = () =>
+				page.waitForResponse(
+					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+				);
 			await test.step('focus on the second message', async () => {
 				// the composer autofocuses only when it mounts enabled, so take the
 				// focus rather than waiting on it
@@ -185,12 +189,7 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('send edited message', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
-				await channelPage.content.sendMessage('edited msg2', false);
-				await editPromise;
+				await Promise.all([waitForEdit(), channelPage.content.sendMessage('edited msg2', false)]);
 
 				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2');
 			});

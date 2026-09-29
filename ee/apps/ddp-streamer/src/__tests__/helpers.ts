@@ -3,13 +3,13 @@ import { EventEmitter } from 'events';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
-import type { Client } from '../Client';
-import type { Publication } from '../Publication';
-import type { IPacket } from '../types/IPacket';
+import type { IPacket } from '../ddp/IPacket';
+import type { Publication } from '../ddp/Publication';
+import type { Session } from '../ddp/Session';
 
-export function makeClient(readyState: number = WebSocket.OPEN) {
-	const client = Object.assign(new EventEmitter(), {
-		ws: { readyState },
+export function makeSession(readyState: number = WebSocket.OPEN) {
+	const session = Object.assign(new EventEmitter(), {
+		ws: { readyState, close: jest.fn<void, [number?, string?]>() },
 		userId: 'user1' as string | undefined,
 		userToken: 'token1',
 		connection: { id: 'connection1' },
@@ -17,7 +17,7 @@ export function makeClient(readyState: number = WebSocket.OPEN) {
 		send: jest.fn<void, [string]>(),
 	});
 
-	return client as typeof client & Client;
+	return session as typeof session & Session;
 }
 
 export function makePacket(method: string, id = 'test-id'): IPacket {
@@ -28,6 +28,6 @@ export function makeSubscription(name = 'messages'): IPacket {
 	return { ...makePacket(''), msg: 'sub', name, params: ['room1', { useCollection: true }] };
 }
 
-export function sentPackets(client: ReturnType<typeof makeClient>) {
-	return client.send.mock.calls.map(([payload]) => ejson.parse(payload));
+export function sentPackets(session: ReturnType<typeof makeSession>) {
+	return session.send.mock.calls.map(([payload]) => ejson.parse(payload));
 }

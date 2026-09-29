@@ -139,7 +139,7 @@ export class AppServerOrchestrator implements IAppServerOrchestrator {
 		});
 
 		this._communicators = new Map() as IAppCommunicatorsMap;
-		this._communicators.set('notifier', new AppServerNotifier(this));
+		this._communicators.set('notifier', new AppServerNotifier());
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 

@@ -19,7 +19,7 @@ export type RoomListRowProps = {
 		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
-		sidebarViewMode: 'extended' | 'condensed';
+		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
 		userId?: string;
 	};

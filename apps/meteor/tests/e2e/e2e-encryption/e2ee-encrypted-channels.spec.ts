@@ -240,8 +240,8 @@ test.describe('E2EE Encrypted Channels', () => {
 	}) => {
 		const channelName = faker.string.uuid();
 
-		// Enable Sidebar Detailed display mode
-		await poHomeChannel.navbar.setDisplayMode('Detailed');
+		// Enable Sidebar Extended display mode
+		await poHomeChannel.navbar.setDisplayMode('Extended');
 
 		// Create private channel
 		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });
@@ -317,10 +317,10 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemPinnedMessages.click();
 
-		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Pinned messages' })).toBeVisible();
 
 		const lastPinnedMessage = page
-			.getByRole('dialog', { name: 'Pinned Messages' })
+			.getByRole('dialog', { name: 'Pinned messages' })
 			.locator('[role="listitem"][aria-roledescription="message"]')
 			.last();
 		await expect(lastPinnedMessage).toContainText('This message should be pinned and stared.');
@@ -334,10 +334,10 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.roomToolbar.menuItemStarredMessages.click();
 
 		const lastStarredMessage = page
-			.getByRole('dialog', { name: 'Starred Messages' })
+			.getByRole('dialog', { name: 'Starred messages' })
 			.locator('[role="listitem"][aria-roledescription="message"]')
 			.last();
-		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Starred messages' })).toBeVisible();
 		await expect(lastStarredMessage).toContainText('This message should be pinned and stared.');
 		await lastStarredMessage.hover();
 		await lastStarredMessage.locator('role=button[name="More"]').waitFor();

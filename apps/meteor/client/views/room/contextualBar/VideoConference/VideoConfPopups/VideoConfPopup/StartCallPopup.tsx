@@ -57,17 +57,20 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	});
 
 	const callbackRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			ref.current = node;
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
+		(node: HTMLDivElement) => {
+			const onKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
 					onClose();
 				}
-			});
+			};
+
+			ref.current = node;
+			node.addEventListener('keydown', onKeyDown);
+
+			return () => {
+				node.removeEventListener('keydown', onKeyDown);
+				ref.current = null;
+			};
 		},
 		[onClose],
 	);

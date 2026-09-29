@@ -3,7 +3,7 @@ import { createPrivateKey, sign } from 'node:crypto';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
-import { config } from '../../../../app/apple/lib/config';
+import { config } from '../../../../lib/apple/config';
 import { settings } from '../../../settings';
 
 new AppleCustomOAuth('apple', config);

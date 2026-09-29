@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useMediaQuery, useSafeRefCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
@@ -30,6 +30,7 @@ import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
@@ -44,7 +45,6 @@ import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
-import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 
 // The first boolean will be used to enable/disable the send button
 // The second boolean will be used to show/hide the placeholder
@@ -166,21 +166,23 @@ const RichTextMessageBox = ({
 
 	const callbackRef = useCallback(
 		(node: HTMLDivElement) => {
-			if (node === null && chat.composer) {
+			if (!chat.composer) {
+				chat.setComposerAPI(
+					createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
+						rid: room._id,
+						tmid,
+					}),
+				);
+			}
+
+			return () => {
+				if (!chat.composer) {
+					return;
+				}
+
 				flushDraft();
-				return chat.setComposerAPI();
-			}
-
-			if (chat.composer) {
-				return;
-			}
-
-			chat.setComposerAPI(
-				createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
-					rid: room._id,
-					tmid,
-				}),
-			);
+				chat.setComposerAPI();
+			};
 		},
 		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
 	);
@@ -441,39 +443,29 @@ const RichTextMessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useSafeRefCallback(
-		useCallback((node: HTMLDivElement) => {
-			if (node === null) {
-				return;
-			}
-			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-			node.addEventListener('keydown', eventHandler);
+	const keyDownHandlerCallbackRef = useCallback((node: HTMLDivElement) => {
+		const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+		node.addEventListener('keydown', eventHandler);
+
+		return () => {
+			node.removeEventListener('keydown', eventHandler);
+		};
+	}, []);
+
+	const beforeInputHandlerCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			const eventHandler = (e: Event) => handleRichTextSelectionWrapping(e as InputEvent, chat);
+			node.addEventListener('beforeinput', eventHandler);
 
 			return () => {
-				node.removeEventListener('keydown', eventHandler);
+				node.removeEventListener('beforeinput', eventHandler);
 			};
-		}, []),
-	);
-
-	const beforeInputHandlerCallbackRef = useSafeRefCallback(
-		useCallback(
-			(node: HTMLDivElement) => {
-				if (node === null) {
-					return;
-				}
-				const eventHandler = (e: Event) => handleRichTextSelectionWrapping(e as InputEvent, chat);
-				node.addEventListener('beforeinput', eventHandler);
-
-				return () => {
-					node.removeEventListener('beforeinput', eventHandler);
-				};
-			},
-			[chat],
-		),
+		},
+		[chat],
 	);
 	const composerHistoryRef = useComposerHistory(parseOptions);
 
-	const newMergedRefs = useMessageComposerMergedRefs(
+	const newMergedRefs = useMergedRefsV2(
 		popup.callbackRef,
 		contentEditableRef,
 		callbackRef,
