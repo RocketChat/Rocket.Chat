@@ -16,4 +16,4 @@ export type FileAttachmentProps =
 	| (CommonFileProps & MessageAttachmentBase);
 
 export const isFileAttachment = (attachment: MessageAttachmentBase): attachment is FileAttachmentProps =>
-	'type' in attachment && (attachment as any).type === 'file';
+	'type' in attachment && (attachment as Record<string, unknown>).type === 'file';
