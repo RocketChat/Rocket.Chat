@@ -61,6 +61,8 @@ export type CallActions = {
 };
 
 export type CallDeviceSelection = {
+	/** Every camera, microphone and speaker the browser lists, kept current as devices come and go. */
+	devices: MediaDeviceInfo[];
 	/** A microphone or a speaker, told apart by the device's own `type`. */
 	selectAudioDevice: (device: Device) => void;
 	selectCamera: (deviceId: string) => void;

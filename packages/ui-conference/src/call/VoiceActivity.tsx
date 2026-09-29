@@ -78,7 +78,12 @@ const VoiceActivity = ({ level, stream, size = 16, badge = false, className }: V
 		// Decorative: what it is saying is already said in words by whatever labels the control it sits in.
 		<Box className={[rowStyles, badge ? null : className]} style={{ height: size }} aria-hidden>
 			{BAR_SCALES.map((scale, index) => (
-				<Box key={index} className={barStyles} style={{ height: Math.max(DOT_SIZE, Math.round(size * scale * clamped)) }} />
+				<Box
+					key={index}
+					data-testid='voice-activity-bar'
+					className={barStyles}
+					style={{ height: Math.max(DOT_SIZE, Math.round(size * scale * clamped)) }}
+				/>
 			))}
 		</Box>
 	);
@@ -91,7 +96,7 @@ const VoiceActivity = ({ level, stream, size = 16, badge = false, className }: V
 	const diameter = size + 10;
 
 	return (
-		<Box className={[badgeStyles, className]} style={{ width: diameter, height: diameter }}>
+		<Box data-testid='voice-activity-badge' className={[badgeStyles, className]} style={{ width: diameter, height: diameter }}>
 			{bars}
 		</Box>
 	);

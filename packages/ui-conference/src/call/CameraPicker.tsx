@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import CameraPickerButton from './CameraPickerButton';
 import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
-import { useMediaDevices } from './hooks/useMediaDevices';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/deviceLabels';
 import { BLUR_LEVEL_LABELS, BLUR_MODEL_LABELS, VIDEO_QUALITY_LABELS } from './lib/mediaChoiceLabels';
 
@@ -21,9 +20,8 @@ const VIDEO_QUALITY_PREFIX = 'video-quality:';
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
-	const { selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
+	const { devices, selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
 	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
-	const { devices } = useMediaDevices();
 	const backgroundImageInput = useRef<HTMLInputElement>(null);
 
 	// The system default first, its duplicate dropped, and every name without the USB id the browser tacks on.

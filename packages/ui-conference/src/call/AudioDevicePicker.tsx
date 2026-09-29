@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import AudioDevicePickerButton from './AudioDevicePickerButton';
 import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { useAudioLevel } from './hooks/useAudioLevel';
-import { useMediaDevices } from './hooks/useMediaDevices';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
 import { NOISE_METHOD_LABELS, NOISE_METHOD_NOTES } from './lib/mediaChoiceLabels';
 
@@ -33,7 +32,7 @@ const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 
 	const { self } = useCallState();
-	const { selectAudioDevice } = useCallDeviceSelection();
+	const { devices, selectAudioDevice } = useCallDeviceSelection();
 	const { noiseSuppression } = useCallMediaProcessing();
 
 	// A muted mic never moves, whatever it is still hearing.
@@ -44,7 +43,6 @@ const AudioDevicePicker = () => {
 
 	// Which hardware each id belongs to, so the system default's duplicate can be told from a second device that
 	// merely shares its name.
-	const { devices } = useMediaDevices();
 	const deviceGroups = useMemo(() => deviceGroupsOf(devices), [devices]);
 
 	// The system default first, wherever the browser happened to put it: it is what will be used if nothing is

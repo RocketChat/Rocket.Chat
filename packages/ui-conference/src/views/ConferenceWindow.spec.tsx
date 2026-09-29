@@ -63,7 +63,7 @@ const mediaProcessing: CallMediaProcessing = {
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={{ selectAudioDevice: jest.fn(), selectCamera: jest.fn() }}>
+			<CallDeviceSelectionProvider value={{ devices: [], selectAudioDevice: jest.fn(), selectCamera: jest.fn() }}>
 				<CallMediaProcessingProvider value={mediaProcessing}>
 					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
 				</CallMediaProcessingProvider>
@@ -128,7 +128,10 @@ it('closes the thread when every panel is shut', () => {
 
 describe('a call that runs in this window', () => {
 	const renderNative = ({ state, ...overrides }: Partial<ConferenceContextValue> & { state?: CallState } = {}) => {
-		const AppRoot = mockAppRoot().withJohnDoe().build();
+		const AppRoot = mockAppRoot()
+			.withJohnDoe()
+			.withTranslations('en', 'core', { __name__raised_their_hand: '{{name}} raised their hand' })
+			.build();
 
 		const value = buildConferenceContext({
 			session: { joined: true, embedded: true, loading: false },
@@ -178,7 +181,7 @@ describe('a call that runs in this window', () => {
 	it('opens the connection panel', () => {
 		renderNative({ panel: { active: 'diagnostics', set: jest.fn() } });
 
-		expect(screen.getByText('Connection_info')).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: 'Connection_info' })).toBeInTheDocument();
 	});
 
 	// The call reports a hand by participant id; the window is what knows who that is.
@@ -188,6 +191,6 @@ describe('a call that runs in this window', () => {
 			state: buildCallState({ raisedHands: [{ id: 'ada', raisedAt: 1 }] }),
 		});
 
-		expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Ada Lovelace raised their hand' })).toBeInTheDocument();
 	});
 });

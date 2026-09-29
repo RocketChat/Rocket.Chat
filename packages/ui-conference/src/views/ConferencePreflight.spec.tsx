@@ -4,19 +4,22 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferencePreflight from './ConferencePreflight';
-import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
 import type { PreflightMedia } from '../context/definitions';
 
 const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 	const opened = jest.fn();
 	const Provider = ({ children }: { capabilities: VideoConferenceCapabilities; children: ReactNode }) => {
 		opened();
-		return <div data-testid='media-provider'>{children}</div>;
+		return (
+			<div role='region' aria-label='media provider'>
+				{children}
+			</div>
+		);
 	};
 	const media: PreflightMedia = {
 		Provider,
-		Preview: () => <PreflightCameraPlaceholder cam={false} note='no camera found' />,
-		Devices: () => <div>device choices</div>,
+		Preview: () => <div role='img' aria-label='camera preview' />,
+		Devices: () => <div role='group' aria-label='device choices' />,
 	};
 
 	render(
@@ -42,8 +45,8 @@ it('hands the preview and the device choices to the application for a provider t
 	const { opened } = renderPreflight({ mic: true, cam: true, embedded: true });
 
 	expect(opened).toHaveBeenCalled();
-	expect(screen.getByTestId('media-provider')).toContainElement(screen.getByText('device choices'));
-	expect(screen.getByText('no camera found')).toBeInTheDocument();
+	expect(screen.getByRole('region', { name: 'media provider' })).toContainElement(screen.getByRole('group', { name: 'device choices' }));
+	expect(screen.getByRole('img', { name: 'camera preview' })).toBeInTheDocument();
 });
 
 // A provider at an address of its own takes "camera on" but not which camera, so showing one would promise a
@@ -52,6 +55,6 @@ it('opens no devices for a provider at an address of its own', () => {
 	const { opened } = renderPreflight({ mic: true, cam: true });
 
 	expect(opened).not.toHaveBeenCalled();
-	expect(screen.queryByText('device choices')).not.toBeInTheDocument();
-	expect(screen.getByText('Your_camera_will_be_off')).toBeInTheDocument();
+	expect(screen.queryByRole('group', { name: 'device choices' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('img', { name: 'camera preview' })).not.toBeInTheDocument();
 });

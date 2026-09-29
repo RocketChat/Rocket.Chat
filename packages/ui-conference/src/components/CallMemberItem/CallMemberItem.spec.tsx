@@ -28,14 +28,14 @@ it('says a member declined, even while their ring window is still open', () => {
 	const now = new Date();
 	renderRow({ ...base, joined: false, ringingAt: now, declined: true, declinedAt: now });
 
-	expect(screen.getByText('Declined')).toBeInTheDocument();
-	expect(screen.queryByText('Ringing')).not.toBeInTheDocument();
+	expect(screen.getByRole('listitem')).toHaveTextContent('Declined');
+	expect(screen.getByRole('listitem')).not.toHaveTextContent('Ringing');
 });
 
 it('says a member is ringing while they have not answered', () => {
 	renderRow({ ...base, joined: false, ringingAt: new Date() });
 
-	expect(screen.getByText('Ringing')).toBeInTheDocument();
+	expect(screen.getByRole('listitem')).toHaveTextContent('Ringing');
 });
 
 // Declined and no longer ringing, so there is something to ring them back for — `getConferenceMemberStatus` is
@@ -75,7 +75,7 @@ describe('in a call that runs in this window', () => {
 				member={joined}
 				hasChatAccess
 				muted={muted}
-				activity={<span>level of {joined._id}</span>}
+				activity={<span role='meter' aria-label={`level of ${joined._id}`} aria-valuenow={0} />}
 				onMute={onMute}
 				onRing={jest.fn()}
 			/>,
@@ -94,7 +94,7 @@ describe('in a call that runs in this window', () => {
 	it("draws the member's microphone level", () => {
 		renderInCall();
 
-		expect(screen.getByText(`level of ${base._id}`)).toBeInTheDocument();
+		expect(screen.getByRole('meter', { name: `level of ${base._id}` })).toBeInTheDocument();
 	});
 
 	// Silence is what everyone already hears, so a muted row says nothing — no button asking for it again.
@@ -102,7 +102,7 @@ describe('in a call that runs in this window', () => {
 		renderInCall({ muted: true });
 
 		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
-		expect(screen.queryByText(`level of ${base._id}`)).not.toBeInTheDocument();
+		expect(screen.queryByRole('meter', { name: `level of ${base._id}` })).not.toBeInTheDocument();
 	});
 
 	// Muting yourself is the call bar's job; asking yourself for silence through a list of other people is not.
@@ -110,6 +110,6 @@ describe('in a call that runs in this window', () => {
 		renderInCall({ viewerId: base._id });
 
 		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
-		expect(screen.getByText(`level of ${base._id}`)).toBeInTheDocument();
+		expect(screen.getByRole('meter', { name: `level of ${base._id}` })).toBeInTheDocument();
 	});
 });

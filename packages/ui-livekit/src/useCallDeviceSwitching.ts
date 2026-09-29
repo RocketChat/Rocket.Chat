@@ -1,5 +1,5 @@
 import type { CallDeviceSelection } from '@rocket.chat/ui-conference';
-import { useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import { useMediaDevices, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { useAvailableDevices, useSetInputMediaDevice, useSetOutputMediaDevice } from '@rocket.chat/ui-contexts';
 import type { LocalTrackPublication, Room } from 'livekit-client';
@@ -142,5 +142,10 @@ export const useCallDeviceSwitching = (
 
 	const currentCameraId = pickedCameraId ?? derivedCameraId;
 
-	return useMemo(() => ({ selectAudioDevice, selectCamera, currentCameraId }), [selectAudioDevice, selectCamera, currentCameraId]);
+	const { devices } = useMediaDevices();
+
+	return useMemo(
+		() => ({ devices, selectAudioDevice, selectCamera, currentCameraId }),
+		[devices, selectAudioDevice, selectCamera, currentCameraId],
+	);
 };
