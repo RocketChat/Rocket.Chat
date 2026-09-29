@@ -5,7 +5,6 @@ import * as z from 'zod';
 
 import { VisitorCodec } from './codecs';
 
-// TODO: check if functions from this converter can be async
 export class AppVisitorsConverter implements IAppVisitorsConverter {
 	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
