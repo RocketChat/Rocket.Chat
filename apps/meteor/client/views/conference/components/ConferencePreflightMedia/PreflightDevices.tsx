@@ -19,10 +19,7 @@ import {
 } from '../../../videoConference/livekit/virtualBackground';
 import CallDeviceMenu from '../CallDeviceMenu';
 
-/**
- * The methods offered before a call, weakest first. Krisp is absent: whether a workspace may use it is only known
- * once it is attached to a published track, so the call's own menu offers it after it has proven itself.
- */
+/** The methods offered before a call, weakest first. */
 const NOISE_CHOICES: { id: NoiseMethod; label: string; note?: string }[] = [
 	{ id: 'none', label: 'Noise_cancellation_off' },
 	{ id: 'browser', label: 'Noise_cancellation_standard' },

@@ -22,7 +22,11 @@ export type CallDevices = {
 export type CallDeviceKind = 'mic' | 'cam' | 'speaker';
 
 /** Which way of cleaning up the microphone the user picked. */
-export type NoiseMethod = 'none' | 'browser' | 'rnnoise' | 'krisp';
+export type NoiseMethod = 'none' | 'browser' | 'rnnoise';
+
+const NOISE_METHODS: readonly unknown[] = ['none', 'browser', 'rnnoise'] satisfies NoiseMethod[];
+
+const isNoiseMethod = (value: unknown): value is NoiseMethod => NOISE_METHODS.includes(value);
 
 export type CallNoiseSuppressionPreference = { noiseMethod?: NoiseMethod };
 
@@ -182,8 +186,9 @@ export const useNoiseSuppressionPreference = () => {
 	const [stored, setStored] = useStoredCallPreferences();
 
 	// Undefined rather than a default: nothing chosen means "the best you can do", which is a better answer than any
-	// particular method — and it is what someone who has never opened this menu wants.
-	const { noiseMethod } = stored;
+	// particular method — and it is what someone who has never opened this menu wants. A method this version no
+	// longer offers counts as nothing chosen.
+	const noiseMethod = isNoiseMethod(stored.noiseMethod) ? stored.noiseMethod : undefined;
 	const selectNoiseMethod = useCallback(
 		(method: NoiseMethod) => setStored((current) => ({ ...current, noiseMethod: method })),
 		[setStored],

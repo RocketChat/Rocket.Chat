@@ -4778,8 +4778,6 @@
   "Nobody_available": "Nobody available",
   "Node_version": "Node version",
   "Noise_cancellation": "Noise cancellation",
-  "Noise_cancellation_by_livekit": "Runs on LiveKit Cloud",
-  "Noise_cancellation_enhanced": "Enhanced (Krisp)",
   "Noise_cancellation_off": "Off",
   "Noise_cancellation_on_this_device": "Runs on this device",
   "Noise_cancellation_rnnoise": "Advanced (RNNoise)",

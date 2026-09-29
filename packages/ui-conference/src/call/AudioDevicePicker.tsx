@@ -68,12 +68,10 @@ const NOISE_METHOD_LABELS: Record<string, string> = {
 	none: 'Noise_cancellation_off',
 	browser: 'Noise_cancellation_standard',
 	rnnoise: 'Noise_cancellation_rnnoise',
-	krisp: 'Noise_cancellation_enhanced',
 };
 
 const NOISE_METHOD_NOTES: Record<string, string> = {
 	rnnoise: 'Noise_cancellation_on_this_device',
-	krisp: 'Noise_cancellation_by_livekit',
 };
 
 /** The microphone and speaker of a call running in this window, with the noise cancelling done to the microphone. */

@@ -4,18 +4,17 @@ import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-clien
 const ASSETS = '/noise-suppressor';
 
 /**
- * Noise suppression with RNNoise, for workspaces that cannot have Krisp.
+ * Noise suppression with RNNoise.
  *
  * RNNoise is a small recurrent network (about 85KB of weights) that Xiph built for exactly this, and it is what
- * Jitsi ships. It is not as good as Krisp on the hardest noise, and it is a great deal better than the browser's
- * own: the browser suppresses steady hiss, while this one removes typing, chairs, and the road outside.
+ * Jitsi ships. It is a great deal better than the browser's own: the browser suppresses steady hiss, while this one
+ * removes typing, chairs, and the road outside.
  *
  * It runs in an **AudioWorklet**, on the audio thread, which is the only place a per-frame filter belongs — doing
  * it on the main thread would mean audio dropping out whenever React re-rendered. The graph is the simplest thing
  * that works: the microphone in, the worklet, and a destination whose track is what gets published.
  *
- * Its assets are served from `public/` rather than a CDN. That is deliberate: this exists for the deployments that
- * cannot reach Krisp's licensing server, and many of those cannot reach a CDN either.
+ * Its assets are served by the workspace rather than a CDN, since many self-hosted deployments cannot reach one.
  */
 export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
 	readonly name = 'rnnoise-noise-filter';
@@ -70,8 +69,7 @@ export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioP
 	/**
 	 * Switches the filter in or out by rewiring, leaving everything loaded.
 	 *
-	 * The published track never changes, so nothing renegotiates and the far side hears no gap — the same reason
-	 * Krisp is switched rather than detached.
+	 * The published track never changes, so nothing renegotiates and the far side hears no gap.
 	 */
 	async setEnabled(enabled: boolean): Promise<boolean> {
 		if (enabled === this.enabled) {
