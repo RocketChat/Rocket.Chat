@@ -15,8 +15,6 @@ test.describe.serial('permissions', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.goto();
 	});
 
 	test.describe.serial('Edit message', () => {
@@ -27,7 +25,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(edit) not be visible', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 
 			await poHomeChannel.content.sendMessage('expect option(edit) not be visible');
 
@@ -54,7 +52,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(delete) not be visible', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(delete) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(delete) not be visible' })).not.toHaveAttribute(
@@ -84,7 +82,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(pin) not be visible', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(pin) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(pin) not be visible' })).not.toHaveAttribute('aria-busy', 'true');
@@ -110,7 +108,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option(star) not be visible', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(star) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(star) not be visible' })).not.toHaveAttribute(
@@ -137,7 +135,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option (upload file) not be visible', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await expect(poHomeChannel.composer.btnOptionFileUpload).toBeDisabled();
 		});
 
@@ -156,7 +154,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option (upload audio) not be visible', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await expect(poHomeChannel.composer.btnAudioMessage).toBeDisabled();
 		});
 
@@ -175,7 +173,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect option (upload video) not be visible', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await expect(poHomeChannel.composer.btnVideoMessage).toBeDisabled();
 		});
 
@@ -196,7 +194,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test('expect badword be censored', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.sendMessage('badword');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('*'.repeat(7));

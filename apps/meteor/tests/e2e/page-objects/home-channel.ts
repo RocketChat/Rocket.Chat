@@ -116,6 +116,10 @@ export class HomeChannel extends RoutedPage {
 		await this.navigateTo(`/group/${name}`, () => this.content.waitForChannel());
 	}
 
+	async gotoDirect(username: string): Promise<void> {
+		await this.navigateTo(`/direct/${username}`, () => this.content.waitForChannel());
+	}
+
 	/** Opens a channel scrolled to a message. Pass `isThread` when the message lives in a thread. */
 	async gotoChannelMessage(name: string, messageId: string, isThread = false): Promise<void> {
 		await this.navigateTo(`/channel/${name}?msg=${messageId}`, async () => {

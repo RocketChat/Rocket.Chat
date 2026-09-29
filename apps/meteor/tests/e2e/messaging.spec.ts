@@ -20,7 +20,6 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		channelPage = new HomeChannel(page);
-		await channelPage.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -29,7 +28,7 @@ test.describe('Messaging', () => {
 
 	test.describe.serial('Navigation', () => {
 		test.beforeEach(async () => {
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 			// wait for the room toolbox to mount, since it's a lazy loaded component
 			await channelPage.roomToolbar.waitFor();
 		});
@@ -166,7 +165,7 @@ test.describe('Messaging', () => {
 
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await test.step('focus on the second message', async () => {
 				await expect(channelPage.composer.inputMessage).toBeFocused();
@@ -208,7 +207,7 @@ test.describe('Messaging', () => {
 		test('expect show a message', async ({ api }) => {
 			const messageText = faker.lorem.sentence();
 
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -222,7 +221,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -241,7 +240,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -260,7 +259,7 @@ test.describe('Messaging', () => {
 			const messageText = faker.lorem.sentence();
 			const attachmentText = faker.lorem.sentence();
 
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
@@ -288,7 +287,7 @@ test.describe('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (targetChannel)', async () => {
-			await channelPage.navbar.openChat(targetChannel);
+			await channelPage.gotoChannel(targetChannel);
 
 			await auxContext.poHomeChannel.navbar.openChat(targetChannel);
 
@@ -301,7 +300,7 @@ test.describe('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (direct)', async () => {
-			await channelPage.navbar.openChat('user2');
+			await channelPage.gotoDirect('user2');
 			await auxContext.poHomeChannel.navbar.openChat('user1');
 
 			await channelPage.content.sendMessage('hello world');
