@@ -6,28 +6,32 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { CallActions, CallDeviceSelection, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
+import type { CallActions, CallMediaProcessing, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
 	CallDeviceSelectionProvider,
 	CallDiagnosticsProvider,
+	CallMediaProcessingProvider,
 	CallStateProvider,
 	playJoinChime,
 	playMutedReminder,
 	useUpdateCallPreferences,
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { LocalVideoTrack, RemoteParticipant } from 'livekit-client';
+import type { LocalAudioTrack, LocalVideoTrack, RemoteParticipant } from 'livekit-client';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useBackgroundBlur } from './useBackgroundBlur';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useNoiseSuppression } from './useNoiseSuppression';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
@@ -40,6 +44,8 @@ export type LiveKitCallProviderProps = {
 	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
 	/** The call ended for this user, whoever ended it. */
 	onEnded: () => void;
+	/** Where the workspace serves the blur and noise suppression runtime files. */
+	assets: MediaProcessorAssets;
 	children: ReactNode;
 };
 
@@ -62,7 +68,7 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, assets, children }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
@@ -129,11 +135,35 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const localCameraTrack = localCameraPub?.track as LocalVideoTrack | undefined;
+	const processedCameraTrack = localCameraTrack?.getProcessor()?.processedTrack;
 
-	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
+	// What the call is actually being sent, which once a processor is attached is not the raw camera: the reader has
+	// to see their own blur. The processed track needs a stream around it, held per track so the video element is not
+	// handed a new object to start over with on every render.
+	const localProcessedStream = useRef<{ track: MediaStreamTrack; stream: MediaStream } | null>(null);
+	const cameraStream = useMemo(() => {
+		if (!camEnabled) {
+			return undefined;
+		}
+
+		if (processedCameraTrack) {
+			if (localProcessedStream.current?.track !== processedCameraTrack) {
+				localProcessedStream.current = { track: processedCameraTrack, stream: new MediaStream([processedCameraTrack]) };
+			}
+			return localProcessedStream.current.stream;
+		}
+
+		localProcessedStream.current = null;
+		return localCameraTrack?.mediaStream;
+		// Keyed on the publication's sid rather than the publication object, which is re-derived whenever any local
+		// track changes, the microphone included: keying on it would restart the camera each time.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [localCameraPub?.trackSid, localCameraTrack?.mediaStream, processedCameraTrack, camEnabled]);
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
+	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined, assets);
+	const backgroundBlur = useBackgroundBlur(localCameraTrack, assets);
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
 
@@ -177,8 +207,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 
 	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
 	const [outputElement] = useState(() => new Audio());
-	const deviceSwitching = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
-	const deviceSelection = useMemo((): CallDeviceSelection => ({ ...deviceSwitching, videoQuality }), [deviceSwitching, videoQuality]);
+	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -237,14 +266,21 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, toggleHand, sendReaction, muteParticipant, onEnded],
 	);
 
+	const mediaProcessing = useMemo(
+		(): CallMediaProcessing => ({ noiseSuppression, backgroundBlur, videoQuality }),
+		[noiseSuppression, backgroundBlur, videoQuality],
+	);
+
 	return (
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
 				<CallDeviceSelectionProvider value={deviceSelection}>
-					<CallDiagnosticsProvider value={diagnostics ?? null}>
-						{children}
-						<RoomAudioRenderer room={room} />
-					</CallDiagnosticsProvider>
+					<CallMediaProcessingProvider value={mediaProcessing}>
+						<CallDiagnosticsProvider value={diagnostics ?? null}>
+							{children}
+							<RoomAudioRenderer room={room} />
+						</CallDiagnosticsProvider>
+					</CallMediaProcessingProvider>
 				</CallDeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>

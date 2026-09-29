@@ -3,8 +3,14 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
-import type { CallDeviceSelection, CallState } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { CallMediaProcessing, CallState } from '../call/context';
+import {
+	CallActionsProvider,
+	CallDeviceSelectionProvider,
+	CallDiagnosticsProvider,
+	CallMediaProcessingProvider,
+	CallStateProvider,
+} from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
@@ -37,10 +43,19 @@ const actions = {
 	leave: jest.fn(),
 };
 
-const deviceSelection: CallDeviceSelection = {
-	devices: [],
-	selectAudioDevice: jest.fn(),
-	selectCamera: jest.fn(),
+const mediaProcessing: CallMediaProcessing = {
+	noiseSuppression: { methods: [], method: 'none', pending: false, select: jest.fn() },
+	backgroundBlur: {
+		available: false,
+		level: 'none',
+		levels: [],
+		pending: false,
+		model: 'quality',
+		models: [],
+		select: jest.fn(),
+		selectModel: jest.fn(),
+		backgroundImage: { available: false, active: false, hasImage: false, select: jest.fn(), activate: jest.fn() },
+	},
 	videoQuality: { quality: 'auto', qualities: [], pending: false, select: jest.fn() },
 };
 
@@ -48,8 +63,10 @@ const deviceSelection: CallDeviceSelection = {
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={deviceSelection}>
-				<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+			<CallDeviceSelectionProvider value={{ devices: [], selectAudioDevice: jest.fn(), selectCamera: jest.fn() }}>
+				<CallMediaProcessingProvider value={mediaProcessing}>
+					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+				</CallMediaProcessingProvider>
 			</CallDeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>

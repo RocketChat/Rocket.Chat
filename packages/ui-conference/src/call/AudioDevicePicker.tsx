@@ -9,9 +9,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AudioDevicePickerButton from './AudioDevicePickerButton';
-import { useCallDeviceSelection, useCallState } from './context';
+import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { useAudioLevel } from './hooks/useAudioLevel';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
+import { NOISE_METHOD_LABELS, NOISE_METHOD_NOTES } from './lib/mediaChoiceLabels';
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	content: (
@@ -23,12 +24,16 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	id: `default-${type}`,
 });
 
-/** The microphone and speaker of a call running in this window. */
+/** Prefixed ids, so the rows in the menu that are not devices are not mistaken for devices. */
+const NOISE_METHOD_PREFIX = 'noise-method:';
+
+/** The microphone and speaker of a call running in this window, with the noise cancelling done to the microphone. */
 const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 
 	const { self } = useCallState();
 	const { devices, selectAudioDevice } = useCallDeviceSelection();
+	const { noiseSuppression } = useCallMediaProcessing();
 
 	// A muted mic never moves, whatever it is still hearing.
 	const micLevel = useAudioLevel(self.muted ? null : (self.microphoneStream ?? null));
@@ -131,10 +136,32 @@ const AudioDevicePicker = () => {
 		[requestPermission, setIsOpen],
 	);
 
+	// Noise cancelling belongs with the microphone, but not among the microphones: those are a choice of *which* one,
+	// and this is what is done to whichever is chosen.
+	const noiseItems: GenericMenuItemProps[] = noiseSuppression.methods.map((noiseMethod) => ({
+		id: `${NOISE_METHOD_PREFIX}${noiseMethod}`,
+		textValue: t(NOISE_METHOD_LABELS[noiseMethod]),
+		content: (
+			<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
+				<Box is='span' withTruncatedText>
+					{t(NOISE_METHOD_LABELS[noiseMethod])}
+				</Box>
+				{NOISE_METHOD_NOTES[noiseMethod] && (
+					<Box is='span' fontScale='c1' color='hint'>
+						{t(NOISE_METHOD_NOTES[noiseMethod])}
+					</Box>
+				)}
+			</Box>
+		),
+		addon: <RadioButton checked={noiseSuppression.method === noiseMethod} disabled={noiseSuppression.pending} readOnly />,
+	}));
+
+	const noiseSection = { title: t('Noise_cancellation'), items: noiseItems };
+
 	return (
 		<GenericMenu
 			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings_lowercase')}
-			sections={[micSection, speakerSection]}
+			sections={noiseItems.length ? [micSection, speakerSection, noiseSection] : [micSection, speakerSection]}
 			disabled={disabled}
 			placement='top-end'
 			selectionMode='multiple'
@@ -142,6 +169,14 @@ const AudioDevicePicker = () => {
 			onOpenChange={onOpenChange}
 			onAction={(deviceId) => {
 				if (typeof deviceId !== 'string') {
+					return;
+				}
+
+				if (deviceId.startsWith(NOISE_METHOD_PREFIX)) {
+					const method = noiseSuppression.methods.find((method) => `${NOISE_METHOD_PREFIX}${method}` === deviceId);
+					if (method) {
+						noiseSuppression.select(method);
+					}
 					return;
 				}
 

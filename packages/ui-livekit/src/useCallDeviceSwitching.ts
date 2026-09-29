@@ -40,7 +40,7 @@ export const useCallDeviceSwitching = (
 	cameraPublication: LocalTrackPublication | undefined,
 	arrival: ArrivalDevices | undefined,
 	outputElement: HTMLAudioElement,
-): Omit<CallDeviceSelection, 'videoQuality'> => {
+): CallDeviceSelection => {
 	const setInputDevice = useSetInputMediaDevice();
 	const setOutputDevice = useSetOutputMediaDevice();
 	const availableDevices = useAvailableDevices();

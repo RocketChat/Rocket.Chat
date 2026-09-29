@@ -107,6 +107,7 @@ const serverRoutes = [
 	'/ufs',
 	'/data-export',
 	'/assets',
+	'/video-conference/assets',
 	'/livechat',
 	'/theme.css',
 	'/robots.txt',

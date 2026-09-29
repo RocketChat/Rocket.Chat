@@ -7,8 +7,8 @@ export type DeviceMenuSectionProps = {
 };
 
 /**
- * A group of choices about the device, under its devices. Headed, because a list that runs from cameras
- * straight into "720p" reads as one list of increasingly strange devices.
+ * A group of choices about the device, under its devices. Headed, because a list that runs from microphones
+ * straight into "no blur" reads as one list of increasingly strange devices.
  */
 const DeviceMenuSection = ({ title, children }: DeviceMenuSectionProps) => (
 	<Box>

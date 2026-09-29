@@ -5,6 +5,14 @@ import { createLocalVideoTrack } from 'livekit-client';
 
 import { usePreviewVideoTrack } from './usePreviewVideoTrack';
 
+const assets = {
+	workerUrl: '/worker.js',
+	visionBundleUrl: '/vision_bundle.mjs',
+	wasmBaseUrl: '/wasm',
+	modelUrls: { quality: '/quality.tflite', performance: '/performance.tflite' },
+	rnnoiseBaseUrl: '/rnnoise',
+};
+
 jest.mock('livekit-client', () => ({
 	createLocalVideoTrack: jest.fn(),
 }));
@@ -15,6 +23,7 @@ const makeTrack = () =>
 	({
 		stop: jest.fn(),
 		restartTrack: jest.fn().mockResolvedValue(undefined),
+		getProcessor: jest.fn(),
 	}) as unknown as LocalVideoTrack;
 
 beforeEach(() => {
@@ -25,7 +34,7 @@ it('restarts the attached preview track instead of replacing it when resolution 
 	const track = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValue(track);
 
-	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality }), {
+	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality, blurLevel: 'none' }, assets), {
 		initialProps: { quality: 'h720' as VideoQuality },
 	});
 
@@ -46,7 +55,7 @@ it('opens the initial preview at the selected resolution without an unnecessary 
 	const track = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValue(track);
 
-	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360' }));
+	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360', blurLevel: 'none' }, assets));
 
 	await waitFor(() => expect(result.current.track).toBe(track));
 

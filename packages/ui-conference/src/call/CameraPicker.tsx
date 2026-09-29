@@ -2,22 +2,27 @@ import { Box, RadioButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CameraPickerButton from './CameraPickerButton';
-import { useCallDeviceSelection, useCallState } from './context';
+import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/deviceLabels';
-import { VIDEO_QUALITY_LABELS } from './lib/mediaChoiceLabels';
+import { BLUR_LEVEL_LABELS, BLUR_MODEL_LABELS, VIDEO_QUALITY_LABELS } from './lib/mediaChoiceLabels';
 
 /** Prefixed ids, so the rows in the menu that are not cameras are not mistaken for cameras. */
+const BLUR_LEVEL_PREFIX = 'blur-level:';
+const BLUR_MODEL_PREFIX = 'blur-model:';
+const BACKGROUND_IMAGE_PREFIX = 'background-image:';
 const VIDEO_QUALITY_PREFIX = 'video-quality:';
 
-/** The camera of a call running in this window, with the quality it sends. */
+/** The camera of a call running in this window, with what is done to its picture: quality, blur, background. */
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
-	const { devices, selectCamera, currentCameraId: currentCameraDeviceId, videoQuality } = useCallDeviceSelection();
+	const { devices, selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
+	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
+	const backgroundImageInput = useRef<HTMLInputElement>(null);
 
 	const ordered = useMemo(() => orderDevices(devices.filter(({ kind }) => kind === 'videoinput')), [devices]);
 
@@ -48,6 +53,85 @@ const CameraPicker = () => {
 		};
 	});
 
+	// A section of its own: which camera is one choice, what is done to its picture another. One row per level,
+	// because "how much" is not something a switch can say.
+	const blurItems: GenericMenuItemProps[] = backgroundBlur.levels.map((blurLevel) => ({
+		id: `${BLUR_LEVEL_PREFIX}${blurLevel}`,
+		textValue: t(BLUR_LEVEL_LABELS[blurLevel]),
+		content: (
+			<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
+				<Box is='span' withTruncatedText>
+					{t(BLUR_LEVEL_LABELS[blurLevel])}
+				</Box>
+				{/* Said once, on the level in use, because it is a fact about what is doing the work rather than about
+				    the choice — the same place a device says it is the system default. */}
+				{backgroundBlur.level === blurLevel && blurLevel !== 'none' && backgroundBlur.blur && (
+					<Box is='span' fontScale='c1' color='hint'>
+						{t(backgroundBlur.blur === 'camera' ? 'Background_blur_by_camera' : 'Background_blur_by_processing')}
+					</Box>
+				)}
+			</Box>
+		),
+		addon: (
+			<RadioButton
+				checked={!backgroundBlur.backgroundImage.active && backgroundBlur.level === blurLevel}
+				disabled={backgroundBlur.pending}
+				readOnly
+			/>
+		),
+	}));
+
+	const backgroundImageItems: GenericMenuItemProps[] = backgroundBlur.backgroundImage.available
+		? [
+				...(backgroundBlur.backgroundImage.hasImage
+					? [
+							{
+								id: `${BACKGROUND_IMAGE_PREFIX}use`,
+								textValue: t('Background_image'),
+								content: (
+									<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
+										<Box is='span' withTruncatedText>
+											{t('Background_image')}
+										</Box>
+										{backgroundBlur.backgroundImage.name && (
+											<Box is='span' fontScale='c1' color='hint' withTruncatedText>
+												{backgroundBlur.backgroundImage.name}
+											</Box>
+										)}
+									</Box>
+								),
+								addon: <RadioButton checked={backgroundBlur.backgroundImage.active} disabled={backgroundBlur.pending} readOnly />,
+							},
+						]
+					: []),
+				{
+					id: `${BACKGROUND_IMAGE_PREFIX}choose`,
+					textValue: t('Background_image_choose'),
+					content: <Box fontScale='p2'>{t('Background_image_choose')}</Box>,
+				},
+			]
+		: [];
+
+	const backgroundSection = { title: t('Background_effects'), items: [...blurItems, ...backgroundImageItems] };
+
+	const modelItems: GenericMenuItemProps[] =
+		backgroundBlur.blur === 'processor' && (backgroundBlur.level !== 'none' || backgroundBlur.backgroundImage.active)
+			? backgroundBlur.models.map((model) => ({
+					id: `${BLUR_MODEL_PREFIX}${model}`,
+					textValue: t(BLUR_MODEL_LABELS[model]),
+					content: (
+						<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
+							<Box is='span' withTruncatedText>
+								{t(BLUR_MODEL_LABELS[model])}
+							</Box>
+						</Box>
+					),
+					addon: <RadioButton checked={backgroundBlur.model === model} disabled={backgroundBlur.pending} readOnly />,
+				}))
+			: [];
+
+	const modelSection = { title: t('Background_blur_model'), items: modelItems };
+
 	// The most detail to send: a ceiling rather than a promise, which is why each row says the size it asks for and
 	// the one in use says what the camera actually gave — they are not always the same number.
 	const qualityItems: GenericMenuItemProps[] = videoQuality.qualities.map((quality) => ({
@@ -71,36 +155,77 @@ const CameraPicker = () => {
 	const qualitySection = { title: t('Video_quality'), items: qualityItems };
 
 	const cameraSection = { title: t('Camera'), items };
-	const sections = [cameraSection, ...(qualityItems.length ? [qualitySection] : [])];
+	const sections = [
+		cameraSection,
+		...(qualityItems.length ? [qualitySection] : []),
+		...((backgroundBlur.available || backgroundBlur.backgroundImage.available) && (blurItems.length || backgroundImageItems.length)
+			? [backgroundSection]
+			: []),
+		...(modelItems.length ? [modelSection] : []),
+	];
 
 	const disabled = items.length === 0;
 
 	const [isOpen, setIsOpen] = useSafely(useState(false));
 
 	return (
-		<GenericMenu
-			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Camera')}
-			sections={sections}
-			disabled={disabled}
-			placement='top-end'
-			selectionMode='single'
-			isOpen={isOpen}
-			onOpenChange={setIsOpen}
-			onAction={(deviceId) => {
-				if (typeof deviceId !== 'string') return;
-				if (deviceId.startsWith(VIDEO_QUALITY_PREFIX)) {
-					const quality = videoQuality.qualities.find((quality) => `${VIDEO_QUALITY_PREFIX}${quality}` === deviceId);
-					if (quality) videoQuality.select(quality);
-					return;
-				}
-				if (!deviceId.endsWith('-videoinput')) return;
-				const id = deviceId.slice(0, -'-videoinput'.length);
-				// Switching to the camera already in use restarts its track, which comes back as a black frame.
-				if (id === currentId) return;
-				selectCamera(id);
-			}}
-			button={<CameraPickerButton cameraOff={!self.cameraOn} />}
-		/>
+		<>
+			<GenericMenu
+				title={disabled ? t('Device_settings_not_supported_by_browser') : t('Camera')}
+				sections={sections}
+				disabled={disabled}
+				placement='top-end'
+				selectionMode='single'
+				isOpen={isOpen}
+				onOpenChange={setIsOpen}
+				onAction={(deviceId) => {
+					if (typeof deviceId !== 'string') return;
+					if (deviceId.startsWith(VIDEO_QUALITY_PREFIX)) {
+						const quality = videoQuality.qualities.find((quality) => `${VIDEO_QUALITY_PREFIX}${quality}` === deviceId);
+						if (quality) videoQuality.select(quality);
+						return;
+					}
+					if (deviceId.startsWith(BLUR_LEVEL_PREFIX)) {
+						const level = backgroundBlur.levels.find((level) => `${BLUR_LEVEL_PREFIX}${level}` === deviceId);
+						if (level) backgroundBlur.select(level);
+						return;
+					}
+					if (deviceId.startsWith(BLUR_MODEL_PREFIX)) {
+						const model = backgroundBlur.models.find((model) => `${BLUR_MODEL_PREFIX}${model}` === deviceId);
+						if (model) backgroundBlur.selectModel(model);
+						return;
+					}
+					if (deviceId === `${BACKGROUND_IMAGE_PREFIX}use`) {
+						backgroundBlur.backgroundImage.activate();
+						return;
+					}
+					if (deviceId === `${BACKGROUND_IMAGE_PREFIX}choose`) {
+						backgroundImageInput.current?.click();
+						return;
+					}
+					if (!deviceId.endsWith('-videoinput')) return;
+					const id = deviceId.slice(0, -'-videoinput'.length);
+					// Switching to the camera already in use restarts its track, which comes back as a black frame.
+					if (id === currentId) return;
+					selectCamera(id);
+				}}
+				button={<CameraPickerButton cameraOff={!self.cameraOn} />}
+			/>
+			<input
+				ref={backgroundImageInput}
+				type='file'
+				accept='image/*'
+				hidden
+				onChange={(event) => {
+					const input = event.currentTarget;
+					const file = input.files?.[0];
+					input.value = '';
+					if (file) {
+						void backgroundBlur.backgroundImage.select(file);
+					}
+				}}
+			/>
+		</>
 	);
 };
 
