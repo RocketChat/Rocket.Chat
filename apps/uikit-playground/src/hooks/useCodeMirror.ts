@@ -1,7 +1,7 @@
-import { EditorState } from '@codemirror/state';
+import { EditorState, Annotation } from '@codemirror/state';
 import type { Extension } from '@codemirror/state';
 import { EditorView } from 'codemirror';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type ICodeMirrorChanges = {
 	value: string;
@@ -9,72 +9,90 @@ export type ICodeMirrorChanges = {
 	cursor?: number;
 };
 
-export default function useCodeMirror(extensions?: Extension[], doc?: string) {
-	const view = useRef<EditorView>(undefined);
-	const [element, setElement] = useState<HTMLElement>();
+// Custom annotation to mark programmatic updates
+const dispatchAnnotation = Annotation.define<boolean>();
+
+export default function useCodeMirror(extensions: Extension[] = [], doc = '') {
+	const view = useRef<EditorView | null>(null);
+	const [element, setElement] = useState<HTMLElement | null>(null);
+
 	const [changes, setChanges] = useState<ICodeMirrorChanges>({
-		value: '[]',
+		value: doc,
 		isDispatch: true,
 		cursor: 0,
 	});
 
+	// Attach editor to DOM node
 	const editor = useCallback((node: HTMLElement | null) => {
-		if (!node) return;
-
-		setElement(node);
+		if (node) {
+			setElement(node);
+		}
 	}, []);
 
+	// Listen for updates
 	const updateListener = EditorView.updateListener.of((update) => {
-		if (update.docChanged) {
-			setChanges({
-				value: view.current?.state?.doc.toString() || '',
-				// @ts-expect-error Property 'annotations' does not exist on type 'Transaction'. Did you mean 'annotation'?
-				isDispatch: update?.transactions[0]?.annotations?.length === 1 || false,
-				cursor: view.current?.state?.selection?.main?.head || 0,
-			});
-		}
+		if (!update.docChanged) return;
+
+		const transaction = update.transactions[0];
+
+		const isDispatch = transaction.annotation(dispatchAnnotation) === true;
+
+		setChanges({
+			value: update.state.doc.toString(),
+			isDispatch,
+			cursor: update.state.selection.main.head,
+		});
 	});
 
-	const setValue = (
-		value: string,
-		{
-			from,
-			to,
-			cursor,
-		}: {
-			from?: number;
-			to?: number;
-			cursor?: number;
+	// Programmatically update editor content
+	const setValue = useCallback(
+		(
+			value: string,
+			{
+				from = 0,
+				to,
+				cursor = 0,
+			}: {
+				from?: number;
+				to?: number;
+				cursor?: number;
+			} = {},
+		) => {
+			if (!view.current) return;
+
+			try {
+				view.current.dispatch({
+					changes: {
+						from,
+						to: to ?? view.current.state.doc.length,
+						insert: value ?? '',
+					},
+					selection: { anchor: cursor },
+					annotations: dispatchAnnotation.of(true),
+				});
+			} catch {
+				// silent fail
+			}
 		},
-	) => {
-		try {
-			view.current?.dispatch({
-				changes: {
-					from: from || 0,
-					to: to || view.current.state.doc.length,
-					insert: value || '',
-				},
-				selection: { anchor: cursor || 0 },
-			});
-		} catch (e) {
-			// do nothing;
-		}
-	};
+		[],
+	);
 
 	useEffect(() => {
 		if (!element) return;
 
 		view.current = new EditorView({
 			state: EditorState.create({
-				doc: doc || '',
-				extensions: [updateListener, ...(extensions || [])],
+				doc,
+				extensions: [updateListener, ...extensions],
 			}),
 			parent: element,
 		});
 
-		return () => view.current?.destroy();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [element]);
+		return () => {
+			view.current?.destroy();
+			view.current = null;
+		};
+	}, [element, doc, extensions, updateListener]);
 
 	return { editor, changes, setValue };
 }
