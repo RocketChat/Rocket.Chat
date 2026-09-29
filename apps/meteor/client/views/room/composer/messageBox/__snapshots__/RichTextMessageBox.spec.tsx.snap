@@ -166,6 +166,7 @@ exports[`renders Empty without crashing 1`] = `
           <button
             aria-label="Send"
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
             type="button"
           >
             <i
