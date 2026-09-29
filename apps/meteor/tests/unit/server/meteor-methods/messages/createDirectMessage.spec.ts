@@ -123,8 +123,8 @@ describe('createDirectMessage', () => {
 		expect(modelsMock.Rooms.findOneDirectRoomContainingAllUserIDs.firstCall.args[0]).to.deep.equal(['me', 'other'].sort());
 	});
 
-	it('should keep an unresolved federated username as a member', async () => {
-		modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
+	it('should keep a federated username as a member even when the user exists locally', async () => {
+		modelsMock.Users.findOneByUsernameIgnoringCase.resolves({ _id: 'remote', username: '@remote:server.com', federated: true });
 		validateFederatedUsernameMock.returns(true);
 
 		await createDirectMessage(['@remote:server.com'], me._id);

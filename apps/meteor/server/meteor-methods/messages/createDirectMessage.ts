@@ -56,13 +56,13 @@ export async function createDirectMessage(
 
 	const users = await Promise.all(
 		targets.map(async (username) => {
+			if (validateFederatedUsername(username)) {
+				return username;
+			}
+
 			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
 			if (to) {
 				return to;
-			}
-
-			if (validateFederatedUsername(username)) {
-				return username;
 			}
 
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
