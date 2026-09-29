@@ -7287,6 +7287,8 @@
   "VideoConf_LiveKit_Api_Secret": "API Secret",
   "VideoConf_LiveKit_Enabled": "LiveKit Enabled",
   "VideoConf_LiveKit_Enabled_Description": "Enable the built-in LiveKit video conference provider. Requires a LiveKit server URL, API key, and API secret to be configured.",
+  "VideoConf_LiveKit_Token_TTL": "Access token lifetime (hours)",
+  "VideoConf_LiveKit_Token_TTL_Description": "How long a participant's LiveKit access token stays valid. A call cannot last longer than this for someone who joined at its start.",
   "VideoConf_LiveKit_Url": "LiveKit URL",
   "VideoConf_Mobile_Ringing": "Enable mobile ringing",
   "VideoConf_Mobile_Ringing_Alert": "This feature is currently in an experimental stage and may not yet be fully supported by the mobile app. When enabled it will send additional push notifications to users.",

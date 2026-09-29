@@ -60,10 +60,3 @@ export async function signHS256(payload: JWTPayload, options: HS256SignOptions):
 
 	return builder.sign(secretBytes);
 }
-
-export async function verifyHS256(jwt: string, secret: string, options?: { issuer?: string }): Promise<JWTPayload> {
-	const { payload } = await jwtVerify(jwt, new TextEncoder().encode(secret), {
-		...(options?.issuer ? { issuer: options.issuer } : {}),
-	});
-	return payload;
-}

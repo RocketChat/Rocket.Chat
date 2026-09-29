@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../server/lib/callbacks';
 import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
-import { LIVEKIT_CAPABILITIES } from '../../../server/lib/videoConference/livekitCapabilities';
+import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
 import { settings } from '../../../server/settings';
 import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';

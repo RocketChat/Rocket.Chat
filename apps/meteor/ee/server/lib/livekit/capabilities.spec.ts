@@ -1,7 +1,7 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { LIVEKIT_CAPABILITIES } from '../../../../../server/lib/videoConference/livekitCapabilities';
+import { LIVEKIT_CAPABILITIES } from './capabilities';
 
 /**
  * What the LiveKit provider declares, read back through the registry the features actually ask.
@@ -16,7 +16,7 @@ import { LIVEKIT_CAPABILITIES } from '../../../../../server/lib/videoConference/
  */
 const proxyquire = require('proxyquire');
 
-const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire.noCallThru().load('../../../../../server/lib/videoConfProviders', {
+const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire.noCallThru().load('../../../../server/lib/videoConfProviders', {
 	'../settings': { settings: { get: () => undefined } },
 });
 

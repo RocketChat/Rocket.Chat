@@ -32,7 +32,7 @@ export async function createLiveKitAccessToken(input: AccessTokenInput): Promise
 		throw new Error('LiveKit API credentials are not configured');
 	}
 
-	const ttl = input.ttlSeconds ?? 6 * 60 * 60; // 6 hours default
+	const ttl = input.ttlSeconds ?? cfg.tokenTtlHours * 60 * 60;
 
 	return signHS256(
 		{

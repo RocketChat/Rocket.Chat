@@ -13,98 +13,92 @@ import { createLiveKitAccessToken, getLiveKitConfig, isLiveKitFullyConfigured } 
 
 const logger = new Logger('VideoConference/LiveKit/API');
 
-const looseSuccessSchema = ajv.compile<Record<string, unknown>>({ type: 'object', additionalProperties: true });
-const looseSuccessResponse = {
-	200: looseSuccessSchema,
-	400: validateBadRequestErrorResponse,
-	401: validateUnauthorizedErrorResponse,
-	403: validateForbiddenErrorResponse,
+type TransportConfigResponse = {
+	service: string;
+	livekit?: { serverUrl: string; token: string; roomName: string };
 };
+
+const transportConfigResponseSchema = ajv.compile<TransportConfigResponse>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		service: { type: 'string' },
+		livekit: {
+			type: 'object',
+			properties: {
+				serverUrl: { type: 'string' },
+				token: { type: 'string' },
+				roomName: { type: 'string' },
+			},
+			required: ['serverUrl', 'token', 'roomName'],
+			additionalProperties: false,
+		},
+	},
+	required: ['success', 'service'],
+	additionalProperties: false,
+});
 
 const callIdQuerySchema = ajv.compile<{ callId: string }>({
 	type: 'object',
 	properties: { callId: { type: 'string', minLength: 1 } },
 	required: ['callId'],
-	additionalProperties: true,
+	additionalProperties: false,
 });
 
 const livekitRoomNameFor = (callId: string) => `mc-${callId}`;
 
-/**
- * Resolves the call and verifies the caller is allowed near it. Returns the call doc on success; the endpoint
- * maps the error code to the right HTTP response.
- *
- * Allowed is `canAccessConference` — the same rule the conference endpoints use — and deliberately not "can
- * access the call's room". Membership of a call is granted without any room access, so a conference started in a
- * DM and joined by a third person has a member with no subscription to that DM: checking the room refused them
- * the credentials for their own call, and, because a missing token is indistinguishable from a call that hasn't
- * connected yet, they got a call window showing them alone with controls that did nothing.
- */
-async function authorizeCall(
-	callId: string | undefined,
-	userId: string,
-): Promise<
-	| { call: NonNullable<Awaited<ReturnType<typeof VideoConferenceModel.findOneById>>> }
-	| { error: 'invalid-params' | 'invalid-call' | 'forbidden' }
-> {
-	if (!callId) return { error: 'invalid-params' };
-	const call = await VideoConferenceModel.findOneById(callId);
-	if (!call) return { error: 'invalid-call' };
-	if (!call.rid) return { error: 'invalid-call' };
-	if (!(await Authorization.canAccessConference(call, userId))) {
-		return { error: 'forbidden' };
-	}
-	return { call };
-}
-
-// ============================================================================
-// Transport (LK credentials)
-// ============================================================================
-
-/**
- * Returns the transport config for a LiveKit conference: a freshly minted
- * { serverUrl, token, roomName } the client can hand to the LiveKit SDK.
- * Other (URL-based) providers don't need this — they hand off via a URL.
- */
+/** Credentials for the caller's own LiveKit call; other providers answer with their name only. */
 API.v1.get(
 	'video-conference.livekit.transport.config',
 	{
 		authRequired: true,
 		query: callIdQuerySchema,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
-		response: looseSuccessResponse,
+		response: {
+			200: transportConfigResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
 	async function action() {
 		const { callId } = this.queryParams;
-		const auth = await authorizeCall(callId, this.userId);
-		if ('error' in auth) {
-			if (auth.error === 'forbidden') return API.v1.forbidden();
-			return API.v1.failure(auth.error);
+
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call?.rid) {
+			return API.v1.failure('invalid-call');
 		}
-		const { call } = auth;
+
+		// Call membership is granted without room access, so the conference rule applies rather than the room's.
+		if (!(await Authorization.canAccessConference(call, this.user._id))) {
+			return API.v1.forbidden();
+		}
 
 		if (call.providerName !== 'livekit') {
 			return API.v1.success({ service: call.providerName });
 		}
 
-		if (!isLiveKitFullyConfigured()) return API.v1.failure('livekit-not-configured');
-
-		try {
-			const cfg = getLiveKitConfig();
-			const roomName = livekitRoomNameFor(callId);
-			const { user } = this;
-			const token = await createLiveKitAccessToken({
-				identity: this.userId,
-				name: user?.name || user?.username || this.userId,
-				grant: { roomJoin: true, room: roomName, canPublish: true, canSubscribe: true, canPublishData: true },
-			});
-			return API.v1.success({
-				service: 'livekit',
-				livekit: { serverUrl: cfg.url, token, roomName },
-			});
-		} catch (e) {
-			logger.error({ msg: 'transport config mint failed', err: e });
-			return API.v1.failure((e as Error).message);
+		if (!isLiveKitFullyConfigured()) {
+			return API.v1.failure('livekit-not-configured');
 		}
+
+		const roomName = livekitRoomNameFor(callId);
+		const token = await createLiveKitAccessToken({
+			identity: this.user._id,
+			name: this.user.name || this.user.username || this.user._id,
+			grant: { roomJoin: true, room: roomName, canPublish: true, canSubscribe: true, canPublishData: true },
+		}).catch((err) => {
+			logger.error({ msg: 'Failed to mint LiveKit access token', callId, err });
+			return undefined;
+		});
+
+		if (!token) {
+			return API.v1.failure('livekit-token-failed');
+		}
+
+		return API.v1.success({
+			service: 'livekit',
+			livekit: { serverUrl: getLiveKitConfig().url, token, roomName },
+		});
 	},
 );

@@ -52,12 +52,6 @@ export function addSettings(): Promise<void> {
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 
-				// LiveKit-as-VC-provider settings. The keys mirror the previous
-				// VoIP_TeamCollab_LiveKit_* layout (same shape, same set) so the
-				// admin UI is familiar — only the namespace moved from VoIP to
-				// Video Conference. The corresponding VoIP_* keys are removed
-				// once the refactor settles; until then both groups coexist and
-				// the bootstrap reads the new keys, falling back to the old.
 				await this.section('VideoConf_LiveKit', async function () {
 					await this.add('VideoConf_LiveKit_Enabled', false, {
 						type: 'boolean',
@@ -71,7 +65,6 @@ export function addSettings(): Promise<void> {
 
 					await this.add('VideoConf_LiveKit_Url', '', {
 						type: 'string',
-						public: true,
 						invalidValue: '',
 						enableQuery: [livekitEnabled],
 					});
@@ -87,6 +80,13 @@ export function addSettings(): Promise<void> {
 						type: 'password',
 						secret: true,
 						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Token_TTL', 6, {
+						type: 'int',
+						invalidValue: 6,
+						i18nDescription: 'VideoConf_LiveKit_Token_TTL_Description',
 						enableQuery: [livekitEnabled],
 					});
 				});

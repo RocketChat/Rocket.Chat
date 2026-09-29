@@ -5,6 +5,7 @@ export type LiveKitConfig = {
 	url: string;
 	apiKey: string;
 	apiSecret: string;
+	tokenTtlHours: number;
 };
 
 export function getLiveKitConfig(): LiveKitConfig {
@@ -13,6 +14,7 @@ export function getLiveKitConfig(): LiveKitConfig {
 		url: settings.get<string>('VideoConf_LiveKit_Url') || '',
 		apiKey: settings.get<string>('VideoConf_LiveKit_Api_Key') || '',
 		apiSecret: settings.get<string>('VideoConf_LiveKit_Api_Secret') || '',
+		tokenTtlHours: settings.get<number>('VideoConf_LiveKit_Token_TTL') || 6,
 	};
 }
 
