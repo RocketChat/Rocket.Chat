@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import { VoiceActivity, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
-import type { ReactNode } from 'react';
+import { PreflightCameraPlaceholder, VoiceActivity, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreviewMedia } from './PreviewMediaContext';
 
-const PreflightPreview = ({ placeholder }: { placeholder: (note?: string) => ReactNode }) => {
+const PreflightPreview = () => {
 	const { t } = useTranslation();
 	const { capabilities, preview, previewVideo } = usePreviewMedia();
 	const { preferences } = useCallDevicesInitialState(capabilities);
@@ -46,7 +45,7 @@ const PreflightPreview = ({ placeholder }: { placeholder: (note?: string) => Rea
 					style={{ objectFit: 'cover', transform: 'scaleX(-1)' }}
 				/>
 			) : (
-				placeholder(failed ? t('Could_not_access_your_camera') : undefined)
+				<PreflightCameraPlaceholder cam={preferences.cam} note={failed ? t('Could_not_access_your_camera') : undefined} />
 			)}
 
 			{/* Proof before joining that the microphone is picked up — the one thing this screen can't otherwise show. */}

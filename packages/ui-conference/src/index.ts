@@ -31,6 +31,7 @@ export { default as ChatAccessModal } from './components/ChatAccessModal/ChatAcc
 export { default as ChatAccessNotice } from './components/ChatAccessNotice/ChatAccessNotice';
 export { default as ConferenceChatNotShared } from './components/ConferenceChatNotShared';
 export { default as ConferenceErrorState } from './components/ConferenceErrorState';
+export { default as PreflightCameraPlaceholder } from './components/PreflightCameraPlaceholder';
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 

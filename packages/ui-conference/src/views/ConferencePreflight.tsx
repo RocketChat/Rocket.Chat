@@ -1,6 +1,6 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, CheckBox, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, CheckBox } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
@@ -9,15 +9,10 @@ import { useTranslation } from 'react-i18next';
 
 import CallDeviceToggle from '../components/CallDeviceToggle';
 import CallParticipants from '../components/CallParticipants';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
 import type { PreflightMedia } from '../context/definitions';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
-
-/**
- * How much of the tile's bottom edge the toggles float over. The placeholder centres in what is left above it,
- * or on a short tile the icon and its line of text land underneath the buttons.
- */
-const TOGGLES_ZONE = 60;
 
 /**
  * The camera tile: 16:9, and black, because that is what a camera with nothing to show looks like. Width leads
@@ -51,8 +46,11 @@ type ConferencePreflightProps = {
 	confirming?: boolean;
 	onConfirm: (preferences: CallPreferences, name: string, ring: boolean) => void;
 	onCancel: () => void;
-	/** The reader's own camera and microphone, for a provider that can be told which devices to use. */
-	media?: PreflightMedia;
+	/**
+	 * The reader's own camera and microphone, or `null` where the application cannot open them. Used only for a
+	 * provider that runs the call in here, since no other can be told which devices to use.
+	 */
+	media: PreflightMedia | null;
 };
 
 const ConferencePreflight = ({
@@ -83,32 +81,8 @@ const ConferencePreflight = ({
 	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 700px)');
 	const columns = wideEnough || shortAndWide;
 
-	// Only a provider that runs the call in here can be told which devices to use, and only the application can
-	// show them — offering the choice anywhere else would be a promise this screen has no way to keep.
-	const chooseDevices = Boolean(capabilities.embedded && media);
-
-	// In the future tense: whatever is on screen, the camera it describes is the one the call will open with.
-	const placeholder = (note?: string) => (
-		<Box
-			display='flex'
-			flexDirection='column'
-			alignItems='center'
-			justifyContent='center'
-			width='100%'
-			height='100%'
-			style={{ paddingBlockEnd: TOGGLES_ZONE }}
-		>
-			<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-			<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-				{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
-			</Box>
-			{note && (
-				<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-					{note}
-				</Box>
-			)}
-		</Box>
-	);
+	// Offering the choice to a provider at an address of its own would be a promise this screen cannot keep.
+	const deviceMedia = capabilities.embedded ? media : null;
 
 	const [title, setTitle] = useState(defaultName ?? name);
 
@@ -125,9 +99,14 @@ const ConferencePreflight = ({
 				overflow='hidden'
 				className={previewTileStyle}
 			>
-				{chooseDevices && media
-					? media.renderPreview(placeholder)
-					: placeholder(preferences.cam ? t('Choose_your_camera_and_microphone_inside_the_call') : undefined)}
+				{deviceMedia ? (
+					<deviceMedia.Preview />
+				) : (
+					<PreflightCameraPlaceholder
+						cam={preferences.cam}
+						note={preferences.cam ? t('Choose_your_camera_and_microphone_inside_the_call') : undefined}
+					/>
+				)}
 
 				<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
 					<ButtonGroup>
@@ -153,7 +132,7 @@ const ConferencePreflight = ({
 
 			{/* Below the preview rather than on it: which device is a setting, not a control reached for mid-thought,
 					    and a device's name needs more room than the tile's corner has. */}
-			{chooseDevices && media?.renderDevices()}
+			{deviceMedia && <deviceMedia.Devices />}
 		</Box>
 	);
 
@@ -197,7 +176,7 @@ const ConferencePreflight = ({
 				paddingBlock={24}
 				style={{ gap: columns ? 48 : 32 }}
 			>
-				{chooseDevices && media ? <media.Provider capabilities={capabilities}>{previewColumn}</media.Provider> : previewColumn}
+				{deviceMedia ? <deviceMedia.Provider capabilities={capabilities}>{previewColumn}</deviceMedia.Provider> : previewColumn}
 				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
 					{/* An `h2`, not a `div` at heading size: it is the screen's heading and has to be findable as one. */}
 					<Box is='h2' fontScale='h2' color='default' textAlign='center'>

@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferencePreflight from './ConferencePreflight';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
 import type { PreflightMedia } from '../context/definitions';
 
 const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
@@ -14,8 +15,8 @@ const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 	};
 	const media: PreflightMedia = {
 		Provider,
-		renderPreview: (placeholder) => placeholder('no camera found'),
-		renderDevices: () => <div>device choices</div>,
+		Preview: () => <PreflightCameraPlaceholder cam={false} note='no camera found' />,
+		Devices: () => <div>device choices</div>,
 	};
 
 	render(

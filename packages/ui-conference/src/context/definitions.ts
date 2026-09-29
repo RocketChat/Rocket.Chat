@@ -160,14 +160,14 @@ export type ConferenceSlots = {
  * What the preflight shows of the reader's own camera and microphone, which only the application can open.
  *
  * `Provider` is mounted around the preview for as long as the preflight is on screen, so the preview's devices are
- * opened once, shared by both halves, and closed when the reader leaves the screen.
+ * opened once, shared by both parts, and closed when the reader leaves the screen.
  */
 export type PreflightMedia = {
 	Provider: ComponentType<{ capabilities: VideoConferenceCapabilities; children: ReactNode }>;
-	/** The self-view, given the placeholder to show until there is a camera — with a note for when there won't be. */
-	renderPreview: (placeholder: (note?: string) => ReactNode) => ReactNode;
+	/** The self-view inside the camera tile, drawing `PreflightCameraPlaceholder` until there is a camera. */
+	Preview: ComponentType;
 	/** The device choices under the preview. */
-	renderDevices: () => ReactNode;
+	Devices: ComponentType;
 };
 
 /**

@@ -157,7 +157,7 @@ const ConferenceWindow = () => {
 				canName={call.canRename}
 				participants={{ people: present.slice(0, PREFLIGHT_FACES_SHOWN), total: presentCount, displayAvatars: viewer.displayAvatars }}
 				capabilities={call.capabilities}
-				media={slots.preflightMedia}
+				media={slots.preflightMedia ?? null}
 				onConfirm={(preferences, name, ring) => actions.join(preferences, name, ring)}
 				onCancel={actions.leave}
 			/>
