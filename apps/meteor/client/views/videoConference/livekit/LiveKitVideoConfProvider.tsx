@@ -1,4 +1,4 @@
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { MediaCallViewContext, defaultMediaCallContextValue } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
@@ -6,58 +6,12 @@ import { createPortal } from 'react-dom';
 
 import CallDiagnosticsContext from './CallDiagnosticsContext';
 import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
+import { useLiveKitTransport } from './useLiveKitTransport';
 
 /**
  * The room, and with it the LiveKit SDK, is fetched the first time a call is live — see `LiveKitRoomHost`.
  */
 const LiveKitRoomHost = lazy(() => import('./LiveKitRoomHost'));
-
-const headersOf = () => ({
-	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
-	'X-User-Id': localStorage.getItem('Meteor.userId') || '',
-});
-
-type LKCreds = { serverUrl: string; token: string; roomName: string };
-
-/**
- * Throws rather than returning null when the credentials are refused, because the two mean opposite things to
- * whoever is waiting: no credentials *yet* is a call still connecting, while credentials refused is a call that
- * will never connect. Swallowing the difference produced the worst possible screen — the call apparently running,
- * the user alone in it, and every control inert — with nothing anywhere to say why.
- */
-const fetchTransportConfig = async (callId: string): Promise<LKCreds | null> => {
-	const res = await fetch(`/api/v1/video-conference.livekit.transport.config?callId=${encodeURIComponent(callId)}`, {
-		headers: headersOf(),
-	});
-	if (!res.ok) {
-		throw new Error(`transport config refused with ${res.status}`);
-	}
-	const data = (await res.json()) as { service: string; livekit?: LKCreds };
-	return data.service === 'livekit' && data.livekit ? data.livekit : null;
-};
-
-/**
- * Tell the server the user has left this call — the same endpoint every provider reports a departure to, because
- * who is in a call is the roster's business rather than the media server's.
- *
- * Best-effort: it is idempotent, and a lost one is survivable by design. Leaving is really inferred from the
- * heartbeat stopping, so this only makes an immediate departure immediate rather than a lease's worth of wait.
- *
- * `keepalive` lets this complete after a page-unload tear-down (when the user
- * closes the tab); inside the running app a normal fetch is fine.
- */
-const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
-	try {
-		void fetch('/api/v1/video-conference.leave', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', ...headersOf() },
-			body: JSON.stringify({ callId }),
-			keepalive: opts?.keepalive,
-		}).catch(() => undefined);
-	} catch {
-		/* unload-time errors are not actionable */
-	}
-};
 
 /**
  * App-level bridge for the LiveKit group-call connection. Always renders
@@ -76,54 +30,43 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { activeCall, leaveCall } = useLiveKitVideoConf();
 	const callId = activeCall?.callId;
-	const [creds, setCreds] = useState<LKCreds | null>(null);
 	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
 	const [diagnosticsValue, setDiagnosticsValue] = useState<unknown>(undefined);
+	const { data: creds, error: transportError } = useLiveKitTransport(callId);
+	const reportLeave = useEndpoint('POST', '/v1/video-conference.leave');
 
 	useEffect(() => {
 		if (!callId) {
-			setCreds(null);
 			setCtxValue(defaultMediaCallContextValue);
 			setDiagnosticsValue(undefined);
+		}
+	}, [callId]);
+
+	// With no credentials there is no call to sit in, so the slot is released rather than left looking live.
+	useEffect(() => {
+		if (!transportError) {
 			return;
 		}
-		let cancelled = false;
-		void fetchTransportConfig(callId)
-			.then((c) => {
-				if (!cancelled) setCreds(c);
-			})
-			// Nothing to connect to, so there is no call to sit in. Leaving says so — where staying would show a
-			// call that looks live and answers nothing — and the toast is what names the reason.
-			.catch((error) => {
-				if (cancelled) {
-					return;
-				}
-				dispatchToastMessage({ type: 'error', message: error });
-				leaveCall();
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, [callId, dispatchToastMessage, leaveCall]);
+		dispatchToastMessage({ type: 'error', message: transportError });
+		leaveCall();
+	}, [transportError, dispatchToastMessage, leaveCall]);
 
 	const onLeave = useCallback(() => {
 		if (callId) {
-			requestLeaveGroup(callId);
+			void reportLeave({ callId }).catch(() => undefined);
 		}
 		leaveCall();
-	}, [leaveCall, callId]);
+	}, [leaveCall, callId, reportLeave]);
 
-	// Tab close / refresh / browser kill: fire the leave REST with keepalive so the server marks this user gone
-	// before the connection dies. Without it the departure waits on the presence lease expiring, and the room
-	// header goes on offering the call to everyone else in the meantime.
+	// Without this the departure waits on the presence lease, and the room keeps offering the call meanwhile.
 	useEffect(() => {
 		if (!callId) return;
-		const handler = () => requestLeaveGroup(callId, { keepalive: true });
+		const handler = () => void reportLeave({ callId }, { keepalive: true }).catch(() => undefined);
 		window.addEventListener('pagehide', handler);
 		return () => {
 			window.removeEventListener('pagehide', handler);
 		};
-	}, [callId]);
+	}, [callId, reportLeave]);
 
 	const lkActive = Boolean(callId && creds);
 

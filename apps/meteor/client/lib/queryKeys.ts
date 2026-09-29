@@ -201,6 +201,7 @@ export const videoConferenceQueryKeys = {
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
 	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
+	livekitTransport: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'livekit-transport'] as const,
 } as const;
 
 export const messagesQueryKeys = {
