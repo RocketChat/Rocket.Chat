@@ -1,11 +1,13 @@
+import type { BackgroundBlurProcessor } from '@rocket.chat/media-processors';
+import { loadBackgroundBlurProcessor } from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel, VideoQuality } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 
-import type { BackgroundBlurProcessor } from '../../videoConference/livekit/backgroundBlurProcessor';
+import { useMediaProcessorAssets } from './useMediaProcessorAssets';
 import { BLUR_STRENGTH } from '../../videoConference/livekit/useBackgroundBlur';
-import { useVirtualBackground } from '../../videoConference/livekit/virtualBackground';
+import { useVirtualBackground } from '../../videoConference/livekit/useVirtualBackground';
 
 /** The same presets the in-call picker uses, so a resolution means the same thing on both screens. */
 const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height: number }> = {
@@ -40,6 +42,7 @@ export const usePreviewVideoTrack = (
 	}: { deviceId?: string; quality: VideoQuality; blurLevel: BlurLevel; blurModel?: BlurModel },
 ): { track?: LocalVideoTrack; error: boolean } => {
 	const virtualBackground = useVirtualBackground();
+	const assets = useMediaProcessorAssets();
 	const [track, setTrack] = useState<LocalVideoTrack | undefined>();
 	const [error, setError] = useState(false);
 	const qualityRef = useRef(quality);
@@ -133,7 +136,7 @@ export const usePreviewVideoTrack = (
 				const existing = track.getProcessor() as BackgroundBlurProcessor | undefined;
 
 				if (existing) {
-					const { BackgroundBlurProcessor } = await import('../../videoConference/livekit/backgroundBlurProcessor');
+					const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
 					if (cancelled) {
 						return;
 					}
@@ -150,7 +153,7 @@ export const usePreviewVideoTrack = (
 					// development-only stale instance so testing this fix does not require restarting the whole app.
 					await track.stopProcessor();
 					if (!cancelled && (strength || backgroundImage)) {
-						await track.setProcessor(new BackgroundBlurProcessor(strength, blurModel, backgroundImage));
+						await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
 					}
 					return;
 				}
@@ -159,12 +162,12 @@ export const usePreviewVideoTrack = (
 					return;
 				}
 
-				const { BackgroundBlurProcessor } = await import('../../videoConference/livekit/backgroundBlurProcessor');
+				const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
 				if (cancelled) {
 					return;
 				}
 
-				await track.setProcessor(new BackgroundBlurProcessor(strength, blurModel, backgroundImage));
+				await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
 			} catch (err) {
 				// MediaPipe comes from a CDN. Failing here means an unblurred preview, which is the truth.
 				console.warn('background blur could not be previewed', err);
@@ -174,7 +177,7 @@ export const usePreviewVideoTrack = (
 		return () => {
 			cancelled = true;
 		};
-	}, [track, blurLevel, blurModel, virtualBackground.active, virtualBackground.image]);
+	}, [track, blurLevel, blurModel, virtualBackground.active, virtualBackground.image, assets]);
 
 	return { track, error };
 };

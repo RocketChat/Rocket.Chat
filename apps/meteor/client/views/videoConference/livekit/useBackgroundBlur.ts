@@ -1,11 +1,17 @@
+import type { BackgroundBlurProcessor, MediaProcessorAssets } from '@rocket.chat/media-processors';
+import {
+	activateVirtualBackground,
+	deactivateVirtualBackground,
+	loadBackgroundBlurProcessor,
+	selectVirtualBackground,
+	supportsBackgroundBlur,
+} from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel } from '@rocket.chat/ui-conference';
 import { useBackgroundBlurPreference } from '@rocket.chat/ui-conference';
 import type { LocalVideoTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { BackgroundBlurProcessor } from './backgroundBlurProcessor';
-import { supportsBackgroundBlur } from './backgroundBlurSupport';
-import { activateVirtualBackground, deactivateVirtualBackground, selectVirtualBackground, useVirtualBackground } from './virtualBackground';
+import { useVirtualBackground } from './useVirtualBackground';
 
 /** Which way of blurring is doing it. The camera's own effect has no strengths to choose between. */
 type Blur = 'camera' | 'processor';
@@ -52,7 +58,7 @@ export const cameraBlurCapability = (values: boolean[] | undefined): CameraBlurC
  * This one takes a strength, and changing it is a number on the running processor — no rebuild or re-publish — so
  * only the first choice in a call is slow.
  */
-export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
+export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined, assets: MediaProcessorAssets) => {
 	const { blurLevel: preferred, selectBlurLevel, blurModel, selectBlurModel } = useBackgroundBlurPreference();
 	const virtualBackground = useVirtualBackground();
 	const virtualBackgroundRef = useRef(virtualBackground);
@@ -64,6 +70,8 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 	const cameraControllableRef = useRef(false);
 	const trackRef = useRef<LocalVideoTrack | undefined>(videoTrack);
 	trackRef.current = videoTrack;
+	const assetsRef = useRef(assets);
+	assetsRef.current = assets;
 
 	const [blur, setBlur] = useState<Blur | null>(null);
 	const [available, setAvailable] = useState(false);
@@ -139,9 +147,9 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 			if (currentLevel !== 'none' || backgroundImage) {
 				const strength = backgroundImage || currentLevel === 'none' ? 0 : BLUR_STRENGTH[currentLevel];
 				try {
-					const { BackgroundBlurProcessor } = await import('./backgroundBlurProcessor');
+					const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
 					if (cancelled) return;
-					const processor = new BackgroundBlurProcessor(strength, blurModelRef.current, backgroundImage);
+					const processor = new BackgroundBlurProcessor(assetsRef.current, strength, blurModelRef.current, backgroundImage);
 					await videoTrack.setProcessor(processor);
 					processorRef.current = processor;
 				} catch (err) {
@@ -213,7 +221,7 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 					const existing = processorRef.current;
 
 					if (existing) {
-						const { BackgroundBlurProcessor } = await import('./backgroundBlurProcessor');
+						const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
 						if (existing.revision === BackgroundBlurProcessor.revision) {
 							// A number on a current processor is instant, and the camera stays published, which is why turning
 							// blur off normally leaves it attached and passing frames through rather than detaching.
@@ -232,7 +240,7 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 							return;
 						}
 
-						const processor = new BackgroundBlurProcessor(strength, blurModelRef.current);
+						const processor = new BackgroundBlurProcessor(assetsRef.current, strength, blurModelRef.current);
 						await track.setProcessor(processor);
 						processorRef.current = processor;
 						setLevel(next);
@@ -244,8 +252,8 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 						return;
 					}
 
-					const { BackgroundBlurProcessor } = await import('./backgroundBlurProcessor');
-					const processor = new BackgroundBlurProcessor(strength, blurModelRef.current);
+					const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
+					const processor = new BackgroundBlurProcessor(assetsRef.current, strength, blurModelRef.current);
 					await track.setProcessor(processor);
 					processorRef.current = processor;
 					setLevel(next);
@@ -310,8 +318,8 @@ export const useBackgroundBlur = (videoTrack: LocalVideoTrack | undefined) => {
 					await track.stopProcessor?.();
 					processorRef.current = null;
 
-					const { BackgroundBlurProcessor } = await import('./backgroundBlurProcessor');
-					const processor = new BackgroundBlurProcessor(strength, next, backgroundImage);
+					const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
+					const processor = new BackgroundBlurProcessor(assetsRef.current, strength, next, backgroundImage);
 					await track.setProcessor(processor);
 					processorRef.current = processor;
 				} catch (err) {

@@ -1,5 +1,6 @@
 import type { Track, TrackProcessor, VideoProcessorOptions } from 'livekit-client';
 
+import type { MediaProcessorAssets } from './assets';
 import { BackgroundBlurRenderer } from './backgroundBlurRenderer';
 import { supportsBackgroundBlur } from './backgroundBlurSupport';
 
@@ -15,15 +16,13 @@ import { supportsBackgroundBlur } from './backgroundBlurSupport';
  *   **15.6 MB** against 244 KB, and roughly twice the work per frame.
  * - **selfie** is one class at 256×144 — the landscape shape a call actually is, cheap, and blunter around hair.
  *
- * Both are served from `public/mediapipe/`, alongside the WASM runtime, so airgapped workspaces work out of the box.
+ * Where each model is fetched from is the caller's to say, in {@link MediaProcessorAssets}.
  */
 export const SEGMENTER_MODELS = {
 	multiclass: {
-		url: '/mediapipe/selfie_multiclass_256x256.tflite',
 		input: { width: 256, height: 256 },
 	},
 	selfie: {
-		url: '/mediapipe/selfie_segmenter_landscape.tflite',
 		input: { width: 256, height: 144 },
 	},
 } as const;
@@ -34,19 +33,6 @@ export const SEGMENTER_BY_KEY: Record<SegmenterModelKey, (typeof SEGMENTER_MODEL
 	quality: SEGMENTER_MODELS.multiclass,
 	performance: SEGMENTER_MODELS.selfie,
 };
-
-/** The one in use when none is specified. */
-export const SEGMENTER = SEGMENTER_MODELS.multiclass;
-
-/**
- * MediaPipe's WASM, which has to match the version of `@mediapipe/tasks-vision` this app depends on — it is the
- * runtime for the JS in the package, not an independent thing. Keep the two in step when the package moves.
- *
- * Served from `public/mediapipe/wasm/`, copied from the npm package at build time. When `@mediapipe/tasks-vision`
- * is updated, re-copy the wasm directory contents.
- */
-export const SEGMENTER_WASM = '/mediapipe/wasm';
-export const SEGMENTER_WORKER = '/mediapipe/background-blur-worker.js';
 
 /**
  * Which confidence mask describes the person, and whether it has to be read inside out.
@@ -517,7 +503,10 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 
 	readonly modelKey: SegmenterModelKey;
 
-	constructor(strength = 0, modelKey: SegmenterModelKey = 'quality', backgroundImage?: ImageBitmap) {
+	private readonly assets: MediaProcessorAssets;
+
+	constructor(assets: MediaProcessorAssets, strength = 0, modelKey: SegmenterModelKey = 'quality', backgroundImage?: ImageBitmap) {
+		this.assets = assets;
 		this.strength = strength;
 		this.modelKey = modelKey;
 		this.backgroundImage = backgroundImage;
@@ -672,7 +661,7 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 		const model = SEGMENTER_BY_KEY[this.modelKey];
 		// MediaPipe's WASM loader still calls importScripts(), which is forbidden inside a module worker. The classic
 		// worker dynamically imports the ESM API bundle and keeps importScripts available for the generated WASM runtime.
-		const worker = new Worker(SEGMENTER_WORKER, { name: 'rocket-chat-background-blur' });
+		const worker = new Worker(this.assets.workerUrl, { name: 'rocket-chat-background-blur' });
 		this.segmenterWorker = worker;
 
 		await new Promise<void>((resolve, reject) => {
@@ -690,8 +679,8 @@ export class BackgroundBlurProcessor implements TrackProcessor<Track.Kind.Video,
 			worker.addEventListener('error', () => reject(new Error('background blur worker could not start')), { once: true });
 			worker.postMessage({
 				type: 'init',
-				wasmUrl: SEGMENTER_WASM,
-				modelUrl: model.url,
+				wasmUrl: this.assets.wasmBaseUrl,
+				modelUrl: this.assets.modelUrls[this.modelKey],
 				width: model.input.width,
 				height: model.input.height,
 			});

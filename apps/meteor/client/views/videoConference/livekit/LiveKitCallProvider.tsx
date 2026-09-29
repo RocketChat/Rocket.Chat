@@ -40,6 +40,7 @@ import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
 import type { EmbeddedCallProviderProps } from '../../../lib/videoConference/embeddedCallProviders';
+import { useMediaProcessorAssets } from '../../conference/hooks/useMediaProcessorAssets';
 
 /** New arrivals are announced only while each face in the call still matters. */
 const JOIN_CHIME_MAX_PARTICIPANTS = 6;
@@ -193,8 +194,9 @@ const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
-	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined);
-	const backgroundBlur = useBackgroundBlur(localCameraTrack);
+	const mediaProcessorAssets = useMediaProcessorAssets();
+	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined, mediaProcessorAssets);
+	const backgroundBlur = useBackgroundBlur(localCameraTrack, mediaProcessorAssets);
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
 

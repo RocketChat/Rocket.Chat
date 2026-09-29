@@ -1,4 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
+import {
+	activateVirtualBackground,
+	deactivateVirtualBackground,
+	selectVirtualBackground,
+	supportsBackgroundBlur,
+} from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel, NoiseMethod, VideoQuality } from '@rocket.chat/ui-conference';
 import {
 	useBackgroundBlurPreference,
@@ -10,13 +16,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreviewMedia } from './PreviewMediaContext';
-import { supportsBackgroundBlur } from '../../../videoConference/livekit/backgroundBlurSupport';
-import {
-	activateVirtualBackground,
-	deactivateVirtualBackground,
-	selectVirtualBackground,
-	useVirtualBackground,
-} from '../../../videoConference/livekit/virtualBackground';
+import { useVirtualBackground } from '../../../videoConference/livekit/useVirtualBackground';
 import CallDeviceMenu from '../CallDeviceMenu';
 
 /** The methods offered before a call, weakest first. */

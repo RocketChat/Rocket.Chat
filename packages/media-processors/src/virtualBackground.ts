@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from 'react';
-
 export type VirtualBackgroundSnapshot = {
 	active: boolean;
 	image?: ImageBitmap;
@@ -67,17 +65,11 @@ export const deactivateVirtualBackground = (): void => {
 	}
 };
 
-/** Exposed for diagnostics and deterministic store tests; React consumers should use the hook below. */
+/** The image chosen in this tab, shared by the preflight and the call. Stable until it changes. */
 export const getVirtualBackgroundSnapshot = (): VirtualBackgroundSnapshot => snapshot;
 
-const subscribe = (listener: () => void): (() => void) => {
+/** Shaped for `useSyncExternalStore`, with {@link getVirtualBackgroundSnapshot}. */
+export const subscribeVirtualBackground = (listener: () => void): (() => void) => {
 	listeners.add(listener);
 	return () => listeners.delete(listener);
 };
-
-export const useVirtualBackground = (): VirtualBackgroundSnapshot =>
-	useSyncExternalStore(
-		subscribe,
-		() => snapshot,
-		() => EMPTY_SNAPSHOT,
-	);

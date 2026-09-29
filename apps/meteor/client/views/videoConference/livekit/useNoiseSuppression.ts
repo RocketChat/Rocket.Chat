@@ -1,9 +1,9 @@
+import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
+import { RnnoiseProcessor } from '@rocket.chat/media-processors';
 import type { NoiseMethod } from '@rocket.chat/ui-conference';
 import { useNoiseSuppressionPreference } from '@rocket.chat/ui-conference';
 import type { LocalAudioTrack } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import { RnnoiseProcessor } from './rnnoiseProcessor';
 
 /**
  * The ways a microphone can be cleaned up, weakest first — which is the order a menu should offer them in, reading
@@ -26,6 +26,7 @@ const ORDER: NoiseMethod[] = ['none', 'browser', 'rnnoise'];
 const applyMethod = async (
 	next: NoiseMethod,
 	track: LocalAudioTrack,
+	assets: MediaProcessorAssets,
 	processorRef: { current: RnnoiseProcessor | null },
 	setMethod: (method: NoiseMethod) => void,
 ): Promise<void> => {
@@ -38,7 +39,7 @@ const applyMethod = async (
 		}
 
 		if (next === 'rnnoise') {
-			const processor = new RnnoiseProcessor();
+			const processor = new RnnoiseProcessor(assets);
 			await track.setProcessor(processor);
 			processorRef.current = processor;
 			setMethod('rnnoise');
@@ -59,12 +60,14 @@ const applyMethod = async (
  *
  * A method is only offered once this browser has shown it can run it.
  */
-export const useNoiseSuppression = (audioTrack: LocalAudioTrack | undefined) => {
+export const useNoiseSuppression = (audioTrack: LocalAudioTrack | undefined, assets: MediaProcessorAssets) => {
 	const { noiseMethod: preferred, selectNoiseMethod } = useNoiseSuppressionPreference();
 
 	const processorRef = useRef<RnnoiseProcessor | null>(null);
 	const trackRef = useRef<LocalAudioTrack | undefined>(audioTrack);
 	trackRef.current = audioTrack;
+	const assetsRef = useRef(assets);
+	assetsRef.current = assets;
 
 	const [methods, setMethods] = useState<NoiseMethod[]>([]);
 	const [method, setMethod] = useState<NoiseMethod>('none');
@@ -101,7 +104,7 @@ export const useNoiseSuppression = (audioTrack: LocalAudioTrack | undefined) => 
 			const remembered = preferredRef.current;
 			const wanted = remembered && offered.includes(remembered) ? remembered : offered[offered.length - 1];
 
-			await applyMethod(wanted, audioTrack, processorRef, setMethod);
+			await applyMethod(wanted, audioTrack, assetsRef.current, processorRef, setMethod);
 		})();
 
 		return () => {
@@ -126,7 +129,7 @@ export const useNoiseSuppression = (audioTrack: LocalAudioTrack | undefined) => 
 
 			selectNoiseMethod(next);
 			setPending(true);
-			void applyMethod(next, track, processorRef, setMethod).finally(() => setPending(false));
+			void applyMethod(next, track, assetsRef.current, processorRef, setMethod).finally(() => setPending(false));
 		},
 		[method, pending, selectNoiseMethod],
 	);

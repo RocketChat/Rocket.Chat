@@ -1,7 +1,6 @@
 import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client';
 
-/** Where the worklet and the WASM are served from. See `apps/meteor/public/noise-suppressor`. */
-const ASSETS = '/noise-suppressor';
+import type { MediaProcessorAssets } from './assets';
 
 /**
  * Noise suppression with RNNoise.
@@ -33,6 +32,12 @@ export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioP
 	/** Whether the filter is in circuit. Switched rather than rebuilt, since rebuilding cuts the audio. */
 	private enabled = true;
 
+	private readonly baseUrl: string;
+
+	constructor({ rnnoiseBaseUrl }: Pick<MediaProcessorAssets, 'rnnoiseBaseUrl'>) {
+		this.baseUrl = rnnoiseBaseUrl;
+	}
+
 	static async isSupported(): Promise<boolean> {
 		return typeof AudioWorkletNode !== 'undefined' && typeof WebAssembly !== 'undefined';
 	}
@@ -48,8 +53,8 @@ export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioP
 		}
 
 		const [wasmBinary] = await Promise.all([
-			loadRnnoise({ url: `${ASSETS}/rnnoise.wasm`, simdUrl: `${ASSETS}/rnnoise_simd.wasm` }),
-			context.audioWorklet.addModule(`${ASSETS}/rnnoise-worklet.js`),
+			loadRnnoise({ url: `${this.baseUrl}/rnnoise.wasm`, simdUrl: `${this.baseUrl}/rnnoise_simd.wasm` }),
+			context.audioWorklet.addModule(`${this.baseUrl}/rnnoise-worklet.js`),
 		]);
 
 		this.source = context.createMediaStreamSource(new MediaStream([opts.track]));
