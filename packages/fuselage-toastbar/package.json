@@ -65,7 +65,6 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/styled": "*",
 		"react": "*",
 		"react-dom": "*"
