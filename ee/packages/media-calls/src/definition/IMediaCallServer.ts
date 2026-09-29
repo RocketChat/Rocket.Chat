@@ -70,6 +70,11 @@ export interface IMediaCallServerSettings {
 
 	mobileRinging: boolean;
 
+	/** Calls placed on external devices (desk phones) handled by an app. */
+	cti: {
+		enabled: boolean;
+	};
+
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureEnabled: (feature: CallFeature) => boolean;
 }

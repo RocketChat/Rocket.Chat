@@ -524,6 +524,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			mobileRinging,
+			cti: {
+				enabled: settings.get<boolean>('VoIP_TeamCollab_CTI_Enabled') ?? false,
+			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureEnabled: (feature) => this.isFeatureEnabled(feature),
 		};

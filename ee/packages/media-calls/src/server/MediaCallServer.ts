@@ -145,6 +145,16 @@ export class MediaCallServer implements IMediaCallServer {
 		device?: string;
 		features?: CallFeature[];
 	}): Promise<void> {
+		if (!this.settings.cti.enabled) {
+			logger.debug('An app reported an inbound cti call while the feature is disabled');
+			throw new CallRejectedError('unsupported');
+		}
+
+		if (params.user.type !== 'user' || !(await this.settings.permissionCheck(params.user.id, 'external'))) {
+			logger.debug({ msg: 'An app reported an inbound cti call for a user without permission for it' });
+			throw new CallRejectedError('forbidden');
+		}
+
 		await CtiCallProvider.createIncomingCall(params);
 	}
 
@@ -155,6 +165,15 @@ export class MediaCallServer implements IMediaCallServer {
 
 	/** Lists the cti devices a user may place/receive calls on, as provided by the installed apps. */
 	public async getUserMediaDevices(uid: IUser['_id']): Promise<MediaCallDevice[]> {
+		if (!this.settings.cti.enabled) {
+			return [];
+		}
+
+		// A device is only useful to someone allowed to place calls on it
+		if (!(await this.settings.permissionCheck(uid, 'external'))) {
+			return [];
+		}
+
 		const gateway = getMediaCallAppGateway();
 		if (!gateway) {
 			return [];
@@ -246,6 +265,11 @@ export class MediaCallServer implements IMediaCallServer {
 	 * is resolved and permission-checked.
 	 */
 	private async parseCtiCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
+		if (!this.settings.cti.enabled) {
+			logger.debug('A cti call was requested while the feature is disabled');
+			throw new CallRejectedError('unsupported');
+		}
+
 		const requester = params.requestedBy || params.caller;
 		if (requester.type !== 'user') {
 			logger.warn('Invalid cti call requester');
