@@ -50,7 +50,7 @@
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {
-		"@rocket.chat/css-in-js": "*",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",

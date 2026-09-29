@@ -16,7 +16,7 @@ export default {
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 				'<rootDir>/app/ui/client/**/**.spec.[jt]s?(x)',
-				'<rootDir>/app/emoji-native/**/**.spec.[jt]s?(x)',
+				'<rootDir>/lib/emoji-native/**/**.spec.[jt]s?(x)',
 			],
 
 			moduleNameMapper: {
@@ -45,6 +45,7 @@ export default {
 				'<rootDir>/app/utils/lib/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
+				'<rootDir>/server/services/upload/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/server/api/*.spec.ts',
