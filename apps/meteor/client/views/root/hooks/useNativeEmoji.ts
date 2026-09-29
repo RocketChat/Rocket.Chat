@@ -1,8 +1,8 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useLayoutEffect } from 'react';
 
-import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
-import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
+import { getEmojiConfig } from '../../../../lib/emoji-native/getEmojiConfig';
+import { legacyEmojioneMap } from '../../../../lib/emoji-native/legacyEmojioneMap';
 import { emoji } from '../../../lib/emoji';
 
 const config = getEmojiConfig(emoji);

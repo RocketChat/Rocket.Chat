@@ -68,7 +68,7 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"@rocket.chat/css-in-js": "*",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",

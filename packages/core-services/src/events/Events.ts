@@ -52,8 +52,18 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+/** A stream emit relayed to the other processes; `origin` identifies the process that emitted it. */
+export type RelayedStreamEvent = {
+	stream: string;
+	eventName: string;
+	args: unknown[];
+	origin: string;
+};
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
+	/** A local client reported what its user is doing in a room, such as typing. */
+	'room.user-activity': (data: { rid: string; uid: string; activities: string[] }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
@@ -121,7 +131,7 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
+	'stream'(relayed: RelayedStreamEvent): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(

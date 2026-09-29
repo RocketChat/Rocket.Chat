@@ -22,6 +22,9 @@ type RetryOptions = {
 	retryTime: number;
 };
 
+// Caps the linear backoff so an unlimited retryCount keeps polling a server that is down for a long time.
+const MAX_RETRY_DELAY = 30_000;
+
 export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
 export interface Connection extends Emitter<{
@@ -38,6 +41,8 @@ export interface Connection extends Emitter<{
 	session?: string;
 
 	status: ConnectionStatus;
+
+	ws?: WebSocket;
 
 	connect(): Promise<boolean>;
 
@@ -243,6 +248,8 @@ export class ConnectionImpl
 
 				this.retryCount += 1;
 
+				const retryDelay = Math.min(this.retryOptions.retryTime * this.retryCount, MAX_RETRY_DELAY);
+
 				this.retryOptions.retryTimer = setTimeout(() => {
 					// Re-check the status when the timer actually fires. If the
 					// consumer bootstrapped a fresh `connect()` in the meantime
@@ -255,7 +262,7 @@ export class ConnectionImpl
 						return;
 					}
 					void this.reconnect();
-				}, this.retryOptions.retryTime * this.retryCount);
+				}, retryDelay);
 			};
 		});
 
