@@ -6,13 +6,12 @@ import {
 	GenericTableCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
-
-import GenericNoResults from '../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const OAuthAppsTable = () => {
 	const t = useTranslation();

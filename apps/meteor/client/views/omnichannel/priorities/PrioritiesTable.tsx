@@ -5,11 +5,11 @@ import {
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import PrioritiesTableRow from './PrioritiesTableRow';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 export type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];

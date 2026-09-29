@@ -197,6 +197,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/sha256',
 	'@rocket.chat/styled',
 	'@rocket.chat/tools',
+	'@rocket.chat/ui-account',
 	'@rocket.chat/ui-avatar',
 	'@rocket.chat/ui-client',
 	'@rocket.chat/ui-composer',
