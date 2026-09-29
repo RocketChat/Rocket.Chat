@@ -6,7 +6,7 @@ import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixt
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
- * microphone is doing. The reader's own tile is mirrored; see `Self`.
+ * microphone is doing. The reader's own tile is mirrored and says what it sends; see `Self`.
  */
 const meta = {
 	component: ParticipantTile,
@@ -39,7 +39,7 @@ export const Held: Story = {
 	args: { held: true },
 };
 
-/** The reader's own tile. */
+/** The reader's own tile, which alone says what its encoder is sending. */
 export const Self: Story = {
-	render: () => <SelfTile displayName='John Doe' muted={false} held={false} />,
+	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} />,
 };

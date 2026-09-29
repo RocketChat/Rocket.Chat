@@ -47,6 +47,7 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 		actions = value;
 		return children;
 	},
+	VideoQualityProvider: ({ children }: { children: ReactNode }) => children,
 	playJoinChime: jest.fn(),
 	playMutedReminder: jest.fn(),
 	useUpdateCallPreferences: () => jest.fn(),
@@ -56,7 +57,9 @@ jest.mock('@rocket.chat/ui-media', () => ({
 	DeviceSelectionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
+jest.mock('./useSendResolution', () => ({ useSendResolution: () => undefined }));
 jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false }));
+jest.mock('./useVideoQuality', () => ({ useVideoQuality: () => ({}) }));
 
 jest.mock('./useLiveKitTransport', () => ({
 	useLiveKitTransport: () => ({ data: { serverUrl: 'wss://lk', token: 'token' }, error: null }),

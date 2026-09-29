@@ -4,6 +4,8 @@ import type { RemoteParticipantInfo } from '../context';
 export type StageSelf = {
 	id: string;
 	displayName: string;
+	/** How tall the picture actually going out is, for the reader's own tile to say so. */
+	sendHeight?: number;
 	avatarUrl?: string;
 	muted: boolean;
 	held: boolean;
@@ -23,8 +25,8 @@ export type TileParticipant = {
 	audioStream?: MediaStream | null;
 };
 
-/** The reader's tile is drawn as a mirror; everyone else's is not. */
-export type StageTile = TileParticipant & { id: string; kind: 'self' | 'participant' };
+/** The reader's tile says what it sends; nobody else's can. */
+export type StageTile = TileParticipant & { id: string } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
 
 /** The most tiles the grid shows; past it, the last slot says how many more there are. */
 export const MAX_VISIBLE_TILES = 9;
@@ -40,6 +42,7 @@ export const buildStageTiles = (self: StageSelf, remoteParticipants: RemoteParti
 		cameraStream: self.cameraStream,
 		audioStream: self.audioStream,
 		kind: 'self',
+		sendHeight: self.sendHeight,
 	},
 	...remoteParticipants.map((p): StageTile => ({
 		kind: 'participant',

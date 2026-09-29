@@ -1684,6 +1684,258 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
             </div>
           </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+            role="separator"
+          />
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_1c_"
+              role="presentation"
+            >
+              Send resolution (maximum)
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_1c_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:auto"
+                id="react-aria-_r_1g_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Auto"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Auto
+                      </span>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1dp5kdc"
+                      >
+                        Sending 720p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h1080"
+                id="react-aria-_r_1k_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="1080p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        1080p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h720"
+                id="react-aria-_r_1o_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="720p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        720p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h360"
+                id="react-aria-_r_1s_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="360p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        360p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h180"
+                id="react-aria-_r_20_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="180p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        180p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1695,7 +1947,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_1c_"
+        id="react-aria-_r_21_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -1934,6 +2186,12 @@ exports[`call stories renders ParticipantTile Self without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
             >
               John Doe
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-10ikj1k rcx-css-16uxknr"
+            >
+              720
+              p
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-h0y5qh"

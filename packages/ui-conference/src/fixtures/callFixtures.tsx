@@ -8,6 +8,8 @@ import { action } from 'storybook/actions';
 import { JOHN_DOE_ID } from './storyFixtures';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallStateProvider } from '../call/context';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,
@@ -66,21 +68,34 @@ export const buildDeviceSelection = (overrides: Partial<DeviceSelection> = {}): 
 	...overrides,
 });
 
+export const buildVideoQuality = (overrides: Partial<VideoQualitySelection> = {}): VideoQualitySelection => ({
+	quality: 'auto',
+	qualities: ['auto', 'h1080', 'h720', 'h360', 'h180'],
+	height: 720,
+	pending: false,
+	select: action('selectVideoQuality'),
+	...overrides,
+});
+
 export type CallFixture = {
 	state?: Parameters<typeof buildCallState>[0];
 	deviceSelection?: Partial<DeviceSelection>;
+	videoQuality?: Partial<VideoQualitySelection>;
 };
 
-const CallContexts = ({ state, deviceSelection, children }: CallFixture & { children: ReactNode }) => {
+const CallContexts = ({ state, deviceSelection, videoQuality, children }: CallFixture & { children: ReactNode }) => {
 	// Built on mount, so the call starts when the story does and the timer in a snapshot always reads zero.
 	const [callState] = useState(() => buildCallState(state));
 	const [actions] = useState(buildCallActions);
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
+	const [quality] = useState(() => buildVideoQuality(videoQuality));
 
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
-				<DeviceSelectionProvider value={devices}>{children}</DeviceSelectionProvider>
+				<DeviceSelectionProvider value={devices}>
+					<VideoQualityProvider value={quality}>{children}</VideoQualityProvider>
+				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);
@@ -91,7 +106,7 @@ export const withCall =
 	(fixture: CallFixture = {}): Decorator =>
 	// eslint-disable-next-line react/display-name, react/no-multi-comp
 	(Story) => (
-		<CallContexts state={fixture.state} deviceSelection={fixture.deviceSelection}>
+		<CallContexts state={fixture.state} deviceSelection={fixture.deviceSelection} videoQuality={fixture.videoQuality}>
 			<Story />
 		</CallContexts>
 	);

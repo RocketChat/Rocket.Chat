@@ -9,7 +9,14 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
-import { CallActionsProvider, CallStateProvider, playJoinChime, playMutedReminder, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import {
+	CallActionsProvider,
+	CallStateProvider,
+	VideoQualityProvider,
+	playJoinChime,
+	playMutedReminder,
+	useUpdateCallPreferences,
+} from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { RemoteParticipant } from 'livekit-client';
@@ -20,7 +27,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
+import { useVideoQuality } from './useVideoQuality';
 
 export type LiveKitCallProviderProps = {
 	callId: string;
@@ -133,9 +142,14 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
-	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
+	const localCameraTrack = localCameraPub?.videoTrack;
+
+	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
+
+	const sendResolution = useSendResolution(localCameraTrack);
+	const videoQuality = useVideoQuality(room, camEnabled ? localCameraTrack : undefined, sendResolution?.height);
 
 	useEffect(() => {
 		const onConnect = (participant: RemoteParticipant) => {
@@ -168,6 +182,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			cameraOn: Boolean(cameraStream),
 			screenSharing: Boolean(screenStream),
 			speakingWhileMuted,
+			sendResolution,
 			cameraStream,
 			screenStream,
 			microphoneStream,
@@ -181,6 +196,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			cameraStream,
 			screenStream,
 			speakingWhileMuted,
+			sendResolution,
 			microphoneStream,
 		],
 	);
@@ -211,8 +227,10 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
 				<DeviceSelectionProvider value={deviceSelection}>
-					{children}
-					<RoomAudioRenderer room={room} />
+					<VideoQualityProvider value={videoQuality}>
+						{children}
+						<RoomAudioRenderer room={room} />
+					</VideoQualityProvider>
 				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>

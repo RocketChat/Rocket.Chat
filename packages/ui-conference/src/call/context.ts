@@ -10,6 +10,8 @@ export type CallSelf = {
 	screenSharing: boolean;
 	/** Whether they are talking into a muted microphone. */
 	speakingWhileMuted: boolean;
+	/** What the encoder is actually sending, which is not what the camera captures. Undefined until it has sent a frame. */
+	sendResolution?: { width: number; height: number };
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
 	microphoneStream?: MediaStream;

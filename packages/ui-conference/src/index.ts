@@ -37,11 +37,12 @@ export { default as SwitchCallModal } from './components/SwitchCallModal';
 export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
+	useVideoQualityPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
 	callDeviceIdField,
 } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference, CallDevices } from './hooks/useCallDevicesInitialState';
+export type { CallPreferences, CallRingPreference, CallDevices, VideoQuality } from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -75,6 +76,8 @@ export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fix
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
 export { CallStateProvider, CallActionsProvider } from './call/context';
 export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions } from './call/context';
+export { VideoQualityProvider } from './devices/VideoQualityContext';
+export type { VideoQualitySelection } from './devices/VideoQualityContext';
 export { playJoinChime, playMutedReminder } from './call/lib/callChimes';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
 export { PreviewVideoContext } from './call/previewVideo';

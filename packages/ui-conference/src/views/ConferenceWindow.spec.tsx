@@ -9,6 +9,8 @@ import type { CallState } from '../call/context';
 import { CallActionsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 const callState: CallState = {
@@ -38,11 +40,15 @@ const deviceSelection: DeviceSelection = {
 	select: jest.fn(),
 };
 
+const videoQuality: VideoQualitySelection = { quality: 'auto', qualities: [], pending: false, select: jest.fn() };
+
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ children }: { children: ReactNode }) => (
 	<CallStateProvider value={callState}>
 		<CallActionsProvider value={actions}>
-			<DeviceSelectionProvider value={deviceSelection}>{children}</DeviceSelectionProvider>
+			<DeviceSelectionProvider value={deviceSelection}>
+				<VideoQualityProvider value={videoQuality}>{children}</VideoQualityProvider>
+			</DeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>
 );
