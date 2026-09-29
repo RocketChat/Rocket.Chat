@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
+import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
 import { gridMeasureStyles, gridStyles } from './stageStyles';
-import CallTile from '../CallTile';
 import { useTileFlip } from '../hooks/useTileFlip';
 import { useTileGridLayout } from '../hooks/useTileGridLayout';
 import type { StageTile } from '../lib/stageTiles';
@@ -47,7 +47,7 @@ const GridLayout = ({ tiles, activeSpeakerId, selfId }: GridLayoutProps) => {
 			>
 				{visible.map((t, i) => (
 					<Box key={t.id} style={{ gridColumnStart: gridColumnStartFor(i, cellCount, cols) }} minWidth={0} minHeight={0}>
-						<CallTile {...t} />
+						<MainTile tile={t} />
 					</Box>
 				))}
 				{hidden.length > 0 && (

@@ -1,4 +1,11 @@
-import { SPEAKING_THRESHOLD, backdropTint, speakingRingLevel, speakingRingThickness } from './speakingRing';
+import {
+	SPEAKING_THRESHOLD,
+	THUMBNAIL_RING_WIDTH,
+	TILE_RING_WIDTH,
+	backdropTint,
+	speakingRingLevel,
+	speakingRingThickness,
+} from './speakingRing';
 
 describe('speakingRingLevel', () => {
 	it('shows nothing at or below the threshold', () => {
@@ -15,9 +22,10 @@ describe('speakingRingLevel', () => {
 
 describe('speakingRingThickness', () => {
 	it('is thinner on a thumbnail', () => {
-		expect(speakingRingThickness(1, false)).toBe(4);
-		expect(speakingRingThickness(1, true)).toBe(3);
-		expect(speakingRingThickness(0, false)).toBe(0);
+		expect(speakingRingThickness(1, TILE_RING_WIDTH)).toBe(4);
+		expect(speakingRingThickness(1, THUMBNAIL_RING_WIDTH)).toBe(3);
+		expect(speakingRingThickness(0.55, TILE_RING_WIDTH)).toBe(2);
+		expect(speakingRingThickness(0, TILE_RING_WIDTH)).toBe(0);
 	});
 });
 

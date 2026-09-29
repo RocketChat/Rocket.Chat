@@ -1,10 +1,9 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import RaisedHandsButton from './RaisedHandsButton';
 
 export type RaisedHand = {
 	id: string;
@@ -12,47 +11,9 @@ export type RaisedHand = {
 	name: string;
 };
 
-const buttonStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	max-width: 220px;
-	padding: 4px 10px;
-	border: none;
-	border-radius: 16px;
-	background-color: var(--rcx-color-button-background-success-default, #148660);
-	color: #fff;
-	font-size: 12px;
-	line-height: 16px;
-	font-weight: 500;
-	cursor: pointer;
-
-	&:hover,
-	&:focus-visible {
-		background-color: var(--rcx-color-button-background-success-hover, #106d4f);
-	}
-`;
-
-// GenericMenu clones whatever it is given as `button` and stamps its own props onto it: `small` and `icon`, neither
-// of which belongs on a label, and a `className` of its own. That last one is why this takes the class apart and
-// puts it back together — spread over the top, it replaced the pill's styling wholesale and left the label as bare
-// text with no background, no padding and nothing between the hand and the name.
-type RaisedHandsButtonProps = Omit<ComponentProps<typeof Box>, 'is' | 'className'> & {
-	small?: boolean;
-	icon?: unknown;
-	className?: string;
+export type CallRaisedHandsProps = {
+	hands: RaisedHand[];
 };
-
-const RaisedHandsButton = forwardRef<HTMLButtonElement, RaisedHandsButtonProps>(function RaisedHandsButton(
-	{ small: _small, icon: _icon, className, children, ...props },
-	ref,
-) {
-	return (
-		<Box is='button' type='button' ref={ref} className={[buttonStyles, className]} {...props}>
-			{children}
-		</Box>
-	);
-});
 
 /**
  * Who is waiting to speak, next in line first.
@@ -65,8 +26,7 @@ const RaisedHandsButton = forwardRef<HTMLButtonElement, RaisedHandsButtonProps>(
  * Nothing is rendered when nobody has their hand up: an empty queue is not a thing to say, and a permanent
  * control that is usually blank teaches people to stop reading it.
  */
-// eslint-disable-next-line react/no-multi-comp
-const CallRaisedHands = ({ hands }: { hands: RaisedHand[] }) => {
+const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 	const { t } = useTranslation();
 
 	if (!hands.length) {

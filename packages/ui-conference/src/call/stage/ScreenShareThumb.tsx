@@ -6,19 +6,18 @@ import { ownBadgeStyles, screenThumbStyles, spotlightOverlayStyles } from './sta
 export type ScreenShareThumbProps = {
 	stream: MediaStream;
 	label: string;
-	isLocal: boolean;
 	onSpotlight: () => void;
 };
 
 /** A screen shared while another one has the stage, with a button, on hover, to give it the stage instead. */
-const ScreenShareThumb = ({ stream, label, isLocal, onSpotlight }: ScreenShareThumbProps) => {
+const ScreenShareThumb = ({ stream, label, onSpotlight }: ScreenShareThumbProps) => {
 	const [videoRef] = usePlayMediaStream(stream);
 	return (
 		<Box className={screenThumbStyles}>
 			<video
 				ref={videoRef}
 				preload='metadata'
-				muted={isLocal}
+				muted
 				style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: 'black' }}
 			>
 				<track kind='captions' />

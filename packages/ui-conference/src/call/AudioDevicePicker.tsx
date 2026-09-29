@@ -3,46 +3,17 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
-import { ActionButton, stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
-import type { ComponentProps, MouseEvent } from 'react';
-import { forwardRef, useCallback, useMemo, useState } from 'react';
+import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
+import type { MouseEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import VoiceActivity from './VoiceActivity';
+import AudioDevicePickerButton from './AudioDevicePickerButton';
 import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { useAudioLevel } from './hooks/useAudioLevel';
 import { useMediaDevices } from './hooks/useMediaDevices';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices } from './lib/deviceLabels';
 import { NOISE_METHOD_LABELS, NOISE_METHOD_NOTES } from './lib/mediaChoiceLabels';
-
-type AudioDevicePickerButtonProps = {
-	small?: boolean;
-	/** How loud the microphone is hearing, from 0 to 1. Shown in place of the chevron. */
-	level: number;
-	/** Whether the microphone is off, in which case there is no activity to show and the chevron stays. */
-	micMuted: boolean;
-} & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
-
-// GenericMenu passes `small: true` when the button is disabled, and clones the button with the props that open the
-// menu, which is why they are forwarded as they come.
-const AudioDevicePickerButton = forwardRef<HTMLButtonElement, AudioDevicePickerButtonProps>(function AudioDevicePickerButton(
-	{ small: _small, level, micMuted, ...props },
-	ref,
-) {
-	// A live microphone shows what it is hearing rather than a chevron: the one thing a caller wondering whether they
-	// are being heard wants to know. A muted mic has nothing to show, so there the chevron stays.
-	return (
-		<ActionButton
-			secondary
-			flexShrink={1}
-			flexGrow={0}
-			{...props}
-			label='Device options'
-			icon={micMuted ? 'chevron-up' : <VoiceActivity level={level} size={props.large ? 24 : 20} />}
-			ref={ref}
-		/>
-	);
-});
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	content: (
@@ -54,19 +25,11 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	id: `default-${type}`,
 });
 
-export type AudioDevicePickerProps = {
-	/** Matches the larger variant of the microphone toggle this picker is fused to. */
-	large?: boolean;
-	/** Whether the microphone is off: the picker takes the toggle's colour so the two read as one control. */
-	danger?: boolean;
-};
-
 /** Prefixed ids, so the rows in the menu that are not devices are not mistaken for devices. */
 const NOISE_METHOD_PREFIX = 'noise-method:';
 
 /** The microphone and speaker of a call running in this window, with the noise cancelling done to the microphone. */
-// eslint-disable-next-line react/no-multi-comp
-const AudioDevicePicker = ({ danger = false, large = false }: AudioDevicePickerProps) => {
+const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 
 	const { self } = useCallState();
@@ -249,7 +212,7 @@ const AudioDevicePicker = ({ danger = false, large = false }: AudioDevicePickerP
 
 				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
 			}}
-			button={<AudioDevicePickerButton danger={danger} large={large} level={micLevel} micMuted={self.muted} />}
+			button={<AudioDevicePickerButton level={micLevel} micMuted={self.muted} />}
 		/>
 	);
 };

@@ -2,28 +2,14 @@ import { Box, RadioButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { ActionButton } from '@rocket.chat/ui-voip';
-import type { ComponentProps } from 'react';
-import { forwardRef, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallDeviceSelection, useCallMediaProcessing } from './context';
+import CameraPickerButton from './CameraPickerButton';
+import { useCallDeviceSelection, useCallMediaProcessing, useCallState } from './context';
 import { useMediaDevices } from './hooks/useMediaDevices';
 import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/deviceLabels';
 import { BLUR_LEVEL_LABELS, BLUR_MODEL_LABELS, VIDEO_QUALITY_LABELS } from './lib/mediaChoiceLabels';
-
-type CameraPickerButtonProps = {
-	small?: boolean;
-} & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
-
-// GenericMenu passes `small: true` when the button is disabled, and clones the button with the props that open the
-// menu, which is why they are forwarded as they come.
-const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps>(function CameraPickerButton(
-	{ small: _small, ...props },
-	ref,
-) {
-	return <ActionButton secondary flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-up' ref={ref} />;
-});
 
 /** Prefixed ids, so the rows in the menu that are not cameras are not mistaken for cameras. */
 const BLUR_LEVEL_PREFIX = 'blur-level:';
@@ -31,16 +17,10 @@ const BLUR_MODEL_PREFIX = 'blur-model:';
 const BACKGROUND_IMAGE_PREFIX = 'background-image:';
 const VIDEO_QUALITY_PREFIX = 'video-quality:';
 
-export type CameraPickerProps = {
-	danger?: boolean;
-	/** Matches the larger variant of the camera toggle this picker is fused to. */
-	large?: boolean;
-};
-
 /** The camera of a call running in this window, with what is done to its picture: quality, blur, background. */
-// eslint-disable-next-line react/no-multi-comp
-const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
+const CameraPicker = () => {
 	const { t } = useTranslation();
+	const { self } = useCallState();
 	const { selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
 	const { backgroundBlur, videoQuality } = useCallMediaProcessing();
 	const { devices } = useMediaDevices();
@@ -234,7 +214,7 @@ const CameraPicker = ({ danger = false, large = false }: CameraPickerProps) => {
 					if (id === currentId) return;
 					selectCamera(id);
 				}}
-				button={<CameraPickerButton danger={danger} large={large} />}
+				button={<CameraPickerButton cameraOff={!self.cameraOn} />}
 			/>
 			<input
 				ref={backgroundImageInput}

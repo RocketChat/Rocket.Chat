@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 
+import MainTile from './MainTile';
+import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, spotlightSelfPipStyles } from './stageStyles';
-import CallTile from '../CallTile';
 import type { StageTile } from '../lib/stageTiles';
 
 export type SpotlightLayoutProps = {
@@ -13,11 +14,11 @@ export type SpotlightLayoutProps = {
 const SpotlightLayout = ({ featured, self }: SpotlightLayoutProps) => (
 	<Box display='flex' width='full' height='full' position='relative'>
 		<Box className={mainStreamStyles}>
-			<CallTile {...featured} />
+			<MainTile tile={featured} />
 		</Box>
 		{self && self.id !== featured.id && (
 			<Box className={spotlightSelfPipStyles}>
-				<CallTile {...self} compact />
+				<ThumbnailTile tile={self} />
 			</Box>
 		)}
 	</Box>

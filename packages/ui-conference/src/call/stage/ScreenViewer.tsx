@@ -1,29 +1,26 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { usePlayMediaStream } from '@rocket.chat/ui-voip';
+import type { ReactNode } from 'react';
 
-import { mainStreamStyles, ownBadgeStyles, stopShareButtonStyles } from './stageStyles';
+import { mainStreamStyles, ownBadgeStyles } from './stageStyles';
 
 export type ScreenViewerProps = {
 	stream: MediaStream;
 	label: string;
-	isLocal?: boolean;
-	onStop?: () => void;
+	/** Controls over the screen, for whoever may act on it. */
+	children?: ReactNode;
 };
 
-/** A shared screen at the size of the stage. */
-const ScreenViewer = ({ stream, label, isLocal, onStop }: ScreenViewerProps) => {
+/** A shared screen at the size of the stage. Muted: the screen's own audio, if any, plays with the rest of the call. */
+const ScreenViewer = ({ stream, label, children }: ScreenViewerProps) => {
 	const [videoRef] = usePlayMediaStream(stream);
 	return (
 		<Box className={mainStreamStyles}>
-			<video ref={videoRef} preload='metadata' muted={isLocal} style={{ width: '100%', height: '100%', objectFit: 'contain' }}>
+			<video ref={videoRef} preload='metadata' muted style={{ width: '100%', height: '100%', objectFit: 'contain' }}>
 				<track kind='captions' />
 			</video>
 			<Box className={ownBadgeStyles}>{label}</Box>
-			{isLocal && onStop && (
-				<Box className={stopShareButtonStyles}>
-					<IconButton icon='cross' small secondary onClick={onStop} title='Stop sharing' />
-				</Box>
-			)}
+			{children}
 		</Box>
 	);
 };

@@ -15,19 +15,21 @@ export type StageSelf = {
 	audioStream?: MediaStream | null;
 };
 
-export type StageTile = {
-	id: string;
+/** What a tile shows of anyone in the call. */
+export type TileParticipant = {
 	displayName: string;
 	avatarUrl?: string;
 	muted: boolean;
 	held: boolean;
 	cameraStream?: MediaStream | null;
+	/** Drives the speaking indicator. */
 	audioStream?: MediaStream | null;
-	mirrored: boolean;
-	muteVideoAudio: boolean;
+	/** Their place in the raised-hand queue, from 1, while their hand is up. */
 	handPosition?: number;
-	sendHeight?: number;
 };
+
+/** The reader's tile says what it sends; nobody else's can. */
+export type StageTile = TileParticipant & { id: string } & ({ kind: 'self'; sendHeight?: number } | { kind: 'participant' });
 
 export type StageSize = { width: number; height: number };
 
@@ -61,12 +63,12 @@ export const buildStageTiles = (
 		held: self.held,
 		cameraStream: self.cameraStream,
 		audioStream: self.audioStream,
-		mirrored: true,
-		muteVideoAudio: true,
+		kind: 'self',
 		handPosition: handPositions?.[self.id],
 		sendHeight: self.sendHeight,
 	},
-	...remoteParticipants.map((p) => ({
+	...remoteParticipants.map((p): StageTile => ({
+		kind: 'participant',
 		id: p.id,
 		displayName: p.displayName,
 		avatarUrl: p.avatarUrl,
@@ -74,8 +76,6 @@ export const buildStageTiles = (
 		held: p.held,
 		cameraStream: p.cameraStream,
 		audioStream: p.audioStream,
-		mirrored: false,
-		muteVideoAudio: false,
 		handPosition: handPositions?.[p.id],
 	})),
 ];

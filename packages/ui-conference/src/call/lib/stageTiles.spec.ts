@@ -1,4 +1,4 @@
-import type { StageTile } from './stageTiles';
+import type { StageTile, TileParticipant } from './stageTiles';
 import {
 	absorbLonelyTile,
 	buildStageTiles,
@@ -12,28 +12,27 @@ import {
 
 const stream = {} as MediaStream;
 
-const tile = (id: string, extra: Partial<StageTile> = {}): StageTile => ({
+const tile = (id: string, extra: Partial<TileParticipant> = {}): StageTile => ({
+	kind: 'participant',
 	id,
 	displayName: id,
 	muted: false,
 	held: false,
-	mirrored: false,
-	muteVideoAudio: false,
 	...extra,
 });
 
 const tiles = (count: number) => Array.from({ length: count }, (_, i) => tile(`p${i}`));
 
 describe('buildStageTiles', () => {
-	it('puts the reader first, mirrored and silenced, with their hand position and send height', () => {
+	it('puts the reader first, with their hand position and send height', () => {
 		const [self, remote] = buildStageTiles(
 			{ id: 'me', displayName: 'Me', muted: true, held: false, sendHeight: 720 },
 			[{ id: 'ada', displayName: 'Ada', muted: false, held: false }],
 			{ ada: 1 },
 		);
 
-		expect(self).toMatchObject({ id: 'me', mirrored: true, muteVideoAudio: true, sendHeight: 720, handPosition: undefined });
-		expect(remote).toMatchObject({ id: 'ada', mirrored: false, muteVideoAudio: false, handPosition: 1 });
+		expect(self).toMatchObject({ kind: 'self', id: 'me', sendHeight: 720, handPosition: undefined });
+		expect(remote).toMatchObject({ kind: 'participant', id: 'ada', handPosition: 1 });
 		// A claim about someone else's encoder is not one this client can make.
 		expect(remote).not.toHaveProperty('sendHeight');
 	});

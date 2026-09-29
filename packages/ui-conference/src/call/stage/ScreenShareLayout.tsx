@@ -2,8 +2,9 @@ import { Box } from '@rocket.chat/fuselage';
 
 import ScreenShareThumb from './ScreenShareThumb';
 import ScreenViewer from './ScreenViewer';
+import StopShareButton from './StopShareButton';
+import ThumbnailTile from './ThumbnailTile';
 import { spotlightClasses } from './stageStyles';
-import CallTile from '../CallTile';
 import type { ScreenShare } from '../lib/screenShares';
 import type { SpotlightOrientation, StageTile } from '../lib/stageTiles';
 
@@ -21,19 +22,16 @@ const ScreenShareLayout = ({ featured, others, tiles, orientation, onPin, onStop
 	const classes = spotlightClasses(orientation);
 	return (
 		<Box className={classes.container}>
-			<ScreenViewer
-				stream={featured.stream}
-				label={featured.label}
-				isLocal={featured.isLocal}
-				onStop={featured.isLocal ? onStopLocalScreenShare : undefined}
-			/>
+			<ScreenViewer stream={featured.stream} label={featured.label}>
+				{featured.isLocal && onStopLocalScreenShare && <StopShareButton onStop={onStopLocalScreenShare} />}
+			</ScreenViewer>
 			<Box className={classes.thumbs} data-thumb-orientation={classes.thumbOrientation}>
 				{others.map((s) => (
-					<ScreenShareThumb key={`screen-${s.id}`} stream={s.stream} label={s.label} isLocal={s.isLocal} onSpotlight={() => onPin(s.id)} />
+					<ScreenShareThumb key={`screen-${s.id}`} stream={s.stream} label={s.label} onSpotlight={() => onPin(s.id)} />
 				))}
 				{tiles.map((t) => (
 					<Box key={t.id} className={classes.thumb}>
-						<CallTile {...t} compact />
+						<ThumbnailTile tile={t} />
 					</Box>
 				))}
 			</Box>

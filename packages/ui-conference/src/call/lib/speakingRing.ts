@@ -13,8 +13,11 @@ export const speakingRingLevel = (audioLevel: number): number =>
 		? MIN_VISIBLE_RING + (1 - MIN_VISIBLE_RING) * Math.min(1, (audioLevel - SPEAKING_THRESHOLD) / (1 - SPEAKING_THRESHOLD))
 		: 0;
 
-/** The ring's width in pixels; thinner on a thumbnail. */
-export const speakingRingThickness = (ringLevel: number, compact: boolean): number => Math.round(ringLevel * (compact ? 3 : 4));
+/** How wide, in pixels, the ring gets at full volume: thinner on a thumbnail. */
+export const TILE_RING_WIDTH = 4;
+export const THUMBNAIL_RING_WIDTH = 3;
+
+export const speakingRingThickness = (ringLevel: number, maxWidth: number): number => Math.round(ringLevel * maxWidth);
 
 const BACKDROP_TINTS = ['#5f141480', '#1a3a5f80', '#145f2a80', '#5f4a1480', '#3a145f80'];
 

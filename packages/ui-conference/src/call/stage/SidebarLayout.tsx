@@ -1,8 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 
+import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
+import ThumbnailTile from './ThumbnailTile';
 import { mainStreamStyles, spotlightClasses } from './stageStyles';
-import CallTile from '../CallTile';
 import type { SpotlightOrientation, StageSize, StageTile } from '../lib/stageTiles';
 import { sidebarCapacity, splitByPriority } from '../lib/stageTiles';
 
@@ -28,13 +29,13 @@ const SidebarLayout = ({ featured, tiles, activeSpeakerId, selfId, stageSize, or
 	return (
 		<Box className={classes.container}>
 			<Box className={mainStreamStyles}>
-				<CallTile {...featured} />
+				<MainTile tile={featured} />
 			</Box>
 			{(visible.length > 0 || hidden.length > 0) && (
 				<Box className={classes.thumbs} style={{ overflow: 'hidden' }} data-thumb-orientation={classes.thumbOrientation}>
 					{visible.map((t) => (
 						<Box key={t.id} className={classes.thumb}>
-							<CallTile {...t} compact />
+							<ThumbnailTile tile={t} />
 						</Box>
 					))}
 					{hidden.length > 0 && (

@@ -202,7 +202,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 		<ButtonGroup large style={{ position: 'relative', gap: 8 }}>
 			<Box className={deviceControlStyles}>
 				<Box>
-					<AudioDevicePicker danger={self.muted} large />
+					<AudioDevicePicker />
 				</Box>
 				<Box>
 					<ToggleButton
@@ -218,7 +218,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 			</Box>
 			<Box className={deviceControlStyles}>
 				<Box>
-					<CameraPicker danger={!self.cameraOn} large />
+					<CameraPicker />
 				</Box>
 				<Box>
 					<ToggleButton
