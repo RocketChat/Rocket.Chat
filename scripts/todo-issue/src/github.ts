@@ -180,7 +180,7 @@ function buildIssueBodyFromGroup(todos: TodoItem[], title: string, owner: string
 	const bodies = [...new Set(todos.map((t) => t.body).filter(Boolean))] as string[];
 	const locationLines = todos.map((todo) => {
 		const blobUrl = `https://github.com/${owner}/${repo}/blob/${sha}/${encodeURI(todo.filename)}#L${todo.line}-L${todo.line + BLOB_LINES}`;
-		const variant = todo.title === title ? '' : ` — \`${todo.title}\``;
+		const variant = todo.title === title ? '' : ` — ${todo.title}`;
 		return `- [\`${todo.filename}#L${todo.line}\`](${blobUrl})${variant}`;
 	});
 	const lines = [
