@@ -88,3 +88,45 @@ test('stereo', async () => {
 
 	expect(hash.read()).toBe('ab6daeb1c563389cafacc0ec4ed963ee8ae8e8d7');
 });
+
+describe.each([
+	{ channels: 1, sampleRate: 48000, kbps: 32 },
+	{ channels: 1, sampleRate: 44100, kbps: 32 },
+	{ channels: 2, sampleRate: 44100, kbps: 128 },
+])('$channels channel(s) at $sampleRate Hz and $kbps kbps', ({ channels, sampleRate, kbps }) => {
+	const encode = (samples: Int16Array, chunkSize: number) => {
+		const encoder = new Mp3Encoder(channels, sampleRate, kbps);
+		const chunks: Uint8Array[] = [];
+
+		for (let i = 0; i < samples.length; i += chunkSize) {
+			chunks.push(encoder.encodeBuffer(samples.subarray(i, i + chunkSize)));
+		}
+		chunks.push(encoder.flush());
+
+		return Buffer.concat(chunks);
+	};
+
+	const startsWithFrameSync = (mp3: Buffer) => mp3.length > 1 && mp3[0] === 0xff && (mp3[1] & 0xe0) === 0xe0;
+
+	it('encodes silence', () => {
+		expect(startsWithFrameSync(encode(new Int16Array(sampleRate), 4096))).toBe(true);
+	});
+
+	it('encodes a tone', () => {
+		const tone = Int16Array.from({ length: sampleRate }, (_, i) => Math.round(Math.sin((2 * Math.PI * 440 * i) / sampleRate) * 16000));
+		expect(startsWithFrameSync(encode(tone, 4096))).toBe(true);
+	});
+
+	it('encodes buffers shorter than a frame', () => {
+		const tone = Int16Array.from({ length: 2000 }, (_, i) => Math.round(Math.sin(i / 10) * 16000));
+		expect(startsWithFrameSync(encode(tone, 5))).toBe(true);
+	});
+
+	it('encodes a single sample', () => {
+		expect(startsWithFrameSync(encode(new Int16Array([1000]), 1))).toBe(true);
+	});
+
+	it('flushes without any input', () => {
+		expect(() => encode(new Int16Array(0), 1)).not.toThrow();
+	});
+});
