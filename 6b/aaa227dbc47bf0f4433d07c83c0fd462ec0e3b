@@ -1,0 +1,22 @@
+apps/meteor/server/api/definition.ts
+  s_6a5ae0f724fffc::t_b42fb85c7df54d 295-301
+apps/meteor/server/api/ApiClass.ts
+  s_6a5ae0f724fffc::t_dfe7a99e6790ff 25
+  s_6a5ae0f724fffc::t_2b9eb455bf37d8 701,718,739,760
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6baaa227dbc47bf0f4433d07c83c0fd462ec0e3b",
+  "prompts": {},
+  "sessions": {
+    "s_6a5ae0f724fffc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b68cdf-6b26-4893-bacb-30ad5c6ad7e2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
