@@ -1,0 +1,22 @@
+.changeset/young-ties-rest.md
+  h_4c386397e672f4 6
+apps/meteor/package.json
+  h_4c386397e672f4 113
+ee/packages/federation-matrix/package.json
+  h_4c386397e672f4 25
+packages/core-services/package.json
+  h_4c386397e672f4 21
+yarn.lock
+  h_4c386397e672f4 9332,9567,9596-9598,9612,10209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1e2f4e6fb1413ca3477c1f444471f8afe380e39b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
