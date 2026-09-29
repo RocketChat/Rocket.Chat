@@ -8,14 +8,7 @@ import {
 } from '@livekit/components-react';
 import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type {
-	CallActions,
-	CallConnectionState,
-	CallMediaProcessing,
-	CallSelf,
-	CallState,
-	RemoteParticipantInfo,
-} from '@rocket.chat/ui-conference';
+import type { CallActions, CallMediaProcessing, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
 	CallDeviceSelectionProvider,
@@ -27,11 +20,12 @@ import {
 	useUpdateCallPreferences,
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { LocalAudioTrack, LocalVideoTrack, Participant, RemoteParticipant } from 'livekit-client';
-import { ConnectionState, ParticipantKind, Room, RoomEvent, Track } from 'livekit-client';
+import type { LocalAudioTrack, LocalVideoTrack, RemoteParticipant } from 'livekit-client';
+import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useBackgroundBlur } from './useBackgroundBlur';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
@@ -57,30 +51,6 @@ export type LiveKitCallProviderProps = {
 
 /** New arrivals are announced only while each face in the call still matters. */
 const JOIN_CHIME_MAX_PARTICIPANTS = 6;
-
-/**
- * Agents are not people in the call. `kind` can be set after an agent first appears, so its identity — fixed at
- * join time, `agent-AJ_<jobId>` when the worker sets none — is checked too.
- */
-const isAgentParticipant = (participant: Participant) => {
-	if (participant.kind === ParticipantKind.AGENT) return true;
-	const id = participant.identity || '';
-	return id.startsWith('agent-') || id.startsWith('agent_') || /^AJ_[A-Za-z0-9]+$/.test(id);
-};
-
-const connectionStateFor = (state: ConnectionState): CallConnectionState => {
-	switch (state) {
-		case ConnectionState.Connected:
-			return 'connected';
-		case ConnectionState.Connecting:
-			return 'connecting';
-		case ConnectionState.Reconnecting:
-		case ConnectionState.SignalReconnecting:
-			return 'reconnecting';
-		default:
-			return 'disconnected';
-	}
-};
 
 /** The preflight's choices as they stood when the call connected: what changes during the call is the room's to apply. */
 const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preferences'], connect: boolean) => {
@@ -141,10 +111,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 	} = useLocalParticipant({ room });
 	const allParticipants = useParticipants({ room });
 
-	const remotes = useMemo(
-		() => allParticipants.filter((p) => p.identity !== localParticipant.identity && !isAgentParticipant(p)),
-		[allParticipants, localParticipant.identity],
-	);
+	const remotes = useMemo(() => otherPeople(allParticipants, localParticipant.identity), [allParticipants, localParticipant.identity]);
 	const remoteCameraTracks = useTracks([Track.Source.Camera], { room, onlySubscribed: true });
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
 	const remoteAudioTracks = useTracks([Track.Source.Microphone], { room, onlySubscribed: true });
@@ -154,25 +121,13 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 
 	const remoteParticipants = useMemo(
 		(): RemoteParticipantInfo[] =>
-			remotes.map((p) => {
-				const cam = remoteCameraTracks.find((t) => t.participant.identity === p.identity);
-				const scr = remoteScreenTracks.find((t) => t.participant.identity === p.identity);
-				const aud = remoteAudioTracks.find((t) => t.participant.identity === p.identity);
-				const micPub = p.getTrackPublication(Track.Source.Microphone);
-				// A muted publication can still surface here, and its stream renders as a black frame instead of the avatar.
-				const camMuted = cam?.publication?.isMuted ?? true;
-				const scrMuted = scr?.publication?.isMuted ?? true;
-				return {
-					id: p.identity,
-					displayName: p.name || p.identity,
-					avatarUrl: getUserAvatarPath({ userId: p.identity }),
-					muted: Boolean(!micPub || micPub.isMuted),
-					held: false,
-					cameraStream: cam && !camMuted ? cam.publication?.track?.mediaStream : undefined,
-					screenStream: scr && !scrMuted ? scr.publication?.track?.mediaStream : undefined,
-					audioStream: aud?.publication?.track?.mediaStream,
-				};
-			}),
+			remotes.map((p) =>
+				toRemoteParticipantInfo(
+					p,
+					{ camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks },
+					getUserAvatarPath({ userId: p.identity }),
+				),
+			),
 		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath],
 	);
 

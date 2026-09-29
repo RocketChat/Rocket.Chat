@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import CallReactions, { type CallReaction } from './CallReactions';
 import CallStage, { type StageLayout } from './CallStage';
 import { useCallActions, useCallState } from './context';
+import { handPositionsOf } from './lib/raisedHands';
 
 export type CallStageAreaProps = {
 	layout: StageLayout;
@@ -41,8 +42,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 		],
 	);
 
-	// Participant id → 1-based queue position for the raise-hand badge.
-	const handPositions = useMemo(() => Object.fromEntries(raisedHands.map(({ id }, index) => [id, index + 1])), [raisedHands]);
+	const handPositions = useMemo(() => handPositionsOf(raisedHands), [raisedHands]);
 
 	// Named from everyone in the call rather than from whoever has a tile, so a sender without one still arrives named.
 	const reactions = useMemo((): CallReaction[] => {

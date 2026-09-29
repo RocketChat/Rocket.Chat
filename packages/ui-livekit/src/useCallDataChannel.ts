@@ -6,24 +6,18 @@ import { RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-/** How long a reaction stays in state: the length of its animation, and a little over. */
-const REACTION_TTL_MS = 3500;
-
-type DataMessage = {
-	type?: string;
-	raised?: boolean;
-	raisedAt?: number;
-	emoji?: string;
-	reactionId?: string;
-	/** A hand we are being told about again for our benefit, not one that has just gone up. */
-	rebroadcast?: boolean;
-	/** Who a `mute` is aimed at, by identity. Everyone receives it; only its target acts on it. */
-	target?: string;
-};
-
-const encode = (message: DataMessage) => new TextEncoder().encode(JSON.stringify(message));
-
-const reactionIdFor = (identity: string, now: number) => `${identity}-${now}-${Math.random().toString(36).slice(2, 6)}`;
+import type { HandsMap } from './callDataProtocol';
+import {
+	applyHand,
+	createReaction,
+	dropHand,
+	encodeMessage as encode,
+	isHandNews,
+	orderRaisedHands,
+	parseMessage,
+	reactionIdFor,
+	sweepReactions,
+} from './callDataProtocol';
 
 /**
  * Raised hands, reactions and mute requests, carried over the room's data channel.
@@ -35,7 +29,7 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [handsMap, setHandsMap] = useState<Record<string, number>>({});
+	const [handsMap, setHandsMap] = useState<HandsMap>({});
 	const [localHandRaised, setLocalHandRaised] = useState(false);
 	const localRaisedAtRef = useRef(0);
 	/** Whose raised hand has already been announced, so the same hand is never announced twice. */
@@ -45,19 +39,15 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 
 	useEffect(() => {
 		const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
-			let msg: DataMessage;
-			try {
-				msg = JSON.parse(new TextDecoder().decode(payload));
-			} catch {
-				return;
-			}
+			const msg = parseMessage(payload);
+			if (!msg) return;
 			if (msg.type === 'hand') {
 				if (!participant) return;
 
 				// Announced only on the way up, and only for a hand that was not already up: a hand held through a
 				// reconnect, or rebroadcast because we arrived after it went up, is not news. Kept in a ref rather than
 				// read from state, because deciding inside a state updater means deciding again whenever React re-runs it.
-				if (msg.raised && !msg.rebroadcast && !announcedHandsRef.current.has(participant.identity)) {
+				if (isHandNews(msg, announcedHandsRef.current.has(participant.identity))) {
 					announcedHandsRef.current.add(participant.identity);
 					playHandRaiseChime();
 				}
@@ -65,10 +55,8 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 					announcedHandsRef.current.delete(participant.identity);
 				}
 
-				setHandsMap((prev) => ({
-					...prev,
-					[participant.identity]: msg.raised ? msg.raisedAt || Date.now() : 0,
-				}));
+				const now = Date.now();
+				setHandsMap((prev) => applyHand(prev, participant.identity, msg, now));
 				return;
 			}
 			if (msg.type === 'mute') {
@@ -88,21 +76,8 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 				});
 				return;
 			}
-			if (msg.type === 'reaction' && msg.emoji) {
-				const senderId = participant?.identity ?? localParticipant.identity;
-				const now = Date.now();
-				const { emoji } = msg;
-				setActiveReactions((prev) => [
-					...prev,
-					{
-						id: msg.reactionId || reactionIdFor(senderId, now),
-						participantId: senderId,
-						emoji,
-						sentAt: now,
-						expiresAt: now + REACTION_TTL_MS,
-					},
-				]);
-			}
+			const reaction = createReaction(participant?.identity ?? localParticipant.identity, msg.emoji, Date.now(), msg.reactionId);
+			setActiveReactions((prev) => [...prev, reaction]);
 		};
 		room.on(RoomEvent.DataReceived, onData);
 		return () => {
@@ -115,10 +90,7 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 		if (activeReactions.length === 0) return undefined;
 		const handle = setInterval(() => {
 			const now = Date.now();
-			setActiveReactions((prev) => {
-				const next = prev.filter((r) => r.expiresAt > now);
-				return next.length === prev.length ? prev : next;
-			});
+			setActiveReactions((prev) => sweepReactions(prev, now));
 		}, 1000);
 		return () => clearInterval(handle);
 	}, [activeReactions.length]);
@@ -128,10 +100,8 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 			const now = Date.now();
 			const reactionId = reactionIdFor(localParticipant.identity, now);
 			// Shown here at once: LiveKit does not deliver our own messages back to us.
-			setActiveReactions((prev) => [
-				...prev,
-				{ id: reactionId, participantId: localParticipant.identity, emoji, sentAt: now, expiresAt: now + REACTION_TTL_MS },
-			]);
+			const reaction = createReaction(localParticipant.identity, emoji, now, reactionId);
+			setActiveReactions((prev) => [...prev, reaction]);
 			void localParticipant.publishData(encode({ type: 'reaction', emoji, reactionId }), { reliable: false }).catch((err) => {
 				console.warn('reaction publish failed', err);
 			});
@@ -175,23 +145,12 @@ export const useCallDataChannel = (room: Room, localParticipant: LocalParticipan
 		[localParticipant],
 	);
 
-	const raisedHands = useMemo(
-		() =>
-			Object.entries(handsMap)
-				.filter(([, raisedAt]) => raisedAt > 0)
-				.map(([id, raisedAt]) => ({ id, raisedAt }))
-				.sort((a, b) => a.raisedAt - b.raisedAt),
-		[handsMap],
-	);
+	const raisedHands = useMemo(() => orderRaisedHands(handsMap), [handsMap]);
 
 	// Someone who leaves leaves the queue, so the positions behind them stay right.
 	useEffect(() => {
 		const onDisconnect = (participant: RemoteParticipant) => {
-			setHandsMap((prev) => {
-				if (!(participant.identity in prev)) return prev;
-				const { [participant.identity]: _drop, ...rest } = prev;
-				return rest;
-			});
+			setHandsMap((prev) => dropHand(prev, participant.identity));
 		};
 		room.on(RoomEvent.ParticipantDisconnected, onDisconnect);
 		return () => {

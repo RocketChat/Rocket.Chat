@@ -11,16 +11,7 @@ import AudioDevicePicker from './AudioDevicePicker';
 import type { StageLayout } from './CallStage';
 import CameraPicker from './CameraPicker';
 import { useCallActions, useCallState } from './context';
-import { useAudioLevel } from './hooks/useAudioLevel';
-
-// The same "actually speaking" threshold the tiles draw, so the hand drops on the signal users see.
-const SPEAKING_THRESHOLD = 0.12;
-
-// Pauses between words shorter than this keep the auto-lower countdown running.
-const SPEAKING_GAP_TOLERANCE_MS = 800;
-
-// How long someone speaks with their hand up before it drops: they have the floor.
-const AUTO_LOWER_AFTER_MS = 3000;
+import { useAutoLowerHand } from './hooks/useAutoLowerHand';
 
 // Google Meet's defaults, so there is no new vocabulary to learn.
 const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '🎉', '👏', '🤔', '🙏'];
@@ -152,40 +143,6 @@ const deviceControlStyles = css`
 		opacity: 0.7;
 	}
 `;
-
-/** Drops the reader's raised hand once they have been speaking for a while: they have the floor. */
-const useAutoLowerHand = (handRaised: boolean, microphoneStream: MediaStream | undefined, lowerHand: () => void) => {
-	const liveLevel = useAudioLevel(handRaised ? (microphoneStream ?? null) : null);
-	const autoLowerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	const lastSpeakingAtRef = useRef(0);
-
-	useEffect(() => {
-		if (!handRaised) {
-			if (autoLowerTimerRef.current) {
-				clearTimeout(autoLowerTimerRef.current);
-				autoLowerTimerRef.current = null;
-			}
-			lastSpeakingAtRef.current = 0;
-			return;
-		}
-		const now = Date.now();
-		if (liveLevel > SPEAKING_THRESHOLD) {
-			lastSpeakingAtRef.current = now;
-			if (!autoLowerTimerRef.current) {
-				autoLowerTimerRef.current = setTimeout(() => {
-					autoLowerTimerRef.current = null;
-					lowerHand();
-				}, AUTO_LOWER_AFTER_MS);
-			}
-			return;
-		}
-		if (autoLowerTimerRef.current && lastSpeakingAtRef.current > 0 && now - lastSpeakingAtRef.current > SPEAKING_GAP_TOLERANCE_MS) {
-			clearTimeout(autoLowerTimerRef.current);
-			autoLowerTimerRef.current = null;
-			lastSpeakingAtRef.current = 0;
-		}
-	}, [liveLevel, handRaised, lowerHand]);
-};
 
 export type CallControlsProps = {
 	layout: StageLayout;

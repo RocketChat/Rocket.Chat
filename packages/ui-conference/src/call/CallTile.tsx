@@ -2,26 +2,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Icon, Palette } from '@rocket.chat/fuselage';
 import { usePlayMediaStream } from '@rocket.chat/ui-voip';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo } from 'react';
 
 import VoiceActivity from './VoiceActivity';
-import { useAudioLevel } from './hooks/useAudioLevel';
+import { useSpeakingRing } from './hooks/useSpeakingRing';
 import { useStreamHasLiveVideo } from './hooks/useStreamHasLiveVideo';
-
-// Above this normalised audio level the speaking ring becomes visible. Keeps
-// background noise / fan hum from constantly lighting the border. Tuned for
-// the sublinear (pow 0.65) curve in useAudioLevel — higher than a linear
-// formula would need because the curve lifts quiet signals.
-const SPEAKING_THRESHOLD = 0.2;
-// Minimum visible intensity for the speaking ring. Anything above threshold
-// maps to at least this much display level so the border is clearly visible
-// even on the quietest speech — without this, levels just over the threshold
-// produce a near-invisible 1px ring.
-const MIN_VISIBLE_RING = 0.55;
-// After speech drops below threshold, keep the ring visible at the last
-// active level for this long before clearing it. Avoids a flickery indicator
-// during natural pauses between words.
-const SPEAKING_HOLD_MS = 1000;
+import { backdropTint, speakingRingThickness } from './lib/speakingRing';
 
 const tileStyles = css`
 	position: relative;
@@ -120,16 +106,6 @@ const avatarBackdropOverlayStyles = css`
 	pointer-events: none;
 `;
 
-const BACKDROP_TINTS = ['#5f141480', '#1a3a5f80', '#145f2a80', '#5f4a1480', '#3a145f80'];
-
-const nameToTint = (name: string): string => {
-	let h = 0;
-	for (let i = 0; i < name.length; i++) {
-		h = (h * 31 + name.charCodeAt(i)) | 0;
-	}
-	return BACKDROP_TINTS[Math.abs(h) % BACKDROP_TINTS.length];
-};
-
 type CallTileProps = {
 	displayName: string;
 	avatarUrl?: string;
@@ -175,37 +151,8 @@ const CallTile = memo(
 		const cameraActive = useStreamHasLiveVideo(cameraStream);
 		const avatarSize = compact ? 'x32' : 'x48';
 
-		// Speaking ring scales with audio RMS. Muted tiles never light up — a
-		// muted mic shouldn't visually "speak" even if there's residual signal.
-		// Anything over the threshold maps into [MIN_VISIBLE_RING, 1] so a quiet
-		// tail of speech still shows a clearly-visible border instead of a 1px hint.
-		const rawLevel = useAudioLevel(muted ? null : (audioStream ?? null));
-		const activeLevel =
-			rawLevel > SPEAKING_THRESHOLD
-				? MIN_VISIBLE_RING + (1 - MIN_VISIBLE_RING) * Math.min(1, (rawLevel - SPEAKING_THRESHOLD) / (1 - SPEAKING_THRESHOLD))
-				: 0;
-
-		// Display value lingers for SPEAKING_HOLD_MS after speech stops so the ring
-		// doesn't flicker on / off between words. While active, display tracks the
-		// current level live; once it drops to 0, a timer holds the last visible
-		// level then clears it.
-		const [displayLevel, setDisplayLevel] = useState(0);
-		const heldLevelRef = useRef(0);
-		useEffect(() => {
-			if (activeLevel > 0) {
-				heldLevelRef.current = activeLevel;
-				setDisplayLevel(activeLevel);
-				return;
-			}
-			if (heldLevelRef.current === 0) return;
-			const handle = setTimeout(() => {
-				heldLevelRef.current = 0;
-				setDisplayLevel(0);
-			}, SPEAKING_HOLD_MS);
-			return () => clearTimeout(handle);
-		}, [activeLevel]);
-
-		const ringThickness = Math.round(displayLevel * (compact ? 3 : 4));
+		const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, Boolean(muted));
+		const ringThickness = speakingRingThickness(displayLevel, Boolean(compact));
 		const ringColor = Palette.stroke['stroke-highlight'].toString();
 
 		return (
@@ -242,7 +189,7 @@ const CallTile = memo(
 				) : avatarUrl ? (
 					<>
 						<Box is='img' src={avatarUrl} alt='' className={avatarBackdropStyles} />
-						<Box className={avatarBackdropOverlayStyles} style={{ backgroundColor: nameToTint(displayName) }} />
+						<Box className={avatarBackdropOverlayStyles} style={{ backgroundColor: backdropTint(displayName) }} />
 						<Avatar url={avatarUrl} size={avatarSize} />
 					</>
 				) : (
