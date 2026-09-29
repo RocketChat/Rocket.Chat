@@ -10561,6 +10561,7 @@ __metadata:
     react-is: "npm:~19.2.8"
     react-keyed-flatten-children: "npm:~5.1.3"
     react-stately: "npm:~3.35.0"
+    react-timing-hooks: "npm:~5.2.0"
     react-virtuoso: "npm:~4.18.16"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:~2.17.7"
