@@ -58,7 +58,7 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 		}
 
-		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
+		const caller = await this.getCallerContactFromInvite(session.sessionId, req, callee.id);
 		logger.debug({ msg: 'incoming call from', callerContact: caller });
 
 		const divertedBy = await this.getDiversionContactFromInvite(req);
@@ -344,11 +344,15 @@ export class IncomingSipCall extends BaseSipCall {
 		};
 	}
 
-	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {
+	private static async getCallerContactFromInvite(
+		sessionId: string,
+		req: SrfRequest,
+		calleeId: string,
+	): Promise<MediaCallSignedContact<'sip'>> {
 		logger.debug({ msg: 'IncomingSipCall.getCallerContactFromInvite' });
 
-		const displayName = req.callingName || undefined;
 		const sipExtension = req.callingNumber;
+		const displayName = (await this.getContactNameForCallee(calleeId, sipExtension)) || req.callingName || undefined;
 
 		const defaultContactInfo: MediaCallContactInformation = {
 			sipExtension,
@@ -370,5 +374,18 @@ export class IncomingSipCall extends BaseSipCall {
 			contractId: sessionId,
 			...defaultContactInfo,
 		};
+	}
+
+	private static async getContactNameForCallee(calleeId: string, sipExtension: string): Promise<string | undefined> {
+		if (!sipExtension) {
+			return undefined;
+		}
+
+		return getMediaCallServer()
+			.resolveCallerName(calleeId, sipExtension)
+			.catch((err) => {
+				logger.warn({ msg: 'Failed to resolve a caller name from the contacts of the called user', err });
+				return undefined;
+			});
 	}
 }
