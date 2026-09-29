@@ -374,6 +374,9 @@ export class Agenda extends EventEmitter {
 
 	private async _createScheduledJob(when: string | Date, name: string, data: IJob['data']): Promise<Job> {
 		const job = this.create(name, data);
+
+        job.unique({ name }, { insertOnly: true });
+
 		await job.schedule(when).save();
 		return job;
 	}
