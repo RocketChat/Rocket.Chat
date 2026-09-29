@@ -44,9 +44,10 @@ export const MAX_VISIBLE_TILES = 9;
  */
 const SPOTLIGHT_SIDE_BY_SIDE_ASPECT = 1.5;
 
-/** The thumb sizes the sidebar styles draw: a 200px-wide 16:9 column, or a 140px-wide strip. */
-const COLUMN_THUMB_HEIGHT = 200 * (9 / 16);
-const STRIP_THUMB_WIDTH = 140;
+/** The thumb sizes the sidebar draws, in pixels: a column of 16:9 thumbs, or a strip of fixed-width ones. */
+export const COLUMN_THUMB_WIDTH = 200;
+export const STRIP_THUMB_WIDTH = 140;
+const COLUMN_THUMB_HEIGHT = COLUMN_THUMB_WIDTH * (9 / 16);
 const STAGE_PADDING = 16;
 
 /** Everyone's tile, the reader first. */

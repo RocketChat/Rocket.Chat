@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { CallTimer } from '@rocket.chat/ui-client';
 
 import { useCallState } from './context';
@@ -8,7 +8,7 @@ const callHeaderStyles = css`
 	display: inline-flex;
 	align-items: center;
 	min-width: 0;
-	color: rgba(255, 255, 255, 0.85);
+	color: ${Palette.text['font-pure-white'].toString()};
 	font-variant-numeric: tabular-nums;
 `;
 

@@ -108,7 +108,7 @@ const ConferencePreflight = ({
 					/>
 				)}
 
-				<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
+				<Box position='absolute' insetBlockEnd={12} display='flex' justifyContent='center'>
 					<ButtonGroup>
 						{capabilities.mic && (
 							<CallDeviceToggle
@@ -174,7 +174,7 @@ const ConferencePreflight = ({
 				flexGrow={1}
 				paddingInline={24}
 				paddingBlock={24}
-				style={{ gap: columns ? 48 : 32 }}
+				gap={columns ? 48 : 32}
 			>
 				{deviceMedia ? <deviceMedia.Provider capabilities={capabilities}>{previewColumn}</deviceMedia.Provider> : previewColumn}
 				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>

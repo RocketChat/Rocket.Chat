@@ -40,7 +40,7 @@ const CameraPicker = () => {
 			id: `${device.deviceId}-videoinput`,
 			textValue: name,
 			content: (
-				<Box title={name} fontSize={14} display='flex' flexDirection='column' minWidth={0}>
+				<Box title={name} fontScale='p2' display='flex' flexDirection='column' minWidth={0}>
 					<Box is='span' withTruncatedText>
 						{name}
 					</Box>
@@ -63,7 +63,7 @@ const CameraPicker = () => {
 		id: `${BLUR_LEVEL_PREFIX}${blurLevel}`,
 		textValue: t(BLUR_LEVEL_LABELS[blurLevel]),
 		content: (
-			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
+			<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
 				<Box is='span' withTruncatedText>
 					{t(BLUR_LEVEL_LABELS[blurLevel])}
 				</Box>
@@ -93,7 +93,7 @@ const CameraPicker = () => {
 								id: `${BACKGROUND_IMAGE_PREFIX}use`,
 								textValue: t('Background_image'),
 								content: (
-									<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
+									<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
 										<Box is='span' withTruncatedText>
 											{t('Background_image')}
 										</Box>
@@ -111,7 +111,7 @@ const CameraPicker = () => {
 				{
 					id: `${BACKGROUND_IMAGE_PREFIX}choose`,
 					textValue: t('Background_image_choose'),
-					content: <Box fontSize={14}>{t('Background_image_choose')}</Box>,
+					content: <Box fontScale='p2'>{t('Background_image_choose')}</Box>,
 				},
 			]
 		: [];
@@ -124,7 +124,7 @@ const CameraPicker = () => {
 					id: `${BLUR_MODEL_PREFIX}${model}`,
 					textValue: t(BLUR_MODEL_LABELS[model]),
 					content: (
-						<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
+						<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
 							<Box is='span' withTruncatedText>
 								{t(BLUR_MODEL_LABELS[model])}
 							</Box>
@@ -142,7 +142,7 @@ const CameraPicker = () => {
 		id: `${VIDEO_QUALITY_PREFIX}${quality}`,
 		textValue: t(VIDEO_QUALITY_LABELS[quality]),
 		content: (
-			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
+			<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
 				<Box is='span' withTruncatedText>
 					{t(VIDEO_QUALITY_LABELS[quality])}
 				</Box>

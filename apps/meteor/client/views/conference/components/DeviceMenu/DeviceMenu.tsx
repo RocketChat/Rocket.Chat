@@ -25,7 +25,7 @@ const triggerStyles = css`
 		min-width: 0;
 		align-items: center;
 		justify-content: flex-start;
-		gap: 6px;
+		gap: 0.5rem;
 	}
 `;
 
@@ -61,7 +61,7 @@ const DeviceMenu = ({ icon, label, current, disabled, children }: DeviceMenuProp
 		<Box display='flex' alignItems='center' minWidth={0}>
 			<Button
 				ref={reference}
-				small
+				size='small'
 				className={triggerStyles}
 				aria-label={label}
 				aria-haspopup='listbox'

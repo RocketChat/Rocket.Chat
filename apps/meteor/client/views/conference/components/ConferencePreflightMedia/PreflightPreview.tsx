@@ -41,8 +41,9 @@ const PreflightPreview = () => {
 					muted
 					width='100%'
 					height='100%'
+					objectFit='cover'
 					// Mirrored, because a self-view that isn't reads as someone else's camera.
-					style={{ objectFit: 'cover', transform: 'scaleX(-1)' }}
+					style={{ transform: 'scaleX(-1)' }}
 				/>
 			) : (
 				<PreflightCameraPlaceholder cam={preferences.cam} note={failed ? t('Could_not_access_your_camera') : undefined} />
@@ -50,7 +51,7 @@ const PreflightPreview = () => {
 
 			{/* Proof before joining that the microphone is picked up — the one thing this screen can't otherwise show. */}
 			{preferences.mic && preview.stream && (
-				<Box position='absolute' style={{ bottom: 12, left: 12 }} display='flex'>
+				<Box position='absolute' insetBlockEnd={12} insetInlineStart={12} display='flex'>
 					<VoiceActivity stream={preview.stream} size={16} badge />
 				</Box>
 			)}

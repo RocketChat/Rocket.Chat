@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Box, Divider, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import CallDiagnosticsParticipantCard from './CallDiagnosticsParticipantCard';
@@ -11,36 +11,25 @@ export type CallDiagnosticsPanelProps = {
 	onClose: () => void;
 };
 
-const sectionStyles = css`
-	padding-block: 8px;
-	padding-inline: 16px;
-`;
-
 const labelStyles = css`
-	font-size: 12px;
-	font-weight: 600;
 	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	color: var(--rcx-color-font-secondary-info);
-	margin-block-end: 8px;
+	letter-spacing: 0.03125rem;
 `;
 
-const qualityDotStyles = (quality: string) => {
-	const colors: Record<string, string> = {
-		excellent: '#2de0a5',
-		good: '#2de0a5',
-		poor: '#f5a623',
-		lost: '#f44336',
-	};
-	return css`
-		display: inline-block;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: ${colors[quality.toLowerCase()] || 'var(--rcx-color-font-secondary-info)'};
-		margin-inline-end: 6px;
-	`;
+const QUALITY_COLORS: Record<string, string> = {
+	excellent: Palette.statusColor['status-font-on-success'].toString(),
+	good: Palette.statusColor['status-font-on-success'].toString(),
+	poor: Palette.statusColor['status-font-on-warning'].toString(),
+	lost: Palette.text['font-danger'].toString(),
 };
+
+const qualityDotStyles = (quality: string) => css`
+	display: inline-block;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 50%;
+	background: ${QUALITY_COLORS[quality.toLowerCase()] ?? Palette.text['font-secondary-info'].toString()};
+`;
 
 const formatBytes = (bytes?: number): string => {
 	if (bytes == null) {
@@ -69,20 +58,22 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 			<CallPanelHeader title={t('Connection_info')} onClose={onClose} />
 			<Box flexGrow={1} overflowY='auto'>
 				{!diagnostics ? (
-					<Box className={sectionStyles} color='font-secondary-info' fontStyle='italic'>
+					<Box paddingBlock={8} paddingInline={16} color='font-secondary-info' fontStyle='italic'>
 						{t('Waiting_for_data')}
 					</Box>
 				) : (
 					<>
-						<Box className={sectionStyles}>
-							<Box className={labelStyles}>{t('Connection')}</Box>
+						<Box paddingBlock={8} paddingInline={16}>
+							<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
+								{t('Connection')}
+							</Box>
 							<CallDiagnosticsStatRow label={t('Server')} value={diagnostics.serverUrl.replace(/^wss?:\/\//, '')} />
 							<CallDiagnosticsStatRow label={t('Status')} value={diagnostics.connectionState} />
 							<CallDiagnosticsStatRow
 								label={t('Quality')}
 								value={
 									<Box display='inline-flex' alignItems='center'>
-										<Box className={qualityDotStyles(diagnostics.connectionQuality)} is='span' />
+										<Box className={qualityDotStyles(diagnostics.connectionQuality)} is='span' marginInlineEnd={8} />
 										{diagnostics.connectionQuality}
 									</Box>
 								}
@@ -92,8 +83,10 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 
 						<Divider />
 
-						<Box className={sectionStyles}>
-							<Box className={labelStyles}>{t('Bandwidth')}</Box>
+						<Box paddingBlock={8} paddingInline={16}>
+							<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
+								{t('Bandwidth')}
+							</Box>
 							<CallDiagnosticsStatRow label={t('Upload')} value={fmtKbps(diagnostics.uploadKbps)} />
 							<CallDiagnosticsStatRow label={t('Download')} value={fmtKbps(diagnostics.downloadKbps)} />
 							<CallDiagnosticsStatRow label={t('Total_sent')} value={formatBytes(diagnostics.totalBytesSent)} />
@@ -102,8 +95,10 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 
 						<Divider />
 
-						<Box className={sectionStyles}>
-							<Box className={labelStyles}>{t('Video_sending')}</Box>
+						<Box paddingBlock={8} paddingInline={16}>
+							<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
+								{t('Video_sending')}
+							</Box>
 							<CallDiagnosticsStatRow
 								label={t('Resolution')}
 								value={
@@ -118,8 +113,10 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 						{diagnostics.backgroundBlur && (
 							<>
 								<Divider />
-								<Box className={sectionStyles}>
-									<Box className={labelStyles}>Background blur</Box>
+								<Box paddingBlock={8} paddingInline={16}>
+									<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
+										Background blur
+									</Box>
 									<CallDiagnosticsStatRow label='Processor FPS' value={fmtDecimal(diagnostics.backgroundBlur.fps)} />
 									<CallDiagnosticsStatRow label='Frame work' value={fmtDecimal(diagnostics.backgroundBlur.frameMs, ' ms')} />
 									<CallDiagnosticsStatRow label='Compositor' value={fmtDecimal(diagnostics.backgroundBlur.compositorMs, ' ms')} />
@@ -133,8 +130,8 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 						{diagnostics.participants.length > 0 && (
 							<>
 								<Divider />
-								<Box className={sectionStyles}>
-									<Box className={labelStyles}>
+								<Box paddingBlock={8} paddingInline={16}>
+									<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
 										{t('Receiving')} ({diagnostics.participants.length})
 									</Box>
 									{diagnostics.participants.map((p) => (

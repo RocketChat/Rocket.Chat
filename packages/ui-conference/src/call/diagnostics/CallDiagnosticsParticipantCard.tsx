@@ -1,22 +1,14 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 
 import CallDiagnosticsStatRow from './CallDiagnosticsStatRow';
 import type { ParticipantTrackStats } from '../context';
 
-const participantCardStyles = css`
-	padding: 8px 12px;
-	border-radius: 8px;
-	background: var(--rcx-color-surface-hover);
-	margin-block-end: 8px;
-`;
-
 const fmt = (value: number | undefined, suffix: string): string => (value != null ? `${value} ${suffix}` : '—');
 const fmtKbps = (value: number | undefined): string => (value != null ? `${Math.round(value / 10) * 10} kbps` : '—');
 
 const CallDiagnosticsParticipantCard = ({ participant }: { participant: ParticipantTrackStats }) => (
-	<Box className={participantCardStyles}>
-		<Box fontScale='p2b' style={{ marginBlockEnd: 4 }}>
+	<Box paddingBlock={8} paddingInline={12} borderRadius='large' backgroundColor='surface-hover' marginBlockEnd={8}>
+		<Box fontScale='p2b' marginBlockEnd={4}>
 			{participant.displayName}
 		</Box>
 		<CallDiagnosticsStatRow

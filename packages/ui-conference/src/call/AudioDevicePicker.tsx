@@ -17,7 +17,7 @@ import { NOISE_METHOD_LABELS, NOISE_METHOD_NOTES } from './lib/mediaChoiceLabels
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	content: (
-		<Box is='span' title={label} fontSize={14}>
+		<Box is='span' title={label} fontScale='p2'>
 			{label}
 		</Box>
 	),
@@ -60,7 +60,7 @@ const AudioDevicePicker = () => {
 			id: `${device.id}-input`,
 			textValue: name,
 			content: (
-				<Box title={name} fontSize={14} display='flex' flexDirection='column' minWidth={0}>
+				<Box title={name} fontScale='p2' display='flex' flexDirection='column' minWidth={0}>
 					<Box is='span' withTruncatedText>
 						{name}
 					</Box>
@@ -88,7 +88,7 @@ const AudioDevicePicker = () => {
 			id: `${device.id}-output`,
 			textValue: name,
 			content: (
-				<Box title={name} fontSize={14} display='flex' flexDirection='column' minWidth={0}>
+				<Box title={name} fontScale='p2' display='flex' flexDirection='column' minWidth={0}>
 					<Box is='span' withTruncatedText>
 						{name}
 					</Box>
@@ -146,7 +146,7 @@ const AudioDevicePicker = () => {
 		id: `${NOISE_METHOD_PREFIX}${noiseMethod}`,
 		textValue: t(NOISE_METHOD_LABELS[noiseMethod]),
 		content: (
-			<Box display='flex' flexDirection='column' fontSize={14} minWidth={0}>
+			<Box display='flex' flexDirection='column' fontScale='p2' minWidth={0}>
 				<Box is='span' withTruncatedText>
 					{t(NOISE_METHOD_LABELS[noiseMethod])}
 				</Box>

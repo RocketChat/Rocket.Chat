@@ -71,9 +71,7 @@ const CallTopBar = ({ startAt, name, host, children }: CallTopBarProps) => {
 					)}
 				</Box>
 			)}
-			{/* `ButtonGroup` has no `gap` prop — only `align`, `stretch`, `wrap`, `vertical`, `small` and `large` —
-			    so this one stays a style. */}
-			<ButtonGroup style={{ gap: 8 }}>{children}</ButtonGroup>
+			<ButtonGroup>{children}</ButtonGroup>
 		</Box>
 	);
 };

@@ -1,7 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Palette } from '@rocket.chat/fuselage';
+import { Palette, borderRadius } from '@rocket.chat/fuselage';
 
 import type { SpotlightOrientation } from '../lib/stageTiles';
+import { COLUMN_THUMB_WIDTH, STRIP_THUMB_WIDTH } from '../lib/stageTiles';
+import { TILE_GAP_PX } from '../lib/tileGrid';
 
 export const stageStyles = css`
 	position: relative;
@@ -9,8 +11,8 @@ export const stageStyles = css`
 	flex: 1 1 0;
 	min-height: 0;
 	padding-block: 0;
-	padding-inline: 8px;
-	gap: 8px;
+	padding-inline: 0.5rem;
+	gap: 0.5rem;
 	overflow: hidden;
 `;
 
@@ -18,7 +20,7 @@ export const stageStyles = css`
 const spotlightStackedStyles = css`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: ${TILE_GAP_PX}px;
 	width: 100%;
 	height: 100%;
 	min-width: 0;
@@ -28,7 +30,7 @@ const spotlightStackedStyles = css`
 const spotlightSideBySideStyles = css`
 	display: flex;
 	flex-direction: row;
-	gap: 8px;
+	gap: ${TILE_GAP_PX}px;
 	width: 100%;
 	height: 100%;
 	min-width: 0;
@@ -48,7 +50,7 @@ export const gridMeasureStyles = css`
 // Cell sizes come inline from the grid layout; clamped cells leave the grid smaller than its wrapper, centred in it.
 export const gridStyles = css`
 	display: grid;
-	gap: 8px;
+	gap: ${TILE_GAP_PX}px;
 `;
 
 // Grows into whatever the thumbs leave: without the zero minimums flexbox would not shrink it on a short stage,
@@ -62,37 +64,37 @@ export const mainStreamStyles = css`
 	align-items: center;
 	justify-content: center;
 	background-color: ${Palette.surface['surface-neutral'].toString()};
-	border-radius: 6px;
+	border-radius: ${borderRadius('large')};
 	overflow: hidden;
 `;
 
 const thumbStripStyles = css`
 	display: flex;
-	gap: 8px;
-	height: 96px;
+	gap: ${TILE_GAP_PX}px;
+	height: 6rem;
 	flex-shrink: 0;
 	overflow-x: auto;
 	overflow-y: hidden;
-	padding-block: 2px;
+	padding-block: 0.125rem;
 	scrollbar-width: thin;
 `;
 
 const thumbColumnStyles = css`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	width: 200px;
+	gap: ${TILE_GAP_PX}px;
+	width: ${COLUMN_THUMB_WIDTH}px;
 	height: 100%;
 	flex-shrink: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	padding-inline: 2px;
+	padding-inline: 0.125rem;
 	scrollbar-width: thin;
 `;
 
 const thumbItemStyles = css`
 	flex: 0 0 auto;
-	width: 140px;
+	width: ${STRIP_THUMB_WIDTH}px;
 	height: 100%;
 `;
 
@@ -114,10 +116,11 @@ export const spotlightClasses = (orientation: SpotlightOrientation) =>
 export const screenThumbStyles = css`
 	position: relative;
 	flex: 0 0 auto;
-	width: 200px;
+	width: 12.5rem;
 	height: 100%;
-	border-radius: 6px;
+	border-radius: ${borderRadius('large')};
 	overflow: hidden;
+	/* Fixed, not themed: the letterbox around a video frame is black in every theme. */
 	background-color: black;
 	border: 1px solid ${Palette.stroke['stroke-medium'].toString()};
 
@@ -148,37 +151,36 @@ export const spotlightOverlayStyles = css`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: rgba(0, 0, 0, 0.45);
+	background-color: ${Palette.surface['surface-overlay'].toString()};
 `;
 
 export const stopShareButtonStyles = css`
 	position: absolute;
-	top: 8px;
-	right: 8px;
+	top: 0.5rem;
+	right: 0.5rem;
 	z-index: 1;
 `;
 
 export const ownBadgeStyles = css`
 	position: absolute;
-	left: 8px;
-	bottom: 8px;
-	padding: 2px 8px;
-	border-radius: 4px;
-	background-color: rgba(0, 0, 0, 0.55);
-	color: white;
-	font-size: 12px;
-	line-height: 16px;
+	left: 0.5rem;
+	bottom: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: ${borderRadius('medium')};
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
 	pointer-events: none;
 `;
 
 export const spotlightSelfPipStyles = css`
 	position: absolute;
-	bottom: 16px;
-	right: 16px;
-	width: 180px;
+	bottom: 1rem;
+	right: 1rem;
+	width: 11.25rem;
 	aspect-ratio: 16 / 9;
-	border-radius: 8px;
+	border-radius: ${borderRadius('large')};
 	overflow: hidden;
+	/* Fixed, not themed: it lifts the picture-in-picture off camera frames, which are the same colours in every theme. */
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	z-index: 2;
 `;
@@ -188,10 +190,10 @@ export const overflowTileStyles = css`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: 0.5rem;
 	width: 100%;
 	height: 100%;
-	border-radius: 6px;
+	border-radius: ${borderRadius('large')};
 	background-color: ${Palette.surface['surface-neutral'].toString()};
 	color: ${Palette.text['font-pure-white'].toString()};
 `;

@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 import VoiceActivity from '../VoiceActivity';
@@ -15,7 +15,7 @@ const tileStyles = css`
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	border-radius: 6px;
+	border-radius: ${borderRadius('large')};
 	container-type: inline-size;
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
@@ -30,17 +30,16 @@ const tileStyles = css`
  */
 const labelStyles = css`
 	position: absolute;
-	left: 8px;
-	bottom: 6px;
-	padding: 2px 8px;
-	border-radius: 4px;
-	color: white;
-	font-size: 16px;
-	line-height: 20px;
+	left: 0.5rem;
+	bottom: 0.25rem;
+	padding: 0 0.5rem;
+	border-radius: ${borderRadius('medium')};
+	color: ${Palette.text['font-pure-white'].toString()};
+	/* Fixed, not themed: it holds the name over camera frames, which are the same colours in every theme. */
 	text-shadow:
 		0 1px 2px rgba(0, 0, 0, 0.6),
 		0 0 2px rgba(0, 0, 0, 0.3);
-	max-width: calc(100% - 16px);
+	max-width: calc(100% - 1rem);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -49,24 +48,22 @@ const labelStyles = css`
 
 const sendBadgeStyles = css`
 	position: absolute;
-	top: 6px;
-	left: 6px;
-	padding: 2px 6px;
-	border-radius: 4px;
-	background-color: rgba(0, 0, 0, 0.55);
-	color: white;
-	font-size: 11px;
-	line-height: 16px;
+	top: 0.25rem;
+	left: 0.25rem;
+	padding: 0.125rem 0.25rem;
+	border-radius: ${borderRadius('medium')};
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
 	font-variant-numeric: tabular-nums;
 	pointer-events: none;
 `;
 
 const indicatorRowStyles = css`
 	position: absolute;
-	top: 6px;
-	right: 6px;
+	top: 0.25rem;
+	right: 0.25rem;
 	display: flex;
-	gap: 4px;
+	gap: 0.25rem;
 	pointer-events: none;
 `;
 
@@ -74,17 +71,18 @@ const indicatorBadgeStyles = css`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 28px;
-	height: 28px;
+	width: 1.75rem;
+	height: 1.75rem;
 	border-radius: 50%;
-	background-color: rgba(0, 0, 0, 0.55);
-	color: white;
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
 const handRaisedLabelStyles = css`
-	background-color: var(--rcx-color-button-background-success-default, #148660);
-	padding: 4px 12px;
-	border-radius: 16px;
+	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
+	background-color: var(--rcx-color-button-background-success-default);
+	padding: 0.25rem 0.75rem;
+	border-radius: ${borderRadius('full')};
 	text-shadow: none;
 `;
 
@@ -115,14 +113,14 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 						inset: 0,
 						borderRadius: 'inherit',
 						border: `${ringThickness}px solid ${ringColor}`,
-						boxShadow: `inset 0 0 ${ringThickness * 3}px ${ringColor}40`,
+						boxShadow: `inset 0 0 ${ringThickness * 3}px color-mix(in srgb, ${ringColor} 25%, transparent)`,
 						pointerEvents: 'none',
 						zIndex: 1,
 					}}
 				/>
 			)}
 			{children}
-			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]}>
+			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]} fontScale='p1'>
 				{handPosition !== undefined && (
 					<>
 						<span aria-hidden>✋</span> ({handPosition}){'  '}
@@ -138,7 +136,11 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 			{/* Opposite corner from the microphone, so the two facts about this tile do not stack. What is *sent* rather
 		    than what is captured: the encoder drops to a smaller layer when bandwidth or CPU says so, and a badge
 		    built from the camera's setting would keep saying 1080p right through it. */}
-			{sendHeight && <Box className={sendBadgeStyles}>{sendHeight}p</Box>}
+			{sendHeight && (
+				<Box className={sendBadgeStyles} fontScale='c1'>
+					{sendHeight}p
+				</Box>
+			)}
 			<Box className={indicatorRowStyles}>
 				{muted ? (
 					<Box className={indicatorBadgeStyles}>

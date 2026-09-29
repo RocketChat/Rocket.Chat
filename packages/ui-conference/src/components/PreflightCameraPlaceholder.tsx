@@ -25,7 +25,7 @@ const PreflightCameraPlaceholder = ({ cam, note }: PreflightCameraPlaceholderPro
 			justifyContent='center'
 			width='100%'
 			height='100%'
-			style={{ paddingBlockEnd: TOGGLES_ZONE }}
+			paddingBlockEnd={TOGGLES_ZONE}
 		>
 			<Icon name={cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
 			<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>

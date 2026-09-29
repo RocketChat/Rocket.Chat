@@ -1,26 +1,24 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, borderRadius } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 const buttonStyles = css`
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	max-width: 220px;
-	padding: 4px 10px;
+	gap: 0.5rem;
+	max-width: 13.75rem;
+	padding: 0.25rem 0.75rem;
 	border: none;
-	border-radius: 16px;
-	background-color: var(--rcx-color-button-background-success-default, #148660);
-	color: #fff;
-	font-size: 12px;
-	line-height: 16px;
-	font-weight: 500;
+	border-radius: ${borderRadius('full')};
+	/* Palette carries no button colours: these are the tokens fuselage's success button is drawn with. */
+	background-color: var(--rcx-color-button-background-success-default);
+	color: var(--rcx-color-button-font-on-success);
 	cursor: pointer;
 
 	&:hover,
 	&:focus-visible {
-		background-color: var(--rcx-color-button-background-success-hover, #106d4f);
+		background-color: var(--rcx-color-button-background-success-hover);
 	}
 `;
 
@@ -37,7 +35,7 @@ const RaisedHandsButton = forwardRef<HTMLButtonElement, RaisedHandsButtonProps>(
 ) {
 	// Spread because GenericMenu clones this trigger with the props that open the menu; its class joins the pill's.
 	return (
-		<Box is='button' type='button' ref={ref} className={[buttonStyles, className]} {...props}>
+		<Box is='button' type='button' ref={ref} className={[buttonStyles, className]} fontScale='c1' {...props}>
 			{children}
 		</Box>
 	);

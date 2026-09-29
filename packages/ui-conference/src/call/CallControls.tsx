@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, RadioButton } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, RadioButton, borderRadius } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -37,15 +37,15 @@ const reactionPickerWrapStyles = css`
 const reactionPickerStyles = css`
 	display: flex;
 	flex-wrap: nowrap;
-	gap: 4px;
-	padding: 8px;
-	background-color: rgba(20, 20, 25, 0.95);
-	border-radius: 10px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	gap: 0.25rem;
+	padding: 0.5rem;
+	background-color: ${Palette.surface['surface-light'].toString()};
+	border-radius: ${borderRadius('large')};
+	box-shadow: 0 0.5rem 1.5rem ${Palette.shadow['shadow-elevation-2y'].toString()};
 	z-index: 100;
 
 	/* One row, always: where it is wider than the window it scrolls instead of wrapping or spilling. */
-	max-width: calc(100vw - 24px);
+	max-width: calc(100vw - 1.5rem);
 	overflow-x: auto;
 	overscroll-behavior-x: contain;
 	-webkit-overflow-scrolling: touch;
@@ -63,19 +63,19 @@ const reactionButtonStyles = css`
 	justify-content: center;
 	/* A touch target, and fixed, so a row too long to fit scrolls rather than squeezing every emoji. */
 	flex: 0 0 auto;
-	width: 44px;
-	height: 44px;
-	border-radius: 8px;
+	width: 2.75rem;
+	height: 2.75rem;
+	border-radius: ${borderRadius('large')};
 	border: none;
 	background: transparent;
-	color: white;
-	font-size: 24px;
+	color: ${Palette.text['font-pure-white'].toString()};
+	font-size: 1.5rem;
 	line-height: 1;
 	cursor: pointer;
 	transition: background-color 80ms ease;
 
 	&:hover {
-		background-color: rgba(255, 255, 255, 0.1);
+		background-color: ${Palette.surface['surface-neutral'].toString()};
 	}
 `;
 
@@ -83,7 +83,7 @@ const speakingWhileMutedTooltip = css`
 	@keyframes swm-fade-in {
 		from {
 			opacity: 0;
-			transform: translateY(4px);
+			transform: translateY(0.25rem);
 		}
 		to {
 			opacity: 1;
@@ -91,13 +91,10 @@ const speakingWhileMutedTooltip = css`
 		}
 	}
 
-	padding: 6px 12px;
-	border-radius: 4px;
-	background: rgba(245, 69, 69, 0.95);
-	color: #fff;
-	font-size: 12px;
-	font-weight: 500;
-	line-height: 1.3;
+	padding: 0.5rem 0.75rem;
+	border-radius: ${borderRadius('medium')};
+	background: ${Palette.badge['badge-background-level-4'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
 	white-space: nowrap;
 	pointer-events: auto;
 	cursor: pointer;
@@ -110,13 +107,13 @@ const speakingWhileMutedTooltip = css`
  */
 const controlNoticesStyles = css`
 	position: absolute;
-	bottom: calc(100% + 8px);
+	bottom: calc(100% + 0.5rem);
 	left: 50%;
 	transform: translateX(-50%);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 8px;
+	gap: 0.5rem;
 
 	/* Above the buttons in the row, and below the side panels (100), which it must not paint over. */
 	z-index: 10;
@@ -133,7 +130,7 @@ const deviceControlStyles = css`
 	display: inline-flex;
 	align-items: stretch;
 	overflow: hidden;
-	border-radius: var(--rcx-border-radius-medium, 4px);
+	border-radius: ${borderRadius('medium')};
 
 	& button {
 		border-radius: 0;
@@ -186,7 +183,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 		textValue: LAYOUT_LABELS[l],
 		icon: LAYOUT_ICONS[l],
 		content: (
-			<Box is='span' title={LAYOUT_LABELS[l]} fontSize={14}>
+			<Box is='span' title={LAYOUT_LABELS[l]} fontScale='p2'>
 				{LAYOUT_LABELS[l]}
 			</Box>
 		),
@@ -199,7 +196,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 	];
 
 	return (
-		<ButtonGroup large style={{ position: 'relative', gap: 8 }}>
+		<ButtonGroup style={{ position: 'relative' }}>
 			<Box className={deviceControlStyles}>
 				<Box>
 					<AudioDevicePicker />
@@ -269,7 +266,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 			{(self.speakingWhileMuted || reactionPickerOpen) && (
 				<Box className={controlNoticesStyles}>
 					{self.speakingWhileMuted && (
-						<Box className={speakingWhileMutedTooltip} onClick={toggleMic}>
+						<Box className={speakingWhileMutedTooltip} fontScale='c1' onClick={toggleMic}>
 							{t('You_are_muted')}
 						</Box>
 					)}

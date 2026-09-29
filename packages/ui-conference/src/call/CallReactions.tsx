@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 
 export type CallReaction = {
 	id: string;
@@ -22,25 +22,25 @@ export type CallReaction = {
  */
 const layerStyles = css`
 	position: absolute;
-	left: 16px;
-	bottom: 16px;
+	left: 1rem;
+	bottom: 1rem;
 	// Tall enough for the whole rise, and no wider than it needs to be, so the call underneath stays clickable.
-	width: 320px;
+	width: 20rem;
 	max-width: 60%;
-	height: 240px;
+	height: 15rem;
 	pointer-events: none;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
 	align-items: flex-start;
-	gap: 4px;
+	gap: 0.25rem;
 `;
 
 const reactionStyles = css`
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: 0.5rem;
 	max-width: 100%;
 	// Each one lives for the same three seconds the sender's copy does, then takes itself off the layer.
 	animation: rcx-call-reaction-rise 3s ease-out forwards;
@@ -48,7 +48,7 @@ const reactionStyles = css`
 	@keyframes rcx-call-reaction-rise {
 		0% {
 			opacity: 0;
-			transform: translateY(24px) scale(0.6);
+			transform: translateY(1.5rem) scale(0.6);
 		}
 		12% {
 			opacity: 1;
@@ -56,30 +56,29 @@ const reactionStyles = css`
 		}
 		75% {
 			opacity: 1;
-			transform: translateY(-120px) scale(1);
+			transform: translateY(-7.5rem) scale(1);
 		}
 		100% {
 			opacity: 0;
-			transform: translateY(-180px) scale(0.9);
+			transform: translateY(-11.25rem) scale(0.9);
 		}
 	}
 `;
 
 const emojiStyles = css`
-	font-size: 36px;
+	font-size: 2.25rem;
 	line-height: 1;
+	/* Fixed, not themed: it lifts the emoji off camera frames, which are the same colours in every theme. */
 	text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 `;
 
 // Over a call, which is whatever colour the cameras in it happen to be — so the name carries its own backing
 // rather than relying on the surface behind it.
 const nameStyles = css`
-	padding: 2px 8px;
-	border-radius: 12px;
-	background-color: rgba(0, 0, 0, 0.55);
-	color: #fff;
-	font-size: 12px;
-	line-height: 16px;
+	padding: 0.25rem 0.5rem;
+	border-radius: ${borderRadius('full')};
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -99,7 +98,7 @@ const CallReactions = ({ reactions }: { reactions: CallReaction[] }) => {
 						{emoji}
 					</Box>
 					{name && (
-						<Box is='span' className={nameStyles}>
+						<Box is='span' className={nameStyles} fontScale='c1'>
 							{name}
 						</Box>
 					)}

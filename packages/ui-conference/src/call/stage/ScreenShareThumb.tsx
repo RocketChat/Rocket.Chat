@@ -14,15 +14,12 @@ const ScreenShareThumb = ({ stream, label, onSpotlight }: ScreenShareThumbProps)
 	const [videoRef] = usePlayMediaStream(stream);
 	return (
 		<Box className={screenThumbStyles}>
-			<video
-				ref={videoRef}
-				preload='metadata'
-				muted
-				style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: 'black' }}
-			>
+			<video ref={videoRef} preload='metadata' muted style={{ width: '100%', height: '100%', objectFit: 'contain' }}>
 				<track kind='captions' />
 			</video>
-			<Box className={ownBadgeStyles}>{label}</Box>
+			<Box className={ownBadgeStyles} fontScale='c1'>
+				{label}
+			</Box>
 			<Box className={['rcx-screen-thumb-overlay', spotlightOverlayStyles]}>
 				<IconButton icon='arrow-expand' small primary onClick={onSpotlight} title='Spotlight this screen' />
 			</Box>

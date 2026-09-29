@@ -40,7 +40,7 @@ const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 		textValue: name,
 		// Numbered, because the order is the point — this is a queue, not a set.
 		content: (
-			<Box display='flex' alignItems='center' fontSize={14} minWidth={0} title={name}>
+			<Box display='flex' alignItems='center' fontScale='p2' minWidth={0} title={name}>
 				<Box is='span' color='hint' marginInlineEnd={8}>
 					{index + 1}.
 				</Box>

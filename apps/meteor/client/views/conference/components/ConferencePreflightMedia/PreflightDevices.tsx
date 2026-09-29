@@ -16,9 +16,10 @@ const PreflightDevices = () => {
 			alignItems='center'
 			marginBlockStart={12}
 			paddingInline={20}
+			gap={8}
 			// `auto-fit` is what makes them wrap: three columns while there is room, one per row on a phone, where
 			// forcing three cut every device name down to nothing.
-			style={{ gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
+			style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
 		>
 			{capabilities.mic && <MicrophoneMenu />}
 			<SpeakerMenu />

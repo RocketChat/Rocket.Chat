@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
+import { Avatar, Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 export type Presenter = {
@@ -11,32 +11,27 @@ export type Presenter = {
 const pillStyles = css`
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 4px 10px;
+	gap: 0.5rem;
+	padding: 0.25rem 0.75rem;
 	border: none;
-	border-radius: 16px;
-	background-color: rgba(255, 255, 255, 0.15);
-	color: #fff;
-	font-size: 12px;
-	line-height: 16px;
-	font-weight: 500;
+	border-radius: ${borderRadius('full')};
+	background-color: ${Palette.surface['surface-light'].toString()};
+	color: ${Palette.text['font-titles-labels'].toString()};
 	white-space: nowrap;
 `;
 
 const stopButtonStyles = css`
 	flex-shrink: 0;
-	padding: 2px 8px;
+	padding: 0.125rem 0.5rem;
 	border: none;
-	border-radius: 12px;
-	background-color: rgb(187 57 51);
-	color: #fff;
-	font-size: 11px;
-	line-height: 16px;
-	font-weight: 600;
+	border-radius: ${borderRadius('full')};
+	/* Palette carries no button colours: these are the tokens fuselage's danger button is drawn with. */
+	background-color: var(--rcx-color-button-background-danger-default);
+	color: var(--rcx-color-button-font-on-danger);
 	cursor: pointer;
 
 	&:hover {
-		background-color: rgb(213 67 60);
+		background-color: var(--rcx-color-button-background-danger-hover);
 	}
 `;
 
@@ -57,7 +52,7 @@ const CallPresenting = ({ presenters, onStopPresenting }: CallPresentingProps) =
 	const label = `${first.name} (${qualifier})`;
 
 	return (
-		<Box className={pillStyles} title={label}>
+		<Box className={pillStyles} fontScale='c1' title={label}>
 			{first.isLocal ? <Icon name='desktop' size='x16' /> : <Avatar url={first.avatarUrl || ''} size='x16' />}
 			<Box is='span'>{label}</Box>
 			{rest.length > 0 && (
@@ -66,7 +61,7 @@ const CallPresenting = ({ presenters, onStopPresenting }: CallPresentingProps) =
 				</Box>
 			)}
 			{first.isLocal && onStopPresenting && (
-				<Box is='button' type='button' className={stopButtonStyles} onClick={onStopPresenting}>
+				<Box is='button' type='button' className={stopButtonStyles} fontScale='c2' onClick={onStopPresenting}>
 					{t('Stop_presenting')}
 				</Box>
 			)}

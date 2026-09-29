@@ -1,4 +1,4 @@
-import { Avatar, Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 
 import { overflowTileStyles } from './stageStyles';
 
@@ -19,13 +19,11 @@ const OverflowTile = ({ hidden }: OverflowTileProps) => (
 						display='flex'
 						alignItems='center'
 						justifyContent='center'
-						style={{
-							width: 36,
-							height: 36,
-							borderRadius: '50%',
-							backgroundColor: Palette.surface['surface-hover'].toString(),
-							flexShrink: 0,
-						}}
+						width='x36'
+						height='x36'
+						borderRadius='full'
+						backgroundColor='surface-hover'
+						flexShrink={0}
 					>
 						<Icon name='user' size='x20' />
 					</Box>
@@ -33,7 +31,7 @@ const OverflowTile = ({ hidden }: OverflowTileProps) => (
 			)}
 		</Box>
 		{hidden.length > 2 && (
-			<Box fontSize={13} fontWeight={600} lineHeight={1} marginBlockStart={2} color='font-secondary-info'>
+			<Box fontScale='c2' marginBlockStart={4} color='font-secondary-info'>
 				{hidden.length} others
 			</Box>
 		)}
