@@ -9306,7 +9306,6 @@ __metadata:
     "@types/express": "npm:^4.17.25"
     eslint: "npm:~10.7.0"
     mongodb: "npm:6.16.0"
-    npm-run-all: "npm:~4.1.5"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
@@ -9638,7 +9637,6 @@ __metadata:
     i18next: "npm:~26.4.2"
     jest: "npm:~30.2.0"
     normalize.css: "npm:^8.0.1"
-    npm-run-all: "npm:^4.1.5"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.15"
@@ -9991,7 +9989,6 @@ __metadata:
     lorem-ipsum: "npm:^2.0.10"
     mem: "npm:^8.1.1"
     mini-css-extract-plugin: "npm:~2.9.4"
-    npm-run-all: "npm:^4.1.5"
     path-to-regexp: "npm:^6.3.0"
     postcss: "npm:8.5.28"
     postcss-css-variables: "npm:^0.19.0"
@@ -10110,7 +10107,6 @@ __metadata:
     eslint: "npm:~10.7.0"
     fast-check: "npm:^4.6.0"
     jest: "npm:~30.2.0"
-    npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
     tinybench: "npm:^3.0.7"
     tldts: "npm:~6.1.86"
@@ -10912,7 +10908,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:~24.13.6"
     eslint: "npm:~10.7.0"
-    npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -11510,7 +11505,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~10.7.0"
     jest: "npm:~30.2.0"
-    npm-run-all: "npm:~4.1.5"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
@@ -29907,7 +29901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all@npm:^4.1.5, npm-run-all@npm:~4.1.5":
+"npm-run-all@npm:^4.1.5":
   version: 4.1.5
   resolution: "npm-run-all@npm:4.1.5"
   dependencies:

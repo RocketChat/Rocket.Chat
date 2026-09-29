@@ -22,10 +22,7 @@
 		"/dist"
 	],
 	"scripts": {
-		".:build:clean": "rm -rf dist",
-		".:build:prepare": "ts-patch install && typia patch",
-		".:build:tsc": "tsc -p tsconfig.build.json",
-		"build": "run-s .:build:prepare .:build:clean .:build:tsc",
+		"build": "ts-patch install && typia patch && rm -rf dist && tsc -p tsconfig.build.json",
 		"lint": "eslint .",
 		"test": "jest",
 		"testunit": "jest",
@@ -41,7 +38,6 @@
 		"@types/jest": "~30.0.0",
 		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
-		"npm-run-all": "~4.1.5",
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"
 	},

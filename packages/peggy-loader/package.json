@@ -27,15 +27,12 @@
 		"/dist"
 	],
 	"scripts": {
-		".:build:clean": "rm -rf dist",
-		".:build:tsc": "tsc -p tsconfig.build.json",
-		"build": "run-s .:build:clean .:build:tsc",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"lint": "eslint ."
 	},
 	"devDependencies": {
 		"@types/node": "~24.13.6",
 		"eslint": "~10.7.0",
-		"npm-run-all": "^4.1.5",
 		"peggy": "4.1.1",
 		"typescript": "~5.9.3",
 		"webpack": "~5.104.1"

@@ -24,9 +24,7 @@
 	],
 	"scripts": {
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
-		".:build:clean": "rm -rf dist",
-		".:build:tsc": "tsc -p tsconfig.build.json",
-		"build": "run-s .:build:clean .:build:tsc",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"build-preview": "yarn build-storybook",
 		"build-storybook": "NODE_ENV=production storybook build",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
@@ -72,7 +70,6 @@
 		"i18next": "~26.4.2",
 		"jest": "~30.2.0",
 		"normalize.css": "^8.0.1",
-		"npm-run-all": "^4.1.5",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-i18next": "~17.0.15",
