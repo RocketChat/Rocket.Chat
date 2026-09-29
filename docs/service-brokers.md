@@ -150,9 +150,10 @@ threw `Converting circular structure to JSON`. It now routes through a
 
 The registry lives in `packages/core-services/src/lib/LocalServiceRegistry.ts`
 rather than in the broker package, because `LocalBroker` had grown its own copy of
-the same mechanism. All three brokers now share it, and `getCallableMethods`
-defines what a service answers to in exactly one place, so the local and remote
-paths cannot expose different method sets.
+the same mechanism. The two now share it, and `NatsBroker` builds its NATS
+endpoints from the same `getCallableMethods`, so its local and remote paths cannot
+expose different method sets. `MoleculerBroker` does not use the registry, since
+Moleculer already dispatches locally.
 
 Set `BROKER_LOCAL_ROUTING=false` to disable it and send every call over NATS.
 
@@ -166,9 +167,6 @@ That is the normal state of affairs while a peer boots or is being rolled.
 nothing received the request, so a second attempt cannot duplicate a side effect.
 Any other failure, a timeout above all, may well have been delivered and is
 surfaced to the caller unchanged.
-
-> `isNatsError` is declared by the nats typings but is not exported at runtime, so
-> the check uses `NatsError` itself.
 
 #### 3. Services wait for their dependencies, lifecycle failures are not fatal
 
@@ -192,8 +190,7 @@ It now reproduces Moleculer's `waitForServices`:
   health endpoints the standalone services open after it, wait as well.
 - It waits forever by default, like Moleculer's `dependencyTimeout: 0`. The
   constructor's `dependencyTimeout` bounds the wait, after which `start()` rejects
-  naming each service and what it was missing. Tests set it so that a dependency
-  that is never met fails in milliseconds instead of hanging.
+  naming each service and what it was missing.
 
 A service that fails `created()` or `started()` is logged and left running.
 Endpoints are registered before any hook runs, so it still answers with whatever
@@ -223,9 +220,7 @@ that subject.
 
 Pulling, rather than the sender publishing as fast as it reads, is what gives
 backpressure, and it removes the subscribe/publish race: the consumer only asks for
-a chunk once its own subscription is in place. Node will not call `_read` again
-until a `push` lands, so a single chunk is in flight at a time without an explicit
-gate. Chunks are capped at 256KB, well under the 1MB `max_payload` NATS defaults
+a chunk once its own subscription is in place. Chunks are capped at 256KB, well under the 1MB `max_payload` NATS defaults
 to — buffering the whole payload into one message was never an option, transcripts
 exceed that on their own.
 
@@ -241,10 +236,8 @@ unsubscribes and destroys its stream.
 Moleculer, which attaches `on('data')` listeners and so tees to every consumer.
 Chunking distributes the chunks between them instead, so
 `OmnichannelTranscript.uploadFiles` — which uploads the same transcript to two
-rooms — now pipes the render into one `PassThrough` per upload. Piping to several
-destinations writes every chunk to all of them and pauses the source when any one
-falls behind, so the pdf is teed rather than held in memory; `renderToStream` is a
-real incremental render and buffering it would give that up.
+rooms — now pipes the render into one `PassThrough` per upload, so the pdf is
+teed rather than held in memory.
 
 Note that [the apps-engine migration](./apps-engine-migration.md) is separately
 restructuring the upload flow so that file contents do not have to cross NATS at
@@ -254,7 +247,7 @@ all.
 
 `ServiceClass.context` is not decoration. ddp-streamer's `created()` reads it for
 the broker's node id and returns early without one — and that method body is what
-registers the `LOGGED` handler that sends a client its own user document and
+registers the `loggedIn` handler that sends a client its own user document and
 records its presence. `NatsBroker` originally invoked lifecycle hooks and method
 handlers directly, so under NATS every login left the client without user data.
 
@@ -304,7 +297,7 @@ whatever carries `broadcast()` onwards. In an enterprise multi-instance monolith
 - delivers what it receives with `broadcastLocal()`, ignoring its own node.
 - sends nothing while the `Troubleshoot_Disable_Instance_Broadcast` setting is on.
 
-In microservices mode the monolith runs `MoleculerBroker`, which reaches every node
+In microservices mode the monolith runs a network broker, which reaches every node
 already, and `InstanceService` is not registered.
 
 ### Stream relays
