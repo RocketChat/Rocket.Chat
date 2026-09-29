@@ -35,7 +35,6 @@ Under **Video Conference → LiveKit** (enterprise):
 | `VideoConf_LiveKit_Url` | The `wss://` address clients connect to. Not public: clients receive it with their token. |
 | `VideoConf_LiveKit_Api_Key` / `VideoConf_LiveKit_Api_Secret` | Used to mint participant tokens locally (HS256). |
 | `VideoConf_LiveKit_Token_TTL` | Token lifetime in hours (default 6). A participant cannot stay in a call longer than this. |
-| `VideoConf_Background_Blur_Model_Url` | Where the segmentation models are downloaded from. Point it at your own host on an airgapped workspace. |
 
 Changing any of them re-evaluates the provider registration; no restart is needed.
 
@@ -81,7 +80,9 @@ runs: MediaPipe segmentation in a worker and a WebGL2 compositor, as a LiveKit `
 - Sustained frame pressure lowers only the background and matte resolutions. Figures are in **Connection info**.
 
 The MediaPipe runtime is served under `/video-conference/assets/` from the installed `@mediapipe/tasks-vision` package,
-so it always matches the version the client code expects, and URLs follow the workspace's root path. The models are downloaded from `VideoConf_Background_Blur_Model_Url`.
+so it always matches the version the client code expects, and URLs follow the workspace's root path. The two segmentation models come from `@rocket.chat/mediapipe-models` and are served the same way: clients never reach
+Google, and airgapped workspaces blur out of the box. The package keeps the models out of the repository and pins them
+by SHA-256.
 
 ## Noise suppression
 

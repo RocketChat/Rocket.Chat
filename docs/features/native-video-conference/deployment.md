@@ -111,8 +111,8 @@ Under **Administration → Settings → Conference Call**:
 The provider appears as soon as all of them are filled. `OVERWRITE_SETTING_<key>` in the `rocketchat` service's
 environment sets them from the compose file instead, at the cost of making them read-only in the admin UI.
 
-Airgapped workspaces: set `VideoConf_Background_Blur_Model_Url` to a host you control that serves the two MediaPipe
-segmentation models; everything else is served by Rocket.Chat itself.
+Background blur and noise suppression need nothing else: their runtime and models are served by Rocket.Chat itself,
+so airgapped workspaces work as is.
 
 ## 5. Verify
 

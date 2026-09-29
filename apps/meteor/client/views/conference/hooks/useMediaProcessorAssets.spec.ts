@@ -1,4 +1,3 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useMediaProcessorAssets } from './useMediaProcessorAssets';
@@ -7,25 +6,25 @@ afterEach(() => {
 	delete (globalThis as { __meteor_runtime_config__?: unknown }).__meteor_runtime_config__;
 });
 
-it('serves the runtime under the workspace root path and the models from MediaPipe by default', () => {
+it('serves the runtime and the models from this workspace, under its root path', () => {
 	(globalThis as { __meteor_runtime_config__?: unknown }).__meteor_runtime_config__ = { ROOT_URL_PATH_PREFIX: '/chat/' };
 
-	const { result } = renderHook(() => useMediaProcessorAssets(), { wrapper: mockAppRoot().build() });
+	const { result } = renderHook(() => useMediaProcessorAssets());
 
-	expect(result.current.workerUrl).toBe('/chat/video-conference/assets/blur-worker.js');
-	expect(result.current.wasmBaseUrl).toBe('/chat/video-conference/assets/mediapipe/wasm');
-	expect(result.current.rnnoiseBaseUrl).toBe('/chat/video-conference/assets/rnnoise');
-	expect(result.current.modelUrls.quality).toMatch(/^https:\/\/storage\.googleapis\.com\/.+\/selfie_multiclass_256x256\.tflite$/);
+	expect(result.current).toEqual({
+		workerUrl: '/chat/video-conference/assets/blur-worker.js',
+		visionBundleUrl: '/chat/video-conference/assets/mediapipe/vision_bundle.mjs',
+		wasmBaseUrl: '/chat/video-conference/assets/mediapipe/wasm',
+		modelUrls: {
+			quality: '/chat/video-conference/assets/models/selfie_multiclass_256x256.tflite',
+			performance: '/chat/video-conference/assets/models/selfie_segmenter_landscape.tflite',
+		},
+		rnnoiseBaseUrl: '/chat/video-conference/assets/rnnoise',
+	});
 });
 
-it('takes the models from the base URL an admin set', () => {
-	const { result } = renderHook(() => useMediaProcessorAssets(), {
-		wrapper: mockAppRoot().withSetting('VideoConf_Background_Blur_Model_Url', 'https://models.example.com/blur/').build(),
-	});
+it('serves from the site root when there is no path prefix', () => {
+	const { result } = renderHook(() => useMediaProcessorAssets());
 
-	expect(result.current.workerUrl).toBe('/video-conference/assets/blur-worker.js');
-	expect(result.current.modelUrls).toEqual({
-		quality: 'https://models.example.com/blur/selfie_multiclass_256x256.tflite',
-		performance: 'https://models.example.com/blur/selfie_segmenter_landscape.tflite',
-	});
+	expect(result.current.modelUrls.quality).toBe('/video-conference/assets/models/selfie_multiclass_256x256.tflite');
 });

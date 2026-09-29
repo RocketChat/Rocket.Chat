@@ -7294,8 +7294,6 @@
   "video-conf-provider-not-configured": "**Conference call not enabled**: A workspace admin needs to enable the conference calls feature first.",
   "Videocall_declined": "Video call declined.",
   "Videocall_enabled": "Video call enabled",
-  "VideoConf_Background_Blur_Model_Url": "Background blur model URL",
-  "VideoConf_Background_Blur_Model_Url_Description": "A base URL serving `selfie_multiclass_256x256.tflite` and `selfie_segmenter_landscape.tflite`, for workspaces that cannot reach Google's servers. Leave empty to download the models from MediaPipe's official storage.",
   "VideoConf_Conference_Window_Enabled": "Enable call window",
   "VideoConf_Conference_Window_Enabled_Description": "When enabled, calls open a dedicated call window in Rocket.Chat instead of the provider's own page, and incoming calls are listed alongside the calls already running instead of taking over the screen. Off by default; unrelated to Persistent Chat, which only controls whether each call gets a discussion or thread.",
   "VideoConf_Default_Provider": "Default provider",

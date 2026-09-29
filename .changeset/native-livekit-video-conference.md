@@ -3,6 +3,7 @@
 '@rocket.chat/i18n': minor
 '@rocket.chat/jwt': minor
 '@rocket.chat/media-processors': minor
+'@rocket.chat/mediapipe-models': minor
 '@rocket.chat/rest-typings': minor
 '@rocket.chat/ui-client': minor
 '@rocket.chat/ui-conference': minor

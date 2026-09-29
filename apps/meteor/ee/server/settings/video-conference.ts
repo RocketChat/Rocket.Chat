@@ -89,14 +89,6 @@ export function addSettings(): Promise<void> {
 						i18nDescription: 'VideoConf_LiveKit_Token_TTL_Description',
 						enableQuery: [livekitEnabled],
 					});
-
-					await this.add('VideoConf_Background_Blur_Model_Url', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						i18nDescription: 'VideoConf_Background_Blur_Model_Url_Description',
-						enableQuery: [livekitEnabled],
-					});
 				});
 
 				// The switch for the whole call-window experience; off means the client behaves as it did before

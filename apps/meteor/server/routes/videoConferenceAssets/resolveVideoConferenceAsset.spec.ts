@@ -9,6 +9,7 @@ const roots = {
 	mediapipe: '/pkgs/mediapipe',
 	rnnoise: '/pkgs/rnnoise/dist',
 	mediaProcessors: '/pkgs/media-processors',
+	models: '/pkgs/mediapipe-models',
 };
 
 describe('resolveVideoConferenceAsset', () => {
@@ -33,6 +34,16 @@ describe('resolveVideoConferenceAsset', () => {
 	it('serves the blur worker from @rocket.chat/media-processors', () => {
 		expect(resolveVideoConferenceAsset(roots, '/blur-worker.js')?.filePath).to.equal(
 			path.resolve('/pkgs/media-processors/assets/background-blur-worker.js'),
+		);
+	});
+
+	it('serves the segmentation models from @rocket.chat/mediapipe-models', () => {
+		expect(resolveVideoConferenceAsset(roots, 'models/selfie_multiclass_256x256.tflite')).to.deep.equal({
+			filePath: path.resolve('/pkgs/mediapipe-models/models/selfie_multiclass_256x256.tflite'),
+			contentType: 'application/octet-stream',
+		});
+		expect(resolveVideoConferenceAsset(roots, 'models/selfie_segmenter_landscape.tflite')?.filePath).to.equal(
+			path.resolve('/pkgs/mediapipe-models/models/selfie_segmenter_landscape.tflite'),
 		);
 	});
 

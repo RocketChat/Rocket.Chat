@@ -134,6 +134,7 @@
 		"@rocket.chat/media-calls": "workspace:^",
 		"@rocket.chat/media-processors": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
+		"@rocket.chat/mediapipe-models": "workspace:^",
 		"@rocket.chat/memo": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/message-types": "workspace:~",

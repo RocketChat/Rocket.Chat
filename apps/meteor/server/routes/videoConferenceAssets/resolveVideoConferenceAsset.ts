@@ -5,10 +5,12 @@ export type VideoConferenceAssetRoots = {
 	mediapipe: string;
 	rnnoise: string;
 	mediaProcessors: string;
+	models: string;
 };
 
 const JAVASCRIPT = 'text/javascript';
 const WASM = 'application/wasm';
+const BINARY = 'application/octet-stream';
 
 /** Every file the route serves, by its path under the route, and where it lives in its package. */
 const ASSETS = new Map<string, { root: keyof VideoConferenceAssetRoots; file: string; contentType: string }>(
@@ -30,6 +32,8 @@ const ASSETS = new Map<string, { root: keyof VideoConferenceAssetRoots; file: st
 		'rnnoise/rnnoise.wasm': { root: 'rnnoise', file: 'rnnoise.wasm', contentType: WASM },
 		'rnnoise/rnnoise_simd.wasm': { root: 'rnnoise', file: 'rnnoise_simd.wasm', contentType: WASM },
 		'blur-worker.js': { root: 'mediaProcessors', file: 'assets/background-blur-worker.js', contentType: JAVASCRIPT },
+		'models/selfie_multiclass_256x256.tflite': { root: 'models', file: 'models/selfie_multiclass_256x256.tflite', contentType: BINARY },
+		'models/selfie_segmenter_landscape.tflite': { root: 'models', file: 'models/selfie_segmenter_landscape.tflite', contentType: BINARY },
 	}),
 );
 

@@ -23,6 +23,7 @@ const getRoots = (): VideoConferenceAssetRoots => {
 		mediapipe: path.dirname(nodeRequire.resolve('@mediapipe/tasks-vision')),
 		rnnoise: path.dirname(nodeRequire.resolve('@sapphi-red/web-noise-suppressor/rnnoise.wasm')),
 		mediaProcessors: path.dirname(nodeRequire.resolve('@rocket.chat/media-processors/package.json')),
+		models: path.dirname(nodeRequire.resolve('@rocket.chat/mediapipe-models/package.json')),
 	};
 	return roots;
 };
@@ -32,7 +33,7 @@ const notFound = (res: ServerResponse) => {
 	res.end();
 };
 
-/** Serves the background blur and noise suppression runtime from the installed packages, read-only. */
+/** Serves the background blur models and runtime, and noise suppression, from the installed packages, read-only. */
 const videoConferenceAssetsHandler = async (req: IncomingMessage, res: ServerResponse) => {
 	if (req.method !== 'GET' && req.method !== 'HEAD') {
 		res.writeHead(405, { Allow: 'GET, HEAD' });
