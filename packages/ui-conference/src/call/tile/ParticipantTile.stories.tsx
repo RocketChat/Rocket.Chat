@@ -1,12 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import ParticipantThumbnail from './ParticipantThumbnail';
 import ParticipantTile from './ParticipantTile';
+import SelfThumbnail from './SelfThumbnail';
 import SelfTile from './SelfTile';
 import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures';
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
- * microphone is doing. For the reader, mirrored.
+ * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail — and for the
+ * reader, mirrored.
  */
 const meta = {
 	component: ParticipantTile,
@@ -42,4 +45,13 @@ export const Held: Story = {
 /** The reader's own tile. */
 export const Self: Story = {
 	render: () => <SelfTile displayName='John Doe' muted={false} held={false} />,
+};
+
+export const Thumbnail: Story = {
+	render: () => <ParticipantThumbnail displayName='Ada Lovelace' muted={false} held={false} />,
+};
+
+export const SelfThumbnailMuted: Story = {
+	name: 'Self thumbnail, muted',
+	render: () => <SelfThumbnail displayName='John Doe' muted held={false} />,
 };

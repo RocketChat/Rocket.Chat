@@ -23,6 +23,8 @@ export type RemoteParticipantInfo = {
 	held: boolean;
 	cameraStream?: MediaStream;
 	screenStream?: MediaStream;
+	/** Drives active-speaker detection. */
+	audioStream?: MediaStream;
 };
 
 export type CallConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';

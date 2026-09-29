@@ -1,6 +1,6 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
-import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,9 @@ import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
 import CallControls from '../call/CallControls';
 import CallHeader from '../call/CallHeader';
+import type { StageLayout } from '../call/CallStage';
 import CallStageArea from '../call/CallStageArea';
+import CallTopBarStatus from '../call/CallTopBarStatus';
 import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 import CallPanel from '../components/CallPanel';
@@ -102,6 +104,8 @@ const ConferenceWindow = () => {
 		}
 		return () => callSounds.stopDialer();
 	}, [someoneRinging, callSounds]);
+
+	const [stageLayout, setStageLayout] = useLocalStorage<StageLayout>('videoconf-stage-layout', 'grid');
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -220,6 +224,8 @@ const ConferenceWindow = () => {
 						</Box>
 					}
 				>
+					{/* Before the toggles, so the pill grows into the bar's own space rather than pushing them. */}
+					<CallTopBarStatus />
 					{panelToggles}
 				</CallTopBar>
 			) : (
@@ -230,7 +236,7 @@ const ConferenceWindow = () => {
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea />}
+					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
 				</Box>
 
 				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
@@ -243,7 +249,7 @@ const ConferenceWindow = () => {
 			</Box>
 
 			{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
-			{embeddedCall && <CallBar centre={<CallControls />} />}
+			{embeddedCall && <CallBar centre={<CallControls layout={stageLayout} onLayoutChange={setStageLayout} />} />}
 		</Box>
 	);
 };

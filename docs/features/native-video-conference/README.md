@@ -78,8 +78,6 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
   - background blur and noise suppression;
   - reactions, raised hands and remote mute requests, and the data channel that carries them;
   - the connection info panel (call diagnostics);
-  - the spotlight and sidebar layouts with active-speaker detection, and screen shares featured on the stage with
-    pinning and thumbnails. The call itself shows each shared screen as a tile of the grid;
   - choosing the send resolution (preflight and in-call camera menu), and the badge on the reader's own tile saying
     what the encoder is actually sending;
   - the speaking-while-muted notice and reminder, the join chime, and live voice activity on the microphone button,

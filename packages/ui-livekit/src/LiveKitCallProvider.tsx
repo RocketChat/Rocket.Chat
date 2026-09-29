@@ -89,6 +89,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remotes = useMemo(() => otherPeople(allParticipants, localParticipant.identity), [allParticipants, localParticipant.identity]);
 	const remoteCameraTracks = useTracks([Track.Source.Camera], { room, onlySubscribed: true });
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
+	const remoteAudioTracks = useTracks([Track.Source.Microphone], { room, onlySubscribed: true });
 
 	// A participant's identity is their user id, which is what names their avatar.
 	const getUserAvatarPath = useUserAvatarPath();
@@ -96,9 +97,13 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remoteParticipants = useMemo(
 		(): RemoteParticipantInfo[] =>
 			remotes.map((p) =>
-				toRemoteParticipantInfo(p, { camera: remoteCameraTracks, screen: remoteScreenTracks }, getUserAvatarPath({ userId: p.identity })),
+				toRemoteParticipantInfo(
+					p,
+					{ camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks },
+					getUserAvatarPath({ userId: p.identity }),
+				),
 			),
-		[remotes, remoteCameraTracks, remoteScreenTracks, getUserAvatarPath],
+		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath],
 	);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
