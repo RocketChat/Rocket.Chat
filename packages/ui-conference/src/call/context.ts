@@ -46,6 +46,41 @@ export type CallActions = {
 	leave: () => void;
 };
 
+export type ParticipantTrackStats = {
+	id: string;
+	displayName: string;
+	videoWidth?: number;
+	videoHeight?: number;
+	videoCodec?: string;
+	fps?: number;
+	videoBitrateKbps?: number;
+	audioBitrateKbps?: number;
+	packetsLost?: number;
+	jitterMs?: number;
+};
+
+export type CallDiagnosticsData = {
+	serverUrl: string;
+	connectionState: string;
+	connectionQuality: string;
+	roundTripTimeMs?: number;
+	uploadKbps?: number;
+	downloadKbps?: number;
+	totalBytesSent?: number;
+	totalBytesReceived?: number;
+	sendWidth?: number;
+	sendHeight?: number;
+	sendFps?: number;
+	sendCodec?: string;
+	qualityLimitationReason?: string;
+	participants: ParticipantTrackStats[];
+	audioConcealment?: number;
+	timestamp: number;
+};
+
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');
 
 export const [CallActionsProvider, useCallActions] = createRequiredContext<CallActions>('CallActions');
+
+/** `null` until the first sample has been taken. */
+export const [CallDiagnosticsProvider, useCallDiagnostics] = createRequiredContext<CallDiagnosticsData | null>('CallDiagnostics');

@@ -74,8 +74,16 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
 
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
-export { CallStateProvider, CallActionsProvider } from './call/context';
-export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions } from './call/context';
+export { CallStateProvider, CallActionsProvider, CallDiagnosticsProvider } from './call/context';
+export type {
+	CallState,
+	CallSelf,
+	CallConnectionState,
+	RemoteParticipantInfo,
+	CallActions,
+	CallDiagnosticsData,
+	ParticipantTrackStats,
+} from './call/context';
 export { VideoQualityProvider } from './devices/VideoQualityContext';
 export type { VideoQualitySelection } from './devices/VideoQualityContext';
 export { playJoinChime, playMutedReminder } from './call/lib/callChimes';
