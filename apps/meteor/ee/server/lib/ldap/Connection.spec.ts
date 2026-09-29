@@ -6,7 +6,7 @@ import sinon from 'sinon';
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 
 const { LDAPConnection } = proxyquire.noCallThru().load('./Connection', {
-	'../../settings': { settings: { get: sinon.stub() } },
+	'../../../../server/settings': { settings: { get: sinon.stub() } },
 	'./getLDAPConditionalSetting': { getLDAPConditionalSetting: sinon.stub().returns('') },
 	'./Logger': {
 		logger: loggerStub,

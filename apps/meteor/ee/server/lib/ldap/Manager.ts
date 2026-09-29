@@ -1,825 +1,562 @@
-import { Abac, Team } from '@rocket.chat/core-services';
-import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
-import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
-import type ldapjs from 'ldapjs';
-import type { FindCursor } from 'mongodb';
+import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw } from '@rocket.chat/models';
+import { SHA256 } from '@rocket.chat/sha256';
+import ldapEscape from 'ldap-escape';
+import limax from 'limax';
+// #ToDo: #TODO: Remove Meteor dependencies
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
-import type {
-	ImporterAfterImportCallback,
-	ImporterBeforeImportCallback,
-} from '../../../../server/lib/import/definitions/IConversionCallbacks';
-import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
-import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
-import { LDAPManager } from '../../../../server/lib/ldap/Manager';
-import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
-import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
-import { createRoom } from '../../../../server/lib/rooms/createRoom';
-import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
-import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
-import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
+import { LDAPConnection } from './Connection';
+import { logger, authLogger, connLogger } from './Logger';
+import { LDAPUserConverter } from './UserConverter';
+import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { getLdapDynamicValue } from './getLdapDynamicValue';
+import { getLdapString } from './getLdapString';
+import { ldapKeyExists } from './ldapKeyExists';
+import { omit } from '../../../../lib/utils/omit';
 import { settings } from '../../../../server/settings';
-import { syncUserRoles } from '../syncUserRoles';
+import { callbacks } from '../../../../server/lib/callbacks';
+import type { UserConverterOptions } from '../../../../server/lib/import/classes/converters/UserConverter';
+import { setUserAvatar } from '../../../../server/lib/users/setUserAvatar';
 
-export class LDAPEEManager extends LDAPManager {
-	public static async sync(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync') !== true) {
-			return;
+export class LDAPManager {
+	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
+		logger.debug({ msg: 'Init LDAP login', username });
+
+		if (settings.get('LDAP_Enable') !== true) {
+			return this.fallbackToDefaultLogin(username, password);
 		}
 
-		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
-		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
-		let disableMissingUsers = updateExistingUsers && (settings.get<boolean>('LDAP_Background_Sync_Disable_Missing_Users') ?? false);
-		const mergeExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Merge_Existent_Users') ?? false;
-
-		const options = this.getConverterOptions();
-		options.skipExistingUsers = !updateExistingUsers;
-		options.skipNewUsers = !createNewUsers;
+		let ldapUser: ILDAPEntry | undefined;
 
 		const ldap = new LDAPConnection();
-		const converter = new LDAPUserConverter(options);
-		const touchedUsers = new Set<IUser['_id']>();
-
 		try {
-			await ldap.connect();
-
-			if (createNewUsers || mergeExistingUsers) {
-				await this.importNewUsers(ldap, converter);
-			} else if (updateExistingUsers) {
-				await this.updateExistingUsers(ldap, converter, disableMissingUsers);
-				// Missing users will have been disabled automatically by the update operation, so no need to do a separate query for them
-				disableMissingUsers = false;
-			}
-
-			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
-
-			await converter.convertData({
-				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
-					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
-						return true;
-					}
-
-					const memberFormat = ldap.options.groupFilterGroupMemberFormat
-						?.replace(/#{username}/g, options?.username || '#{username}')
-						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
-
-					return membersOfGroupFilter.includes(memberFormat);
-				}) as ImporterBeforeImportCallback,
-				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
-					if (data._id) {
-						touchedUsers.add(data._id);
-					}
-					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord);
-				}) as ImporterAfterImportCallback,
-			});
-
-			if (disableMissingUsers) {
-				await this.disableMissingUsers([...touchedUsers]);
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-
-		ldap.disconnect();
-	}
-
-	public static async syncAvatars(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync_Avatars') !== true) {
-			return;
-		}
-
-		try {
-			const ldap = new LDAPConnection();
-			await ldap.connect();
-
 			try {
-				await this.updateUserAvatars(ldap);
-			} finally {
-				ldap.disconnect();
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
-
-	public static async syncAbacAttributes(): Promise<void> {
-		if (
-			!settings.get('LDAP_Enable') ||
-			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
-			!License.hasModule('abac') ||
-			!settings.get('ABAC_Enabled') ||
-			settings.get('ABAC_PDP_Type') === 'virtru'
-		) {
-			return;
-		}
-
-		try {
-			const ldap = new LDAPConnection();
-			await ldap.connect();
-
-			try {
-				await this.updateUserAbacAttributes(ldap);
-			} finally {
-				ldap.disconnect();
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
-
-	public static async syncUsersAbacAttributes(users: FindCursor<IUser>): Promise<void> {
-		if (
-			!settings.get('LDAP_Enable') ||
-			!License.hasModule('abac') ||
-			!settings.get('ABAC_Enabled') ||
-			settings.get('ABAC_PDP_Type') === 'virtru'
-		) {
-			return;
-		}
-
-		try {
-			const ldap = new LDAPConnection();
-			await ldap.connect();
-
-			try {
-				logger.debug({ msg: 'Starting ABAC attributes sync for LDAP users' });
-				for await (const user of users) {
-					await this.syncUserAbacAttribute(ldap, user);
-				}
-			} finally {
-				ldap.disconnect();
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
-
-	public static validateLDAPTeamsMappingChanges(json: string): void {
-		if (!json) {
-			return;
-		}
-
-		const mustBeAnArrayOfStrings = (array: Array<string>): boolean =>
-			Boolean(Array.isArray(array) && array.length && array.every((item) => typeof item === 'string'));
-		const mappedTeams = this.parseJson(json);
-		if (!mappedTeams) {
-			return;
-		}
-
-		const mappedRocketChatTeams = Object.values(mappedTeams);
-		const validStructureMapping = mappedRocketChatTeams.every(mustBeAnArrayOfStrings);
-		if (!validStructureMapping) {
-			throw new Error(
-				'Please verify your mapping for LDAP X RocketChat Teams. The structure is invalid, the structure should be an object like: {key: LdapTeam, value: [An array of rocket.chat teams]}',
-			);
-		}
-	}
-
-	public static validateLDAPABACAttributeMap(json: string): void {
-		if (!json) {
-			return;
-		}
-
-		const mappedAttributes = this.parseJson(json);
-
-		// attributes are { key: value } with key being the ldap attribute and value being the abac attribute in rocketchat
-		// both strings
-		// There's no need for the attribute to exist in rocketchat, we just add whatever the admin wants to map
-
-		if (!mappedAttributes || Object.keys(mappedAttributes).length === 0) {
-			return;
-		}
-
-		const validStructureMapping = Object.entries(mappedAttributes).every(
-			([key, value]) => typeof key === 'string' && typeof value === 'string',
-		);
-
-		if (!validStructureMapping) {
-			throw new Error(
-				'Please verify your mapping for LDAP X RocketChat ABAC Attributes. The structure is invalid, the structure should be an object like: {key: LdapAttribute, value: RocketChatAbacAttribute}',
-			);
-		}
-	}
-
-	public static async syncAvatarAndAbacAttributes(): Promise<void> {
-		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
-		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
-		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
-
-		if (!syncAvatars && !syncAbac) {
-			return;
-		}
-
-		try {
-			const ldap = new LDAPConnection();
-			await ldap.connect();
-
-			try {
-				const users = Users.findLDAPUsers();
-				for await (const user of users) {
-					const ldapUser = await this.findLDAPUser(ldap, user);
-					if (!ldapUser) {
-						continue;
-					}
-
-					if (syncAvatars) {
-						await LDAPManager.syncUserAvatar(user, ldapUser);
-					}
-
-					if (syncAbac && abacMapping) {
-						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
-					}
-				}
-			} finally {
-				ldap.disconnect();
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
-
-	public static async syncLogout(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Sync_AutoLogout_Enabled') !== true) {
-			return;
-		}
-
-		try {
-			const ldap = new LDAPConnection();
-			await ldap.connect();
-
-			try {
-				await this.logoutDeactivatedUsers(ldap);
-			} finally {
-				ldap.disconnect();
-			}
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
-
-	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
-		try {
-			await this.syncUserRoles(ldap, user, dn);
-			await this.syncUserChannels(ldap, user, dn);
-			await this.syncUserTeams(ldap, user, dn, isNewRecord);
-		} catch (err) {
-			logger.error({ msg: 'Advanced Sync failed for user', dn, err });
-		}
-	}
-
-	private static async advancedSync(
-		ldap: LDAPConnection,
-		importUser: IImportUser,
-		converter: LDAPUserConverter,
-		isNewRecord: boolean,
-	): Promise<void> {
-		const user = await converter.findExistingUser(importUser);
-		if (!user?.username) {
-			return;
-		}
-
-		const dn = importUser.importIds[0];
-		return this.advancedSyncForUser(ldap, user, isNewRecord, dn);
-	}
-
-	private static async isUserInGroup(
-		ldap: LDAPConnection,
-		baseDN: string,
-		filter: string,
-		{ dn, username }: { dn: string; username: string },
-		groupName: string,
-	): Promise<boolean> {
-		if (!filter || !baseDN) {
-			logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
-			return false;
-		}
-		const searchOptions: ldapjs.SearchOptions = {
-			filter: filter
-				.replace(/#{username}/g, username)
-				.replace(/#{groupName}/g, groupName)
-				.replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
-			scope: 'sub',
-		};
-
-		const result = await ldap.searchRaw(baseDN, searchOptions);
-
-		if (!Array.isArray(result) || result.length === 0) {
-			logger.debug({ msg: 'User is not in group', username, groupName });
-		} else {
-			logger.debug({ msg: 'User is in group', username, groupName });
-			return true;
-		}
-
-		return false;
-	}
-
-	private static parseJson(json: string): Record<string, any> | undefined {
-		try {
-			return JSON.parse(json);
-		} catch (err) {
-			logger.error({ msg: 'Unexpected error', err });
-		}
-	}
-
-	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
-		const { username } = user;
-		if (!username) {
-			logger.debug('User has no username');
-			return;
-		}
-
-		const shouldSyncUserRoles = settings.get<boolean>('LDAP_Sync_User_Data_Roles') ?? false;
-		const syncUserRolesAutoRemove = settings.get<boolean>('LDAP_Sync_User_Data_Roles_AutoRemove') ?? false;
-		const syncUserRolesFieldMap = (settings.get<string>('LDAP_Sync_User_Data_RolesMap') ?? '').trim();
-		const syncUserRolesFilter = (settings.get<string>('LDAP_Sync_User_Data_Roles_Filter') ?? '').trim();
-		const syncUserRolesBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Roles_BaseDN') ?? '').trim();
-		const searchStrategy = settings.get<'once' | 'each_group'>('LDAP_Sync_User_Data_Roles_GroupMembershipValidationStrategy');
-
-		if (!shouldSyncUserRoles || !syncUserRolesFieldMap) {
-			logger.debug('not syncing user roles');
-			return;
-		}
-
-		const roles = await Roles.find(
-			{},
-			{
-				projection: {
-					_id: 1,
-					name: 1,
-				},
-			},
-		).toArray();
-
-		if (!roles) {
-			return;
-		}
-
-		const groupsToRolesMap = this.parseJson(syncUserRolesFieldMap);
-		if (!groupsToRolesMap) {
-			logger.debug('missing group role mapping');
-			return;
-		}
-
-		const ldapGroups = Object.keys(groupsToRolesMap);
-		const roleList: Array<IRole['_id']> = [];
-		const roleIdsList: Array<IRole['_id']> = [];
-		const allowedRoles: Array<IRole['_id']> = this.getDataMappedByLdapGroups(groupsToRolesMap, ldapGroups)
-			.map((role) => role.split(/\.(.+)/)[0])
-			.reduce((allowedRolesIds: string[], roleIdOrName: string) => {
-				const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
-				if (role) {
-					allowedRolesIds.push(role._id);
-				}
-				return allowedRolesIds;
-			}, []);
-
-		if (searchStrategy === 'once') {
-			const ldapUserGroups = await this.getLdapGroupsByUsername(ldap, username, dn, syncUserRolesBaseDN, syncUserRolesFilter);
-			roleList.push(...this.getDataMappedByLdapGroups(groupsToRolesMap, ldapUserGroups));
-		} else if (searchStrategy === 'each_group') {
-			for await (const ldapGroup of ldapGroups) {
-				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapGroup)) {
-					roleList.push(...ensureArray<string>(groupsToRolesMap[ldapGroup]));
-				}
-			}
-		}
-
-		for await (const nonValidatedRole of roleList) {
-			const [roleIdOrName] = nonValidatedRole.split(/\.(.+)/);
-
-			const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
-			if (role) {
-				roleIdsList.push(role._id);
-			}
-		}
-
-		await syncUserRoles(user._id, roleIdsList, {
-			allowedRoles,
-			skipRemovingRoles: !syncUserRolesAutoRemove,
-		});
-	}
-
-	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
-		logger.debug({ msg: "Channel doesn't exist, creating it", channel });
-
-		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
-
-		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
-		if (!user) {
-			logger.error({ msg: 'Unable to find user to own channel', roomOwner, channel });
-			return;
-		}
-
-		const room = await createRoom('c', channel, user, [], false, false, {
-			customFields: { ldap: true },
-		});
-		if (!room?.rid) {
-			logger.error({ msg: 'Unable to auto-create channel during LDAP sync', channel });
-			return;
-		}
-
-		room._id = room.rid;
-		return room;
-	}
-
-	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
-		const syncUserChannels = settings.get<boolean>('LDAP_Sync_User_Data_Channels') ?? false;
-		const syncUserChannelsRemove = settings.get<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels') ?? false;
-		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
-		const syncUserChannelsFilter = (settings.get<string>('LDAP_Sync_User_Data_Channels_Filter') ?? '').trim();
-		const syncUserChannelsBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Channels_BaseDN') ?? '').trim();
-		const searchStrategy = settings.get<'once' | 'each_group'>('LDAP_Sync_User_Data_Channels_GroupMembershipValidationStrategy');
-
-		if (!syncUserChannels || !syncUserChannelsFieldMap) {
-			logger.debug('not syncing groups to channels');
-			return;
-		}
-
-		const groupsToRoomsMap = this.parseJson(syncUserChannelsFieldMap);
-		if (!groupsToRoomsMap) {
-			logger.debug('missing group channel mapping');
-			return;
-		}
-
-		const { username } = user;
-		if (!username) {
-			return;
-		}
-
-		logger.debug('syncing user channels');
-		const ldapGroups = Object.keys(groupsToRoomsMap);
-		const ldapUserGroups: string[] = [];
-		const channelsToAdd = new Set<string>();
-		const userChannelsNames: string[] = [];
-
-		if (searchStrategy === 'once') {
-			ldapUserGroups.push(...(await this.getLdapGroupsByUsername(ldap, username, dn, syncUserChannelsBaseDN, syncUserChannelsFilter)));
-			userChannelsNames.push(...this.getDataMappedByLdapGroups(groupsToRoomsMap, ldapUserGroups));
-		} else if (searchStrategy === 'each_group') {
-			for await (const ldapGroup of ldapGroups) {
-				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapGroup)) {
-					userChannelsNames.push(...ensureArray<string>(groupsToRoomsMap[ldapGroup]));
-					ldapUserGroups.push(ldapGroup);
-				}
-			}
-		}
-
-		for await (const userChannelName of userChannelsNames) {
-			try {
-				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
-				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
-				if (!room) {
-					logger.debug({ msg: 'Unable to resolve mapped channel for sync', userChannelName, username });
-					continue;
-				}
-
-				if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
-					logger.error({ msg: 'Cannot add user to channel. Channel is ABAC managed', userChannelName });
-					continue;
-				}
-
-				if (room.teamMain) {
-					logger.error({ msg: "Can't add user to channel because it is a team", userChannelName });
-				} else {
-					channelsToAdd.add(room._id);
-					await addUserToRoom(room._id, user);
-					logger.debug({ msg: 'Synced user channel from LDAP', roomId: room._id, username });
-				}
+				await ldap.connect();
+				ldapUser = await this.findUser(ldap, username, password);
 			} catch (err) {
-				logger.debug({ msg: 'Failed to sync user room', username, userChannelName });
 				logger.error({ err });
 			}
-		}
 
-		if (syncUserChannelsRemove) {
-			const notInUserGroups = ldapGroups.filter((ldapGroup) => !ldapUserGroups.includes(ldapGroup));
-			const notMappedRooms = this.getDataMappedByLdapGroups(groupsToRoomsMap, notInUserGroups);
-
-			const roomsToRemove = new Set<string>(notMappedRooms);
-			for await (const roomName of roomsToRemove) {
-				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
-				const room = await Rooms.findOneByNonValidatedName(name);
-				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
-					logger.debug({ msg: 'Skipping channel on removal sync', roomName, username });
-					continue;
-				}
-
-				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
-				if (subscription) {
-					await removeUserFromRoom(room._id, user);
-					logger.debug({ msg: 'Removed user from channel', username, roomId: room._id });
-				}
+			if (ldapUser === undefined) {
+				return this.fallbackToDefaultLogin(username, password);
 			}
+
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
+				return this.fallbackToDefaultLogin(username, password);
+			}
+
+			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
+			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
+
+			// Bind connection to the admin user so that RC has full access to groups in the next steps
+			await ldap.bindAuthenticationUser();
+			if (user) {
+				return await this.loginExistingUser(ldap, user, ldapUser, password);
+			}
+
+			return await this.loginNewUserFromLDAP(slugifiedUsername, ldap, ldapUser, password);
+		} finally {
+			ldap.disconnect();
 		}
 	}
 
-	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, dn: string, isNewRecord: boolean): Promise<void> {
-		if (!user.username) {
+	public static async loginAuthenticatedUser(username: string): Promise<LDAPLoginResult> {
+		logger.debug({ msg: 'Init LDAP login', username });
+
+		if (settings.get('LDAP_Enable') !== true) {
 			return;
 		}
 
-		const mapTeams =
-			settings.get<boolean>('LDAP_Enable_LDAP_Groups_To_RC_Teams') &&
-			(isNewRecord || settings.get<boolean>('LDAP_Validate_Teams_For_Each_Login'));
-		if (!mapTeams) {
-			return;
-		}
+		let ldapUser: ILDAPEntry | undefined;
 
-		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
-		const filter = settings.get<string>('LDAP_Query_To_Get_User_Teams');
-		const groupAttributeName = settings.get<string>('LDAP_Teams_Name_Field');
-		const ldapUserTeams = await this.getLdapGroupsByUsername(ldap, user.username, dn, baseDN, filter, groupAttributeName);
-		const mapJson = settings.get<string>('LDAP_Groups_To_Rocket_Chat_Teams');
-		if (!mapJson) {
-			return;
-		}
-		const map = this.parseJson(mapJson) as Record<string, string>;
-		if (!map) {
-			return;
-		}
+		const ldap = new LDAPConnection();
+		try {
+			try {
+				await ldap.connect();
+				ldapUser = await this.findAuthenticatedUser(ldap, username);
+			} catch (err) {
+				logger.error({ err });
+			}
 
-		const teamNames = this.getDataMappedByLdapGroups(map, ldapUserTeams);
-
-		const allTeamNames = [...new Set(Object.values(map).flat())];
-		const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
-
-		const inTeamIds = allTeams.filter(({ name }) => teamNames.includes(name)).map(({ _id }) => _id);
-		const notInTeamIds = allTeams.filter(({ name }) => !teamNames.includes(name)).map(({ _id }) => _id);
-
-		const currentTeams = await Team.listTeamsBySubscriberUserId(user._id, {
-			projection: { teamId: 1 },
-		});
-		const currentTeamIds = currentTeams?.map(({ teamId }) => teamId);
-		const teamsToRemove = currentTeamIds?.filter((teamId) => notInTeamIds.includes(teamId));
-		let teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
-
-		if (settings.get('ABAC_Enabled')) {
-			const roomsWithAbacAttributes = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(
-				allTeams.filter((t) => teamsToAdd.includes(t._id)).map((t) => t.roomId),
-				{ projection: { teamId: 1 } },
-			)
-				.map((r) => r.teamId)
-				.toArray();
-
-			logger.debug({ msg: 'Some teams will be ignored from sync because they are abac managed', roomsWithAbacAttributes });
-
-			teamsToAdd = teamsToAdd.filter((teamId) => !roomsWithAbacAttributes.includes(teamId));
-			if (!teamsToAdd.length) {
+			if (ldapUser === undefined) {
 				return;
 			}
-		}
 
-		await Team.insertMemberOnTeams(user._id, teamsToAdd);
-		if (teamsToRemove) {
-			await Team.removeMemberFromTeams(user._id, teamsToRemove);
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
+				return;
+			}
+
+			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
+			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
+
+			if (user) {
+				return await this.loginExistingUser(ldap, user, ldapUser);
+			}
+
+			return await this.loginNewUserFromLDAP(slugifiedUsername, ldap, ldapUser);
+		} finally {
+			ldap.disconnect();
 		}
 	}
 
-	private static getDataMappedByLdapGroups(map: Record<string, string>, ldapGroups: Array<string>): Array<string> {
-		const mappedLdapGroups = Object.keys(map);
-		const filteredMappedLdapGroups = ldapGroups.filter((ldapGroup) => mappedLdapGroups.includes(ldapGroup));
-
-		if (filteredMappedLdapGroups.length < ldapGroups.length) {
-			const unmappedLdapGroups = ldapGroups.filter((ldapGroup) => !mappedLdapGroups.includes(ldapGroup));
-			logger.error({ msg: 'The following LDAP groups are not mapped in Rocket.Chat', unmappedLdapGroups });
+	public static async testConnection(): Promise<void> {
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.testConnection();
+		} catch (err) {
+			connLogger.error({ err });
+			throw err;
 		}
-
-		if (!filteredMappedLdapGroups.length) {
-			return [];
-		}
-
-		return [...new Set(filteredMappedLdapGroups.map((ldapGroup) => map[ldapGroup]).flat())];
 	}
 
-	private static async getLdapGroupsByUsername(
-		ldap: LDAPConnection,
-		username: string,
-		userDN: string,
-		baseDN: string,
-		filter: string,
-		groupAttributeName?: string,
-	): Promise<Array<string>> {
-		if (!filter) {
-			return [];
+	public static async testSearch(username: string): Promise<void> {
+		const escapedUsername = ldapEscape.filter`${username}`;
+		const ldap = new LDAPConnection();
+
+		try {
+			await ldap.connect();
+
+			const users = await ldap.searchByUsername(escapedUsername);
+			if (users.length !== 1) {
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
+				throw new Error('User not found');
+			}
+		} catch (err) {
+			logger.error({ err });
+			throw err;
+		}
+	}
+
+	public static async syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): Promise<void> {
+		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
+			return;
 		}
 
-		const searchOptions = {
-			filter: filter.replace(/#{username}/g, username).replace(/#{userdn}/g, userDN.replace(/\\/g, '\\5c')),
-			scope: ldap.options.userSearchScope || 'sub',
-			sizeLimit: ldap.options.searchSizeLimit,
+		const avatar = this.getAvatarFromUser(ldapUser);
+		if (!avatar) {
+			return;
+		}
+
+		const hash = SHA256(avatar.toString());
+		if (user.avatarETag === hash) {
+			return;
+		}
+
+		logger.debug({ msg: 'Syncing user avatar', username: user.username });
+
+		await setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash);
+	}
+
+	// This method will only find existing users that are already linked to LDAP
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined | null> {
+		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
+
+		if (uniqueIdentifierField) {
+			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
+			return UsersRaw.findOneByLDAPId<IUser>(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
+		}
+	}
+
+	protected static getConverterOptions(): UserConverterOptions {
+		return {
+			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
+			skipExistingUsers: false,
+			skipUserCallbacks: false,
+			syncVoipExtension: Boolean(settings.get<string>('LDAP_Extension_Field')),
+		};
+	}
+
+	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined): IImportUser {
+		const uniqueId = this.getLdapUserUniqueID(ldapUser);
+		if (!uniqueId) {
+			throw new Error('Failed to generate unique identifier for ldap entry');
+		}
+
+		const { attribute: idAttribute, value: id } = uniqueId;
+		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
+		const homeServer = this.getFederationHomeServer(ldapUser);
+		const emails = homeServer ? [] : this.getLdapEmails(ldapUser, username).map((email) => email.trim());
+		const name = this.getLdapName(ldapUser) || undefined;
+		const voipExtension = this.getLdapExtension(ldapUser);
+
+		const userData: IImportUser = {
+			type: 'user',
+			emails,
+			importIds: [ldapUser.dn],
+			username,
+			name,
+			voipExtension,
+			services: {
+				ldap: {
+					idAttribute,
+					id,
+				},
+			},
+			...(homeServer && {
+				username: `@${username}:${homeServer}`,
+				federated: true,
+				federation: {
+					version: 1,
+					mui: `@${username}:${homeServer}`,
+					origin: homeServer,
+				},
+			}),
 		};
 
-		const attributeNames = groupAttributeName ? groupAttributeName.split(',').map((attributeName) => attributeName.trim()) : ['ou', 'cn'];
+		this.onMapUserData(ldapUser, userData);
+		return userData;
+	}
 
-		const ldapUserGroups = await ldap.searchRaw(baseDN, searchOptions);
-		if (!Array.isArray(ldapUserGroups)) {
-			return [];
-		}
+	private static onMapUserData(ldapUser: ILDAPEntry, userData: IImportUser): void {
+		void callbacks.run('mapLDAPUserData', userData, ldapUser);
+	}
 
-		return ldapUserGroups
-			.map((entry) => {
-				if (!entry?.raw) {
-					return undefined;
+	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
+		const escapedUsername = ldapEscape.filter`${username}`;
+
+		try {
+			const users = await ldap.searchByUsername(escapedUsername);
+
+			if (users.length !== 1) {
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
+				throw new Error('User not found');
+			}
+
+			const [ldapUser] = users;
+			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
+				throw new Error('User not found');
+			}
+
+			if (!(await ldap.authenticate(ldapUser.dn, password))) {
+				logger.debug({ msg: 'Wrong password', username: escapedUsername });
+				throw new Error('Invalid user or wrong password');
+			}
+
+			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
+				// Do a search as the user and check if they have any result
+				authLogger.debug('User authenticated successfully, performing additional search.');
+				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
+			}
+			return ldapUser;
+		} catch (err) {
+			logger.error({ err });
+		}
+	}
 
-				for (const attributeName of attributeNames) {
-					if (entry.raw[attributeName]) {
-						return ldap.extractLdapAttribute(entry.raw[attributeName]) as string;
-					}
+	private static async findAuthenticatedUser(ldap: LDAPConnection, username: string): Promise<ILDAPEntry | undefined> {
+		const escapedUsername = ldapEscape.filter`${username}`;
+
+		try {
+			const users = await ldap.searchByUsername(escapedUsername);
+
+			if (users.length !== 1) {
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
+				return;
+			}
+
+			const [ldapUser] = users;
+
+			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
+				// Do a search as the user and check if they have any result
+				authLogger.debug('User authenticated successfully, performing additional search.');
+				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
+			}
 
-				return undefined;
-			})
-			.filter((entry): entry is string => Boolean(entry))
-			.flat();
+			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
+				throw new Error('User not in a valid group');
+			}
+
+			return ldapUser;
+		} catch (err) {
+			logger.error({ err });
+		}
 	}
 
-	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
-		// EDirectory: Account manually disabled by an admin
-		if (ldapUser.loginDisabled) {
-			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');
-			return true;
+	private static async loginNewUserFromLDAP(
+		slugifiedUsername: string,
+		ldap: LDAPConnection,
+		ldapUser: ILDAPEntry,
+		ldapPass?: string,
+	): Promise<LDAPLoginResult> {
+		logger.debug({ msg: 'User does not exist, creating', username: slugifiedUsername });
+
+		let username: string | undefined;
+
+		if (getLDAPConditionalSetting('LDAP_Username_Field') !== '') {
+			username = slugifiedUsername;
 		}
 
-		// Oracle: Account must not be allowed to authenticate
-		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
-			mapLogger.debug('User must not be allowed to authenticate (attribute orclIsEnabled)');
-			return true;
-		}
-
-		// Active Directory - Account disabled by an Admin
-		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
-			mapLogger.debug('User account disabled by an admin (attribute userAccountControl)');
-			return true;
-		}
-
-		return false;
+		// Create new user
+		return this.addLdapUser(ldapUser, username, ldapPass, ldap);
 	}
 
-	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		if (!ldapUser) {
+	private static async addLdapUser(
+		ldapUser: ILDAPEntry,
+		username: string | undefined,
+		password: string | undefined,
+		ldap: LDAPConnection,
+	): Promise<LDAPLoginResult> {
+		const user = await this.syncUserForLogin(ldapUser, undefined, username);
+
+		if (!user) {
 			return;
 		}
 
-		const syncUserState = settings.get('LDAP_Sync_User_Active_State');
-		if (syncUserState === 'none') {
-			return;
-		}
+		await this.onLogin(ldapUser, user, password, ldap, true);
 
-		const deleted = this.isUserDeactivated(ldapUser);
-		if (deleted === userData.deleted) {
-			return;
-		}
-
-		if (syncUserState === 'disable' && !deleted) {
-			return;
-		}
-
-		if (syncUserState === 'enable' && deleted) {
-			return;
-		}
-
-		userData.deleted = deleted;
-		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
+		return {
+			userId: user._id,
+		};
 	}
 
-	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		return copyCustomFieldsLDAP(
-			{
-				ldapUser,
-				userData,
-				customFieldsSettings: settings.get<string>('Accounts_CustomFields'),
-				customFieldsMap: settings.get<string>('LDAP_CustomFieldMap'),
-				syncCustomFields: settings.get<boolean>('LDAP_Sync_Custom_Fields'),
+	private static async onLogin(
+		ldapUser: ILDAPEntry,
+		user: IUser,
+		password: string | undefined,
+		ldap: LDAPConnection,
+		isNewUser: boolean,
+	): Promise<void> {
+		logger.debug('running onLDAPLogin');
+		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
+			await Accounts.setPasswordAsync(user._id, password, { logout: false });
+		}
+
+		await this.syncUserAvatar(user, ldapUser);
+		await callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
+	}
+
+	private static async loginExistingUser(
+		ldap: LDAPConnection,
+		user: IUser,
+		ldapUser: ILDAPEntry,
+		password?: string,
+	): Promise<LDAPLoginResult> {
+		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
+			logger.debug('User exists without "ldap: true"');
+			throw new Meteor.Error(
+				'LDAP-login-error',
+				`LDAP Authentication succeeded, but there's already an existing user with provided username [${user.username}] in Mongo.`,
+			);
+		}
+
+		// If we're merging an ldap user with a local user, then we need to sync the data even if 'update data on login' is off.
+		const forceUserSync = !user.ldap;
+
+		const syncData = forceUserSync || (settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true);
+		logger.debug({ msg: 'Logging user in', syncData });
+		const updatedUser = (syncData && (await this.syncUserForLogin(ldapUser, user))) || user;
+
+		await this.onLogin(ldapUser, updatedUser, password, ldap, false);
+		return {
+			userId: user._id,
+		};
+	}
+
+	private static async syncUserForLogin(
+		ldapUser: ILDAPEntry,
+		existingUser?: IUser,
+		usedUsername?: string | undefined,
+	): Promise<IUser | undefined | null> {
+		logger.debug({
+			msg: 'Syncing user data',
+			ldapUser: omit(ldapUser, '_raw'),
+			user: { ...(existingUser && { email: existingUser.emails, _id: existingUser._id }) },
+		});
+
+		const userData = this.mapUserData(ldapUser, usedUsername);
+
+		// make sure to persist existing user data when passing to sync/convert
+		// TODO this is only needed because ImporterDataConverter assigns a default role and type if nothing is set. we might need to figure out a better way and stop doing that there
+		if (existingUser) {
+			if (!userData.roles && existingUser.roles) {
+				userData.roles = existingUser.roles;
+			}
+			if (!userData.type && existingUser.type) {
+				userData.type = existingUser.type as IImportUser['type'];
+			}
+		}
+
+		const options = this.getConverterOptions();
+		await LDAPUserConverter.convertSingleUser(userData, options);
+
+		return existingUser || this.findExistingLDAPUser(ldapUser);
+	}
+
+	private static getLdapUserUniqueID(ldapUser: ILDAPEntry): ILDAPUniqueIdentifierField | undefined {
+		let uniqueIdentifierField: string | string[] | undefined = settings.get<string>('LDAP_Unique_Identifier_Field');
+
+		if (uniqueIdentifierField) {
+			uniqueIdentifierField = uniqueIdentifierField.replace(/\s/g, '').split(',');
+		} else {
+			uniqueIdentifierField = [];
+		}
+
+		let userSearchField: string | string[] | undefined = getLDAPConditionalSetting<string>('LDAP_User_Search_Field');
+
+		if (userSearchField) {
+			userSearchField = userSearchField.replace(/\s/g, '').split(',');
+		} else {
+			userSearchField = [];
+		}
+
+		uniqueIdentifierField = uniqueIdentifierField.concat(userSearchField);
+		if (!uniqueIdentifierField.length) {
+			uniqueIdentifierField.push('dn');
+		}
+
+		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
+		if (key) {
+			return {
+				attribute: key,
+				value: ldapUser._raw[key].toString('hex'),
+			};
+		}
+
+		connLogger.warn('Failed to generate unique identifier for ldap entry');
+		connLogger.debug(ldapUser);
+	}
+
+	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
+		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
+		return getLdapDynamicValue(ldapUser, nameAttributes);
+	}
+
+	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
+		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
+		if (!extensionAttribute) {
+			return;
+		}
+
+		return getLdapString(ldapUser, extensionAttribute);
+	}
+
+	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {
+		const emailAttributes = getLDAPConditionalSetting<string>('LDAP_Email_Field');
+		if (emailAttributes) {
+			const attributeList: string[] = emailAttributes.replace(/\s/g, '').split(',');
+			const key = attributeList.find((field) => ldapKeyExists(ldapUser, field));
+
+			const emails: string[] = [].concat(key ? ldapUser[key.trim()] : []);
+			const filteredEmails = emails.filter((email) => email.includes('@'));
+
+			if (filteredEmails.length) {
+				return filteredEmails;
+			}
+		}
+
+		if (settings.get('LDAP_Default_Domain') !== '' && username) {
+			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
+		}
+
+		if (ldapUser.mail?.includes('@')) {
+			return [ldapUser.mail];
+		}
+
+		logger.debug(ldapUser);
+		throw new Error('Failed to get email address from LDAP user');
+	}
+
+	private static slugify(text: string): string {
+		if (settings.get('UTF8_Names_Slugify') !== true) {
+			return text;
+		}
+
+		text = limax(text, { replacement: '.' });
+		return text.replace(/[^0-9a-z-_.]/g, '');
+	}
+
+	private static slugifyUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
+		if (getLDAPConditionalSetting('LDAP_Username_Field') !== '') {
+			const username = this.getLdapUsername(ldapUser);
+			if (username) {
+				return this.slugify(username);
+			}
+		}
+
+		return this.slugify(requestUsername);
+	}
+
+	protected static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
+		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
+		return getLdapDynamicValue(ldapUser, usernameField);
+	}
+
+	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
+		if (!settings.get<boolean>('Federation_Service_Enabled')) {
+			return;
+		}
+
+		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
+		const homeServer = getLdapDynamicValue(ldapUser, homeServerField);
+
+		if (!homeServer) {
+			return;
+		}
+
+		logger.debug({ msg: 'User has a federation home server', homeServer });
+
+		const localServer = settings.get<string>('Federation_Service_Domain');
+		if (localServer === homeServer) {
+			return;
+		}
+
+		return homeServer;
+	}
+
+	// This method will find existing users by LDAP id or by username.
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined | null> {
+		const user = await this.findExistingLDAPUser(ldapUser);
+		if (user) {
+			return user;
+		}
+
+		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase<IUser>(slugifiedUsername);
+	}
+
+	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {
+		if (typeof username === 'string') {
+			if (username.indexOf('@') === -1) {
+				username = { username };
+			} else {
+				username = { email: username };
+			}
+		}
+
+		logger.debug({ msg: 'Fallback to default account system', username });
+
+		const loginRequest = {
+			user: username,
+			password: {
+				digest: SHA256(password),
+				algorithm: 'sha-256',
 			},
-			logger,
-		);
+		};
+
+		return Accounts._runLoginHandlers(this, loginRequest);
 	}
 
-	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPUserConverter): Promise<void> {
-		return new Promise((resolve, reject) => {
-			let count = 0;
-
-			ldap
-				.searchAllUsers<IImportUser>({
-					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-						const data = ldap.extractLdapEntryData(entry);
-						count++;
-
-						const userData = this.mapUserData(data);
-						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-						return userData;
-					},
-					endCallback: (err: any): void => {
-						if (err) {
-							logger.error({ err });
-							reject(err);
-							return;
-						}
-
-						logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
-						resolve();
-					},
-				})
-				.catch(reject);
-		});
-	}
-
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPUserConverter, disableMissingUsers = false): Promise<void> {
-		const users = await Users.findLDAPUsers().toArray();
-		for await (const user of users) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
-
-			if (ldapUser) {
-				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
-			} else if (disableMissingUsers && user.active) {
-				await setUserActiveStatus(user._id, false, true);
-			}
-		}
-	}
-
-	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
-		const userIds = (await Users.findActiveLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
-
-		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
-	}
-
-	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
-		const users = await Users.findLDAPUsers().toArray();
-		for await (const user of users) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
-			if (!ldapUser) {
-				continue;
-			}
-
-			await LDAPManager.syncUserAvatar(user, ldapUser);
-		}
-	}
-
-	private static async updateUserAbacAttributes(ldap: LDAPConnection): Promise<void> {
-		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
-		if (!mapping) {
-			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
-			return;
+	private static getAvatarFromUser(ldapUser: ILDAPEntry): any | undefined {
+		const avatarField = String(settings.get('LDAP_Avatar_Field') || '').trim();
+		if (avatarField && ldapUser._raw[avatarField]) {
+			return ldapUser._raw[avatarField];
 		}
 
-		for await (const user of Users.findLDAPUsers()) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
-			if (!ldapUser) {
-				continue;
-			}
-
-			await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
-		}
-	}
-
-	private static async syncUserAbacAttribute(ldap: LDAPConnection, user: IUser): Promise<void> {
-		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
-		if (!mapping) {
-			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
-			return;
+		if (ldapUser._raw.thumbnailPhoto) {
+			return ldapUser._raw.thumbnailPhoto;
 		}
 
-		const ldapUser = await this.findLDAPUser(ldap, user);
-		if (!ldapUser) {
-			return;
-		}
-
-		await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
-	}
-
-	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
-		if (user.services?.ldap?.id) {
-			return ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-		}
-
-		if (user.username) {
-			return ldap.findOneByUsername(user.username);
-		}
-
-		searchLogger.debug({
-			msg: 'existing LDAP user not found during Sync',
-			ldapId: user.services?.ldap?.id,
-			ldapAttribute: user.services?.ldap?.idAttribute,
-			username: user.username,
-		});
-	}
-
-	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
-		const users = await Users.findConnectedLDAPUsers().toArray();
-
-		for await (const user of users) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
-			if (!ldapUser) {
-				continue;
-			}
-
-			if (this.isUserDeactivated(ldapUser)) {
-				await Users.unsetLoginTokens(user._id);
-			}
+		if (ldapUser._raw.jpegPhoto) {
+			return ldapUser._raw.jpegPhoto;
 		}
 	}
 }
