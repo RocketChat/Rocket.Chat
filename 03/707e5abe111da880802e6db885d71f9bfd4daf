@@ -1,0 +1,26 @@
+apps/meteor/package.json
+  h_4c386397e672f4 113
+yarn.lock
+  h_4c386397e672f4 9332,9567,9596-9598,9612,10209
+packages/core-services/package.json
+  h_4c386397e672f4 21
+ee/packages/federation-matrix/package.json
+  h_4c386397e672f4 25
+apps/meteor/CHANGELOG.md
+  h_4c386397e672f4 87
+.changeset/young-ties-rest.md
+  h_4c386397e672f4 6
+ee/packages/federation-matrix/CHANGELOG.md
+  h_4c386397e672f4 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "03707e5abe111da880802e6db885d71f9bfd4daf",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
