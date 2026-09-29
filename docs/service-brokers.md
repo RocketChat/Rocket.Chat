@@ -120,6 +120,7 @@ event listeners:
 - `rpc.<service>.<method>` — calls, load balanced by NATS across every node running the service
 - `node.<nodeID>.<service>.<method>` — calls pinned to one instance, backing `CallingOptions.nodeID`
 - `event.<name>` — broadcasts
+- `emit.<name>` — `emitToOne`, subscribed in a queue group named after the service, so NATS hands each message to one instance of every listening service
 
 A node id is reduced to a single NATS subject token (`.`, `*`, `>` and whitespace
 become `_`), and that reduced form is what `nodeList()` reports, so an id handed
@@ -281,7 +282,8 @@ processes is relayed as the event `stream`.
 | ---------------------------------- | ------------------------------------ | ---------------- | ------------------------------------ | -------------------------------------- | --------------------------------- |
 | single monolith                    | this process                         | this process     | this process, every listener         | this process                           | —                                 |
 | enterprise multi-instance monolith | every instance                       | this process     | this process, every listener         | this process                           | `InstanceService` (matrix broker) |
-| microservices                      | every node, **including the sender** | this node        | every instance of the named services | one instance of each listening service | the Moleculer transporter         |
+| microservices, Moleculer           | every node, **including the sender** | this node        | every instance of the named services | one instance of each listening service | the Moleculer transporter         |
+| microservices, NATS                | every node, **including the sender** | this node        | **nothing** — not implemented        | one instance of each listening service | NATS                              |
 
 `emitToOne` means "one instance of each service that listens". In a monolith every service
 exists once per process, and whatever publishes it (a client write, for instance) happens on
