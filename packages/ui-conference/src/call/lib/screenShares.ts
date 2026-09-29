@@ -1,7 +1,8 @@
 import type { RemoteParticipantInfo } from '../context';
 import type { StageSelf } from './stageTiles';
 
-export type ScreenShare = { id: string; stream: MediaStream; label: string; isLocal: boolean };
+/** `name` is who is sharing, absent for the reader's own share. */
+export type ScreenShare = { id: string; stream: MediaStream; name?: string; isLocal: boolean };
 
 /** When each share started, by participant: a new stream from the same person is a new share. */
 export type ShareStarts = ReadonlyMap<string, { stream: MediaStream; startedAt: number }>;
@@ -11,10 +12,8 @@ export const collectScreenShares = (
 	self: Pick<StageSelf, 'id' | 'screenStream'>,
 	remoteParticipants: RemoteParticipantInfo[],
 ): ScreenShare[] => [
-	...(self.screenStream ? [{ id: self.id, stream: self.screenStream, label: 'You — screen', isLocal: true }] : []),
-	...remoteParticipants.flatMap((p) =>
-		p.screenStream ? [{ id: p.id, stream: p.screenStream, label: `${p.displayName} — screen`, isLocal: false }] : [],
-	),
+	...(self.screenStream ? [{ id: self.id, stream: self.screenStream, isLocal: true }] : []),
+	...remoteParticipants.flatMap((p) => (p.screenStream ? [{ id: p.id, stream: p.screenStream, name: p.displayName, isLocal: false }] : [])),
 ];
 
 /** Brings the start times up to date with the shares on screen, and says which share started last, if any did. */

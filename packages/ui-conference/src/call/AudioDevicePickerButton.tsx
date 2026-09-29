@@ -1,6 +1,7 @@
 import { ActionButton } from '@rocket.chat/ui-voip';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from './VoiceActivity';
 
@@ -18,6 +19,8 @@ const AudioDevicePickerButton = forwardRef<HTMLButtonElement, AudioDevicePickerB
 	{ small: _small, level, micMuted, ...menuProps },
 	ref,
 ) {
+	const { t } = useTranslation();
+
 	// A live microphone shows what it is hearing rather than a chevron: the one thing a caller wondering whether they
 	// are being heard wants to know. A muted mic has nothing to show, so there the chevron stays.
 	return (
@@ -29,7 +32,7 @@ const AudioDevicePickerButton = forwardRef<HTMLButtonElement, AudioDevicePickerB
 			flexGrow={0}
 			// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
 			{...menuProps}
-			label='Device options'
+			label={t('Audio_device_options')}
 			icon={micMuted ? 'chevron-up' : <VoiceActivity level={level} size={24} />}
 			ref={ref}
 		/>

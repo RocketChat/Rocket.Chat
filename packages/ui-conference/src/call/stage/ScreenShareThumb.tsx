@@ -1,5 +1,6 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { usePlayMediaStream } from '@rocket.chat/ui-voip';
+import { useTranslation } from 'react-i18next';
 
 import { ownBadgeStyles, screenThumbStyles, spotlightOverlayStyles } from './stageStyles';
 
@@ -11,6 +12,7 @@ export type ScreenShareThumbProps = {
 
 /** A screen shared while another one has the stage, with a button, on hover, to give it the stage instead. */
 const ScreenShareThumb = ({ stream, label, onSpotlight }: ScreenShareThumbProps) => {
+	const { t } = useTranslation();
 	const [videoRef] = usePlayMediaStream(stream);
 	return (
 		<Box className={screenThumbStyles}>
@@ -21,7 +23,7 @@ const ScreenShareThumb = ({ stream, label, onSpotlight }: ScreenShareThumbProps)
 				{label}
 			</Box>
 			<Box className={['rcx-screen-thumb-overlay', spotlightOverlayStyles]}>
-				<IconButton icon='arrow-expand' small primary onClick={onSpotlight} title='Spotlight this screen' />
+				<IconButton icon='arrow-expand' small primary onClick={onSpotlight} title={t('Spotlight_screen')} />
 			</Box>
 		</Box>
 	);

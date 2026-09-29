@@ -19,7 +19,7 @@ const DeviceMenuDevices = ({ rows, selectedId, onSelect }: DeviceMenuDevicesProp
 				<DeviceMenuOption
 					key={row.id}
 					name={row.name}
-					note={row.systemDefault ? `${t('System')} ${t('Default').toLowerCase()}` : undefined}
+					note={row.systemDefault ? t('System_default') : undefined}
 					selected={row.id === selectedId}
 					onSelect={() => onSelect(row.id)}
 				/>

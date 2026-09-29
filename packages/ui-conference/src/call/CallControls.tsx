@@ -25,9 +25,9 @@ const LAYOUT_ICONS: Record<StageLayout, Keys> = {
 };
 
 const LAYOUT_LABELS: Record<StageLayout, string> = {
-	grid: 'Grid',
-	spotlight: 'Spotlight',
-	sidebar: 'Sidebar',
+	grid: 'Call_layout_grid',
+	spotlight: 'Call_layout_spotlight',
+	sidebar: 'Call_layout_sidebar',
 };
 
 const reactionPickerWrapStyles = css`
@@ -180,11 +180,11 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 
 	const layoutItems: GenericMenuItemProps[] = STAGE_LAYOUTS.map((l) => ({
 		id: l,
-		textValue: LAYOUT_LABELS[l],
+		textValue: t(LAYOUT_LABELS[l]),
 		icon: LAYOUT_ICONS[l],
 		content: (
-			<Box is='span' title={LAYOUT_LABELS[l]} fontScale='p2'>
-				{LAYOUT_LABELS[l]}
+			<Box is='span' title={t(LAYOUT_LABELS[l])} fontScale='p2'>
+				{t(LAYOUT_LABELS[l])}
 			</Box>
 		),
 		addon: <RadioButton checked={layout === l} readOnly />,
@@ -238,18 +238,18 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				onToggle={toggleScreenShare}
 			/>
 			<ToggleButton
-				label='Raise hand'
+				label={t('Raise_hand')}
 				icons={['hand-pointer', 'hand-pointer']}
-				titles={['Raise hand', 'Lower hand']}
+				titles={[t('Raise_hand'), t('Lower_hand')]}
 				pressed={self.handRaised}
 				large
 				onToggle={toggleHand}
 			/>
 			<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
 				<ToggleButton
-					label='Send reaction'
+					label={t('Send_reaction')}
 					icons={['emoji', 'emoji']}
-					titles={['Send reaction', 'Send reaction']}
+					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					large
 					onToggle={() => setReactionPickerOpen((p) => !p)}
@@ -277,7 +277,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 									key={emoji}
 									is='button'
 									type='button'
-									title={`Send ${emoji}`}
+									title={t('Send_reaction__emoji__', { emoji })}
 									className={reactionButtonStyles}
 									onClick={() => sendReaction(emoji)}
 								>

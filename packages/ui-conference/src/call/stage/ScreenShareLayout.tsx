@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
 import ScreenShareThumb from './ScreenShareThumb';
 import ScreenViewer from './ScreenViewer';
@@ -19,15 +20,18 @@ export type ScreenShareLayoutProps = {
 
 /** A shared screen on the stage, with the other shares and everyone's tile beside or under it. */
 const ScreenShareLayout = ({ featured, others, tiles, orientation, onPin, onStopLocalScreenShare }: ScreenShareLayoutProps) => {
+	const { t } = useTranslation();
 	const classes = spotlightClasses(orientation);
+	const labelOf = ({ name, isLocal }: ScreenShare) => (isLocal || !name ? t('Your_screen') : t('__name__screen', { name }));
+
 	return (
 		<Box className={classes.container}>
-			<ScreenViewer stream={featured.stream} label={featured.label}>
+			<ScreenViewer stream={featured.stream} label={labelOf(featured)}>
 				{featured.isLocal && onStopLocalScreenShare && <StopShareButton onStop={onStopLocalScreenShare} />}
 			</ScreenViewer>
 			<Box className={classes.thumbs} data-thumb-orientation={classes.thumbOrientation}>
 				{others.map((s) => (
-					<ScreenShareThumb key={`screen-${s.id}`} stream={s.stream} label={s.label} onSpotlight={() => onPin(s.id)} />
+					<ScreenShareThumb key={`screen-${s.id}`} stream={s.stream} label={labelOf(s)} onSpotlight={() => onPin(s.id)} />
 				))}
 				{tiles.map((t) => (
 					<Box key={t.id} className={classes.thumb}>

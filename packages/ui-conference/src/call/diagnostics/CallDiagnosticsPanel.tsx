@@ -106,8 +106,8 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 								}
 							/>
 							<CallDiagnosticsStatRow label={t('Codec')} value={diagnostics.sendCodec ?? '—'} />
-							<CallDiagnosticsStatRow label='FPS' value={diagnostics.sendFps ?? '—'} />
-							<CallDiagnosticsStatRow label={t('Limited_by')} value={diagnostics.qualityLimitationReason || 'none'} />
+							<CallDiagnosticsStatRow label={t('FPS')} value={diagnostics.sendFps ?? '—'} />
+							<CallDiagnosticsStatRow label={t('Limited_by')} value={diagnostics.qualityLimitationReason || t('None')} />
 						</Box>
 
 						{diagnostics.backgroundBlur && (
@@ -115,14 +115,26 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 								<Divider />
 								<Box paddingBlock={8} paddingInline={16}>
 									<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
-										Background blur
+										{t('Background_blur')}
 									</Box>
-									<CallDiagnosticsStatRow label='Processor FPS' value={fmtDecimal(diagnostics.backgroundBlur.fps)} />
-									<CallDiagnosticsStatRow label='Frame work' value={fmtDecimal(diagnostics.backgroundBlur.frameMs, ' ms')} />
-									<CallDiagnosticsStatRow label='Compositor' value={fmtDecimal(diagnostics.backgroundBlur.compositorMs, ' ms')} />
-									<CallDiagnosticsStatRow label='Segmentation' value={fmtDecimal(diagnostics.backgroundBlur.segmentationMs, ' ms')} />
-									<CallDiagnosticsStatRow label='Mask interval' value={fmt(diagnostics.backgroundBlur.segmentIntervalMs, 'ms')} />
-									<CallDiagnosticsStatRow label='Adaptive level' value={diagnostics.backgroundBlur.qualityReduction} />
+									<CallDiagnosticsStatRow label={t('Background_blur_processor_fps')} value={fmtDecimal(diagnostics.backgroundBlur.fps)} />
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_frame_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.frameMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_compositor_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.compositorMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_segmentation_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.segmentationMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_mask_interval')}
+										value={fmt(diagnostics.backgroundBlur.segmentIntervalMs, 'ms')}
+									/>
+									<CallDiagnosticsStatRow label={t('Background_blur_adaptive_level')} value={diagnostics.backgroundBlur.qualityReduction} />
 								</Box>
 							</>
 						)}

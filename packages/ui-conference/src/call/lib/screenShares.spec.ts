@@ -5,7 +5,7 @@ const streamA = { id: 'a' } as MediaStream;
 const streamB = { id: 'b' } as MediaStream;
 const streamC = { id: 'c' } as MediaStream;
 
-const share = (id: string, stream: MediaStream): ScreenShare => ({ id, stream, label: id, isLocal: false });
+const share = (id: string, stream: MediaStream): ScreenShare => ({ id, stream, name: id, isLocal: false });
 
 describe('collectScreenShares', () => {
 	it('lists the reader first, then whoever else is sharing', () => {
@@ -15,8 +15,8 @@ describe('collectScreenShares', () => {
 		]);
 
 		expect(shares).toEqual([
-			{ id: 'me', stream: streamA, label: 'You — screen', isLocal: true },
-			{ id: 'ada', stream: streamB, label: 'Ada — screen', isLocal: false },
+			{ id: 'me', stream: streamA, isLocal: true },
+			{ id: 'ada', stream: streamB, name: 'Ada', isLocal: false },
 		]);
 	});
 });

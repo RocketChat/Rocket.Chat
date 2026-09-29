@@ -48,8 +48,7 @@ const CallPresenting = ({ presenters, onStopPresenting }: CallPresentingProps) =
 	}
 
 	const [first, ...rest] = presenters;
-	const qualifier = first.isLocal ? t('You_presenting') : t('Presenting');
-	const label = `${first.name} (${qualifier})`;
+	const label = first.isLocal ? t('__name__you_presenting', { name: first.name }) : t('__name__presenting', { name: first.name });
 
 	return (
 		<Box className={pillStyles} fontScale='c1' title={label}>

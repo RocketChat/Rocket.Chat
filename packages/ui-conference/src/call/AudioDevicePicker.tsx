@@ -66,7 +66,7 @@ const AudioDevicePicker = () => {
 					</Box>
 					{device.id === SYSTEM_DEFAULT_DEVICE_ID && (
 						<Box is='span' fontScale='c1' color='hint'>
-							{t('System')} {t('Default').toLowerCase()}
+							{t('System_default')}
 						</Box>
 					)}
 				</Box>
@@ -94,7 +94,7 @@ const AudioDevicePicker = () => {
 					</Box>
 					{device.id === SYSTEM_DEFAULT_DEVICE_ID && (
 						<Box is='span' fontScale='c1' color='hint'>
-							{t('System')} {t('Default').toLowerCase()}
+							{t('System_default')}
 						</Box>
 					)}
 				</Box>

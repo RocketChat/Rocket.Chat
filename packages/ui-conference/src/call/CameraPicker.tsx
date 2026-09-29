@@ -47,7 +47,7 @@ const CameraPicker = () => {
 					{/* Said on its own line, as a fact about the device rather than part of its name. */}
 					{device.deviceId === SYSTEM_DEFAULT_DEVICE_ID && (
 						<Box is='span' fontScale='c1' color='hint'>
-							{t('System')} {t('Default').toLowerCase()}
+							{t('System_default')}
 						</Box>
 					)}
 				</Box>

@@ -1,6 +1,7 @@
 import { ActionButton } from '@rocket.chat/ui-voip';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /** What GenericMenu stamps onto the trigger it clones; `small` is dropped, since the fused control is always large. */
 type MenuTriggerProps = { small?: boolean } & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
@@ -14,6 +15,8 @@ const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps
 	{ small: _small, cameraOff, ...menuProps },
 	ref,
 ) {
+	const { t } = useTranslation();
+
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
 	return (
 		<ActionButton
@@ -23,7 +26,7 @@ const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps
 			flexShrink={1}
 			flexGrow={0}
 			{...menuProps}
-			label='Camera options'
+			label={t('Camera_options')}
 			icon='chevron-up'
 			ref={ref}
 		/>
