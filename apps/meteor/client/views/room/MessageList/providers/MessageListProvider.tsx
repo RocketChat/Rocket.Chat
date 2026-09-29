@@ -1,4 +1,5 @@
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
@@ -6,7 +7,6 @@ import { useMemo, memo } from 'react';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';

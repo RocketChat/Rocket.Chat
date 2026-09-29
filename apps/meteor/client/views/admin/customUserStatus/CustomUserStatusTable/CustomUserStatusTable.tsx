@@ -9,6 +9,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults as GenericNoResult,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import CustomUserStatusRow from './CustomUserStatusRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResult from '../../../../components/GenericNoResults';
 
 export type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;

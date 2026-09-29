@@ -160,6 +160,7 @@
 		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
+		"@rocket.chat/ui-account": "workspace:^",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-composer": "workspace:^",
