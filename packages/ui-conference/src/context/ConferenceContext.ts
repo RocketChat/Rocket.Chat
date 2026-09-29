@@ -11,7 +11,7 @@ import type {
 import type { ProviderPluginControls } from '../lib/providerPlugin';
 
 /** What the window can show beside the call. */
-export type ConferencePanel = 'members' | 'chat' | 'diagnostics';
+export type ConferencePanel = 'members' | 'chat';
 
 /**
  * One call, as the window that shows it needs to know it.

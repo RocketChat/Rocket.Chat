@@ -25,5 +25,5 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	args: { centre: <CallControls layout='grid' onLayoutChange={() => undefined} onOpenDiagnostics={() => undefined} /> },
+	args: { centre: <CallControls layout='grid' onLayoutChange={() => undefined} /> },
 };

@@ -11,7 +11,6 @@ import type { CallActions, CallDeviceSelection, CallSelf, CallState, RemoteParti
 import {
 	CallActionsProvider,
 	CallDeviceSelectionProvider,
-	CallDiagnosticsProvider,
 	CallStateProvider,
 	playJoinChime,
 	playMutedReminder,
@@ -25,7 +24,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
-import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
@@ -136,13 +134,6 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
 
-	const diagnostics = useCallDiagnostics(
-		room,
-		allParticipants.filter((p) => p !== localParticipant),
-		credentials?.serverUrl ?? '',
-		connected,
-	);
-
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled);
 
 	const mutedReminderPlayed = useRef(false);
@@ -230,10 +221,8 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
 				<CallDeviceSelectionProvider value={deviceSelection}>
-					<CallDiagnosticsProvider value={diagnostics ?? null}>
-						{children}
-						<RoomAudioRenderer room={room} />
-					</CallDiagnosticsProvider>
+					{children}
+					<RoomAudioRenderer room={room} />
 				</CallDeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>

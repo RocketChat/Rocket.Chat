@@ -8,7 +8,7 @@ import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixture
 const meta = {
 	component: CallControls,
 	parameters: { layout: 'centered' },
-	args: { layout: 'grid', onLayoutChange: () => undefined, onOpenDiagnostics: () => undefined },
+	args: { layout: 'grid', onLayoutChange: () => undefined },
 	decorators: [
 		(Story) => (
 			<CallSurface>

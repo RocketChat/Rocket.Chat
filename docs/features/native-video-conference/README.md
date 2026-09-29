@@ -13,8 +13,8 @@ The call is mounted by the conference window's composition root, around the wind
 - The window looks up the component registered for the call's `providerName` (`embeddedCallProviders`, filled at
   client startup) and wraps itself in it. Core code never names LiveKit; the registration line does.
 - The LiveKit component connects once the window has joined, and provides the call contexts from
-  `@rocket.chat/ui-conference` (call state, call actions, devices, diagnostics). The window's
-  header, stage and controls read those contexts directly: no portal, no state pushed back up to a parent.
+  `@rocket.chat/ui-conference` (call state, call actions, devices). The window's header, stage and controls read
+  those contexts directly: no portal, no state pushed back up to a parent.
 - The tree is the same before and after the join, so connecting never remounts the window.
 
 The LiveKit client is its own package, `@rocket.chat/ui-livekit`, loaded lazily so the SDK stays out of the bundle for
@@ -83,4 +83,5 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - No e2e coverage for the native flow yet.
 - Shipping in follow-ups:
   - background blur and noise suppression;
-  - reactions, raised hands and remote mute requests, and the data channel that carries them.
+  - reactions, raised hands and remote mute requests, and the data channel that carries them;
+  - the connection info panel (call diagnostics).

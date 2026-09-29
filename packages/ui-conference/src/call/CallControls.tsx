@@ -87,11 +87,10 @@ const deviceControlStyles = css`
 export type CallControlsProps = {
 	layout: StageLayout;
 	onLayoutChange: (layout: StageLayout) => void;
-	onOpenDiagnostics: () => void;
 };
 
 /** The controls of a call running in this window: devices, sharing, layout and leaving. */
-const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControlsProps) => {
+const CallControls = ({ layout, onLayoutChange }: CallControlsProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants } = useCallState();
 	const { toggleMic, toggleCamera, toggleScreenShare, leave } = useCallActions();
@@ -112,10 +111,6 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 		addon: <RadioButton checked={layout === l} readOnly />,
 		onClick: () => onLayoutChange(l),
 	}));
-
-	const moreItems: GenericMenuItemProps[] = [
-		{ id: 'diagnostics', icon: 'info-circled', content: t('Connection_info'), onClick: onOpenDiagnostics },
-	];
 
 	return (
 		<ButtonGroup style={{ position: 'relative' }}>
@@ -161,7 +156,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 			/>
 			<GenericMenu
 				title={t('More')}
-				sections={[{ items: layoutItems }, { items: moreItems }]}
+				sections={[{ items: layoutItems }]}
 				placement='top-end'
 				selectionMode='multiple'
 				button={<ActionButton secondary label={t('More')} icon='kebab' large />}

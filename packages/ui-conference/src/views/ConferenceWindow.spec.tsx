@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
 import type { CallDeviceSelection, CallState } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
@@ -41,9 +41,7 @@ const deviceSelection: CallDeviceSelection = {
 const CallContexts = ({ children }: { children: ReactNode }) => (
 	<CallStateProvider value={callState}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={deviceSelection}>
-				<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
-			</CallDeviceSelectionProvider>
+			<CallDeviceSelectionProvider value={deviceSelection}>{children}</CallDeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>
 );
@@ -103,13 +101,12 @@ it('closes the thread when every panel is shut', () => {
 });
 
 describe('a call that runs in this window', () => {
-	const renderNative = (overrides: Partial<ConferenceContextValue> = {}) => {
+	const renderNative = () => {
 		const AppRoot = mockAppRoot().withJohnDoe().build();
 
 		const value = buildConferenceContext({
 			session: { joined: true, embedded: true, loading: false },
 			room: { rid: 'room-id', loading: false },
-			...overrides,
 		});
 
 		const wrapper = ({ children }: { children: ReactNode }) => (
@@ -149,11 +146,5 @@ describe('a call that runs in this window', () => {
 		);
 
 		expect(screen.queryByRole('button', { name: 'Leave_call' })).not.toBeInTheDocument();
-	});
-
-	it('opens the connection panel', () => {
-		renderNative({ panel: { active: 'diagnostics', set: jest.fn() } });
-
-		expect(screen.getByRole('heading', { name: 'Connection_info' })).toBeInTheDocument();
 	});
 });
