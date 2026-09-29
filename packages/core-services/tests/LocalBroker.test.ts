@@ -157,4 +157,66 @@ describe('LocalBroker', () => {
 			expect(test2Listener).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('#emitToOne()', () => {
+		it('should deliver the event to the listening services in this process only', async () => {
+			const listener = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
+			instance.onEvent('test' as any, listener);
+
+			const publish = jest.fn();
+			const broker = new LocalBroker();
+			broker.setClusterTransport({ publish });
+			broker.createService(instance);
+
+			await broker.emitToOne('test' as any, 'a');
+
+			expect(listener).toHaveBeenCalledTimes(1);
+			expect(listener).toHaveBeenCalledWith('a');
+			expect(publish).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('#setClusterTransport()', () => {
+		const brokerWithTransport = () => {
+			const publish = jest.fn();
+			const broker = new LocalBroker();
+			broker.setClusterTransport({ publish });
+			return { broker, publish };
+		};
+
+		it('should hand every broadcast to the transport with its arguments', async () => {
+			const { broker, publish } = brokerWithTransport();
+
+			await broker.broadcast('test' as any, 'a', 1);
+
+			expect(publish).toHaveBeenCalledTimes(1);
+			expect(publish).toHaveBeenCalledWith('test', ['a', 1]);
+		});
+
+		it('should still deliver the broadcast to local listeners', async () => {
+			const listener = jest.fn();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
+			instance.onEvent('test' as any, listener);
+
+			const { broker } = brokerWithTransport();
+			broker.createService(instance);
+			await broker.broadcast('test' as any, 'a');
+
+			expect(listener).toHaveBeenCalledWith('a');
+		});
+
+		it('should not hand broadcastLocal or broadcastToServices to the transport', async () => {
+			const { broker, publish } = brokerWithTransport();
+
+			await broker.broadcastLocal('test' as any, 'a');
+			await broker.broadcastToServices(['test'], 'test' as any, 'a');
+
+			expect(publish).not.toHaveBeenCalled();
+		});
+	});
 });
