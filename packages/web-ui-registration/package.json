@@ -28,7 +28,7 @@
 		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/icons": "^0.50.0",
-		"@rocket.chat/layout": "~0.36.3",
+		"@rocket.chat/layout": "workspace:~",
 		"@rocket.chat/logo": "^0.33.2",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:~",
