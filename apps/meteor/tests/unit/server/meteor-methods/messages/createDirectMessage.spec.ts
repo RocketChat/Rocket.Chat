@@ -76,6 +76,18 @@ describe('createDirectMessage', () => {
 		await expect(createDirectMessage(['ME'], me._id)).to.be.rejectedWith('Invalid user');
 	});
 
+	it('should reject a repeated self username when self-DMs are disabled', async () => {
+		settingsGetMock.withArgs('Message_AllowDirectMessagesToYourself').returns(false);
+
+		await expect(createDirectMessage(['me', 'ME'], me._id)).to.be.rejectedWith('Invalid user');
+		expect(createRoomMock.called).to.be.false;
+	});
+
+	it('should reject excluding the caller when no other member is left', async () => {
+		await expect(createDirectMessage(['ME'], me._id, true)).to.be.rejectedWith('Invalid user');
+		expect(createRoomMock.called).to.be.false;
+	});
+
 	it('should reject a username that does not exist', async () => {
 		modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
 
