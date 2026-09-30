@@ -74,6 +74,7 @@ jobs:
         with:
           action: ${{ github.event_name == 'push' && 'publish-final' || github.event_name == 'schedule' && 'next' || inputs.name }}
           base-ref: ${{ github.event_name == 'schedule' && github.ref_name || github.event_name == 'workflow_dispatch' && inputs.base-ref || '' }}
+          lts-versions: ${{ vars.LTS_VERSIONS }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # transitional, see the Setup NodeJS step
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}
