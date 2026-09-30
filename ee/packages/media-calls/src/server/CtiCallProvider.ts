@@ -4,6 +4,7 @@ import { MediaCalls } from '@rocket.chat/models';
 
 import { mediaCallDirector } from './CallDirector';
 import { getMediaCallServer } from './injection';
+import { assertCallReachesSelectedDevice } from './selectedDevice';
 import { BaseCallProvider } from '../base/BaseCallProvider';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { CtiCallStateEvent } from '../definition/IMediaCallAppGateway';
@@ -54,6 +55,7 @@ export class CtiCallProvider extends BaseCallProvider {
 		if (await MediaCalls.hasUnfinishedCallsByUid(params.user.id)) {
 			throw new CallRejectedError('unavailable');
 		}
+		await assertCallReachesSelectedDevice(params.user.id, 'cti', params.device);
 
 		// The external side is app-backed and has no client session, so sign it with a synthetic contract.
 		const caller: MediaCallSignedContact = { ...params.from, type: 'sip', contractId: CTI_APP_CONTRACT_ID };

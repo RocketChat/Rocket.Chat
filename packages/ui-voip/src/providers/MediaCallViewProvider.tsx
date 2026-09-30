@@ -8,7 +8,7 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
@@ -21,7 +21,6 @@ import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
-import { useMediaCallDevices } from '../hooks/useMediaCallDevices';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import TransferModal from '../views/TransferModal';
@@ -81,9 +80,6 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onMute = () => controls.toggleMute();
 	const onHold = () => controls.toggleHold();
 
-	const callDevices = useMediaCallDevices();
-	const [selectedCallDevice, setSelectedCallDevice] = useState<string | null>(null);
-
 	const onCall = async () => {
 		if (sessionState.state !== 'none') {
 			console.error('Cannot start call in state', sessionState.state);
@@ -94,26 +90,19 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
-		const startCall = (micless: boolean, device?: string) => {
+		const startCall = (micless: boolean) => {
 			if ('userId' in targetPeer) {
-				void controls.startCall(targetPeer.userId, 'user', micless, device);
+				void controls.startCall(targetPeer.userId, 'user', micless);
 				return;
 			}
 
 			if ('number' in targetPeer) {
-				void controls.startCall(targetPeer.number, 'sip', micless, device);
+				void controls.startCall(targetPeer.number, 'sip', micless);
 				return;
 			}
 
 			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
-
-		// When a desk phone (cti device) is selected the call runs on that device, which handles its own
-		// audio, so skip the browser microphone permission flow entirely.
-		if (selectedCallDevice) {
-			startCall(true, selectedCallDevice);
-			return;
-		}
 
 		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
@@ -272,9 +261,6 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onCall,
 		onAccept,
 		onSelectPeer,
-		callDevices,
-		selectedCallDevice,
-		onSelectCallDevice: setSelectedCallDevice,
 		onToggleScreenSharing,
 		onOpenPopout,
 		onClosePopout,

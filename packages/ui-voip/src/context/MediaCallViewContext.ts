@@ -3,7 +3,6 @@ import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
 import type { SessionState, PeerInfo } from './definitions';
-import type { MediaCallDevice } from '../hooks/useMediaCallDevices';
 import { type LastKnownPosition } from '../providers/useWidgetPositionTracker';
 
 export type MediaCallStreams = {
@@ -26,11 +25,6 @@ export type MediaCallViewContextValue = {
 	onCall: () => Promise<void>;
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
-	/** External devices (e.g. desk phones) the call can be placed on, in addition to the Rocket.Chat client. */
-	callDevices: MediaCallDevice[];
-	/** The selected external device id, or `null` to place the call on the Rocket.Chat client (webrtc). */
-	selectedCallDevice: string | null;
-	onSelectCallDevice: (deviceId: string | null) => void;
 	onToggleScreenSharing: () => void;
 	onOpenPopout: () => void;
 	onClosePopout: () => void;
@@ -72,9 +66,6 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onCall: () => Promise.resolve(undefined),
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
-	callDevices: [],
-	selectedCallDevice: null,
-	onSelectCallDevice: () => undefined,
 	onToggleScreenSharing: () => undefined,
 	onOpenPopout: () => undefined,
 	onClosePopout: () => undefined,

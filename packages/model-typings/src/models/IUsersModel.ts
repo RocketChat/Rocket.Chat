@@ -1,6 +1,7 @@
 import type {
 	AvailableAgentsAggregation,
 	IUser,
+	IUserMediaCallDevice,
 	IRole,
 	ILivechatAgent,
 	UserStatus,
@@ -587,6 +588,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		freeSwitchExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	setMediaCallDeviceById(userId: IUser['_id'], device: IUserMediaCallDevice | null): Promise<UpdateResult>;
 	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		phoneNumber: string,
 		options?: O,

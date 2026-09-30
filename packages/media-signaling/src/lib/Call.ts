@@ -418,7 +418,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	public async requestCall(
 		callee: { type: CallActorType; id: string },
 		supportedFeatures: CallFeature[],
-		{ contactInfo, device }: { contactInfo?: CallContact; device?: string } = {},
+		contactInfo?: CallContact,
 	): Promise<void> {
 		if (this._initialized) {
 			return;
@@ -430,9 +430,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			callee,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
 			supportedFeatures,
-			// A chosen device means the call must run on an external endpoint handled by an app (cti),
-			// not through the browser's webrtc stack.
-			...(device && { requestedService: 'cti', device }),
 		});
 
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });

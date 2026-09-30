@@ -11,7 +11,6 @@ export { useInfoSlots } from './PeerInfo/useInfoSlots';
 export { default as PeerAutocomplete } from './PeerAutocomplete';
 export { default as Timer } from './Timer';
 export { default as DevicePicker } from './DevicePicker';
-export { default as CallDeviceSelector } from './CallDeviceSelector';
 export { default as CallHistoryInternalUser } from './CallHistoryInternalUser';
 export { default as CallHistoryExternalUser } from './CallHistoryExternalUser';
 export { default as VideoCallWidgetAction } from './VideoCallWidgetAction';

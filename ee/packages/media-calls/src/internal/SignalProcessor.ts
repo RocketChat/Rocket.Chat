@@ -204,9 +204,7 @@ export class GlobalSignalProcessor {
 		}
 
 		const services = signal.supportedServices ?? [];
-		// An explicit requestedService (e.g. a `cti` desk-phone call the browser can't service itself)
-		// wins over the capability-based heuristic used for regular webrtc calls.
-		const requestedService = signal.requestedService ?? (services.includes('webrtc') ? 'webrtc' : services[0]);
+		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
 		const features = signal.supportedFeatures ?? DEFAULT_CALL_FEATURES;
 
 		const params: InternalCallParams = {
@@ -223,7 +221,6 @@ export class GlobalSignalProcessor {
 			},
 			requestedCallId: signal.callId,
 			...(requestedService && { requestedService }),
-			...(signal.device && { device: signal.device }),
 			features,
 		};
 

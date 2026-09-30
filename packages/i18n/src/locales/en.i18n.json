@@ -1210,6 +1210,8 @@
   "Call_back": "Call back",
   "Call_chat": "Call chat",
   "Call_declined": "Call Declined!",
+  "Call_device": "Call device",
+  "Call_device_locked_during_call": "Call device cannot be changed during a call",
   "Call_ended": "Call ended",
   "Call_ended_bold": "*Voice call ended*",
   "Call_failed_bold": "*Voice call failed*",

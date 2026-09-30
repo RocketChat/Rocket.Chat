@@ -1,4 +1,4 @@
-import type { IMediaCall, IUser, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IUserMediaCallDevice, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	CallFeature,
@@ -7,11 +7,13 @@ import type {
 	ClientMediaSignalBody,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
+import { MediaCalls, Users } from '@rocket.chat/models';
 
 import { mediaCallDirector } from './CallDirector';
 import { CtiCallProvider } from './CtiCallProvider';
 import { getDefaultSettings } from './getDefaultSettings';
 import { getMediaCallAppGateway } from './injection';
+import { getSelectedDevice } from './selectedDevice';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type { CtiCallStateEvent, MediaCallDevice } from '../definition/IMediaCallAppGateway';
 import type {
@@ -93,7 +95,8 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async requestCall(params: InternalCallParams): Promise<void> {
 		try {
-			const fullParams = params.requestedService === 'cti' ? await this.parseCtiCallContacts(params) : await this.parseCallContacts(params);
+			const routed = await this.routeToSelectedDevice(params);
+			const fullParams = routed.requestedService === 'cti' ? await this.parseCtiCallContacts(routed) : await this.parseCallContacts(routed);
 
 			await this.createCall(fullParams);
 		} catch (error) {
@@ -161,6 +164,35 @@ export class MediaCallServer implements IMediaCallServer {
 	/** Entry point for an app to report a state/control change on a cti call it is handling (app -> host). */
 	public async reportCtiCallState(callId: string, event: CtiCallStateEvent): Promise<void> {
 		await CtiCallProvider.reportState(callId, event);
+	}
+
+	/**
+	 * Records which device a user takes their calls on, from then until they change it.
+	 *
+	 * Refused while the user is on a call: the choice decides where calls are placed and which ones
+	 * are answered, and moving it out from under a call in progress has no sane meaning.
+	 */
+	public async selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null> {
+		if (await MediaCalls.hasUnfinishedCallsByUid(uid)) {
+			throw new Error('error-media-call-in-progress');
+		}
+
+		if (!deviceId) {
+			await Users.setMediaCallDeviceById(uid, null);
+			return null;
+		}
+
+		// Only a device an app currently offers this user may be chosen, which also covers the feature
+		// being disabled and the user lacking permission for it.
+		const device = (await this.getUserMediaDevices(uid)).find(({ id }) => id === deviceId);
+		if (!device) {
+			throw new Error('error-invalid-media-call-device');
+		}
+
+		const selected: IUserMediaCallDevice = { id: device.id, appId: device.appId, name: device.name };
+		await Users.setMediaCallDeviceById(uid, selected);
+
+		return selected;
 	}
 
 	/** Lists the cti devices a user may place/receive calls on, as provided by the installed apps. */
@@ -258,6 +290,29 @@ export class MediaCallServer implements IMediaCallServer {
 	 * Will throw if a call can't be routed or if one of the user lacks permission for it.
 	 * Blocked permissions do not affect the routing rules, meaning a call may be blocked even if it would have been allowed through a different route.
 	 * */
+	/**
+	 * Decides where a call the caller asked for should actually be placed.
+	 *
+	 * The device is read from the caller rather than taken from the request: a user's calls go to the
+	 * device they chose, whatever the client believed when it asked. A caller who chose no device
+	 * places the call in Rocket.Chat, even if the request named a device.
+	 */
+	private async routeToSelectedDevice(params: InternalCallParams): Promise<InternalCallParams> {
+		if (params.caller.type !== 'user') {
+			return params;
+		}
+
+		const selected = await getSelectedDevice(params.caller.id);
+
+		if (!selected) {
+			const { device: _unusedDevice, requestedService, ...rest } = params;
+
+			return { ...rest, ...(requestedService && requestedService !== 'cti' && { requestedService }) };
+		}
+
+		return { ...params, requestedService: 'cti', device: selected.id };
+	}
+
 	/**
 	 * Resolves contacts for a `cti` call. Unlike a webrtc/sip call, the callee is the opaque dial
 	 * target the app will route, so it is NOT resolved through SIP routing or required to be an

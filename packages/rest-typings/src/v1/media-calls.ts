@@ -10,4 +10,9 @@ export type MediaCallsEndpoints = {
 			devices: { id: string; name: string; appId: string }[];
 		};
 	};
+	'/v1/media-calls.selectDevice': {
+		POST: (params: { deviceId?: string }) => {
+			device: { id: string; appId: string; name?: string } | null;
+		};
+	};
 };

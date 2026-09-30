@@ -1,4 +1,4 @@
-import type { CallPreventionRecord, IMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
+import type { CallPreventionRecord, IMediaCall, IUser, IUserMediaCallDevice, MediaCallContact } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
@@ -112,6 +112,7 @@ export interface IMediaCallServer {
 	}): Promise<void>;
 	reportCtiCallState(callId: string, event: CtiCallStateEvent): Promise<void>;
 	getUserMediaDevices(uid: IUser['_id']): Promise<MediaCallDevice[]>;
+	selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null>;
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 	isFeatureAvailableForParticipants(feature: CallFeature, participants: MediaCallContact[]): boolean;

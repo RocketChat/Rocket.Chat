@@ -1,4 +1,4 @@
-import type { IMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IUserMediaCallDevice, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ClientMediaSignal, ServerMediaCallSignal, ClientMediaSignalAnswer } from '@rocket.chat/media-signaling';
 
 export interface IMediaCallService {
@@ -13,6 +13,7 @@ export interface IMediaCallService {
 
 	// cti (app-controlled device calls)
 	getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]>;
+	selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null>;
 	// app -> host intake
 	createIncomingCtiCall(params: { userId: IUser['_id']; from: MediaCallContact; device?: string; features?: string[] }): Promise<void>;
 	reportCtiCallRinging(callId: string): Promise<void>;

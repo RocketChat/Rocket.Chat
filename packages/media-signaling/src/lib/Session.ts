@@ -283,22 +283,18 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.startInputTrack();
 	}
 
-	public async startCall(
-		calleeType: CallActorType,
-		calleeId: string,
-		params: { contactInfo?: CallContact; device?: string } = {},
-	): Promise<void> {
+	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
 		if (this.getMainCall(false)) {
 			throw new Error(`Already on a call.`);
 		}
 
-		const { contactInfo, device } = params;
+		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
 		const call = this.createCall(callId);
 
-		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, { contactInfo, device });
+		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
 	public setIceGatheringTimeout(newTimeout: number): void {

@@ -11,6 +11,7 @@ import type {
 	IGroupVideoConference,
 	IRegisterUser,
 	MediaCallContact,
+	IUserMediaCallDevice,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
@@ -168,6 +169,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]> {
 		return callServer.getUserMediaDevices(uid);
+	}
+
+	public async selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null> {
+		return callServer.selectUserMediaDevice(uid, deviceId);
 	}
 
 	// app -> host intake, called from the apps-engine media-call bridge.
