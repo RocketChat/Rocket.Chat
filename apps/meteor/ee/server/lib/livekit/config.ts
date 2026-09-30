@@ -8,13 +8,18 @@ export type LiveKitConfig = {
 	tokenTtlHours: number;
 };
 
+const DEFAULT_TOKEN_TTL_HOURS = 6;
+
 export function getLiveKitConfig(): LiveKitConfig {
+	const tokenTtlHours = settings.get<number>('VideoConf_LiveKit_Token_TTL');
+
 	return {
 		enabled: settings.get<boolean>('VideoConf_LiveKit_Enabled'),
 		url: settings.get<string>('VideoConf_LiveKit_Url') || '',
 		apiKey: settings.get<string>('VideoConf_LiveKit_Api_Key') || '',
 		apiSecret: settings.get<string>('VideoConf_LiveKit_Api_Secret') || '',
-		tokenTtlHours: settings.get<number>('VideoConf_LiveKit_Token_TTL') || 6,
+		// A lifetime of zero or less would mint tokens that are already expired.
+		tokenTtlHours: tokenTtlHours > 0 ? tokenTtlHours : DEFAULT_TOKEN_TTL_HOURS,
 	};
 }
 
