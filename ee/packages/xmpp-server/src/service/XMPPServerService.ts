@@ -1,6 +1,12 @@
 import { api, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IXMPPServerService } from '@rocket.chat/core-services';
-import { isRoomXMPPFederated, isRoomXMPPHostedMuc, isRoomXMPPRemoteMuc, isUserXMPPFederated } from '@rocket.chat/core-typings';
+import {
+	isEditedMessage,
+	isRoomXMPPFederated,
+	isRoomXMPPHostedMuc,
+	isRoomXMPPRemoteMuc,
+	isUserXMPPFederated,
+} from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -229,6 +235,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		}
 
 		const { role, muc, with: dmJid } = room.xmppFederation;
+		// XEP-0308 corrections carry an id of their own and always point back at the original message
+		const stanza = isEditedMessage(message) ? { id: Random.id(), replaceId: message._id } : { id: message._id };
 
 		switch (role) {
 			case 'dm':
@@ -237,13 +245,13 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 						from: `${user.username}@${this.server.domain}`,
 						to: dmJid,
 						body: message.msg,
-						id: message._id,
+						...stanza,
 					});
 				}
 				break;
 			case 'host-muc':
 				if (muc) {
-					this.server.mucBroadcastMessage({ roomId: muc.split('@')[0], fromNick: user.username, body: message.msg, id: message._id });
+					this.server.mucBroadcastMessage({ roomId: muc.split('@')[0], fromNick: user.username, body: message.msg, ...stanza });
 				}
 				break;
 			case 'remote-muc':
@@ -254,7 +262,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 						localJid: `${user.username}@${this.server.domain}`,
 						roomJid: muc,
 						body: message.msg,
-						id: message._id,
+						...stanza,
 					});
 				}
 				break;
@@ -579,11 +587,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		});
 
 		server.on('muc.remoteMessage', (event) => {
-			this.track(
-				'muc.remoteMessage',
-				this.onRemoteMucMessage(event.roomJid, event.fromNick, event.body, event.id),
-				'Failed to persist remote MUC message',
-			);
+			this.track('muc.remoteMessage', this.onRemoteMucMessage(event), 'Failed to persist remote MUC message');
 		});
 
 		server.on('muc.inviteReceived', (event) => {
@@ -644,15 +648,22 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	}
 
 	/** Persists a message received in a remote MUC we joined (author is an opaque nick). */
-	private async onRemoteMucMessage(roomJid: string, fromNick: string, body: string, stanzaId?: string): Promise<void> {
+	private async onRemoteMucMessage({
+		roomJid,
+		fromNick,
+		body,
+		id: stanzaId,
+		replaceId,
+	}: XMPPServerEventMap['muc.remoteMessage']): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': roomJid }, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
 
-		// Messages we relayed carry their Rocket.Chat message id and come back reflected to every
-		// local member's session — under a nick only the author's own session would recognize.
-		if (stanzaId && (await Messages.findOneById(stanzaId, { projection: { _id: 1 } }))) {
+		// Messages we relayed carry their Rocket.Chat message id (corrections point at it) and come back
+		// reflected to every local member's session — under a nick only the author's own session would recognize.
+		const relayedId = replaceId ?? stanzaId;
+		if (relayedId && (await Messages.findOneById(relayedId, { projection: { _id: 1 } }))) {
 			return;
 		}
 		// Remote occupants rarely disclose a real JID; synthesize a stable per-nick JID

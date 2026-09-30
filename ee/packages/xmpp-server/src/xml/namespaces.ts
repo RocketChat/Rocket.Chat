@@ -14,3 +14,5 @@ export const NS_MUC_USER = 'http://jabber.org/protocol/muc#user';
 export const NS_CONFERENCE = 'jabber:x:conference';
 /** XEP-0359 unique and stable stanza ids. */
 export const NS_SID = 'urn:xmpp:sid:0';
+/** XEP-0308 last message correction. */
+export const NS_CORRECT = 'urn:xmpp:message-correct:0';

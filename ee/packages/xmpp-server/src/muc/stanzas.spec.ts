@@ -10,6 +10,8 @@ import {
 	splitOccupantJid,
 } from './stanzas';
 
+const NS_CORRECT = 'urn:xmpp:message-correct:0';
+
 const p = (xmlString: string): Element => parse(xmlString) as unknown as Element;
 
 describe('splitOccupantJid', () => {
@@ -56,6 +58,21 @@ describe('buildGroupchatMessage', () => {
 		});
 		expect(message.attrs).toMatchObject({ from: 'team@conference.rc.tld/alice', to: 'bob@remote.tld', type: 'groupchat', id: 'm1' });
 		expect(message.getChildText('body')).toBe('hi');
+		expect(message.getChild('replace', NS_CORRECT)).toBeUndefined();
+	});
+
+	it('marks a correction with the id of the message it replaces', () => {
+		const message = buildGroupchatMessage({
+			roomJid: 'team@conference.rc.tld',
+			fromNick: 'alice',
+			to: 'bob@remote.tld',
+			body: 'hi, fixed',
+			id: 'm2',
+			replaceId: 'm1',
+		});
+		expect(message.attrs.id).toBe('m2');
+		expect(message.getChildText('body')).toBe('hi, fixed');
+		expect(message.getChild('replace', NS_CORRECT)?.attrs.id).toBe('m1');
 	});
 });
 

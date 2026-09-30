@@ -1,5 +1,11 @@
 import { MeteorError, XMPPServer } from '@rocket.chat/core-services';
-import { isRoomXMPPFederated, isRoomXMPPHostedMuc, isRoomXMPPRemoteMuc, isUserXMPPFederated } from '@rocket.chat/core-typings';
+import {
+	isEditedMessage,
+	isRoomXMPPFederated,
+	isRoomXMPPHostedMuc,
+	isRoomXMPPRemoteMuc,
+	isUserXMPPFederated,
+} from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -27,6 +33,10 @@ callbacks.add(
 		}
 		// Inbound messages are persisted with a federation.eventId stamp — never echo them back.
 		if (message.federation?.eventId || message.t || isUserXMPPFederated(user)) {
+			return;
+		}
+		// XMPP only accepts a correction from the original sender, so a moderator's edit stays local
+		if (isEditedMessage(message) && message.editedBy._id !== message.u._id) {
 			return;
 		}
 

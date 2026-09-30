@@ -21,6 +21,8 @@ export type MucOccupant = {
 	isLocal: boolean;
 };
 
+type BroadcastMessage = { fromNick: string; body: string; id?: string; replaceId?: string };
+
 export type MucRoomEvents = {
 	occupantJoined: (occupant: MucOccupant) => void;
 	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked') => void;
@@ -178,13 +180,13 @@ export class MucRoom {
 			return;
 		}
 
-		this.broadcastMessage(occupant.nick, body, message.attrs.id);
+		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id });
 		this.deps.emit('message', { fromNick: occupant.nick, fromJid: occupant.realJid, body, id: message.attrs.id, raw: message });
 	}
 
 	/** Broadcasts a message authored on the Rocket.Chat side into the room. */
-	broadcastFromLocal(params: { fromNick: string; body: string; id?: string }): void {
-		this.broadcastMessage(params.fromNick, params.body, params.id);
+	broadcastFromLocal(message: BroadcastMessage): void {
+		this.broadcastMessage(message);
 	}
 
 	kick(nick: string, _reason?: string): void {
@@ -224,9 +226,9 @@ export class MucRoom {
 		}
 	}
 
-	private broadcastMessage(fromNick: string, body: string, id?: string): void {
+	private broadcastMessage(message: BroadcastMessage): void {
 		for (const recipient of this.remoteOccupants()) {
-			this.deps.send(buildGroupchatMessage({ roomJid: this.roomJid, fromNick, to: recipient.realJid, body, id }));
+			this.deps.send(buildGroupchatMessage({ ...message, roomJid: this.roomJid, to: recipient.realJid }));
 		}
 	}
 

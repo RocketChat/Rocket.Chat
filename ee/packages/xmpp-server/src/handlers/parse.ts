@@ -1,8 +1,7 @@
 import type Element from 'ltx/lib/Element';
 
 import type { IncomingChatMessage, IncomingPresence } from '../events';
-
-const NS_CORRECT = 'urn:xmpp:message-correct:0';
+import { parseReplaceId } from '../xml/correction';
 
 /** Parses a `<message>` stanza into a chat message, or `undefined` for non-chat/bodyless messages. */
 export function parseChatMessage(stanza: Element): IncomingChatMessage | undefined {
@@ -27,7 +26,7 @@ export function parseChatMessage(stanza: Element): IncomingChatMessage | undefin
 		body,
 		id: stanza.attrs.id,
 		thread: stanza.getChildText('thread') ?? undefined,
-		replaceId: stanza.getChild('replace', NS_CORRECT)?.attrs.id,
+		replaceId: parseReplaceId(stanza),
 		raw: stanza,
 	};
 }

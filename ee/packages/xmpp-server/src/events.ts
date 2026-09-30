@@ -57,6 +57,6 @@ export type XMPPServerEventMap = {
 	'muc.remoteJoinFailed': { roomJid: string; localJid: string; condition: string };
 	'muc.remoteOccupantJoined': { roomJid: string; occupant: MucRemoteOccupant };
 	'muc.remoteOccupantLeft': { roomJid: string; nick: string };
-	'muc.remoteMessage': { roomJid: string; fromNick: string; body: string; id?: string; raw: Element };
+	'muc.remoteMessage': { roomJid: string; fromNick: string; body: string; id?: string; replaceId?: string; raw: Element };
 	'muc.remoteSessionLost': { roomJid: string; localJid: string };
 };

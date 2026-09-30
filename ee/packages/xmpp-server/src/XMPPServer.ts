@@ -16,13 +16,14 @@ import { S2SManager } from './s2s/S2SManager';
 import type { XmppDnsResolver } from './s2s/dnsResolver';
 import { resolveXmppServer } from './s2s/dnsResolver';
 import { xml } from './xml/build';
+import { buildReplace } from './xml/correction';
 
 export type XMPPServerOptions = {
 	/** Overridable DNS resolver — injected in tests to point at loopback listeners. */
 	resolver?: XmppDnsResolver;
 };
 
-export type SendChatMessageParams = { from: string; to: string; body: string; id?: string; thread?: string };
+export type SendChatMessageParams = { from: string; to: string; body: string; id?: string; thread?: string; replaceId?: string };
 export type SendPresenceParams = {
 	from: string;
 	to: string;
@@ -139,7 +140,12 @@ export class XMPPServer {
 	}
 
 	async sendChatMessage(params: SendChatMessageParams): Promise<void> {
-		const message = xml('message', { from: params.from, to: params.to, type: 'chat', id: params.id }, xml('body', {}, params.body));
+		const message = xml(
+			'message',
+			{ from: params.from, to: params.to, type: 'chat', id: params.id },
+			xml('body', {}, params.body),
+			buildReplace(params.replaceId),
+		);
 		if (params.thread) {
 			message.cnode(xml('thread', {}, params.thread));
 		}
@@ -192,8 +198,8 @@ export class XMPPServer {
 		return this.muc.getRoom(roomId)?.listOccupants();
 	}
 
-	mucBroadcastMessage(params: { roomId: string; fromNick: string; body: string; id?: string }): void {
-		this.muc.getRoom(params.roomId)?.broadcastFromLocal({ fromNick: params.fromNick, body: params.body, id: params.id });
+	mucBroadcastMessage({ roomId, ...message }: { roomId: string; fromNick: string; body: string; id?: string; replaceId?: string }): void {
+		this.muc.getRoom(roomId)?.broadcastFromLocal(message);
 	}
 
 	/** Invites a remote JID into a hosted room on behalf of a local member. */
@@ -259,12 +265,22 @@ export class XMPPServer {
 		return this.remoteMucSessions.has(this.remoteKey(params.localJid, params.roomJid));
 	}
 
-	async mucSendToRemoteRoom(params: { localJid: string; roomJid: string; body: string; id?: string }): Promise<void> {
-		const session = this.remoteMucSessions.get(this.remoteKey(params.localJid, params.roomJid));
+	async mucSendToRemoteRoom({
+		localJid,
+		roomJid,
+		...message
+	}: {
+		localJid: string;
+		roomJid: string;
+		body: string;
+		id?: string;
+		replaceId?: string;
+	}): Promise<void> {
+		const session = this.remoteMucSessions.get(this.remoteKey(localJid, roomJid));
 		if (!session) {
-			throw new NotJoinedToRemoteRoomError(params.roomJid, params.localJid);
+			throw new NotJoinedToRemoteRoomError(roomJid, localJid);
 		}
-		await session.sendMessage({ body: params.body, id: params.id });
+		await session.sendMessage(message);
 	}
 
 	private remoteKey(localJid: string, roomJid: string): string {

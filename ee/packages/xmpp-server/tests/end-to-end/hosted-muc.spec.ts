@@ -220,8 +220,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.expectOnce(isGroupchat({ roomJid: muc, nick: late.username, body: outbound }), 'the late member message');
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#edits-reach-xmpp-users-as-new-messages
-		it.skip('delivers an edit as an XEP-0308 correction, not a second message', async () => {
+		it('delivers an edit as an XEP-0308 correction, not a second message', async () => {
 			const original = await sendMessage(members[0], room._id, `before edit ${uniqueSuffix()}`);
 			await alice.waitFor(isGroupchat({ roomJid: muc, body: original.msg }), 'the original message');
 

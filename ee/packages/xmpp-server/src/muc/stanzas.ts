@@ -1,6 +1,7 @@
 import type Element from 'ltx/lib/Element';
 
 import { xml } from '../xml/build';
+import { buildReplace } from '../xml/correction';
 import { NS_CONFERENCE, NS_MUC, NS_MUC_USER } from '../xml/namespaces';
 
 export type MucRole = 'moderator' | 'participant';
@@ -37,11 +38,19 @@ export function buildOccupantPresence(params: {
 }
 
 /** Builds a groupchat message reflected from a room occupant to a recipient. */
-export function buildGroupchatMessage(params: { roomJid: string; fromNick: string; to: string; body: string; id?: string }): Element {
+export function buildGroupchatMessage(params: {
+	roomJid: string;
+	fromNick: string;
+	to: string;
+	body: string;
+	id?: string;
+	replaceId?: string;
+}): Element {
 	return xml(
 		'message',
 		{ from: `${params.roomJid}/${params.fromNick}`, to: params.to, type: 'groupchat', id: params.id },
 		xml('body', {}, params.body),
+		buildReplace(params.replaceId),
 	);
 }
 

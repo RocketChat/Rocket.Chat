@@ -3,6 +3,7 @@ import type Element from 'ltx/lib/Element';
 import type { MucRemoteOccupant } from '../events';
 import { splitOccupantJid } from './stanzas';
 import { xml } from '../xml/build';
+import { buildReplace, parseReplaceId } from '../xml/correction';
 import { NS_MUC, NS_MUC_USER, NS_SID } from '../xml/namespaces';
 
 const REMOTE_RESOURCE = 'rocketchat';
@@ -22,7 +23,7 @@ export type RemoteMucSessionDeps = {
 	onJoinFailed: (condition: string) => void;
 	onOccupantJoined: (occupant: MucRemoteOccupant) => void;
 	onOccupantLeft: (nick: string) => void;
-	onMessage: (params: { fromNick: string; body: string; id?: string; raw: Element }) => void;
+	onMessage: (params: { fromNick: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
 };
 
 /**
@@ -55,9 +56,14 @@ export class RemoteMucSession {
 		this.state = 'closed';
 	}
 
-	async sendMessage(params: { body: string; id?: string }): Promise<void> {
+	async sendMessage(params: { body: string; id?: string; replaceId?: string }): Promise<void> {
 		await this.deps.send(
-			xml('message', { from: this.occupantJid, to: this.deps.roomJid, type: 'groupchat', id: params.id }, xml('body', {}, params.body)),
+			xml(
+				'message',
+				{ from: this.occupantJid, to: this.deps.roomJid, type: 'groupchat', id: params.id },
+				xml('body', {}, params.body),
+				buildReplace(params.replaceId),
+			),
 		);
 	}
 
@@ -114,7 +120,7 @@ export class RemoteMucSession {
 		// Every local member holds a session, so the same message arrives once per member:
 		// prefer the room-assigned XEP-0359 id, which makes deduplication reliable.
 		const stanzaId = message.getChild('stanza-id', NS_SID)?.attrs.id ?? message.attrs.id;
-		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, raw: message });
+		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, replaceId: parseReplaceId(message), raw: message });
 	}
 
 	markStale(): void {

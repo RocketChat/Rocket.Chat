@@ -49,7 +49,7 @@ A Rocket.Chat service (`xmpp-server`), running in its own microservice (`ee/apps
 | [XEP-0220](https://xmpp.org/extensions/xep-0220.html) | Server Dialback | All three roles — originating (sends `db:result`), receiving (verifies a presented key with the claimed authoritative server over a separate stream), and authoritative (answers `db:verify`). Advertises `urn:xmpp:features:dialback` in stream features |
 | [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | Inbound only — direct invites (`jabber:x:conference`) to a Rocket.Chat user are parsed and surfaced as room invitations. Rocket.Chat-hosted rooms always send *mediated* invites instead |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | Inbound only — `<stanza-id/>` on messages from remote MUCs is preferred over the stanza `id` for deduplication. Rocket.Chat does not stamp its own outbound stanzas |
-| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Parsed only — `<replace/>` is decoded off inbound messages, but corrections are not yet applied to the stored message |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Outbound — a Rocket.Chat user's edit is sent as a correction of the original message, in DMs and in both kinds of room. An edit by anyone other than the author stays local, because receivers accept a correction only from the original sender. Inbound — `<replace/>` is parsed, but corrections are not yet applied to the stored message |
 
 ### Explicitly not supported
 
@@ -128,7 +128,7 @@ Usually **none** — this is standard XMPP federation, and public XMPP servers f
 ## v1 limitations
 
 - Text messages only — no file/attachment transfer.
-- Message edits and deletions are not propagated over XMPP (local-only); XEP-0308/XEP-0424 support may come later.
+- Edits reach XMPP only one way: Rocket.Chat edits go out as XEP-0308 corrections, but corrections from XMPP users are not applied. Deletions are local-only; XEP-0424 support may come later.
 - No typing indicators or read receipts.
 - No proactive joining/searching of remote MUC rooms from the Rocket.Chat UI (invite-only).
 - Presence subscriptions have no UI; the auto-accept policy above is fixed.
@@ -159,12 +159,6 @@ Where: remote-room message handling in `XMPPServerService.ts`. Test: `remote-muc
 When a room-message stanza carries neither an `id` nor a stanza id, each copy gets a random event id, so every copy is stored. Whether a fix should cover this case is a design decision. Deduplicating by content is lossy; an alternative is to accept room messages from only one member session per room.
 
 Test: `remote-muc.spec.ts` ("stores a message sent without an id once").
-
-### Edits reach XMPP users as new messages
-
-Editing a message in a federated room or DM re-sends the new text to XMPP as an ordinary message, so XMPP users see a second message. The "v1 limitations" above describe edits as local-only, which is not what happens. The fix is either to skip edits in the outgoing message hook or to send them as XEP-0308 corrections.
-
-Where: the outgoing message hook in `apps/meteor/ee/server/hooks/xmpp/`. Test: `hosted-muc.spec.ts` ("delivers an edit as an XEP-0308 correction…").
 
 ### A second invite into a mirrored room does not make the user a member
 

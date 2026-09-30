@@ -1,16 +1,20 @@
+import { parse } from 'ltx';
 import type Element from 'ltx/lib/Element';
 
 import { RemoteMucSession } from './RemoteMucSession';
+import type { RemoteMucSessionDeps } from './RemoteMucSession';
 
 const NS_MUC = 'http://jabber.org/protocol/muc';
+const NS_CORRECT = 'urn:xmpp:message-correct:0';
 
-const joinStanza = async (maxHistoryStanzas?: number): Promise<Element> => {
+const p = (xmlString: string): Element => parse(xmlString) as unknown as Element;
+
+const createSession = (overrides: Partial<RemoteMucSessionDeps> = {}): { session: RemoteMucSession; sent: Element[] } => {
 	const sent: Element[] = [];
 	const session = new RemoteMucSession({
 		roomJid: 'team@conference.remote.tld',
 		localJid: 'alice@rc.tld',
 		nick: 'alice',
-		maxHistoryStanzas,
 		send: async (stanza) => {
 			sent.push(stanza);
 		},
@@ -19,7 +23,13 @@ const joinStanza = async (maxHistoryStanzas?: number): Promise<Element> => {
 		onOccupantJoined: () => undefined,
 		onOccupantLeft: () => undefined,
 		onMessage: () => undefined,
+		...overrides,
 	});
+	return { session, sent };
+};
+
+const joinStanza = async (maxHistoryStanzas?: number): Promise<Element> => {
+	const { session, sent } = createSession({ maxHistoryStanzas });
 	await session.join();
 	return sent[0];
 };
@@ -36,5 +46,27 @@ describe('RemoteMucSession', () => {
 		const presence = await joinStanza(0);
 
 		expect(presence.getChild('x', NS_MUC)?.getChild('history')?.attrs.maxstanzas).toBe('0');
+	});
+
+	it('sends a correction with the id of the message it replaces', async () => {
+		const { session, sent } = createSession();
+
+		await session.sendMessage({ body: 'hi, fixed', id: 'm2', replaceId: 'm1' });
+
+		expect(sent[0].attrs).toMatchObject({ to: 'team@conference.remote.tld', type: 'groupchat', id: 'm2' });
+		expect(sent[0].getChild('replace', NS_CORRECT)?.attrs.id).toBe('m1');
+	});
+
+	it('reports the message a received correction replaces', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m2'><body>fixed</body><replace id='m1' xmlns='urn:xmpp:message-correct:0'/></message>",
+			),
+		);
+
+		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ fromNick: 'bob', body: 'fixed', id: 'm2', replaceId: 'm1' }));
 	});
 });
