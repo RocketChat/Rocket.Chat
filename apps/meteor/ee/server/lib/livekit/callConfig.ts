@@ -28,7 +28,8 @@ const displayNameOf = (user: Pick<IUser, '_id' | 'name' | 'username'>): string =
 /** The configuration of a call for one of its members. */
 export async function getCallConfig(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): Promise<CallConfigResult> {
 	const call = await VideoConferenceModel.findOneById(callId);
-	if (!call?.rid) {
+	// An ended call is refused before a token is minted, as joining one is.
+	if (!call?.rid || call.endedAt) {
 		return { error: 'error-videoconf-invalid-call' };
 	}
 
