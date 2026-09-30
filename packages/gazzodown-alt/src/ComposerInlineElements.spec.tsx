@@ -50,6 +50,10 @@ describe('code', () => {
 		expect(code?.textContent).toBe('a = 1');
 		expect(code?.className).toBe('code-colors inline');
 	});
+
+	it('prints the stored text of a node the caller supplied a fallback for', () => {
+		expect(mountInline([{ type: undefined, fallback: plain('$$x^2$$') }]).textContent).toBe('$$x^2$$');
+	});
 });
 
 describe('mentions', () => {
