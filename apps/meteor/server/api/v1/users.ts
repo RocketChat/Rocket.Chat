@@ -7,6 +7,7 @@ import {
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
 	isUsersListStatusProps,
+	isUsersListStatusVisibilityParamsGET,
 	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
@@ -28,10 +29,12 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -42,15 +45,16 @@ import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
 import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
-import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatus';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
+import { isAdminHidingAllowed, isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';
@@ -273,7 +277,7 @@ API.v1
 						preferences: {
 							...savedPreferences,
 							...(userId === this.userId &&
-								settings.get<boolean>('Accounts_StatusVisibility_Enabled') &&
+								isUserHidingAllowed() &&
 								statusVisibilityDenied?.length && {
 									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
 								}),
@@ -721,14 +725,15 @@ API.v1.addRoute(
 
 			const hidden = await getUsersHiddenFrom(this.userId);
 
-			if (hidden && queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), { _id: { $nin: [...hidden] } }];
+			if (queryFiltersStatus(query)) {
+				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
 			}
 
-			const actualSort = sort || { username: 1 };
+			const actualSort = sort ? { ...sort } : { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+				delete actualSort.status;
 			}
 
 			if (sort?.name) {
@@ -826,7 +831,14 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
-		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
+		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason, statusManagement } = this.queryParams;
+
+		if (
+			statusManagement &&
+			!(isAdminHidingAllowed() && (await hasAllPermissionAsync(this.userId, ['edit-other-user-info', 'view-full-other-user-info'])))
+		) {
+			return API.v1.forbidden();
+		}
 
 		const result = await findPaginatedUsersByStatus({
 			uid: this.userId,
@@ -839,6 +851,7 @@ API.v1.get(
 			hasLoggedIn,
 			type,
 			inactiveReason,
+			statusManagement,
 		});
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -846,6 +859,78 @@ API.v1.get(
 		return API.v1.success({
 			...result,
 			users: redactHiddenUsers(result.users, hidden),
+		});
+	},
+);
+
+API.v1.get(
+	'users.listStatusVisibility',
+	{
+		authRequired: true,
+		permissionsRequired: ['edit-other-user-info', 'view-full-other-user-info'],
+		query: isUsersListStatusVisibilityParamsGET,
+		response: {
+			200: ajv.compile<{ users: object[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					users: { type: 'array' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { searchTerm } = this.queryParams;
+
+		if (!isAdminHidingAllowed()) {
+			return API.v1.success({ users: [], count: 0, offset, total: 0 });
+		}
+
+		const { cursor, totalCount } = Users.findPaginatedManagedPresenceUsers(searchTerm, {
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				statusText: 1,
+				presenceDisabledByAdmin: 1,
+				statusVisibilityDeniedByAdmin: 1,
+			},
+			sort: { username: 1 },
+			skip: offset,
+			limit: count,
+		});
+
+		const [rows, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const visible = redactHiddenUsers(rows, hidden);
+
+		const everyId = [...new Set(visible.flatMap((user) => user.statusVisibilityDeniedByAdmin ?? []))];
+		const resolved = await resolveUsersByIds(everyId);
+		const usernameById = new Map(resolved.ids.map((id, index) => [id, resolved.usernames[index]]));
+
+		return API.v1.success({
+			users: visible.map((user) => ({
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+				status: user.status,
+				statusText: user.statusText,
+				presenceDisabledByAdmin: user.presenceDisabledByAdmin === true,
+				statusVisibilityDeniedByAdmin: (user.statusVisibilityDeniedByAdmin ?? []).map((id) => usernameById.get(id)).filter(Boolean),
+			})),
+			count: visible.length,
+			offset,
+			total,
 		});
 	},
 );
@@ -1742,8 +1827,8 @@ API.v1.get(
 
 		const hidden = await getUsersHiddenFrom(this.userId);
 
-		if (hidden && queryFiltersStatus(selector.conditions)) {
-			selector.conditions = { $and: [selector.conditions, { _id: { $nin: [...hidden] } }] };
+		if (queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, excludingHiddenFilter(hidden)] };
 		}
 
 		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
@@ -1980,7 +2065,7 @@ API.v1
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: (hidden?.has(user._id) ? 'offline' : user.status || 'offline') as UserStatus,
+				presence: (isHiddenFor(hidden, user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -2118,7 +2203,7 @@ API.v1
 
 			const user = await getUserFromParams(this.queryParams);
 			const hidden = await getUsersHiddenFrom(this.userId);
-			const visible = hidden?.has(user._id) ? redactStatus(user) : user;
+			const visible = redactHiddenUser(user, hidden);
 
 			return API.v1.success({
 				_id: visible._id,

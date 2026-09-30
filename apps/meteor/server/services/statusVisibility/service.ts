@@ -1,4 +1,4 @@
-import type { IStatusVisibilityService } from '@rocket.chat/core-services';
+import type { IStatusVisibilityService, PresenceScope } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -11,9 +11,17 @@ const PRESENCE_FIELDS = { username: 1, status: 1, statusText: 1, statusSource: 1
 export class StatusVisibilityService extends ServiceClassInternal implements IStatusVisibilityService {
 	protected name = 'status-visibility';
 
-	private enabled = false;
+	private adminHidingEnabled = false;
+
+	private userHidingEnabled = false;
+
+	private everyoneHidden = false;
 
 	private hiddenFromByUser = new Map<IUser['_id'], Set<IUser['_id']>>();
+
+	private adminHiddenFromByUser = new Map<IUser['_id'], Set<IUser['_id']>>();
+
+	private adminDisabledUsers: ReadonlySet<IUser['_id']> = new Set();
 
 	private lock: Promise<unknown> = Promise.resolve();
 
@@ -23,28 +31,68 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		this.onSettingChanged('Accounts_StatusVisibility_Enabled', async () => {
 			await this.invalidate();
 		});
+
+		this.onSettingChanged('Accounts_UserStatus_Enabled', async () => {
+			await this.invalidate();
+		});
+
+		this.onSettingChanged('Accounts_StatusVisibility_Admin_Enabled', async () => {
+			await this.invalidate();
+		});
+
+		this.onEvent('license.module', async ({ module }) => {
+			if (module === 'unlimited-presence') {
+				await this.invalidate();
+			}
+		});
 	}
 
 	override async started(): Promise<void> {
 		await this.refresh();
 	}
 
-	async getHiddenFrom(viewerId: IUser['_id'] | null | undefined): Promise<IUser['_id'][]> {
-		if (!this.enabled || !viewerId) {
-			return [];
+	async getHiddenFrom(viewerId: IUser['_id'] | null | undefined): Promise<PresenceScope> {
+		if (this.everyoneHidden) {
+			return { hideAll: true };
 		}
 
-		return [...this.hiddenFromByUser]
-			.filter(([targetId, viewers]) => targetId !== viewerId && viewers.has(viewerId))
-			.map(([targetId]) => targetId);
+		if (!this.adminHidingEnabled) {
+			return { hideAll: false };
+		}
+
+		const perViewer: IUser['_id'][] = [];
+
+		if (viewerId) {
+			for (const map of [this.hiddenFromByUser, this.adminHiddenFromByUser]) {
+				for (const [targetId, viewers] of map) {
+					if (targetId !== viewerId && viewers.has(viewerId) && !this.adminDisabledUsers.has(targetId)) {
+						perViewer.push(targetId);
+					}
+				}
+			}
+		}
+
+		const selfDisabled = Boolean(viewerId && this.adminDisabledUsers.has(viewerId));
+
+		if (!perViewer.length && !selfDisabled) {
+			return { hideAll: false, ...(this.adminDisabledUsers.size && { hidden: this.adminDisabledUsers }) };
+		}
+
+		const hidden = new Set([...this.adminDisabledUsers, ...perViewer]);
+
+		if (viewerId) {
+			hidden.delete(viewerId);
+		}
+
+		return { hideAll: false, ...(hidden.size && { hidden }) };
 	}
 
-	async hasRestrictions(targetId: IUser['_id']): Promise<boolean> {
-		return this.enabled && this.hiddenFromByUser.has(targetId);
+	async isPresenceDisabledFor(targetId: IUser['_id']): Promise<boolean> {
+		return this.everyoneHidden || (this.adminHidingEnabled && this.adminDisabledUsers.has(targetId));
 	}
 
 	async getRestrictedUsers(): Promise<IUser['_id'][]> {
-		return [...this.hiddenFromByUser.keys()];
+		return this.restrictedIds();
 	}
 
 	async refresh(targets?: IUser['_id'][]): Promise<UserPresence[]> {
@@ -53,40 +101,117 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		return result;
 	}
 
-	private async rebuildHiddenUsers(targets?: IUser['_id'][]): Promise<UserPresence[]> {
-		this.enabled = (await Settings.get<boolean>('Accounts_StatusVisibility_Enabled')) === true;
+	private hasRules(): boolean {
+		return Boolean(this.hiddenFromByUser.size || this.adminHiddenFromByUser.size || this.adminDisabledUsers.size);
+	}
 
-		if (!this.enabled) {
-			const previous = [...this.hiddenFromByUser.keys()];
-			this.hiddenFromByUser.clear();
-			return previous.length ? Users.findPresenceUsersByIds(previous, { projection: PRESENCE_FIELDS }).toArray() : [];
+	private restrictedIds(): IUser['_id'][] {
+		return [...new Set([...this.hiddenFromByUser.keys(), ...this.adminHiddenFromByUser.keys(), ...this.adminDisabledUsers])];
+	}
+
+	private forgetRules(): void {
+		this.hiddenFromByUser.clear();
+		this.adminHiddenFromByUser.clear();
+		this.adminDisabledUsers = new Set();
+	}
+
+	private allPresences(): Promise<UserPresence[]> {
+		return Users.findUsersNotOffline({ projection: PRESENCE_FIELDS }).toArray();
+	}
+
+	private async rebuildAdminDisabled(targets?: IUser['_id'][]): Promise<UserPresence[]> {
+		const users = await Users.findPresenceDisabledByAdmin(targets, { projection: PRESENCE_FIELDS }).toArray();
+		const disabled = new Set(users.map(({ _id }) => _id));
+
+		if (!targets) {
+			this.adminDisabledUsers = disabled;
+			return users;
 		}
 
-		const previous = targets ?? [...this.hiddenFromByUser.keys()];
+		const next = new Set(this.adminDisabledUsers);
+		targets.forEach((uid) => (disabled.has(uid) ? next.add(uid) : next.delete(uid)));
+		this.adminDisabledUsers = next;
+
+		return users;
+	}
+
+	private async rebuildHiddenUsers(targets?: IUser['_id'][]): Promise<UserPresence[]> {
+		const wasHidingEveryone = this.everyoneHidden;
+		const wasApplyingRules = this.adminHidingEnabled && this.hasRules();
+		const [userStatus, adminHiding, userHiding] = await Promise.all([
+			Settings.get<boolean>('Accounts_UserStatus_Enabled'),
+			Settings.get<boolean>('Accounts_StatusVisibility_Admin_Enabled'),
+			Settings.get<boolean>('Accounts_StatusVisibility_Enabled'),
+		]);
+
+		this.everyoneHidden = userStatus === false;
+		this.adminHidingEnabled = adminHiding === true;
+		this.userHidingEnabled = userHiding === true;
+
+		if (this.everyoneHidden) {
+			this.forgetRules();
+
+			return this.allPresences();
+		}
+
+		if (!this.adminHidingEnabled) {
+			const restore = wasApplyingRules ? this.restrictedIds() : [];
+			this.forgetRules();
+
+			if (wasHidingEveryone) {
+				return this.allPresences();
+			}
+
+			return restore.length ? Users.findPresenceUsersByIds(restore, { projection: PRESENCE_FIELDS }).toArray() : [];
+		}
+
+		const previous = targets ?? this.restrictedIds();
+
+		const disabled = await this.rebuildAdminDisabled(targets);
 
 		const users = await Users.findWithStatusVisibilityConfig(targets).toArray();
 
 		if (targets) {
-			targets.forEach((uid) => this.hiddenFromByUser.delete(uid));
+			targets.forEach((uid) => {
+				this.hiddenFromByUser.delete(uid);
+				this.adminHiddenFromByUser.delete(uid);
+			});
 		} else {
 			this.hiddenFromByUser.clear();
+			this.adminHiddenFromByUser.clear();
 		}
 
-		for (const { _id, settings: userSettings } of users) {
-			const viewers = userSettings?.preferences?.statusVisibilityDenied;
+		for (const { _id, settings: userSettings, statusVisibilityDeniedByAdmin } of users) {
+			const chosen = this.userHidingEnabled ? userSettings?.preferences?.statusVisibilityDenied : undefined;
 
-			if (viewers?.length) {
-				this.hiddenFromByUser.set(_id, new Set(viewers));
+			if (chosen?.length) {
+				this.hiddenFromByUser.set(_id, new Set(chosen));
+			}
+
+			if (statusVisibilityDeniedByAdmin?.length) {
+				this.adminHiddenFromByUser.set(_id, new Set(statusVisibilityDeniedByAdmin));
 			}
 		}
 
-		const dropped = previous.filter((uid) => !this.hiddenFromByUser.has(uid));
-
-		if (dropped.length) {
-			users.push(...(await Users.findPresenceUsersByIds(dropped, { projection: PRESENCE_FIELDS }).toArray()));
+		if (wasHidingEveryone) {
+			return this.allPresences();
 		}
 
-		return users;
+		const reported = new Set(users.map(({ _id }) => _id));
+
+		const dropped = previous.filter(
+			(uid) =>
+				!this.hiddenFromByUser.has(uid) && !this.adminHiddenFromByUser.has(uid) && !this.adminDisabledUsers.has(uid) && !reported.has(uid),
+		);
+
+		if (dropped.length) {
+			const restored = await Users.findPresenceUsersByIds(dropped, { projection: PRESENCE_FIELDS }).toArray();
+
+			users.push(...restored);
+			restored.forEach(({ _id }) => reported.add(_id));
+		}
+
+		return [...users, ...disabled.filter(({ _id }) => !reported.has(_id))];
 	}
 
 	private viewersOf(targets: IUser['_id'][]): IUser['_id'][] {
@@ -94,20 +219,28 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 
 		for (const target of targets) {
 			this.hiddenFromByUser.get(target)?.forEach((viewer) => viewers.add(viewer));
+			this.adminHiddenFromByUser.get(target)?.forEach((viewer) => viewers.add(viewer));
 		}
 
 		return [...viewers];
 	}
 
-	async invalidate(targets?: IUser['_id'][]): Promise<UserPresence[]> {
-		const previousViewers = targets && this.viewersOf(targets);
-		const affected = await this.refresh(targets);
-		const viewers = previousViewers && [...new Set([...previousViewers, ...this.viewersOf(targets)])];
+	async invalidate(targets?: IUser['_id'][], options?: { allViewers?: boolean }): Promise<void> {
+		if (!targets || options?.allViewers) {
+			this.broadcastInvalidation(targets);
+			return;
+		}
 
+		const previousViewers = this.viewersOf(targets);
+
+		await this.refresh(targets);
+
+		this.broadcastInvalidation(targets, [...new Set([...previousViewers, ...this.viewersOf(targets)])]);
+	}
+
+	private broadcastInvalidation(targets?: IUser['_id'][], viewers?: IUser['_id'][]): void {
 		void api
 			.broadcast('presence.invalidateVisibility', { targets, viewers })
 			.catch((err) => logger.error({ msg: 'Status visibility invalidation failed', err, targets }));
-
-		return affected;
 	}
 }

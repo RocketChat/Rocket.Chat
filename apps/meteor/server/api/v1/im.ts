@@ -27,8 +27,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
-import { getUsersHiddenFrom } from '../../lib/statusVisibility/hiddenUsers';
-import { redactStatus } from '../../lib/statusVisibility/redactStatus';
+import { getUsersHiddenFrom, redactHiddenUser } from '../../lib/statusVisibility/hiddenUsers';
 import { blockUserMethod } from '../../lib/users/blockUser';
 import { unblockUserMethod } from '../../lib/users/unblockUser';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
@@ -598,7 +597,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			const { u: _u, ...subscription } = sub || {};
 
 			return {
-				...(hidden?.has(member._id) ? redactStatus(member) : member),
+				...redactHiddenUser(member, hidden),
 				subscription,
 			};
 		});

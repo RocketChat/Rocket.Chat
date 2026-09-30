@@ -6,6 +6,7 @@ import { Users } from '@rocket.chat/models';
 import type { UpdateUserData } from './saveUser';
 import { settings } from '../../../settings';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { isAdminHidingAllowed } from '../../statusVisibility/settings';
 
 const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
 	newRoles !== undefined &&
@@ -39,6 +40,16 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 
 	if (!user) {
 		throw new MeteorError('error-invalid-user', 'Invalid user');
+	}
+
+	if (
+		(userData.presenceDisabledByAdmin !== undefined || userData.statusVisibilityDeniedByAdmin !== undefined) &&
+		(!canEditOtherUserInfo || !isAdminHidingAllowed())
+	) {
+		throw new MeteorError('error-action-not-allowed', 'Edit user presence is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
 	}
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {
