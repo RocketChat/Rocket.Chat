@@ -2728,6 +2728,7 @@ describe('LIVECHAT - rooms', () => {
 		describe('with room', () => {
 			let visitor: ILivechatVisitor;
 			let room: IOmnichannelRoom;
+			const agentsToDelete: IUser[] = [];
 
 			before(async () => {
 				visitor = await createVisitor();
@@ -2737,6 +2738,7 @@ describe('LIVECHAT - rooms', () => {
 			after(async () => {
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
+				await Promise.all(agentsToDelete.map((agent) => deleteUser(agent)));
 			});
 
 			it('should return empty for a room without transfer history', async () => {
@@ -2751,11 +2753,13 @@ describe('LIVECHAT - rooms', () => {
 			});
 			it('should return the transfer history for a room', async () => {
 				const initialAgentAssignedToChat = await createUser();
+				agentsToDelete.push(initialAgentAssignedToChat);
 				const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 				await createAgent(initialAgentAssignedToChat.username);
 				await makeAgentAvailable(initialAgentCredentials);
 
 				const forwardChatToUser = await createUser();
+				agentsToDelete.push(forwardChatToUser);
 				const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 				await createAgent(forwardChatToUser.username);
 				await makeAgentAvailable(forwardChatToUserCredentials);
@@ -2787,10 +2791,6 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.history[0]).to.have.property('scope', 'agent');
 				expect(body.history[0]).to.have.property('comment', 'test comment');
 				expect(body.history[0]).to.have.property('transferredBy').that.is.an('object');
-
-				// cleanup
-				await deleteUser(initialAgentAssignedToChat);
-				await deleteUser(forwardChatToUser);
 			});
 		});
 	});

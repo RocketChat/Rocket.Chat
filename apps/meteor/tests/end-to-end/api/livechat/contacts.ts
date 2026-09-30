@@ -846,7 +846,7 @@ describe('LIVECHAT - contacts', () => {
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
-			await deleteUser(agent.user);
+			await deleteUser(agent.user, { confirmRelinquish: true });
 		});
 
 		it('should create a contact and assign it to the room', async () => {

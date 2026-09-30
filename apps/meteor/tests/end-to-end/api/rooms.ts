@@ -1636,17 +1636,17 @@ describe('[Rooms]', () => {
 			await updateSetting('API_User_Limit', 1000000);
 		});
 
-		after(() =>
-			Promise.all([
+		after(async () => {
+			await Promise.all([
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
-				deleteUser(user2),
 				updateSetting('API_User_Limit', 10000),
-			]),
-		);
+			]);
+			await deleteUser(user2);
+		});
 
 		it('should return an Error when trying leave a DM room', async () => {
 			const res = await request
@@ -2826,13 +2826,10 @@ describe('[Rooms]', () => {
 			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: privateRoom._id, roomCustomFields }).expect(200);
 		});
 
-		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'p', roomId: privateRoom._id }),
-				deleteUser(roomOwner),
-				updatePermission('view-room-administration', ['admin']),
-			]),
-		);
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: privateRoom._id }), updatePermission('view-room-administration', ['admin'])]);
+			await deleteUser(roomOwner);
+		});
 
 		it('should not expose the private room through groups.info to an admin that is not a member', async () => {
 			const res = await request.get(api('groups.info')).set(credentials).query({ roomId: privateRoom._id });

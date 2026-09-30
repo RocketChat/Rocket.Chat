@@ -1044,10 +1044,8 @@ describe('[Groups]', () => {
 					.expect(200),
 				updatePermission('kick-user-from-any-p-room', []),
 				updatePermission('remove-user', ['admin', 'owner', 'moderator']),
-				deleteUser(testUserModerator),
-				deleteUser(testUserOwner),
-				deleteUser(testUserMember),
 			]);
+			await Promise.all([deleteUser(testUserModerator), deleteUser(testUserOwner), deleteUser(testUserMember)]);
 		});
 
 		it("should return an error when user is not a member of the group and doesn't have permission", async () => {
@@ -2466,10 +2464,13 @@ describe('[Groups]', () => {
 			testModeratorTeamGroup = teamModeratorGroupResponse.body.group;
 		});
 		after(async () => {
-			await deleteUser(invitedUser);
-			await deleteUser(moderatorUser);
 			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 			await updatePermission('delete-team-group', ['admin', 'owner', 'moderator']);
+			await Promise.all([
+				deleteRoom({ type: 'p', roomId: testTeamGroup._id }),
+				deleteRoom({ type: 'p', roomId: testModeratorTeamGroup._id }),
+			]);
+			await Promise.all([deleteUser(invitedUser), deleteUser(moderatorUser)]);
 		});
 		it('should succesfully delete a group', async () => {
 			await request

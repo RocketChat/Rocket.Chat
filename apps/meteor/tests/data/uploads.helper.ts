@@ -330,7 +330,10 @@ export async function testFileUploads(
 			}
 		});
 
-		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
+		after(async () => {
+			await deleteRoom({ type: roomType, roomId: extraRoom._id });
+			await deleteUser(anotherUser);
+		});
 
 		it('should not allow to confirm a file from another user', async function () {
 			if (roomType === 'd') {

@@ -398,12 +398,8 @@ describe('AutoTranslate', () => {
 				});
 
 				after(async () => {
-					await Promise.all([
-						updateSetting('AutoTranslate_Enabled', false),
-						deleteUser(userA),
-						deleteUser(userB),
-						deleteRoom({ type: 'p', roomId: privateRoom._id }),
-					]);
+					await Promise.all([updateSetting('AutoTranslate_Enabled', false), deleteRoom({ type: 'p', roomId: privateRoom._id })]);
+					await Promise.all([deleteUser(userA), deleteUser(userB)]);
 				});
 
 				it('should return 403 forbidden when the user is not a member of the room', async () => {
@@ -455,12 +451,8 @@ describe('AutoTranslate', () => {
 			});
 
 			after(async () => {
-				await Promise.all([
-					updateSetting('AutoTranslate_Enabled', false),
-					deleteUser(userA),
-					deleteUser(userB),
-					deleteRoom({ type: 'p', roomId: privateRoom._id }),
-				]);
+				await Promise.all([updateSetting('AutoTranslate_Enabled', false), deleteRoom({ type: 'p', roomId: privateRoom._id })]);
+				await Promise.all([deleteUser(userA), deleteUser(userB)]);
 			});
 
 			it('should fail when messageId is not a string', async () => {
@@ -568,10 +560,9 @@ describe('AutoTranslate', () => {
 					updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false),
 					updateSetting('AutoTranslate_Enabled', false),
 					updateSetting('Language', ''),
-					deleteUser(userA),
-					deleteUser(userB),
-					channelsToRemove.map(() => deleteRoom({ type: 'c', roomId: channel._id })),
+					...channelsToRemove.map((room) => deleteRoom({ type: 'c', roomId: room._id })),
 				]);
+				await Promise.all([deleteUser(userA), deleteUser(userB)]);
 			});
 
 			it("should do nothing if the user hasn't changed his language preference", async () => {

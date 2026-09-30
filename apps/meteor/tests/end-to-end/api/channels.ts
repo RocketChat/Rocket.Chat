@@ -1526,10 +1526,10 @@ describe('[Channels]', () => {
 			await Promise.all([
 				deleteRoom({ type: 'c', roomId: testChannelNoCode._id }),
 				deleteRoom({ type: 'c', roomId: testChannelWithCode._id }),
-				deleteUser(testUser),
 				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
 				updatePermission('join-without-join-code', ['admin', 'bot', 'app']),
 			]);
+			await deleteUser(testUser);
 		});
 
 		before('Set code for channel', (done) => {
@@ -2317,7 +2317,7 @@ describe('[Channels]', () => {
 		let user: TestUser<IUser>;
 
 		before((done) => {
-			void createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).end((_err, res) => {
+			void createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).then((res) => {
 				createdChannel = res.body.channel;
 				void createUser().then((createdUser) => {
 					user = createdUser;
@@ -2345,7 +2345,7 @@ describe('[Channels]', () => {
 						});
 					});
 				});
-			});
+			}, done);
 		});
 
 		after(async () => {

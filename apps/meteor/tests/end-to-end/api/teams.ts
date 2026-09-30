@@ -2138,8 +2138,8 @@ describe('/teams.listRooms', () => {
 				deleteRoom({ type: 'c', roomId: discussionOnMainRoom._id }),
 				deleteTeam(credentials, teamName),
 				deleteTeam(credentials, testPrivateTeam.name),
-				deleteUser({ _id: testUser._id }),
 			]);
+			await deleteUser({ _id: testUser._id });
 		});
 
 		it('should fail if user is not logged in', async () => {
