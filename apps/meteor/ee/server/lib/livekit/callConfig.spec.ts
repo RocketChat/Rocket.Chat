@@ -40,6 +40,13 @@ describe('getCallConfig', () => {
 		expect(await getCallConfig('call', user)).to.deep.equal({ error: 'error-videoconf-invalid-call' });
 	});
 
+	it('refuses a call that has ended, minting nothing', async () => {
+		findOneById.resolves({ _id: 'call', rid: 'rid', providerName: 'livekit', endedAt: new Date() });
+
+		expect(await getCallConfig('call', user)).to.deep.equal({ error: 'error-videoconf-invalid-call' });
+		expect(createLiveKitAccessToken.called).to.be.false;
+	});
+
 	it('refuses someone who cannot access the conference', async () => {
 		canAccessConference.resolves(false);
 
