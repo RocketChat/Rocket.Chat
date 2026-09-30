@@ -10,7 +10,7 @@ import type { DeviceSelection } from '../devices/DeviceSelectionContext';
 import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { useCallDevicesInitialState, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
+import { useBackgroundBlurPreference, useCallDevicesInitialState, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
 
 const QUALITIES = choicesOf(VIDEO_QUALITY_LABELS);
 
@@ -28,6 +28,7 @@ export type PreviewMediaProviderProps = {
 const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaProviderProps) => {
 	const { preferences, devices, selectDevice } = useCallDevicesInitialState(capabilities);
 	const { videoQuality, selectVideoQuality } = useVideoQualityPreference();
+	const { blurLevel, blurModel } = useBackgroundBlurPreference();
 
 	const preview = useCallDevicePreview(preferences, devices);
 
@@ -51,12 +52,20 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 		<PreviewMediaContextProvider value={value}>
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQualitySelection}>
-					{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
-					<Suspense fallback={children}>
-						<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
-							{children}
-						</media.PreviewVideoProvider>
-					</Suspense>
+					<media.MediaProcessingProvider>
+						{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
+						<Suspense fallback={children}>
+							<media.PreviewVideoProvider
+								enabled={preferences.cam}
+								deviceId={devices.camId}
+								quality={videoQuality}
+								blurLevel={blurLevel}
+								blurModel={blurModel}
+							>
+								{children}
+							</media.PreviewVideoProvider>
+						</Suspense>
+					</media.MediaProcessingProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>

@@ -1,0 +1,44 @@
+{
+	"name": "@rocket.chat/media-processors",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/assets",
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@mediapipe/tasks-vision": "0.10.14",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@sapphi-red/web-noise-suppressor": "^0.4.0",
+		"@types/jest": "~30.0.0",
+		"eslint": "~9.39.5",
+		"jest": "~30.2.0",
+		"livekit-client": "^2.20.1",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@mediapipe/tasks-vision": "*",
+		"@sapphi-red/web-noise-suppressor": "*",
+		"livekit-client": "*"
+	},
+	"peerDependenciesMeta": {
+		"livekit-client": {
+			"optional": true
+		}
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

@@ -5,6 +5,14 @@ import { createLocalVideoTrack } from 'livekit-client';
 
 import { usePreviewVideoTrack } from './usePreviewVideoTrack';
 
+const assets = {
+	workerUrl: '/worker.js',
+	visionBundleUrl: '/vision_bundle.mjs',
+	wasmBaseUrl: '/wasm',
+	modelUrls: { quality: '/quality.tflite', performance: '/performance.tflite' },
+	rnnoiseBaseUrl: '/rnnoise',
+};
+
 jest.mock('livekit-client', () => ({
 	createLocalVideoTrack: jest.fn(),
 }));
@@ -16,7 +24,12 @@ const makeTrack = () => {
 	const stop = jest.fn(() => {
 		mediaStreamTrack.readyState = 'ended';
 	});
-	return { stop, mediaStreamTrack, restartTrack: jest.fn().mockResolvedValue(undefined) } as unknown as LocalVideoTrack;
+	return {
+		stop,
+		mediaStreamTrack,
+		restartTrack: jest.fn().mockResolvedValue(undefined),
+		getProcessor: jest.fn(),
+	} as unknown as LocalVideoTrack;
 };
 
 beforeEach(() => {
@@ -27,7 +40,7 @@ it('opens the chosen camera, and stops it when the preflight goes', async () => 
 	const track = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValue(track);
 
-	const { result, unmount } = renderHook(() => usePreviewVideoTrack(true, { deviceId: 'brio' }));
+	const { result, unmount } = renderHook(() => usePreviewVideoTrack(true, { deviceId: 'brio' }, assets));
 
 	await waitFor(() => expect(result.current.track).toBe(track));
 	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledWith({ deviceId: 'brio' });
@@ -38,7 +51,7 @@ it('opens the chosen camera, and stops it when the preflight goes', async () => 
 
 // A camera that is off in the preflight must not light up just to be previewed.
 it('opens nothing while the camera is off', () => {
-	const { result } = renderHook(() => usePreviewVideoTrack(false, {}));
+	const { result } = renderHook(() => usePreviewVideoTrack(false, {}, assets));
 
 	expect(mockedCreateLocalVideoTrack).not.toHaveBeenCalled();
 	expect(result.current.track).toBeUndefined();
@@ -48,7 +61,7 @@ it('tells whoever needs to know once the camera is open', async () => {
 	mockedCreateLocalVideoTrack.mockResolvedValue(makeTrack());
 	const onOpen = jest.fn();
 
-	renderHook(() => usePreviewVideoTrack(true, { onOpen }));
+	renderHook(() => usePreviewVideoTrack(true, { onOpen }, assets));
 
 	await waitFor(() => expect(onOpen).toHaveBeenCalledTimes(1));
 });
@@ -57,7 +70,7 @@ it('tells whoever needs to know once the camera is open', async () => {
 it('stops reporting a failure once the camera is turned off', async () => {
 	mockedCreateLocalVideoTrack.mockRejectedValue(new Error('NotAllowedError'));
 
-	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}), { initialProps: { enabled: true } });
+	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}, assets), { initialProps: { enabled: true } });
 	await waitFor(() => expect(result.current.error).toBe(true));
 
 	rerender({ enabled: false });
@@ -69,7 +82,7 @@ it('does not show the stopped track again when the camera comes back on', async 
 	const first = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValueOnce(first).mockReturnValueOnce(new Promise(() => undefined));
 
-	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}), { initialProps: { enabled: true } });
+	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}, assets), { initialProps: { enabled: true } });
 	await waitFor(() => expect(result.current.track).toBe(first));
 
 	rerender({ enabled: false });
@@ -81,7 +94,7 @@ it('restarts the attached preview track instead of replacing it when resolution 
 	const track = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValue(track);
 
-	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality }), {
+	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality }, assets), {
 		initialProps: { quality: 'h720' as VideoQuality },
 	});
 
@@ -102,7 +115,7 @@ it('opens the initial preview at the selected resolution without an unnecessary 
 	const track = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValue(track);
 
-	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360' }));
+	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360' }, assets));
 
 	await waitFor(() => expect(result.current.track).toBe(track));
 
@@ -114,7 +127,7 @@ it('opens the initial preview at the selected resolution without an unnecessary 
 it('does not show the last failure while the next attempt is still opening', async () => {
 	mockedCreateLocalVideoTrack.mockRejectedValueOnce(new Error('NotReadableError')).mockReturnValueOnce(new Promise(() => undefined));
 
-	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }), {
+	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }, assets), {
 		initialProps: { deviceId: 'brio' },
 	});
 	await waitFor(() => expect(result.current.error).toBe(true));
@@ -128,7 +141,7 @@ it('shows no camera while the newly chosen one opens', async () => {
 	const first = makeTrack();
 	mockedCreateLocalVideoTrack.mockResolvedValueOnce(first).mockReturnValueOnce(new Promise(() => undefined));
 
-	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }), {
+	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }, assets), {
 		initialProps: { deviceId: 'brio' },
 	});
 	await waitFor(() => expect(result.current.track).toBe(first));

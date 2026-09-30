@@ -17,7 +17,8 @@ export type DeviceMenuChoice = {
 	name: string;
 	/** Said on its own line, under the name. */
 	note?: string;
-	selected: boolean;
+	/** Left out for an action rather than an option, such as opening a file picker. */
+	selected?: boolean;
 	disabled?: boolean;
 	onSelect: () => void;
 };
@@ -102,7 +103,7 @@ const DeviceMenu = ({ kinds, title, placement, beforeOpen, button, choices = [] 
 				id,
 				textValue: choice.name,
 				content: rowContent(choice.name, choice.note),
-				addon: <RadioButton checked={choice.selected} disabled={choice.disabled} />,
+				addon: choice.selected === undefined ? undefined : <RadioButton checked={choice.selected} disabled={choice.disabled} />,
 			};
 		}),
 	}));

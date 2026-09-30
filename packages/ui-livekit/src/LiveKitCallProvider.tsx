@@ -7,11 +7,13 @@ import {
 	useTracks,
 } from '@livekit/components-react';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
+import type { CallActions, CallMediaProcessing, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
 	CallDiagnosticsProvider,
+	CallMediaProcessingProvider,
 	CallStateProvider,
 	DeviceSelectionProvider,
 	VideoQualityProvider,
@@ -26,10 +28,12 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useBackgroundBlur } from './useBackgroundBlur';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useNoiseSuppression } from './useNoiseSuppression';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
@@ -42,6 +46,8 @@ export type LiveKitCallProviderProps = {
 	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
 	/** The call ended for this user, whoever ended it. */
 	onEnded: () => void;
+	/** Where the workspace serves the blur and noise suppression runtime files. */
+	assets: MediaProcessorAssets;
 	children: ReactNode;
 };
 
@@ -64,7 +70,7 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, assets, children }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 	const [room] = useState(() => new Room());
@@ -146,11 +152,20 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
 	const localCameraTrack = localCameraPub?.videoTrack;
+	const processedCameraTrack = localCameraTrack?.getProcessor()?.processedTrack;
 
-	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
+	// What the call is actually sending, which once a processor is attached is not the raw camera: the reader has to
+	// see their own blur. One stream per processed track, so the video element is not handed a new one every render.
+	const processedCameraStream = useMemo(
+		() => (processedCameraTrack ? new MediaStream([processedCameraTrack]) : undefined),
+		[processedCameraTrack],
+	);
+	const cameraStream = camEnabled ? (processedCameraStream ?? localCameraTrack?.mediaStream) : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
+	const noiseSuppression = useNoiseSuppression(localMicPub?.audioTrack, assets);
+	const backgroundBlur = useBackgroundBlur(localCameraTrack, assets);
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
 
@@ -254,15 +269,19 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		],
 	);
 
+	const mediaProcessing = useMemo((): CallMediaProcessing => ({ noiseSuppression, backgroundBlur }), [noiseSuppression, backgroundBlur]);
+
 	return (
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
 				<DeviceSelectionProvider value={deviceSelection}>
 					<VideoQualityProvider value={videoQuality}>
-						<CallDiagnosticsProvider value={diagnostics ?? null}>
-							{children}
-							<RoomAudioRenderer room={room} />
-						</CallDiagnosticsProvider>
+						<CallMediaProcessingProvider value={mediaProcessing}>
+							<CallDiagnosticsProvider value={diagnostics ?? null}>
+								{children}
+								<RoomAudioRenderer room={room} />
+							</CallDiagnosticsProvider>
+						</CallMediaProcessingProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
 			</CallActionsProvider>

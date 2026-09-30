@@ -21,7 +21,8 @@ const PRESETS: Record<Exclude<VideoQuality, 'auto'>, VideoCaptureOptions> = {
 const ORDER: VideoQuality[] = ['auto', 'h1080', 'h720', 'h360', 'h180'];
 
 /**
- * The most detail to send. A camera's default is often far below what it can do, while more costs bandwidth.
+ * The most detail to send. A camera's default is often far below what it can do, while more costs bandwidth and,
+ * with background blur on, compositing work on every frame.
  *
  * Changing it restarts the track, a visible flicker: resolution is a property of the capture.
  */

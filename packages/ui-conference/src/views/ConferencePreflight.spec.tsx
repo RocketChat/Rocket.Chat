@@ -1,10 +1,13 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
 import ConferencePreflight from './ConferencePreflight';
+import { CallMediaProcessingProvider } from '../call/context';
 import type { PreviewVideoProviderProps } from '../call/previewVideo';
 import type { PreflightMedia } from '../context/definitions';
+import { buildMediaProcessing } from '../fixtures/callFixtures';
 
 const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 	const opened = jest.fn();
@@ -16,7 +19,10 @@ const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 			</div>
 		);
 	};
-	const media: PreflightMedia = { PreviewVideoProvider };
+	const MediaProcessingProvider = ({ children }: { children: ReactNode }) => (
+		<CallMediaProcessingProvider value={buildMediaProcessing()}>{children}</CallMediaProcessingProvider>
+	);
+	const media: PreflightMedia = { PreviewVideoProvider, MediaProcessingProvider };
 
 	render(
 		<ConferencePreflight

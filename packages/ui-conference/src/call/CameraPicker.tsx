@@ -7,13 +7,15 @@ import { useCallState } from './context';
 import { refreshMediaDevices } from './lib/mediaDevicesStore';
 import DeviceMenu from '../devices/DeviceMenu';
 import { useDeviceSelection } from '../devices/DeviceSelectionContext';
+import { useBackgroundEffectChoices } from '../devices/useBackgroundEffectChoices';
 import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
-/** The camera of a call running in this window, with the quality it sends. */
+/** The camera of a call running in this window, with what is done to its picture: quality, blur, background. */
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
 	const videoQuality = useVideoQualityChoices();
+	const backgroundEffects = useBackgroundEffectChoices();
 	const { devices } = useDeviceSelection();
 
 	// Asked on opening, like the audio menu: a call joined with the camera off may not have the permission that
@@ -31,7 +33,7 @@ const CameraPicker = () => {
 			kinds={['videoinput']}
 			title={t('Camera')}
 			placement='top-end'
-			choices={[videoQuality]}
+			choices={[videoQuality, ...backgroundEffects]}
 			beforeOpen={askForCameras}
 			button={<CallDeviceMenuButton label={t('Camera_options')} danger={!self.cameraOn} />}
 		/>
