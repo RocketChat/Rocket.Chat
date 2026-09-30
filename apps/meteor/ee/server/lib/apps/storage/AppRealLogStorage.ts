@@ -4,7 +4,7 @@ import { AppLogStorage } from '@rocket.chat/apps/dist/server/storage/AppLogStora
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import type { AppLogs } from '@rocket.chat/models';
 
-import { redact } from '../lib/redactor';
+import { redact } from '../redactor';
 
 export class AppRealLogStorage extends AppLogStorage {
 	constructor(private db: typeof AppLogs) {

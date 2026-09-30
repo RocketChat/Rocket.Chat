@@ -1,8 +1,10 @@
+import '../cron/apps';
+import '../cron/appRequests';
 import { License } from '@rocket.chat/license';
 
-import { Apps } from './orchestrator';
 import { settings, settingsRegistry } from '../../../server/settings';
 import { disableAppsWithAddonsCallback } from '../lib/apps/disableAppsWithAddonsCallback';
+import { Apps } from '../lib/apps/orchestrator';
 
 export const startupApp = async function startupApp() {
 	await settingsRegistry.addGroup('General', async function () {

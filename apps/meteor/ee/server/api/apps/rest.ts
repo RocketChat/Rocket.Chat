@@ -32,13 +32,17 @@ import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-en
 import { settings } from '../../../../server/settings';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
+import { notifyMarketplace } from '../../lib/apps/marketplace/appInstall';
+import { fetchMarketplaceApps } from '../../lib/apps/marketplace/fetchMarketplaceApps';
+import { fetchMarketplaceCategories } from '../../lib/apps/marketplace/fetchMarketplaceCategories';
+import {
+	MarketplaceAppsError,
+	MarketplaceConnectionError,
+	MarketplaceUnsupportedVersionError,
+} from '../../lib/apps/marketplace/marketplaceErrors';
+import type { AppServerOrchestrator } from '../../lib/apps/orchestrator';
+import { Apps } from '../../lib/apps/orchestrator';
 import { canEnableApp } from '../../lib/license/canEnableApp';
-import { notifyMarketplace } from '../marketplace/appInstall';
-import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
-import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
-import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
-import type { AppServerOrchestrator } from '../orchestrator';
-import { Apps } from '../orchestrator';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');

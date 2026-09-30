@@ -15,13 +15,13 @@ import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { redactionFieldPaths } from './lib/redactor';
 import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
+import { redactionFieldPaths } from './redactor';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { RealAppBridges } from '../../../server/modules/apps/bridges';
-import type { HandleEvent } from '../../../server/modules/apps/bridges/listeners';
+import { AppServerNotifier } from './websockets';
+import { RealAppBridges } from '../../../../server/modules/apps/bridges';
+import type { HandleEvent } from '../../../../server/modules/apps/bridges/listeners';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -33,10 +33,12 @@ import {
 	AppVisitorsConverter,
 	AppRolesConverter,
 	AppContactsConverter,
-} from '../../../server/modules/apps/converters';
-import { AppThreadsConverter } from '../../../server/modules/apps/converters/threads';
-import { settings } from '../../../server/settings';
-import { canEnableApp } from '../lib/license/canEnableApp';
+} from '../../../../server/modules/apps/converters';
+import { AppThreadsConverter } from '../../../../server/modules/apps/converters/threads';
+import { settings } from '../../../../server/settings';
+import { AppsRestApi } from '../../api/apps/rest';
+import { AppUIKitInteractionApi } from '../../api/apps/uikit';
+import { canEnableApp } from '../license/canEnableApp';
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 

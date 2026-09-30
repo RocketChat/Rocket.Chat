@@ -3,9 +3,9 @@ import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
-import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
-import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
-import { settings } from '../../../../server/settings';
+import { CloudOfflineLicenseError } from '../../../../../lib/errors/CloudOfflineLicenseError';
+import { getWorkspaceAccessToken } from '../../../../../server/lib/cloud';
+import { settings } from '../../../../../server/settings';
 import { Apps } from '../orchestrator';
 
 type FetchMarketplaceAppsParams = {

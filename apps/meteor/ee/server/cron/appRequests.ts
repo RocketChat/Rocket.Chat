@@ -2,10 +2,10 @@ import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
-import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
-import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
 import { settings } from '../../../server/settings';
+import { appRequestNotififyForUsers } from '../lib/apps/marketplace/appRequestNotifyUsers';
+import { Apps } from '../lib/apps/orchestrator';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {

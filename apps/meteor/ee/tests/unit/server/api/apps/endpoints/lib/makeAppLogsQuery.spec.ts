@@ -1,7 +1,7 @@
 import type { AppLogsProps } from '@rocket.chat/rest-typings';
 import { expect } from 'chai';
 
-import { makeAppLogsQuery } from '../../../../../../server/apps/communication/endpoints/lib/makeAppLogsQuery';
+import { makeAppLogsQuery } from '../../../../../../../server/api/apps/endpoints/lib/makeAppLogsQuery';
 
 describe('makeAppLogsQuery', () => {
 	const appId = 'test-app-id';

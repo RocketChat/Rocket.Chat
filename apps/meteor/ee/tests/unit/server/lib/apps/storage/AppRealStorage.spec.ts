@@ -5,7 +5,7 @@ import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { AppRealStorage } from '../../../../server/apps/storage/AppRealStorage';
+import { AppRealStorage } from '../../../../../../server/lib/apps/storage/AppRealStorage';
 
 describe('AppRealStorage', () => {
 	let storage: AppRealStorage;

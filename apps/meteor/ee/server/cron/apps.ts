@@ -4,10 +4,10 @@ import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 
-import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
 import { i18n } from '../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { Apps } from '../lib/apps/orchestrator';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {

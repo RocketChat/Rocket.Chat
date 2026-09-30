@@ -2,7 +2,7 @@ import { License } from '@rocket.chat/license';
 import { type ExtendedFetchOptions, Response, serverFetch } from '@rocket.chat/server-fetch';
 
 import { isTesting } from './isTesting';
-import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
+import { CloudOfflineLicenseError } from '../../../../../lib/errors/CloudOfflineLicenseError';
 
 export class MarketplaceAPIClient {
 	#fetchStrategy: (input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean) => Promise<Response>;

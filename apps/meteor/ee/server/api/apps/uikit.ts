@@ -11,7 +11,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { settings } from '../../../../server/settings';
-import { Apps } from '../orchestrator';
+import { Apps } from '../../lib/apps/orchestrator';
 
 const apiServer = express();
 
