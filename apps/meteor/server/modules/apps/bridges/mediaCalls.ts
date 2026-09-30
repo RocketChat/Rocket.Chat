@@ -66,4 +66,9 @@ export class AppMediaCallBridge extends MediaCallBridge {
 		this.orch.debugLog(`The App ${appId} reports cti call "${callId}" state`);
 		await MediaCall.reportCtiCallState(callId, state);
 	}
+
+	protected async notifyDevicesChanged(userId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} reports the media call devices of user "${userId}" changed`);
+		await MediaCall.notifyUserMediaDevicesChanged(userId);
+	}
 }

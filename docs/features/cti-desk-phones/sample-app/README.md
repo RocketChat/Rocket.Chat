@@ -30,7 +30,7 @@ A `cti` call splits into two directions, and the app has to hold up both ends:
 | Direction | How | Where in the source |
 | --- | --- | --- |
 | Rocket.Chat asks the app to act | `IMediaCallHandler` control methods | `executeMediaCall*` |
-| The app tells Rocket.Chat what happened | `modify.getMediaCallModifier()` | `report*` calls |
+| The app tells Rocket.Chat what happened | `modify.getMediaCallModifier()` | `report*` calls, `notifyDevicesChanged` |
 
 The second direction is the one that surprises people: a `cti` call does not move in the Rocket.Chat UI
 on its own. The gateway is what knows whether the line is ringing, up or cleared, so the widget only

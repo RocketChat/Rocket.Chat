@@ -38,4 +38,11 @@ export interface IMediaCallModify {
 	reportEnded(callId: string, reason?: string): Promise<void>;
 	/** Report the current mute/hold state of either leg, to reflect it in the Rocket.Chat call widget. */
 	reportState(callId: string, state: IMediaCallReportedState): Promise<void>;
+
+	/**
+	 * Tell Rocket.Chat that the set of devices this user can be reached on has changed, so that it asks
+	 * for the list again. Only the app knows when one is added, removed or renamed, so without this the
+	 * user has to reload before a new device can be picked.
+	 */
+	notifyDevicesChanged(userId: string): Promise<void>;
 }

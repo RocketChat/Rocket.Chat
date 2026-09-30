@@ -24,4 +24,5 @@ export interface IMediaCallService {
 		callId: string,
 		state: { muted?: boolean; held?: boolean; remoteMuted?: boolean; remoteHeld?: boolean },
 	): Promise<void>;
+	notifyUserMediaDevicesChanged(uid: IUser['_id']): Promise<void>;
 }

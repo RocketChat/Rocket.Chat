@@ -51,6 +51,12 @@ export abstract class MediaCallBridge extends BaseBridge {
 		}
 	}
 
+	public async doNotifyDevicesChanged(userId: string, appId: string): Promise<void> {
+		if (this.hasControlPermission(appId)) {
+			return this.notifyDevicesChanged(userId, appId);
+		}
+	}
+
 	protected abstract getById(callId: string, appId: string): Promise<IAppsMediaCall | undefined>;
 
 	protected abstract createIncomingCall(params: IMediaCallIncomingCallParams, appId: string): Promise<void>;
@@ -64,6 +70,8 @@ export abstract class MediaCallBridge extends BaseBridge {
 	protected abstract reportEnded(callId: string, reason: string | undefined, appId: string): Promise<void>;
 
 	protected abstract reportState(callId: string, state: IMediaCallReportedState, appId: string): Promise<void>;
+
+	protected abstract notifyDevicesChanged(userId: string, appId: string): Promise<void>;
 
 	private hasReadPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.mediaCall.read)) {

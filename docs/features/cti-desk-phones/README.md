@@ -39,11 +39,15 @@ confirm the new state. The widget applies the change optimistically and settles 
 | Direction | Mechanism |
 | --- | --- |
 | Rocket.Chat → app | The `executeMediaCall*` methods on `IMediaCallHandler` |
-| App → Rocket.Chat | `modify.getMediaCallModifier()` — `createIncomingCall` and the `report*` methods |
+| App → Rocket.Chat | `modify.getMediaCallModifier()` — `createIncomingCall`, the `report*` methods, and `notifyDevicesChanged` |
 
 Control is **broadcast** to every app implementing the handler, so an app must recognise its own calls
 and ignore the rest. `getDevices` is the exception: results are aggregated across apps, and Rocket.Chat
 tags each device with the app that offered it.
+
+Rocket.Chat caches the device list and has no way of noticing when an app's answer would change, so an
+app that adds, removes or renames a device must call `notifyDevicesChanged(userId)` — otherwise the user
+has to reload before the change reaches the picker.
 
 A call does not progress on its own. Rocket.Chat does not know whether the line is ringing, up or
 cleared — only the gateway does — so the widget moves when the app reports it and not before.

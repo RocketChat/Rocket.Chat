@@ -33,4 +33,8 @@ export class MediaCallModify implements IMediaCallModify {
 	public reportState(callId: string, state: IMediaCallReportedState): Promise<void> {
 		return bridgeCall<void>(this.senderFn, 'getMediaCallBridge', 'doReportState', callId, state, 'APP_ID');
 	}
+
+	public notifyDevicesChanged(userId: string): Promise<void> {
+		return bridgeCall<void>(this.senderFn, 'getMediaCallBridge', 'doNotifyDevicesChanged', userId, 'APP_ID');
+	}
 }

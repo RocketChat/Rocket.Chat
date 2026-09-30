@@ -214,6 +214,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		await callServer.reportCtiCallState(callId, { type: 'state', ...state });
 	}
 
+	public async notifyUserMediaDevicesChanged(uid: IUser['_id']): Promise<void> {
+		void api.broadcast('user.media-call-devices', { userId: uid });
+	}
+
 	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
 

@@ -97,6 +97,7 @@ class CtiPhoneCommand implements ISlashCommand {
 
 		if (argument === 'remove') {
 			await persis.removeByAssociation(phoneOf(user.id));
+			await modify.getMediaCallModifier().notifyDevicesChanged(user.id);
 			await this.reply(context, modify, 'Phone removed. Your calls will stay in Rocket.Chat.');
 			return;
 		}
@@ -108,6 +109,11 @@ class CtiPhoneCommand implements ISlashCommand {
 		}
 
 		await persis.updateByAssociation(phoneOf(user.id), { number }, true);
+
+		// Rocket.Chat caches the device list and has no way of noticing this on its own, so the user
+		// would have to reload before the number showed up in the picker.
+		await modify.getMediaCallModifier().notifyDevicesChanged(user.id);
+
 		await this.reply(context, modify, `Registered \`${number}\`. It is now offered when you start a call.`);
 	}
 
