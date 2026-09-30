@@ -239,7 +239,7 @@ describe('AISearchService', () => {
 
 			const requestBody = JSON.parse(serverFetch.firstCall.args[1].body);
 			expect(requestBody.type).to.equal('search');
-			expect(requestBody.classification).to.deep.equal({ classifications: ['user', 'admin'], search_type: 1 });
+			expect(requestBody.classification).to.deep.equal({ classifications: ['user', 'admin'], search_type: 2 });
 			expect(requestBody.params).to.not.have.property('threshold');
 		});
 
