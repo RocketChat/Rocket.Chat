@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/css-supports",
-	"version": "0.31.25",
+	"version": "0.31.26-rc.0",
 	"description": "Memoized and SSR-compatible facade of CSS.supports API",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"

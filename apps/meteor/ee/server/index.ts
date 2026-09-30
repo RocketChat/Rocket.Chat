@@ -14,5 +14,5 @@ import './meteor-methods/getReadReceipts';
 import './patches';
 import './hooks/federation';
 
-export * from './apps/startup';
+export * from './startup/apps';
 export { registerEEBroker } from './startup';

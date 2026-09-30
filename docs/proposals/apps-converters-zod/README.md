@@ -7,7 +7,7 @@ notes below, including the messages/threads deviation in Phase 4.
 
 ## Problem
 
-`apps/meteor/app/apps/server/converters/` translates data between two models in both
+`apps/meteor/server/modules/apps/converters/` translates data between two models in both
 directions:
 
 - **Rocket.Chat → Apps-Engine** ("to app"): Mongo documents (`IUser`, `IRoom`, `IMessage`, …)
@@ -91,7 +91,7 @@ implementation detail those methods delegate to.
    returning a closure-bound codec. DB-free converters export a static codec constant.
 
 3. **Preserve the `_unmappedProperties_` contract — do not drop it.** It is load-bearing: the reverse
-   converters merge it back, the EE redactor (`ee/server/apps/lib/redactor.ts`) references the path,
+   converters merge it back, the EE redactor (`ee/server/lib/apps/redactor.ts`) references the path,
    and `RoomBridge` reads it. A plain `z.object` strips unknown keys; `z.looseObject` keeps them
    inline but *without* the bucket. We will build a small reusable helper (working name
    `mappedCodec`) that reproduces `transformMappedData`'s bucket semantics exactly, so output is
@@ -224,7 +224,7 @@ in a codec later remains possible (e.g. via `proxyquire`'s `@global` stubs) if d
 
 Every converter is off `transformMappedData`, so `transformMappedData.ts` was deleted and its
 (previously importer-located) spec was retired — its coverage now lives in the `mappedDecodeAsync`
-tests under `tests/unit/app/apps/server/codecs/`. `cachedFunction` stays: it is still used by the
+tests under `tests/unit/server/modules/apps/codecs/`. `cachedFunction` stays: it is still used by the
 messages and threads memoization, which remained in the class layer (see the Phase 4 deviation).
 
 ## Testing strategy

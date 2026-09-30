@@ -5,7 +5,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import type { MessageData } from '../../../../../server/lib/dataExport/exportRoomMessagesToFile';
-import { exportMessagesMock } from '../../../app/apps/server/mocks/data/messages.data';
+import { exportMessagesMock } from '../../modules/apps/mocks/data/messages.data';
 
 // Create stubs for dependencies
 const stubs = {
