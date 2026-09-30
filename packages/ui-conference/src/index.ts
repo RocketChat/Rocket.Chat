@@ -78,3 +78,5 @@ export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, C
 export { default as VoiceActivity } from './call/VoiceActivity';
 export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
+export { PreviewVideoContext, usePreviewVideo } from './call/previewVideo';
+export type { PreviewVideo, PreviewVideoTrack } from './call/previewVideo';

@@ -5,7 +5,19 @@ import { useCallDevicePreview } from './useCallDevicePreview';
 const getUserMedia = jest.fn();
 const enumerateDevices = jest.fn(() => Promise.resolve([] as MediaDeviceInfo[]));
 
-const fakeStream = () => ({ getTracks: () => [{ stop: jest.fn() }] }) as unknown as MediaStream;
+const fakeStream = () => {
+	const stream = {
+		active: true,
+		getTracks: () => [
+			{
+				stop: () => {
+					stream.active = false;
+				},
+			},
+		],
+	};
+	return stream as unknown as MediaStream;
+};
 
 beforeAll(() => {
 	Object.defineProperty(navigator, 'mediaDevices', {
@@ -37,4 +49,17 @@ it('opens the chosen microphone, and only the microphone', async () => {
 
 	await waitFor(() => expect(result.current.stream).toBe(stream));
 	expect(getUserMedia).toHaveBeenCalledWith({ audio: { deviceId: { exact: 'yeti' } }, video: false });
+});
+
+it('shows no stream once the microphone is off, nor the stopped one when it comes back on', async () => {
+	getUserMedia.mockResolvedValueOnce(fakeStream()).mockReturnValueOnce(new Promise(() => undefined));
+
+	const { result, rerender } = renderHook(({ mic }) => useCallDevicePreview({ mic, cam: false }, {}), { initialProps: { mic: true } });
+	await waitFor(() => expect(result.current.stream).not.toBeNull());
+
+	rerender({ mic: false });
+	expect(result.current.stream).toBeNull();
+
+	rerender({ mic: true });
+	expect(result.current.stream).toBeNull();
 });

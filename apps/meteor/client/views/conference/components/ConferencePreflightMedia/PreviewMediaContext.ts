@@ -1,5 +1,4 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
-import type { PreviewVideo } from '@rocket.chat/ui-livekit';
 import { createContext, useContext } from 'react';
 
 import type { useCallDevicePreview } from '../../hooks/useCallDevicePreview';
@@ -7,7 +6,6 @@ import type { useCallDevicePreview } from '../../hooks/useCallDevicePreview';
 type PreviewMediaState = {
 	capabilities: VideoConferenceCapabilities;
 	preview: ReturnType<typeof useCallDevicePreview>;
-	previewVideo: PreviewVideo;
 };
 
 export const PreviewMediaContext = createContext<PreviewMediaState | undefined>(undefined);

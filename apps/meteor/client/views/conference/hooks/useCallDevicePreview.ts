@@ -27,7 +27,6 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 	useEffect(() => {
 		// Only the microphone is opened here: asking for no track at all is a rejection, not an empty stream.
 		if (!mic || !navigator.mediaDevices?.getUserMedia) {
-			setStream(null);
 			return;
 		}
 
@@ -68,5 +67,8 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 	const audioInputs = useMemo(() => devices.filter(({ kind }) => kind === 'audioinput'), [devices]);
 	const audioOutputs = useMemo(() => devices.filter(({ kind }) => kind === 'audiooutput'), [devices]);
 
-	return { stream, videoInputs, audioInputs, audioOutputs, error };
+	// The last stream stays in state after the mic goes off, stopped; turning it back on must not show it again.
+	const shownStream = mic && stream?.active ? stream : null;
+
+	return { stream: shownStream, videoInputs, audioInputs, audioOutputs, error };
 };

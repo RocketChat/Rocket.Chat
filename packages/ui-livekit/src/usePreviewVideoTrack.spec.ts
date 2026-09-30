@@ -10,7 +10,13 @@ jest.mock('livekit-client', () => ({
 
 const mockedCreateLocalVideoTrack = jest.mocked(createLocalVideoTrack);
 
-const makeTrack = () => ({ stop: jest.fn() }) as unknown as LocalVideoTrack;
+const makeTrack = () => {
+	const mediaStreamTrack = { readyState: 'live' };
+	const stop = jest.fn(() => {
+		mediaStreamTrack.readyState = 'ended';
+	});
+	return { stop, mediaStreamTrack } as unknown as LocalVideoTrack;
+};
 
 beforeEach(() => {
 	mockedCreateLocalVideoTrack.mockReset();
@@ -34,5 +40,38 @@ it('opens nothing while the camera is off', () => {
 	const { result } = renderHook(() => usePreviewVideoTrack(false, {}));
 
 	expect(mockedCreateLocalVideoTrack).not.toHaveBeenCalled();
+	expect(result.current.track).toBeUndefined();
+});
+
+it('tells whoever needs to know once the camera is open', async () => {
+	mockedCreateLocalVideoTrack.mockResolvedValue(makeTrack());
+	const onOpen = jest.fn();
+
+	renderHook(() => usePreviewVideoTrack(true, { onOpen }));
+
+	await waitFor(() => expect(onOpen).toHaveBeenCalledTimes(1));
+});
+
+// A failure is about the camera that was asked for: turning it off is not still failing.
+it('stops reporting a failure once the camera is turned off', async () => {
+	mockedCreateLocalVideoTrack.mockRejectedValue(new Error('NotAllowedError'));
+
+	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}), { initialProps: { enabled: true } });
+	await waitFor(() => expect(result.current.error).toBe(true));
+
+	rerender({ enabled: false });
+	expect(result.current.error).toBe(false);
+});
+
+// The track left over from before is stopped; showing it would be a black frame.
+it('does not show the stopped track again when the camera comes back on', async () => {
+	const first = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValueOnce(first).mockReturnValueOnce(new Promise(() => undefined));
+
+	const { result, rerender } = renderHook(({ enabled }) => usePreviewVideoTrack(enabled, {}), { initialProps: { enabled: true } });
+	await waitFor(() => expect(result.current.track).toBe(first));
+
+	rerender({ enabled: false });
+	rerender({ enabled: true });
 	expect(result.current.track).toBeUndefined();
 });

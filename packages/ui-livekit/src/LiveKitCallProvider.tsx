@@ -6,6 +6,7 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
@@ -50,13 +51,16 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
 	// With no credentials there is no call to sit in.
-	useEffect(() => {
-		if (!transportError) {
-			return;
-		}
-		dispatchToastMessage({ type: 'error', message: transportError });
+	const onTransportError = useStableCallback((error: Error) => {
+		dispatchToastMessage({ type: 'error', message: error });
 		onEnded();
-	}, [transportError, dispatchToastMessage, onEnded]);
+	});
+
+	useEffect(() => {
+		if (transportError) {
+			onTransportError(transportError);
+		}
+	}, [transportError, onTransportError]);
 
 	const arrival = useArrivalPreferences(preferences, connect);
 	const [room] = useState(() => new Room());

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 /**
  * Whether this track is producing frames.
@@ -16,53 +16,43 @@ const isProducingFrames = (track: MediaStreamTrack): boolean => {
 	return isSynthetic || !track.muted;
 };
 
+/** Calls `onChange` whenever one of the stream's video tracks pauses, resumes or ends, or a track comes or goes. */
+const subscribeToVideoTracks = (stream: MediaStream, onChange: () => void): (() => void) => {
+	const trackOffs: Array<() => void> = [];
+	const attachTrackListeners = (t: MediaStreamTrack) => {
+		t.addEventListener('mute', onChange);
+		t.addEventListener('unmute', onChange);
+		t.addEventListener('ended', onChange);
+		trackOffs.push(() => {
+			t.removeEventListener('mute', onChange);
+			t.removeEventListener('unmute', onChange);
+			t.removeEventListener('ended', onChange);
+		});
+	};
+	stream.getVideoTracks().forEach(attachTrackListeners);
+
+	const onAddTrack = (e: MediaStreamTrackEvent) => {
+		if (e.track.kind === 'video') attachTrackListeners(e.track);
+		onChange();
+	};
+	stream.addEventListener('addtrack', onAddTrack);
+	stream.addEventListener('removetrack', onChange);
+
+	return () => {
+		trackOffs.forEach((off) => off());
+		stream.removeEventListener('addtrack', onAddTrack);
+		stream.removeEventListener('removetrack', onChange);
+	};
+};
+
+const noSubscription = () => undefined;
+
 /**
  * Whether the stream has a video track producing frames — what decides between its `<video>` and the avatar. Kept
  * current as tracks pause, end or come and go, since the stream itself stays the same object throughout.
  */
 export const useStreamHasLiveVideo = (stream?: MediaStream | null): boolean => {
-	const [hasLive, setHasLive] = useState(false);
+	const subscribe = useCallback((onChange: () => void) => (stream ? subscribeToVideoTracks(stream, onChange) : noSubscription), [stream]);
 
-	useEffect(() => {
-		if (!stream) {
-			setHasLive(false);
-			return;
-		}
-
-		const update = () => {
-			const live = stream.getVideoTracks().some(isProducingFrames);
-			setHasLive(live);
-		};
-
-		update();
-
-		const trackOffs: Array<() => void> = [];
-		const attachTrackListeners = (t: MediaStreamTrack) => {
-			t.addEventListener('mute', update);
-			t.addEventListener('unmute', update);
-			t.addEventListener('ended', update);
-			trackOffs.push(() => {
-				t.removeEventListener('mute', update);
-				t.removeEventListener('unmute', update);
-				t.removeEventListener('ended', update);
-			});
-		};
-		stream.getVideoTracks().forEach(attachTrackListeners);
-
-		const onAddTrack = (e: MediaStreamTrackEvent) => {
-			if (e.track.kind === 'video') attachTrackListeners(e.track);
-			update();
-		};
-		const onRemoveTrack = () => update();
-		stream.addEventListener('addtrack', onAddTrack);
-		stream.addEventListener('removetrack', onRemoveTrack);
-
-		return () => {
-			trackOffs.forEach((off) => off());
-			stream.removeEventListener('addtrack', onAddTrack);
-			stream.removeEventListener('removetrack', onRemoveTrack);
-		};
-	}, [stream]);
-
-	return hasLive;
+	return useSyncExternalStore(subscribe, () => stream?.getVideoTracks().some(isProducingFrames) ?? false);
 };
