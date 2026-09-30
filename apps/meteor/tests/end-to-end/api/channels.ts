@@ -2316,36 +2316,25 @@ describe('[Channels]', () => {
 		let createdChannel: IRoom;
 		let user: TestUser<IUser>;
 
-		before((done) => {
-			void createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).then((res) => {
-				createdChannel = res.body.channel;
-				void createUser().then((createdUser) => {
-					user = createdUser;
-					void login(user.username, password).then((credentials) => {
-						userCredentials = credentials;
-						void updatePermission('manage-incoming-integrations', ['user']).then(() => {
-							void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-								void createIntegration(
-									{
-										type: 'webhook-incoming',
-										name: 'Incoming test',
-										enabled: true,
-										alias: 'test',
-										username: 'rocket.cat',
-										scriptEnabled: false,
-										overrideDestinationChannelEnabled: true,
-										channel: `#${createdChannel.name}`,
-									},
-									userCredentials,
-								).then((integration) => {
-									integrationCreatedByAnUser = integration;
-									done();
-								});
-							});
-						});
-					});
-				});
-			}, done);
+		before(async () => {
+			createdChannel = (await createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' })).body.channel;
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			await updatePermission('manage-incoming-integrations', ['user']);
+			await updatePermission('manage-own-incoming-integrations', ['user']);
+			integrationCreatedByAnUser = await createIntegration(
+				{
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: true,
+					channel: `#${createdChannel.name}`,
+				},
+				userCredentials,
+			);
 		});
 
 		after(async () => {
