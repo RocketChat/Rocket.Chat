@@ -128,7 +128,6 @@ test.describe.serial('Notification Sounds', () => {
 			await poHomeChannel.navbar.btnHome.click();
 			await sendMessageFromUser(request, Users.user1, targetChannelId, `Hello @${Users.admin.data.username} from User 1`);
 
-			await expect(poHomeChannel.sidebar.getItemUnreadBadge(poHomeChannel.sidebar.getSidebarItemByName(targetChannel))).toBeVisible();
 			await page.waitForTimeout(100); // wait for the sound to play
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);

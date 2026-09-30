@@ -34,7 +34,8 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 
 		conversation = await createConversation(api);
-		await agent.poHomeChannel.gotoLive(conversation.data.room._id);
+		await agent.poHomeChannel.goto();
+		await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 	});
 
 	test.afterAll(async ({ api }) => {

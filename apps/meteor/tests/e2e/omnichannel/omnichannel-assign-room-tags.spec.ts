@@ -85,7 +85,8 @@ test.describe('OC - Tags Visibility', () => {
 
 	test('Verify agent should see correct tags based on department association', async () => {
 		await test.step('Agent opens room', async () => {
-			await poOmnichannel.gotoLive(conversations[0].data.room._id);
+			await poOmnichannel.goto();
+			await poOmnichannel.navbar.openChat(conversations[0].data.visitor.name);
 		});
 
 		await test.step('should not be able to see tags field', async () => {
@@ -129,7 +130,8 @@ test.describe('OC - Tags Visibility', () => {
 
 	test('Verify tags visibility for agent associated with multiple departments', async () => {
 		await test.step('Open room info', async () => {
-			await poOmnichannel.gotoLive(conversations[1].data.room._id);
+			await poOmnichannel.goto();
+			await poOmnichannel.navbar.openChat(conversations[1].data.visitor.name);
 			await poOmnichannel.roomInfo.btnEdit.click();
 			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
 			await poOmnichannel.editRoomInfo.inputTags.click();

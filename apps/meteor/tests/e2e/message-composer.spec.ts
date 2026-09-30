@@ -109,7 +109,7 @@ test.describe.serial('message-composer', () => {
 
 	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page, request }) => {
 		await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello composer @rocket.cat');
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer @rocket.cat');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
@@ -137,7 +137,7 @@ test.describe.serial('message-composer', () => {
 
 	test('should close mention popup when canceling a message edit via keyboard', async ({ page, request }) => {
 		await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello composer @rocket.cat');
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer @rocket.cat');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');

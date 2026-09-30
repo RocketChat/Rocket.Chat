@@ -137,7 +137,7 @@ test.describe.serial('Quote Messages', () => {
 		});
 
 		await test.step('Open DM and quote message', async () => {
-			await poHomeChannel.gotoDirect(Users.user1.data.username);
+			await poHomeChannel.navbar.openChat(Users.user1.data.username);
 			await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
@@ -156,17 +156,15 @@ test.describe.serial('Quote Messages', () => {
 		const discussionMessage = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
 		const discussionName = `Discussion-${Date.now()}`;
-		let discussionRoomName: string;
 
 		await test.step('Setup Discussion and messages via API', async () => {
 			const parentMsgId = await sendMessage(api, targetChannelId, originalMessage);
 			const discussionRoomId = await createDiscussion(api, targetChannelId, parentMsgId, discussionName);
 			await sendMessage(api, discussionRoomId, discussionMessage);
-			discussionRoomName = (await (await api.get('/rooms.info', { roomId: discussionRoomId })).json()).room.name;
 		});
 
 		await test.step('Open discussion and quote message', async () => {
-			await poHomeChannel.gotoGroup(discussionRoomName);
+			await poHomeChannel.navbar.openChat(discussionName);
 			await expect(poHomeChannel.content.channelHeader).toContainText(discussionName);
 			await poHomeChannel.content.quoteMessage(quoteText, discussionMessage);
 		});
@@ -192,7 +190,7 @@ test.describe.serial('Quote Messages', () => {
 		});
 
 		await test.step('Open DM thread and quote message', async () => {
-			await poHomeChannel.gotoDirect(Users.user2.data.username);
+			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await poHomeChannel.content.openReplyInThread();
 
 			await poHomeChannel.content.lastUserThreadMessage.hover();

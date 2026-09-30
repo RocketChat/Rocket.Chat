@@ -35,7 +35,8 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 
 	test('OC - Canned Responses Sidebar - Create', async () => {
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
+			await agent.poHomeChannel.goto();
+			await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {
@@ -54,7 +55,8 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 
 	test('OC - Canned Responses Sidebar - Edit', async () => {
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
+			await agent.poHomeChannel.goto();
+			await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {

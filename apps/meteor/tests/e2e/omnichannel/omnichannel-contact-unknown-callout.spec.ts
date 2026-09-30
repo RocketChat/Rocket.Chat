@@ -37,7 +37,8 @@ test.describe('OC - Contact Unknown Callout', () => {
 
 	test('OC - Contact Unknown Callout - Dismiss callout', async () => {
 		await test.step('expect to open conversation', async () => {
-			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
+			await agent.poHomeChannel.goto();
+			await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 		});
 
 		await test.step('expect contact unknown callout to be visible', async () => {

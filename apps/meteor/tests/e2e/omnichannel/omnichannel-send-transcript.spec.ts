@@ -31,7 +31,8 @@ test.describe('omnichannel-transcript', () => {
 		conversation = await createConversation(api, { agentId: 'user1' });
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
+			await agent.poHomeChannel.goto();
+			await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 		});
 
 		await test.step('Expect to be able to send transcript to email', async () => {

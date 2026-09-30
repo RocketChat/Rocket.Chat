@@ -55,7 +55,8 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
-		await agent1.poHomeChannel.gotoLive(conversation.data.room._id);
+		await agent1.poHomeChannel.goto();
+		await agent1.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 
 		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 

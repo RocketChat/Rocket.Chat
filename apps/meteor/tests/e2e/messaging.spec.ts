@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { BASE_API_URL, IS_EE } from './config/constants';
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
-import { sendMessageFromUser } from './utils/sendMessage';
+import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -14,12 +13,9 @@ test.use({ storageState: Users.user1.state });
 test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
-	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		const { channel } = await createTargetChannelAndReturnFullRoom(api);
-		targetChannel = channel.name as string;
-		targetChannelId = channel._id;
+		targetChannel = await createTargetChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -31,15 +27,6 @@ test.describe('Messaging', () => {
 	});
 
 	test.describe.serial('Navigation', () => {
-		test.beforeAll(async ({ request }) => {
-			await request.post(`${BASE_API_URL}/channels.join`, {
-				headers: { 'X-Auth-Token': Users.user1.data.loginToken, 'X-User-Id': Users.user1.data._id },
-				data: { roomId: targetChannelId },
-			});
-			await sendMessageFromUser(request, Users.user1, targetChannelId, 'msg1');
-			await sendMessageFromUser(request, Users.user1, targetChannelId, 'msg2');
-		});
-
 		test.beforeEach(async () => {
 			await channelPage.gotoChannel(targetChannel);
 			// wait for the room toolbox to mount, since it's a lazy loaded component
@@ -48,8 +35,12 @@ test.describe('Messaging', () => {
 
 		// TODO: this should be replaced by a unit test
 		test('should navigate on messages using keyboard', async ({ page }) => {
+			await test.step('open chat and send message', async () => {
+				await channelPage.content.sendMessage('msg1');
+				await channelPage.content.sendMessage('msg2');
+			});
+
 			await test.step('move focus to the second message', async () => {
-				await channelPage.composer.inputMessage.focus();
 				await page.keyboard.press('Shift+Tab');
 				await expect(channelPage.content.lastUserMessage).toBeFocused();
 			});
@@ -173,18 +164,20 @@ test.describe('Messaging', () => {
 	});
 
 	test.describe.serial('Message edition', () => {
-		test('should edit messages', async ({ page, request }) => {
+		test('should edit messages', async ({ page }) => {
 			const waitForEdit = () =>
 				page.waitForResponse(
 					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 				);
 
-			await sendMessageFromUser(request, Users.user1, targetChannelId, 'msg1');
-			await sendMessageFromUser(request, Users.user1, targetChannelId, 'msg2');
 			await channelPage.gotoChannel(targetChannel);
 
+			await test.step('send messages to edit', async () => {
+				await channelPage.content.sendMessage('msg1');
+				await channelPage.content.sendMessage('msg2');
+			});
+
 			await test.step('focus on the second message', async () => {
-				await channelPage.composer.inputMessage.focus();
 				await expect(channelPage.composer.inputMessage).toBeFocused();
 				await page.keyboard.press('ArrowUp');
 
@@ -296,7 +289,7 @@ test.describe('Messaging', () => {
 		test('expect show "hello word" in both contexts (targetChannel)', async () => {
 			await channelPage.gotoChannel(targetChannel);
 
-			await auxContext.poHomeChannel.gotoChannel(targetChannel);
+			await auxContext.poHomeChannel.navbar.openChat(targetChannel);
 
 			await channelPage.content.sendMessage('hello world');
 
@@ -308,7 +301,7 @@ test.describe('Messaging', () => {
 
 		test('expect show "hello word" in both contexts (direct)', async () => {
 			await channelPage.gotoDirect('user2');
-			await auxContext.poHomeChannel.gotoDirect('user1');
+			await auxContext.poHomeChannel.navbar.openChat('user1');
 
 			await channelPage.content.sendMessage('hello world');
 
