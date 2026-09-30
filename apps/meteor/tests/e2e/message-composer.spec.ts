@@ -24,7 +24,7 @@ test.describe.serial('message-composer', () => {
 	test('should have all formatters and the main actions visible on toolbar', async () => {
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
+		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(14);
 	});
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
