@@ -23,6 +23,7 @@ export { UserCardContext, type UserCardContextValue } from './UserCardContext';
 export { UserPresenceContext, type UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, type Device, type DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, type IActionManager } from './ActionManagerContext';
+export { createRequiredContext } from './createRequiredContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
