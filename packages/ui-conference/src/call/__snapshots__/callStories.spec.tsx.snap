@@ -87,11 +87,13 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 class="rcx-box rcx-box--full"
               >
                 <button
-                  aria-label="Device options"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  aria-label="Device settings"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  disabled=""
+                  id="react-aria-_r_4_"
                   label="Device options"
-                  title="Device settings (not supported by the browser)"
+                  title="Device settings"
                   type="button"
                 >
                   <i
@@ -132,7 +134,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                   aria-haspopup="true"
                   aria-label="Camera"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  id="react-aria-_r_4_"
+                  id="react-aria-_r_6_"
                   label="Camera options"
                   title="Camera"
                   type="button"
@@ -220,11 +222,13 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_8_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -265,7 +269,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_6_"
+                id="react-aria-_r_a_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -352,11 +356,13 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_c_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -397,7 +403,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_8_"
+                id="react-aria-_r_e_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -484,11 +490,13 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_g_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -529,7 +537,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_a_"
+                id="react-aria-_r_i_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -616,11 +624,13 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_k_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -661,7 +671,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_c_"
+                id="react-aria-_r_m_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -1030,7 +1040,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_e_"
+          id="react-aria-_r_o_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -1062,7 +1072,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_g_"
+          id="react-aria-_r_q_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -1124,7 +1134,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_i_"
+          id="react-aria-_r_s_"
           label="Camera options"
           title="Camera"
           type="button"

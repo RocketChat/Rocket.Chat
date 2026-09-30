@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useMediaDevices } from '../call/hooks/useMediaDevices';
 import type { CallDevices, CallPreferences } from '../hooks/useCallDevicesInitialState';
@@ -6,9 +6,8 @@ import type { CallDevices, CallPreferences } from '../hooks/useCallDevicesInitia
 type CallDevicePreview = {
 	/** The local stream to show the user, while the camera is on. Null whenever there is nothing to show. */
 	stream: MediaStream | null;
-	videoInputs: MediaDeviceInfo[];
-	audioInputs: MediaDeviceInfo[];
-	audioOutputs: MediaDeviceInfo[];
+	/** Every camera, microphone and speaker the browser lists. */
+	devices: MediaDeviceInfo[];
 	/** Set when the browser refused — no permission, or no device. The screen says so rather than showing nothing. */
 	error: boolean;
 };
@@ -64,12 +63,8 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 		};
 	}, [mic, micId, refresh]);
 
-	const videoInputs = useMemo(() => devices.filter(({ kind }) => kind === 'videoinput'), [devices]);
-	const audioInputs = useMemo(() => devices.filter(({ kind }) => kind === 'audioinput'), [devices]);
-	const audioOutputs = useMemo(() => devices.filter(({ kind }) => kind === 'audiooutput'), [devices]);
-
 	// The last stream stays in state after the mic goes off, stopped; turning it back on must not show it again.
 	const shownStream = mic && stream?.active ? stream : null;
 
-	return { stream: shownStream, videoInputs, audioInputs, audioOutputs, error };
+	return { stream: shownStream, devices, error };
 };

@@ -1,5 +1,3 @@
-import type { Device } from '@rocket.chat/ui-contexts';
-
 import { createRequiredContext } from '../lib/createRequiredContext';
 
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
@@ -41,18 +39,6 @@ export type CallActions = {
 	leave: () => void;
 };
 
-export type CallDeviceSelection = {
-	/** Every camera, microphone and speaker the browser lists, kept current as devices come and go. */
-	devices: MediaDeviceInfo[];
-	/** A microphone or a speaker, told apart by the device's own `type`. */
-	selectAudioDevice: (device: Device) => void;
-	selectCamera: (deviceId: string) => void;
-	/** The device the call has open for each kind, as the call reports it rather than as it was asked for. */
-	activeDeviceIds: Partial<Record<MediaDeviceKind, string>>;
-};
-
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');
 
 export const [CallActionsProvider, useCallActions] = createRequiredContext<CallActions>('CallActions');
-
-export const [CallDeviceSelectionProvider, useCallDeviceSelection] = createRequiredContext<CallDeviceSelection>('CallDeviceSelection');

@@ -4,13 +4,6 @@ import AudioDevicePicker from './AudioDevicePicker';
 import { withCall } from '../fixtures/callFixtures';
 import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
 
-const microphones = [
-	{ id: 'default', label: 'Default - MacBook Pro Microphone', type: 'audioinput' },
-	{ id: 'yeti', label: 'Yeti Stereo Microphone (046d:0ab7)', type: 'audioinput' },
-];
-
-const speakers = [{ id: 'default', label: 'Default - MacBook Pro Speakers', type: 'audiooutput' }];
-
 /** The microphone and speaker menu of a call running in this window. */
 const meta = {
 	component: AudioDevicePicker,
@@ -21,7 +14,7 @@ const meta = {
 				<Story />
 			</CallSurface>
 		),
-		withConferenceWindow(conferenceAppRoot().withAudioInputDevices(microphones).withAudioOutputDevices(speakers)),
+		withConferenceWindow(conferenceAppRoot()),
 	],
 } satisfies Meta<typeof AudioDevicePicker>;
 

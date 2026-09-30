@@ -1,6 +1,5 @@
-import type { CallDeviceSelection } from '@rocket.chat/ui-conference';
-import { useMediaDevices, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
-import type { Device } from '@rocket.chat/ui-contexts';
+import type { DeviceSelection } from '@rocket.chat/ui-conference';
+import { callDeviceIdField, useMediaDevices, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import type { Room } from 'livekit-client';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -16,7 +15,7 @@ type ArrivalDevices = { micId?: string; camId?: string; speakerId?: string };
  * `arrival` is what the preflight chose, applied to the room as its capture defaults — read every time a track is
  * created, so a call joined muted still opens the chosen microphone when it is unmuted.
  */
-export const useCallDeviceSwitching = (room: Room, arrival: ArrivalDevices | undefined): CallDeviceSelection => {
+export const useCallDeviceSwitching = (room: Room, arrival: ArrivalDevices | undefined): DeviceSelection => {
 	const persistDevicePreference = useUpdateCallPreferences();
 
 	const { micId, camId, speakerId } = arrival ?? {};
@@ -34,20 +33,10 @@ export const useCallDeviceSwitching = (room: Room, arrival: ArrivalDevices | und
 		}
 	}, [room, micId, camId, speakerId]);
 
-	const selectCamera = useCallback(
-		(deviceId: string) => {
-			persistDevicePreference({ camId: deviceId });
-			void room.switchActiveDevice('videoinput', deviceId).catch(warn('camera'));
-		},
-		[room, persistDevicePreference],
-	);
-
-	const selectAudioDevice = useCallback(
-		(device: Device) => {
-			const kind = device.type === 'audiooutput' ? 'audiooutput' : 'audioinput';
-			persistDevicePreference(kind === 'audiooutput' ? { speakerId: device.id } : { micId: device.id });
-
-			void room.switchActiveDevice(kind, device.id).catch(warn(kind));
+	const select = useCallback(
+		(kind: MediaDeviceKind, deviceId: string) => {
+			persistDevicePreference({ [callDeviceIdField[kind]]: deviceId });
+			void room.switchActiveDevice(kind, deviceId).catch(warn(kind));
 		},
 		[room, persistDevicePreference],
 	);
@@ -55,12 +44,9 @@ export const useCallDeviceSwitching = (room: Room, arrival: ArrivalDevices | und
 	const audioinput = useActiveDevice(room, 'audioinput');
 	const audiooutput = useActiveDevice(room, 'audiooutput');
 	const videoinput = useActiveDevice(room, 'videoinput');
-	const activeDeviceIds = useMemo(() => ({ audioinput, audiooutput, videoinput }), [audioinput, audiooutput, videoinput]);
+	const selectedIds = useMemo(() => ({ audioinput, audiooutput, videoinput }), [audioinput, audiooutput, videoinput]);
 
 	const { devices } = useMediaDevices();
 
-	return useMemo(
-		() => ({ devices, selectAudioDevice, selectCamera, activeDeviceIds }),
-		[devices, selectAudioDevice, selectCamera, activeDeviceIds],
-	);
+	return useMemo(() => ({ devices, selectedIds, select }), [devices, selectedIds, select]);
 };

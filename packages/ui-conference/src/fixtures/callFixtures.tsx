@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { JOHN_DOE_ID } from './storyFixtures';
-import type { CallActions, CallDeviceSelection, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider } from '../call/context';
+import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
+import { CallActionsProvider, CallStateProvider } from '../call/context';
+import type { DeviceSelection } from '../devices/DeviceSelectionContext';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,
@@ -56,17 +58,16 @@ export const fakeDevices = [
 	{ deviceId: 'brio', kind: 'videoinput', label: 'Logitech BRIO (046d:085e)', groupId: 'brio' },
 ] as unknown as MediaDeviceInfo[];
 
-export const buildDeviceSelection = (overrides: Partial<CallDeviceSelection> = {}): CallDeviceSelection => ({
+export const buildDeviceSelection = (overrides: Partial<DeviceSelection> = {}): DeviceSelection => ({
 	devices: fakeDevices,
-	selectAudioDevice: action('selectAudioDevice'),
-	selectCamera: action('selectCamera'),
-	activeDeviceIds: { audioinput: 'default', audiooutput: 'default', videoinput: 'facetime' },
+	selectedIds: { audioinput: 'default', audiooutput: 'default', videoinput: 'facetime' },
+	select: action('select'),
 	...overrides,
 });
 
 export type CallFixture = {
 	state?: Parameters<typeof buildCallState>[0];
-	deviceSelection?: Partial<CallDeviceSelection>;
+	deviceSelection?: Partial<DeviceSelection>;
 };
 
 const CallContexts = ({ state, deviceSelection, children }: CallFixture & { children: ReactNode }) => {
@@ -78,7 +79,7 @@ const CallContexts = ({ state, deviceSelection, children }: CallFixture & { chil
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
-				<CallDeviceSelectionProvider value={devices}>{children}</CallDeviceSelectionProvider>
+				<DeviceSelectionProvider value={devices}>{children}</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);

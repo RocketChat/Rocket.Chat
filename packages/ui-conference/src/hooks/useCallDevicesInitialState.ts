@@ -18,8 +18,12 @@ export type CallDevices = {
 	speakerId?: string;
 };
 
-/** The three things there are to choose. The speaker is output-only, so it has no on/off of its own. */
-export type CallDeviceKind = 'mic' | 'cam' | 'speaker';
+/** Which of `CallDevices` records the device chosen for each kind. */
+export const callDeviceIdField = {
+	audioinput: 'micId',
+	videoinput: 'camId',
+	audiooutput: 'speakerId',
+} as const satisfies Record<MediaDeviceKind, keyof CallDevices>;
 
 type StoredCallPreferences = CallPreferences & CallDevices & CallRingPreference;
 
@@ -181,7 +185,7 @@ export const useCallDevicesInitialState = (capabilities: VideoConferenceCapabili
 	const { ring, toggleRing } = useRingIn(stored, setStored);
 
 	const selectDevice = useCallback(
-		(device: CallDeviceKind, deviceId: string) => setStored((current) => ({ ...current, [`${device}Id`]: deviceId })),
+		(kind: MediaDeviceKind, deviceId: string) => setStored((current) => ({ ...current, [callDeviceIdField[kind]]: deviceId })),
 		[setStored],
 	);
 

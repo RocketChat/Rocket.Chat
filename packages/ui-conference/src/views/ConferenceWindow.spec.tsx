@@ -3,10 +3,12 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
-import type { CallDeviceSelection, CallState } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider } from '../call/context';
+import type { CallState } from '../call/context';
+import { CallActionsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import type { DeviceSelection } from '../devices/DeviceSelectionContext';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 const callState: CallState = {
@@ -29,18 +31,17 @@ const actions = {
 	leave: jest.fn(),
 };
 
-const deviceSelection: CallDeviceSelection = {
+const deviceSelection: DeviceSelection = {
 	devices: [],
-	selectAudioDevice: jest.fn(),
-	selectCamera: jest.fn(),
-	activeDeviceIds: {},
+	selectedIds: {},
+	select: jest.fn(),
 };
 
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ children }: { children: ReactNode }) => (
 	<CallStateProvider value={callState}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={deviceSelection}>{children}</CallDeviceSelectionProvider>
+			<DeviceSelectionProvider value={deviceSelection}>{children}</DeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>
 );

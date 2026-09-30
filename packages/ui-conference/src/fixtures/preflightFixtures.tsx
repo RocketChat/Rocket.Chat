@@ -1,35 +1,27 @@
 import type { Decorator } from '@storybook/react';
 
-import { fakeDevices } from './callFixtures';
+import { buildDeviceSelection, fakeDevices } from './callFixtures';
 import { embeddedCapabilities } from './storyFixtures';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import type { PreviewMediaState } from '../preflight/PreviewMediaContext';
 import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext';
 
-const ofKind = (devices: MediaDeviceInfo[], kind: MediaDeviceKind) => devices.filter((device) => device.kind === kind);
-
 export type PreviewMediaFixture = {
 	capabilities?: PreviewMediaState['capabilities'];
-	/** What the browser lists; the preview's own lists are split out of it. */
+	/** What the browser lists. */
 	devices?: MediaDeviceInfo[];
+	/** What the reader chose before; nothing, by default. */
+	selectedIds?: Partial<Record<MediaDeviceKind, string>>;
 };
 
-/** The preflight's opened media, told rather than opened: no camera or microphone is asked for. */
+/** The preflight's opened media, told rather than opened: no camera or microphone is asked for, and choosing logs. */
 export const withPreviewMedia =
-	({ capabilities = embeddedCapabilities, devices = fakeDevices }: PreviewMediaFixture = {}): Decorator =>
+	({ capabilities = embeddedCapabilities, devices = fakeDevices, selectedIds = {} }: PreviewMediaFixture = {}): Decorator =>
 	// eslint-disable-next-line react/display-name
 	(Story) => (
-		<PreviewMediaContextProvider
-			value={{
-				capabilities,
-				preview: {
-					stream: null,
-					error: false,
-					videoInputs: ofKind(devices, 'videoinput'),
-					audioInputs: ofKind(devices, 'audioinput'),
-					audioOutputs: ofKind(devices, 'audiooutput'),
-				},
-			}}
-		>
-			<Story />
+		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, error: false, devices } }}>
+			<DeviceSelectionProvider value={buildDeviceSelection({ devices, selectedIds })}>
+				<Story />
+			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>
 	);

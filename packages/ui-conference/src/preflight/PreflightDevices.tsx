@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
-import CameraMenu from './CameraMenu';
-import MicrophoneMenu from './MicrophoneMenu';
+import PreflightDeviceMenu from './PreflightDeviceMenu';
 import { usePreviewMedia } from './PreviewMediaContext';
-import SpeakerMenu from './SpeakerMenu';
 
 /** The devices to arrive on, one menu per kind the provider can be told about. */
 const PreflightDevices = () => {
+	const { t } = useTranslation();
 	const { capabilities } = usePreviewMedia();
 
 	return (
@@ -21,9 +21,9 @@ const PreflightDevices = () => {
 			// forcing three cut every device name down to nothing.
 			style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
 		>
-			{capabilities.mic && <MicrophoneMenu />}
-			<SpeakerMenu />
-			{capabilities.cam && <CameraMenu />}
+			{capabilities.mic && <PreflightDeviceMenu kind='audioinput' label={t('Microphone')} />}
+			<PreflightDeviceMenu kind='audiooutput' label={t('Speaker')} />
+			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} />}
 		</Box>
 	);
 };

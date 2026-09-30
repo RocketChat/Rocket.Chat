@@ -9,7 +9,7 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import { CallActionsProvider, CallStateProvider, DeviceSelectionProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { Room, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
@@ -153,10 +153,10 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	return (
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
-				<CallDeviceSelectionProvider value={deviceSelection}>
+				<DeviceSelectionProvider value={deviceSelection}>
 					{children}
 					<RoomAudioRenderer room={room} />
-				</CallDeviceSelectionProvider>
+				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);
