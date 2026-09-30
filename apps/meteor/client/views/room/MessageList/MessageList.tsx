@@ -6,7 +6,6 @@ import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { MessageListItem } from './MessageListItem';
@@ -25,6 +24,7 @@ import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
+import { useVirtualListScroll } from './hooks/useVirtualListScroll';
 
 export type MessageListProps = {
 	rid: IRoom['_id'];
@@ -74,13 +74,10 @@ export const MessageList = function MessageList({
 	const isPrepend = useRef<boolean>(false);
 	useLayoutEffect(() => {
 		isPrepend.current = false;
-		// FIXME: isAtBottom should be better calculated, as it does no alwas represent the correct value
-		if (hasMoreNextMessages) {
-			isAtBottom.current = false;
-		}
 	});
 
-	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
+	// FIXME: isAtBottom should be better calculated, as it does no alwas represent the correct value
+	const { virtualizerRef, trackScroll } = useVirtualListScroll({ isAtBottom, hasMoreNext: hasMoreNextMessages, bottomThreshold: 60 });
 	const lastScrollSizeRef = useRef(0);
 
 	const messages = useMessages({ rid });
@@ -121,24 +118,11 @@ export const MessageList = function MessageList({
 				isPrepend.current = true;
 			}
 
-			const scrollSize = virtualizerRef.current?.scrollSize ?? 0;
-			const viewportSize = virtualizerRef.current?.viewportSize ?? 0;
-
-			if (hasMoreNextMessages) {
-				isAtBottom.current = false;
-				return;
-			}
-
-			if (scrollSize >= viewportSize) {
-				isAtBottom.current = true;
-			}
-
-			isAtBottom.current = offset - scrollSize + viewportSize >= -60;
-			if (shouldJumpToBottom && isAtBottom.current) {
+			if (trackScroll(offset) && shouldJumpToBottom) {
 				setShouldJumpToBottom(false);
 			}
 		},
-		[isAtBottom, setShouldJumpToBottom, shouldJumpToBottom, hasMoreNextMessages],
+		[trackScroll, setShouldJumpToBottom, shouldJumpToBottom],
 	);
 
 	const isRoomInitialized = useRef<boolean>(false);

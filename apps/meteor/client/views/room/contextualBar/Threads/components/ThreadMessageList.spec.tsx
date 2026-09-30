@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { HTMLAttributes, ReactNode } from 'react';
@@ -177,6 +177,157 @@ describe('ThreadMessageList', () => {
 		await user.pointer({ keys: '[/MouseLeft]' });
 
 		expect(fetchPreviousPage).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('ThreadMessageList jump to bottom', () => {
+	const mainMessage = createFakeMessage<IThreadMainMessage>({
+		_id: 'thread-id',
+		rid: room._id,
+		msg: 'main message',
+		tcount: 2,
+		u: {
+			_id: 'user-id',
+			username: 'user',
+			name: 'User',
+		},
+	});
+
+	const mockThreadMessagesQuery = (overrides: Record<string, unknown> = {}) => {
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [createThreadMessage(1), createThreadMessage(2)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: false,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn().mockResolvedValue(undefined),
+			jumpToRecent: jest.fn().mockResolvedValue(undefined),
+			...overrides,
+		});
+	};
+
+	const { clientCallbacks } = jest.requireMock<typeof import('@rocket.chat/ui-client')>('@rocket.chat/ui-client');
+
+	const getStreamNewMessageHandler = () => {
+		const [, handler] = (clientCallbacks.add as jest.Mock).mock.calls.findLast(([hook]) => hook === 'streamNewMessage');
+		return handler as (message: IMessage) => void;
+	};
+
+	const wrapper = mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build();
+
+	beforeEach(() => {
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+		mockVirtualizerHandle.scrollSize = 1000;
+		(clientCallbacks.add as jest.Mock).mockClear();
+	});
+
+	it('scrolls to the last message when the thread opens', () => {
+		mockThreadMessagesQuery();
+
+		render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+
+		// the main message plus the two replies
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(3, { align: 'end' });
+	});
+
+	it('waits for the messages to load before scrolling', () => {
+		mockThreadMessagesQuery({ isLoading: true, data: undefined });
+
+		const { rerender } = render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
+
+		mockThreadMessagesQuery();
+		rerender(<ThreadMessageList mainMessage={mainMessage} />);
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(3, { align: 'end' });
+	});
+
+	it('does not scroll to the bottom when a reply is linked', () => {
+		mockThreadMessagesQuery();
+
+		render(<ThreadMessageList mainMessage={mainMessage} />, {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withSetting('Message_GroupingPeriod', 300)
+				.withRouter({ getSearchParameters: () => ({ msg: 'reply-1' }) })
+				.build(),
+		});
+
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalledWith(3, { align: 'end' });
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(1, { align: 'center' });
+	});
+
+	it("scrolls to the bottom when the user's own reply arrives", () => {
+		mockThreadMessagesQuery();
+		render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		act(() => getStreamNewMessageHandler()({ ...createThreadMessage(3), u: { _id: 'john.doe', username: 'john.doe' } }));
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(3, { align: 'end' });
+	});
+
+	it('follows new replies while at the bottom', () => {
+		mockThreadMessagesQuery();
+		const { rerender } = render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		mockVirtualizerHandle.scrollSize = 1200;
+		mockThreadMessagesQuery({ data: { messages: [createThreadMessage(1), createThreadMessage(2), createThreadMessage(3)] } });
+		rerender(<ThreadMessageList mainMessage={mainMessage} />);
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(4, { align: 'end' });
+	});
+
+	it("scrolls to the user's own pending reply after scrolling up", () => {
+		mockThreadMessagesQuery();
+		const { rerender } = render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		fireEvent.scroll(screen.getByTestId('thread-message-list'));
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		const pendingReply = { ...createThreadMessage(3), temp: true, u: { _id: 'john.doe', username: 'john.doe' } };
+		mockThreadMessagesQuery({ data: { messages: [createThreadMessage(1), createThreadMessage(2), pendingReply] } });
+		rerender(<ThreadMessageList mainMessage={mainMessage} />);
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(4, { align: 'end' });
+	});
+
+	it('stays put when replies arrive after scrolling up', () => {
+		mockThreadMessagesQuery();
+		const { rerender } = render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		fireEvent.scroll(screen.getByTestId('thread-message-list'));
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		mockVirtualizerHandle.scrollSize = 1200;
+		mockThreadMessagesQuery({ data: { messages: [createThreadMessage(1), createThreadMessage(2), createThreadMessage(3)] } });
+		rerender(<ThreadMessageList mainMessage={mainMessage} />);
+
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
+	});
+
+	it("ignores someone else's reply", () => {
+		mockThreadMessagesQuery();
+		render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		act(() => getStreamNewMessageHandler()({ ...createThreadMessage(3), u: { _id: 'someone-else', username: 'someone' } }));
+
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
+	});
+
+	it("loads the recent replies before scrolling to the user's own reply", async () => {
+		const jumpToRecent = jest.fn().mockResolvedValue(undefined);
+		mockThreadMessagesQuery({ hasNextPage: true, jumpToRecent });
+		render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+
+		await act(async () => getStreamNewMessageHandler()({ ...createThreadMessage(3), u: { _id: 'john.doe', username: 'john.doe' } }));
+
+		expect(jumpToRecent).toHaveBeenCalled();
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(3, { align: 'end' });
 	});
 });
 

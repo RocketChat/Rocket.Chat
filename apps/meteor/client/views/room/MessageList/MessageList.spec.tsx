@@ -246,6 +246,47 @@ describe('MessageList scroll position', () => {
 		});
 	});
 
+	it('should settle the pending jump to bottom once the list is scrolled to the bottom', () => {
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: 123, atBottom: true, update: jest.fn() });
+		const isAtBottom = { current: false };
+		const setShouldJumpToBottom = jest.fn();
+
+		render(<MessageList {...defaultProps} isAtBottom={isAtBottom} shouldJumpToBottom setShouldJumpToBottom={setShouldJumpToBottom} />, {
+			wrapper: root.build(),
+		});
+		setShouldJumpToBottom.mockClear();
+
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('message-list'));
+
+		expect(isAtBottom.current).toBe(true);
+		expect(setShouldJumpToBottom).toHaveBeenCalledWith(false);
+	});
+
+	it('should not count as at the bottom while newer messages are unloaded', () => {
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: 123, atBottom: true, update: jest.fn() });
+		const isAtBottom = { current: true };
+		const setShouldJumpToBottom = jest.fn();
+
+		render(
+			<MessageList
+				{...defaultProps}
+				hasMoreNextMessages
+				isAtBottom={isAtBottom}
+				shouldJumpToBottom
+				setShouldJumpToBottom={setShouldJumpToBottom}
+			/>,
+			{ wrapper: root.build() },
+		);
+		setShouldJumpToBottom.mockClear();
+
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('message-list'));
+
+		expect(isAtBottom.current).toBe(false);
+		expect(setShouldJumpToBottom).not.toHaveBeenCalled();
+	});
+
 	it('should persist the virtualizer cache snapshot alongside the scroll position and the message count it was measured against', async () => {
 		const store = {
 			scroll: 1,
