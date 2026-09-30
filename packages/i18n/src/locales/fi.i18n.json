@@ -154,8 +154,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud-tunnus",
   "Accounts_OAuth_Nextcloud_secret": "Asiakasohjelman salasana",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud-palvelimen URL-osoite",
-  "Accounts_OAuth_Proxy_host": "Välityspalvelimen isäntä",
-  "Accounts_OAuth_Proxy_services": "Välityspalvelinpalvelut",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Vähintään yksi pieni kirjain",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Pakota salasanaan vähintään yksi pieni kirjain.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Vähintään yksi numero",

@@ -272,7 +272,6 @@ export class MockedAppRootBuilder {
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
-		loginWithCustomOauth: () => undefined,
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
 		queryLoginServices: {

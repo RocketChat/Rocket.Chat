@@ -106,8 +106,6 @@
   "Accounts_OAuth_Google_secret": "Μυστικό Google",
   "Accounts_OAuth_Nextcloud": "OAuth Ενεργοποιημένο",
   "Accounts_OAuth_Nextcloud_secret": "Μυστικό πελάτη",
-  "Accounts_OAuth_Proxy_host": "Διακομιστής Μεσολάβησης",
-  "Accounts_OAuth_Proxy_services": "Υπηρεσίες Μεσολάβησης",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Τουλάχιστον ένα μικρό πεζά",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Επιβάλλετε ότι ένας κωδικός πρόσβασης περιέχει τουλάχιστον ένα πεζά χαρακτήρα.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Τουλάχιστον ένα αριθμό",
