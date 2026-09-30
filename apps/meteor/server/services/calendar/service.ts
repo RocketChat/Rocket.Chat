@@ -183,7 +183,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		let skipped = 0;
 
 		for (const data of events) {
-			const { uid, externalId, source, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
+			const { uid, externalId, source, seriesMasterId, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
 			if (!externalId) {
 				skipped++;
@@ -200,6 +200,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 				uid,
 				externalId,
 				...(source && { source }),
+				...(seriesMasterId && { seriesMasterId }),
 				startTime,
 				...(endTime && { endTime }),
 				subject,
@@ -261,6 +262,29 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult> {
 		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, timeWindow.start, timeWindow.end, keepExternalIds);
+
+		return this.finishDeletion(uid, deletedCount, options);
+	}
+
+	/** Graph resends a whole series whenever one of its occurrences changes, and never a deletion for the ones dropped. */
+	public async pruneImportedSeries(
+		uid: IUser['_id'],
+		timeWindow: { start: Date; end: Date },
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
+		if (!seriesMasterIds.length) {
+			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0 };
+		}
+
+		const { deletedCount } = await CalendarEvent.deleteSeriesOutsideSet(
+			uid,
+			timeWindow.start,
+			timeWindow.end,
+			seriesMasterIds,
+			keepExternalIds,
+		);
 
 		return this.finishDeletion(uid, deletedCount, options);
 	}
