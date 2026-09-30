@@ -2,7 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useUserPreference, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
 
@@ -51,7 +51,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 		}
 	}, [sendToChannelPreference]);
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const handleComposerEscape = onEscape ?? closeTab;
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();

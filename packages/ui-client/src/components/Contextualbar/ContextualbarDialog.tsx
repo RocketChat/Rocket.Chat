@@ -2,7 +2,7 @@ import type { AriaDialogProps } from '@react-aria/dialog';
 import { useDialog } from '@react-aria/dialog';
 import { FocusScope } from '@react-aria/focus';
 import { Contextualbar, type ContextualbarProps } from '@rocket.chat/fuselage';
-import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useCallback, useRef } from 'react';
 
 import ContextualbarResizable from './ContextualbarResizable';
@@ -17,7 +17,7 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
 	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const closeContextualbar = onClose ?? closeTab;
 
 	const callbackRef = useCallback(

@@ -2,7 +2,7 @@ import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
+import { UserCardContext, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
 
@@ -21,7 +21,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
 	delete triggerProps.onPress;
 
-	const { openTab } = useRoomToolbox();
+	const { openTab } = useRoomToolboxActions();
 
 	const openUserInfo = useStableCallback((username?: string) => {
 		switch (room.t) {

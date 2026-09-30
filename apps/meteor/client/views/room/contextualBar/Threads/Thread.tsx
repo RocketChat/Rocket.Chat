@@ -17,7 +17,7 @@ import {
 	useToastMessageDispatch,
 	useTranslation,
 	useUserId,
-	useRoomToolbox,
+	useRoomToolboxActions,
 } from '@rocket.chat/ui-contexts';
 import { createPortal } from 'react-dom';
 
@@ -35,7 +35,7 @@ export type ThreadProps = {
 
 const Thread = ({ tmid }: ThreadProps) => {
 	const goToThreadList = useGoToThreadList({ replace: true });
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
 		onDelete: () => {

@@ -12,7 +12,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback } from 'react';
@@ -39,7 +39,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const handleTabBarCloseButtonClick = useCallback(() => {
 		closeTab();
 	}, [closeTab]);

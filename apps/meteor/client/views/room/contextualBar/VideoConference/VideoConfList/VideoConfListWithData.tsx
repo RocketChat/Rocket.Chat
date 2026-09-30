@@ -1,4 +1,4 @@
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 
 import VideoConfList from './VideoConfList';
 import { useVideoConfList } from './useVideoConfList';
@@ -6,7 +6,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 const VideoConfListWithData = () => {
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const { isPending, data, error, refetch, fetchNextPage } = useVideoConfList({ roomId: room._id });
 
 	return (

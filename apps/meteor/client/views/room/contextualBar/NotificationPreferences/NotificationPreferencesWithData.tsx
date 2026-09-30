@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useCustomSound, useToastMessageDispatch, useRoomToolbox, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useToastMessageDispatch, useUserPreference, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const NotificationPreferencesWithData = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const subscription = useRoomSubscription();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const customSound = useCustomSound();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const newMessageNotificationPreference = useUserPreference<string>('newMessageNotification', 'chime') as string;

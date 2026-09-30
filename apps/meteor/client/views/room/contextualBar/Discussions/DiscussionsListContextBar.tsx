@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useUserId, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -10,7 +10,7 @@ import { useRoom } from '../../contexts/RoomContext';
 const DiscussionListContextBar = () => {
 	const userId = useUserId();
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 400);

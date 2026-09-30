@@ -6,7 +6,9 @@ import {
 	useRouteParameter,
 	useLayoutHiddenActions,
 	RoomToolboxContext,
+	RoomToolboxActionsContext,
 	type RoomToolboxContextValue,
+	type RoomToolboxActionsContextValue,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
@@ -112,7 +114,13 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 		[actions, tab, context, openTab, closeTab],
 	);
 
-	return <RoomToolboxContext.Provider value={contextValue}>{children}</RoomToolboxContext.Provider>;
+	const actionsContextValue = useMemo((): RoomToolboxActionsContextValue => ({ openTab, closeTab }), [openTab, closeTab]);
+
+	return (
+		<RoomToolboxActionsContext.Provider value={actionsContextValue}>
+			<RoomToolboxContext.Provider value={contextValue}>{children}</RoomToolboxContext.Provider>
+		</RoomToolboxActionsContext.Provider>
+	);
 };
 
 export default RoomToolboxProvider;

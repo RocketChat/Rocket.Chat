@@ -11,7 +11,7 @@ const mockUseRoomSubscription = jest.fn();
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useCustomSound: () => ({ play: mockPlay, list: [] }),
-	useRoomToolbox: () => ({ closeTab: mockCloseTab }),
+	useRoomToolboxActions: () => ({ closeTab: mockCloseTab }),
 	useToastMessageDispatch: () => jest.fn(),
 }));
 

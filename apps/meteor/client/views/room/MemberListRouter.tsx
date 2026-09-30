@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useUserId, useRoomToolbox, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 
 import { useRoom } from './contexts/RoomContext';
 import RoomMembers from './contextualBar/RoomMembers';
@@ -20,7 +20,7 @@ const getUid = (room: IRoom, ownUserId: IUser['_id'] | undefined) => {
 const MemberListRouter = () => {
 	const { tab, context: username } = useRoomToolbox();
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const ownUserId = useUserId();
 
 	const isMembersList = tab?.id === 'members-list' || tab?.id === 'user-info-group';

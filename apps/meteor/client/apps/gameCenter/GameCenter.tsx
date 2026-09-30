@@ -1,6 +1,6 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
 
@@ -14,7 +14,7 @@ export type IGame = IExternalComponent;
 const GameCenter = () => {
 	const [openedGame, setOpenedGame] = useState<IGame>();
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const result = useExternalComponentsQuery();
 

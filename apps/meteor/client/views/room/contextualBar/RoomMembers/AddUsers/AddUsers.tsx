@@ -11,7 +11,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetModal, useEndpoint, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -40,7 +40,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	const isFederated = roomIsFederated && !isFederationBlocked;
 
 	const setModal = useSetModal();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
 	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
 	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');

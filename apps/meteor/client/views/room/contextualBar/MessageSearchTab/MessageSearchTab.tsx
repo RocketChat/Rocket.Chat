@@ -11,7 +11,7 @@ import {
 	VirtualizedScrollbars,
 	ContextualbarEmptyContent,
 } from '@rocket.chat/ui-client';
-import { useRoomToolbox, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useState, memo, Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -33,7 +33,7 @@ const MessageSearchTab = () => {
 	const { t } = useTranslation();
 	const searchListId = useId();
 	const formatDate = useFormatDate();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const pageSize = useSetting('PageSize', 10);
 
 	const [limit, setLimit] = useState(pageSize);

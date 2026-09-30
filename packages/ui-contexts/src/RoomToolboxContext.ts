@@ -44,3 +44,10 @@ export const RoomToolboxContext = createContext<RoomToolboxContextValue>({
 	openTab: () => undefined,
 	closeTab: () => undefined,
 });
+
+export type RoomToolboxActionsContextValue = Pick<RoomToolboxContextValue, 'openTab' | 'closeTab'>;
+
+export const RoomToolboxActionsContext = createContext<RoomToolboxActionsContextValue>({
+	openTab: () => undefined,
+	closeTab: () => undefined,
+});

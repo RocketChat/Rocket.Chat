@@ -1,7 +1,7 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -52,7 +52,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 	const actionManager = useUiKitActionManager();
 
-	const { openTab } = useRoomToolbox();
+	const { openTab } = useRoomToolboxActions();
 
 	return {
 		action: ({ appId, actionId, blockId, value }, event) => {

@@ -9,6 +9,8 @@ export * from './RouterContext';
 export {
 	RoomToolboxContext,
 	type RoomToolboxContextValue,
+	RoomToolboxActionsContext,
+	type RoomToolboxActionsContextValue,
 	type RoomToolboxActionConfig,
 	type RenderToolboxItemParams,
 } from './RoomToolboxContext';
@@ -68,6 +70,7 @@ export { useRoleIdResolver } from './hooks/useRoleIdResolver';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoomToolbox } from './hooks/useRoomToolbox';
+export { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useSearchParameter } from './hooks/useSearchParameter';

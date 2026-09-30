@@ -12,7 +12,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +38,7 @@ export type ExportMessagesFormValues = {
 
 const ExportMessages = () => {
 	const { t } = useTranslation();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const pfdExportPermission = usePermission('export-messages-as-pdf');
 	const formFocus = useAutoFocus<HTMLFormElement>();
 	const room = useRoom();

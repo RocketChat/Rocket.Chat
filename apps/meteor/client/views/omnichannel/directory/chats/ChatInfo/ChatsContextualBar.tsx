@@ -5,7 +5,7 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useRoute, useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ const ChatsContextualBar = () => {
 	const context = useRouteParameter('context') as 'edit' | 'info' | undefined;
 	const directoryRoute = useRoute(PATH);
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const handleRoomEditBarCloseButtonClick = () => {
 		directoryRoute.push({ id: room._id, tab: 'room-info' });

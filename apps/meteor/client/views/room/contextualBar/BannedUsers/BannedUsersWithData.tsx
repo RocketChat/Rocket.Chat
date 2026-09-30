@@ -1,4 +1,4 @@
-import { useRoomToolbox, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 
 import BannedUsers from './BannedUsers';
 import { useRoomBannedUsers } from '../../../hooks/useRoomBannedUsers';
@@ -7,7 +7,7 @@ import { useUnbanUser } from '../../hooks/useUnbanUser';
 
 const BannedUsersWithData = () => {
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { data, error, isPending, hasNextPage, fetchNextPage } = useRoomBannedUsers({ rid: room._id });

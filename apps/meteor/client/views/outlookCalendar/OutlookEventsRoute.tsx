@@ -1,4 +1,4 @@
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 
 import OutlookEventsList from './OutlookEventsList';
@@ -12,7 +12,7 @@ const CALENDAR_ROUTES: { [key: string]: OutlookCalendarRoutes } = {
 };
 
 const OutlookEventsRoute = () => {
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const [calendarRoute, setCalendarRoute] = useState<OutlookCalendarRoutes>('list');
 
 	if (calendarRoute === CALENDAR_ROUTES.SETTINGS) {

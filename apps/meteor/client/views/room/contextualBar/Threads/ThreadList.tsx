@@ -12,7 +12,7 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -31,7 +31,7 @@ const ThreadList = () => {
 	const t = useTranslation();
 	const threadListId = useId();
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const handleTabBarCloseButtonClick = useCallback(() => {
 		closeTab();
