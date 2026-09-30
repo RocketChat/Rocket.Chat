@@ -43,6 +43,6 @@ export const NoDevices: Story = {
 export const CameraMenuOpen: Story = {
 	decorators: [withPreviewMedia()],
 	play: async ({ canvasElement }) => {
-		await userEvent.click(await within(canvasElement).findByRole('button', { name: 'Camera' }));
+		await userEvent.click(await within(canvasElement).findByRole('button', { name: /^Camera/ }));
 	},
 };

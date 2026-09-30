@@ -118,7 +118,7 @@ because a call can be larger than the tiles it shows.
 | Direct message (2 people) | yes | Rung when the caller arrives, not when the call is created. |
 | Multi-person direct message | yes | Exactly the people meant. |
 | Channel, team | **no** | An invitation to whoever is around, announced by the call message. |
-| Added to a call in progress | yes | Capped at `VIDEO_CONF_RINGING_LIMIT`. |
+| Added to a call in progress | yes, if asked | One add is capped at `RING_RECIPIENTS_LIMIT` people, so all of them can be rung. |
 
 The preflight's **Ring participants** switch lets the caller decide, and is remembered.
 

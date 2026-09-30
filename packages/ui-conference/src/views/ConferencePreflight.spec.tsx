@@ -47,7 +47,7 @@ it("opens the application's camera around the preview and the device choices for
 	const { opened } = renderPreflight({ mic: true, cam: true, embedded: true });
 
 	expect(opened).toHaveBeenCalled();
-	expect(screen.getByRole('region', { name: 'camera provider' })).toContainElement(screen.getByRole('button', { name: 'Speaker' }));
+	expect(screen.getByRole('region', { name: 'camera provider' })).toContainElement(screen.getByRole('button', { name: /^Speaker/ }));
 });
 
 // A provider at an address of its own takes "camera on" but not which camera, so showing one would promise a
@@ -56,5 +56,5 @@ it('opens no devices for a provider at an address of its own', () => {
 	const { opened } = renderPreflight({ mic: true, cam: true });
 
 	expect(opened).not.toHaveBeenCalled();
-	expect(screen.queryByRole('button', { name: 'Speaker' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: /^Speaker/ })).not.toBeInTheDocument();
 });

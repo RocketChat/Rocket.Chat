@@ -25,7 +25,7 @@
 		"@types/jest": "~30.0.0",
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
-		"livekit-client": "^2.5.0",
+		"livekit-client": "^2.20.1",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {

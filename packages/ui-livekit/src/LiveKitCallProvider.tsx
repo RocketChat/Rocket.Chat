@@ -73,21 +73,32 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
 export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, assets, children }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
+	const [room] = useState(() => new Room());
 
-	// With no credentials there is no call to sit in.
-	const onTransportError = useStableCallback((error: Error) => {
+	// Failing before the call is up leaves no call to sit in; failing inside one, as a device refusing to publish
+	// does, leaves the call as it was.
+	const onCallError = useStableCallback((error: Error) => {
 		dispatchToastMessage({ type: 'error', message: error });
-		onEnded();
+		if (room.state === ConnectionState.Disconnected) {
+			onEnded();
+		}
 	});
 
 	useEffect(() => {
 		if (transportError) {
-			onTransportError(transportError);
+			onCallError(transportError);
 		}
-	}, [transportError, onTransportError]);
+	}, [transportError, onCallError]);
+
+	// A picker or permission prompt the reader dismissed is them changing their mind, not something to report.
+	const onToggleError = useStableCallback((error: unknown) => {
+		if (error instanceof Error && error.name === 'NotAllowedError') {
+			return;
+		}
+		dispatchToastMessage({ type: 'error', message: error });
+	});
 
 	const arrival = useArrivalPreferences(preferences, connect);
-	const [room] = useState(() => new Room());
 	const [startedAt, setStartedAt] = useState(() => new Date());
 	const onConnected = useCallback(() => setStartedAt(new Date()), []);
 
@@ -101,6 +112,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		video: arrival?.cam ?? false,
 		onConnected,
 		onDisconnected: onEnded,
+		onError: onCallError,
 	});
 
 	const roomState = useConnectionState(room);
@@ -229,19 +241,32 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		(): CallActions => ({
 			toggleMic: () => {
 				persistDevicePreference({ mic: !micEnabled });
-				void localParticipant.setMicrophoneEnabled(!micEnabled);
+				localParticipant.setMicrophoneEnabled(!micEnabled).catch(onToggleError);
 			},
 			toggleCamera: () => {
 				persistDevicePreference({ cam: !camEnabled });
-				void localParticipant.setCameraEnabled(!camEnabled);
+				localParticipant.setCameraEnabled(!camEnabled).catch(onToggleError);
 			},
-			toggleScreenShare: () => void localParticipant.setScreenShareEnabled(!screenEnabled),
+			toggleScreenShare: () => {
+				localParticipant.setScreenShareEnabled(!screenEnabled).catch(onToggleError);
+			},
 			toggleHand,
 			sendReaction,
 			muteParticipant,
 			leave: onEnded,
 		}),
-		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, toggleHand, sendReaction, muteParticipant, onEnded],
+		[
+			persistDevicePreference,
+			micEnabled,
+			camEnabled,
+			screenEnabled,
+			localParticipant,
+			toggleHand,
+			sendReaction,
+			muteParticipant,
+			onEnded,
+			onToggleError,
+		],
 	);
 
 	const mediaProcessing = useMemo((): CallMediaProcessing => ({ noiseSuppression, backgroundBlur }), [noiseSuppression, backgroundBlur]);

@@ -15,11 +15,15 @@ const OverflowTile = ({ hidden }: OverflowTileProps) => {
 		<Box className={overflowTileStyles}>
 			<Box display='flex' justifyContent='center' alignItems='center' flexDirection='row' gap={4}>
 				{hidden.slice(0, 2).map((p, i) =>
+					// Named, since this is the only place these people appear on the stage.
 					p.avatarUrl ? (
-						<Avatar key={i} url={p.avatarUrl} size='x36' />
+						<Avatar key={i} url={p.avatarUrl} size='x36' alt={p.displayName} title={p.displayName} />
 					) : (
 						<Box
 							key={i}
+							role='img'
+							aria-label={p.displayName}
+							title={p.displayName}
 							display='flex'
 							alignItems='center'
 							justifyContent='center'
@@ -36,7 +40,7 @@ const OverflowTile = ({ hidden }: OverflowTileProps) => {
 			</Box>
 			{hidden.length > 2 && (
 				<Box fontScale='c2' marginBlockStart={4} color='font-secondary-info'>
-					{t('__count__others', { count: hidden.length })}
+					{t('Others_count', { count: hidden.length - 2 })}
 				</Box>
 			)}
 		</Box>

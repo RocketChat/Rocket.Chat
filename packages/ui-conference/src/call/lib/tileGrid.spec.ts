@@ -32,6 +32,16 @@ describe('tileGridLayout and gridBox', () => {
 		expect(gridBox(layout)).toEqual({ width: 1608, height: 908 });
 	});
 
+	// Before the first measurement the gutters alone would make the tracks negative, which CSS rejects.
+	it('never sizes a cell below zero', () => {
+		expect(tileGridLayout(4, 0, 0)).toMatchObject({ cellWidth: 0, cellHeight: 0 });
+	});
+
+	// A tile folded into the overflow can empty the last row; the grid then has one row fewer, not an empty one.
+	it('lays out the columns it is given with only the rows the cells need', () => {
+		expect(tileGridLayout(6, 1216, 908, 3)).toEqual({ rows: 2, cols: 3, cellWidth: 400, cellHeight: 450 });
+	});
+
 	it('has no size until the cells have been measured', () => {
 		expect(gridBox({ rows: 1, cols: 1, cellWidth: 0, cellHeight: 0 })).toEqual({ width: undefined, height: undefined });
 	});

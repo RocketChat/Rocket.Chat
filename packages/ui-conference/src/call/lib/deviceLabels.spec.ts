@@ -1,4 +1,4 @@
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderAudioDevices, orderDevices } from './deviceLabels';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from './deviceLabels';
 
 describe('deviceName', () => {
 	// The vendor:product pair identifies the hardware to the machine, not to the person choosing it.
@@ -65,55 +65,6 @@ describe('orderDevices', () => {
 		const ordered = orderDevices([device('one', 'group-1'), device('two', 'group-2')]);
 
 		expect(ordered.map(({ deviceId }) => deviceId)).toEqual(['one', 'two']);
-	});
-});
-
-// The audio devices the app hands around carry `id` and no `groupId`, so the alias goes first and nothing is
-// collapsed — without a group, the only thing left to match a duplicate on is its name, and two devices called the
-// same thing are routinely two different devices.
-describe('orderAudioDevices', () => {
-	const device = (id: string) => ({ id, label: id });
-
-	it('puts the system default first wherever the browser had it', () => {
-		const ordered = orderAudioDevices([device('mic-a'), device('mic-b'), device(SYSTEM_DEFAULT_DEVICE_ID)]);
-
-		expect(ordered.map(({ id }) => id)).toEqual([SYSTEM_DEFAULT_DEVICE_ID, 'mic-a', 'mic-b']);
-	});
-
-	// Given the browser's own groups, the alias's twin goes — the same rule as for a `MediaDeviceInfo`, just with the
-	// group looked up rather than carried.
-	it('drops the twin when told which hardware each id belongs to', () => {
-		const groups = new Map([
-			[SYSTEM_DEFAULT_DEVICE_ID, 'group-1'],
-			['built-in', 'group-1'],
-			['usb', 'group-2'],
-		]);
-
-		const ordered = orderAudioDevices([device('built-in'), device(SYSTEM_DEFAULT_DEVICE_ID), device('usb')], groups);
-
-		expect(ordered.map(({ id }) => id)).toEqual([SYSTEM_DEFAULT_DEVICE_ID, 'usb']);
-	});
-
-	// Two microphones of the same model share a name and nothing else. Without groups there is no way to tell that
-	// from a duplicate, and a device missing from the list is worse than one listed twice.
-	it('keeps everything when it has no groups to go on', () => {
-		const ordered = orderAudioDevices([device(SYSTEM_DEFAULT_DEVICE_ID), device('built-in'), device('usb')]);
-
-		expect(ordered).toHaveLength(3);
-	});
-
-	it('keeps a device whose group is unknown', () => {
-		const groups = new Map([[SYSTEM_DEFAULT_DEVICE_ID, 'group-1']]);
-
-		const ordered = orderAudioDevices([device(SYSTEM_DEFAULT_DEVICE_ID), device('mystery')], groups);
-
-		expect(ordered.map(({ id }) => id)).toEqual([SYSTEM_DEFAULT_DEVICE_ID, 'mystery']);
-	});
-
-	it('leaves a list with no default in the order it came', () => {
-		const ordered = orderAudioDevices([device('one'), device('two')]);
-
-		expect(ordered.map(({ id }) => id)).toEqual(['one', 'two']);
 	});
 });
 

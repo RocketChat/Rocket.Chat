@@ -11,7 +11,7 @@ LiveKit Cloud works too: skip to [Rocket.Chat settings](#4-rocketchat-settings) 
 
 - Rocket.Chat running from rocketchat-compose with `compose.traefik.yml` (Let's Encrypt enabled).
 - A DNS name for LiveKit pointing at the same host, e.g. `livekit.example.com` next to `chat.example.com`.
-- Inbound `7881/tcp` and `7882/udp` open on the host (media). Signalling goes through Traefik on 443.
+- Inbound `7881/tcp` and `7882/udp` open on the host (media), plus `5349/tcp` if you enable [TURN](#turn-restrictive-networks). Signalling goes through Traefik on 443.
 
 ## 1. LiveKit configuration
 
@@ -142,7 +142,7 @@ turn:
   key_file: /etc/livekit/tls/key.pem
 ```
 
-Publish `5349:5349/tcp` on the `livekit` service. Traefik keeps its certificates in `acme.json`, not as PEM files; export
+Publish `5349:5349/tcp` on the `livekit` service and open inbound `5349/tcp` on the host firewall, as for 7881 and 7882. Traefik keeps its certificates in `acme.json`, not as PEM files; export
 them with a certificate dumper (for example `ldez/traefik-certs-dumper` watching the `traefik_ssl` volume) into a volume
 mounted read-only at `/etc/livekit/tls`, or use a certificate of your own.
 

@@ -1,7 +1,7 @@
 import type { DeviceSelection } from '@rocket.chat/ui-conference';
 import { callDeviceIdField, useMediaDevices, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import type { Room } from 'livekit-client';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useActiveDevice } from './useActiveDevice';
 
@@ -18,27 +18,48 @@ type ArrivalDevices = { micId?: string; camId?: string; speakerId?: string };
 export const useCallDeviceSwitching = (room: Room, arrival: ArrivalDevices | undefined): DeviceSelection => {
 	const persistDevicePreference = useUpdateCallPreferences();
 
+	// One switch at a time per kind, in the order asked: LiveKit does not queue them, and a slow one finishing last
+	// would leave the call on a device the reader has already moved off.
+	const [switches] = useState(() => new Map<MediaDeviceKind, Promise<unknown>>());
+	const switchDevice = useCallback(
+		(kind: MediaDeviceKind, deviceId: string, exact?: boolean): Promise<boolean> => {
+			const next = (switches.get(kind) ?? Promise.resolve()).then(() => room.switchActiveDevice(kind, deviceId, exact));
+			switches.set(
+				kind,
+				next.catch(() => undefined),
+			);
+			return next;
+		},
+		[room, switches],
+	);
+
 	const { micId, camId, speakerId } = arrival ?? {};
 
 	// Not `exact`: a device chosen in the preflight can be gone by the time the call opens it.
 	useEffect(() => {
 		if (micId) {
-			void room.switchActiveDevice('audioinput', micId, false).catch(warn('audioinput'));
+			switchDevice('audioinput', micId, false).catch(warn('audioinput'));
 		}
 		if (camId) {
-			void room.switchActiveDevice('videoinput', camId, false).catch(warn('videoinput'));
+			switchDevice('videoinput', camId, false).catch(warn('videoinput'));
 		}
 		if (speakerId) {
-			void room.switchActiveDevice('audiooutput', speakerId).catch(warn('audiooutput'));
+			switchDevice('audiooutput', speakerId).catch(warn('audiooutput'));
 		}
-	}, [room, micId, camId, speakerId]);
+	}, [switchDevice, micId, camId, speakerId]);
 
 	const select = useCallback(
 		(kind: MediaDeviceKind, deviceId: string) => {
-			persistDevicePreference({ [callDeviceIdField[kind]]: deviceId });
-			void room.switchActiveDevice(kind, deviceId).catch(warn(kind));
+			switchDevice(kind, deviceId)
+				.then((switched) => {
+					// Remembered once it took, so the next call does not start on a device this one could not open.
+					if (switched) {
+						persistDevicePreference({ [callDeviceIdField[kind]]: deviceId });
+					}
+				})
+				.catch(warn(kind));
 		},
-		[room, persistDevicePreference],
+		[switchDevice, persistDevicePreference],
 	);
 
 	const audioinput = useActiveDevice(room, 'audioinput');

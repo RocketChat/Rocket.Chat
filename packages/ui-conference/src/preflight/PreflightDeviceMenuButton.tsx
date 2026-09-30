@@ -48,7 +48,15 @@ const PreflightDeviceMenuButton = forwardRef<HTMLButtonElement, PreflightDeviceM
 ) {
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
 	return (
-		<Button {...menuProps} ref={ref} size='small' className={triggerStyles} aria-label={label} title={current || label}>
+		// Named with the device too: it is what the button shows, and what someone choosing one needs to hear.
+		<Button
+			{...menuProps}
+			ref={ref}
+			size='small'
+			className={triggerStyles}
+			aria-label={current ? `${label}: ${current}` : label}
+			title={current || label}
+		>
 			<Icon name={icons[kind]} size='x16' flexShrink={0} />
 			<Box className={nameStyles}>{current || label}</Box>
 			<Icon name={pressed ? 'chevron-up' : 'chevron-down'} size='x16' flexShrink={0} />

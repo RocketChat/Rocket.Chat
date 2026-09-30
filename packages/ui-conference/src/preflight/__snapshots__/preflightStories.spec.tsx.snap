@@ -19,7 +19,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_0_"
               title="MacBook Pro Microphone"
@@ -54,7 +54,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_2_"
               title="MacBook Pro Speakers"
@@ -89,7 +89,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Camera"
+              aria-label="Camera: FaceTime HD Camera"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_4_"
               title="FaceTime HD Camera"
@@ -127,7 +127,9 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
 
 exports[`preflight stories renders PreflightDevices CameraMenuOpen without crashing 1`] = `
 <body>
-  <div>
+  <div
+    aria-hidden="true"
+  >
     <div
       class="rcx-box rcx-box--full rcx-css-owlgau"
     >
@@ -144,7 +146,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_6_"
               title="MacBook Pro Microphone"
@@ -179,7 +181,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_8_"
               title="MacBook Pro Speakers"
@@ -212,9 +214,10 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             class="rcx-box rcx-box--full rcx-css-iyng0n"
           >
             <button
-              aria-expanded="false"
+              aria-controls="react-aria-_r_b_"
+              aria-expanded="true"
               aria-haspopup="true"
-              aria-label="Camera"
+              aria-label="Camera: FaceTime HD Camera"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_a_"
               title="FaceTime HD Camera"
@@ -236,9 +239,9 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 </div>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-18jrq41"
                 >
-                  
+                  
                 </i>
               </span>
             </button>
@@ -247,6 +250,649 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
       </div>
     </div>
   </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-start="true"
+    hidden=""
+  />
+  <div
+    aria-hidden="true"
+  />
+  <div
+    style="position: absolute; z-index: 100000; max-height: -24px; left: 12px; bottom: 4px;"
+  >
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_c_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-6qwf9c"
+      data-testid="dropdown"
+      style="bottom: 0px; left: 0px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-xvdgy9"
+      >
+        <div
+          aria-labelledby="react-aria-_r_a_"
+          id="react-aria-_r_b_"
+          role="menu"
+          tabindex="0"
+        >
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_d_"
+              role="presentation"
+            >
+              Camera
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_d_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="facetime-videoinput"
+                id="react-aria-_r_h_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="FaceTime HD Camera"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        FaceTime HD Camera
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="brio-videoinput"
+                id="react-aria-_r_l_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Logitech BRIO"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Logitech BRIO
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+            role="separator"
+          />
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_m_"
+              role="presentation"
+            >
+              Send resolution (maximum)
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_m_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:auto"
+                id="react-aria-_r_q_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Auto"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Auto
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h1080"
+                id="react-aria-_r_u_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="1080p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        1080p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h720"
+                id="react-aria-_r_12_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="720p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        720p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h360"
+                id="react-aria-_r_16_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="360p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        360p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:0:h180"
+                id="react-aria-_r_1a_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="180p"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        180p
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+            role="separator"
+          />
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_1b_"
+              role="presentation"
+            >
+              Background effects
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_1b_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-none"
+                id="react-aria-_r_1f_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="None"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        None
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-light"
+                id="react-aria-_r_1j_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Light"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Light
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-medium"
+                id="react-aria-_r_1n_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Medium"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Medium
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-strong"
+                id="react-aria-_r_1r_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Strong"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Strong
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:image-choose"
+                id="react-aria-_r_1v_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Choose background image…"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Choose background image…
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span
+      style="display: contents;"
+    />
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_20_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-end="true"
+    hidden=""
+  />
 </body>
 `;
 
@@ -269,9 +915,9 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_c_"
+              id="react-aria-_r_21_"
               title="MacBook Pro Microphone"
               type="button"
             >
@@ -304,9 +950,9 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_e_"
+              id="react-aria-_r_23_"
               title="MacBook Pro Speakers"
               type="button"
             >

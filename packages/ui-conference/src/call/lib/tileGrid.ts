@@ -66,11 +66,20 @@ export type TileGridLayout = {
 	cellHeight: number;
 };
 
-/** The grid for `count` tiles in a container of the given size, gutters included. */
-export const tileGridLayout = (count: number, width: number, height: number): TileGridLayout => {
-	const { rows, cols } = pickTileGridLayout(count, width, height);
-	const naturalCellW = cols > 0 ? (width - (cols - 1) * TILE_GAP_PX) / cols : 0;
-	const naturalCellH = rows > 0 ? (height - (rows - 1) * TILE_GAP_PX) / rows : 0;
+/**
+ * The grid for `count` tiles in a container of the given size, gutters included. `cols` keeps the columns of a
+ * layout already picked, for a count that changed because of them.
+ */
+export const tileGridLayout = (
+	count: number,
+	width: number,
+	height: number,
+	cols = pickTileGridLayout(count, width, height).cols,
+): TileGridLayout => {
+	const rows = Math.max(1, Math.ceil(count / cols));
+	// Clamped: before the first measurement the gutters alone outgrow a 0×0 container.
+	const naturalCellW = cols > 0 ? Math.max(0, (width - (cols - 1) * TILE_GAP_PX) / cols) : 0;
+	const naturalCellH = Math.max(0, (height - (rows - 1) * TILE_GAP_PX) / rows);
 	const { width: cellWidth, height: cellHeight } = clampCellToAspectBand(naturalCellW, naturalCellH);
 	return { rows, cols, cellWidth, cellHeight };
 };

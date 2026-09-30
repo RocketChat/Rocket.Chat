@@ -10237,7 +10237,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.5"
     jest: "npm:~30.2.0"
-    livekit-client: "npm:^2.5.0"
+    livekit-client: "npm:^2.20.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@mediapipe/tasks-vision": "*"
@@ -10623,7 +10623,7 @@ __metadata:
     ldap-escape: "npm:^2.0.6"
     ldapjs: "npm:^2.3.3"
     limax: "npm:^3.0.0"
-    livekit-client: "npm:^2.5.0"
+    livekit-client: "npm:^2.20.1"
     localforage: "npm:^1.10.0"
     lodash.clonedeep: "npm:^4.5.0"
     lodash.debounce: "npm:^4.0.8"
@@ -11746,18 +11746,20 @@ __metadata:
     eslint: "npm:~9.39.5"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.2.0"
-    livekit-client: "npm:^2.5.0"
+    livekit-client: "npm:^2.20.1"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.14"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@mediapipe/tasks-vision": "*"
+    "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@sapphi-red/web-noise-suppressor": "*"
+    "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
@@ -28412,7 +28414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"livekit-client@npm:^2.5.0":
+"livekit-client@npm:^2.20.1":
   version: 2.22.1
   resolution: "livekit-client@npm:2.22.1"
   dependencies:

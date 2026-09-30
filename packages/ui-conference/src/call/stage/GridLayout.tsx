@@ -20,11 +20,15 @@ export type GridLayoutProps = {
 const GridLayout = ({ tiles, activeSpeakerId, selfId }: GridLayoutProps) => {
 	const split = useMemo(() => splitByPriority(tiles, MAX_VISIBLE_TILES, activeSpeakerId, selfId), [tiles, activeSpeakerId, selfId]);
 
-	const [measureRef, layout] = useTileGridLayout(split.visible.length + (split.hidden.length > 0 ? 1 : 0));
-	const { cols, rows, cellWidth, cellHeight } = layout;
+	const [measureRef, layoutFor] = useTileGridLayout();
+	const { cols: measuredCols } = layoutFor(split.visible.length + (split.hidden.length > 0 ? 1 : 0));
 
-	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols);
+	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, measuredCols, activeSpeakerId, selfId);
 	const cellCount = visible.length + (hidden.length > 0 ? 1 : 0);
+
+	// Laid out again for the cells actually drawn, in the same columns: an absorbed tile takes its row with it.
+	const layout = layoutFor(cellCount, measuredCols);
+	const { cols, rows, cellWidth, cellHeight } = layout;
 
 	const gridRef = useRef<HTMLDivElement | null>(null);
 	useTileFlip(gridRef, gridCellKeys(visible, hidden), cols);
