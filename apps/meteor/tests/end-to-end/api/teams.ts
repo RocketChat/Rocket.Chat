@@ -2151,7 +2151,7 @@ describe('/teams.listRooms', () => {
 				deleteTeam(credentials, teamName),
 				deleteTeam(credentials, testPrivateTeam.name),
 			]);
-			await deleteUser({ _id: testUser._id });
+			await deleteUser({ _id: testUser._id }, { confirmRelinquish: true });
 		});
 
 		it('should fail if user is not logged in', async () => {

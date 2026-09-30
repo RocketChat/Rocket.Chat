@@ -4480,7 +4480,7 @@ describe('[Rooms]', () => {
 					restorePermissionToRoles('view-c-room'),
 				]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room members by user not part of room', async () => {
