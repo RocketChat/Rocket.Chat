@@ -1,0 +1,105 @@
+ee/apps/xmpp-server-service/src/service.ts
+  s_6c26d69274a8d9::t_0867f2114ca06a 34,41
+  s_6c26d69274a8d9::t_d7f4096a3f6199 36
+  s_6c26d69274a8d9::t_f4119a87aebfc2 9-11,38-40,42-43,61,63-67
+  s_6c26d69274a8d9::t_a0afad5f93e882 35
+docs/features/xmpp-server-architecture.md
+  s_6c26d69274a8d9::t_3fb23428437698 171-173,175-185,203-205,209,211-221,223,225-226,228,232-235,256,258,264-265,267-269
+  s_6c26d69274a8d9::t_57907cdd07d9fe 222
+  s_6c26d69274a8d9::t_ad3b07bae7a4b1 174,227,266
+  s_6c26d69274a8d9::t_62efbabed8a28c 206-208,210,224,229-231,236-255,257,259-263
+ee/apps/xmpp-server-service/loadtest/completeness.ts
+  s_6c26d69274a8d9::t_7741689662ff30 1-24
+ee/apps/xmpp-server-service/loadtest/scenarios/dm.ts
+  s_6c26d69274a8d9::t_33d6e5970210d0 1-23
+ee/packages/xmpp-server/tests/integration/service-observer.spec.ts
+  s_6c26d69274a8d9::t_74c96a3ae4f59d 1-98,102-141
+  s_6c26d69274a8d9::t_fa75051e77572b 99-101
+ee/apps/xmpp-server-service/loadtest/seed.ts
+  s_6c26d69274a8d9::t_480a9606a62ba1 1-50,52-63,65-66,68-69,71-77,79-83,85-130
+  s_6c26d69274a8d9::t_d7f4096a3f6199 51,64,67,78
+  s_6c26d69274a8d9::t_3fa2c6260de478 70,84
+ee/apps/xmpp-server-service/loadtest/scenarios/presence.ts
+  s_6c26d69274a8d9::t_4804ccf9f81d9d 1-25
+ee/apps/xmpp-server-service/loadtest/scenarios/muc.ts
+  s_6c26d69274a8d9::t_c812f94b7da449 90-92
+  s_6c26d69274a8d9::t_32f487c4e1a99b 1-26,28-60,62-76,78-84,86-89,93-95
+  s_6c26d69274a8d9::t_51f44ccf556b75 27,61,77,85
+ee/apps/xmpp-server-service/loadtest/tsconfig.json
+  s_6c26d69274a8d9::t_11dc1c1596fdf0 1-7
+ee/apps/xmpp-server-service/loadtest/peers.ts
+  s_6c26d69274a8d9::t_9324da5c81ad34 1-3,27-33,61-62,64-65
+  s_6c26d69274a8d9::t_7375869a70cda9 4-26,34-60,63,66-81
+ee/apps/xmpp-server-service/loadtest/session.ts
+  s_6c26d69274a8d9::t_f5d01c800130e1 1-110
+ee/apps/xmpp-server-service/loadtest/max.ts
+  s_6c26d69274a8d9::t_38a16d2e53196d 1-98,101-132
+  s_6c26d69274a8d9::t_692b479e54998f 99-100
+ee/packages/xmpp-server/src/index.ts
+  s_6c26d69274a8d9::t_a58701b5a52367 9-10,14
+ee/apps/xmpp-server-service/loadtest/scenarios/types.ts
+  s_6c26d69274a8d9::t_ef0a66cefb2bf1 1-60
+ee/apps/xmpp-server-service/loadtest/scenarios/mix.ts
+  s_6c26d69274a8d9::t_51f44ccf556b75 31-35
+  s_6c26d69274a8d9::t_c232ab792e6bfc 1-30,36-43
+ee/apps/xmpp-server-service/loadtest/run.ts
+  s_6c26d69274a8d9::t_29923af1f40452 16,113,287-289
+  s_6c26d69274a8d9::t_a6b262c09a7129 5,7-9,18,24,31-33,35,37-42,49-50,56,71-76,100-108,110-112,205-213,222-238,240-251,254-259,261-262,264,266-271,280-286,293-299
+  s_6c26d69274a8d9::t_d7f4096a3f6199 46,82,121-125,130
+  s_6c26d69274a8d9::t_59e9bf35aa1825 1-4,6,10-15,17,19-23,25-30,34,36,43-45,47-48,51-55,57-70,77-81,83-99,109,114,116-119,126-129,131-135,137-139,144-146,148-149,153-159,161-166,169-204,214-221,239,252-253,260,263,265,272-277,279,290-292,300-326
+  s_6c26d69274a8d9::t_288f61f92f65a8 167-168
+  s_6c26d69274a8d9::t_c812f94b7da449 115,120,136,140,147,160,278
+  s_6c26d69274a8d9::t_e0e837cecc0605 150-152
+  s_6c26d69274a8d9::t_6377027400708d 141-143
+ee/apps/xmpp-server-service/loadtest/stats.ts
+  s_6c26d69274a8d9::t_cc4ac3fe127791 43
+  s_6c26d69274a8d9::t_0b5b9ef50e5fa7 1-28,30-40,42,44-49
+  s_6c26d69274a8d9::t_649b46215bd476 29,41
+ee/apps/xmpp-server-service/src/dnsOverrides.ts
+  s_6c26d69274a8d9::t_f4119a87aebfc2 1-2,5-8,10-21,23-25,28-29
+  s_6c26d69274a8d9::t_0867f2114ca06a 3-4,9,22,26-27
+ee/apps/xmpp-server-service/loadtest/scheduler.ts
+  s_6c26d69274a8d9::t_10786d4f354ae3 12-13,15-16,58-59,61,63,69,71-72
+  s_6c26d69274a8d9::t_b340be0583a182 3,7,11,14,17-26,28-30,32-38,44,47-48,56,62,75-83
+  s_6c26d69274a8d9::t_d01000eaaee5cf 1-2,4-6,8-10,27,31,39-40,42-43,45-46,49,51,53-55,57,64-68,73-74
+  s_6c26d69274a8d9::t_51f44ccf556b75 41,50,52,60,70
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_6c26d69274a8d9::t_a58701b5a52367 19,74-76,80-83,93-96,107,110-111,184,541,545,550,554-557,566-569,574-577,582-585,590,594-603
+  s_6c26d69274a8d9::t_226152564560d1 604-605
+ee/apps/xmpp-server-service/src/metrics.ts
+  s_6c26d69274a8d9::t_649b46215bd476 8-9,18,96-97,100
+  s_6c26d69274a8d9::t_bae36a84ca6333 92-93,98-99
+  s_6c26d69274a8d9::t_d7f4096a3f6199 12-13,26,108
+  s_6c26d69274a8d9::t_51f44ccf556b75 94-95
+  s_6c26d69274a8d9::t_aa4603eabd790f 1-7,10-11,14-17,19-25,27-91,101-107,109-128
+  s_6c26d69274a8d9::t_6c7896630a6933 129-131
+ee/apps/xmpp-server-service/package.json
+  s_6c26d69274a8d9::t_11dc1c1596fdf0 17,20
+ee/apps/xmpp-server-service/loadtest/report.ts
+  s_6c26d69274a8d9::t_2f8c6beb74249a 1-2,5-44,47-48,51-67,69-72,80-83,85-86,88-90,92-93,95-96,98-99,101,103-110,112-116,128-129,132-134,136-145,209,228-233,235-237,240,243,245-246,248,251-252,254-256,258-262
+  s_6c26d69274a8d9::t_9ff6b5bde84bd5 117-118,120-125,127,130,135
+  s_6c26d69274a8d9::t_df3313d7b45a27 3-4,45-46,49-50,68,73-79,84,87,91,94,97,100,102,111,119,126,131,146-208,210-227,234,238-239,241-242,244,247,249-250,253,257
+ee/apps/xmpp-server-service/loadtest/ramp.ts
+  s_6c26d69274a8d9::t_5caf3b7fcd6232 1-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4028aa28f6e1ef734d819c1cdd08b62516020828",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_6c26d69274a8d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "30e159e4-c276-46b8-b1e0-8bdecf2eab1b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
