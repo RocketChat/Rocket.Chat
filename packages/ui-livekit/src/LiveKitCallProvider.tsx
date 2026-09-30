@@ -6,6 +6,7 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import { CallActionsProvider, CallDeviceSelectionProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
@@ -50,13 +51,16 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
 	// With no credentials there is no call to sit in.
-	useEffect(() => {
-		if (!transportError) {
-			return;
-		}
-		dispatchToastMessage({ type: 'error', message: transportError });
+	const onTransportError = useStableCallback((error: Error) => {
+		dispatchToastMessage({ type: 'error', message: error });
 		onEnded();
-	}, [transportError, dispatchToastMessage, onEnded]);
+	});
+
+	useEffect(() => {
+		if (transportError) {
+			onTransportError(transportError);
+		}
+	}, [transportError, onTransportError]);
 
 	const arrival = useArrivalPreferences(preferences, connect);
 	const [room] = useState(() => new Room());
@@ -106,9 +110,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 
-	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
-	const [outputElement] = useState(() => new Audio());
-	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
+	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });

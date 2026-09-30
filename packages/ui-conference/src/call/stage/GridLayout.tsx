@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MainTile from './MainTile';
@@ -28,9 +28,7 @@ const GridLayout = ({ screens, tiles, selfId }: GridLayoutProps) => {
 		[tiles, screens.length, selfId],
 	);
 
-	const [measureEl, setMeasureEl] = useState<HTMLDivElement | null>(null);
-	const measureRef = useCallback((node: HTMLDivElement | null) => setMeasureEl(node), []);
-	const layout = useTileGridLayout(measureEl, screens.length + split.visible.length + (split.hidden.length > 0 ? 1 : 0));
+	const [measureRef, layout] = useTileGridLayout(screens.length + split.visible.length + (split.hidden.length > 0 ? 1 : 0));
 	const { cols, rows, cellWidth, cellHeight } = layout;
 
 	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols, screens.length);

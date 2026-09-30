@@ -19,33 +19,23 @@ type CallDevicePreview = {
  * The lists do not depend on anything being open — a device can be chosen while it is off — but the browser only
  * names them once permission is granted, so they can populate twice.
  */
-export const useCallDevicePreview = ({ mic, cam }: CallPreferences, { micId, camId }: CallDevices): CallDevicePreview => {
+export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDevices): CallDevicePreview => {
 	const [stream, setStream] = useState<MediaStream | null>(null);
 	const { devices, refresh } = useMediaDevices();
 	const [error, setError] = useState(false);
 
-	// `cam` counts too: permission for either device is what puts names on the lists.
-	const wanted = mic || cam;
-
 	useEffect(() => {
-		if (!wanted || !navigator.mediaDevices?.getUserMedia) {
-			setStream(null);
+		// Only the microphone is opened here: asking for no track at all is a rejection, not an empty stream.
+		if (!mic || !navigator.mediaDevices?.getUserMedia) {
 			return;
 		}
 
 		let cancelled = false;
 		let opened: MediaStream | undefined;
 
-		// A chosen device is asked for exactly; with none chosen, whatever the browser prefers.
-		const wantDevice = (on: boolean, deviceId?: string): boolean | MediaTrackConstraints => {
-			if (!on) {
-				return false;
-			}
-			return deviceId ? { deviceId: { exact: deviceId } } : true;
-		};
-
-		// Audio only: the preview's camera is a separate track, and opening it here too would light it twice.
-		const constraints: MediaStreamConstraints = { audio: wantDevice(mic, micId), video: false };
+		// A chosen device is asked for exactly; with none chosen, whatever the browser prefers. Audio only: the
+		// preview's camera is a separate track, and opening it here too would light it twice.
+		const constraints: MediaStreamConstraints = { audio: micId ? { deviceId: { exact: micId } } : true, video: false };
 
 		navigator.mediaDevices
 			.getUserMedia(constraints)
@@ -71,11 +61,14 @@ export const useCallDevicePreview = ({ mic, cam }: CallPreferences, { micId, cam
 			cancelled = true;
 			opened?.getTracks().forEach((track) => track.stop());
 		};
-	}, [wanted, mic, cam, micId, camId, refresh]);
+	}, [mic, micId, refresh]);
 
 	const videoInputs = useMemo(() => devices.filter(({ kind }) => kind === 'videoinput'), [devices]);
 	const audioInputs = useMemo(() => devices.filter(({ kind }) => kind === 'audioinput'), [devices]);
 	const audioOutputs = useMemo(() => devices.filter(({ kind }) => kind === 'audiooutput'), [devices]);
 
-	return { stream, videoInputs, audioInputs, audioOutputs, error };
+	// The last stream stays in state after the mic goes off, stopped; turning it back on must not show it again.
+	const shownStream = mic && stream?.active ? stream : null;
+
+	return { stream: shownStream, videoInputs, audioInputs, audioOutputs, error };
 };

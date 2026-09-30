@@ -33,6 +33,7 @@ const deviceSelection: CallDeviceSelection = {
 	devices: [],
 	selectAudioDevice: jest.fn(),
 	selectCamera: jest.fn(),
+	activeDeviceIds: {},
 };
 
 /** What a provider running the call in this window provides around it. */

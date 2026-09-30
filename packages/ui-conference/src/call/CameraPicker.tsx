@@ -13,13 +13,13 @@ import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from './lib/device
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
-	const { devices, selectCamera, currentCameraId: currentCameraDeviceId } = useCallDeviceSelection();
+	const { devices, selectCamera, activeDeviceIds } = useCallDeviceSelection();
 
 	const ordered = useMemo(() => orderDevices(devices.filter(({ kind }) => kind === 'videoinput')), [devices]);
 
 	// What is in use when nothing has been picked is the first on offer, which is what makes clicking it a no-op
 	// below rather than a switch to the camera already running.
-	const currentId = currentCameraDeviceId ?? ordered[0]?.deviceId;
+	const currentId = activeDeviceIds.videoinput ?? ordered[0]?.deviceId;
 
 	const items: GenericMenuItemProps[] = ordered.map((device) => {
 		const name = deviceName(device.label) || t('Default');
