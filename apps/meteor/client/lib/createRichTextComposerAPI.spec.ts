@@ -60,7 +60,7 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 	input.contentEditable = 'true';
 	document.body.appendChild(input);
 
-	const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+	const composer = makeComposer(input, jest.fn(), jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 	input.textContent = initialValue;
 	setSelectionRange(input, cursor.start, cursor.end);
@@ -281,7 +281,7 @@ describe('RichText Composer API - insertText', () => {
 		const input = document.createElement('div');
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
-		const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		const composer = makeComposer(input, jest.fn(), jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		input.innerHTML = '<br>';
 		expect(input.firstChild?.nodeName).toBe('BR');
@@ -342,7 +342,7 @@ describe('RichText Composer API - draft restore', () => {
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
 
-		makeComposer(input, jest.fn(), '*bold*', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		makeComposer(input, jest.fn(), jest.fn(), '*bold*', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		expect(input.querySelector('strong')).not.toBeNull();
 		expect(input.textContent).toBe('*bold*\n');
@@ -353,7 +353,7 @@ describe('RichText Composer API - draft restore', () => {
 		input.contentEditable = 'true';
 		document.body.appendChild(input);
 
-		const composer = makeComposer(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+		const composer = makeComposer(input, jest.fn(), jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
 
 		expect(input.textContent).toBe('');
 		expect(composer.text).toBe('');
@@ -368,6 +368,7 @@ describe('RichText Composer API - text', () => {
 
 		const composer = makeComposer(
 			input,
+			jest.fn(),
 			jest.fn(),
 			'edited *message*',
 			Number.MAX_SAFE_INTEGER,

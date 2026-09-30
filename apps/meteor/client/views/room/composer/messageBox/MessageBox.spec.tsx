@@ -147,4 +147,29 @@ describe('MessageBox drafts', () => {
 		expect(endpointHandler).toHaveBeenCalledTimes(1);
 		expect(endpointHandler).not.toHaveBeenCalledWith(expect.objectContaining({ draft: 'draft B' }));
 	});
+
+	it('should keep the draft when the send flow leaves the text in the composer', async () => {
+		const user = userEvent.setup();
+		const endpointHandler = jest.fn(() => null);
+
+		const onSend = jest.fn(() => Promise.resolve());
+
+		const { unmount } = renderMessageBox(onSend, endpointHandler);
+
+		const composer = screen.getByRole('textbox', { name: 'Message #general' });
+
+		await user.type(composer, 'a message over the limit');
+		await waitFor(() => expect(localStorage.getItem('messagebox_rid')).toBe('a message over the limit'));
+
+		// eslint-disable-next-line testing-library/prefer-user-event
+		fireEvent.keyDown(composer, { key: 'Enter', which: 13, keyCode: 13 });
+		await waitFor(() => expect(onSend).toHaveBeenCalledWith(expect.objectContaining({ value: 'a message over the limit' })));
+
+		// The unsent text survives a reload…
+		await waitFor(() => expect(localStorage.getItem('messagebox_rid')).toBe('a message over the limit'));
+
+		// …and leaving the room.
+		unmount();
+		await waitFor(() => expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'a message over the limit' }));
+	});
 });
