@@ -142,10 +142,15 @@ const findWorkspaceSources = (): { name: string; root: string; entry: string | u
 			const manifest = join(root, 'package.json');
 			if (!existsSync(manifest) || !existsSync(join(root, 'src'))) return [];
 
-			const { name } = JSON.parse(readFileSync(manifest, 'utf8'));
+			const { name, main, browser } = JSON.parse(readFileSync(manifest, 'utf8'));
 			if (distOnly.has(name)) return [];
 
-			const entry = ['src/index.ts', 'src/index.tsx'].map((file) => join(root, file)).find((file) => existsSync(file));
+			// The declared client entry pointed back at its source (`./dist/main.client.js` → `src/main.client.ts`).
+			const declared: string | undefined = typeof browser === 'string' ? browser : main;
+			const declaredSource = declared?.replace(/^(\.\/)?dist\//, 'src/').replace(/\.js$/, '');
+			const entry = [...(declaredSource ? [`${declaredSource}.ts`, `${declaredSource}.tsx`] : []), 'src/index.ts', 'src/index.tsx']
+				.map((file) => join(root, file))
+				.find((file) => existsSync(file));
 			return [{ name, root, entry }];
 		}),
 	);
