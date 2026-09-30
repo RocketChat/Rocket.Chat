@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "24.0.0",
+	"version": "25.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -31,7 +31,7 @@
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:~",
-		"@rocket.chat/fuselage": "^0.92.0",
+		"@rocket.chat/fuselage": "^0.93.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",

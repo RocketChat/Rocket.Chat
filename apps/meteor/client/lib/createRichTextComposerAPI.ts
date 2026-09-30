@@ -12,6 +12,7 @@ import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
 	persistDraft: (value: string) => void,
+	discardDraft: () => void,
 	initialDraft: string,
 	quoteChainLimit: number,
 	parseOptions: Options,
@@ -78,6 +79,7 @@ export const createRichTextComposerAPI = (
 		room: { rid, tmid },
 		initialValue: initialDraft,
 		save: () => persistDraft(getText()),
+		discardDraft,
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),

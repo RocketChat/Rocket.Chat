@@ -1,4 +1,5 @@
-import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import { api, Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import type { RelayedStreamEvent } from '@rocket.chat/core-services';
 import type {
 	IImportProgress,
 	ISubscription,
@@ -15,7 +16,7 @@ import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/model
 import { emit, StreamPresence } from './StreamPresence';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
-import type { IStreamer, IStreamerConstructor } from './types';
+import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
 
 const logger = new Logger('NotificationsModule');
 
@@ -50,27 +51,37 @@ export class NotificationsModule {
 
 	public readonly streamRoomData: IStreamer<'room-data'>;
 
-	public readonly streamLocal: IStreamer<'local'>;
-
 	public readonly streamPresence: IStreamer<'user-presence'>;
 
 	public readonly streamVideoConference: IStreamer<'video-conference'>;
 
-	constructor(private Streamer: IStreamerConstructor) {
-		this.streamAll = new this.Streamer('notify-all');
-		this.streamLogged = new this.Streamer('notify-logged');
-		this.streamRoom = new this.Streamer('notify-room');
-		this.streamRoomUsers = new this.Streamer('notify-room-users');
-		this.streamImporters = new this.Streamer('importers', { retransmit: false });
-		this.streamRoles = new this.Streamer('roles');
-		this.streamApps = new this.Streamer('apps', { retransmit: false });
-		this.streamCannedResponses = new this.Streamer('canned-responses');
-		this.streamIntegrationHistory = new this.Streamer('integrationHistory');
-		this.streamLivechatRoom = new this.Streamer('livechat-room');
-		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
-		this.streamRoomData = new this.Streamer('room-data');
-		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
-		this.streamRoomMessage = new this.Streamer('room-messages');
+	private readonly streams = new Map<string, IStreamer<StreamNames>>();
+
+	private readonly relay: StreamRelay = (stream, eventName, args) => {
+		api.broadcast('stream', { stream, eventName, args, origin: this.originId }).catch((err) => {
+			logger.error({ msg: 'Failed to relay stream event', stream, eventName, err });
+		});
+	};
+
+	constructor(
+		private Streamer: IStreamerConstructor,
+		/** Identifies this process among every process that hosts the same streams. */
+		private readonly originId: string,
+	) {
+		this.streamAll = this.createStream('notify-all');
+		this.streamLogged = this.createStream('notify-logged');
+		this.streamRoom = this.createStream('notify-room');
+		this.streamRoomUsers = this.createStream('notify-room-users');
+		this.streamImporters = this.createStream('importers', { retransmit: false });
+		this.streamRoles = this.createStream('roles');
+		this.streamApps = this.createStream('apps', { retransmit: false });
+		this.streamCannedResponses = this.createStream('canned-responses');
+		this.streamIntegrationHistory = this.createStream('integrationHistory');
+		this.streamLivechatRoom = this.createStream('livechat-room');
+		this.streamLivechatQueueData = this.createStream('livechat-inquiry-queue-observer');
+		this.streamRoomData = this.createStream('room-data');
+		this.streamPresence = this.register(StreamPresence.getInstance(Streamer, { relay: this.relay }));
+		this.streamRoomMessage = this.createStream('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication, eventName): Promise<void> => {
 			if (!StreamerModule.isPublicationActive(publication)) {
@@ -97,9 +108,26 @@ export class NotificationsModule {
 			publication.onStop(() => streamer.removeListener(userId, userEvent));
 		});
 
-		this.streamUser = new this.Streamer('notify-user');
-		this.streamLocal = new this.Streamer('local');
-		this.streamVideoConference = new this.Streamer('video-conference');
+		this.streamUser = this.createStream('notify-user');
+		this.streamVideoConference = this.createStream('video-conference');
+	}
+
+	private createStream<N extends StreamNames>(name: N, options?: Omit<StreamerOptions, 'relay'>): IStreamer<N> {
+		return this.register(new this.Streamer(name, { ...options, relay: this.relay }));
+	}
+
+	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
+		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
+		return stream;
+	}
+
+	/** Delivers an emit relayed from another process to this process's subscribers, skipping this process's own emits. */
+	deliverRelayed({ stream, eventName, args, origin }: RelayedStreamEvent): void {
+		if (origin === this.originId) {
+			return;
+		}
+
+		this.streams.get(stream)?._emit(eventName, args, undefined, false);
 	}
 
 	configure(): void {
@@ -253,6 +281,18 @@ export class NotificationsModule {
 			return true;
 		});
 
+		this.streamRoom.on('_afterWrite', (eventName, args, uid) => {
+			const [rid, e] = eventName.split('/');
+			if (e !== 'user-activity' || !uid) {
+				return;
+			}
+
+			const [, activities] = args;
+			api.emitToOne('room.user-activity', { rid, uid, activities: Array.isArray(activities) ? activities : [] }).catch((err) => {
+				logger.error({ msg: 'Failed to report user activity', rid, err });
+			});
+		});
+
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function (
 			eventName: `${string}/video-conference` | `${string}/userData`,
@@ -323,7 +363,6 @@ export class NotificationsModule {
 		this.streamImporters.allowEmit('all');
 		this.streamImporters.allowWrite('none');
 
-		this.streamApps.serverOnly = true;
 		this.streamApps.allowRead('all');
 		this.streamApps.allowEmit('all');
 		this.streamApps.allowWrite('none');
@@ -484,11 +523,6 @@ export class NotificationsModule {
 			return Authorization.canAccessConference(call, user._id);
 		});
 
-		this.streamLocal.serverOnly = true;
-		this.streamLocal.allowRead('none');
-		this.streamLocal.allowEmit('all');
-		this.streamLocal.allowWrite('none');
-
 		this.streamPresence.allowRead('logged');
 		this.streamPresence.allowWrite('none');
 	}
@@ -553,8 +587,8 @@ export class NotificationsModule {
 		this.streamImporters.emit('progress', progress);
 	}
 
-	notifyVideoConferenceUpdated(callId: string): void {
-		this.streamVideoConference.emit(`${callId}/updated`);
+	notifyVideoConferenceUpdatedInThisInstance(callId: string): void {
+		this.streamVideoConference.emitWithoutBroadcast(`${callId}/updated`);
 	}
 }
 

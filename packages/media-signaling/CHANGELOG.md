@@ -1,5 +1,13 @@
 # @rocket.chat/media-signaling
 
+## 1.3.0-rc.0
+
+### Minor Changes
+
+- ([#41964](https://github.com/RocketChat/Rocket.Chat/pull/41964)) Improves the logic of when the Busy Tone should be played after a call ends
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
 ## 1.2.0
 
 ### Minor Changes
@@ -15,8 +23,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/emitter@0.33.0
+
   </details>
 
 ## 1.1.0

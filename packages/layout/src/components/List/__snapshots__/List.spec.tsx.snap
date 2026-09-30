@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <ul
+      class="rcx-css-1pzq9er"
+    >
+      <li
+        class="rcx-box rcx-box--full rcx-css-1hi76ss"
+      >
+        List Item 1
+      </li>
+      <li
+        class="rcx-box rcx-box--full rcx-css-1hi76ss"
+      >
+        List Item 2
+      </li>
+    </ul>
+  </div>
+</body>
+`;

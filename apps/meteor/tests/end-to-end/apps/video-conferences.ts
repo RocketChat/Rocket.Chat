@@ -369,6 +369,88 @@ describe('Apps - Video Conferences', () => {
 			});
 		});
 
+		describe('[/video-conference.join] anonymous access', () => {
+			let publicRoomId: string;
+			let callId: string | undefined;
+			let regularUser: Awaited<ReturnType<typeof createUser>>;
+			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+
+				const roomRes = await createRoom({ type: 'c', name: `videoconf-anon-test-room-${Date.now()}` });
+				publicRoomId = roomRes.body.channel._id;
+
+				const startRes = await request.post(api('video-conference.start')).set(credentials).send({ roomId: publicRoomId });
+				callId = startRes.body.data.callId;
+
+				regularUser = await createUser({ roles: ['user'], active: true });
+				regularUserCredentials = await login(regularUser.username, password);
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: publicRoomId }),
+					deleteUser(regularUser),
+					updateSetting('Accounts_AllowAnonymousRead', false),
+				]),
+			);
+
+			it('should allow an unauthenticated user to join when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should allow an authenticated user to join when Accounts_AllowAnonymousRead is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should allow an authenticated user to join when Accounts_AllowAnonymousRead is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				await request
+					.post(api('video-conference.join'))
+					.set(regularUserCredentials)
+					.send({ callId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('providerName', 'test');
+					});
+			});
+
+			it('should reject an unauthenticated user when Accounts_AllowAnonymousRead is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				await request
+					.post(api('video-conference.join'))
+					.send({ callId })
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error', 'You must be logged in to do this.');
+					});
+			});
+		});
+
 		describe('[/video-conference.info]', () => {
 			let callId: string | undefined;
 
