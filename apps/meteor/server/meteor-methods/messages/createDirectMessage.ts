@@ -10,6 +10,7 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { createRoom } from '../../lib/rooms/createRoom';
+import { isFederationEnabled } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
 export async function createDirectMessage(
@@ -35,9 +36,8 @@ export async function createDirectMessage(
 	}
 
 	const myUsername = me.username.toLowerCase();
-	const isMe = (username: string) => username.toLowerCase() === myUsername;
 
-	const targets = usernames.filter((username) => !isMe(username));
+	const targets = usernames.filter((username) => username.toLowerCase() !== myUsername);
 
 	if (!targets.length && (excludeSelf || settings.get('Message_AllowDirectMessagesToYourself') === false)) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -56,7 +56,7 @@ export async function createDirectMessage(
 
 	const users = await Promise.all(
 		targets.map(async (username) => {
-			if (validateFederatedUsername(username)) {
+			if (isFederationEnabled() && validateFederatedUsername(username)) {
 				return username;
 			}
 

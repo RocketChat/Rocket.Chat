@@ -9,6 +9,7 @@ const sandbox = sinon.createSandbox();
 const createRoomMock = sandbox.stub();
 const hasPermissionMock = sandbox.stub();
 const validateFederatedUsernameMock = sandbox.stub();
+const isFederationEnabledMock = sandbox.stub();
 const settingsGetMock = sandbox.stub();
 
 const modelsMock = {
@@ -39,6 +40,7 @@ const { createDirectMessage } = p.noCallThru().load('../../../../../server/meteo
 	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
 	'../../lib/callbacks': { callbacks: { run: sandbox.stub() } },
 	'../../lib/rooms/createRoom': { createRoom: createRoomMock },
+	'../../services/federation/utils': { isFederationEnabled: isFederationEnabledMock },
 	'../../settings': { settings: { get: settingsGetMock } },
 });
 
@@ -51,6 +53,7 @@ describe('createDirectMessage', () => {
 		modelsMock.Users.findOneById.resolves(me);
 		hasPermissionMock.resolves(true);
 		validateFederatedUsernameMock.returns(false);
+		isFederationEnabledMock.returns(true);
 		settingsGetMock.withArgs('DirectMesssage_maxUsers').returns(8);
 		createRoomMock.resolves({ _id: 'rid', inserted: true });
 	});
@@ -130,5 +133,14 @@ describe('createDirectMessage', () => {
 		await createDirectMessage(['@remote:server.com'], me._id);
 
 		expect(createRoomMock.firstCall.args[3]).to.deep.equal([me, '@remote:server.com']);
+	});
+
+	it('should reject an unknown federated username when federation is disabled', async () => {
+		modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
+		validateFederatedUsernameMock.returns(true);
+		isFederationEnabledMock.returns(false);
+
+		await expect(createDirectMessage(['@remote:server.com'], me._id)).to.be.rejectedWith('Invalid user');
+		expect(createRoomMock.called).to.be.false;
 	});
 });
