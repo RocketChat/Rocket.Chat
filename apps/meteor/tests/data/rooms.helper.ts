@@ -1,8 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, ISubscription, IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { api, credentials, methodCall, request } from './api-data';
+import { api, assertSuccess, credentials, methodCall, request, RequestFailedError } from './api-data';
 import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
@@ -16,7 +16,10 @@ type CreateRoomParams = {
 	config?: IRequestConfig;
 };
 
-export const createRoom = ({
+/**
+ * @throws {RequestFailedError} when the room is not created
+ */
+export const createRoom = async ({
 	name,
 	type,
 	username,
@@ -46,7 +49,7 @@ export const createRoom = ({
 
 	const roomType = endpoints[type as keyof typeof endpoints];
 
-	return requestInstance
+	const res = await requestInstance
 		.post(api(roomType))
 		.set(credentialsInstance)
 		.send({
@@ -55,6 +58,8 @@ export const createRoom = ({
 			...(readOnly && { readOnly }),
 			...(extraData && { extraData }),
 		});
+
+	return assertSuccess(roomType, res);
 };
 
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
@@ -98,37 +103,28 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
-export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials, req = request): Promise<ISubscription> =>
-	new Promise((resolve, reject) => {
-		void req
-			.get(api('subscriptions.getOne'))
-			.set(userCredentials)
-			.query({ roomId })
-			.end((err, res) => {
-				if (err) {
-					return reject(err);
-				}
-				if (!res.body?.subscription) {
-					return reject(new Error('Subscription not found'));
-				}
+/**
+ * @throws {RequestFailedError} when the request fails or the user has no subscription to the room
+ */
+export const getSubscriptionByRoomId = async (
+	roomId: IRoom['_id'],
+	userCredentials = credentials,
+	req = request,
+): Promise<ISubscription> => {
+	const res = assertSuccess('subscriptions.getOne', await req.get(api('subscriptions.getOne')).set(userCredentials).query({ roomId }));
 
-				resolve(res.body.subscription);
-			});
-	});
+	if (!res.body.subscription) {
+		throw new RequestFailedError('subscriptions.getOne', res.status, res.body);
+	}
+
+	return res.body.subscription;
+};
 
 /**
- * Adds users to a room using the REST invite endpoints (channels.invite / groups.invite).
+ * Invites users through channels.invite / groups.invite, the endpoints the "Add users" UI uses.
+ * Supports local and federated users; resolves to one response per username.
  *
- * This is the entrypoint the "Add users" UI uses. Supports both local and federated users.
- * The REST endpoints accept a single invitee per call, so this issues one request per
- * username (mirroring how the UI fans out the invites) and resolves to the array of responses.
- *
- * @param usernames - Array of usernames to add to the room
- * @param rid - The unique identifier of the room
- * @param type - Room type, selects the endpoint: 'c' -> channels.invite, 'p' -> groups.invite
- * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the array of REST invite responses (one per username)
+ * @throws {RequestFailedError} when any of the invites fails
  */
 export const addUserToRoom = ({
 	usernames,
@@ -150,40 +146,31 @@ export const addUserToRoom = ({
 	// The REST invite endpoints accept a single invitee per call, so we issue one
 	// request per username (mirroring how the UI fans out the invites).
 	return Promise.all(
-		usernames.map((username) => requestInstance.post(api(endpoint)).set(credentialsInstance).send({ roomId: rid, username })),
+		usernames.map(async (username) =>
+			assertSuccess(endpoint, await requestInstance.post(api(endpoint)).set(credentialsInstance).send({ roomId: rid, username })),
+		),
 	);
 };
 
 /**
- * Adds users to a room using the deprecated `addUsersToRoom` DDP method.
+ * Adds users to a direct room through the deprecated `addUsersToRoom` method, the only entrypoint
+ * that accepts a direct room. Prefer {@link addUserToRoom} for channels and groups.
  *
- * The method is deprecated in favour of the REST invite endpoints (see {@link addUserToRoom}),
- * but it is still a supported entrypoint. Prefer the REST helper for general test setup — this
- * helper exists to keep dedicated coverage of the DDP-method entrypoint (e.g. federation invites).
- *
- * @param usernames - Array of usernames to add to the room
- * @param rid - The unique identifier of the room
- * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the method call response
+ * @throws {RequestFailedError} with the method's DDP result as `body` when the method fails
  */
-export const addUserToRoomViaMethod = ({
+// TODO: move addUserToDirectRoomViaMethod to REST once an endpoint can add users to a direct room
+export const addUserToDirectRoomViaMethod = async ({
 	usernames,
 	rid,
-	userCredentials,
 	config,
 }: {
 	usernames: string[];
 	rid: IRoom['_id'];
-	userCredentials?: Credentials;
-	config?: IRequestConfig;
+	config: IRequestConfig;
 }) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || userCredentials || credentials;
-
-	return requestInstance
+	const res = await config.request
 		.post(methodCall('addUsersToRoom'))
-		.set(credentialsInstance)
+		.set(config.credentials)
 		.send({
 			message: JSON.stringify({
 				method: 'addUsersToRoom',
@@ -192,26 +179,23 @@ export const addUserToRoomViaMethod = ({
 				msg: 'method',
 			}),
 		});
+
+	const result = typeof res.body?.message === 'string' ? JSON.parse(res.body.message) : undefined;
+
+	if (res.status !== 200 || res.body?.success !== true || !result || result.error) {
+		throw new RequestFailedError('method.call/addUsersToRoom', res.status, result ?? res.body);
+	}
+
+	return result.result as boolean;
 };
 
 /**
- * Adds users to a room using the /invite slash command via method.call.
+ * Runs `/invite` through commands.run, the way the composer does. A rejected invite is not an
+ * error here: the command still succeeds and reports it to the caller as an ephemeral message.
  *
- * Executes the /invite slash command using the DDP method call to add users to a room.
- * This simulates the user experience of using slash commands in the UI.
- * Supports both local and federated users, with proper error handling for federation restrictions.
- *
- * @param usernames - Array of usernames to add to the room
- * @param rid - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the method call response
- * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
+ * @throws {RequestFailedError} when the command itself fails to run
  */
-// TODO(ddp-removal): swap /api/v1/method.call/slashCommand for
-// POST /v1/commands.run. Same caveat as addUserToRoom: federation specs
-// inspect the DDP-style `message` payload and need to be ported to the
-// REST envelope first.
-export const addUserToRoomSlashCommand = ({
+export const addUserToRoomSlashCommand = async ({
 	usernames,
 	rid,
 	config,
@@ -230,99 +214,48 @@ export const addUserToRoomSlashCommand = ({
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return requestInstance
-		.post(methodCall('slashCommand'))
+	const res = await requestInstance
+		.post(api('commands.run'))
 		.set(credentialsInstance)
 		.send({
-			message: JSON.stringify({
-				method: 'slashCommand',
-				params: [
-					{
-						cmd: 'invite',
-						params: usernames.join(' '),
-						msg: {
-							rid,
-							_id: `test-${Date.now()}`,
-						},
-						triggerId: `test-trigger-${Date.now()}`,
-					},
-				],
-				id: 'id',
-				msg: 'method',
-			}),
+			command: 'invite',
+			params: usernames.join(' '),
+			roomId: rid,
+			triggerId: `test-trigger-${Date.now()}`,
 		});
+
+	return assertSuccess('commands.run', res);
 };
 
 /**
- * Retrieves detailed information about a room.
- *
- * Fetches comprehensive room metadata including federation status,
- * member counts, and other room properties needed for federation testing.
- *
- * @param roomId - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to room information response
+ * @throws {RequestFailedError} when the room info cannot be fetched
  */
-export const getRoomInfo = (roomId: IRoom['_id'], config?: IRequestConfig) => {
+export const getRoomInfo = async (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return new Promise<ReturnType<Endpoints['/v1/rooms.info']['GET']>>((resolve) => {
-		void requestInstance
-			.get(api('rooms.info'))
-			.set(credentialsInstance)
-			.query({
-				roomId,
-			})
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
+	const res = await requestInstance.get(api('rooms.info')).set(credentialsInstance).query({ roomId });
+
+	return assertSuccess('rooms.info', res).body as ReturnType<Endpoints['/v1/rooms.info']['GET']>;
 };
 
 /**
- * Retrieves room members ordered by their role hierarchy.
- *
- * Gets the complete list of room members with their roles and permissions,
- * ordered by importance. Essential for verifying federation member synchronization
- * and role assignments across different Rocket.Chat instances.
- *
- * @param roomId - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to ordered member list response
+ * @throws {RequestFailedError} when the member list cannot be fetched
  */
-export const getRoomMembers = (roomId: IRoom['_id'], config?: IRequestConfig) => {
+export const getRoomMembers = async (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return new Promise<ReturnType<Endpoints['/v1/rooms.membersOrderedByRole']['GET']>>((resolve) => {
-		void requestInstance
-			.get(api('rooms.membersOrderedByRole'))
-			.set(credentialsInstance)
-			.query({
-				roomId,
-			})
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
+	const res = await requestInstance.get(api('rooms.membersOrderedByRole')).set(credentialsInstance).query({ roomId });
+
+	return assertSuccess('rooms.membersOrderedByRole', res).body as ReturnType<Endpoints['/v1/rooms.membersOrderedByRole']['GET']>;
 };
 
 /**
- * Finds a specific room member with configurable retry logic.
+ * Polls the member list until `username` shows up, for membership that federation propagates
+ * eventually. Resolves to `null` when the user never appears.
  *
- * Searches for a member in a room by username, with retry logic to handle
- * eventual consistency in federated systems. This is crucial for federation
- * testing where member synchronization may take time to propagate.
- *
- * @param roomId - The unique identifier of the room to search
- * @param username - The username to find
- * @param options - Retry configuration options
- * @param options.maxRetries - Maximum number of retry attempts (default: 3)
- * @param options.delay - Delay between retries in milliseconds (default: 1000)
- * @param options.initialDelay - Initial delay before first attempt in milliseconds (default: 0)
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the user object if found, null otherwise
+ * @throws {RequestFailedError} when the member list cannot be fetched
  */
 export const findRoomMember = async (
 	roomId: IRoom['_id'],
@@ -337,23 +270,15 @@ export const findRoomMember = async (
 	}
 
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
-		try {
-			const membersResponse = await getRoomMembers(roomId, config);
-			const member = membersResponse.members.find((member: IUser) => member.username === username);
+		const membersResponse = await getRoomMembers(roomId, config);
+		const member = membersResponse.members.find((member: IUser) => member.username === username);
 
-			if (member) {
-				return member;
-			}
+		if (member) {
+			return member;
+		}
 
-			if (attempt < maxRetries) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-		} catch (error) {
-			console.warn(`Attempt ${attempt} to find room member failed:`, error);
-
-			if (attempt < maxRetries) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
+		if (attempt < maxRetries) {
+			await new Promise((resolve) => setTimeout(resolve, delay));
 		}
 	}
 
@@ -361,179 +286,44 @@ export const findRoomMember = async (
 };
 
 /**
- * Retrieves the message history for a group/private room.
- *
- * Fetches the complete message history including system messages,
- * user messages, and federation events. Essential for verifying
- * message synchronization and system message generation in federated rooms.
- *
- * @param roomId - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to message history response
+ * @throws {RequestFailedError} when the history cannot be fetched
  */
-export const getGroupHistory = (roomId: IRoom['_id'], config?: IRequestConfig) => {
+export const getGroupHistory = async (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return new Promise<ReturnType<Endpoints['/v1/groups.history']['GET']>>((resolve) => {
-		void requestInstance
-			.get(api('groups.history'))
-			.set(credentialsInstance)
-			.query({
-				roomId,
-			})
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
+	const res = await requestInstance.get(api('groups.history')).set(credentialsInstance).query({ roomId });
+
+	return assertSuccess('groups.history', res).body as ReturnType<Endpoints['/v1/groups.history']['GET']>;
+};
+
+const answerRoomInvite = async (roomId: IRoom['_id'], action: 'accept' | 'reject', config?: IRequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	const res = await requestInstance.post(api('rooms.invite')).set(credentialsInstance).send({ roomId, action });
+
+	return assertSuccess('rooms.invite', res).body as { success: true };
 };
 
 /**
- * Loads message history for a room using the loadHistory method call.
- *
- * Fetches message history via the DDP method call endpoint, which returns
- * messages with markdown parsing metadata (md attribute). This is useful
- * for testing message rendering and markdown parsing, including emoji handling.
- *
- * @param rid - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @param end - Optional end date to load messages before this timestamp
- * @param limit - Optional limit for number of messages to return (default: 20)
- * @param ls - Optional last seen timestamp for unread calculation
- * @param showThreadMessages - Optional flag to include thread messages (default: true)
- * @returns Promise resolving to message history with structure: { messages, firstUnread?, unreadNotLoaded? }
+ * @throws {RequestFailedError} when the invite cannot be accepted
  */
-export const loadHistory = async (
-	rid: IRoom['_id'],
-	config?: IRequestConfig,
-	end?: Date,
-	limit?: number,
-	ls?: string | Date,
-	showThreadMessages?: boolean,
-) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-
-	const params: any[] = [rid];
-	if (end !== undefined) {
-		params.push(end);
-	}
-	if (limit !== undefined) {
-		params.push(limit);
-	}
-	if (ls !== undefined) {
-		params.push(ls);
-	}
-	if (showThreadMessages !== undefined) {
-		params.push(showThreadMessages);
-	}
-
-	const response = await requestInstance
-		.post(methodCall('loadHistory'))
-		.set(credentialsInstance)
-		.send({
-			message: JSON.stringify({
-				method: 'loadHistory',
-				params,
-				id: 'id',
-				msg: 'method',
-			}),
-		});
-
-	if (!response.body.success) {
-		throw new Error(`loadHistory failed: ${JSON.stringify(response.body)}`);
-	}
-
-	const data = JSON.parse(response.body.message);
-	if (data.error) {
-		throw new Error(`loadHistory method error: ${JSON.stringify(data.error)}`);
-	}
-
-	return data.result as {
-		messages: IMessage[];
-		firstUnread?: IMessage;
-		unreadNotLoaded?: number;
-	};
-};
+export const acceptRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => answerRoomInvite(roomId, 'accept', config);
 
 /**
- * Accepts a room invite for the authenticated user.
- *
- * Processes a room invitation by accepting it, which grants the user
- * access to the room. This is essential for federated room workflows
- * where users receive invitations rather than auto-joining.
- *
- * @param roomId - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the acceptance response
+ * @throws {RequestFailedError} when the invite cannot be rejected
  */
-export const acceptRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-
-	return new Promise<{ success: boolean; error?: string }>((resolve) => {
-		void requestInstance
-			.post(api('rooms.invite'))
-			.set(credentialsInstance)
-			.send({
-				roomId,
-				action: 'accept',
-			})
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
-};
+export const rejectRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => answerRoomInvite(roomId, 'reject', config);
 
 /**
- * Retrieves the subscriptions for the authenticated user.
- *
- * Fetches the complete list of subscriptions for the authenticated user, which is essential
- * for verifying federation subscription synchronization and member synchronization.
- *
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the subscriptions response
+ * @throws {RequestFailedError} when the subscriptions cannot be fetched
  */
-
-export const getSubscriptions = (config?: IRequestConfig) => {
+export const getSubscriptions = async (config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
-	return new Promise<ReturnType<Endpoints['/v1/subscriptions.get']['GET']>>((resolve) => {
-		void requestInstance
-			.get(api('subscriptions.get'))
-			.set(credentialsInstance)
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
-};
+	const res = await requestInstance.get(api('subscriptions.get')).set(credentialsInstance);
 
-/**
- * Rejects a room invite for the authenticated user.
- *
- * Processes a room invitation by rejecting it, which prevents the user
- * from joining the room and removes them from the invited members list.
- * This is essential for federated room workflows where users can decline invitations.
- *
- * @param roomId - The unique identifier of the room
- * @param config - Optional request configuration for custom domains
- * @returns Promise resolving to the rejection response
- */
-export const rejectRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-
-	return new Promise<{ success: boolean; error?: string }>((resolve) => {
-		void requestInstance
-			.post(api('rooms.invite'))
-			.set(credentialsInstance)
-			.send({
-				roomId,
-				action: 'reject',
-			})
-			.end((_err: any, req: any) => {
-				resolve(req.body);
-			});
-	});
+	return assertSuccess('subscriptions.get', res).body as ReturnType<Endpoints['/v1/subscriptions.get']['GET']>;
 };
