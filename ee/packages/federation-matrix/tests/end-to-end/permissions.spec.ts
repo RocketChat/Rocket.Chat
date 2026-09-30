@@ -371,8 +371,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		afterAll(async () => {
 			await Promise.all([
-				deleteUser(rcValidUser1.user, {}, rc1AdminRequestConfig),
-				deleteUser(rcValidUser2.user, {}, rc1AdminRequestConfig),
+				deleteUser(rcValidUser1.user, { confirmRelinquish: true }, rc1AdminRequestConfig),
+				deleteUser(rcValidUser2.user, { confirmRelinquish: true }, rc1AdminRequestConfig),
 			]);
 		});
 
@@ -844,7 +844,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				afterAll(async () => {
-					await deleteUser(userWithNonMatchingEmail, {}, rc1AdminRequestConfig);
+					await deleteUser(userWithNonMatchingEmail, { confirmRelinquish: true }, rc1AdminRequestConfig);
 				});
 
 				it('should be able to create a federated room regardless of email domain', async () => {
