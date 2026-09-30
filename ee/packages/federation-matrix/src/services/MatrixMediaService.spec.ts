@@ -1,18 +1,24 @@
 import { Upload } from '@rocket.chat/core-services';
-import { federationSDK } from '@rocket.chat/federation-sdk';
-import { Uploads } from '@rocket.chat/models';
+import { FederationRequestError, federationSDK } from '@rocket.chat/federation-sdk';
+import { Avatars, Uploads } from '@rocket.chat/models';
 
-import { MatrixMediaService } from './MatrixMediaService';
+import { MatrixMediaService, RemoteMediaFetchError } from './MatrixMediaService';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Upload: {
 		createPendingFile: jest.fn(),
+		checkPendingFile: jest.fn(),
 		completePendingFile: jest.fn(),
 		uploadFile: jest.fn(),
 	},
 }));
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
+	FederationRequestError: class FederationRequestError extends Error {
+		constructor(readonly response: { status: number }) {
+			super(`Federation request failed: ${response.status}`);
+		}
+	},
 	federationSDK: {
 		downloadFromRemoteServer: jest.fn(),
 	},
@@ -25,7 +31,9 @@ jest.mock('@rocket.chat/models', () => ({
 		setFederationRoomInfo: jest.fn(),
 		setFederationInfo: jest.fn(),
 	},
-	Avatars: {},
+	Avatars: {
+		findOneByETag: jest.fn(),
+	},
 }));
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -33,6 +41,9 @@ jest.mock('@rocket.chat/logger', () => ({
 }));
 
 const mockCreatePendingFile = Upload.createPendingFile as jest.MockedFunction<typeof Upload.createPendingFile>;
+const mockCheckPendingFile = Upload.checkPendingFile as jest.MockedFunction<typeof Upload.checkPendingFile>;
+const mockSetFederationRoomInfo = Uploads.setFederationRoomInfo as jest.MockedFunction<typeof Uploads.setFederationRoomInfo>;
+const mockFindAvatar = Avatars.findOneByETag as jest.MockedFunction<typeof Avatars.findOneByETag>;
 const mockCompletePendingFile = Upload.completePendingFile as jest.MockedFunction<typeof Upload.completePendingFile>;
 const mockDownload = federationSDK.downloadFromRemoteServer as jest.MockedFunction<typeof federationSDK.downloadFromRemoteServer>;
 const mockFindOneById = Uploads.findOneById as jest.MockedFunction<typeof Uploads.findOneById>;
@@ -41,6 +52,14 @@ const mockFindByFederation = Uploads.findByFederationMediaIdAndServerName as jes
 >;
 
 const MXC = 'mxc://remote.example/abc123';
+
+const pendingRemoteFile = (id: string) =>
+	({ _id: id, complete: false, federation: { serverName: 'remote.example', mediaId: 'abc123', mxcUri: MXC } }) as any;
+
+const answeredByOrigin = (status: number) =>
+	new Error('Failed to download media abc123 from remote.example', {
+		cause: new (FederationRequestError as unknown as new (response: { status: number }) => Error)({ status }),
+	});
 
 const metadata = { name: 'holiday.png', size: 2048, type: 'image/png', rid: 'rid1', userId: 'uid1' };
 
@@ -78,6 +97,17 @@ describe('MatrixMediaService.registerRemoteFile', () => {
 		const fileId = await MatrixMediaService.registerRemoteFile(MXC, '!room:remote.example', metadata as any);
 
 		expect(fileId).toBe('existing');
+		expect(mockCreatePendingFile).not.toHaveBeenCalled();
+		expect(mockSetFederationRoomInfo).not.toHaveBeenCalled();
+	});
+
+	it('ties a known file that has no room yet to the room of the event', async () => {
+		mockFindByFederation.mockResolvedValueOnce({ _id: 'existing', rid: '' } as any);
+
+		const fileId = await MatrixMediaService.registerRemoteFile(MXC, '!room:remote.example', metadata as any);
+
+		expect(fileId).toBe('existing');
+		expect(mockSetFederationRoomInfo).toHaveBeenCalledWith('existing', 'rid1', '!room:remote.example');
 		expect(mockCreatePendingFile).not.toHaveBeenCalled();
 	});
 
@@ -163,9 +193,35 @@ describe('MatrixMediaService.materializePendingFile', () => {
 			complete: false,
 			federation: { serverName: 'remote.example', mediaId: 'abc123', mxcUri: MXC },
 		} as any);
-		mockDownload.mockRejectedValueOnce(new Error('Failed to download media abc123 from remote.example'));
+		const failure = new Error('Failed to download media abc123 from remote.example');
+		mockDownload.mockRejectedValueOnce(failure);
 
-		await expect(MatrixMediaService.materializePendingFile('upload3')).rejects.toThrow('Failed to download media');
+		const rejection = MatrixMediaService.materializePendingFile('upload3');
+
+		await expect(rejection).rejects.toBeInstanceOf(RemoteMediaFetchError);
+		await expect(rejection).rejects.toMatchObject({ cause: failure });
+	});
+
+	it('reports media the origin does not have as missing rather than as a failed fetch', async () => {
+		mockFindOneById.mockResolvedValueOnce(pendingRemoteFile('upload5'));
+		mockDownload.mockRejectedValueOnce(answeredByOrigin(404));
+
+		await expect(MatrixMediaService.materializePendingFile('upload5')).resolves.toBeNull();
+	});
+
+	it('reports media the origin has not finished uploading as a failed fetch', async () => {
+		mockFindOneById.mockResolvedValueOnce(pendingRemoteFile('upload6'));
+		mockDownload.mockRejectedValueOnce(answeredByOrigin(504));
+
+		await expect(MatrixMediaService.materializePendingFile('upload6')).rejects.toBeInstanceOf(RemoteMediaFetchError);
+	});
+
+	it('does not download a file the upload rules already reject', async () => {
+		mockFindOneById.mockResolvedValueOnce(pendingRemoteFile('upload7'));
+		mockCheckPendingFile.mockRejectedValueOnce(new Error('error-file-too-large'));
+
+		await expect(MatrixMediaService.materializePendingFile('upload7')).rejects.toBeInstanceOf(RemoteMediaFetchError);
+		expect(mockDownload).not.toHaveBeenCalled();
 	});
 
 	it('allows a later attempt after a failure', async () => {
@@ -176,12 +232,47 @@ describe('MatrixMediaService.materializePendingFile', () => {
 		} as any);
 		mockDownload.mockRejectedValueOnce(new Error('not committed yet'));
 
-		await expect(MatrixMediaService.materializePendingFile('upload4')).rejects.toThrow('not committed yet');
+		await expect(MatrixMediaService.materializePendingFile('upload4')).rejects.toBeInstanceOf(RemoteMediaFetchError);
 
 		mockDownload.mockResolvedValueOnce(Buffer.from('bytes'));
 		mockCompletePendingFile.mockResolvedValueOnce({ _id: 'upload4', complete: true } as any);
 
 		await expect(MatrixMediaService.materializePendingFile('upload4')).resolves.toEqual({ _id: 'upload4', complete: true });
 		expect(mockDownload).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe('MatrixMediaService.getLocalFileForMatrixNode', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		mockFindAvatar.mockResolvedValue(null);
+	});
+
+	it('does not fetch a remote file for the federation API, which only serves our own media', async () => {
+		mockFindByFederation.mockResolvedValueOnce(pendingRemoteFile('upload8'));
+
+		await expect(MatrixMediaService.getLocalFileForMatrixNode('abc123', 'rc.example')).resolves.toBeNull();
+		expect(mockDownload).not.toHaveBeenCalled();
+	});
+
+	it('fetches a remote file on first access when asked to', async () => {
+		mockFindByFederation.mockResolvedValueOnce(pendingRemoteFile('upload9'));
+		mockFindOneById.mockResolvedValueOnce(pendingRemoteFile('upload9'));
+		mockDownload.mockResolvedValueOnce(Buffer.from('bytes'));
+		mockCompletePendingFile.mockResolvedValueOnce({ _id: 'upload9', complete: true } as any);
+
+		await expect(MatrixMediaService.getLocalFileForMatrixNode('abc123', 'remote.example', { fetchRemote: true })).resolves.toEqual({
+			_id: 'upload9',
+			complete: true,
+		});
+		expect(mockDownload).toHaveBeenCalledWith('remote.example', 'abc123');
+	});
+
+	it('serves a file it already holds either way', async () => {
+		const local = { _id: 'local1', complete: true, federation: { mxcUri: 'mxc://rc.example/local1' } } as any;
+		mockFindByFederation.mockResolvedValueOnce(local);
+
+		await expect(MatrixMediaService.getLocalFileForMatrixNode('local1', 'rc.example')).resolves.toBe(local);
+		expect(mockDownload).not.toHaveBeenCalled();
 	});
 });

@@ -44,7 +44,7 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 					file = materialized;
 				} catch (err) {
 					SystemLogger.warn({ msg: 'Failed to fetch federated file on demand', fileId: file._id, err });
-					res.writeHead(503);
+					res.writeHead(502);
 					res.end();
 					return;
 				}

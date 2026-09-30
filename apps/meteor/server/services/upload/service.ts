@@ -24,8 +24,10 @@ import { i18n } from '../../lib/i18n';
 import { FileUpload } from '../../lib/media/file-upload';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { fileUploadIsValidContentType } from '../../lib/utils/restrictions';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
 import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
+import { settings } from '../../settings';
 import { UploadFS } from '../../ufs';
 import { ufsComplete } from '../../ufs/ufs-methods';
 
@@ -39,10 +41,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
 	}
 
-	async createPendingFile({ details, federation }: ICreatePendingFileParams): Promise<IUpload> {
+	async createPendingFile({ userId, details, federation }: ICreatePendingFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
 		const fileData = {
 			...details,
+			userId,
 			federation,
 			complete: false,
 			uploading: false,
@@ -59,6 +62,24 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return file;
 	}
 
+	// Only the rules that need no content: the full filter also hands the bytes to apps (IPreFileUpload)
+	async checkPendingFile({ fileId }: { fileId: IUpload['_id'] }): Promise<void> {
+		const file = await Uploads.findOneById(fileId);
+		if (!file) {
+			return;
+		}
+
+		const maxFileSize = Number(settings.get('FileUpload_MaxFileSize'));
+		// -1 means there is no limit
+		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+			throw new Error(`File of ${file.size} bytes exceeds the allowed size of ${maxFileSize}`);
+		}
+
+		if (!fileUploadIsValidContentType(file.type)) {
+			throw new Error(`File type ${file.type} is not accepted`);
+		}
+	}
+
 	async completePendingFile({ fileId, buffer }: { fileId: IUpload['_id']; buffer: Buffer }): Promise<IUpload | null> {
 		const file = await Uploads.findOneById(fileId);
 		if (!file) {
@@ -71,8 +92,9 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 		const fileStore = FileUpload.getStore('Uploads');
 
-		await fileStore.store.getFilter()?.check({ ...file, size: buffer.length }, buffer);
+		// Recorded before the filter runs so a rejected file is refused by checkPendingFile next time, without another download
 		await Uploads.updateOne({ _id: fileId }, { $set: { size: buffer.length } });
+		await fileStore.store.getFilter()?.check({ ...file, size: buffer.length }, buffer);
 
 		await fs.promises.writeFile(UploadFS.getTempFilePath(fileId), buffer);
 

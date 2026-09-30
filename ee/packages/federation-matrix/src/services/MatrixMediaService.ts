@@ -3,11 +3,21 @@ import crypto from 'crypto';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { FederationRequestError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Avatars, Uploads } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:media-service');
+
+export class RemoteMediaFetchError extends Error {
+	constructor(fileId: string, cause: unknown) {
+		super(`Failed to fetch remote media for upload ${fileId}`, { cause });
+		this.name = 'RemoteMediaFetchError';
+	}
+}
+
+const isMissingOnOrigin = (err: unknown): boolean =>
+	err instanceof Error && err.cause instanceof FederationRequestError && err.cause.response.status === 404;
 
 export class MatrixMediaService {
 	private static readonly pendingDownloads = new Map<string, Promise<IUpload | null>>();
@@ -56,7 +66,17 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
+	/**
+	 * With `fetchRemote`, a remote file nobody has opened yet is fetched from its origin first, and a
+	 * failed fetch throws RemoteMediaFetchError. Without it only files this server holds are returned,
+	 * which is what the federation API may serve.
+	 */
+	static async getLocalFileForMatrixNode(
+		mediaId: string,
+		serverName: string,
+		{ fetchRemote = false }: { fetchRemote?: boolean } = {},
+	): Promise<IUpload | null> {
+		let file: IUpload | null;
 		try {
 			// try to find an avatar with the given mediaId as etag first, the index tends to be smaller
 			const avatarFile = await Avatars.findOneByETag(mediaId);
@@ -64,25 +84,17 @@ export class MatrixMediaService {
 				return avatarFile;
 			}
 
-			let file = await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName);
-
-			if (!file) {
-				file = await Uploads.findOneById(mediaId);
-			}
-
-			if (!file) {
-				return null;
-			}
-
-			if (!file.complete && file.federation?.mxcUri) {
-				return this.materializePendingFile(file._id);
-			}
-
-			return file;
+			file = (await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName)) ?? (await Uploads.findOneById(mediaId));
 		} catch (err) {
 			logger.error({ msg: 'Error retrieving local file', err });
 			return null;
 		}
+
+		if (!file || file.complete || !file.federation?.mxcUri) {
+			return file;
+		}
+
+		return fetchRemote ? this.materializePendingFile(file._id) : null;
 	}
 
 	static async uploadFromAppService(params: {
@@ -121,15 +133,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	/**
-	 * Registers a remote file without fetching it.
-	 *
-	 * An event describing a file routinely arrives before the origin can serve it — for a large
-	 * upload the sender is still committing while the event is already federated, and every
-	 * download endpoint answers 404 until it finishes. Downloading here would make delivery of the
-	 * message depend on that race. Everything needed to store and render the message is already in
-	 * the event, so the bytes are fetched the first time somebody actually opens the file.
-	 */
+	/** Records a remote file from its event without fetching it; materializePendingFile fetches it on first access. */
 	static async registerRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
 		const parts = this.parseMXCUri(mxcUri);
 		if (!parts) {
@@ -181,12 +185,21 @@ export class MatrixMediaService {
 
 			logger.debug({ msg: 'Fetching federated file on first access', fileId, serverName, mediaId });
 
-			const buffer = await federationSDK.downloadFromRemoteServer(serverName, mediaId);
-			if (!buffer) {
-				throw new Error('Download from remote server returned null content.');
-			}
+			try {
+				await Upload.checkPendingFile({ fileId });
 
-			return Upload.completePendingFile({ fileId, buffer });
+				const buffer = await federationSDK.downloadFromRemoteServer(serverName, mediaId);
+				if (!buffer) {
+					throw new Error('Download from remote server returned null content.');
+				}
+
+				return await Upload.completePendingFile({ fileId, buffer });
+			} catch (err) {
+				if (isMissingOnOrigin(err)) {
+					return null;
+				}
+				throw new RemoteMediaFetchError(fileId, err);
+			}
 		})().finally(() => {
 			this.pendingDownloads.delete(fileId);
 		});
