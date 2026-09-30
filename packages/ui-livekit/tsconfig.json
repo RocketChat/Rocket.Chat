@@ -5,4 +5,6 @@
 		"outDir": "./dist",
 	},
 	"include": ["./src/**/*", "./jest.config.ts"],
+	// Specs are typechecked too; the base config leaves them out.
+	"exclude": [],
 }
