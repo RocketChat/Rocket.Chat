@@ -1,18 +1,21 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { UserContext } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
 
+const johnDoe: IUser = {
+	_id: 'john.doe',
+	username: 'john.doe',
+	name: 'John Doe',
+	createdAt: new Date(),
+	active: true,
+	_updatedAt: new Date(),
+	roles: ['admin'],
+	type: 'user',
+};
+
 const userContextValue: ContextType<typeof UserContext> = {
 	userId: 'john.doe',
-	user: {
-		_id: 'john.doe',
-		username: 'john.doe',
-		name: 'John Doe',
-		createdAt: new Date(),
-		active: true,
-		_updatedAt: new Date(),
-		roles: ['admin'],
-		type: 'user',
-	},
+	queryUser: () => [() => () => undefined, () => johnDoe],
 	queryPreference: (<T,>(pref: string, defaultValue: T) => [
 		() => () => undefined,
 		() => (typeof pref === 'string' ? undefined : defaultValue),

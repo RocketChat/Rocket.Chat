@@ -140,7 +140,11 @@ it('keeps the login page up while someone is logging in at it', () => {
 const MaybeSessionEnded = ({ ended, children }: { ended: boolean; children: ReactNode }) => {
 	const value = useContext(UserContext);
 
-	return <UserContext.Provider value={ended ? { ...value, userId: undefined, user: null } : value}>{children}</UserContext.Provider>;
+	return (
+		<UserContext.Provider value={ended ? { ...value, userId: undefined, queryUser: () => [() => () => undefined, () => null] } : value}>
+			{children}
+		</UserContext.Provider>
+	);
 };
 
 // Deleting your own account ends the session server-side but clears nothing locally: the stored token stays put,

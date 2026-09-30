@@ -1,21 +1,14 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { UserContext } from '@rocket.chat/ui-contexts';
 import type { Filter, ObjectId } from 'mongodb';
 import type { ContextType, ReactNode } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
-import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
-import { useDeleteUser } from './hooks/useDeleteUser';
-import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
-import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
-import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
@@ -23,7 +16,6 @@ import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
 import { logout } from '../../meteor/accounts';
 import { Users, Rooms, Subscriptions } from '../../stores';
-import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 export type UserProviderProps = {
 	children: ReactNode;
@@ -59,25 +51,9 @@ const queryRoom = (
 const UserProvider = ({ children }: UserProviderProps) => {
 	const userId = userIdStore();
 
-	const user = Users.use((state) => {
-		if (!userId) return null;
-		return state.get(userId) ?? null;
-	});
-
-	const previousUserId = useRef(userId);
-	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
-	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
-	const [, setSamlInviteToken] = useSamlInviteToken();
-	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
-	const inviteTokenHash = useRouteParameter('hash');
-
-	useEmailVerificationWarning(user ?? undefined);
-	useClearRemovedRoomsHistory(userId);
-
-	useDeleteUser();
-	useUpdateAvatar();
-	useIdleConnection(userId);
-	useReloadAfterLogin(user);
+	const serverLanguage = Users.use((state) => (userId ? state.get(userId)?.language : undefined));
+	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
+	const [, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 
 	const querySubscriptions = useMemo(() => {
 		const createSubscriptionFactory =
@@ -128,10 +104,12 @@ const UserProvider = ({ children }: UserProviderProps) => {
 		};
 	}, []);
 
-	const contextValue = useMemo(
-		(): ContextType<typeof UserContext> => ({
+	const contextValue = useMemo((): ContextType<typeof UserContext> => {
+		const getUser = (): IUser | null => (userId ? (Users.use.getState().get(userId) ?? null) : null);
+
+		return {
 			userId,
-			user,
+			queryUser: () => [Users.use.subscribe, getUser],
 			queryPreference: <T,>(
 				key: string | ObjectId,
 				defaultValue?: T,
@@ -149,7 +127,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
 
 				const getSnapshot = (): T | undefined => {
 					return (
-						(user?.settings?.preferences?.[effectiveKey] as T | undefined) ??
+						(getUser()?.settings?.preferences?.[effectiveKey] as T | undefined) ??
 						defaultValue ??
 						settings.peek(`Accounts_Default_User_Preferences_${effectiveKey}`)
 					);
@@ -163,42 +141,18 @@ const UserProvider = ({ children }: UserProviderProps) => {
 			onLogout: (cb) => {
 				return ee.on('logout', cb);
 			},
-		}),
-		[userId, user, querySubscription, querySubscriptions],
-	);
+		};
+	}, [userId, querySubscription, querySubscriptions]);
 
-	// Mirror local preference changes into the live userLanguage state without hitting the server.
+	// When the server reports a language, overwrite both storage keys so every tab stays aligned.
 	useEffect(() => {
-		if (preferedLanguage === userLanguage) {
+		if (serverLanguage === undefined) {
 			return;
 		}
 
-		setUserLanguage(preferedLanguage);
-	}, [preferedLanguage, setUserLanguage, userLanguage]);
-
-	// When the server reports a new language, overwrite both storage keys so every tab stays aligned.
-	useEffect(() => {
-		if (user?.language !== undefined && user.language !== userLanguage) {
-			setUserLanguage(user.language);
-			setPreferedLanguage(user.language);
-		}
-	}, [setPreferedLanguage, setUserLanguage, user?.language, userLanguage]);
-
-	useEffect(() => {
-		if (!samlCredentialToken && !inviteTokenHash) {
-			setSamlInviteToken(null);
-		}
-	}, [inviteTokenHash, samlCredentialToken, setSamlInviteToken]);
-
-	const queryClient = useQueryClient();
-
-	useEffect(() => {
-		if (previousUserId.current && previousUserId.current !== userId) {
-			queryClient.clear();
-		}
-
-		previousUserId.current = userId;
-	}, [queryClient, userId]);
+		setUserLanguage(serverLanguage);
+		setPreferedLanguage(serverLanguage);
+	}, [serverLanguage, setPreferedLanguage, setUserLanguage]);
 
 	return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };

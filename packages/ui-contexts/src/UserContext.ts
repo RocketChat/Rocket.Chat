@@ -30,7 +30,7 @@ export type FindOptions<TSchema extends Document = Document> = {
 
 export type UserContextValue = {
 	userId: string | undefined;
-	user: IUser | null;
+	queryUser: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IUser | null];
 	queryPreference: <T>(
 		key: string | ObjectId,
 		defaultValue?: T,
@@ -53,7 +53,7 @@ export type UserContextValue = {
 
 export const UserContext = createContext<UserContextValue>({
 	userId: undefined,
-	user: null,
+	queryUser: () => [() => (): void => undefined, (): null => null],
 	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],

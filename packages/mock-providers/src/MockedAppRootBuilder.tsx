@@ -163,6 +163,8 @@ export class MockedAppRootBuilder {
 		dispatch: async () => undefined,
 	};
 
+	private userDocument: IUser | null = null;
+
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
 		onLogout: () => () => undefined,
@@ -173,7 +175,7 @@ export class MockedAppRootBuilder {
 			() => () => undefined,
 			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
 		], // apply query and option
-		user: null,
+		queryUser: () => [() => () => undefined, () => this.userDocument],
 		userId: undefined,
 	};
 
@@ -449,7 +451,7 @@ export class MockedAppRootBuilder {
 	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
-		this.user.user = {
+		this.userDocument = {
 			_id: 'john.doe',
 			username: 'john.doe',
 			name: 'John Doe',
@@ -466,14 +468,14 @@ export class MockedAppRootBuilder {
 
 	withAnonymous(): this {
 		this.user.userId = undefined;
-		this.user.user = null;
+		this.userDocument = null;
 
 		return this;
 	}
 
 	withUser(user: IUser): this {
 		this.user.userId = user._id;
-		this.user.user = user;
+		this.userDocument = user;
 
 		return this;
 	}
@@ -528,11 +530,11 @@ export class MockedAppRootBuilder {
 	}
 
 	withRole(role: string): this {
-		if (!this.user.user) {
+		if (!this.userDocument) {
 			throw new Error('user is not defined');
 		}
 
-		this.user.user.roles.push(role);
+		this.userDocument.roles.push(role);
 
 		const innerFn = this.authorization.queryRole;
 
