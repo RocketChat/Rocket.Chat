@@ -20,8 +20,8 @@ import { redactionFieldPaths } from './lib/redactor';
 import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { RealAppBridges } from '../../../app/apps/server/bridges';
-import type { HandleEvent } from '../../../app/apps/server/bridges/listeners';
+import { RealAppBridges } from '../../../server/modules/apps/bridges';
+import type { HandleEvent } from '../../../server/modules/apps/bridges/listeners';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -33,8 +33,8 @@ import {
 	AppVisitorsConverter,
 	AppRolesConverter,
 	AppContactsConverter,
-} from '../../../app/apps/server/converters';
-import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
+} from '../../../server/modules/apps/converters';
+import { AppThreadsConverter } from '../../../server/modules/apps/converters/threads';
 import { settings } from '../../../server/settings';
 import { canEnableApp } from '../lib/license/canEnableApp';
 
