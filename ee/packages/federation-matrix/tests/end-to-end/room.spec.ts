@@ -9,7 +9,6 @@ import {
 	getGroupHistory,
 	findRoomMember,
 	addUserToRoom,
-	addUserToRoomViaMethod,
 	addUserToRoomSlashCommand,
 	acceptRoomInvite,
 	rejectRoomInvite,
@@ -140,20 +139,17 @@ import { SynapseClient } from '../helper/synapse-client';
 					const channelName = `non-federated-channel-single-fed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 1 federated user
-					const response = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId],
-						extraData: {
-							federated: false,
-						},
-						config: rc1AdminRequestConfig,
-					});
-
-					// RC view: Verify the room creation failed
-					expect(response.status).toBe(400);
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [federationConfig.hs1.adminMatrixUserId],
+							extraData: {
+								federated: false,
+							},
+							config: rc1AdminRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-federated-users-in-non-federated-rooms' } });
 				});
 			});
 
@@ -162,20 +158,17 @@ import { SynapseClient } from '../helper/synapse-client';
 					const channelName = `non-federated-channel-multi-fed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 2 federated users
-					const response = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
-						extraData: {
-							federated: false,
-						},
-						config: rc1AdminRequestConfig,
-					});
-
-					// RC view: Verify the room creation failed
-					expect(response.status).toBe(400);
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
+							extraData: {
+								federated: false,
+							},
+							config: rc1AdminRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-federated-users-in-non-federated-rooms' } });
 				});
 			});
 
@@ -184,20 +177,17 @@ import { SynapseClient } from '../helper/synapse-client';
 					const channelName = `non-federated-channel-mixed-${Date.now()}`;
 
 					// RC view: Attempt to create a non-federated private room with 1 federated user and 1 local user
-					const response = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
-						extraData: {
-							federated: false,
-						},
-						config: rc1AdminRequestConfig,
-					});
-
-					// RC view: Verify the room creation failed
-					expect(response.status).toBe(400);
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
+							extraData: {
+								federated: false,
+							},
+							config: rc1AdminRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-federated-users-in-non-federated-rooms' } });
 				});
 			});
 		});
@@ -232,19 +222,17 @@ import { SynapseClient } from '../helper/synapse-client';
 			describe('Go to the members list and try to add a federated user', () => {
 				it('should not allow and show an error message', async () => {
 					// RC view: Attempt to add a federated user to the non-federated room via the REST invite endpoint
-					const [response] = await addUserToRoom({
-						usernames: [federationConfig.hs1.adminMatrixUserId],
-						rid: nonFederatedChannel._id,
-						type: 'p',
-						config: rc1AdminRequestConfig,
-					});
-
 					// The REST endpoint rejects the invite with the federation-specific error: the federated
 					// user already exists locally (a federated DM was created earlier), so it resolves and the
 					// federation guard rejects adding it to a non-federated room.
-					expect(response.status).toBe(400);
-					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+					await expect(
+						addUserToRoom({
+							usernames: [federationConfig.hs1.adminMatrixUserId],
+							rid: nonFederatedChannel._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-federated-users-in-non-federated-rooms' } });
 
 					// RC view: Verify the federated user was NOT added to the room's member list
 					const federatedUserInRoom = await findRoomMember(
@@ -279,9 +267,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					// The slash command returns success but broadcasts ephemeral messages
 					// instead of throwing errors
 					expect(response.body).toHaveProperty('success', true);
-					expect(response.body).toHaveProperty('message');
-					const messageData = JSON.parse(response.body.message);
-					expect(messageData).toHaveProperty('msg', 'result');
 
 					// Wait for the ephemeral message to be broadcast
 					const ephemeralMessage = await ddpListener.waitForEphemeralMessage(
@@ -1625,94 +1610,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					});
 				});
 			});
-
-			describe('Use the deprecated addUsersToRoom DDP method to', () => {
-				describe('Add a federated user', () => {
-					let channelName: string;
-					let federatedChannel: any;
-
-					beforeAll(async () => {
-						channelName = `federated-channel-ddp-single-${Date.now()}`;
-
-						// Create empty federated room without members
-						const createResponse = await createRoom({
-							type: 'p',
-							name: channelName,
-							members: [],
-							extraData: {
-								federated: true,
-							},
-							config: rc1AdminRequestConfig,
-						});
-
-						federatedChannel = createResponse.body.group;
-
-						expect(federatedChannel).toHaveProperty('_id');
-						expect(federatedChannel).toHaveProperty('name', channelName);
-						expect(federatedChannel).toHaveProperty('t', 'p');
-						expect(federatedChannel).toHaveProperty('federated', true);
-						expect(federatedChannel).toHaveProperty('federation');
-						expect((federatedChannel as any).federation).toHaveProperty('version', 1);
-
-						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
-						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
-
-						// Add federated user to the room via the deprecated addUsersToRoom DDP method
-						const addUserResponse = await addUserToRoomViaMethod({
-							usernames: [federationConfig.hs1.adminMatrixUserId],
-							rid: federatedChannel._id,
-							config: rc1AdminRequestConfig,
-						});
-
-						expect(addUserResponse.body).toHaveProperty('success', true);
-
-						// Accept invitation for the federated user
-						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
-						expect(acceptedRoomId).not.toBe('');
-					}, 15000);
-
-					it('should show the new user in the members list', async () => {
-						// RC view: Check in RC that both users are in the members list
-						const rc1AdminUserInRC = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.rc1.adminUser,
-							{ initialDelay: 0 },
-							rc1AdminRequestConfig,
-						);
-						const hs1AdminUserInRC = await findRoomMember(
-							federatedChannel._id,
-							federationConfig.hs1.adminMatrixUserId,
-							{ initialDelay: 0 },
-							rc1AdminRequestConfig,
-						);
-
-						expect(rc1AdminUserInRC).not.toBeNull();
-						expect(hs1AdminUserInRC).not.toBeNull();
-						expect(hs1AdminUserInRC?.federated).toBe(true);
-
-						// Synapse view: Check in Element (Matrix) that both users are in the members list
-						const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
-							delay: 2000,
-						});
-						expect(hs1AdminUserInSynapse).not.toBeNull();
-					});
-
-					it('should show the system message that the user joined', async () => {
-						// RC view: Get the room history to find the system messages
-						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
-						expect(Array.isArray(historyResponse.messages)).toBe(true);
-
-						// Look for 'uj' (user joined) system message after accepting the invite
-						const joinedMessage = historyResponse.messages.find(
-							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
-						);
-
-						expect(joinedMessage).toBeDefined();
-						expect(joinedMessage?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
-					});
-				});
-			});
 		});
 
 		describe('Accept/Reject invitation permissions', () => {
@@ -1742,20 +1639,22 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should not allow admin to accept invitation on behalf of another user', async () => {
 					// RC view: Admin tries to accept rc1User1's invitation
-					const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
-					expect(response.success).toBe(false);
-					expect(response.error).toBe(
-						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
-					);
+					await expect(acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig)).rejects.toMatchObject({
+						body: {
+							success: false,
+							error: 'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+						},
+					});
 				});
 
 				it('should not allow admin to reject invitation on behalf of another user', async () => {
 					// RC view: Admin tries to reject rc1User1's invitation
-					const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
-					expect(response.success).toBe(false);
-					expect(response.error).toBe(
-						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
-					);
+					await expect(rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig)).rejects.toMatchObject({
+						body: {
+							success: false,
+							error: 'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+						},
+					});
 				});
 			});
 		});
@@ -1869,8 +1768,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				}, 15000);
 
 				it('should fail when RC user tries to accept the revoked invitation', async () => {
-					const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
-					expect(acceptResponse.success).toBe(false);
+					await expect(acceptRoomInvite(rid, rc1AdminRequestConfig)).rejects.toMatchObject({ body: { success: false } });
 				});
 
 				it('should not have the subscription on the RC side after revoked invitation', async () => {

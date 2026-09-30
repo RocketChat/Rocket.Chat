@@ -8,7 +8,7 @@ import {
 	createUser,
 	deleteUser,
 	getRequestConfig,
-	getUserByUsername,
+	findUserByUsername,
 } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
@@ -40,7 +40,7 @@ const localUser = {
 	let hs1FirstContactApp: SynapseClient;
 
 	const forgetRemoteUserLocally = async () => {
-		const known = await getUserByUsername(remoteUser.matrixUserId, rc1AdminRequestConfig);
+		const known = await findUserByUsername(remoteUser.matrixUserId, rc1AdminRequestConfig);
 		if (known?._id) {
 			await deleteUser({ _id: known._id }, { confirmRelinquish: true }, rc1AdminRequestConfig);
 		}

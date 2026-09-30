@@ -8,7 +8,7 @@ import {
 	downloadFileAndVerifyBinary as downloadFileAndCompareBinary,
 } from '../../../../../apps/meteor/tests/data/file.helper';
 import { sendMessage } from '../../../../../apps/meteor/tests/data/messages.helper';
-import { createRoom, loadHistory } from '../../../../../apps/meteor/tests/data/rooms.helper';
+import { createRoom, getGroupHistory } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
@@ -94,7 +94,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -117,7 +117,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -159,7 +159,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -197,7 +197,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -232,7 +232,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// await new Promise((resolve) => setTimeout(resolve, 2000));
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -254,7 +254,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -306,7 +306,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -344,7 +344,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -422,7 +422,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -440,7 +440,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -474,7 +474,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -506,7 +506,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toContain(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 
@@ -532,7 +532,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 				});
@@ -549,7 +549,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -596,7 +596,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -629,7 +629,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
-					const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 					const rcMessage = historyResponse.messages.find((message: IMessage) => message.msg === messageText);
 					expect(rcMessage).toBeDefined();
 					expect(rcMessage?.msg).toBe(messageText);
@@ -730,8 +730,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(uploadResponse.message).toBeDefined();
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 
@@ -781,7 +781,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.image;
 
 						// RC view: Get the file from history to get download URL
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
@@ -808,8 +808,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(uploadResponse.message).toBeDefined();
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 
@@ -857,7 +857,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.pdf;
 
 						// RC view: Get the file from history to get download URL
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
@@ -884,8 +884,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(uploadResponse.message).toBeDefined();
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 
@@ -935,7 +935,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.video;
 
 						// RC view: Get the file from history to get download URL
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
@@ -962,8 +962,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(uploadResponse.message).toBeDefined();
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 
@@ -1013,7 +1013,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.audio;
 
 						// RC view: Get the file from history to get download URL
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
@@ -1040,8 +1040,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(uploadResponse.message).toBeDefined();
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 
@@ -1088,7 +1088,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.text;
 
 						// RC view: Get the file from history to get download URL
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
@@ -1149,8 +1149,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.image');
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
@@ -1170,7 +1170,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.image;
 
 						// RC view: Download and verify binary match from RC
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
 						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
@@ -1197,8 +1197,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
@@ -1216,7 +1216,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.pdf;
 
 						// RC view: Download and verify binary match from RC
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
 						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
@@ -1243,8 +1243,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.video');
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
@@ -1262,7 +1262,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.video;
 
 						// RC view: Download and verify binary match from RC
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
 						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
@@ -1289,8 +1289,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.audio');
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
@@ -1308,7 +1308,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.audio;
 
 						// RC view: Download and verify binary match from RC
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
 						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
@@ -1335,8 +1335,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
 
-						// RC view: Verify in RC loadHistory
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						// RC view: Verify in RC history
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage).toBeDefined();
 						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
@@ -1354,7 +1354,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						const fileInfo = testFiles.text;
 
 						// RC view: Download and verify binary match from RC
-						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
 						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
 						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
 						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
