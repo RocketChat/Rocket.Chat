@@ -13,6 +13,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
+		"test:e2e": "node --import tsx --test --test-concurrency=1 --test-force-exit 'tests/end-to-end/**/*.spec.ts'",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
@@ -30,8 +31,11 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:^",
 		"@types/node": "~22.19.21",
+		"@types/xmpp__client": "^0",
+		"@xmpp/client": "~0.14.0",
 		"eslint": "~9.39.5",
 		"jest": "~30.2.0",
+		"tsx": "~4.22.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
