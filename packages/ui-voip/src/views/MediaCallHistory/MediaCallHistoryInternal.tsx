@@ -1,8 +1,9 @@
 import type { CallHistoryItem, IInternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
-import { CallHistoryContextualBar, type CallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistoryActions';
+import { type CallHistoryInternalContact } from '../../definitions/callHistoryContacts';
+import { CallHistoryContextualBar } from '../CallHistoryContextualbar';
 
 type InternalCallEndpointData = Serialized<{
 	item: IInternalMediaCallHistoryItem;

@@ -1,8 +1,10 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { useWidgetExternalControls, usePeekMediaSessionState, type CallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
+
+import { useWidgetExternalControls, usePeekMediaSessionState } from '../../context';
+import { type CallHistoryInternalContact } from '../../definitions/callHistoryContacts';
 
 type UseMediaCallInternalHistoryActionsBaseOptions = {
 	contact: CallHistoryInternalContact;

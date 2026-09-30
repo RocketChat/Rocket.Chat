@@ -1,12 +1,13 @@
 import type { CallHistoryItem, IInternalMediaCallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
+import { useMemo } from 'react';
+
+import { useWidgetExternalControls, usePeekMediaSessionState } from '../../context';
 import {
-	CallHistoryContextualBar,
-	useWidgetExternalControls,
-	usePeekMediaSessionState,
+	isCallHistoryExternalContact,
 	type CallHistoryExternalContact,
 	type CallHistoryUnknownContact,
-} from '@rocket.chat/ui-voip';
-import { useMemo } from 'react';
+} from '../../definitions/callHistoryContacts';
+import { CallHistoryContextualBar } from '../CallHistoryContextualbar';
 
 type ExternalCallEndpointData = Serialized<{
 	item: Exclude<CallHistoryItem, IInternalMediaCallHistoryItem>;
@@ -48,7 +49,7 @@ const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalPro
 	const { toggleWidget } = useWidgetExternalControls();
 
 	const actions = useMemo(() => {
-		if (state !== 'available') {
+		if (state !== 'available' || !isCallHistoryExternalContact(contact)) {
 			return {};
 		}
 		return {

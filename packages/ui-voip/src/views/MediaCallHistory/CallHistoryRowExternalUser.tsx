@@ -1,8 +1,11 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { CallHistoryExternalContact, CallHistoryTableRowProps } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { usePeekMediaSessionState, useWidgetExternalControls } from '../../context';
+import type { CallHistoryExternalContact } from '../../definitions/callHistoryContacts';
+import type { CallHistoryTableRowProps } from '../MediaCallHistoryTable';
+import { CallHistoryTableRow } from '../MediaCallHistoryTable';
 
 export type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryExternalContact>, 'onClick' | 'menu'> & {
 	onClick: (historyId: string) => void;
