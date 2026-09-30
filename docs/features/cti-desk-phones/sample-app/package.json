@@ -1,0 +1,10 @@
+{
+    "name": "cti-gateway-sample",
+    "version": "0.0.1",
+    "description": "Reference integration between Rocket.Chat and a CTI gateway for desk-phone calls",
+    "private": true,
+    "devDependencies": {
+        "@rocket.chat/apps-engine": "1.44.0",
+        "typescript": "~5.9.3"
+    }
+}
