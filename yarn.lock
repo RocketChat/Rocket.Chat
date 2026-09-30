@@ -9722,7 +9722,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.92.0":
+"@rocket.chat/fuselage@npm:0.92.0":
   version: 0.92.0
   resolution: "@rocket.chat/fuselage@npm:0.92.0"
   dependencies:
@@ -9741,6 +9741,28 @@ __metadata:
     react-dom: "*"
     react-virtuoso: "*"
   checksum: 10/238858d85e4b1e4666852fd0579249bcfe39cb3419b5baa2af3170ec178a0b7ff0cc8f529b6fd109eac5910f1be72f6514c360d5d9a76b343ed4642f93524f44
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage@patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-6fa39ac4c9.patch":
+  version: 0.92.0
+  resolution: "@rocket.chat/fuselage@patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-6fa39ac4c9.patch::version=0.92.0&hash=11911c"
+  dependencies:
+    "@rocket.chat/css-in-js": "npm:^0.33.1"
+    "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
+    "@rocket.chat/memo": "npm:~0.31.25"
+    invariant: "npm:^2.2.4"
+    react-aria: "npm:~3.37.0"
+    react-is: "npm:~19.2.8"
+    react-keyed-flatten-children: "npm:~5.1.3"
+    react-stately: "npm:~3.35.0"
+  peerDependencies:
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/icons": "*"
+    react: "*"
+    react-dom: "*"
+    react-virtuoso: "*"
+  checksum: 10/00798d446e3e83ea828a0fbf9eb7d3b2f303bdfa43f6fdef4c59b101e8bea654dc6fb6135b1ce55509a7dd3a64f162ee4d9fe82aed369a38a4cff33c3cc7382e
   languageName: node
   linkType: hard
 
@@ -11197,7 +11219,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
+"@rocket.chat/storybook-dark-mode@npm:~4.2.1, @rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode"
   dependencies:

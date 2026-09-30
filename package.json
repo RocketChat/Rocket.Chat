@@ -34,6 +34,7 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
+		"@rocket.chat/fuselage@npm:^0.92.0": "patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-6fa39ac4c9.patch",
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
 		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"browserslist": "^4.28.7",
