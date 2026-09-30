@@ -12,7 +12,7 @@ export {
 	type RoomToolboxActionConfig,
 	type RenderToolboxItemParams,
 } from './RoomToolboxContext';
-export { ServerContext, type ServerContextValue, type UploadResult } from './ServerContext';
+export { ServerContext, type ServerConnectionStatus, type ServerContextValue, type UploadResult } from './ServerContext';
 export { SessionContext, type SessionContextValue } from './SessionContext';
 export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, type ToastMessagesContextValue } from './ToastMessagesContext';

@@ -17,11 +17,18 @@ export type UploadResult = {
 	[key: string]: unknown;
 };
 
-export type ServerContextValue = {
+export type ServerConnectionStatus = {
 	connected: boolean;
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 	retryCount: number;
 	retryTime?: number | undefined;
+};
+
+export type ServerContextValue = {
+	/** Kept out of the value itself so a status change re-renders only the components that read it. */
+	subscribeToConnectionStatus: (onStoreChange: () => void) => () => void;
+	/** Must return the same object until the status changes. */
+	getConnectionStatus: () => ServerConnectionStatus;
 	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
@@ -59,10 +66,11 @@ export type ServerContextValue = {
 	reconnect: () => void;
 };
 
+const connectedStatus: ServerConnectionStatus = { connected: true, status: 'connected', retryCount: 0 };
+
 export const ServerContext = createContext<ServerContextValue>({
-	connected: true,
-	status: 'connected',
-	retryCount: 0,
+	subscribeToConnectionStatus: () => () => undefined,
+	getConnectionStatus: () => connectedStatus,
 	info: undefined,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {

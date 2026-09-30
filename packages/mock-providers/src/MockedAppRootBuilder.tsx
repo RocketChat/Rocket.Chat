@@ -28,6 +28,7 @@ import type {
 	DeviceContext,
 	LoginService,
 	ModalContextValue,
+	ServerConnectionStatus,
 	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
@@ -103,10 +104,11 @@ export class MockedAppRootBuilder {
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
+	private connectionStatus: ServerConnectionStatus = { connected: true, status: 'connected', retryCount: 0 };
+
 	private server: ContextType<typeof ServerContext> = {
-		connected: true,
-		status: 'connected',
-		retryCount: 0,
+		subscribeToConnectionStatus: () => () => undefined,
+		getConnectionStatus: () => this.connectionStatus,
 		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
@@ -753,6 +755,11 @@ export class MockedAppRootBuilder {
 
 	withServerContext(partial: Partial<ServerContextValue>): this {
 		this.server = { ...this.server, ...partial };
+		return this;
+	}
+
+	withConnectionStatus(partial: Partial<ServerConnectionStatus>): this {
+		this.connectionStatus = { ...this.connectionStatus, ...partial };
 		return this;
 	}
 
