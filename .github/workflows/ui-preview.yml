@@ -5,7 +5,7 @@ name: UI Preview
 on:
   push:
     branches: [develop]
-    paths: &paths
+    paths:
       - 'apps/meteor/client/**'
       - 'apps/meteor/app/**'
       - 'apps/meteor/ee/client/**'
@@ -14,9 +14,9 @@ on:
       - 'packages/**'
       - 'ee/packages/**'
       - 'yarn.lock'
+  # No path filter: it would also gate `unlabeled`/`closed`, leaving a preview behind. The `preview` label gates builds.
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled, closed]
-    paths: *paths
 
 concurrency:
   # Adding or removing any other label must not cancel a preview build in progress.
@@ -121,8 +121,9 @@ jobs:
           GH_TOKEN: ${{ secrets.CR_PAT }}
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
         run: |
-          gh api --paginate "$PACKAGE" -q '.[] | select(.metadata.container.tags == []) | .id' |
-            xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
+          # List every page before deleting, or deletions shift the pages still to be read.
+          ids=$(gh api --paginate "$PACKAGE" -q '.[] | select(.metadata.container.tags == []) | .id')
+          printf '%s' "$ids" | xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
@@ -173,9 +174,9 @@ jobs:
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
           NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          gh api --paginate "$PACKAGE" \
-            -q ".[] | select(any(.metadata.container.tags[]; . == \"pr-$NUMBER\" or startswith(\"pr-$NUMBER-\"))) | .id" |
-            xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
+          ids=$(gh api --paginate "$PACKAGE" \
+            -q ".[] | select(any(.metadata.container.tags[]; . == \"pr-$NUMBER\" or startswith(\"pr-$NUMBER-\"))) | .id")
+          printf '%s' "$ids" | xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
 
       - name: Update PR comment
         env:
