@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
+import { act, render, screen, waitFor } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 
@@ -23,11 +24,10 @@ const appRoot = mockAppRoot().withEndpoint('GET', '/v1/emoji-custom.all', () => 
 }));
 
 describe('CustomEmoji Component', () => {
-	const mockRef = { current: jest.fn() };
 	const mockOnClick = jest.fn();
 
 	it('renders emoji list', async () => {
-		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
+		render(<CustomEmoji onClick={mockOnClick} />, {
 			wrapper: appRoot.build(),
 		});
 
@@ -37,7 +37,7 @@ describe('CustomEmoji Component', () => {
 	});
 
 	it("renders emoji's aliases as comma-separated values when aliases is an array", async () => {
-		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
+		render(<CustomEmoji onClick={mockOnClick} />, {
 			wrapper: appRoot.build(),
 		});
 
@@ -47,7 +47,7 @@ describe('CustomEmoji Component', () => {
 	});
 
 	it("renders emoji's aliases values when aliases is a string", async () => {
-		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
+		render(<CustomEmoji onClick={mockOnClick} />, {
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/v1/emoji-custom.all', () => ({
 					count: 1,
@@ -71,5 +71,20 @@ describe('CustomEmoji Component', () => {
 		await waitFor(() => {
 			expect(screen.getByText('happy')).toBeInTheDocument();
 		});
+	});
+
+	it('refetches the list when its query key is invalidated', async () => {
+		const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+		const getEmojiList = jest.fn(() => ({ count: 0, offset: 0, total: 0, success: true as const, emojis: [] }));
+
+		render(<CustomEmoji onClick={mockOnClick} />, {
+			wrapper: mockAppRoot().withQueryClient(queryClient).withEndpoint('GET', '/v1/emoji-custom.all', getEmojiList).build(),
+		});
+
+		await waitFor(() => expect(getEmojiList).toHaveBeenCalledTimes(1));
+
+		await act(() => queryClient.invalidateQueries({ queryKey: ['getEmojiList'] }));
+
+		expect(getEmojiList).toHaveBeenCalledTimes(2);
 	});
 });

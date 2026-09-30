@@ -13,18 +13,16 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 
 export type CustomEmojiProps = {
-	reload: MutableRefObject<() => void>;
 	onClick: (emoji: string) => () => void;
 };
 
-const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
+const CustomEmoji = ({ onClick }: CustomEmojiProps) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -61,10 +59,6 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		queryKey: ['getEmojiList', query],
 		queryFn: () => getEmojiList(query),
 	});
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
 
 	return (
 		<>

@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +26,7 @@ type RoomFilters = {
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
-const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const RoomsTable = () => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -63,10 +62,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		queryKey: ['rooms', query, 'admin'],
 		queryFn: async () => getAdminRooms(query),
 	});
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
 
 	useEffect(() => {
 		prevRoomFilterText.current = searchText;

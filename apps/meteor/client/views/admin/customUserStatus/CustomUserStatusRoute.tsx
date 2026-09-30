@@ -9,7 +9,8 @@ import {
 	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect } from 'react';
 
 import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
@@ -50,11 +51,11 @@ const CustomUserStatusRoute = () => {
 		route.push({});
 	}, [route]);
 
-	const reload = useRef(() => null);
+	const queryClient = useQueryClient();
 
 	const handleReload = useCallback(() => {
-		reload.current();
-	}, [reload]);
+		queryClient.invalidateQueries({ queryKey: ['custom-user-statuses'] });
+	}, [queryClient]);
 
 	if (!canManageUserStatus) {
 		return <NotAuthorizedPage />;
@@ -71,7 +72,7 @@ const CustomUserStatusRoute = () => {
 					</ButtonGroup>
 				</PageHeader>
 				<PageContent>
-					<CustomUserStatusTable reload={reload} onClick={handleItemClick} />
+					<CustomUserStatusTable onClick={handleItemClick} />
 				</PageContent>
 			</Page>
 			{context && (

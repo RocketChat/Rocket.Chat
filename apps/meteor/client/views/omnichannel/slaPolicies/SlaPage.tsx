@@ -10,7 +10,8 @@ import {
 	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
-import { useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SlaEditWithData from './SlaEditWithData';
@@ -19,15 +20,15 @@ import SlaTable from './SlaTable';
 
 const SlaPage = () => {
 	const { t } = useTranslation();
-	const reload = useRef(() => null);
+	const queryClient = useQueryClient();
 
 	const slaPoliciesRoute = useRoute('omnichannel-sla-policies');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
 	const handleReload = useCallback(() => {
-		reload.current();
-	}, []);
+		queryClient.invalidateQueries({ queryKey: ['/v1/livechat/sla'] });
+	}, [queryClient]);
 
 	const handleClick = useStableCallback(() =>
 		slaPoliciesRoute.push({
@@ -48,7 +49,7 @@ const SlaPage = () => {
 					</ButtonGroup>
 				</PageHeader>
 				<PageContent>
-					<SlaTable reload={reload} />
+					<SlaTable />
 				</PageContent>
 			</Page>
 			{context && (

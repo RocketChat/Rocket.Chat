@@ -1,7 +1,6 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
-import { useRef } from 'react';
 import { action } from 'storybook/actions';
 
 import CustomSoundsTable from './CustomSoundsTable';
@@ -17,10 +16,7 @@ export default {
 	],
 } satisfies Meta<typeof CustomSoundsTable>;
 
-const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
-	const reloadRef = useRef(() => undefined);
-	return <CustomSoundsTable {...args} reload={reloadRef} />;
-};
+const Template: StoryFn<typeof CustomSoundsTable> = (args) => <CustomSoundsTable {...args} />;
 
 export const Default = {
 	render: Template,
