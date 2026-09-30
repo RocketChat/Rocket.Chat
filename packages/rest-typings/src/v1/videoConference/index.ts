@@ -57,6 +57,17 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfRingProps) => { rang: boolean };
 	};
 
+	/**
+	 * What a member needs to set their call up. The provider's own key is present only when that provider needs
+	 * configuring: `livekit` carries the server, a token for this user and the room to join.
+	 */
+	'/v1/video-conference.callConfig': {
+		GET: (params: { callId: string }) => {
+			providerName: string;
+			livekit?: { serverUrl: string; token: string; roomName: string };
+		};
+	};
+
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCallIdProps) => void;
 	};
