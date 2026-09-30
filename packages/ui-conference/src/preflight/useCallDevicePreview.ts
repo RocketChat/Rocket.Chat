@@ -33,9 +33,10 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 		let cancelled = false;
 		let opened: MediaStream | undefined;
 
-		// A chosen device is asked for exactly; with none chosen, whatever the browser prefers. Audio only: the
-		// preview's camera is a separate track, and opening it here too would light it twice.
-		const constraints: MediaStreamConstraints = { audio: micId ? { deviceId: { exact: micId } } : true, video: false };
+		// A chosen device is preferred rather than required: one remembered from an earlier call can be gone, and the
+		// browser's choice beats no microphone. Audio only: the preview's camera is a separate track, and opening it
+		// here too would light it twice.
+		const constraints: MediaStreamConstraints = { audio: micId ? { deviceId: micId } : true, video: false };
 
 		navigator.mediaDevices
 			.getUserMedia(constraints)

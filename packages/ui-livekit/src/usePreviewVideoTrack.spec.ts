@@ -29,7 +29,7 @@ it('opens the chosen camera, and stops it when the preflight goes', async () => 
 	const { result, unmount } = renderHook(() => usePreviewVideoTrack(true, { deviceId: 'brio' }));
 
 	await waitFor(() => expect(result.current.track).toBe(track));
-	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledWith({ deviceId: { exact: 'brio' } });
+	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledWith({ deviceId: 'brio' });
 
 	unmount();
 	expect(track.stop).toHaveBeenCalledTimes(1);
@@ -73,5 +73,33 @@ it('does not show the stopped track again when the camera comes back on', async 
 
 	rerender({ enabled: false });
 	rerender({ enabled: true });
+	expect(result.current.track).toBeUndefined();
+});
+
+// Trying again is not failing again: the note waits for this attempt's own answer.
+it('does not show the last failure while the next attempt is still opening', async () => {
+	mockedCreateLocalVideoTrack.mockRejectedValueOnce(new Error('NotReadableError')).mockReturnValueOnce(new Promise(() => undefined));
+
+	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }), {
+		initialProps: { deviceId: 'brio' },
+	});
+	await waitFor(() => expect(result.current.error).toBe(true));
+
+	rerender({ deviceId: 'facetime' });
+	expect(result.current.error).toBe(false);
+});
+
+// The previous camera is stopped the moment another is chosen; its last frame is not a preview of anything.
+it('shows no camera while the newly chosen one opens', async () => {
+	const first = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValueOnce(first).mockReturnValueOnce(new Promise(() => undefined));
+
+	const { result, rerender } = renderHook(({ deviceId }) => usePreviewVideoTrack(true, { deviceId }), {
+		initialProps: { deviceId: 'brio' },
+	});
+	await waitFor(() => expect(result.current.track).toBe(first));
+
+	rerender({ deviceId: 'facetime' });
+	expect(first.stop).toHaveBeenCalled();
 	expect(result.current.track).toBeUndefined();
 });

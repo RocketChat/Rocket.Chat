@@ -30,7 +30,7 @@ const PreflightPreview = () => {
 		[track],
 	);
 
-	const failed = preferences.cam && (preview.error || previewVideo.error);
+	const failed = preferences.cam && previewVideo.error;
 
 	return (
 		<>
