@@ -31,3 +31,5 @@ export { default as FilterByText, type FilterByTextProps } from './FilterByText'
 export * from './FormSkeleton';
 export * from './UserCard';
 export * from './UserInfo';
+export { default as TwoFactorModal, type TwoFactorModalProps } from './TwoFactorModal/TwoFactorModal';
+export { default as TwoFactorTotpModal } from './TwoFactorModal/TwoFactorTotpModal';

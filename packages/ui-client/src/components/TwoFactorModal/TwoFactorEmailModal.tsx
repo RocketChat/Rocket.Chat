@@ -1,25 +1,35 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { GenericModal } from '../Modal';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-export type TwoFactorTotpModalProps = {
+export type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
-	onDismiss?: () => void;
 	invalidAttempt?: boolean;
-};
+} & (
+	| {
+			emailOrUsername: string;
+			challengeId?: never;
+	  }
+	| {
+			challengeId: string;
+			emailOrUsername?: never;
+	  }
+);
 
-type TwoFactorTotpFormData = {
+type TwoFactorEmailFormData = {
 	code: string;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUsername, challengeId }: TwoFactorEmailModalProps) => {
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
 	const {
@@ -29,7 +39,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		setValue,
 		clearErrors,
 		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorTotpFormData>({
+	} = useForm<TwoFactorEmailFormData>({
 		defaultValues: { code: '' },
 	});
 
@@ -42,9 +52,28 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		}
 	}, [invalidAttempt, setError, t]);
 
+	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
+	const sendEmailCodeByChallengeId = useEndpoint('POST', '/v1/twoFactorChallenges.sendEmailCode');
+
+	const onClickResendCode = async (): Promise<void> => {
+		try {
+			if (emailOrUsername) {
+				await sendEmailCode({ emailOrUsername });
+			} else if (challengeId) {
+				await sendEmailCodeByChallengeId({ challengeId });
+			}
+			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
+		} catch (error) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('error-email-send-failed', { message: error }),
+			});
+		}
+	};
+
 	const onSubmit = handleSubmit(async ({ code }) => {
 		try {
-			await onConfirm(code, Method.TOTP);
+			await onConfirm(code, Method.EMAIL);
 		} catch (error) {
 			setError('code', {
 				type: 'manual',
@@ -59,17 +88,16 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
-			title={t('Enter_TOTP_password')}
+			title={t('Enter_authentication_code')}
 			onClose={onClose}
-			onDismiss={onDismiss}
 			variant='warning'
 			confirmDisabled={isSubmitting}
-			tagline={t('Two-factor_authentication')}
+			tagline={t('Email_two-factor_authentication')}
 			icon={null}
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}</FieldLabel>
+					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='code'
@@ -94,8 +122,11 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 					{errors.code && <FieldError>{errors.code.message}</FieldError>}
 				</Field>
 			</FieldGroup>
+			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small marginBlockStart={24}>
+				{t('Cloud_resend_email')}
+			</Button>
 		</GenericModal>
 	);
 };
 
-export default TwoFactorTotpModal;
+export default TwoFactorEmailModal;

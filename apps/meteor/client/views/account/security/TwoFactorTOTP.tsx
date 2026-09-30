@@ -1,5 +1,6 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { TwoFactorTotpModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
@@ -10,7 +11,6 @@ import qrcode from 'yaqrcode';
 
 import BackupCodesModal from './BackupCodesModal';
 import TextCopy from '../../../components/TextCopy';
-import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 import { usersQueryKeys } from '../../../lib/queryKeys';
 
 type TwoFactorTOTPFormData = {

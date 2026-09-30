@@ -1,13 +1,10 @@
 import { SHA256 } from '@rocket.chat/sha256';
-import { imperativeModal } from '@rocket.chat/ui-client';
-import { lazy } from 'react';
+import { imperativeModal, TwoFactorModal } from '@rocket.chat/ui-client';
 
 import type { LoginCallback } from './overrideLoginMethod';
 import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 import { getUser } from '../user';
-
-const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
