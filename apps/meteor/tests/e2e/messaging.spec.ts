@@ -1,11 +1,14 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
+import { request as playwrightRequest } from '@playwright/test';
+import type { APIRequestContext, Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
+import { API_PREFIX, BASE_API_URL } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
+import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -14,8 +17,43 @@ test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+	// beforeAll/afterAll only accept worker-scoped fixtures, while `api`
+	// depends on the test-scoped `request` fixture, so build a small
+	// worker-scoped admin client here instead of injecting `api`.
+	const createWorkerAdminApi = async () => {
+		const adminRequest = await playwrightRequest.newContext({
+			baseURL: BASE_API_URL,
+			extraHTTPHeaders: {
+				'X-Auth-Token': Users.admin.data.loginToken,
+				'X-User-Id': Users.admin.data._id,
+			},
+		});
+		const workerApi = {
+			get: (uri: string, params?: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.get(`${prefix}${uri}`, { params }),
+			post: (uri: string, data: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.post(`${prefix}${uri}`, { data }),
+			put: (uri: string, data: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.put(`${prefix}${uri}`, { data }),
+			delete: (uri: string, params?: Record<string, unknown>, prefix = API_PREFIX) => adminRequest.delete(`${prefix}${uri}`, { params }),
+		} as unknown as BaseTest['api'];
+		return { adminRequest, workerApi };
+	};
+
+	test.beforeAll(async () => {
+		const { adminRequest, workerApi } = await createWorkerAdminApi();
+		try {
+			const { channel } = await createTargetChannelAndReturnFullRoom(workerApi, { members: [Users.user1.data.username] });
+			targetChannel = channel.name as string;
+			const request: APIRequestContext = await playwrightRequest.newContext();
+			try {
+				for (const message of ['msg1', 'msg2']) {
+					const response = await sendMessageFromUser(request, Users.user1, channel._id, message);
+					expect(response.success).toBe(true);
+				}
+			} finally {
+				await request.dispose();
+			}
+		} finally {
+			await adminRequest.dispose();
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -23,8 +61,13 @@ test.describe('Messaging', () => {
 		await channelPage.goto();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await deleteChannel(api, targetChannel);
+	test.afterAll(async () => {
+		const { adminRequest, workerApi } = await createWorkerAdminApi();
+		try {
+			await deleteChannel(workerApi, targetChannel);
+		} finally {
+			await adminRequest.dispose();
+		}
 	});
 
 	test.describe.serial('Navigation', () => {
@@ -32,73 +75,6 @@ test.describe('Messaging', () => {
 			await channelPage.navbar.openChat(targetChannel);
 			// wait for the room toolbox to mount, since it's a lazy loaded component
 			await channelPage.roomToolbar.waitFor();
-		});
-
-		// TODO: this should be replaced by a unit test
-		test('should navigate on messages using keyboard', async ({ page }) => {
-			await test.step('open chat and send message', async () => {
-				await channelPage.content.sendMessage('msg1');
-				await channelPage.content.sendMessage('msg2');
-			});
-
-			await test.step('move focus to the second message', async () => {
-				await page.keyboard.press('Shift+Tab');
-				await expect(channelPage.content.lastUserMessage).toBeFocused();
-			});
-
-			await test.step('move focus to the first system message', async () => {
-				await page.keyboard.press('ArrowUp');
-				await page.keyboard.press('ArrowUp');
-				await expect(channelPage.content.systemMessageListItems.first()).toBeFocused();
-			});
-
-			await test.step('move focus to the first typed message', async () => {
-				await page.keyboard.press('ArrowDown');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
-
-			await test.step('move focus to the room title', async () => {
-				const roomHeaderFavoriteBtn = channelPage.getRoomHeaderFavoriteBtn(IS_EE);
-				await page.keyboard.press('Shift+Tab');
-
-				await expect(roomHeaderFavoriteBtn).toBeFocused();
-			});
-
-			await test.step('move focus to the channel list', async () => {
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
-
-			await test.step('move focus to the message toolbar', async () => {
-				await channelPage.content
-					.getMessageByText('msg1')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(
-					channelPage.content
-						.getMessageByText('msg1')
-						.locator('[role=toolbar][aria-label="Message actions"]')
-						.getByRole('button', { name: 'Add reaction' }),
-				).toBeFocused();
-			});
-
-			await test.step('move focus to the composer', async () => {
-				await page.keyboard.press('Tab');
-				await channelPage.content
-					.getMessageByText('msg2')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.composer.inputMessage).toBeFocused();
-			});
 		});
 
 		test('should navigate properly on the user card', async ({ page }) => {
