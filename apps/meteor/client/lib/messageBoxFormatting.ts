@@ -66,7 +66,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Multi_line_code',
 		icon: 'multiline',
-		pattern: '```\n{{text}}\n``` ',
+		pattern: '```\n{{text}}\n```',
 	},
 	{
 		label: 'Bulleted_list',

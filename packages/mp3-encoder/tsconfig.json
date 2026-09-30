@@ -10,10 +10,5 @@
 		"noFallthroughCasesInSwitch": false
 	},
 	"include": ["src/**/*"],
-	"typedocOptions": {
-		"entryPoints": ["src/index.ts"],
-		"out": "../../static/mp3-encoder",
-		"skipErrorChecking": true
-	},
 	"exclude": ["./dist", "./jest.config.ts"]
 }

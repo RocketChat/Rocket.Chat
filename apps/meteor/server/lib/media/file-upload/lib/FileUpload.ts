@@ -696,27 +696,55 @@ export const FileUpload = {
 		fileUrl: string,
 		forceDownload: boolean,
 		request: typeof http | typeof https,
-		_req: http.IncomingMessage,
+		req: http.IncomingMessage,
 		res: http.ServerResponse,
 	) {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
-		request.get(fileUrl, (fileRes) => {
-			if (fileRes.statusCode !== 200) {
-				res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
+		const { range, 'if-range': ifRange } = req.headers;
+		const headers: http.OutgoingHttpHeaders = { ...(range && { range }), ...(typeof ifRange === 'string' && { 'if-range': ifRange }) };
+
+		request.get(fileUrl, { headers }, (fileRes) => {
+			const { statusCode = 500 } = fileRes;
+
+			if (statusCode === 416) {
+				fileRes.resume();
+				if (fileRes.headers['content-range']) {
+					res.setHeader('content-range', fileRes.headers['content-range']);
+				}
+				res.writeHead(416);
+				res.end();
+				return;
+			}
+
+			if (statusCode !== 200 && statusCode !== 206) {
+				fileRes.resume();
+				res.setHeader('x-rc-proxyfile-status', String(statusCode));
 				res.setHeader('content-length', 0);
 				res.writeHead(500);
 				res.end();
 				return;
 			}
 
-			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
+			const headersToProxy = [
+				'accept-ranges',
+				'age',
+				'cache-control',
+				'content-length',
+				'content-range',
+				'content-type',
+				'date',
+				'etag',
+				'expired',
+				'last-modified',
+			];
 
 			headersToProxy.forEach((header) => {
 				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
 			});
 
-			fileRes.pipe(res);
+			res.statusCode = statusCode;
+			stream.pipeline(fileRes, res, () => undefined);
 		});
 	},
 

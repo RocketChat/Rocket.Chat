@@ -1767,6 +1767,10 @@ export const roomEndpoints = API.v1
 				403: validateForbiddenErrorResponse,
 				404: validateNotFoundErrorResponse,
 			},
+			rateLimiterOptions: {
+				numRequestsAllowed: 20,
+				intervalTimeInMS: 10000,
+			},
 		},
 		async function action() {
 			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
