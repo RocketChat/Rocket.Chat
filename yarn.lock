@@ -9150,12 +9150,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
   dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
     "@types/debug": "npm:^4.1.13"
     cron: "npm:~1.8.2"
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     eslint: "npm:~9.39.5"
     human-interval: "npm:^2.0.1"
+    jest: "npm:~30.2.0"
     moment-timezone: "npm:~0.5.48"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"

@@ -615,6 +615,9 @@ export class Agenda extends EventEmitter {
 		}
 
 		await this._ready;
+		if (this._processInterval) {
+			return;
+		}
 		debug('Agenda.start called, creating interval to call processJobs every [%dms]', this._processEvery);
 		this._processInterval = setInterval(() => this.processJobs(), this._processEvery || defaultInterval);
 		process.nextTick(() => this.processJobs());
