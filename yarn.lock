@@ -9817,7 +9817,7 @@ __metadata:
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.5"
     date-fns: "npm:~4.1.0"
-    dompurify: "npm:~3.4.14"
+    dompurify: "npm:~3.4.16"
     eslint: "npm:~9.39.5"
     highlight.js: "npm:11.8.0"
     i18next: "npm:~26.4.2"
@@ -10041,7 +10041,7 @@ __metadata:
     cssnano: "npm:^7.1.9"
     date-fns: "npm:~4.1.0"
     desvg-loader: "npm:^0.1.0"
-    dompurify: "npm:~3.4.14"
+    dompurify: "npm:~3.4.16"
     emoji-mart: "npm:^3.0.1"
     eslint: "npm:~9.39.5"
     file-loader: "npm:^6.2.0"
@@ -10447,7 +10447,7 @@ __metadata:
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     docker-compose: "npm:^0.24.8"
-    dompurify: "npm:~3.4.14"
+    dompurify: "npm:~3.4.16"
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
@@ -11401,7 +11401,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.5"
-    dompurify: "npm:~3.4.14"
+    dompurify: "npm:~3.4.16"
     eslint: "npm:~9.39.5"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.2.0"
@@ -11771,7 +11771,7 @@ __metadata:
     "@testing-library/react": "npm:~16.3.3"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.5"
-    dompurify: "npm:~3.4.14"
+    dompurify: "npm:~3.4.16"
     eslint: "npm:~9.39.5"
     i18next: "npm:~26.4.2"
     react: "npm:~19.2.8"
@@ -21429,15 +21429,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:~3.4.14":
-  version: 3.4.14
-  resolution: "dompurify@npm:3.4.14"
+"dompurify@npm:~3.4.16":
+  version: 3.4.16
+  resolution: "dompurify@npm:3.4.16"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10/e1948f825c9ea5dfc2d2adfdab60d230ccd593091cdf8ac30676b86df6bd1f97ab49e95678a164cbf3aa48d40304ad6dd58a35799261205142d9231aad357dae
+  checksum: 10/a571d0e2bede4f739666afd640398a86854abd27c71ce0724910249e2fd2ca7ddb8098a9ab579d3a5b39058419af694421f8fe859a81fd6d8acda16019a8ab9d
   languageName: node
   linkType: hard
 
