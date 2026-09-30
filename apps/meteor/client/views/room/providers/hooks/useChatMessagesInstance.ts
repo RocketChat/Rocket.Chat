@@ -1,6 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 
 import { useInstance } from './useInstance';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
@@ -23,6 +23,7 @@ export function useChatMessagesInstance({
 	const subscription = useRoomSubscription();
 	const actionManager = useUiKitActionManager();
 	const e2eRoomState = useE2EERoomState(rid);
+	const emojiPicker = useEmojiPicker();
 
 	const chatMessages = useInstance(() => {
 		const instance = new ChatMessages({ rid, tmid, uid, actionManager });
@@ -42,7 +43,9 @@ export function useChatMessagesInstance({
 		}
 	}, [subscription, chatMessages?.readStateManager]);
 
-	chatMessages.emojiPicker = useEmojiPicker();
+	useLayoutEffect(() => {
+		chatMessages.emojiPicker = emojiPicker;
+	}, [chatMessages, emojiPicker]);
 
 	return chatMessages;
 }
