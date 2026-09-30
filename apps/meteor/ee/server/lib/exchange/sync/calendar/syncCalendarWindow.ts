@@ -1,4 +1,5 @@
 import { Calendar } from '@rocket.chat/core-services';
+import type { CalendarBatchResult } from '@rocket.chat/core-services';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
@@ -40,6 +41,7 @@ const toCalendarEvent = (uid: IUser['_id'], event: ExchangeEventUpsert): Omit<In
 	uid,
 	externalId: event.externalId,
 	source: 'outlook',
+	...(event.seriesMasterId && { seriesMasterId: event.seriesMasterId }),
 	subject: event.subject,
 	description: event.description,
 	startTime: event.startTime,
@@ -59,6 +61,8 @@ type Collected = {
 	removals: Set<string>;
 	/** Present only when a provider handed over a complete set for the window. */
 	keepExternalIds?: string[];
+	/** Series whose whole expansion the run carried, so what is stored for them and missing has been removed. */
+	resyncedSeries: string[];
 	cursor?: string;
 };
 
@@ -70,6 +74,7 @@ const collectPages = async (
 ): Promise<Collected> => {
 	const upserts = new Map<string, ExchangeEventUpsert>();
 	const removals = new Set<string>();
+	const resyncedSeries = new Set<string>();
 	let keepExternalIds: string[] | undefined;
 	let cursor = startCursor;
 	let pages = 0;
@@ -100,6 +105,8 @@ const collectPages = async (
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
 		}
 
+		page.resyncedSeries?.forEach((id) => resyncedSeries.add(id));
+
 		partial = partial || page.coverage === 'partial';
 		cursor = page.cursor;
 
@@ -107,13 +114,55 @@ const collectPages = async (
 			// Having reached the end of a read that started from scratch, what we hold is the whole window
 			const readEverything = !startCursor && !partial;
 
-			return { upserts, removals, keepExternalIds: keepExternalIds ?? (readEverything ? [...upserts.keys()] : undefined), cursor };
+			return {
+				upserts,
+				removals,
+				keepExternalIds: keepExternalIds ?? (readEverything ? [...upserts.keys()] : undefined),
+				resyncedSeries: [...resyncedSeries],
+				cursor,
+			};
 		}
 
 		if (!page.cursor || pages >= MAX_EVENT_PAGES) {
 			logger.warn({ msg: 'Exchange calendar read stopped before the provider was done', mailbox, pages, missingCursor: !page.cursor });
-			return { upserts, removals, keepExternalIds, cursor };
+			return { upserts, removals, keepExternalIds, resyncedSeries: [], cursor };
 		}
+	}
+};
+
+/** What a run removed, kept across the removals so work already committed survives a later failure. */
+type RemovalTally = { changed: boolean; removedEvents: boolean; deleted: number; pruned: number };
+
+/**
+ * The three ways an event leaves: the provider named it, a series came back without it, or the window was
+ * read completely enough to say what is no longer in it. Each is optional and they run in that order.
+ */
+const applyRemovals = async (
+	uid: IUser['_id'],
+	timeWindow: DateRange,
+	{ upserts, removals, keepExternalIds, resyncedSeries }: Collected,
+	tally: RemovalTally,
+): Promise<void> => {
+	const options = { deferSideEffects: true } as const;
+
+	const record = (result: CalendarBatchResult): number => {
+		tally.changed = tally.changed || result.changed;
+		tally.removedEvents = tally.removedEvents || result.deleted > 0;
+
+		return result.deleted;
+	};
+
+	if (removals.size) {
+		tally.deleted = record(await Calendar.deleteImported(uid, [...removals], timeWindow.start, options));
+	}
+
+	if (resyncedSeries.length) {
+		record(await Calendar.pruneImportedSeries(uid, timeWindow, resyncedSeries, [...upserts.keys()], options));
+	}
+
+	// Only from a complete set, and only after the upserts landed.
+	if (keepExternalIds) {
+		tally.pruned = record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
 	}
 };
 
@@ -136,45 +185,28 @@ export const syncCalendarWindow = async (
 	// Discarding an EWS cursor just because the time window changed would force a useless and expensive full sync.
 	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || provider.id !== 'graph');
 
-	let changed = false;
-	let removedEvents = false;
+	const tally: RemovalTally = { changed: false, removedEvents: false, deleted: 0, pruned: 0 };
 
 	try {
-		const { upserts, removals, keepExternalIds, cursor } = await collectPages(
-			provider,
-			mailbox,
-			timeWindow,
-			reusable ? state?.cursor : undefined,
-		);
+		const collected = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
 
 		const imported = await Calendar.importMany(
-			[...upserts.values()].map((event) => toCalendarEvent(uid, event)),
+			[...collected.upserts.values()].map((event) => toCalendarEvent(uid, event)),
 			{ deferSideEffects: true },
 		);
-		changed = imported.changed;
+		tally.changed = imported.changed;
 
-		const deleted = removals.size
-			? await Calendar.deleteImported(uid, [...removals], timeWindow.start, { deferSideEffects: true })
-			: undefined;
-		changed = changed || Boolean(deleted?.changed);
-		removedEvents = Boolean(deleted?.deleted);
+		await applyRemovals(uid, timeWindow, collected, tally);
 
-		// Only from a complete set, and only after the upserts landed.
-		const pruned = keepExternalIds
-			? await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, { deferSideEffects: true })
-			: undefined;
-		changed = changed || Boolean(pruned?.changed);
-		removedEvents = removedEvents || Boolean(pruned?.deleted);
-
-		await ExchangeCalendarSyncState.saveCursor(uid, identity, cursor, new Date());
+		await ExchangeCalendarSyncState.saveCursor(uid, identity, collected.cursor, new Date());
 
 		return {
 			upserted: imported.upserted,
 			modified: imported.modified,
-			deleted: deleted?.deleted ?? 0,
-			pruned: pruned?.deleted ?? 0,
-			changed,
-			removedEvents,
+			deleted: tally.deleted,
+			pruned: tally.pruned,
+			changed: tally.changed,
+			removedEvents: tally.removedEvents,
 			failed: false,
 			fatal: false,
 		};
@@ -189,6 +221,6 @@ export const syncCalendarWindow = async (
 
 		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err: scrubForLog(err) });
 
-		return { ...EMPTY, changed, removedEvents, failed: true, fatal: FATAL_CODES.has(code), error: err };
+		return { ...EMPTY, changed: tally.changed, removedEvents: tally.removedEvents, failed: true, fatal: FATAL_CODES.has(code), error: err };
 	}
 };

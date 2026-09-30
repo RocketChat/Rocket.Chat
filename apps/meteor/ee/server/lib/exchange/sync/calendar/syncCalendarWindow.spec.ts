@@ -1,12 +1,13 @@
 import { MAX_EVENT_PAGES, syncCalendarWindow } from './syncCalendarWindow';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeEventUpsert, Page } from '../../definition/types';
+import type { DateRange, EventPage, ExchangeEvent, ExchangeEventUpsert } from '../../definition/types';
 import type { ExchangeErrorCode } from '../../errors';
 import { ExchangeError } from '../../errors';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();
 const pruneImportedWindow = jest.fn();
+const pruneImportedSeries = jest.fn();
 
 const findOneByUserId = jest.fn();
 const saveCursor = jest.fn();
@@ -18,6 +19,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 		importMany: (...args: unknown[]) => importMany(...args),
 		deleteImported: (...args: unknown[]) => deleteImported(...args),
 		pruneImportedWindow: (...args: unknown[]) => pruneImportedWindow(...args),
+		pruneImportedSeries: (...args: unknown[]) => pruneImportedSeries(...args),
 	},
 }));
 
@@ -50,7 +52,7 @@ const upsert = (externalId: string, over: Partial<ExchangeEventUpsert> = {}): Ex
 
 const deletion = (externalId: string): ExchangeEvent => ({ kind: 'deleted', externalId });
 
-const page = (items: ExchangeEvent[], over: Partial<Page<ExchangeEvent>> = {}): Page<ExchangeEvent> => ({
+const page = (items: ExchangeEvent[], over: Partial<EventPage> = {}): EventPage => ({
 	items,
 	hasMore: false,
 	coverage: 'delta',
@@ -61,7 +63,7 @@ const capabilities = () => ({
 	supportsWebhooks: false,
 });
 
-const providerReturning = (id: string, ...pages: Page<ExchangeEvent>[]): IExchangeProvider => {
+const providerReturning = (id: string, ...pages: EventPage[]): IExchangeProvider => {
 	const queue = [...pages];
 
 	return {
@@ -90,9 +92,46 @@ describe('syncCalendarWindow', () => {
 		importMany.mockResolvedValue(batch());
 		deleteImported.mockResolvedValue(batch());
 		pruneImportedWindow.mockResolvedValue(batch());
+		pruneImportedSeries.mockResolvedValue(batch());
 		saveCursor.mockResolvedValue(undefined);
 		setLastError.mockResolvedValue(undefined);
 		clearCursorByUserId.mockResolvedValue(undefined);
+	});
+
+	describe('a recurring series, which Graph reports as a whole', () => {
+		const occurrence = (externalId: string) => upsert(externalId, { seriesMasterId: 'master' });
+
+		it('drops the occurrences the re-expansion left out, since Graph never reports them as deleted', async () => {
+			const provider = providerReturning('graph', page([occurrence('second')], { resyncedSeries: ['master'] }));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedSeries).toHaveBeenCalledWith(UID, timeWindow, ['master'], ['second'], { deferSideEffects: true });
+		});
+
+		it('leaves every other series alone, pruning only the ones the page carried whole', async () => {
+			const provider = providerReturning('graph', page([occurrence('second'), upsert('standalone')], { resyncedSeries: ['master'] }));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedSeries.mock.calls[0][2]).toEqual(['master']);
+		});
+
+		it('prunes nothing when the read stopped early, since a half series is not a series', async () => {
+			const provider = providerReturning('graph', page([occurrence('a')], { resyncedSeries: ['master'], hasMore: true }));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedSeries).not.toHaveBeenCalled();
+		});
+
+		it('asks for a deletion by the master id alone, which is all Graph sends for a deleted series', async () => {
+			const provider = providerReturning('graph', page([deletion('master')]));
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(deleteImported).toHaveBeenCalledWith(UID, ['master'], timeWindow.start, { deferSideEffects: true });
+		});
 	});
 
 	describe('resolving upserts against removals', () => {
@@ -323,7 +362,7 @@ describe('syncCalendarWindow', () => {
 	});
 
 	it('stops paging rather than following a provider that never says it is done', async () => {
-		const pages: Page<ExchangeEvent>[] = Array.from({ length: MAX_EVENT_PAGES }, () => page([], { hasMore: true, cursor: 'endless' }));
+		const pages: EventPage[] = Array.from({ length: MAX_EVENT_PAGES }, () => page([], { hasMore: true, cursor: 'endless' }));
 
 		const provider = providerReturning('ews', ...pages);
 		await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
