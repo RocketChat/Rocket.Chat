@@ -19,7 +19,6 @@ test.describe('Translations', () => {
 
 	test("expect to display text in the user's preference language", async ({ page, api }) => {
 		await page.goto('/home');
-		await page.waitForTimeout(5000);
 		await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
 
 		const response = page.waitForResponse('**/i18n/pt-BR.json');

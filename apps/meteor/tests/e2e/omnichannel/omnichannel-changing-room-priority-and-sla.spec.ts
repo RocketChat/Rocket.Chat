@@ -1,31 +1,19 @@
 import type { Page } from '@playwright/test';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { makeAgentAvailable } from '../utils/omnichannel/agents';
 import { getPriorityByi18nLabel } from '../utils/omnichannel/priority';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { createSLA } from '../utils/omnichannel/sla';
 import { test, expect } from '../utils/test';
-
-const getRoomId = (page: Page): string => {
-	// url is of the form: http://localhost:3000/live/:rid/room-info
-	const url = page?.url();
-	// rid comes after /live/ and before /room-info (or /)
-	const rid = url?.split('/live/')[1].split('/')[0];
-	if (!rid) {
-		throw new Error(`Could not get room id from url: ${page.url()}`);
-	}
-	return rid;
-};
 
 test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
-	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
@@ -36,7 +24,7 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
-		statusCode = (await api.post('/livechat/agent.status', { status: 'available' })).status();
+		statusCode = (await makeAgentAvailable(api, Users.admin.data._id)).status();
 		expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
@@ -45,11 +33,13 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 
-		await agent.poHomeChannel.navbar.changeUserStatus('online');
+		conversation = await createConversation(api);
+		await agent.poHomeChannel.gotoLive(conversation.data.room._id);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await agent.page.close();
+		await conversation?.delete();
 
 		await Promise.all([
 			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
@@ -58,26 +48,12 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		]);
 	});
 
-	test('expect to initiate a new livechat conversation', async ({ page, api }) => {
-		newVisitor = createFakeVisitor();
-		poLiveChat = new OmnichannelLiveChat(page, api);
-		await poLiveChat.goto();
-		await poLiveChat.openLiveChat();
-		await poLiveChat.sendMessage(newVisitor, false);
-		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-		await poLiveChat.btnSendMessageToOnlineAgent.click();
-
-		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
-	});
-
 	test('expect to change priority of room and corresponding system message should be displayed', async ({ api }) => {
 		const priority = await getPriorityByi18nLabel(api, 'High');
 
 		await test.step('change priority of room to the new priority', async () => {
-			const status = (await api.post(`/livechat/room/${getRoomId(agent.page)}/priority`, { priorityId: priority._id })).status();
+			const status = (await api.post(`/livechat/room/${conversation.data.room._id}/priority`, { priorityId: priority._id })).status();
 			await expect(status).toBe(200);
-
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
@@ -89,9 +65,8 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		const sla = await createSLA(api);
 
 		await test.step('change SLA of room to the new SLA', async () => {
-			const status = (await api.put(`/livechat/inquiry.setSLA`, { sla: sla.name, roomId: getRoomId(agent.page) })).status();
+			const status = (await api.put(`/livechat/inquiry.setSLA`, { sla: sla.name, roomId: conversation.data.room._id })).status();
 			expect(status).toBe(200);
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(

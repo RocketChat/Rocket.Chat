@@ -1,63 +1,41 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { test } from '../utils/test';
 
 test.describe.serial('OC - Canned Responses Sidebar', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
-	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	const cannedResponseName = faker.string.uuid();
 
 	test.beforeAll(async ({ api, browser }) => {
-		newVisitor = createFakeVisitor();
-
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
-	});
 
-	test.beforeEach(async ({ page, api }) => {
-		poLiveChat = new OmnichannelLiveChat(page, api);
-	});
-
-	test.afterAll('close livechat conversation', async () => {
-		await agent.poHomeChannel.quickActionsRoomToolbar.closeChat();
+		conversation = await createConversation(api, { agentId: 'user1' });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
-			poLiveChat.page.close(),
-			agent.page.close(),
-		]);
+		await conversation?.delete();
+		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1'), agent.page.close()]);
 	});
 
 	test('OC - Canned Responses Sidebar - Create', async () => {
-		await test.step('expect send a message as a visitor', async () => {
-			await poLiveChat.goto();
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-		});
-
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
+			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {
@@ -76,7 +54,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 
 	test('OC - Canned Responses Sidebar - Edit', async () => {
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
+			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {

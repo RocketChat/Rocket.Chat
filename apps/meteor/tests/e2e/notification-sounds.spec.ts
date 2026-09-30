@@ -1,8 +1,7 @@
-import type { Page } from 'playwright-core';
-
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannelAndReturnFullRoom, deleteRoom, setUserPreferences } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { test, expect } from './utils/test';
 
 declare global {
@@ -18,8 +17,6 @@ test.describe.serial('Notification Sounds', () => {
 	let targetChannel: string;
 	let targetChannelId: string;
 	let poHomeChannel: HomeChannel;
-	let user1PoHomeChannel: HomeChannel;
-	let user1Page: Page;
 
 	test.beforeAll(async ({ api }) => {
 		const { channel } = await createTargetChannelAndReturnFullRoom(api, {
@@ -33,13 +30,9 @@ test.describe.serial('Notification Sounds', () => {
 		await deleteRoom(api, targetChannel);
 	});
 
-	test.beforeEach(async ({ page, browser }) => {
+	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await poHomeChannel.gotoChannel(targetChannel);
-
-		user1Page = await browser.newPage({ storageState: Users.user1.state });
-		user1PoHomeChannel = new HomeChannel(user1Page);
-		await user1PoHomeChannel.gotoChannel(targetChannel);
 
 		await page.evaluate(() => {
 			Audio.prototype.play = ((fn) =>
@@ -52,18 +45,13 @@ test.describe.serial('Notification Sounds', () => {
 		});
 	});
 
-	test.afterEach(async () => {
-		await user1Page.close();
-	});
-
-	test('should play default notification sounds', async ({ page }) => {
+	test('should play default notification sounds', async ({ page, request }) => {
 		await poHomeChannel.content.waitForChannel();
-		await user1PoHomeChannel.content.waitForChannel();
 
 		await poHomeChannel.navbar.btnHome.click();
-		await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+		await sendMessageFromUser(request, Users.user1, targetChannelId, `Hello @${Users.admin.data.username} from User 1`);
 
-		await page.waitForTimeout(100); // wait for the sound to play
+		await expect.poll(() => page.evaluate(() => window.__audioCalls?.played)).toBe(true);
 
 		const audioCalls = await page.evaluate(() => window.__audioCalls);
 		expect(audioCalls).toHaveProperty('src');
@@ -84,14 +72,13 @@ test.describe.serial('Notification Sounds', () => {
 			});
 		});
 
-		test('should play notification sound based on user preferences', async ({ page }) => {
+		test('should play notification sound based on user preferences', async ({ page, request }) => {
 			await poHomeChannel.content.waitForChannel();
-			await user1PoHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.navbar.btnHome.click();
-			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, `Hello @${Users.admin.data.username} from User 1`);
 
-			await page.waitForTimeout(100); // wait for the sound to play
+			await expect.poll(() => page.evaluate(() => window.__audioCalls?.played)).toBe(true);
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);
 			expect(audioCalls).toHaveProperty('src');
@@ -110,14 +97,13 @@ test.describe.serial('Notification Sounds', () => {
 			});
 		});
 
-		test('should play custom room notification sound', async ({ page }) => {
+		test('should play custom room notification sound', async ({ page, request }) => {
 			await poHomeChannel.content.waitForChannel();
-			await user1PoHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.navbar.btnHome.click();
-			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, `Hello @${Users.admin.data.username} from User 1`);
 
-			await page.waitForTimeout(100); // wait for the sound to play
+			await expect.poll(() => page.evaluate(() => window.__audioCalls?.played)).toBe(true);
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);
 			expect(audioCalls).toHaveProperty('src');
@@ -136,13 +122,13 @@ test.describe.serial('Notification Sounds', () => {
 			});
 		});
 
-		test('should not play any notification sound', async ({ page }) => {
+		test('should not play any notification sound', async ({ page, request }) => {
 			await poHomeChannel.content.waitForChannel();
-			await user1PoHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.navbar.btnHome.click();
-			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, `Hello @${Users.admin.data.username} from User 1`);
 
+			await expect(poHomeChannel.sidebar.getItemUnreadBadge(poHomeChannel.sidebar.getSidebarItemByName(targetChannel))).toBeVisible();
 			await page.waitForTimeout(100); // wait for the sound to play
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);

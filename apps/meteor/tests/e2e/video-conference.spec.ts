@@ -1,15 +1,7 @@
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import {
-	createArchivedChannel,
-	createTargetChannel,
-	setUserPreferences,
-	createTargetTeam,
-	createDirectMessage,
-	deleteChannel,
-	deleteTeam,
-} from './utils';
+import { createArchivedChannel, createTargetChannel, setUserPreferences, createTargetTeam, deleteChannel, deleteTeam } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -21,13 +13,14 @@ test.describe('video conference', () => {
 	let targetReadOnlyChannel: string;
 	let targetArchivedChannel: string;
 	let targetTeam: string;
+	let multipleDirectRid: string;
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
 		targetReadOnlyChannel = await createTargetChannel(api, { readOnly: true });
 		targetArchivedChannel = await createArchivedChannel(api);
 		targetTeam = await createTargetTeam(api);
-		await createDirectMessage(api);
+		multipleDirectRid = (await (await api.post('/dm.create', { usernames: 'user1,user2' })).json()).room._id;
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -125,8 +118,7 @@ test.describe('video conference', () => {
 	});
 
 	test('should create video conference in a direct multiple', async () => {
-		await poHomeChannel.goto();
-		await poHomeChannel.navbar.openChat('rocketchat.internal.admin.test, user2');
+		await poHomeChannel.gotoDirect(multipleDirectRid);
 
 		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
@@ -136,8 +128,7 @@ test.describe('video conference', () => {
 	test.describe('received in a direct multiple', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('should display a message block in a direct multiple', async () => {
-			await poHomeChannel.goto();
-			await poHomeChannel.navbar.openChat('rocketchat.internal.admin.test, user1');
+			await poHomeChannel.gotoDirect(multipleDirectRid);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});

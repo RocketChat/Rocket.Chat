@@ -81,7 +81,6 @@ test.describe('OC - Manual Selection', () => {
 		});
 
 		await test.step('expect chat to leave the queue', async () => {
-			await page.waitForTimeout(250);
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
 		});
 

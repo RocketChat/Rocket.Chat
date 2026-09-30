@@ -21,13 +21,12 @@ test.describe.parallel('Mention User Card [To Member]', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await poHomeChannel.goto();
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(({ api }) => deleteChannel(api, targetChannel));
 
 	test('should show correct userinfo actions for a member of the room to a non-privileged member', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`);
 		await mentionSpan.click();
 
@@ -58,7 +57,6 @@ test.describe.parallel('Mention User Card [To Member]', () => {
 	});
 
 	test('should show correct userinfo actions for a non-member of the room to a non-privileged member', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(targetChannel);
 		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`);
 		await mentionSpan.click();
 

@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -42,6 +43,15 @@ test.describe('OC - Business Hours', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelBusinessHours = new OmnichannelBusinessHours(page);
+	});
+
+	test.afterEach(async ({ api }) => {
+		const { businessHours } = await (await api.get('/livechat/business-hours', { name: BHName })).json();
+		await Promise.all(
+			businessHours
+				.filter(({ name }: ILivechatBusinessHour) => name === BHName)
+				.map(({ _id, type }: ILivechatBusinessHour) => api.post('/livechat/business-hours.remove', { _id, type })),
+		);
 	});
 
 	test('OC - Manage Business Hours - Create Business Hours', async () => {
@@ -116,10 +126,6 @@ test.describe('OC - Business Hours', () => {
 			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeHidden();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
-
-		await test.step('expect delete business hours', async () => {
-			await poOmnichannelBusinessHours.deleteBusinessHour(BHName);
-		});
 	});
 
 	test('OC - Business hours - Toggle BH active status', async ({ api }) => {
@@ -154,10 +160,6 @@ test.describe('OC - Business Hours', () => {
 
 			await poOmnichannelBusinessHours.btnSave.click();
 			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
-		});
-
-		await test.step('expect delete business hours', async () => {
-			await poOmnichannelBusinessHours.deleteBusinessHour(BHName);
 		});
 	});
 });

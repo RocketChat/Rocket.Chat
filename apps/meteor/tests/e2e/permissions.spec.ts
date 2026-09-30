@@ -1,6 +1,7 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, sendTargetChannelMessage } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user2.state });
@@ -8,9 +9,12 @@ test.use({ storageState: Users.user2.state });
 test.describe.serial('permissions', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user2'] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -24,10 +28,9 @@ test.describe.serial('permissions', () => {
 			await expect(statusCode).toBe(200);
 		});
 
-		test('expect option(edit) not be visible', async ({ page }) => {
+		test('expect option(edit) not be visible', async ({ page, request }) => {
+			await sendMessageFromUser(request, Users.user2, targetChannelId, 'expect option(edit) not be visible');
 			await poHomeChannel.gotoChannel(targetChannel);
-
-			await poHomeChannel.content.sendMessage('expect option(edit) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(edit) not be visible' })).not.toHaveAttribute(
 				'aria-busy',
@@ -51,9 +54,9 @@ test.describe.serial('permissions', () => {
 			await expect(statusCode).toBe(200);
 		});
 
-		test('expect option(delete) not be visible', async ({ page }) => {
+		test('expect option(delete) not be visible', async ({ page, request }) => {
+			await sendMessageFromUser(request, Users.user2, targetChannelId, 'expect option(delete) not be visible');
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.sendMessage('expect option(delete) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(delete) not be visible' })).not.toHaveAttribute(
 				'aria-busy',
@@ -81,9 +84,9 @@ test.describe.serial('permissions', () => {
 			await expect(statusCode).toBe(200);
 		});
 
-		test('expect option(pin) not be visible', async ({ page }) => {
+		test('expect option(pin) not be visible', async ({ api, page }) => {
+			await sendTargetChannelMessage(api, targetChannel, { msg: 'expect option(pin) not be visible' });
 			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.sendMessage('expect option(pin) not be visible');
 
 			await expect(page.locator('.rcx-message', { hasText: 'expect option(pin) not be visible' })).not.toHaveAttribute('aria-busy', 'true');
 			await poHomeChannel.content.openLastMessageMenu();

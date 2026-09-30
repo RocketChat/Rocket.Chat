@@ -1,7 +1,8 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { FileUploadWarningModal } from './page-objects/fragments/modals';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, createTargetChannelAndReturnFullRoom } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
@@ -15,10 +16,13 @@ const TEST_EMPTY_FILE = 'empty_file.txt';
 test.describe.serial('file-upload', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
-		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -67,8 +71,9 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastUserMessageDownloadLink).toHaveCount(1);
 	});
 
-	test('should not be able to attach files when editing a message', async () => {
-		await poHomeChannel.content.sendMessage('message to be edited');
+	test('should not be able to attach files when editing a message', async ({ request }) => {
+		await sendMessageFromUser(request, Users.user1, targetChannelId, 'message to be edited');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('message to be edited');
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
 
@@ -85,8 +90,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.getLastMessageByFileName(TEST_FILE_LST)).toBeVisible();
 	});
 
-	test('should send drawio (unknown media type) file successfully', async ({ page }) => {
-		await page.reload();
+	test('should send drawio (unknown media type) file successfully', async () => {
 		await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO);
 		await poHomeChannel.composer.inputMessage.fill('drawio_description');
 		await poHomeChannel.composer.btnSend.click();
@@ -145,9 +149,9 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test.describe.serial('thread multiple file upload', () => {
-		test('should be able to remove file from thread composer before sending', async () => {
-			await poHomeChannel.content.sendMessage('this is a message for thread reply');
-			await poHomeChannel.content.openReplyInThread();
+		test('should be able to remove file from thread composer before sending', async ({ request }) => {
+			const { message } = await sendMessageFromUser(request, Users.user1, targetChannelId, 'this is a message for thread reply');
+			await poHomeChannel.gotoChannelThread(targetChannel, message._id);
 			await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_TXT);
 			await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_LST);
 

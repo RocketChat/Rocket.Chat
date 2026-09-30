@@ -366,7 +366,6 @@ test.describe('SAML', () => {
 	});
 
 	test('Logout - From IdP', async ({ page }) => {
-		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 
 		// This should trigger a logout request from the IdP, with a redirect to our home on success
@@ -647,7 +646,6 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Invalid Signature on Logout Request', async ({ page }) => {
-				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
@@ -659,7 +657,6 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Missing Signature on Logout Request', async ({ page }) => {
-				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);
@@ -671,7 +668,6 @@ test.describe('SAML', () => {
 			});
 
 			test('Accept Valid Signature on Logout Request', async ({ page }) => {
-				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=${logoutRequestSignature}`);
@@ -686,7 +682,6 @@ test.describe('SAML', () => {
 			});
 
 			test('Ignore Invalid Signature on Logout Request', async ({ page }) => {
-				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
@@ -695,7 +690,6 @@ test.describe('SAML', () => {
 			});
 
 			test('Ignore Missing Signature on Logout Request', async ({ page }) => {
-				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);

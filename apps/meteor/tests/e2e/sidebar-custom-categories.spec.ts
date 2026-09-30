@@ -17,9 +17,11 @@ test.describe.serial('sidebar custom categories', () => {
 
 	const uniqueName = (prefix: string) => `${prefix}-${faker.string.uuid().slice(0, 8)}`;
 
-	const createCategory = async (api: Parameters<typeof setUserPreferences>[0], name: string): Promise<void> => {
-		await setUserPreferences(api, { sidebarCategories: [{ _id: faker.string.uuid(), name }] });
+	const createCategory = async (api: Parameters<typeof setUserPreferences>[0], name: string): Promise<string> => {
+		const _id = faker.string.uuid();
+		await setUserPreferences(api, { sidebarCategories: [{ _id, name }] });
 		await expect(poHomeChannel.sidebar.getCategoryCollapser(name)).toBeVisible();
+		return _id;
 	};
 
 	const roomBelongsToGroup = async (groupName: string, belongs = true) => {
@@ -122,9 +124,10 @@ test.describe.serial('sidebar custom categories', () => {
 
 	test.describe('manage category in room actions', () => {
 		const category = uniqueName('ren');
+		let categoryId: string;
 
 		test.beforeEach(async ({ api }) => {
-			await createCategory(api, category);
+			categoryId = await createCategory(api, category);
 			await poHomeChannel.gotoChannel(targetChannel);
 		});
 
@@ -141,8 +144,10 @@ test.describe.serial('sidebar custom categories', () => {
 			expect(await roomBelongsToGroup('Favorites', false)).toBe(false);
 		});
 
-		test('should remove a room from a category', async () => {
-			await poHomeChannel.sidebar.moveRoomToCategory(targetChannel, category);
+		test('should remove a room from a category', async ({ api }) => {
+			expect(
+				(await api.post('/rooms.setCategory', { roomIds: [targetChannelId], category: categoryId }, '/api/experimental')).status(),
+			).toBe(200);
 			expect(await roomBelongsToGroup(category)).toBe(true);
 
 			await poHomeChannel.sidebar.removeRoomFromCategory(targetChannel, category);

@@ -5,6 +5,7 @@ import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects/home-channel';
 import { sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
+import { uploadFileToRoom } from './utils/uploadFile';
 
 test.use({ storageState: Users.admin.state });
 
@@ -34,16 +35,14 @@ test.describe('prune-messages', () => {
 				description: 'https://rocketchat.atlassian.net/browse/CORE-1146',
 			},
 		},
-		async ({ api }) => {
+		async ({ api, request }) => {
 			const {
 				content,
 				tabs: { pruneMessages },
 				toastMessage,
 			} = poHomeChannel;
 
-			await content.sendFileMessage('any_file.txt');
-			await expect(content.composer.getFileByName('any_file.txt')).toBeVisible();
-			await poHomeChannel.composer.btnSend.click();
+			await uploadFileToRoom(request, Users.admin, targetChannel._id, 'any_file.txt');
 			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await sendTargetChannelMessage(api, targetChannel.fname as string, {
@@ -101,15 +100,14 @@ test.describe('prune-messages', () => {
 				description: 'https://rocketchat.atlassian.net/browse/CORE-1168',
 			},
 		},
-		async () => {
+		async ({ request }) => {
 			const {
 				content,
 				tabs: { pruneMessages },
 				toastMessage,
 			} = poHomeChannel;
 
-			await content.sendFileMessage('any_file.txt');
-			await poHomeChannel.composer.btnSend.click();
+			await uploadFileToRoom(request, Users.admin, targetChannel._id, 'any_file.txt');
 			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await test.step('prune files only', async () => {
@@ -139,11 +137,10 @@ test.describe('prune-messages', () => {
 				description: 'https://rocketchat.atlassian.net/browse/CORE-1168',
 			},
 		},
-		async ({ api }) => {
+		async ({ api, request }) => {
 			const { content } = poHomeChannel;
 
-			await content.sendFileMessage('any_file.txt');
-			await poHomeChannel.composer.btnSend.click();
+			await uploadFileToRoom(request, Users.admin, targetChannel._id, 'any_file.txt');
 			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await content.openReplyInThread();

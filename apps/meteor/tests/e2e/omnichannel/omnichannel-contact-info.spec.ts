@@ -1,49 +1,37 @@
 import type { Page } from '@playwright/test';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { expect, test } from '../utils/test';
 
 test.describe('Omnichannel contact info', () => {
-	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		newVisitor = createFakeVisitor();
-
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
-	});
-	test.beforeEach(async ({ page, api }) => {
-		poLiveChat = new OmnichannelLiveChat(page, api);
+
+		conversation = await createConversation(api, { agentId: 'user1' });
 	});
 
 	test.afterAll(async ({ api }) => {
+		await conversation?.delete();
 		await api.delete('/livechat/users/agent/user1');
 		await api.delete('/livechat/users/manager/user1');
 		await agent.page.close();
 	});
 
 	test('Receiving a message from visitor, and seeing its information', async () => {
-		await test.step('Expect send a message as a visitor', async () => {
-			await poLiveChat.goto();
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-		});
-
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
+			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
 		});
 
 		await test.step('Expect to be able to see contact information and edit', async () => {

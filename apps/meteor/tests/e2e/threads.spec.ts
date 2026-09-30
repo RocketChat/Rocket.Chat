@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetChannelAndReturnFullRoom, deleteChannel, markRoomAsRead, sendMessage } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel, markRoomAsRead, sendMessage } from './utils';
 import { sendFillerMessages } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
@@ -8,9 +8,17 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api);
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
+
+		const tmid = await sendMessage(api, targetChannelId, 'this is a message for reply');
+		await api.post('/chat.sendMessage', {
+			message: { rid: targetChannelId, msg: 'This is a thread message also sent in channel', tmid, tshow: true },
+		});
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -96,10 +104,11 @@ test.describe.serial('Threads', () => {
 	});
 
 	test.describe('thread message actions', () => {
-		test.beforeEach(async ({ page }) => {
-			poHomeChannel = new HomeChannel(page);
-			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.sendMessage('this is a message for reply');
+		let tmid: string;
+
+		test.beforeEach(async ({ api }) => {
+			tmid = await sendMessage(api, targetChannelId, 'this is a message for reply');
+			await expect(poHomeChannel.content.getMessageById(tmid)).toBeVisible();
 			await poHomeChannel.content.openReplyInThread();
 		});
 
@@ -112,9 +121,9 @@ test.describe.serial('Threads', () => {
 
 			await expect(page).not.toHaveURL(/.*thread/);
 		});
-		test('expect delete the thread message and keep thread open if has more than one message', async ({ page }) => {
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('another reply message');
-			await page.keyboard.press('Enter');
+		test('expect delete the thread message and keep thread open if has more than one message', async ({ page, api }) => {
+			await sendMessage(api, targetChannelId, 'another reply message', tmid);
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('another reply message');
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 

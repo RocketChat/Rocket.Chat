@@ -1,44 +1,32 @@
 import type { Page } from '@playwright/test';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { expect, test } from '../utils/test';
 
 test.describe('OC - Contact Unknown Callout', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
-	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		newVisitor = createFakeVisitor();
-
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
-	test.beforeEach(async ({ page, api }) => {
-		poLiveChat = new OmnichannelLiveChat(page, api);
-	});
-
-	test.beforeEach('create livechat conversation', async () => {
-		await poLiveChat.goto();
-		await poLiveChat.openLiveChat();
-		await poLiveChat.sendMessage(newVisitor, false);
-		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-		await poLiveChat.btnSendMessageToOnlineAgent.click();
+	test.beforeEach('create livechat conversation', async ({ api }) => {
+		conversation = await createConversation(api, { agentId: 'user1' });
 	});
 
 	test.afterEach('close livechat conversation', async () => {
-		await poLiveChat.closeChat();
+		await conversation.delete();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -49,7 +37,7 @@ test.describe('OC - Contact Unknown Callout', () => {
 
 	test('OC - Contact Unknown Callout - Dismiss callout', async () => {
 		await test.step('expect to open conversation', async () => {
-			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
+			await agent.poHomeChannel.gotoLive(conversation.data.room._id);
 		});
 
 		await test.step('expect contact unknown callout to be visible', async () => {
@@ -63,7 +51,7 @@ test.describe('OC - Contact Unknown Callout', () => {
 
 		await test.step('expect keep callout hidden after changing pages', async () => {
 			await agent.poHomeChannel.navbar.btnHome.click();
-			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
 			await expect(agent.poHomeChannel.content.contactUnknownCallout).not.toBeVisible();
 		});
 	});

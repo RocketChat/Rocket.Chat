@@ -3,6 +3,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
+import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -61,11 +62,10 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Manage Agents [CE]- Edit and Remove', async () => {
+	test('OC - Manage Agents [CE]- Edit and Remove', async ({ api }) => {
 		test.skip(IS_EE, 'Community Edition Only');
 
-		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAddAgent.click();
+		await createAgent(api, 'user1');
 
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
@@ -88,11 +88,10 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Manage Agents [EE] - Edit ', async () => {
+	test('OC - Manage Agents [EE] - Edit ', async ({ api }) => {
 		test.skip(!IS_EE, 'Enterprise Only');
 
-		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAddAgent.click();
+		await createAgent(api, 'user1');
 
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
@@ -109,9 +108,8 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Edit agent  - Manage departments', async ({ page }) => {
-		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAddAgent.click();
+	test('OC - Edit agent  - Manage departments', async ({ page, api }) => {
+		await createAgent(api, 'user1');
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
 
@@ -144,7 +142,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Edit agent  - Departments pagination', async ({ page }) => {
+	test('OC - Edit agent  - Departments pagination', async ({ page, api }) => {
 		const data = Array.from({ length: 100 }, (_, i) => createFakeDepartment({ name: `Department ${i}` }));
 		await page.route('**/v1/livechat/department*', async (route, request) => {
 			const url = new URL(request.url());
@@ -159,10 +157,7 @@ test.describe.serial('OC - Manage Agents', () => {
 			});
 		});
 
-		await test.step('expect to add agent', async () => {
-			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAddAgent.click();
-		});
+		await createAgent(api, 'user1');
 
 		await test.step('expect to edit agent', async () => {
 			await poOmnichannelAgents.search('user1');

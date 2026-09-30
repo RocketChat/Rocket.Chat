@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel } from './page-objects';
-import { deleteChannel, createTargetChannel } from './utils';
+import { deleteChannel, createTargetChannel, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -214,9 +214,8 @@ test.describe.serial('Sidebar', () => {
 			await expect(collapser).toHaveAttribute('aria-expanded', expectedState);
 		});
 
-		test('should show unread badge on collapser when group is collapsed and has unread items', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
-			await poHomeChannel.content.sendMessage('hello world');
+		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ api }) => {
+			await sendTargetChannelMessage(api, targetChannel, { msg: 'hello world' });
 
 			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel);
 			await poHomeChannel.sidebar.markItemAsUnread(item);
