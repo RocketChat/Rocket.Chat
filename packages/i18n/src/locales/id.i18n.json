@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "Hidupkan OAuth",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
-  "Accounts_OAuth_Proxy_host": "Hosti Proxy",
-  "Accounts_OAuth_Proxy_services": "Layanan Proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Setidaknya Satu Huruf Kecil",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Tegaskan bahwa kata sandi mengandung setidaknya satu karakter huruf kecil.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Setidaknya satu nomor",

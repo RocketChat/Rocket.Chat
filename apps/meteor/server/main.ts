@@ -23,7 +23,6 @@ import './startup/robots';
 import './importPackages';
 import './meteor-methods';
 import './publications';
-import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 

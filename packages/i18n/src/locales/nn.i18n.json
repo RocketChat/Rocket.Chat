@@ -189,8 +189,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud id",
   "Accounts_OAuth_Nextcloud_secret": "Klientshemmelighet",
   "Accounts_OAuth_Nextcloud_URL": "URL til Nextcloud server",
-  "Accounts_OAuth_Proxy_host": "Proxy-vert",
-  "Accounts_OAuth_Proxy_services": "Proxy-tjenester",
   "Accounts_Password_Policy_AtLeastOneLowercase": "I minst en liten bokstav",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Forstå at et passord inneholder minst en liten bokstav.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Ved minst ett nummer",

@@ -5,7 +5,6 @@ import type { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { capitalize as capitalizeService } from '../../../lib/utils/stringUtils';
 import { loginServices } from '../../lib/loginServices';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
@@ -77,10 +76,6 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 							reject(error);
 						});
 					});
-			},
-			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
-				const methodName = `loginWith${capitalizeService(service, true)}`;
-				getLoginWithMethod(methodName)?.(options, callback);
 			},
 			loginWithIframe: (token: string, callback) =>
 				callLoginMethod({ methodArguments: [{ iframe: true, token }] }).catch((error) => {

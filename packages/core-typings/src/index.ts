@@ -119,7 +119,6 @@ export type * from './ILivechatUnitMonitor';
 export type * from './ICronHistoryItem';
 
 export type * from './migrations/IControl';
-export type * from './OauthConfig';
 
 export type * from './IModerationReport';
 export type * from './CustomFieldMetadata';
