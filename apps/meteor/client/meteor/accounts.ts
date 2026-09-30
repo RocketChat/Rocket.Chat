@@ -1,7 +1,6 @@
 // Single point of access to Meteor accounts-base's login lifecycle on the
 // client. Call sites outside client/meteor go through these helpers so the
 // eventual SDK-native auth replaces one module instead of every caller.
-// OAuth-specific internals (Accounts.oauth.*, OAuth.*) stay in client/meteor/login.
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

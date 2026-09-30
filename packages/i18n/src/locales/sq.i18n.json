@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth enabled",
   "Accounts_OAuth_Nextcloud_secret": "klienti Secret",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy services",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Në së paku një të vogël",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Zbatoni që një fjalëkalim të përmbajë të paktën një karakter të vogël.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Më së paku një numër",

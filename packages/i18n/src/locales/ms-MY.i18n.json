@@ -99,8 +99,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth Didayakan",
   "Accounts_OAuth_Nextcloud_secret": "Secret Pelanggan",
-  "Accounts_OAuth_Proxy_host": "Host Proksi",
-  "Accounts_OAuth_Proxy_services": "Perkhidmatan Proksi",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Pada Least One Lowercase",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Menguatkuasakan bahawa kata laluan mengandungi sekurang-kurangnya satu huruf kecil.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Sekurang-kurangnya satu nombor",

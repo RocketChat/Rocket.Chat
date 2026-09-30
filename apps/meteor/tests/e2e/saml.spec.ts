@@ -823,14 +823,6 @@ test.describe('SAML', () => {
 			}
 		};
 
-		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: true });
-		});
-
-		test.afterAll(async ({ api }) => {
-			await api.post('/settings/Accounts_OAuth_Use_Modern_Flow', { value: false });
-		});
-
 		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
 			await poRegistration.goto('/home?loginClient=desktop');
 

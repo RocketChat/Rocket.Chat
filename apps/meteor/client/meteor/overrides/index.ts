@@ -3,8 +3,6 @@ import './ddpOverREST';
 import './ddpSdkCollectionBridge';
 import './desktopInjection';
 import './killMeteorStream';
-import './oauthProxy';
-import './oauthRedirectUri';
 import './stubMeteorStream';
 import './subscribeViaSDK';
 import './totpOnCall';

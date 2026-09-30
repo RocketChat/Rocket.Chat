@@ -96,7 +96,7 @@ Meteor.loginWithSaml = (options) => {
 
 	// Forward the loginClient so the session can be deep-linked back to the native client.
 	const loginClient = new URLSearchParams(window.location.search).get('loginClient');
-	if (settings.peek('Accounts_OAuth_Use_Modern_Flow') && (loginClient === 'desktop' || loginClient === 'mobile')) {
+	if (loginClient === 'desktop' || loginClient === 'mobile') {
 		url += `?loginClient=${loginClient}`;
 	}
 

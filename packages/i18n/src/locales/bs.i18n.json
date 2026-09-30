@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google Tajna",
   "Accounts_OAuth_Nextcloud": "OAuth Omogućen",
   "Accounts_OAuth_Nextcloud_secret": "Klijent tajna",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy usluge",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Najmanje jedan mala slova",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Provjerite da lozinka sadrži barem jedan mali znak.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Najmanji broj",
