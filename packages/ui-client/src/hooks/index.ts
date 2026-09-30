@@ -7,6 +7,7 @@ export * from './useEmbeddedLayout';
 export * from './useFeaturePreview';
 export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
+export * from './useHasLicenseModule';
 export * from './useLicense';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useRoomRoute';

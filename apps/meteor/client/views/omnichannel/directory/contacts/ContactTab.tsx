@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import ContactTable from './ContactTable';
-import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 const ContactTab = () => {
 	const hasAccess = usePermission('view-l-room');

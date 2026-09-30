@@ -1,10 +1,10 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import ImportHistoryPage from './ImportHistoryPage';
 import ImportProgressPage from './ImportProgressPage';
 import NewImportPage from './NewImportPage';
 import PrepareImportPage from './PrepareImportPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 export type ImportHistoryRouteProps = {
 	page: 'history' | 'new' | 'prepare' | 'progress';

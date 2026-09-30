@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import UsersTable from './UsersTable';
-import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 export type UsersTabProps = {
 	workspace?: 'external' | 'local';

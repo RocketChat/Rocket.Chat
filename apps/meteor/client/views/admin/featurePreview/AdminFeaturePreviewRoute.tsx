@@ -1,9 +1,9 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import AdminFeaturePreviewPage from './AdminFeaturePreviewPage';
 import SettingsProvider from '../../../providers/SettingsProvider';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
 const AdminFeaturePreviewRoute = () => {

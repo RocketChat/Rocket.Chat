@@ -1,6 +1,6 @@
 import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { Header } from '@rocket.chat/ui-client';
+import { Header, NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,6 @@ const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
 const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
-const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
 type RoomOpenerProps = {
 	type: RoomType;

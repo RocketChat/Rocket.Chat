@@ -9,13 +9,13 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker from '../../moderation/helpers/DateRangePicker';

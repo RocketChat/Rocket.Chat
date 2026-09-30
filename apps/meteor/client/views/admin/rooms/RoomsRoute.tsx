@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import RoomsPage from './RoomsPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const RoomsRoute = () => {
 	const canViewRoomAdministration = usePermission('view-room-administration');

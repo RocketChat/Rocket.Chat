@@ -1,9 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, ModalBackdrop } from '@rocket.chat/fuselage';
+import { GenericError } from '@rocket.chat/ui-client';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-
-import GenericError from '../GenericError/GenericError';
 
 const closeButtonStyle = css`
 	position: absolute;

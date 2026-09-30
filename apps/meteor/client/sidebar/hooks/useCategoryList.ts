@@ -1,9 +1,9 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
 type FilterSystemCategoriesOptions = {

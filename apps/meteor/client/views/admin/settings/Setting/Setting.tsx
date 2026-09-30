@@ -1,12 +1,12 @@
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { links } from '@rocket.chat/ui-client';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { links } from '../../../../lib/links';
 import { useEditableSetting, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
 import { useSettingDraft } from '../hooks/useSettingDraft';

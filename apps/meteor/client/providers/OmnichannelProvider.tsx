@@ -1,5 +1,6 @@
 import { type IOmnichannelAgent, OmnichannelSortingMechanismSettingType, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useUser, useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -10,7 +11,6 @@ import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 

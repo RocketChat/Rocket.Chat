@@ -2,14 +2,15 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import { useShowVoipExtension } from '../useShowVoipExtension';
 

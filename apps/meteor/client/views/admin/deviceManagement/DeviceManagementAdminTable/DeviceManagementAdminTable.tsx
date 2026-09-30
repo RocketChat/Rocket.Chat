@@ -1,13 +1,12 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePagination, useSort, FilterByText } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAdminRow from './DeviceManagementAdminRow';
-import FilterByText from '../../../../components/FilterByText';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import { deviceManagementQueryKeys } from '../../../../lib/queryKeys';
 

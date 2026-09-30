@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import ChannelsTable from './ChannelsTable';
-import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 const ChannelsTab = () => {
 	const canViewPublicRooms = usePermission('view-c-room');

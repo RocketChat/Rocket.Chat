@@ -1,4 +1,5 @@
 import { Icon } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,6 @@ import { useCategoryModals } from './useCategoryModals';
 import { useMoveRoomCategory } from './useMoveRoomCategory';
 import type { MovableRoom } from './useUserSidebarCategories';
 import { FAVORITES_TARGET, useUserSidebarCategories } from './useUserSidebarCategories';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const useRoomCategoryItems = (room: MovableRoom) => {
 	const { t } = useTranslation();

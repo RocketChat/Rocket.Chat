@@ -7,6 +7,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableHeaderCell,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import AccountTokensRow from './AccountTokensRow';
 import AddToken from './AddToken';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 

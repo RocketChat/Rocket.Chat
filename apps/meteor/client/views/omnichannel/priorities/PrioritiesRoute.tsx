@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter } from '@rocket.chat/ui-contexts';
 
 import { PrioritiesPage } from './PrioritiesPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const PrioritiesRoute = () => {
 	const canViewPriorities = usePermission('manage-livechat-priorities');

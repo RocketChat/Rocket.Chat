@@ -13,7 +13,7 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage-forms';
-import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter, getDirtyFields, links } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting, useLocationHash } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
@@ -24,8 +24,6 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
-import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();

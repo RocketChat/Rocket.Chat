@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import AccountProfilePage from './AccountProfilePage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountProfileRoute = () => {
 	const canViewProfile = useSetting('Accounts_AllowUserProfileChange');

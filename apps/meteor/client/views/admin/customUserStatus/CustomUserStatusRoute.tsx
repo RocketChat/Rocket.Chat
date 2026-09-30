@@ -7,6 +7,7 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	NotAuthorizedPage,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomUserStatusRoute = () => {
 	const t = useTranslation();

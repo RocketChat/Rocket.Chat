@@ -1,16 +1,19 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
 
 import EngagementDashboardRoute from './EngagementDashboardRoute';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-jest.mock('../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: jest.fn() }));
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	useHasLicenseModule: jest.fn(),
+	NotAuthorizedPage: () => null,
+}));
 jest.mock('../../../components/GenericUpsellModal/hooks', () => ({ useUpsellActions: jest.fn() }));
 jest.mock('./EngagementDashboardPage', () => () => null);
 jest.mock('../../../components/PageSkeleton', () => () => null);
-jest.mock('../../notAuthorized/NotAuthorizedPage', () => () => null);
 jest.mock('../../../../client/lib/getURL', () => ({ getURL: (path: string) => path }));
 
 const buildWrapper = (router: Partial<RouterContextValue>, tab?: string) => {

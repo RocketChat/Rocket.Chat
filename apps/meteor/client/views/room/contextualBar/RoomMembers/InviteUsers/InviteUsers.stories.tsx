@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { links } from '@rocket.chat/ui-client';
 import type { StoryObj, Meta } from '@storybook/react';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
-import { links } from '../../../../../lib/links';
 
 export default {
 	component: InviteUsers,

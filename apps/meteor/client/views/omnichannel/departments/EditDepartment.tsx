@@ -19,7 +19,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
@@ -33,7 +33,6 @@ import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';

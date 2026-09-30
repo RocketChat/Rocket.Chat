@@ -1,6 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { CustomScrollbars, usePagination } from '@rocket.chat/ui-client';
+import { CustomScrollbars, usePagination, GenericError, GenericNoResults } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,8 +9,6 @@ import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
-import GenericError from '../../../../../components/GenericError';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 

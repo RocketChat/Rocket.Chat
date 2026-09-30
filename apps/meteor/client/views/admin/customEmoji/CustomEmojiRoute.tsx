@@ -7,6 +7,7 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	NotAuthorizedPage,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomEmojiRoute = () => {
 	const { t } = useTranslation();

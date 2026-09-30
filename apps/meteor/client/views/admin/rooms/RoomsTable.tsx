@@ -9,6 +9,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 type RoomFilters = {
 	searchText: string;

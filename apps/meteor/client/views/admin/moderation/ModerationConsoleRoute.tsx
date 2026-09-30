@@ -1,8 +1,8 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import ModerationConsolePage from './ModerationConsolePage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const MODERATION_VALID_TABS = ['users', 'messages'] as const;
 

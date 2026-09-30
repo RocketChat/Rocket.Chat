@@ -6,7 +6,10 @@ import type { ReactNode } from 'react';
 import OmnichannelProvider from './OmnichannelProvider';
 import { useOmnichannelRouteConfig } from '../views/omnichannel/hooks/useOmnichannelRouteConfig';
 
-jest.mock('../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: () => ({ data: false }) }));
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	useHasLicenseModule: () => ({ data: false }),
+}));
 jest.mock('../hooks/useShouldPreventAction', () => ({ useShouldPreventAction: () => false }));
 jest.mock('../hooks/useOmnichannelContinuousSoundNotification', () => ({ useOmnichannelContinuousSoundNotification: () => undefined }));
 

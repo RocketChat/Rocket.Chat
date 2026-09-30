@@ -1,16 +1,19 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import RoomGroupingMenu from './RoomGroupingMenu';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useCategoryModals } from '../../../../sidebar/categories/hooks/useCategoryModals';
 import { useMoveRoomCategory } from '../../../../sidebar/categories/hooks/useMoveRoomCategory';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
-jest.mock('../../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: jest.fn() }));
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	useHasLicenseModule: jest.fn(),
+}));
 jest.mock('../../../../sidebar/categories/hooks/useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
 jest.mock('../../../../sidebar/categories/hooks/useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
 jest.mock('../../contexts/RoomContext', () => ({ useUserIsSubscribed: jest.fn() }));

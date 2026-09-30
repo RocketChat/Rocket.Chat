@@ -1,15 +1,16 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { SIDEBAR_DYNAMIC_GROUP_KEYS, mergeWithSectionsOrder, useCategoryList, withDynamicFirst } from './useCategoryList';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useSetting: jest.fn(),
 	useUserPreference: jest.fn(),
 }));
 
-jest.mock('../../hooks/useHasLicenseModule', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useHasLicenseModule: jest.fn(),
 }));
 

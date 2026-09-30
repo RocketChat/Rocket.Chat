@@ -1,7 +1,6 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 export const useSlaInfo = (slaId: string) => {
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');

@@ -8,6 +8,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	FormSkeleton,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';

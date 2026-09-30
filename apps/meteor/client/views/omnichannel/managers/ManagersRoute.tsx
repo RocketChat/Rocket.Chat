@@ -1,9 +1,8 @@
-import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageContent, NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ManagersTable from './ManagersTable';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const ManagersRoute = () => {
 	const { t } = useTranslation();
