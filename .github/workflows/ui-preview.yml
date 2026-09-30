@@ -4,6 +4,7 @@ name: UI Preview
 # anonymously (`rocketchat://ui-preview?pr=<number>`).
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
     paths:
       - 'apps/meteor/client/**'
       - 'apps/meteor/app/**'
@@ -15,7 +16,8 @@ on:
       - 'yarn.lock'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  # Adding any other label must not cancel a preview build in progress.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}${{ github.event.action == 'labeled' && github.event.label.name != 'preview' && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
 
 env:
@@ -27,8 +29,12 @@ permissions: {}
 jobs:
   build:
     name: Build UI preview
-    # Publishing needs CR_PAT, which fork and Dependabot PRs do not receive.
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    # Opt-in through the `preview` label. Publishing needs CR_PAT, which fork and Dependabot PRs do not receive.
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'preview') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'preview') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
