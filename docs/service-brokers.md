@@ -263,6 +263,29 @@ optional concern was gating the thing the service exists to do.
 **Tracing is still missing.** `LocalBroker` and `MoleculerBroker` wrap handlers in a
 tracer span as well; `NatsBroker` does not.
 
+#### 6. The process stops gracefully on SIGTERM
+
+Moleculer's `ServiceBroker` listens for `SIGTERM` and `SIGINT`, stops every
+service and then calls `process.exit(0)`. Nothing else in the monolith or the
+standalone services handles those signals — they rely on the broker for it.
+
+Without a listener, the default is to terminate, except for PID 1, which the
+kernel shields from signals it has no handler for. Every image runs
+`node main.js` as PID 1 with no init, so under `NatsBroker` a `docker stop` or a
+pod deletion was ignored until the grace period ran out and the process was
+killed. No service ran `stopped()`, no subscription was drained, and `exit` hooks
+never fired — among them the one in `rocketchat-coverage` that writes the server
+coverage report, which is how this showed up: the API suites run with coverage
+under `BROKER=nats` uploaded nothing, and **Report Coverage** failed on the
+missing `/tmp/coverage/api`.
+
+`startNatsBroker` now registers the same listeners. They call `NatsBroker.stop()`
+— which destroys every service, including those still waiting on their
+dependencies so a boot that never finished lets go too, then drains the
+connection — and exit with `0` even if a service failed to stop.
+`SKIP_PROCESS_EVENT_REGISTRATION=true` leaves the signals alone, as it does for
+Moleculer.
+
 ## Events across instances
 
 A broker event is the only way a real-time update crosses a process boundary. Client
@@ -410,13 +433,14 @@ Exposure without a caller — delete from the interface or retype:
 
 Shared:
 
-| variable                 | default     | effect                                                           |
-| ------------------------ | ----------- | ---------------------------------------------------------------- |
-| `BROKER`                 | `moleculer` | `nats` selects `NatsBroker`                                      |
-| `TRANSPORTER`            | —           | Moleculer transporter string; also the fallback NATS server list |
-| `REQUEST_TIMEOUT`        | `60`        | seconds to wait for a reply                                      |
-| `LICENSE_CHECK_INTERVAL` | `20`        | seconds between license checks                                   |
-| `MAX_FAILS`              | `2`         | failed license checks before a service shuts itself down         |
+| variable                          | default     | effect                                                                  |
+| --------------------------------- | ----------- | ----------------------------------------------------------------------- |
+| `BROKER`                          | `moleculer` | `nats` selects `NatsBroker`                                             |
+| `TRANSPORTER`                     | —           | Moleculer transporter string; also the fallback NATS server list        |
+| `REQUEST_TIMEOUT`                 | `60`        | seconds to wait for a reply                                             |
+| `LICENSE_CHECK_INTERVAL`          | `20`        | seconds between license checks                                          |
+| `MAX_FAILS`                       | `2`         | failed license checks before a service shuts itself down                |
+| `SKIP_PROCESS_EVENT_REGISTRATION` | `false`     | `true` stops the broker from stopping the process on `SIGTERM`/`SIGINT` |
 
 `NatsBroker` only:
 
