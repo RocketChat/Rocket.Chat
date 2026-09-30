@@ -1,0 +1,37 @@
+ee/packages/federation-matrix/tests/end-to-end/dms.spec.ts
+  s_4349bb1a42d872::t_328bfb5132248d 277
+  s_4349bb1a42d872::t_7d0fe79daea96a 164,612,799,842,1552
+  s_4349bb1a42d872::t_eb5f91609b0edc 1888
+  s_4349bb1a42d872::t_e5563d9edc5f16 1154
+ee/packages/federation-matrix/tests/end-to-end/ban.spec.ts
+  s_4349bb1a42d872::t_4bff96c3a4d5c3 446
+ee/packages/federation-matrix/tests/end-to-end/presence.spec.ts
+  s_4349bb1a42d872::t_4ba3e3e324255a 96
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  s_4349bb1a42d872::t_9d96e8ab3feae4 274-281
+  s_4349bb1a42d872::t_864b3eeb032990 205-212
+  s_4349bb1a42d872::t_60792aa7f4e43f 424-431
+  s_4349bb1a42d872::t_a3fa265466ce9a 860-867
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_4349bb1a42d872::t_c3d4ceb7c1edfe 257,826,928,1063,1228,1329,1462,1714
+ee/packages/federation-matrix/tests/end-to-end/messaging.spec.ts
+  s_4349bb1a42d872::t_4bff96c3a4d5c3 88,109,149,185,215,238,288,324
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  s_4349bb1a42d872::t_bd2aeee221ec6b 143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2a4b1741b789374ee0df84ca48686903df253c73",
+  "prompts": {},
+  "sessions": {
+    "s_4349bb1a42d872": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "59ad8db1-e5f8-46c0-9aa6-c6eb7fbf0309",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
