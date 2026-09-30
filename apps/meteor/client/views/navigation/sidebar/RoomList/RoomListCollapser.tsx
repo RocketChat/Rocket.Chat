@@ -21,6 +21,7 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
 	return (
 		<SidebarCollapseGroup
+			role='listitem'
 			title={t(groupTitle)}
 			expanded={!collapsedGroups.includes(group)}
 			badge={

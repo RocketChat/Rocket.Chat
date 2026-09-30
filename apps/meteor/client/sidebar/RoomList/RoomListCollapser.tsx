@@ -31,6 +31,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 
 	return (
 		<SidebarCollapseGroup
+			role='listitem'
 			title={title}
 			empty={group.empty}
 			expanded={!group.collapsed}

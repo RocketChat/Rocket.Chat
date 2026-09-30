@@ -81,23 +81,23 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('group').first().getByRole('button').first();
+		return this.channelsList.getByRole('listitem', { name: /^(Collapse|Expand) / }).first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
-		return this.root.getByRole('group', { name: 'Collapse Teams' }).first();
+		return this.root.getByRole('listitem', { name: 'Collapse Teams' }).first();
 	}
 
 	get channelsCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Channels' });
+		return this.channelsList.getByRole('listitem', { name: 'Collapse Channels' });
 	}
 
 	get directMessagesCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Direct messages' });
+		return this.channelsList.getByRole('listitem', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {
-		return this.channelsList.getByRole('listitem').first();
+		return this.channelsList.getByRole('listitem').filter({ has: this.page.getByRole('link') }).first();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {
@@ -132,7 +132,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCategoryCollapser(name: string): Locator {
-		return this.root.getByRole('group', { name: `Collapse ${name}`, exact: true }).first();
+		return this.root.getByRole('listitem', { name: `Collapse ${name}`, exact: true }).first();
 	}
 
 	getCategoryKebab(name: string): Locator {
