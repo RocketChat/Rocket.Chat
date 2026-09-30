@@ -1,3 +1,4 @@
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { BackgroundBlurProcessor, MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { loadBackgroundBlurProcessor } from '@rocket.chat/media-processors';
 import type { BlurLevel, BlurModel, VideoQuality } from '@rocket.chat/ui-conference';
@@ -8,7 +9,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { BLUR_STRENGTH } from './useBackgroundBlur';
 import { useVirtualBackground } from './useVirtualBackground';
 
-export type PreviewVideoOptions = { deviceId?: string; quality: VideoQuality; blurLevel: BlurLevel; blurModel?: BlurModel };
+export type PreviewVideoOptions = {
+	deviceId?: string;
+	quality?: VideoQuality;
+	blurLevel?: BlurLevel;
+	blurModel?: BlurModel;
+	onOpen?: () => void;
+};
 
 /** The preflight's camera, once it is open, and whether opening it failed. */
 export type PreviewVideo = { track?: LocalVideoTrack; error: boolean };
@@ -21,6 +28,8 @@ const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height
 	h180: { width: 320, height: 180 },
 };
 
+const noop = () => undefined;
+
 /**
  * The camera for the preflight, as a LiveKit track rather than a bare `getUserMedia` stream: blur is a
  * `TrackProcessor`, which needs a `LocalTrack` to attach to, so the preview runs the same processor at the same
@@ -30,23 +39,22 @@ const RESOLUTIONS: Record<Exclude<VideoQuality, 'auto'>, { width: number; height
  */
 export const usePreviewVideoTrack = (
 	enabled: boolean,
-	{ deviceId, quality, blurLevel, blurModel = 'quality' }: PreviewVideoOptions,
+	{ deviceId, quality = 'auto', blurLevel = 'none', blurModel = 'quality', onOpen = noop }: PreviewVideoOptions,
 	assets: MediaProcessorAssets,
 ): PreviewVideo => {
 	const virtualBackground = useVirtualBackground();
 	const [track, setTrack] = useState<LocalVideoTrack | undefined>();
 	const [error, setError] = useState(false);
+	const onOpened = useStableCallback(onOpen);
 	const qualityRef = useRef(quality);
 	qualityRef.current = quality;
 	const requestedQuality = useRef<{ track: LocalVideoTrack; quality: VideoQuality } | undefined>(undefined);
 
-	// Open a new camera only when the device changes. Resolution changes restart this track in place below: replacing
+	// Opens a new camera only when the device changes; a resolution change restarts this track in place below: replacing
 	// a processed track makes the video element follow a stopped canvas while the replacement processor initializes,
 	// which presents as a permanently black preview on slower, low-resolution camera modes.
 	useEffect(() => {
 		if (!enabled) {
-			requestedQuality.current = undefined;
-			setTrack(undefined);
 			return;
 		}
 
@@ -67,6 +75,7 @@ export const usePreviewVideoTrack = (
 				requestedQuality.current = { track: next, quality: initialQuality };
 				setError(false);
 				setTrack(next);
+				onOpened();
 			})
 			.catch(() => {
 				if (!cancelled) {
@@ -80,19 +89,23 @@ export const usePreviewVideoTrack = (
 			// Stopped rather than left running: a preview nobody is looking at should not keep the camera light on.
 			opened?.stop();
 		};
-	}, [enabled, deviceId]);
+	}, [enabled, deviceId, onOpened]);
 
-	// Keep the LocalVideoTrack identity (and therefore the element attached to its processed output) stable while
-	// changing resolution. LiveKit restarts the processor with the replacement camera track once capture has changed.
+	// The last track stays in state after the camera goes off, stopped; turning it back on must not show it again.
+	const shownTrack = enabled && track?.mediaStreamTrack.readyState !== 'ended' ? track : undefined;
+	const shownError = enabled && error;
+
+	// Keeps the LocalVideoTrack identity, and so the element attached to its processed output, stable while changing
+	// resolution. LiveKit restarts the processor with the replacement camera track once capture has changed.
 	useEffect(() => {
-		if (!track || (requestedQuality.current?.track === track && requestedQuality.current.quality === quality)) {
+		if (!shownTrack || (requestedQuality.current?.track === shownTrack && requestedQuality.current.quality === quality)) {
 			return;
 		}
 
 		let cancelled = false;
-		requestedQuality.current = { track, quality };
+		requestedQuality.current = { track: shownTrack, quality };
 
-		void track
+		void shownTrack
 			.restartTrack(quality === 'auto' ? {} : { resolution: RESOLUTIONS[quality] })
 			.then(() => {
 				if (!cancelled) {
@@ -109,12 +122,12 @@ export const usePreviewVideoTrack = (
 		return () => {
 			cancelled = true;
 		};
-	}, [track, quality]);
+	}, [shownTrack, quality]);
 
 	// Blur, applied to whichever track is current. Switched where a processor is already loaded, so moving between
 	// strengths costs nothing after the first.
 	useEffect(() => {
-		if (!track) {
+		if (!shownTrack) {
 			return;
 		}
 
@@ -124,7 +137,7 @@ export const usePreviewVideoTrack = (
 			try {
 				const backgroundImage = virtualBackground.active ? virtualBackground.image : undefined;
 				const strength = backgroundImage || blurLevel === 'none' ? 0 : BLUR_STRENGTH[blurLevel];
-				const existing = track.getProcessor() as BackgroundBlurProcessor | undefined;
+				const existing = shownTrack.getProcessor() as BackgroundBlurProcessor | undefined;
 
 				if (existing) {
 					const BackgroundBlurProcessor = await loadBackgroundBlurProcessor();
@@ -142,9 +155,9 @@ export const usePreviewVideoTrack = (
 
 					// Fast refresh cannot alter a processor that is already running, so a stale development-only instance is
 					// replaced.
-					await track.stopProcessor();
+					await shownTrack.stopProcessor();
 					if (!cancelled && (strength || backgroundImage)) {
-						await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
+						await shownTrack.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
 					}
 					return;
 				}
@@ -158,7 +171,7 @@ export const usePreviewVideoTrack = (
 					return;
 				}
 
-				await track.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
+				await shownTrack.setProcessor(new BackgroundBlurProcessor(assets, strength, blurModel, backgroundImage));
 			} catch (err) {
 				// Failing here means an unblurred preview, which is the truth.
 				console.warn('background blur could not be previewed', err);
@@ -168,7 +181,7 @@ export const usePreviewVideoTrack = (
 		return () => {
 			cancelled = true;
 		};
-	}, [track, blurLevel, blurModel, virtualBackground.active, virtualBackground.image, assets]);
+	}, [shownTrack, blurLevel, blurModel, virtualBackground.active, virtualBackground.image, assets]);
 
-	return useMemo(() => ({ track, error }), [track, error]);
+	return useMemo(() => ({ track: shownTrack, error: shownError }), [shownTrack, shownError]);
 };

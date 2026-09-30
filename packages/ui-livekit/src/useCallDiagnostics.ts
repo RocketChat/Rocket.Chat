@@ -1,3 +1,4 @@
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { CallDiagnosticsData, ParticipantTrackStats } from '@rocket.chat/ui-conference';
 import type { LocalAudioTrack, LocalVideoTrack, Participant, LocalTrack, RemoteTrack } from 'livekit-client';
 import { Track } from 'livekit-client';
@@ -179,12 +180,92 @@ export const useCallDiagnostics = (
 	const [diagnostics, setDiagnostics] = useState<CallDiagnosticsData | undefined>();
 	const prev = useRef<PrevSnapshot | null>(null);
 
-	const roomRef = useRef(room);
-	roomRef.current = room;
-	const remoteRef = useRef(remoteParticipants);
-	remoteRef.current = remoteParticipants;
-	const serverUrlRef = useRef(serverUrl);
-	serverUrlRef.current = serverUrl;
+	// The latest room and participants each time it samples, without restarting the polling when they change.
+	const sample = useStableCallback(async (): Promise<CallDiagnosticsData> => {
+		const now = Date.now();
+		const localP = room.localParticipant;
+
+		const [videoStats, audioStats, ...remoteStats] = await Promise.all([
+			readLocalVideoStats(localP),
+			readLocalAudioStats(localP),
+			...remoteParticipants.map((p) => readRemoteParticipantStats(p)),
+		]);
+
+		const totalBytesSent = videoStats.bytesSent + audioStats.bytesSent;
+		let totalBytesReceived = 0;
+		const perParticipant = new Map<string, { videoBytes: number; audioBytes: number }>();
+
+		const participantStats: ParticipantTrackStats[] = remoteParticipants.map((p, i) => {
+			const rs = remoteStats[i];
+			totalBytesReceived += rs.videoBytes + rs.audioBytes;
+			perParticipant.set(p.identity, { videoBytes: rs.videoBytes, audioBytes: rs.audioBytes });
+
+			let videoBitrateKbps: number | undefined;
+			let audioBitrateKbps: number | undefined;
+			if (prev.current) {
+				const prevP = prev.current.perParticipant.get(p.identity);
+				if (prevP) {
+					const dt = (now - prev.current.timestamp) / 1000;
+					if (dt > 0) {
+						videoBitrateKbps = Math.max(0, Math.round(((rs.videoBytes - prevP.videoBytes) * 8) / dt / 1000));
+						audioBitrateKbps = Math.max(0, Math.round(((rs.audioBytes - prevP.audioBytes) * 8) / dt / 1000));
+					}
+				}
+			}
+
+			return {
+				id: p.identity,
+				displayName: p.name || p.identity,
+				videoWidth: rs.videoWidth,
+				videoHeight: rs.videoHeight,
+				videoCodec: rs.videoCodec,
+				fps: rs.fps != null ? Math.round(rs.fps) : undefined,
+				videoBitrateKbps,
+				audioBitrateKbps,
+				packetsLost: rs.packetsLost,
+				jitterMs: rs.jitterMs != null ? Math.round(rs.jitterMs * 10) / 10 : undefined,
+			};
+		});
+
+		let uploadKbps: number | undefined;
+		let downloadKbps: number | undefined;
+		if (prev.current) {
+			const dt = (now - prev.current.timestamp) / 1000;
+			if (dt > 0) {
+				uploadKbps = Math.max(0, Math.round(((totalBytesSent - prev.current.bytesSent) * 8) / dt / 1000));
+				downloadKbps = Math.max(0, Math.round(((totalBytesReceived - prev.current.bytesReceived) * 8) / dt / 1000));
+			}
+		}
+
+		let audioConcealment: number | undefined;
+		for (const rs of remoteStats) {
+			if (rs.concealedSamples != null) {
+				audioConcealment = (audioConcealment ?? 0) + rs.concealedSamples;
+			}
+		}
+
+		prev.current = { timestamp: now, bytesSent: totalBytesSent, bytesReceived: totalBytesReceived, perParticipant };
+
+		return {
+			serverUrl,
+			connectionState: room.state,
+			connectionQuality: localP.connectionQuality ?? 'unknown',
+			roundTripTimeMs: videoStats.rtt != null ? Math.round(videoStats.rtt) : undefined,
+			uploadKbps,
+			downloadKbps,
+			totalBytesSent,
+			totalBytesReceived,
+			sendWidth: videoStats.width,
+			sendHeight: videoStats.height,
+			sendFps: videoStats.fps != null ? Math.round(videoStats.fps) : undefined,
+			sendCodec: videoStats.codec,
+			qualityLimitationReason: videoStats.qualityLimitationReason,
+			backgroundBlur: videoStats.backgroundBlur,
+			participants: participantStats,
+			audioConcealment,
+			timestamp: now,
+		};
+	});
 
 	useEffect(() => {
 		if (!active) {
@@ -193,102 +274,16 @@ export const useCallDiagnostics = (
 
 		let cancelled = false;
 
-		const read = async () => {
-			try {
-				const now = Date.now();
-				const currentRoom = roomRef.current;
-				const currentRemotes = remoteRef.current;
-				const currentServerUrl = serverUrlRef.current;
-				const localP = currentRoom.localParticipant;
-
-				const [videoStats, audioStats, ...remoteStats] = await Promise.all([
-					readLocalVideoStats(localP),
-					readLocalAudioStats(localP),
-					...currentRemotes.map((p) => readRemoteParticipantStats(p)),
-				]);
-
-				const totalBytesSent = videoStats.bytesSent + audioStats.bytesSent;
-				let totalBytesReceived = 0;
-				const perParticipant = new Map<string, { videoBytes: number; audioBytes: number }>();
-
-				const participantStats: ParticipantTrackStats[] = currentRemotes.map((p, i) => {
-					const rs = remoteStats[i];
-					totalBytesReceived += rs.videoBytes + rs.audioBytes;
-					perParticipant.set(p.identity, { videoBytes: rs.videoBytes, audioBytes: rs.audioBytes });
-
-					let videoBitrateKbps: number | undefined;
-					let audioBitrateKbps: number | undefined;
-					if (prev.current) {
-						const prevP = prev.current.perParticipant.get(p.identity);
-						if (prevP) {
-							const dt = (now - prev.current.timestamp) / 1000;
-							if (dt > 0) {
-								videoBitrateKbps = Math.max(0, Math.round(((rs.videoBytes - prevP.videoBytes) * 8) / dt / 1000));
-								audioBitrateKbps = Math.max(0, Math.round(((rs.audioBytes - prevP.audioBytes) * 8) / dt / 1000));
-							}
-						}
+		const read = () =>
+			sample().then(
+				(next) => {
+					if (!cancelled) {
+						setDiagnostics(next);
 					}
-
-					return {
-						id: p.identity,
-						displayName: p.name || p.identity,
-						videoWidth: rs.videoWidth,
-						videoHeight: rs.videoHeight,
-						videoCodec: rs.videoCodec,
-						fps: rs.fps != null ? Math.round(rs.fps) : undefined,
-						videoBitrateKbps,
-						audioBitrateKbps,
-						packetsLost: rs.packetsLost,
-						jitterMs: rs.jitterMs != null ? Math.round(rs.jitterMs * 10) / 10 : undefined,
-					};
-				});
-
-				let uploadKbps: number | undefined;
-				let downloadKbps: number | undefined;
-				if (prev.current) {
-					const dt = (now - prev.current.timestamp) / 1000;
-					if (dt > 0) {
-						uploadKbps = Math.max(0, Math.round(((totalBytesSent - prev.current.bytesSent) * 8) / dt / 1000));
-						downloadKbps = Math.max(0, Math.round(((totalBytesReceived - prev.current.bytesReceived) * 8) / dt / 1000));
-					}
-				}
-
-				let audioConcealment: number | undefined;
-				for (const rs of remoteStats) {
-					if (rs.concealedSamples != null) {
-						audioConcealment = (audioConcealment ?? 0) + rs.concealedSamples;
-					}
-				}
-
-				prev.current = { timestamp: now, bytesSent: totalBytesSent, bytesReceived: totalBytesReceived, perParticipant };
-
-				if (cancelled) {
-					return;
-				}
-
-				setDiagnostics({
-					serverUrl: currentServerUrl,
-					connectionState: currentRoom.state,
-					connectionQuality: localP.connectionQuality ?? 'unknown',
-					roundTripTimeMs: videoStats.rtt != null ? Math.round(videoStats.rtt) : undefined,
-					uploadKbps,
-					downloadKbps,
-					totalBytesSent,
-					totalBytesReceived,
-					sendWidth: videoStats.width,
-					sendHeight: videoStats.height,
-					sendFps: videoStats.fps != null ? Math.round(videoStats.fps) : undefined,
-					sendCodec: videoStats.codec,
-					qualityLimitationReason: videoStats.qualityLimitationReason,
-					backgroundBlur: videoStats.backgroundBlur,
-					participants: participantStats,
-					audioConcealment,
-					timestamp: now,
-				});
-			} catch {
+				},
 				// Stats are best-effort.
-			}
-		};
+				() => undefined,
+			);
 
 		void read();
 		const timer = setInterval(() => void read(), POLL_MS);
@@ -297,7 +292,7 @@ export const useCallDiagnostics = (
 			cancelled = true;
 			clearInterval(timer);
 		};
-	}, [active]);
+	}, [active, sample]);
 
 	return diagnostics;
 };

@@ -103,11 +103,13 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 class="rcx-box rcx-box--full"
               >
                 <button
-                  aria-label="Device options"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  aria-label="Device settings"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  disabled=""
+                  id="react-aria-_r_4_"
                   label="Device options"
-                  title="Device settings (not supported by the browser)"
+                  title="Device settings"
                   type="button"
                 >
                   <div
@@ -163,7 +165,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                   aria-haspopup="true"
                   aria-label="Camera"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  id="react-aria-_r_4_"
+                  id="react-aria-_r_6_"
                   label="Camera options"
                   title="Camera"
                   type="button"
@@ -175,11 +177,6 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                     
                   </i>
                 </button>
-                <input
-                  accept="image/*"
-                  hidden=""
-                  type="file"
-                />
               </div>
               <div
                 class="rcx-box rcx-box--full"
@@ -251,7 +248,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="More"
               class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              id="react-aria-_r_6_"
+              id="react-aria-_r_8_"
               label="More"
               title="More"
               type="button"
@@ -306,11 +303,13 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_a_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <div
@@ -366,7 +365,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_8_"
+                id="react-aria-_r_c_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -378,11 +377,6 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
                   
                 </i>
               </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
             </div>
             <div
               class="rcx-box rcx-box--full"
@@ -415,208 +409,6 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               class="rcx-box rcx-box--full rcx-icon--name-desktop-cross rcx-icon rcx-css-1px5el2"
             >
               
-            </i>
-          </button>
-          <button
-            aria-label="Raise hand"
-            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            label="Raise hand"
-            title="Raise hand"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
-            >
-              
-            </i>
-          </button>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
-          >
-            <button
-              aria-label="Send reaction"
-              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              label="Send reaction"
-              title="Send reaction"
-              type="button"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
-              >
-                
-              </i>
-            </button>
-          </div>
-          <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            aria-label="More"
-            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_a_"
-            label="More"
-            title="More"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1bepdyv"
-            >
-              
-            </i>
-          </button>
-          <button
-            aria-label="Leave call"
-            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-            label="Leave call"
-            title="Leave call"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
-            >
-              
-            </i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-`;
-
-exports[`call stories renders CallControls Default without crashing 1`] = `
-<body>
-  <div>
-    <div
-      class="rcx-box rcx-box--full rcx-css-owlgau"
-    >
-      <div
-        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
-      >
-        <div
-          class="rcx-button-group rcx-button-group--align-start"
-          role="group"
-          style="position: relative;"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
-          >
-            <div
-              class="rcx-box rcx-box--full"
-            >
-              <button
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
-                label="Device options"
-                title="Device settings (not supported by the browser)"
-                type="button"
-              >
-                <div
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
-            >
-              <button
-                aria-label="Mute"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Mute"
-                type="button"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-          </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
-          >
-            <div
-              class="rcx-box rcx-box--full"
-            >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_c_"
-                label="Camera options"
-                title="Camera"
-                type="button"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
-            >
-              <button
-                aria-label="Camera"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
-          </div>
-          <button
-            aria-label="Share screen"
-            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            label="Share screen"
-            title="Share screen"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-1bepdyv"
-            >
-              
             </i>
           </button>
           <button
@@ -689,7 +481,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
 </body>
 `;
 
-exports[`call stories renders CallControls HandRaised without crashing 1`] = `
+exports[`call stories renders CallControls Default without crashing 1`] = `
 <body>
   <div>
     <div
@@ -710,11 +502,13 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_g_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <div
@@ -770,7 +564,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_g_"
+                id="react-aria-_r_i_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -782,11 +576,205 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
                   
                 </i>
               </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
+            </div>
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-label="Camera"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                label="Camera"
+                title="Start camera"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
+                >
+                  ❴
+                </i>
+              </button>
+            </div>
+          </div>
+          <button
+            aria-label="Share screen"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Share screen"
+            title="Share screen"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Raise hand"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Raise hand"
+            title="Raise hand"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1f9gxzh"
+          >
+            <button
+              aria-label="Send reaction"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Send reaction"
+              title="Send reaction"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="More"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            id="react-aria-_r_k_"
+            label="More"
+            title="More"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+          <button
+            aria-label="Leave call"
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            label="Leave call"
+            title="Leave call"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders CallControls HandRaised without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+          style="position: relative;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-yaiuut"
+          >
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_m_"
+                label="Device options"
+                title="Device settings"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 24px;"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-label="Mute"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                label="Mute"
+                title="Mute"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-yaiuut"
+          >
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Camera"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_o_"
+                label="Camera options"
+                title="Camera"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
+                >
+                  
+                </i>
+              </button>
             </div>
             <div
               class="rcx-box rcx-box--full"
@@ -858,7 +846,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_i_"
+            id="react-aria-_r_q_"
             label="More"
             title="More"
             type="button"
@@ -912,11 +900,13 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_s_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -957,7 +947,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_k_"
+                id="react-aria-_r_u_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -969,11 +959,6 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
                   
                 </i>
               </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
             </div>
             <div
               class="rcx-box rcx-box--full"
@@ -1045,7 +1030,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_m_"
+            id="react-aria-_r_10_"
             label="More"
             title="More"
             type="button"
@@ -1099,11 +1084,13 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_12_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <div
@@ -1159,7 +1146,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_o_"
+                id="react-aria-_r_14_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -1171,11 +1158,6 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
                   
                 </i>
               </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
             </div>
             <div
               class="rcx-box rcx-box--full"
@@ -1247,7 +1229,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_q_"
+            id="react-aria-_r_16_"
             label="More"
             title="More"
             type="button"
@@ -1301,11 +1283,13 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
               class="rcx-box rcx-box--full"
             >
               <button
-                aria-label="Device options"
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device settings"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                disabled=""
+                id="react-aria-_r_18_"
                 label="Device options"
-                title="Device settings (not supported by the browser)"
+                title="Device settings"
                 type="button"
               >
                 <i
@@ -1346,7 +1330,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
                 aria-haspopup="true"
                 aria-label="Camera"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_s_"
+                id="react-aria-_r_1a_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -1358,11 +1342,6 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
                   
                 </i>
               </button>
-              <input
-                accept="image/*"
-                hidden=""
-                type="file"
-              />
             </div>
             <div
               class="rcx-box rcx-box--full"
@@ -1434,7 +1413,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
             aria-haspopup="true"
             aria-label="More"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_u_"
+            id="react-aria-_r_1c_"
             label="More"
             title="More"
             type="button"
@@ -2581,7 +2560,7 @@ exports[`call stories renders CallRaisedHands OneHand without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
-          id="react-aria-_r_10_"
+          id="react-aria-_r_1e_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2617,7 +2596,7 @@ exports[`call stories renders CallRaisedHands Queue without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
-          id="react-aria-_r_12_"
+          id="react-aria-_r_1g_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2659,7 +2638,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-16uxknr"
-          id="react-aria-_r_14_"
+          id="react-aria-_r_1i_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -3914,7 +3893,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_16_"
+          id="react-aria-_r_1k_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3926,11 +3905,6 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
             
           </i>
         </button>
-        <input
-          accept="image/*"
-          hidden=""
-          type="file"
-        />
       </div>
     </div>
   </div>
@@ -3951,7 +3925,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_18_"
+          id="react-aria-_r_1m_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3963,11 +3937,6 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
             
           </i>
         </button>
-        <input
-          accept="image/*"
-          hidden=""
-          type="file"
-        />
       </div>
     </div>
   </div>
@@ -3998,11 +3967,6 @@ exports[`call stories renders CameraPicker NoCamera without crashing 1`] = `
             
           </i>
         </button>
-        <input
-          accept="image/*"
-          hidden=""
-          type="file"
-        />
       </div>
     </div>
   </div>
@@ -4023,7 +3987,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_1a_"
+          id="react-aria-_r_1o_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -4035,11 +3999,6 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             
           </i>
         </button>
-        <input
-          accept="image/*"
-          hidden=""
-          type="file"
-        />
       </div>
     </div>
   </div>

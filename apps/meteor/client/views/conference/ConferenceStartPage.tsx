@@ -2,10 +2,10 @@ import { ConferencePreflight } from '@rocket.chat/ui-conference';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePageError from './ConferencePageError';
-import { conferencePreflightMedia } from './components/ConferencePreflightMedia';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useStartConference } from './hooks/useStartConference';
 import { closeCallWindow } from './lib/callWindow';
+import { conferencePreflightMedia } from './lib/conferencePreflightMedia';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceStartPageProps = {

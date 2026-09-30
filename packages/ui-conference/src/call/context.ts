@@ -1,6 +1,4 @@
-import type { Device } from '@rocket.chat/ui-contexts';
-
-import type { BlurLevel, BlurModel, NoiseMethod, VideoQuality } from '../hooks/useCallDevicesInitialState';
+import type { BlurLevel, BlurModel, NoiseMethod } from '../hooks/useCallDevicesInitialState';
 import { createRequiredContext } from '../lib/createRequiredContext';
 
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
@@ -60,19 +58,11 @@ export type CallActions = {
 	leave: () => void;
 };
 
-export type CallDeviceSelection = {
-	/** Every camera, microphone and speaker the browser lists, kept current as devices come and go. */
-	devices: MediaDeviceInfo[];
-	/** A microphone or a speaker, told apart by the device's own `type`. */
-	selectAudioDevice: (device: Device) => void;
-	selectCamera: (deviceId: string) => void;
-	currentCameraId?: string;
-};
-
 export type CallNoiseSuppression = {
 	/** What this workspace can offer, weakest first. Empty until there is a microphone track to filter. */
 	methods: NoiseMethod[];
-	method: NoiseMethod;
+	/** Unset while nothing has been chosen, when the best on offer is what a call applies. */
+	method?: NoiseMethod;
 	pending: boolean;
 	select: (method: NoiseMethod) => void;
 };
@@ -98,19 +88,13 @@ export type CallBackgroundBlur = {
 	};
 };
 
-export type CallVideoQuality = {
-	quality: VideoQuality;
-	qualities: VideoQuality[];
-	/** What the camera actually gave, which is not always what was asked for. */
-	height?: number;
-	pending: boolean;
-	select: (quality: VideoQuality) => void;
-};
-
+/**
+ * What is done to the microphone and the camera's picture, for the device menus. A call running in this window fills
+ * it with what its tracks are running; the preflight, with the stored choices the preview applies.
+ */
 export type CallMediaProcessing = {
 	noiseSuppression: CallNoiseSuppression;
 	backgroundBlur: CallBackgroundBlur;
-	videoQuality: CallVideoQuality;
 };
 
 export type ParticipantTrackStats = {
@@ -158,8 +142,6 @@ export type CallDiagnosticsData = {
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');
 
 export const [CallActionsProvider, useCallActions] = createRequiredContext<CallActions>('CallActions');
-
-export const [CallDeviceSelectionProvider, useCallDeviceSelection] = createRequiredContext<CallDeviceSelection>('CallDeviceSelection');
 
 export const [CallMediaProcessingProvider, useCallMediaProcessing] = createRequiredContext<CallMediaProcessing>('CallMediaProcessing');
 

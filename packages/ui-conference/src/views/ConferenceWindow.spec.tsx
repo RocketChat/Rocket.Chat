@@ -4,15 +4,13 @@ import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
 import type { CallMediaProcessing, CallState } from '../call/context';
-import {
-	CallActionsProvider,
-	CallDeviceSelectionProvider,
-	CallDiagnosticsProvider,
-	CallMediaProcessingProvider,
-	CallStateProvider,
-} from '../call/context';
+import { CallActionsProvider, CallDiagnosticsProvider, CallMediaProcessingProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import type { DeviceSelection } from '../devices/DeviceSelectionContext';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 const buildCallState = (overrides: Partial<CallState> = {}): CallState => ({
@@ -43,6 +41,14 @@ const actions = {
 	leave: jest.fn(),
 };
 
+const deviceSelection: DeviceSelection = {
+	devices: [],
+	selectedIds: {},
+	select: jest.fn(),
+};
+
+const videoQuality: VideoQualitySelection = { quality: 'auto', qualities: [], pending: false, select: jest.fn() };
+
 const mediaProcessing: CallMediaProcessing = {
 	noiseSuppression: { methods: [], method: 'none', pending: false, select: jest.fn() },
 	backgroundBlur: {
@@ -56,18 +62,19 @@ const mediaProcessing: CallMediaProcessing = {
 		selectModel: jest.fn(),
 		backgroundImage: { available: false, active: false, hasImage: false, select: jest.fn(), activate: jest.fn() },
 	},
-	videoQuality: { quality: 'auto', qualities: [], pending: false, select: jest.fn() },
 };
 
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={{ devices: [], selectAudioDevice: jest.fn(), selectCamera: jest.fn() }}>
-				<CallMediaProcessingProvider value={mediaProcessing}>
-					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
-				</CallMediaProcessingProvider>
-			</CallDeviceSelectionProvider>
+			<DeviceSelectionProvider value={deviceSelection}>
+				<VideoQualityProvider value={videoQuality}>
+					<CallMediaProcessingProvider value={mediaProcessing}>
+						<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+					</CallMediaProcessingProvider>
+				</VideoQualityProvider>
+			</DeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>
 );

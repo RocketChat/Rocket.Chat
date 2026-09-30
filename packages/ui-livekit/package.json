@@ -18,6 +18,7 @@
 	},
 	"dependencies": {
 		"@livekit/components-react": "2.9.23",
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/media-processors": "workspace:~",
 		"@tanstack/react-query": "~5.65.1",
 		"livekit-client": "^2.5.0"

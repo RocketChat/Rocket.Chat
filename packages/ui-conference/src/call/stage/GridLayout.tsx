@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 
 import MainTile from './MainTile';
 import OverflowTile from './OverflowTile';
@@ -20,9 +20,7 @@ export type GridLayoutProps = {
 const GridLayout = ({ tiles, activeSpeakerId, selfId }: GridLayoutProps) => {
 	const split = useMemo(() => splitByPriority(tiles, MAX_VISIBLE_TILES, activeSpeakerId, selfId), [tiles, activeSpeakerId, selfId]);
 
-	const [measureEl, setMeasureEl] = useState<HTMLDivElement | null>(null);
-	const measureRef = useCallback((node: HTMLDivElement | null) => setMeasureEl(node), []);
-	const layout = useTileGridLayout(measureEl, split.visible.length + (split.hidden.length > 0 ? 1 : 0));
+	const [measureRef, layout] = useTileGridLayout(split.visible.length + (split.hidden.length > 0 ? 1 : 0));
 	const { cols, rows, cellWidth, cellHeight } = layout;
 
 	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols);

@@ -6,24 +6,26 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallMediaProcessing, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
-	CallDeviceSelectionProvider,
 	CallDiagnosticsProvider,
 	CallMediaProcessingProvider,
 	CallStateProvider,
+	DeviceSelectionProvider,
+	VideoQualityProvider,
 	playJoinChime,
 	playMutedReminder,
 	useUpdateCallPreferences,
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { LocalAudioTrack, LocalVideoTrack, RemoteParticipant } from 'livekit-client';
+import type { RemoteParticipant } from 'livekit-client';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useBackgroundBlur } from './useBackgroundBlur';
@@ -73,13 +75,16 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
 	// With no credentials there is no call to sit in.
-	useEffect(() => {
-		if (!transportError) {
-			return;
-		}
-		dispatchToastMessage({ type: 'error', message: transportError });
+	const onTransportError = useStableCallback((error: Error) => {
+		dispatchToastMessage({ type: 'error', message: error });
 		onEnded();
-	}, [transportError, dispatchToastMessage, onEnded]);
+	});
+
+	useEffect(() => {
+		if (transportError) {
+			onTransportError(transportError);
+		}
+	}, [transportError, onTransportError]);
 
 	const arrival = useArrivalPreferences(preferences, connect);
 	const [room] = useState(() => new Room());
@@ -134,35 +139,20 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
-	const localCameraTrack = localCameraPub?.track as LocalVideoTrack | undefined;
+	const localCameraTrack = localCameraPub?.videoTrack;
 	const processedCameraTrack = localCameraTrack?.getProcessor()?.processedTrack;
 
-	// What the call is actually being sent, which once a processor is attached is not the raw camera: the reader has
-	// to see their own blur. The processed track needs a stream around it, held per track so the video element is not
-	// handed a new object to start over with on every render.
-	const localProcessedStream = useRef<{ track: MediaStreamTrack; stream: MediaStream } | null>(null);
-	const cameraStream = useMemo(() => {
-		if (!camEnabled) {
-			return undefined;
-		}
-
-		if (processedCameraTrack) {
-			if (localProcessedStream.current?.track !== processedCameraTrack) {
-				localProcessedStream.current = { track: processedCameraTrack, stream: new MediaStream([processedCameraTrack]) };
-			}
-			return localProcessedStream.current.stream;
-		}
-
-		localProcessedStream.current = null;
-		return localCameraTrack?.mediaStream;
-		// Keyed on the publication's sid rather than the publication object, which is re-derived whenever any local
-		// track changes, the microphone included: keying on it would restart the camera each time.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [localCameraPub?.trackSid, localCameraTrack?.mediaStream, processedCameraTrack, camEnabled]);
+	// What the call is actually sending, which once a processor is attached is not the raw camera: the reader has to
+	// see their own blur. One stream per processed track, so the video element is not handed a new one every render.
+	const processedCameraStream = useMemo(
+		() => (processedCameraTrack ? new MediaStream([processedCameraTrack]) : undefined),
+		[processedCameraTrack],
+	);
+	const cameraStream = camEnabled ? (processedCameraStream ?? localCameraTrack?.mediaStream) : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 	const microphoneStream = localMicPub?.track?.mediaStream;
 
-	const noiseSuppression = useNoiseSuppression(localMicPub?.track as LocalAudioTrack | undefined, assets);
+	const noiseSuppression = useNoiseSuppression(localMicPub?.audioTrack, assets);
 	const backgroundBlur = useBackgroundBlur(localCameraTrack, assets);
 	const videoQuality = useVideoQuality(localCameraTrack);
 	const sendResolution = useSendResolution(localCameraTrack);
@@ -174,17 +164,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		connected,
 	);
 
-	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled);
-
-	const mutedReminderPlayed = useRef(false);
-	useEffect(() => {
-		mutedReminderPlayed.current = false;
-	}, [micEnabled]);
-	useEffect(() => {
-		if (!speakingWhileMuted || mutedReminderPlayed.current) return;
-		mutedReminderPlayed.current = true;
-		playMutedReminder();
-	}, [speakingWhileMuted]);
+	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder);
 
 	useEffect(() => {
 		const onConnect = (participant: RemoteParticipant) => {
@@ -205,9 +185,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		localParticipant,
 	);
 
-	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
-	const [outputElement] = useState(() => new Audio());
-	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
+	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -266,22 +244,21 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, ass
 		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, toggleHand, sendReaction, muteParticipant, onEnded],
 	);
 
-	const mediaProcessing = useMemo(
-		(): CallMediaProcessing => ({ noiseSuppression, backgroundBlur, videoQuality }),
-		[noiseSuppression, backgroundBlur, videoQuality],
-	);
+	const mediaProcessing = useMemo((): CallMediaProcessing => ({ noiseSuppression, backgroundBlur }), [noiseSuppression, backgroundBlur]);
 
 	return (
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
-				<CallDeviceSelectionProvider value={deviceSelection}>
-					<CallMediaProcessingProvider value={mediaProcessing}>
-						<CallDiagnosticsProvider value={diagnostics ?? null}>
-							{children}
-							<RoomAudioRenderer room={room} />
-						</CallDiagnosticsProvider>
-					</CallMediaProcessingProvider>
-				</CallDeviceSelectionProvider>
+				<DeviceSelectionProvider value={deviceSelection}>
+					<VideoQualityProvider value={videoQuality}>
+						<CallMediaProcessingProvider value={mediaProcessing}>
+							<CallDiagnosticsProvider value={diagnostics ?? null}>
+								{children}
+								<RoomAudioRenderer room={room} />
+							</CallDiagnosticsProvider>
+						</CallMediaProcessingProvider>
+					</VideoQualityProvider>
+				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);

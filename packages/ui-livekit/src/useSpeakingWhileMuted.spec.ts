@@ -53,8 +53,8 @@ afterEach(() => {
 });
 
 /** Lets the hook's `getUserMedia` settle, since nothing is sampled until it has. */
-const start = async () => {
-	const view = renderHook(() => useSpeakingWhileMuted(true));
+const start = async (onFirstSpeech?: () => void) => {
+	const view = renderHook(() => useSpeakingWhileMuted(true, onFirstSpeech));
 	await act(async () => undefined);
 	return view;
 };
@@ -76,6 +76,21 @@ describe('useSpeakingWhileMuted', () => {
 
 		await listenFor(300);
 		expect(result.current).toBe(true);
+	});
+
+	// The reminder chime: once per mute, not once per sentence.
+	it('tells about the speech once while muted', async () => {
+		const onFirstSpeech = jest.fn();
+		await start(onFirstSpeech);
+
+		sample = LOUD;
+		await listenFor(600);
+		sample = SILENT;
+		await listenFor(3100);
+		sample = LOUD;
+		await listenFor(600);
+
+		expect(onFirstSpeech).toHaveBeenCalledTimes(1);
 	});
 
 	// The regression this guards: speech dips below any threshold between words, and an answer that fell with it
