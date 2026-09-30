@@ -113,6 +113,8 @@ test.describe('video conference call window', () => {
 		test.setTimeout(150_000);
 
 		poHomeChannel = new HomeChannel(page);
+
+		await page.goto('/home');
 	});
 
 	test.afterEach(async ({ api, page, request }) => {
@@ -187,7 +189,7 @@ test.describe('video conference call window', () => {
 	 * test's call can answer for it.
 	 */
 	const startNamedConference = async (session: Session, channel: string, name: string): Promise<ConferenceWindow> => {
-		await session.poHomeChannel.gotoChannel(channel);
+		await session.poHomeChannel.navbar.openChat(channel);
 
 		const callWindow = await openCallWindow(session);
 
@@ -207,7 +209,7 @@ test.describe('video conference call window', () => {
 	};
 
 	test('should open the call in its own window instead of asking in the room', async ({ page }) => {
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 
@@ -231,7 +233,7 @@ test.describe('video conference call window', () => {
 		const callName = `Meeting in "${channel}"`;
 		const user2 = await openSessionAs(browser, Users.user2);
 
-		await poHomeChannel.gotoChannel(channel);
+		await poHomeChannel.navbar.openChat(channel);
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 
@@ -261,7 +263,7 @@ test.describe('video conference call window', () => {
 
 	// Qase case 11, and the half of case 49 that can be asserted from outside the window.
 	test('should create the conference when the preflight is confirmed and settle the window on it', async ({ page, request }) => {
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const conferencesBefore = await poHomeChannel.content.videoConfMessageBlock.count();
 		const callWindow = await openCallWindow({ page, poHomeChannel });
@@ -310,7 +312,7 @@ test.describe('video conference call window', () => {
 			await expect(user2.poHomeChannel.ongoingCalls.btnOngoingCalls).toBeHidden();
 		});
 
-		await poHomeChannel.gotoChannel(channel);
+		await poHomeChannel.navbar.openChat(channel);
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 
@@ -343,14 +345,14 @@ test.describe('video conference call window', () => {
 		// Opened before the call and looking at the very room it will be placed in: a ring only reaches a client
 		// that is there to receive it, so a callee opened afterwards would prove nothing by staying quiet.
 		const user2 = await openSessionAs(browser, Users.user2);
-		await user2.poHomeChannel.gotoDirect('user1');
+		await user2.poHomeChannel.navbar.openChat('user1');
 		// Counted only once the history has finished arriving, or the baseline would be a room still loading.
 		await user2.poHomeChannel.content.waitForChannel();
 
 		// This DM carries the other tests' calls too, so what the last step waits for is one *more* than this.
 		const conferencesBefore = await user2.poHomeChannel.content.videoConfMessageBlock.count();
 
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 
@@ -406,7 +408,7 @@ test.describe('video conference call window', () => {
 			await expect(user2.poHomeChannel.ongoingCalls.btnOngoingCalls).toBeHidden();
 		});
 
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 
@@ -441,7 +443,7 @@ test.describe('video conference call window', () => {
 	test('should answer a ringing call through the join preflight', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 		await callWindow.getBtnCall('user2').click();
@@ -475,7 +477,7 @@ test.describe('video conference call window', () => {
 	test('should record a decline from the row without ending the call, and still allow joining', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 		await callWindow.getBtnCall('user2').click();
@@ -536,7 +538,7 @@ test.describe('video conference call window', () => {
 	test('should follow the call from the caller window as others join, decline and leave', async ({ page, browser }) => {
 		const user2 = await openSessionAs(browser, Users.user2);
 
-		await poHomeChannel.gotoDirect('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const callWindow = await openCallWindow({ page, poHomeChannel });
 		await callWindow.getBtnCall('user2').click();
@@ -678,7 +680,6 @@ test.describe('video conference call window', () => {
 		const firstCall = `First call ${faker.string.uuid()}`;
 		const secondCall = `Second call ${faker.string.uuid()}`;
 
-		await poHomeChannel.goto();
 		const user2 = await openSessionAs(browser, Users.user2);
 		const user3 = await openSessionAs(browser, Users.user3);
 
@@ -811,7 +812,8 @@ test.describe('video conference call window disabled', () => {
 		});
 
 		const poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.gotoDirect('user2');
+		await page.goto('/home');
+		await poHomeChannel.navbar.openChat('user2');
 
 		const { page: auxPage } = await createAuxContext(browser, Users.user2);
 		const auxPoHomeChannel = new HomeChannel(auxPage);
@@ -822,7 +824,7 @@ test.describe('video conference call window disabled', () => {
 			});
 
 			await test.step('a ring is announced by the incoming popup, as it always was', async () => {
-				await auxPoHomeChannel.gotoDirect('user1');
+				await auxPoHomeChannel.navbar.openChat('user1');
 				await auxPoHomeChannel.content.btnVideoCall.click();
 				await auxPoHomeChannel.content.btnStartVideoCall.click();
 

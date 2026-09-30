@@ -170,7 +170,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		const [user1, user2] = sessions;
 
 		await test.step('establish call from user1 DM with user2', async () => {
-			await user1.poHomeChannel.gotoDirect('user2');
+			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
@@ -222,7 +222,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		const [user1, user2] = sessions;
 
 		await test.step('establish call and navigate to peer DM', async () => {
-			await user1.poHomeChannel.gotoDirect('user2');
+			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
@@ -267,7 +267,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 		const [user1, user2] = sessions;
 
 		await test.step('establish call and navigate to peer DM', async () => {
-			await user1.poHomeChannel.gotoDirect('user2');
+			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
@@ -333,7 +333,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 
 		await test.step('establish call from user1 DM with user2', async () => {
-			await user1.poHomeChannel.gotoDirect('user2');
+			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
@@ -395,7 +395,7 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 
 		await test.step('establish call and open popout', async () => {
-			await user1.poHomeChannel.gotoDirect('user2');
+			await user1.poHomeChannel.navbar.openChat('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.widget.initiateCall();
