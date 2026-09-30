@@ -6,7 +6,7 @@ import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixt
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
- * microphone is doing. For the reader, mirrored.
+ * microphone is doing. The reader's own tile is mirrored; see `Self`.
  */
 const meta = {
 	component: ParticipantTile,

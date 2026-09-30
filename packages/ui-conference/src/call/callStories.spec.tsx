@@ -16,7 +16,9 @@ import * as callBar from '../components/CallBar.stories';
  * The call's parts are drawn from what their contexts say, so each story is a state of the call and the snapshot
  * is what that state looks like — the stories are the cases, as they are for the rest of the package.
  */
-const casesOf = (file: string, stories: Record<string, ComponentType & { storyName?: string }>) =>
+type ComposedStory = ComponentType & { storyName?: string; play?: (context: { canvasElement: HTMLElement }) => Promise<void> };
+
+const casesOf = (file: string, stories: Record<string, ComposedStory>) =>
 	Object.values(stories).map((Story) => [`${file} ${Story.storyName || 'Story'}`, Story] as const);
 
 const testCases = [
@@ -31,14 +33,17 @@ const testCases = [
 ];
 
 describe('call stories', () => {
+	// Played first: a story with a `play` is the state it leaves behind, such as an open menu.
 	test.each(testCases)('renders %s without crashing', async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
+		const { baseElement, container } = render(<Story />);
+		await Story.play?.({ canvasElement: container });
 
 		expect(baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
+		await Story.play?.({ canvasElement: container });
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();

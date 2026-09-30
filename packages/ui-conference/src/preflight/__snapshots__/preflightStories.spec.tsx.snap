@@ -127,7 +127,9 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
 
 exports[`preflight stories renders PreflightDevices CameraMenuOpen without crashing 1`] = `
 <body>
-  <div>
+  <div
+    aria-hidden="true"
+  >
     <div
       class="rcx-box rcx-box--full rcx-css-owlgau"
     >
@@ -212,7 +214,8 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             class="rcx-box rcx-box--full rcx-css-iyng0n"
           >
             <button
-              aria-expanded="false"
+              aria-controls="react-aria-_r_b_"
+              aria-expanded="true"
               aria-haspopup="true"
               aria-label="Camera: FaceTime HD Camera"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
@@ -236,9 +239,9 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 </div>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-18jrq41"
                 >
-                  
+                  
                 </i>
               </span>
             </button>
@@ -247,6 +250,171 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
       </div>
     </div>
   </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-start="true"
+    hidden=""
+  />
+  <div
+    aria-hidden="true"
+  />
+  <div
+    style="position: absolute; z-index: 100000; max-height: -24px; left: 12px; bottom: 4px;"
+  >
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_c_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-6qwf9c"
+      data-testid="dropdown"
+      style="bottom: 0px; left: 0px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-xvdgy9"
+      >
+        <div
+          aria-labelledby="react-aria-_r_a_"
+          id="react-aria-_r_b_"
+          role="menu"
+          tabindex="0"
+        >
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_d_"
+              role="presentation"
+            >
+              Camera
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_d_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="facetime-videoinput"
+                id="react-aria-_r_h_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="FaceTime HD Camera"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        FaceTime HD Camera
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="brio-videoinput"
+                id="react-aria-_r_l_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Logitech BRIO"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Logitech BRIO
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span
+      style="display: contents;"
+    />
+    <div
+      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+    >
+      <button
+        aria-label="Dismiss"
+        id="react-aria-_r_m_"
+        style="width: 1px; height: 1px;"
+        tabindex="-1"
+      />
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-focus-scope-end="true"
+    hidden=""
+  />
 </body>
 `;
 
@@ -271,7 +439,7 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
               aria-haspopup="true"
               aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_c_"
+              id="react-aria-_r_n_"
               title="MacBook Pro Microphone"
               type="button"
             >
@@ -306,7 +474,7 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
               aria-haspopup="true"
               aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_e_"
+              id="react-aria-_r_p_"
               title="MacBook Pro Speakers"
               type="button"
             >
