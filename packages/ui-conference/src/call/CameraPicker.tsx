@@ -7,11 +7,13 @@ import { useCallState } from './context';
 import { refreshMediaDevices } from './lib/mediaDevicesStore';
 import DeviceMenu from '../devices/DeviceMenu';
 import { useDeviceSelection } from '../devices/DeviceSelectionContext';
+import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
-/** The camera of a call running in this window. */
+/** The camera of a call running in this window, with the quality it sends. */
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
+	const videoQuality = useVideoQualityChoices();
 	const { devices } = useDeviceSelection();
 
 	// Asked on opening, like the audio menu: a call joined with the camera off may not have the permission that
@@ -29,6 +31,7 @@ const CameraPicker = () => {
 			kinds={['videoinput']}
 			title={t('Camera')}
 			placement='top-end'
+			choices={[videoQuality]}
 			beforeOpen={askForCameras}
 			button={<CallDeviceMenuButton label={t('Camera_options')} danger={!self.cameraOn} />}
 		/>

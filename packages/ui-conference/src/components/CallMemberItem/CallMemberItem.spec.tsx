@@ -55,3 +55,61 @@ it('does not offer to ring where the workspace would not let this caller ring', 
 
 	expect(screen.queryByRole('button', { name: `Ring__name__` })).not.toBeInTheDocument();
 });
+
+describe('in a call that runs in this window', () => {
+	const joined: ConferenceMember = { ...base, joined: true };
+
+	const renderInCall = ({ muted = false, viewerId = 'someone-else' }: { muted?: boolean; viewerId?: string } = {}) => {
+		const AppRoot = mockAppRoot().withJohnDoe().build();
+		const onMute = jest.fn();
+		const conference = buildConferenceContext({ viewer: { uid: viewerId } });
+
+		const wrapper = ({ children }: { children: ReactNode }) => (
+			<AppRoot>
+				<ConferenceContext.Provider value={conference}>{children}</ConferenceContext.Provider>
+			</AppRoot>
+		);
+
+		render(
+			<CallMemberItem
+				member={joined}
+				hasChatAccess
+				muted={muted}
+				activity={<span role='meter' aria-label={`level of ${joined._id}`} aria-valuenow={0} />}
+				onMute={onMute}
+				onRing={jest.fn()}
+			/>,
+			{ wrapper },
+		);
+
+		return { onMute };
+	};
+
+	it('offers to mute a member whose microphone is on', () => {
+		renderInCall();
+
+		expect(screen.getByRole('button', { name: 'Mute__name__' })).toBeInTheDocument();
+	});
+
+	it("draws the member's microphone level", () => {
+		renderInCall();
+
+		expect(screen.getByRole('meter', { name: `level of ${base._id}` })).toBeInTheDocument();
+	});
+
+	// Silence is what everyone already hears, so a muted row says nothing — no button asking for it again.
+	it('says nothing about a member who is already muted', () => {
+		renderInCall({ muted: true });
+
+		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('meter', { name: `level of ${base._id}` })).not.toBeInTheDocument();
+	});
+
+	// Muting yourself is the call bar's job; asking yourself for silence through a list of other people is not.
+	it('shows the reader their own level, but no way to mute themselves from the list', () => {
+		renderInCall({ viewerId: base._id });
+
+		expect(screen.queryByRole('button', { name: 'Mute__name__' })).not.toBeInTheDocument();
+		expect(screen.getByRole('meter', { name: `level of ${base._id}` })).toBeInTheDocument();
+	});
+});

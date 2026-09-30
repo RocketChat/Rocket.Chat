@@ -4,10 +4,15 @@ import { Suspense, useMemo } from 'react';
 
 import { PreviewMediaContextProvider } from './PreviewMediaContext';
 import { useCallDevicePreview } from './useCallDevicePreview';
+import { VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
 import type { PreflightMedia } from '../context/definitions';
 import type { DeviceSelection } from '../devices/DeviceSelectionContext';
 import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
-import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
+import { useCallDevicesInitialState, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
+
+const QUALITIES = choicesOf(VIDEO_QUALITY_LABELS);
 
 export type PreviewMediaProviderProps = {
 	capabilities: VideoConferenceCapabilities;
@@ -22,6 +27,7 @@ export type PreviewMediaProviderProps = {
  */
 const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaProviderProps) => {
 	const { preferences, devices, selectDevice } = useCallDevicesInitialState(capabilities);
+	const { videoQuality, selectVideoQuality } = useVideoQualityPreference();
 
 	const preview = useCallDevicePreview(preferences, devices);
 
@@ -36,15 +42,22 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 		[preview.devices, devices, selectDevice],
 	);
 
+	const videoQualitySelection = useMemo(
+		(): VideoQualitySelection => ({ quality: videoQuality, qualities: QUALITIES, pending: false, select: selectVideoQuality }),
+		[videoQuality, selectVideoQuality],
+	);
+
 	return (
 		<PreviewMediaContextProvider value={value}>
 			<DeviceSelectionProvider value={deviceSelection}>
-				{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
-				<Suspense fallback={children}>
-					<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId}>
-						{children}
-					</media.PreviewVideoProvider>
-				</Suspense>
+				<VideoQualityProvider value={videoQualitySelection}>
+					{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
+					<Suspense fallback={children}>
+						<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
+							{children}
+						</media.PreviewVideoProvider>
+					</Suspense>
+				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>
 	);

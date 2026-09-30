@@ -1,8 +1,9 @@
 import type { Decorator } from '@storybook/react';
 
-import { buildDeviceSelection, fakeDevices } from './callFixtures';
+import { buildDeviceSelection, buildVideoQuality, fakeDevices } from './callFixtures';
 import { embeddedCapabilities } from './storyFixtures';
 import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import type { PreviewMediaState } from '../preflight/PreviewMediaContext';
 import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext';
 
@@ -21,7 +22,9 @@ export const withPreviewMedia =
 	(Story) => (
 		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, error: false, devices } }}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices, selectedIds })}>
-				<Story />
+				<VideoQualityProvider value={buildVideoQuality({ height: undefined })}>
+					<Story />
+				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>
 	);

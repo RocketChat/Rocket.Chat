@@ -3,14 +3,19 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallDeviceMenuButton from './CallDeviceMenuButton';
+import VoiceActivity from './VoiceActivity';
 import { useCallState } from './context';
+import { useAudioLevel } from './hooks/useAudioLevel';
 import { refreshMediaDevices } from './lib/mediaDevicesStore';
 import DeviceMenu from '../devices/DeviceMenu';
 
-/** The microphone and speaker of a call running in this window. */
+/** The microphone and speaker of a call running in this window, its trigger showing what the microphone hears. */
 const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
+
+	// A muted mic never moves, whatever it is still hearing.
+	const micLevel = useAudioLevel(self.muted ? null : (self.microphoneStream ?? null));
 
 	const requestPermission = useDevicePermissionPrompt2();
 
@@ -30,7 +35,13 @@ const AudioDevicePicker = () => {
 			title={t('Device_settings_lowercase')}
 			placement='top-end'
 			beforeOpen={askForDevices}
-			button={<CallDeviceMenuButton label={t('Audio_device_options')} danger={self.muted} />}
+			button={
+				<CallDeviceMenuButton
+					label={t('Audio_device_options')}
+					danger={self.muted}
+					indicator={self.muted ? undefined : <VoiceActivity level={micLevel} size={24} />}
+				/>
+			}
 		/>
 	);
 };

@@ -1,3 +1,4 @@
+import type { VideoQuality } from '@rocket.chat/ui-conference';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
@@ -15,7 +16,7 @@ const makeTrack = () => {
 	const stop = jest.fn(() => {
 		mediaStreamTrack.readyState = 'ended';
 	});
-	return { stop, mediaStreamTrack } as unknown as LocalVideoTrack;
+	return { stop, mediaStreamTrack, restartTrack: jest.fn().mockResolvedValue(undefined) } as unknown as LocalVideoTrack;
 };
 
 beforeEach(() => {
@@ -74,6 +75,39 @@ it('does not show the stopped track again when the camera comes back on', async 
 	rerender({ enabled: false });
 	rerender({ enabled: true });
 	expect(result.current.track).toBeUndefined();
+});
+
+it('restarts the attached preview track instead of replacing it when resolution changes', async () => {
+	const track = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValue(track);
+
+	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality }), {
+		initialProps: { quality: 'h720' as VideoQuality },
+	});
+
+	await waitFor(() => expect(result.current.track).toBe(track));
+
+	rerender({ quality: 'h180' });
+
+	await waitFor(() => expect(track.restartTrack).toHaveBeenCalledWith({ resolution: { width: 320, height: 180 } }));
+	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledTimes(1);
+	expect(track.stop).not.toHaveBeenCalled();
+	expect(result.current.track).toBe(track);
+
+	unmount();
+	expect(track.stop).toHaveBeenCalledTimes(1);
+});
+
+it('opens the initial preview at the selected resolution without an unnecessary restart', async () => {
+	const track = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValue(track);
+
+	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360' }));
+
+	await waitFor(() => expect(result.current.track).toBe(track));
+
+	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledWith({ resolution: { width: 640, height: 360 } });
+	expect(track.restartTrack).not.toHaveBeenCalled();
 });
 
 // Trying again is not failing again: the note waits for this attempt's own answer.
