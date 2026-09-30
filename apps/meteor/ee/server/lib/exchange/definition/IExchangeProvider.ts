@@ -1,12 +1,4 @@
-import type {
-	ContactFolder,
-	DateRange,
-	ExchangeContact,
-	ExchangeEvent,
-	Page,
-	ExchangeProviderId,
-	ExchangeProviderCapabilities,
-} from './types';
+import type { ContactFolder, DateRange, ExchangeContact, EventPage, Page, ExchangeProviderId, ExchangeProviderCapabilities } from './types';
 
 export interface IExchangeProvider {
 	readonly id: ExchangeProviderId;
@@ -15,7 +7,7 @@ export interface IExchangeProvider {
 	testConnection(): Promise<void>;
 
 	/** `timeWindow` bounds the range, `cursor` is an opaque delta token, omitted for an initial sync. */
-	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
+	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage>;
 
 	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
 
