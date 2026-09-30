@@ -399,7 +399,7 @@ describe('AutoTranslate', () => {
 
 				after(async () => {
 					await Promise.all([updateSetting('AutoTranslate_Enabled', false), deleteRoom({ type: 'p', roomId: privateRoom._id })]);
-					await Promise.all([deleteUser(userA), deleteUser(userB)]);
+					await Promise.all([deleteUser(userA, { confirmRelinquish: true }), deleteUser(userB)]);
 				});
 
 				it('should return 403 forbidden when the user is not a member of the room', async () => {
@@ -452,7 +452,7 @@ describe('AutoTranslate', () => {
 
 			after(async () => {
 				await Promise.all([updateSetting('AutoTranslate_Enabled', false), deleteRoom({ type: 'p', roomId: privateRoom._id })]);
-				await Promise.all([deleteUser(userA), deleteUser(userB)]);
+				await Promise.all([deleteUser(userA, { confirmRelinquish: true }), deleteUser(userB)]);
 			});
 
 			it('should fail when messageId is not a string', async () => {

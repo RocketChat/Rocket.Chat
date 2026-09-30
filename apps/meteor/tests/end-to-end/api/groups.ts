@@ -2132,7 +2132,7 @@ describe('[Groups]', () => {
 			await deleteTeam(credentials, team.name);
 			await updatePermission('create-c', ['admin', 'user']);
 			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
-			await deleteUser(testUser);
+			await deleteUser(testUser, { confirmRelinquish: true });
 		});
 
 		it('should change the type of the group to a channel', async () => {
@@ -2466,11 +2466,7 @@ describe('[Groups]', () => {
 		after(async () => {
 			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 			await updatePermission('delete-team-group', ['admin', 'owner', 'moderator']);
-			await Promise.all([
-				deleteRoom({ type: 'p', roomId: testTeamGroup._id }),
-				deleteRoom({ type: 'p', roomId: testModeratorTeamGroup._id }),
-			]);
-			await Promise.all([deleteUser(invitedUser), deleteUser(moderatorUser)]);
+			await Promise.all([deleteUser(invitedUser, { confirmRelinquish: true }), deleteUser(moderatorUser)]);
 		});
 		it('should succesfully delete a group', async () => {
 			await request

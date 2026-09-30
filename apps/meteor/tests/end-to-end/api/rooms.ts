@@ -2828,7 +2828,7 @@ describe('[Rooms]', () => {
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: privateRoom._id }), updatePermission('view-room-administration', ['admin'])]);
-			await deleteUser(roomOwner);
+			await deleteUser(roomOwner, { confirmRelinquish: true });
 		});
 
 		it('should not expose the private room through groups.info to an admin that is not a member', async () => {

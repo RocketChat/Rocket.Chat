@@ -103,22 +103,17 @@ export const login = (username: string | undefined, password: string, config?: I
 			});
 	});
 
+const requestUserDeletion = (user: Pick<IUser, '_id'>, extraData: Record<string, unknown>, config?: IRequestConfig) =>
+	(config?.request || request)
+		.post(api('users.delete'))
+		.set(config?.credentials || credentials)
+		.send({ userId: user._id, ...extraData });
+
 /**
  * @throws {RequestFailedError} when the user is not deleted
  */
-export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-	const res = await requestInstance
-		.post(api('users.delete'))
-		.set(credentialsInstance)
-		.send({
-			userId: user._id,
-			...extraData,
-		});
-
-	return assertSuccess('users.delete', res);
-};
+export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) =>
+	assertSuccess('users.delete', await requestUserDeletion(user, extraData, config));
 
 /**
  * Cleanup for users a test may already have deleted itself.
@@ -126,15 +121,7 @@ export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, confi
  * @throws {RequestFailedError} when the user exists and is not deleted
  */
 export const deleteUserIfExists = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-	const res = await requestInstance
-		.post(api('users.delete'))
-		.set(credentialsInstance)
-		.send({
-			userId: user._id,
-			...extraData,
-		});
+	const res = await requestUserDeletion(user, extraData, config);
 
 	if (res.status === 400 && res.body?.errorType === 'error-invalid-user') {
 		return;

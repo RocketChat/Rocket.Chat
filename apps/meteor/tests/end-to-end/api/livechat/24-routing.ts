@@ -7,6 +7,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, api, credentials } from '../../../data/api-data';
 import {
+	closeOmnichannelRoom,
 	createAgent,
 	makeAgentAvailable,
 	createDepartment,
@@ -35,6 +36,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let botUser: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 		let testDepartment2: ILivechatDepartment;
+		let botRoomId: string | undefined;
 		before(async () => {
 			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
 			const credentials = await login(bot.username, password);
@@ -53,12 +55,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+			if (botRoomId) {
+				await closeOmnichannelRoom(botRoomId);
+			}
 			await deleteUser(botUser.user);
 		});
 
 		it('should assign conversation to bot', async () => {
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
+			botRoomId = room._id;
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 

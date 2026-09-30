@@ -838,6 +838,7 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('Contact Rooms', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		const roomIdsToClose: string[] = [];
 
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
@@ -846,12 +847,14 @@ describe('LIVECHAT - contacts', () => {
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
-			await deleteUser(agent.user, { confirmRelinquish: true });
+			await Promise.all(roomIdsToClose.map((rid) => closeOmnichannelRoom(rid)));
+			await deleteUser(agent.user);
 		});
 
 		it('should create a contact and assign it to the room', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
+			roomIdsToClose.push(room._id);
 			expect(room).to.have.property('contactId').that.is.a('string');
 		});
 
@@ -875,6 +878,7 @@ describe('LIVECHAT - contacts', () => {
 			const visitor = await createVisitor(undefined, 'Visitor Name', email, phone);
 
 			const room = await createLivechatRoom(visitor.token);
+			roomIdsToClose.push(room._id);
 
 			expect(room).to.have.property('contactId', contactId);
 			expect(room).to.have.property('fname', 'Contact Name');
@@ -883,6 +887,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should update room names when a contact name changes', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
+			roomIdsToClose.push(room._id);
 			expect(room).to.have.property('contactId').that.is.a('string');
 			expect(room.fname).to.not.be.equal('New Contact Name');
 
@@ -901,6 +906,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should update room subscriptions when a contact name changes', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			const { room, visitor } = response;
+			roomIdsToClose.push(room._id);
 			const newName = faker.person.fullName();
 
 			expect(room).to.have.property('contactId').that.is.a('string');
@@ -932,6 +938,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should update inquiry when a contact name changes', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
+			roomIdsToClose.push(room._id);
 			expect(room).to.have.property('contactId').that.is.a('string');
 			expect(room.fname).to.not.be.equal('New Contact Name');
 

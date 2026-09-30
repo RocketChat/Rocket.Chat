@@ -332,7 +332,7 @@ export async function testFileUploads(
 
 		after(async () => {
 			await deleteRoom({ type: roomType, roomId: extraRoom._id });
-			await deleteUser(anotherUser);
+			await deleteUser(anotherUser, { confirmRelinquish: true });
 		});
 
 		it('should not allow to confirm a file from another user', async function () {
