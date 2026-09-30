@@ -1,9 +1,9 @@
 import { type IOmnichannelAgent, OmnichannelSortingMechanismSettingType, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
-import { useUser, useSetting, usePermission, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useUser, useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, memo, useRef } from 'react';
+import { useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
@@ -12,9 +12,7 @@ import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
-import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
-import { initializeLivechatInquiryStream } from '../lib/omnichannel/queueManager';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -45,8 +43,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		OmnichannelSortingMechanismSettingType.Timestamp,
 	);
 
-	const lastQueueSize = useRef(0);
-
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
@@ -75,12 +71,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
-	const subscribe = useStream('notify-logged');
-	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
-
-	const { notificationSounds } = useCustomSound();
 
 	const {
 		data: { priorities = [] } = {},
@@ -95,37 +87,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const isOverMacLimit = useShouldPreventAction('monthlyActiveContacts');
 
-	useEffect(() => {
-		if (!isPrioritiesEnabled) {
-			return;
-		}
-
-		return subscribe('omnichannel.priority-changed', () => {
-			queryClient.invalidateQueries({
-				queryKey: ['/v1/livechat/priorities'],
-			});
-		});
-	}, [isPrioritiesEnabled, queryClient, subscribe]);
-
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
-
-	const streamNotifyUser = useStream('notify-user');
-	useEffect(() => {
-		if (!manuallySelected) {
-			return;
-		}
-
-		const handleDepartmentAgentData = (): void => {
-			initializeLivechatInquiryStream(user?._id);
-		};
-
-		initializeLivechatInquiryStream(user?._id);
-		if (!user?._id) {
-			return;
-		}
-		return streamNotifyUser(`${user._id}/departmentAgentData`, handleDepartmentAgentData);
-	}, [manuallySelected, streamNotifyUser, user?._id]);
 
 	const queue = useLivechatInquiryStore(
 		useShallow((state) => {
@@ -139,19 +102,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				.slice(...(omnichannelPoolMaxIncoming > 0 ? [0, omnichannelPoolMaxIncoming] : []));
 		}),
 	);
-
-	useEffect(() => {
-		if (lastQueueSize.current < (queue?.length ?? 0)) {
-			notificationSounds.playNewRoom();
-		}
-		lastQueueSize.current = queue?.length ?? 0;
-
-		return () => {
-			notificationSounds.stopNewRoom();
-		};
-	}, [notificationSounds, queue?.length]);
-
-	useOmnichannelContinuousSoundNotification(queue ?? []);
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {

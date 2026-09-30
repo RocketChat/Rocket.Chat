@@ -2,6 +2,7 @@ import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
 import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
+import OmnichannelQueueWatcher from '../../omnichannel/components/OmnichannelQueueWatcher';
 import { useClearRemovedRoomsHistory } from '../hooks/loggedIn/useClearRemovedRoomsHistory';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
 import { useDeleteUser } from '../hooks/loggedIn/useDeleteUser';
@@ -50,7 +51,12 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useLogoutCleanup();
 	useE2EEncryption();
 
-	return <MediaPlayerProvider>{children}</MediaPlayerProvider>;
+	return (
+		<>
+			<OmnichannelQueueWatcher />
+			<MediaPlayerProvider>{children}</MediaPlayerProvider>
+		</>
+	);
 };
 
 export default LoggedInArea;
