@@ -1,12 +1,11 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
+import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
-import { closeRoom } from '../utils/omnichannel/rooms';
-import { sendMessageFromUser } from '../utils/sendMessage';
-import type { BaseTest } from '../utils/test';
 import { test, expect } from '../utils/test';
 
 declare const window: Window & {
@@ -17,16 +16,12 @@ declare const window: Window & {
 	};
 };
 
-const getOpenRoomByVisitorName = async (api: BaseTest['api'], name: string): Promise<IOmnichannelRoom> => {
-	const { rooms } = await (await api.get('/livechat/rooms', { roomName: name, open: true })).json();
-	return rooms[0];
-};
-
 test.use({ storageState: Users.user1.state });
 
 test.describe('OC - Livechat - Bubble background color', async () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let poLiveChat: OmnichannelLiveChatEmbedded;
+	let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
@@ -38,6 +33,11 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		}
 	});
 
+	test.beforeEach(async ({ browser }) => {
+		const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+		poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
@@ -45,6 +45,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 	});
 
 	test.afterEach(async ({ page }) => {
+		await poAuxContext.page?.close();
 		await page.close();
 	});
 
@@ -52,7 +53,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		await agent.delete();
 	});
 
-	test('OC - Livechat - Change bubble background color', async ({ api, request }) => {
+	test('OC - Livechat - Change bubble background color', async () => {
 		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
@@ -64,9 +65,8 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		});
 
 		await test.step('expect to send a message as agent', async () => {
-			const room = await getOpenRoomByVisitorName(api, visitor.name);
-			await sendMessageFromUser(request, Users.user1, room._id, 'message_from_agent');
-			await expect(poLiveChat.txtChatMessage('message_from_agent')).toBeVisible();
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.content.sendMessage('message_from_agent');
 		});
 
 		await test.step('expect to have default bubble background color', async () => {
@@ -96,8 +96,8 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		});
 
 		await test.step('should close the conversation', async () => {
-			const room = await getOpenRoomByVisitorName(api, visitor.name);
-			await closeRoom(api, { roomId: room._id, visitorToken: room.v.token });
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });

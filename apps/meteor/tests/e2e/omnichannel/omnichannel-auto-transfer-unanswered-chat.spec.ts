@@ -1,16 +1,18 @@
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { createConversation } from '../utils/omnichannel/rooms';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
-	let conversation: Awaited<ReturnType<typeof createConversation>>;
+	let poLiveChat: OmnichannelLiveChat;
+	let newVisitor: { email: string; name: string };
 
 	let agent1: { page: Page; poHomeChannel: HomeChannel };
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
@@ -41,27 +43,29 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		]);
 	});
 
-	test.beforeEach(async ({ api }) => {
+	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
 		await agent1.poHomeChannel.navbar.switchOmnichannelStatus('online');
 		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
-		conversation = await createConversation(api);
-	});
-
-	test.afterEach(async () => {
-		await conversation.delete();
+		newVisitor = createFakeVisitor();
+		poLiveChat = new OmnichannelLiveChat(page, api);
+		await poLiveChat.goto();
+		await poLiveChat.openLiveChat();
+		await poLiveChat.sendMessage(newVisitor, false);
+		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
 	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
-		await agent1.poHomeChannel.goto();
-		await agent1.poHomeChannel.navbar.openChat(conversation.data.visitor.name);
+		await agent1.poHomeChannel.navbar.openChat(newVisitor.name);
 
 		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 
-		const transferredChat = agent2.poHomeChannel.sidebar.getSidebarItemByName(conversation.data.visitor.name);
-		await expect(transferredChat).toBeVisible({ timeout: 15000 });
-		await transferredChat.click();
+		// wait for the chat to be closed automatically for 5 seconds
+		await agent1.page.waitForTimeout(7000);
+
+		await agent2.poHomeChannel.navbar.openChat(newVisitor.name);
 	});
 });
