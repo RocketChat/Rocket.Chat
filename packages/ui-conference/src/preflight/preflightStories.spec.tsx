@@ -1,0 +1,22 @@
+import { composeStories } from '@storybook/react';
+import { render } from '@testing-library/react';
+import { axe } from 'jest-axe';
+
+import * as preflightDevices from './PreflightDevices.stories';
+
+const testCases = Object.values(composeStories(preflightDevices)).map((Story) => [`PreflightDevices ${Story.storyName}`, Story] as const);
+
+describe('preflight stories', () => {
+	test.each(testCases)('renders %s without crashing', async (_storyname, Story) => {
+		const { baseElement } = render(<Story />);
+
+		expect(baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />);
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
+	});
+});

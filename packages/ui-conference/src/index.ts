@@ -31,7 +31,6 @@ export { default as ChatAccessModal } from './components/ChatAccessModal/ChatAcc
 export { default as ChatAccessNotice } from './components/ChatAccessNotice/ChatAccessNotice';
 export { default as ConferenceChatNotShared } from './components/ConferenceChatNotShared';
 export { default as ConferenceErrorState } from './components/ConferenceErrorState';
-export { default as PreflightCameraPlaceholder } from './components/PreflightCameraPlaceholder';
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 
@@ -41,6 +40,7 @@ export {
 	useVideoQualityPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
+	callDeviceIdField,
 } from './hooks/useCallDevicesInitialState';
 export type { CallPreferences, CallRingPreference, CallDevices, VideoQuality } from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
@@ -74,7 +74,7 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
 
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
-export { CallStateProvider, CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider } from './call/context';
+export { CallStateProvider, CallActionsProvider, CallDiagnosticsProvider } from './call/context';
 export type {
 	CallState,
 	CallSelf,
@@ -82,12 +82,15 @@ export type {
 	RemoteParticipantInfo,
 	ActiveReaction,
 	CallActions,
-	CallDeviceSelection,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
 } from './call/context';
-export { default as VoiceActivity } from './call/VoiceActivity';
+// Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
+export { DeviceSelectionProvider } from './devices/DeviceSelectionContext';
+export type { DeviceSelection } from './devices/DeviceSelectionContext';
+export { VideoQualityProvider } from './devices/VideoQualityContext';
+export type { VideoQualitySelection } from './devices/VideoQualityContext';
 export { playHandRaiseChime, playJoinChime, playMutedReminder } from './call/lib/callChimes';
-export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
-export { VIDEO_QUALITY_LABELS, choicesOf } from './call/lib/mediaChoiceLabels';
+export { PreviewVideoContext } from './call/previewVideo';
+export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

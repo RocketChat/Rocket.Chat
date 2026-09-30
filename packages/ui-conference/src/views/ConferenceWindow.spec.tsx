@@ -3,10 +3,14 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
-import type { CallDeviceSelection, CallState } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { CallState } from '../call/context';
+import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
+import type { DeviceSelection } from '../devices/DeviceSelectionContext';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 const buildCallState = (overrides: Partial<CallState> = {}): CallState => ({
@@ -37,20 +41,23 @@ const actions = {
 	leave: jest.fn(),
 };
 
-const deviceSelection: CallDeviceSelection = {
+const deviceSelection: DeviceSelection = {
 	devices: [],
-	selectAudioDevice: jest.fn(),
-	selectCamera: jest.fn(),
-	videoQuality: { quality: 'auto', qualities: [], pending: false, select: jest.fn() },
+	selectedIds: {},
+	select: jest.fn(),
 };
+
+const videoQuality: VideoQualitySelection = { quality: 'auto', qualities: [], pending: false, select: jest.fn() };
 
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
-			<CallDeviceSelectionProvider value={deviceSelection}>
-				<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
-			</CallDeviceSelectionProvider>
+			<DeviceSelectionProvider value={deviceSelection}>
+				<VideoQualityProvider value={videoQuality}>
+					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+				</VideoQualityProvider>
+			</DeviceSelectionProvider>
 		</CallActionsProvider>
 	</CallStateProvider>
 );

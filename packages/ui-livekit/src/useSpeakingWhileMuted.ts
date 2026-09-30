@@ -1,3 +1,4 @@
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useRef, useState } from 'react';
 
 const SAMPLE_INTERVAL_MS = 100;
@@ -10,18 +11,22 @@ const SUSTAINED_MS = 400;
  */
 const RELEASE_MS = 3000;
 
-export const useSpeakingWhileMuted = (muted: boolean): boolean => {
+const noop = () => undefined;
+
+/** Whether the reader is talking into a muted microphone; `onFirstSpeech` is told once each time they are muted. */
+export const useSpeakingWhileMuted = (muted: boolean, onFirstSpeech: () => void = noop): boolean => {
 	const [speaking, setSpeaking] = useState(false);
+	const onSpeech = useStableCallback(onFirstSpeech);
 	const aboveThresholdSince = useRef<number | null>(null);
 	const lastAboveThreshold = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (!muted) {
-			setSpeaking(false);
 			return undefined;
 		}
 
 		let cancelled = false;
+		let told = false;
 		let stream: MediaStream | undefined;
 		let ctx: AudioContext | undefined;
 		let timer: ReturnType<typeof setInterval> | undefined;
@@ -37,7 +42,8 @@ export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 				return;
 			}
 
-			const AC: typeof AudioContext | undefined = (window as any).AudioContext || (window as any).webkitAudioContext;
+			const AC: typeof AudioContext | undefined =
+				window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
 			if (!AC) return;
 
 			ctx = new AC();
@@ -67,6 +73,10 @@ export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 						aboveThresholdSince.current = now;
 					} else if (now - aboveThresholdSince.current >= SUSTAINED_MS) {
 						setSpeaking(true);
+						if (!told) {
+							told = true;
+							onSpeech();
+						}
 					}
 					return;
 				}
@@ -89,7 +99,7 @@ export const useSpeakingWhileMuted = (muted: boolean): boolean => {
 			aboveThresholdSince.current = null;
 			lastAboveThreshold.current = null;
 		};
-	}, [muted]);
+	}, [muted, onSpeech]);
 
-	return speaking;
+	return muted && speaking;
 };

@@ -4,8 +4,12 @@ import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { JOHN_DOE_ID } from './storyFixtures';
-import type { CallActions, CallDeviceSelection, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
-import { CallActionsProvider, CallDeviceSelectionProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
+import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { DeviceSelection } from '../devices/DeviceSelectionContext';
+import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
+import type { VideoQualitySelection } from '../devices/VideoQualityContext';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,
@@ -63,18 +67,19 @@ export const fakeDevices = [
 	{ deviceId: 'brio', kind: 'videoinput', label: 'Logitech BRIO (046d:085e)', groupId: 'brio' },
 ] as unknown as MediaDeviceInfo[];
 
-export const buildDeviceSelection = (overrides: Partial<CallDeviceSelection> = {}): CallDeviceSelection => ({
+export const buildDeviceSelection = (overrides: Partial<DeviceSelection> = {}): DeviceSelection => ({
 	devices: fakeDevices,
-	selectAudioDevice: action('selectAudioDevice'),
-	selectCamera: action('selectCamera'),
-	currentCameraId: 'facetime',
-	videoQuality: {
-		quality: 'auto',
-		qualities: ['auto', 'h1080', 'h720', 'h360', 'h180'],
-		height: 720,
-		pending: false,
-		select: action('selectVideoQuality'),
-	},
+	selectedIds: { audioinput: 'default', audiooutput: 'default', videoinput: 'facetime' },
+	select: action('select'),
+	...overrides,
+});
+
+export const buildVideoQuality = (overrides: Partial<VideoQualitySelection> = {}): VideoQualitySelection => ({
+	quality: 'auto',
+	qualities: ['auto', 'h1080', 'h720', 'h360', 'h180'],
+	height: 720,
+	pending: false,
+	select: action('selectVideoQuality'),
 	...overrides,
 });
 
@@ -110,22 +115,26 @@ export const diagnosticsSample: CallDiagnosticsData = {
 
 export type CallFixture = {
 	state?: Parameters<typeof buildCallState>[0];
-	deviceSelection?: Partial<CallDeviceSelection>;
+	deviceSelection?: Partial<DeviceSelection>;
+	videoQuality?: Partial<VideoQualitySelection>;
 	diagnostics?: CallDiagnosticsData | null;
 };
 
-const CallContexts = ({ state, deviceSelection, diagnostics = null, children }: CallFixture & { children: ReactNode }) => {
+const CallContexts = ({ state, deviceSelection, videoQuality, diagnostics = null, children }: CallFixture & { children: ReactNode }) => {
 	// Built on mount, so the call starts when the story does and the timer in a snapshot always reads zero.
 	const [callState] = useState(() => buildCallState(state));
 	const [actions] = useState(buildCallActions);
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
+	const [quality] = useState(() => buildVideoQuality(videoQuality));
 
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
-				<CallDeviceSelectionProvider value={devices}>
-					<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
-				</CallDeviceSelectionProvider>
+				<DeviceSelectionProvider value={devices}>
+					<VideoQualityProvider value={quality}>
+						<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+					</VideoQualityProvider>
+				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);
@@ -136,7 +145,12 @@ export const withCall =
 	(fixture: CallFixture = {}): Decorator =>
 	// eslint-disable-next-line react/display-name, react/no-multi-comp
 	(Story) => (
-		<CallContexts state={fixture.state} deviceSelection={fixture.deviceSelection} diagnostics={fixture.diagnostics}>
+		<CallContexts
+			state={fixture.state}
+			deviceSelection={fixture.deviceSelection}
+			videoQuality={fixture.videoQuality}
+			diagnostics={fixture.diagnostics}
+		>
 			<Story />
 		</CallContexts>
 	);

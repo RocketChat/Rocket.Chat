@@ -14,7 +14,6 @@ import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
 import ConferencePageError from '../ConferencePageError';
 import ConferenceUnauthorizedPage from '../ConferenceUnauthorizedPage';
-import { conferencePreflightMedia } from '../components/ConferencePreflightMedia';
 import ConferenceUserPicker from '../components/ConferenceUserPicker';
 import { useConferenceEmbedded } from '../hooks/useConferenceEmbedded';
 import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease';
@@ -22,6 +21,7 @@ import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 

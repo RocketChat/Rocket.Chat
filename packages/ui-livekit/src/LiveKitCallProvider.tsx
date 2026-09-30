@@ -6,22 +6,24 @@ import {
 	useParticipants,
 	useTracks,
 } from '@livekit/components-react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { CallActions, CallDeviceSelection, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
+import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
 import {
 	CallActionsProvider,
-	CallDeviceSelectionProvider,
 	CallDiagnosticsProvider,
 	CallStateProvider,
+	DeviceSelectionProvider,
+	VideoQualityProvider,
 	playJoinChime,
 	playMutedReminder,
 	useUpdateCallPreferences,
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { LocalVideoTrack, RemoteParticipant } from 'livekit-client';
+import type { RemoteParticipant } from 'livekit-client';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
 import { useCallDataChannel } from './useCallDataChannel';
@@ -67,13 +69,16 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 
 	// With no credentials there is no call to sit in.
-	useEffect(() => {
-		if (!transportError) {
-			return;
-		}
-		dispatchToastMessage({ type: 'error', message: transportError });
+	const onTransportError = useStableCallback((error: Error) => {
+		dispatchToastMessage({ type: 'error', message: error });
 		onEnded();
-	}, [transportError, dispatchToastMessage, onEnded]);
+	});
+
+	useEffect(() => {
+		if (transportError) {
+			onTransportError(transportError);
+		}
+	}, [transportError, onTransportError]);
 
 	const arrival = useArrivalPreferences(preferences, connect);
 	const [room] = useState(() => new Room());
@@ -128,7 +133,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
 	const localMicPub = localParticipant.getTrackPublication(Track.Source.Microphone);
-	const localCameraTrack = localCameraPub?.track as LocalVideoTrack | undefined;
+	const localCameraTrack = localCameraPub?.videoTrack;
 
 	const cameraStream = camEnabled ? localCameraTrack?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
@@ -144,17 +149,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		connected,
 	);
 
-	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled);
-
-	const mutedReminderPlayed = useRef(false);
-	useEffect(() => {
-		mutedReminderPlayed.current = false;
-	}, [micEnabled]);
-	useEffect(() => {
-		if (!speakingWhileMuted || mutedReminderPlayed.current) return;
-		mutedReminderPlayed.current = true;
-		playMutedReminder();
-	}, [speakingWhileMuted]);
+	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder);
 
 	useEffect(() => {
 		const onConnect = (participant: RemoteParticipant) => {
@@ -175,10 +170,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		localParticipant,
 	);
 
-	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
-	const [outputElement] = useState(() => new Audio());
-	const deviceSwitching = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
-	const deviceSelection = useMemo((): CallDeviceSelection => ({ ...deviceSwitching, videoQuality }), [deviceSwitching, videoQuality]);
+	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -240,12 +232,14 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	return (
 		<CallStateProvider value={state}>
 			<CallActionsProvider value={actions}>
-				<CallDeviceSelectionProvider value={deviceSelection}>
-					<CallDiagnosticsProvider value={diagnostics ?? null}>
-						{children}
-						<RoomAudioRenderer room={room} />
-					</CallDiagnosticsProvider>
-				</CallDeviceSelectionProvider>
+				<DeviceSelectionProvider value={deviceSelection}>
+					<VideoQualityProvider value={videoQuality}>
+						<CallDiagnosticsProvider value={diagnostics ?? null}>
+							{children}
+							<RoomAudioRenderer room={room} />
+						</CallDiagnosticsProvider>
+					</VideoQualityProvider>
+				</DeviceSelectionProvider>
 			</CallActionsProvider>
 		</CallStateProvider>
 	);
