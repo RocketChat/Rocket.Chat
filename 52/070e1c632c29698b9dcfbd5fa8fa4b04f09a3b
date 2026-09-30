@@ -1,0 +1,37 @@
+apps/meteor/client/providers/UserPresenceProvider.spec.tsx
+  s_e1ca9e90cc080b::t_8ba58365203ba5 1-2,4-5,17-21,23-34,36-42
+  s_e1ca9e90cc080b::t_761cc9347dddf4 3,6-12,14-16,22,44
+  s_e1ca9e90cc080b::t_33a0d196fa7cfc 13,35,43
+apps/meteor/client/providers/UserPresenceProvider.tsx
+  s_e1ca9e90cc080b::t_bd0714874a87e0 2,27-30,32-33
+  s_e1ca9e90cc080b::t_33a0d196fa7cfc 31
+.changeset/presence-resync-on-reconnect.md
+  s_e1ca9e90cc080b::t_761cc9347dddf4 1-4
+  s_e1ca9e90cc080b::t_53cde5579358db 5
+apps/meteor/client/lib/presence.spec.ts
+  s_e1ca9e90cc080b::t_761cc9347dddf4 5-6,59,61-79,81-83,86-88,91-94
+  s_e1ca9e90cc080b::t_33a0d196fa7cfc 60,90
+  s_e1ca9e90cc080b::t_68709966b5681c 80,95
+  s_e1ca9e90cc080b::t_1f4b7df7cba029 84-85,89
+  s_e1ca9e90cc080b::t_97fedc04d674f6 15
+apps/meteor/client/lib/presence.ts
+  s_e1ca9e90cc080b::t_e8543132cad058 47,179
+  s_e1ca9e90cc080b::t_33a0d196fa7cfc 177,209
+  s_e1ca9e90cc080b::t_3e72b63413f1da 178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "52070e1c632c29698b9dcfbd5fa8fa4b04f09a3b",
+  "prompts": {},
+  "sessions": {
+    "s_e1ca9e90cc080b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2612b70d-094d-4534-b97f-912b65ca47e2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
