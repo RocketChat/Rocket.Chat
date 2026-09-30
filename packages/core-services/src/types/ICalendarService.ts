@@ -36,5 +36,12 @@ export interface ICalendarService {
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
+	pruneImportedSeries(
+		uid: IUser['_id'],
+		timeWindow: { start: Date; end: Date },
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult>;
 	refreshBusyPresence(uid: IUser['_id'], options?: CalendarPresenceRefreshOptions): Promise<void>;
 }

@@ -27,6 +27,7 @@ const CalendarEventMock = {
 	reopenNotifications: sinon.stub(),
 	deleteUnfinishedByExternalIdsAndUserId: sinon.stub(),
 	deleteImportedOutsideSet: sinon.stub(),
+	deleteSeriesOutsideSet: sinon.stub(),
 };
 
 const PresenceMock = {
@@ -118,6 +119,7 @@ describe('CalendarService', () => {
 			reopenNotifications: sinon.stub().resolves({ modifiedCount: 0 }),
 			deleteUnfinishedByExternalIdsAndUserId: sinon.stub().resolves({ deletedCount: 0 }),
 			deleteImportedOutsideSet: sinon.stub().resolves({ deletedCount: 0 }),
+			deleteSeriesOutsideSet: sinon.stub().resolves({ deletedCount: 0 }),
 		};
 
 		Object.assign(CalendarEventMock, freshMocks);
@@ -747,6 +749,29 @@ describe('CalendarService', () => {
 
 		it('touches nothing when it removed nothing', async () => {
 			await service.pruneImportedWindow(fakeUserId, timeWindow, []);
+
+			sinon.assert.notCalled(PresenceMock.endActiveState);
+		});
+	});
+
+	describe('#pruneImportedSeries', () => {
+		const timeWindow = { start: fakeStartTime, end: fakeEndTime };
+
+		it('does not query at all when no series came back whole', async () => {
+			const result = await service.pruneImportedSeries(fakeUserId, timeWindow, [], [fakeExternalId]);
+
+			sinon.assert.notCalled(CalendarEventMock.deleteSeriesOutsideSet);
+			expect(result).to.include({ changed: false, deleted: 0 });
+		});
+
+		it('scopes the removal to the series it was given and to the window', async () => {
+			await service.pruneImportedSeries(fakeUserId, timeWindow, ['master'], ['survivor']);
+
+			sinon.assert.calledWith(CalendarEventMock.deleteSeriesOutsideSet, fakeUserId, fakeStartTime, fakeEndTime, ['master'], ['survivor']);
+		});
+
+		it('does not refresh presence when it removed nothing', async () => {
+			await service.pruneImportedSeries(fakeUserId, timeWindow, ['master'], []);
 
 			sinon.assert.notCalled(PresenceMock.endActiveState);
 		});
