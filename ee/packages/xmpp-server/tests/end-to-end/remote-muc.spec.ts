@@ -17,11 +17,12 @@ import {
 	messagesWithText,
 	sendMessage,
 	teardown,
+	updateMessage,
 	waitForMessage,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import { isGroupchat, isOccupantPresence } from './helper/xmpp-client';
+import { isGroupchat, isOccupantPresence, replacedId } from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 
@@ -109,6 +110,19 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await alice.waitFor(isGroupchat({ roomJid, nick: a.username, body: outbound }), 'the Rocket.Chat message');
 		});
 
+		// Known bug: ../../../../../docs/features/xmpp-server.md#corrections-from-xmpp-users-arrive-as-new-messages
+		it.skip('applies a correction from an occupant to the stored message', async () => {
+			const id = `e2e-${uniqueSuffix()}`;
+			const text = `before correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(roomJid, text, { id });
+			const original = await waitForMessage(a, shadow, text);
+
+			const corrected = `after correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(roomJid, corrected, { replaces: id });
+			const stored = await expectStoredOnce(a, shadow, corrected);
+			assert.equal(stored._id, original._id);
+		});
+
 		it('joins a member added in Rocket.Chat with their own session', async () => {
 			await addFromRocketChat(roomJid, a, shadow, b);
 			await waitForOccupant(roomJid, b);
@@ -177,6 +191,20 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 
 			const stored = await expectStoredOnce(members[0], shadow, text);
 			assert.equal(stored.u.username, members[0].username);
+		});
+
+		it('delivers an edit as an XEP-0308 correction and does not store it again when the room reflects it', async () => {
+			const original = await sendMessage(members[0], shadow._id, `before edit ${uniqueSuffix()}`);
+			await alice.waitFor(isGroupchat({ roomJid, nick: members[0].username, body: original.msg }), 'the original message');
+
+			const edited = `after edit ${uniqueSuffix()}`;
+			await updateMessage(members[0], shadow._id, original._id, edited);
+			const correction = await alice.expectOnce(isGroupchat({ roomJid, nick: members[0].username, body: edited }), 'the edited text');
+			assert.equal(replacedId(correction), original._id);
+
+			// The room reflects the correction to the other members' sessions, under a room-assigned id
+			const stored = await expectStoredOnce(members[0], shadow, edited);
+			assert.equal(stored._id, original._id);
 		});
 	});
 

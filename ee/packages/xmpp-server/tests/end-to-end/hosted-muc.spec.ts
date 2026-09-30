@@ -17,10 +17,11 @@ import {
 	sendMessage,
 	teardown,
 	updateMessage,
+	waitForMessage,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import { NS, StanzaError, isGroupchat, isOccupantPresence, isRoomInvite, statusCodes } from './helper/xmpp-client';
+import { NS, StanzaError, isGroupchat, isOccupantPresence, isRoomInvite, replacedId, statusCodes } from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
 import { createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
@@ -89,6 +90,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner message');
 		});
 
+		// Known bug: ../../../../../docs/features/xmpp-server.md#corrections-from-xmpp-users-arrive-as-new-messages
+		it.skip('applies a correction from the XMPP user to the stored message', async () => {
+			const id = `e2e-${uniqueSuffix()}`;
+			const text = `before correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(muc, text, { id });
+			const original = await waitForMessage(owner, room, text);
+
+			const corrected = `after correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(muc, corrected, { replaces: id });
+			const stored = await expectStoredOnce(owner, room, corrected);
+			assert.equal(stored._id, original._id);
+		});
+
 		it("drops the XMPP user's membership when they leave the room", async () => {
 			await alice.leaveRoom(muc);
 			await waitForMember(owner, room, alice.jid, false);
@@ -143,6 +157,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await sendMessage(owner, room._id, outbound);
 			await alice.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner reply');
 			await bob.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner reply');
+		});
+
+		// Known bug: ../../../../../docs/features/xmpp-server.md#the-room-strips-corrections-it-relays-between-xmpp-users
+		it.skip("relays an XMPP user's correction to the other XMPP occupants as a correction", async () => {
+			const id = `e2e-${uniqueSuffix()}`;
+			const text = `before correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(muc, text, { id });
+			await bob.waitFor(isGroupchat({ roomJid: muc, nick: alice.username, body: text }), "alice's message");
+
+			const corrected = `after correction ${uniqueSuffix()}`;
+			await alice.sendGroupchat(muc, corrected, { replaces: id });
+			const correction = await bob.waitFor(isGroupchat({ roomJid: muc, nick: alice.username, body: corrected }), "alice's correction");
+			assert.equal(replacedId(correction), id);
 		});
 
 		it('shows Rocket.Chat members joining and leaving as occupants', async () => {
@@ -227,7 +254,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			const edited = `after edit ${uniqueSuffix()}`;
 			await updateMessage(members[0], room._id, original._id, edited);
 			const correction = await alice.expectOnce(isGroupchat({ roomJid: muc, body: edited }), 'the edited text');
-			assert.equal(correction.getChild('replace', NS.correction)?.attrs.id, original._id);
+			assert.equal(replacedId(correction), original._id);
+			assert.notEqual(correction.attrs.id, original._id, 'a correction needs an id of its own');
+		});
+
+		it("keeps an edit of another member's message local", async () => {
+			const original = await sendMessage(members[0], room._id, `before moderation ${uniqueSuffix()}`);
+			await alice.waitFor(isGroupchat({ roomJid: muc, body: original.msg }), 'the original message');
+
+			const after = alice.cursor();
+			const edited = `moderated ${uniqueSuffix()}`;
+			await updateMessage(owner, room._id, original._id, edited);
+			await waitForMessage(owner, room, edited);
+			await alice.expectNone(isGroupchat({ roomJid: muc, body: edited }), "the owner's edit", { after });
 		});
 	});
 });

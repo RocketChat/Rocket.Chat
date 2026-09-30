@@ -49,7 +49,7 @@ A Rocket.Chat service (`xmpp-server`), running in its own microservice (`ee/apps
 | [XEP-0220](https://xmpp.org/extensions/xep-0220.html) | Server Dialback | All three roles — originating (sends `db:result`), receiving (verifies a presented key with the claimed authoritative server over a separate stream), and authoritative (answers `db:verify`). Advertises `urn:xmpp:features:dialback` in stream features |
 | [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | Inbound only — direct invites (`jabber:x:conference`) to a Rocket.Chat user are parsed and surfaced as room invitations. Rocket.Chat-hosted rooms always send *mediated* invites instead |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | Inbound only — `<stanza-id/>` on messages from remote MUCs is preferred over the stanza `id` for deduplication. Rocket.Chat does not stamp its own outbound stanzas |
-| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Outbound — a Rocket.Chat user's edit is sent as a correction of the original message, in DMs and in both kinds of room. An edit by anyone other than the author stays local, because receivers accept a correction only from the original sender. Inbound — `<replace/>` is parsed, but corrections are not yet applied to the stored message |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Outbound — a Rocket.Chat user's edit is sent as a correction of the original message, in DMs and in both kinds of room. An edit by anyone other than the author stays local, because receivers accept a correction only from the original sender. Inbound — `<replace/>` is parsed, but corrections are not applied yet (see [known bugs](#corrections-from-xmpp-users-arrive-as-new-messages)) |
 
 ### Explicitly not supported
 
@@ -128,7 +128,7 @@ Usually **none** — this is standard XMPP federation, and public XMPP servers f
 ## v1 limitations
 
 - Text messages only — no file/attachment transfer.
-- Edits reach XMPP only one way: Rocket.Chat edits go out as XEP-0308 corrections, but corrections from XMPP users are not applied. Deletions are local-only; XEP-0424 support may come later.
+- Edits reach XMPP only one way: Rocket.Chat edits go out as XEP-0308 corrections, but corrections from XMPP users show up as new messages (see [known bugs](#corrections-from-xmpp-users-arrive-as-new-messages)). Deletions are local-only; XEP-0424 support may come later.
 - No typing indicators or read receipts.
 - No proactive joining/searching of remote MUC rooms from the Rocket.Chat UI (invite-only).
 - Presence subscriptions have no UI; the auto-accept policy above is fixed.
@@ -159,6 +159,20 @@ Where: remote-room message handling in `XMPPServerService.ts`. Test: `remote-muc
 When a room-message stanza carries neither an `id` nor a stanza id, each copy gets a random event id, so every copy is stored. Whether a fix should cover this case is a design decision. Deduplicating by content is lossy; an alternative is to accept room messages from only one member session per room.
 
 Test: `remote-muc.spec.ts` ("stores a message sent without an id once").
+
+### Corrections from XMPP users arrive as new messages
+
+When an XMPP user corrects a message (XEP-0308), Rocket.Chat stores the corrected text as a second message and leaves the original unchanged. This happens in DMs, in rooms Rocket.Chat hosts, and in rooms hosted by the XMPP server. The `<replace/>` id is parsed, but no inbound handler looks it up. The correction gets a new event id and passes deduplication.
+
+A fix has to find the stored message by the id the sender gave the original. In a room that assigns its own XEP-0359 stanza ids, the stored event id uses the room's id, not the sender's, so that room needs the sender's id recorded as well.
+
+Where: inbound message handling in `XMPPServerService.ts`. Tests: "applies a correction from the XMPP user to the stored message" in `direct-messages.spec.ts` and `hosted-muc.spec.ts`, and "applies a correction from an occupant to the stored message" in `remote-muc.spec.ts`.
+
+### The room strips corrections it relays between XMPP users
+
+In a room hosted by Rocket.Chat, a correction from one XMPP occupant reaches the other XMPP occupants without its `<replace/>` element. Their clients show it as a new message. The room rebuilds every message it relays from the body and id alone.
+
+Where: groupchat reflection in `ee/packages/xmpp-server/src/muc/MucRoom.ts`. Test: `hosted-muc.spec.ts` ("relays an XMPP user's correction to the other XMPP occupants as a correction").
 
 ### A second invite into a mirrored room does not make the user a member
 

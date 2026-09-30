@@ -33,6 +33,11 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 
 type Waiter = { predicate: Predicate; after: number; resolve: (stanza: Stanza) => void };
 
+/** `id: null` sends the message without an id. */
+type SendOptions = { id?: string | null; replaces?: string };
+
+const replaceChild = (replaces?: string): Stanza[] => (replaces ? [xml('replace', { xmlns: NS.correction, id: replaces })] : []);
+
 /**
  * A real account on the XMPP server under test, registered in-band (XEP-0077) for one suite.
  * Every inbound stanza is recorded from login onward, so a wait never misses one that arrived
@@ -162,8 +167,9 @@ export class XmppUser {
 		return this.iq('get', to, xml('query', { xmlns: NS.discoItems }));
 	}
 
-	sendChat(to: string, body: string, { id = crypto.randomUUID() }: { id?: string | null } = {}): Promise<void> {
-		return this.send(xml('message', { to, type: 'chat', id: id ?? undefined }, xml('body', {}, body)));
+	/** `replaces` sends the message as an XEP-0308 correction of that message id. */
+	sendChat(to: string, body: string, { id = crypto.randomUUID(), replaces }: SendOptions = {}): Promise<void> {
+		return this.send(xml('message', { to, type: 'chat', id: id ?? undefined }, xml('body', {}, body), ...replaceChild(replaces)));
 	}
 
 	sendPresence({ to, type, show }: { to?: string; type?: string; show?: string } = {}): Promise<void> {
@@ -231,8 +237,10 @@ export class XmppUser {
 		return this.send(xml('message', { to: roomJid }, xml('x', { xmlns: NS.mucUser }, xml('invite', { to: inviteeJid }))));
 	}
 
-	sendGroupchat(roomJid: string, body: string, { id = crypto.randomUUID() }: { id?: string | null } = {}): Promise<void> {
-		return this.send(xml('message', { to: roomJid, type: 'groupchat', id: id ?? undefined }, xml('body', {}, body)));
+	sendGroupchat(roomJid: string, body: string, { id = crypto.randomUUID(), replaces }: SendOptions = {}): Promise<void> {
+		return this.send(
+			xml('message', { to: roomJid, type: 'groupchat', id: id ?? undefined }, xml('body', {}, body), ...replaceChild(replaces)),
+		);
 	}
 
 	/** Removes the account; the server then closes the stream, so this never calls stop(). */
@@ -307,6 +315,9 @@ export const isChat =
 		stanza.attrs.type !== 'error' &&
 		matchesJid(stanza.attrs.from, from) &&
 		(body === undefined || stanza.getChildText('body') === body);
+
+/** The id of the message an XEP-0308 correction replaces; undefined for a plain message. */
+export const replacedId = (stanza: Stanza): string | undefined => stanza.getChild('replace', NS.correction)?.attrs.id;
 
 export const isGroupchat =
 	({ roomJid, nick, body }: { roomJid: string; nick?: string; body?: string }): Predicate =>

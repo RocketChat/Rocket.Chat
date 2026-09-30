@@ -12,12 +12,13 @@ import {
 	findUser,
 	sendMessage,
 	teardown,
+	updateMessage,
 	waitForDirectMessageWith,
 	waitForMessage,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import { isChat } from './helper/xmpp-client';
+import { isChat, replacedId } from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
 
 describe('XMPP federation: direct messages', () => {
@@ -74,6 +75,30 @@ describe('XMPP federation: direct messages', () => {
 		const sent = await sendMessage(local, room._id, text);
 		const received = await alice.waitFor(isChat({ from: local.jid, body: text }), 'the DM from Rocket.Chat');
 		assert.equal(received.attrs.id, sent._id);
+	});
+
+	it('delivers an edit as an XEP-0308 correction, not a second message', async () => {
+		const original = await sendMessage(local, dm._id, `before edit ${uniqueSuffix()}`);
+		await alice.waitFor(isChat({ from: local.jid, body: original.msg }), 'the original message');
+
+		const edited = `after edit ${uniqueSuffix()}`;
+		await updateMessage(local, dm._id, original._id, edited);
+		const correction = await alice.expectOnce(isChat({ from: local.jid, body: edited }), 'the edited text');
+		assert.equal(replacedId(correction), original._id);
+		assert.notEqual(correction.attrs.id, original._id, 'a correction needs an id of its own');
+	});
+
+	// Known bug: ../../../../../docs/features/xmpp-server.md#corrections-from-xmpp-users-arrive-as-new-messages
+	it.skip('applies a correction from the XMPP user to the stored message', async () => {
+		const id = `e2e-${uniqueSuffix()}`;
+		const text = `before correction ${uniqueSuffix()}`;
+		await alice.sendChat(local.jid, text, { id });
+		const original = await waitForMessage(local, dm, text);
+
+		const corrected = `after correction ${uniqueSuffix()}`;
+		await alice.sendChat(local.jid, corrected, { replaces: id });
+		const stored = await expectStoredOnce(local, dm, corrected);
+		assert.equal(stored._id, original._id);
 	});
 
 	it('does not echo an inbound message back to its author', async () => {
