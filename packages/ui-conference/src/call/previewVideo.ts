@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
 /** A camera track the preflight can show, whatever SDK opened it. */
@@ -13,5 +14,12 @@ const NO_PREVIEW_VIDEO: PreviewVideo = { error: false };
 
 /** Filled by whichever provider opens the preflight's camera; with none, there is no camera to show. */
 export const PreviewVideoContext = createContext<PreviewVideo>(NO_PREVIEW_VIDEO);
+
+/** What a provider that opens the preflight's camera is told: whether to, and which camera. */
+export type PreviewVideoProviderProps = {
+	enabled: boolean;
+	deviceId?: string;
+	children: ReactNode;
+};
 
 export const usePreviewVideo = (): PreviewVideo => useContext(PreviewVideoContext);

@@ -1,9 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import { PreflightCameraPlaceholder, VoiceActivity, useCallDevicesInitialState, usePreviewVideo } from '@rocket.chat/ui-conference';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePreviewMedia } from './PreviewMediaContext';
+import VoiceActivity from '../call/VoiceActivity';
+import { usePreviewVideo } from '../call/previewVideo';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
+import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
 
 const PreflightPreview = () => {
 	const { t } = useTranslation();

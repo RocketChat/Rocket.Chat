@@ -1,4 +1,4 @@
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '@rocket.chat/ui-conference';
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceName, orderDevices } from '../call/lib/deviceLabels';
 
 export type DeviceRow = { id: string; name: string; systemDefault: boolean };
 

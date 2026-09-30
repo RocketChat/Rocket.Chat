@@ -1,13 +1,7 @@
+import type { PreviewVideoProviderProps } from '@rocket.chat/ui-conference';
 import { PreviewVideoContext, useMediaDevices } from '@rocket.chat/ui-conference';
-import type { ReactNode } from 'react';
 
 import { usePreviewVideoTrack } from './usePreviewVideoTrack';
-
-export type PreviewVideoProviderProps = {
-	enabled: boolean;
-	deviceId?: string;
-	children: ReactNode;
-};
 
 /**
  * The preflight's camera, opened with LiveKit and handed to `children` through `usePreviewVideo`. A component, so

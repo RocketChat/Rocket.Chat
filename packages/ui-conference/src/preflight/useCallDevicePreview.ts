@@ -1,6 +1,7 @@
-import type { CallDevices, CallPreferences } from '@rocket.chat/ui-conference';
-import { useMediaDevices } from '@rocket.chat/ui-conference';
 import { useEffect, useMemo, useState } from 'react';
+
+import { useMediaDevices } from '../call/hooks/useMediaDevices';
+import type { CallDevices, CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 type CallDevicePreview = {
 	/** The local stream to show the user, while the camera is on. Null whenever there is nothing to show. */

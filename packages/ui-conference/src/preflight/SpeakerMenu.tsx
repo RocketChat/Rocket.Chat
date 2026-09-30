@@ -1,11 +1,11 @@
-import { useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DeviceMenu from './DeviceMenu';
+import DeviceMenuDevices from './DeviceMenuDevices';
 import { usePreviewMedia } from './PreviewMediaContext';
-import DeviceMenu from '../DeviceMenu/DeviceMenu';
-import DeviceMenuDevices from '../DeviceMenu/DeviceMenuDevices';
-import { deviceMenuRows, selectedDevice } from '../DeviceMenu/deviceMenuRows';
+import { deviceMenuRows, selectedDevice } from './deviceMenuRows';
+import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
 
 /** Which speaker to arrive on. */
 const SpeakerMenu = () => {

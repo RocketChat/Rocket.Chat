@@ -2,6 +2,7 @@ import type { IRoom, IUser, IVideoConferenceUser, VideoConferenceCapabilities, V
 import type { Badge } from '@rocket.chat/fuselage';
 import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
+import type { PreviewVideoProviderProps } from '../call/previewVideo';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 /**
@@ -156,18 +157,10 @@ export type ConferenceSlots = {
 	preflightMedia?: PreflightMedia;
 };
 
-/**
- * What the preflight shows of the reader's own camera and microphone, which only the application can open.
- *
- * `Provider` is mounted around the preview for as long as the preflight is on screen, so the preview's devices are
- * opened once, shared by both parts, and closed when the reader leaves the screen.
- */
+/** What the preflight needs from the application to show the reader's own camera, which only the call's SDK opens. */
 export type PreflightMedia = {
-	Provider: ComponentType<{ capabilities: VideoConferenceCapabilities; children: ReactNode }>;
-	/** The self-view inside the camera tile, drawing `PreflightCameraPlaceholder` until there is a camera. */
-	Preview: ComponentType;
-	/** The device choices under the preview. */
-	Devices: ComponentType;
+	/** Mounted around the preview for as long as the preflight is on screen; it may suspend while it loads. */
+	PreviewVideoProvider: ComponentType<PreviewVideoProviderProps>;
 };
 
 /**

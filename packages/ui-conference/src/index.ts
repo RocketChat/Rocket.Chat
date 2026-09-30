@@ -31,7 +31,6 @@ export { default as ChatAccessModal } from './components/ChatAccessModal/ChatAcc
 export { default as ChatAccessNotice } from './components/ChatAccessNotice/ChatAccessNotice';
 export { default as ConferenceChatNotShared } from './components/ConferenceChatNotShared';
 export { default as ConferenceErrorState } from './components/ConferenceErrorState';
-export { default as PreflightCameraPlaceholder } from './components/PreflightCameraPlaceholder';
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 
@@ -75,8 +74,6 @@ export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fix
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
 export { CallStateProvider, CallActionsProvider, CallDeviceSelectionProvider } from './call/context';
 export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions, CallDeviceSelection } from './call/context';
-export { default as VoiceActivity } from './call/VoiceActivity';
-export { deviceName, orderDevices, SYSTEM_DEFAULT_DEVICE_ID } from './call/lib/deviceLabels';
 export { useMediaDevices } from './call/hooks/useMediaDevices';
-export { PreviewVideoContext, usePreviewVideo } from './call/previewVideo';
-export type { PreviewVideo, PreviewVideoTrack } from './call/previewVideo';
+export { PreviewVideoContext } from './call/previewVideo';
+export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

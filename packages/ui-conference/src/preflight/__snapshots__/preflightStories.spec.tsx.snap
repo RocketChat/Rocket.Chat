@@ -1,0 +1,458 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`preflight stories renders PreflightDevices AllDevices without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="width: 640px;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-pvdni0"
+          style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Microphone"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Microphone"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Microphone
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Speaker"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Speakers"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-volume rcx-icon rcx-css-18jrq41"
+                >
+                  ⟦
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Speakers
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Camera"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="FaceTime HD Camera"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-18jrq41"
+                >
+                  ❲
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  FaceTime HD Camera
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`preflight stories renders PreflightDevices CameraMenuOpen without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="width: 640px;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-pvdni0"
+          style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Microphone"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Microphone"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Microphone
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Speaker"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Speakers"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-volume rcx-icon rcx-css-18jrq41"
+                >
+                  ⟦
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Speakers
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Camera"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="FaceTime HD Camera"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-18jrq41"
+                >
+                  ❲
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  FaceTime HD Camera
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`preflight stories renders PreflightDevices MicOnlyProvider without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="width: 640px;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-pvdni0"
+          style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Microphone"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Microphone"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Microphone
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Speaker"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              title="MacBook Pro Speakers"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-volume rcx-icon rcx-css-18jrq41"
+                >
+                  ⟦
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  MacBook Pro Speakers
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`preflight stories renders PreflightDevices NoDevices without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="width: 640px;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-pvdni0"
+          style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Microphone"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              disabled=""
+              title="Microphone"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  Microphone
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Speaker"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              disabled=""
+              title="Speaker"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-volume rcx-icon rcx-css-18jrq41"
+                >
+                  ⟦
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  Speaker
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-iyng0n"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-label="Camera"
+              class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
+              disabled=""
+              title="Camera"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-18jrq41"
+                >
+                  ❲
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-99nwg2"
+                >
+                  Camera
+                </div>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-18jrq41"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

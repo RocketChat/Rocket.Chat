@@ -13,6 +13,9 @@ import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder
 import type { PreflightMedia } from '../context/definitions';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
+import PreflightDevices from '../preflight/PreflightDevices';
+import PreflightPreview from '../preflight/PreflightPreview';
+import PreviewMediaProvider from '../preflight/PreviewMediaProvider';
 
 /**
  * The camera tile: 16:9, and black, because that is what a camera with nothing to show looks like. Width leads
@@ -47,8 +50,8 @@ type ConferencePreflightProps = {
 	onConfirm: (preferences: CallPreferences, name: string, ring: boolean) => void;
 	onCancel: () => void;
 	/**
-	 * The reader's own camera and microphone, or `null` where the application cannot open them. Used only for a
-	 * provider that runs the call in here, since no other can be told which devices to use.
+	 * How to open the reader's own camera, or `null` where the application cannot. Used only for a provider that
+	 * runs the call in here, since no other can be told which devices to use.
 	 */
 	media: PreflightMedia | null;
 };
@@ -100,7 +103,7 @@ const ConferencePreflight = ({
 				className={previewTileStyle}
 			>
 				{deviceMedia ? (
-					<deviceMedia.Preview />
+					<PreflightPreview />
 				) : (
 					<PreflightCameraPlaceholder
 						cam={preferences.cam}
@@ -132,7 +135,7 @@ const ConferencePreflight = ({
 
 			{/* Below the preview rather than on it: which device is a setting, not a control reached for mid-thought,
 					    and a device's name needs more room than the tile's corner has. */}
-			{deviceMedia && <deviceMedia.Devices />}
+			{deviceMedia && <PreflightDevices />}
 		</Box>
 	);
 
@@ -176,7 +179,13 @@ const ConferencePreflight = ({
 				paddingBlock={24}
 				gap={columns ? 48 : 32}
 			>
-				{deviceMedia ? <deviceMedia.Provider capabilities={capabilities}>{previewColumn}</deviceMedia.Provider> : previewColumn}
+				{deviceMedia ? (
+					<PreviewMediaProvider capabilities={capabilities} media={deviceMedia}>
+						{previewColumn}
+					</PreviewMediaProvider>
+				) : (
+					previewColumn
+				)}
 				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
 					{/* An `h2`, not a `div` at heading size: it is the screen's heading and has to be findable as one. */}
 					<Box is='h2' fontScale='h2' color='default' textAlign='center'>
