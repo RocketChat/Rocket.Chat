@@ -30,4 +30,11 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
 	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
+	deleteSeriesOutsideSet(
+		uid: IUser['_id'],
+		start: Date,
+		end: Date,
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+	): Promise<DeleteResult>;
 }

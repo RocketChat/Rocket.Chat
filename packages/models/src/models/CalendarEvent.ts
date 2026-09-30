@@ -231,11 +231,38 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
+	/** An id may name a whole series rather than one event: Graph reports a deleted series by its master alone. */
 	public deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult> {
 		return this.deleteMany({
 			uid,
-			externalId: { $in: externalIds },
-			$or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gt: notBefore } }],
+			$and: [
+				{ $or: [{ externalId: { $in: externalIds } }, { seriesMasterId: { $in: externalIds } }] },
+				{ $or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gt: notBefore } }] },
+			],
+		});
+	}
+
+	public deleteSeriesOutsideSet(
+		uid: IUser['_id'],
+		start: Date,
+		end: Date,
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+	): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			startTime: { $lt: end },
+			$and: [
+				{ $or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }] },
+				{
+					$or: [
+						{ seriesMasterId: { $in: seriesMasterIds }, externalId: { $nin: keepExternalIds } },
+						// Turning a single event into a series keeps its id and makes it the master, so the row we
+						// hold under that id stopped being an event of its own the moment the occurrences appeared.
+						{ externalId: { $in: seriesMasterIds } },
+					],
+				},
+			],
 		});
 	}
 
