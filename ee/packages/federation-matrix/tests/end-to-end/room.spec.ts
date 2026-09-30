@@ -105,8 +105,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					config: userRequestConfig,
 				});
 
-				expect(response.status).toBe(200);
-				expect(response.body).toHaveProperty('success', true);
 				expect(response.body).toHaveProperty('room');
 				expect(response.body.room).toHaveProperty('_id');
 				expect(response.body.room).toHaveProperty('t', 'd');
@@ -122,8 +120,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					config: userRequestConfig,
 				});
 
-				expect(response.status).toBe(200);
-				expect(response.body).toHaveProperty('success', true);
 				expect(response.body).toHaveProperty('room');
 				expect(response.body.room).toHaveProperty('_id');
 				expect(response.body.room).toHaveProperty('t', 'd');
@@ -258,15 +254,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					await ddpListener.connect();
 
 					// RC view: Execute the /invite slash command to add a federated user
-					const response = await addUserToRoomSlashCommand({
+					await addUserToRoomSlashCommand({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: nonFederatedChannel._id,
 						config: rc1AdminRequestConfig,
 					});
-
-					// The slash command returns success but broadcasts ephemeral messages
-					// instead of throwing errors
-					expect(response.body).toHaveProperty('success', true);
 
 					// Wait for the ephemeral message to be broadcast
 					const ephemeralMessage = await ddpListener.waitForEphemeralMessage(
@@ -831,14 +823,12 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add federated user to the room via the REST invite endpoint
-						const [addUserResponse] = await addUserToRoom({
+						await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId],
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
-
-						expect(addUserResponse.body).toHaveProperty('success', true);
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -935,14 +925,12 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add both federated users to the room via the REST invite endpoint
-						const addUserResponse = await addUserToRoom({
+						await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
-
-						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
 
 						// Accept invitations for both users
 						const acceptedRoomId1 = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1072,14 +1060,12 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add 1 federated user and 1 local user to the room via the REST invite endpoint
-						const addUserResponse = await addUserToRoom({
+						await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
 							rid: federatedChannel._id,
 							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
-
-						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1239,13 +1225,11 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add federated user to the room via the /invite slash command
-						const addUserResponse = await addUserToRoomSlashCommand({
+						await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId],
 							rid: federatedChannel._id,
 							config: rc1AdminRequestConfig,
 						});
-
-						expect(addUserResponse.body).toHaveProperty('success', true);
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1342,13 +1326,11 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add both federated users to the room via the /invite slash command
-						const addUserResponse = await addUserToRoomSlashCommand({
+						await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
 							rid: federatedChannel._id,
 							config: rc1AdminRequestConfig,
 						});
-
-						expect(addUserResponse.body).toHaveProperty('success', true);
 
 						// Accept invitations for both users
 						const acceptedRoomId1 = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1477,13 +1459,11 @@ import { SynapseClient } from '../helper/synapse-client';
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
 						// Add 1 federated user and 1 local user to the room via the /invite slash command
-						const addUserResponse = await addUserToRoomSlashCommand({
+						await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId, rc1User1Name],
 							rid: federatedChannel._id,
 							config: rc1AdminRequestConfig,
 						});
-
-						expect(addUserResponse.body).toHaveProperty('success', true);
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1731,8 +1711,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			}, 15000);
 
 			it('should allow RC user to reject the invite and remove the subscription', async () => {
-				const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
-				expect(rejectResponse.success).toBe(true);
+				await rejectRoomInvite(rid, rc1AdminRequestConfig);
 
 				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));

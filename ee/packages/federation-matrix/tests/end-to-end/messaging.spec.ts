@@ -85,13 +85,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Hello from RC1';
 
 					// RC view: Send a text message from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -108,13 +106,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Hello :rocket: from RC1 🚀';
 
 					// RC view: Send a text message with emoji shortcut and system emoji from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -150,13 +146,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = ':smirk:';
 
 					// RC view: Send a single emoji shortcut from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -188,13 +182,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = '😀';
 
 					// RC view: Send a single system emoji from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -220,13 +212,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Plain text **bold** _italic_ __underline__';
 
 					// RC view: Send a formatted text message from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// Wait for message to propagate
 					// await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -245,13 +235,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Check this link: https://www.wikipedia.org';
 
 					// RC view: Send a message with plain link from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -297,13 +285,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Check this [google](google.com) link';
 
 					// RC view: Send a message with markdown link from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
@@ -335,13 +321,11 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Here is some code:\n```\nconst x = 1;\n```';
 
 					// RC view: Send a message with code block from RC1
-					const sendResponse = await sendMessage({
+					await sendMessage({
 						rid: federatedChannel._id,
 						msg: messageText,
 						config: rc1AdminRequestConfig,
 					});
-
-					expect(sendResponse.body).toHaveProperty('success', true);
 
 					// RC view: Verify message appears in RC1
 					const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);

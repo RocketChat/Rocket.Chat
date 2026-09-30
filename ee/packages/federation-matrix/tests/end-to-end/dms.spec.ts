@@ -161,8 +161,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmId);
 					});
 
-					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoom._id, rcUserConfig);
 
 					await waitForRoomEventPromise;
 				});
@@ -275,10 +274,7 @@ const waitForRoomEvent = async (
 							expect(event).toHaveProperty('content.membership', 'join');
 							expect(event).toHaveProperty('state_key', userDmId);
 						}),
-						(async () => {
-							const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-							expect(response.success).toBe(true);
-						})(),
+						acceptRoomInvite(rcRoom._id, rcUserConfig),
 					]);
 				});
 
@@ -613,8 +609,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmId1);
 					});
 
-					const response = await acceptRoomInvite(rcRoom1._id, rcUserConfig1);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoom1._id, rcUserConfig1);
 
 					await waitForRoomEventPromise1;
 
@@ -801,8 +796,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmIdA);
 					});
 
-					const response = await acceptRoomInvite(rcRoomConverted._id, rcUserConfigA);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoomConverted._id, rcUserConfigA);
 
 					await waitForJoinEventPromise;
 
@@ -845,8 +839,7 @@ const waitForRoomEvent = async (
 						expect(event).toHaveProperty('state_key', userDmIdB);
 					});
 
-					const response = await acceptRoomInvite(rcRoomConverted._id, rcUserConfigB);
-					expect(response.success).toBe(true);
+					await acceptRoomInvite(rcRoomConverted._id, rcUserConfigB);
 
 					await waitForRoomEventPromise;
 
@@ -1158,8 +1151,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should accept the invitation by the Rocket.Chat user', async () => {
-					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig2);
-					expect(response.success).toBe(true);
+					await expect(acceptRoomInvite(rcRoom._id, rcUserConfig2)).resolves.toMatchObject({ success: true });
 				});
 
 				// TODO maybe we should allow it
@@ -1557,8 +1549,7 @@ const waitForRoomEvent = async (
 								{ retries: 5, delayMs: 1000 },
 							);
 
-							const response = await acceptRoomInvite(rcRoom._id, rcUser2.config);
-							expect(response.success).toBe(true);
+							await acceptRoomInvite(rcRoom._id, rcUser2.config);
 
 							await retry(
 								'wait for the join to be processed',
@@ -1894,8 +1885,7 @@ const waitForRoomEvent = async (
 		});
 
 		it('should accept the DM invitation from RC', async () => {
-			const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-			expect(response.success).toBe(true);
+			await expect(acceptRoomInvite(rcRoom._id, rcUserConfig)).resolves.toMatchObject({ success: true });
 		});
 
 		it('should update DM room name after Synapse user changes their display name', async () => {

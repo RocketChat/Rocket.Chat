@@ -171,8 +171,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 						config: rc1AdminRequestConfig,
 					});
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('_id');
 					expect(createResponse.body.group).toHaveProperty('t', 'p');
@@ -204,15 +202,14 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
-					const [addUserResponse] = await addUserToRoom({
-						usernames: [federationConfig.hs1.adminMatrixUserId],
-						rid: createResponse.body.group._id,
-						type: 'p',
-						config: rc1AdminRequestConfig,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [federationConfig.hs1.adminMatrixUserId],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});
@@ -247,8 +244,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					config: rc1AdminRequestConfig,
 				});
 
-				expect(createResponse.status).toBe(200);
-				expect(createResponse.body).toHaveProperty('success', true);
 				expect(createResponse.body).toHaveProperty('group');
 				expect(createResponse.body.group).toHaveProperty('_id');
 				expect(createResponse.body.group).toHaveProperty('t', 'p');
@@ -276,14 +271,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					const [addUserResponse] = await addUserToRoom({
-						usernames: [user.username],
-						rid: createResponse.body.group._id,
-						type: 'p',
-						config: rc1AdminRequestConfig,
-					});
-
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [user.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});
@@ -410,8 +405,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -428,17 +421,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const [addUserResponse] = await addUserToRoom({
-						usernames: [rcValidUser2.username],
-						rid: createResponse.body.group._id,
-						type: 'p',
-						config: rcValidUser1.config,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [rcValidUser2.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rcValidUser1.config,
+						}),
+					).resolves.toHaveLength(1);
 				});
 
 				it('should be able to be added to a federated room during creation', async () => {
@@ -453,8 +443,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -521,8 +509,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 						config: rcValidUser1.config,
 					});
-
-					expect(createResponse.status).toBe(200);
 
 					await expect(
 						addUserToRoom({
@@ -602,8 +588,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
 					await expect(
 						addUserToRoom({
 							usernames: [userWithUnverifiedEmail.username],
@@ -665,8 +649,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 						config: rcValidUser1.config,
 					});
-
-					expect(createResponse.status).toBe(200);
 
 					await expect(
 						addUserToRoom({
@@ -859,8 +841,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: userRequestConfig,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -877,17 +857,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const [addUserResponse] = await addUserToRoom({
-						usernames: [userWithNonMatchingEmail.username],
-						rid: createResponse.body.group._id,
-						type: 'p',
-						config: rc1AdminRequestConfig,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [userWithNonMatchingEmail.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});

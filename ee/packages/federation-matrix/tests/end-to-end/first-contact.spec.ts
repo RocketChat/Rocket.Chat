@@ -140,9 +140,7 @@ const localUser = {
 		});
 
 		it('should let the local user accept the invite', async () => {
-			const response = await acceptRoomInvite(federatedRoomId, rc1InviteeRequestConfig);
-
-			expect(response).toHaveProperty('success', true);
+			await expect(acceptRoomInvite(federatedRoomId, rc1InviteeRequestConfig)).resolves.toMatchObject({ success: true });
 		});
 
 		it('should reach the local user on the Synapse side', async () => {

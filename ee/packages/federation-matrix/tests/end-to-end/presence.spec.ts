@@ -93,8 +93,7 @@ const PRESENCE_SETTING = 'Federation_Service_EDU_Process_Presence';
 			{ retries: 10, delayMs: 2000 },
 		);
 
-		const accepted = await acceptRoomInvite(federatedRoomId, rc1UserRequestConfig);
-		expect(accepted).toHaveProperty('success', true);
+		await acceptRoomInvite(federatedRoomId, rc1UserRequestConfig);
 	}, 120000);
 
 	afterAll(async () => {
