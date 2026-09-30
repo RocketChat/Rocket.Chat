@@ -33,7 +33,6 @@ export interface ISendFileLivechatMessageParams {
 export interface IUploadService {
 	uploadFile(params: IUploadFileParams): Promise<IUpload>;
 	createPendingFile(params: ICreatePendingFileParams): Promise<IUpload>;
-	/** Throws when the size or type declared for a pending file is already refused, so it is not downloaded. */
 	checkPendingFile(params: { fileId: IUpload['_id'] }): Promise<void>;
 	completePendingFile(params: { fileId: IUpload['_id']; buffer: Buffer }): Promise<IUpload | null>;
 	sendFileMessage(params: ISendFileMessageParams): Promise<boolean | undefined>;

@@ -66,11 +66,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	/**
-	 * With `fetchRemote`, a remote file nobody has opened yet is fetched from its origin first, and a
-	 * failed fetch throws RemoteMediaFetchError. Without it only files this server holds are returned,
-	 * which is what the federation API may serve.
-	 */
+	/** Without `fetchRemote` only files this server holds are returned, which is all the federation API may serve. */
 	static async getLocalFileForMatrixNode(
 		mediaId: string,
 		serverName: string,

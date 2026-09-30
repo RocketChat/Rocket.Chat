@@ -58,7 +58,7 @@ const pendingRemoteFile = (id: string) =>
 
 const answeredByOrigin = (status: number) =>
 	new Error('Failed to download media abc123 from remote.example', {
-		cause: new (FederationRequestError as unknown as new (response: { status: number }) => Error)({ status }),
+		cause: new FederationRequestError({ status } as any, ''),
 	});
 
 const metadata = { name: 'holiday.png', size: 2048, type: 'image/png', rid: 'rid1', userId: 'uid1' };
