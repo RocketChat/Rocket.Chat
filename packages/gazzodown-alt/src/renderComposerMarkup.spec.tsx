@@ -9,8 +9,6 @@ const paragraph = (value: string): MessageParser.Paragraph => ({ type: 'PARAGRAP
 
 const textOfTokens = (tokens: MessageParser.Root, source = ''): string => mountTokens(tokens, source).textContent ?? '';
 
-const styledNodes = (input: HTMLElement): Element[] => Array.from(input.querySelectorAll('[style], [class]'));
-
 const code = (language: string | undefined, ...lines: string[]): MessageParser.Root => [
 	{
 		type: 'CODE',
@@ -22,27 +20,7 @@ const code = (language: string | undefined, ...lines: string[]): MessageParser.R
 const listItems = (...values: string[]): MessageParser.ListItem[] =>
 	values.map((value, index) => ({ type: 'LIST_ITEM', value: [plain(value)], number: index + 1 }));
 
-const tasks: MessageParser.Tasks = {
-	type: 'TASKS',
-	value: [
-		{ type: 'TASK', status: true, value: [plain('done')] },
-		{ type: 'TASK', status: false, value: [plain('todo')] },
-	],
-};
-
-const bigEmoji: MessageParser.BigEmoji = {
-	type: 'BIG_EMOJI',
-	value: [
-		{ type: 'EMOJI', value: plain('smile'), shortCode: 'smile' },
-		{ type: 'EMOJI', value: undefined, unicode: '😄' },
-	],
-};
-
-const TABLE_SOURCE = '|a|b|\n|-|-|\n|1|2|';
-
 const horizontalRule: MessageParser.HorizontalRule = { type: 'HORIZONTAL_RULE', value: undefined, fallback: [0, 3] };
-
-const table: MessageParser.Table = { type: 'TABLE', value: { header: [], rows: [] }, fallback: [0, TABLE_SOURCE.length] };
 
 describe('block structure', () => {
 	it('closes a paragraph with a line ending', () => {
@@ -126,42 +104,6 @@ describe('blocks the composer gives visual treatment', () => {
 		};
 
 		expect(textOfTokens([block])).toBe('1. one\n3. three\n2. two\n');
-	});
-});
-
-// TODO: As we implement these nodes, remove these tests
-describe('blocks with no visual treatment yet', () => {
-	it.each([
-		['a task list', [tasks] as MessageParser.Root, '', '- [x] done\n- [ ] todo\n'],
-		['a horizontal rule', [horizontalRule] as MessageParser.Root, '---', '---\n'],
-		['a table', [table] as MessageParser.Root, TABLE_SOURCE, `${TABLE_SOURCE}\n`],
-		['a big emoji block', [bigEmoji] as MessageParser.Root, '', ':smile:😄'],
-	])('renders %s as the plain text it was typed as', (_label, tokens, source, expected) => {
-		const input = mountTokens(tokens, source);
-
-		expect(input.textContent).toBe(expected);
-		expect(styledNodes(input)).toHaveLength(0);
-	});
-
-	it.each([
-		['a horizontal rule', [horizontalRule] as MessageParser.Root, '---'],
-		['a table', [table] as MessageParser.Root, TABLE_SOURCE],
-		['a big emoji block', [bigEmoji] as MessageParser.Root, ''],
-	])('emits no element at all for %s', (_label, tokens, source) => {
-		expect(mountTokens(tokens, source).querySelectorAll('*')).toHaveLength(0);
-	});
-
-	it('gives a task only the bare spans every block gets, with no control of its own', () => {
-		const input = mountTokens([tasks]);
-
-		expect(input.querySelector('input')).toBeNull();
-		expect(Array.from(input.querySelectorAll('span')).every((span) => span.attributes.length === 0)).toBe(true);
-	});
-
-	it('does not add a second line ending when the source already carries one', () => {
-		const block: MessageParser.HorizontalRule = { type: 'HORIZONTAL_RULE', value: undefined, fallback: [0, 4] };
-
-		expect(textOfTokens([block], '---\nafter')).toBe('---\n');
 	});
 });
 

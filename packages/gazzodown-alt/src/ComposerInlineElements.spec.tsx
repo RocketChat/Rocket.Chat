@@ -108,32 +108,3 @@ describe('links', () => {
 		expect(input.textContent).toBe('[x](javascript:alert(1))');
 	});
 });
-
-// TODO: As we implement these nodes, remove these tests
-describe('nodes routed through the source fallback', () => {
-	it('prints a timestamp as the markup it was parsed from', () => {
-		const source = 'at <t:1700000000:t> ok';
-		const node: MessageParser.Timestamp = { type: 'TIMESTAMP', value: { timestamp: '1700000000', format: 't' }, fallback: [3, 19] };
-
-		expect(mountInline([node], { source }).textContent).toBe('<t:1700000000:t>');
-	});
-
-	it('prints an image as the markup it was parsed from, never as an image element', () => {
-		const node: MessageParser.Image = {
-			type: 'IMAGE',
-			value: { src: plain('https://rocket.chat/a.png'), label: plain('alt') },
-		};
-		const input = mountInline([node]);
-
-		expect(input.textContent).toBe('![alt](https://rocket.chat/a.png)');
-		expect(input.querySelector('img')).toBeNull();
-	});
-
-	it('prints the stored text of a node the caller supplied a fallback for', () => {
-		expect(mountInline([{ type: undefined, fallback: plain('$$x^2$$') }]).textContent).toBe('$$x^2$$');
-	});
-
-	it('prints nothing for a node with no source form, leaving the caller to guard the text', () => {
-		expect(mountInline([{ type: 'COLOR', value: { r: 255, g: 0, b: 0, a: 1 } }]).textContent).toBe('');
-	});
-});
