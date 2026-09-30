@@ -23,6 +23,13 @@ const mockedTranslations = [
 	'en',
 	'core',
 	{
+		Discussion: 'Discussion',
+		Unread: 'Unread',
+		Join: 'Join',
+		Leave: 'Leave',
+		Join_discussion: 'Join discussion',
+		Leave_discussion: 'Leave discussion',
+		Leave_Discussion_Warning: 'Are you sure you want to leave the discussion "{{roomName}}"?',
 		__count__members_one: '{{count}} member',
 		__count__members_other: '{{count}} members',
 		__count__replies_one: '{{count}} reply',
@@ -63,8 +70,37 @@ describe('DiscussionMetrics', () => {
 		expect(await screen.findByTitle('5 members')).toBeVisible();
 		expect(screen.getByText('+3')).toBeVisible();
 
-		await userEvent.click(screen.getByRole('button', { name: 'Join' }));
+		await userEvent.click(screen.getByRole('button', { name: 'Join discussion' }));
 		expect(joinSpy).toHaveBeenCalledWith({ roomId: 'drid' });
+	});
+
+	it('should keep keyboard focus on the join button while joining', async () => {
+		let resolveJoin: () => void = () => undefined;
+
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', () => members)
+				.withEndpoint(
+					'POST',
+					'/v1/rooms.join',
+					() =>
+						new Promise((resolve) => {
+							resolveJoin = () => resolve({ room: {} as any });
+						}),
+				)
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		const join = screen.getByRole('button', { name: 'Join discussion' });
+		join.focus();
+		await userEvent.keyboard('{Enter}');
+
+		expect(join).toHaveAttribute('aria-busy', 'true');
+		expect(join).toBeEnabled();
+		expect(join).toHaveFocus();
+
+		resolveJoin();
 	});
 
 	it('should render a primary button and a leave action when the user is a member with unread messages', async () => {
@@ -78,8 +114,35 @@ describe('DiscussionMetrics', () => {
 				.build(),
 		});
 
-		expect(screen.getByRole('button', { name: 'Discussion' })).toHaveClass('rcx-button--primary');
-		expect(screen.getByRole('button', { name: 'Leave' })).toBeVisible();
+		expect(screen.getByRole('button', { name: 'Discussion Unread' })).toHaveClass('rcx-button--primary');
+		expect(screen.getByRole('button', { name: 'Leave discussion' })).toBeVisible();
 		expect(screen.getByTitle('Last_message__date__')).toHaveTextContent('2 replies, July 1st, 2024');
+	});
+
+	it('should not announce unread when the user is a member and has read everything', () => {
+		render(<DiscussionMetrics rid='rid' drid='drid' count={1} lm={new Date(2024, 6, 1, 0, 0, 0)} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', () => members)
+				.withSubscription(createFakeSubscription({ rid: 'drid', unread: 0, alert: false }))
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		const button = screen.getByRole('button', { name: 'Discussion' });
+		expect(button).not.toHaveClass('rcx-button--primary');
+	});
+
+	it('should ask to leave the discussion, not the channel', async () => {
+		render(<DiscussionMetrics rid='rid' drid='drid' count={1} lm={new Date(2024, 6, 1, 0, 0, 0)} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', () => members)
+				.withSubscription(createFakeSubscription({ rid: 'drid', prid: 'rid', t: 'c', fname: 'Release planning', unread: 0, alert: false }))
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Leave discussion' }));
+
+		expect(await screen.findByText('Are you sure you want to leave the discussion "Release planning"?')).toBeVisible();
 	});
 });

@@ -3864,6 +3864,8 @@
   "Leave": "Leave",
   "Leave__name__to_join_this_call": "You are in <b>{{name}}</b>. Joining this call will leave it.",
   "Leave_a_comment": "Leave a comment",
+  "Leave_discussion": "Leave discussion",
+  "Leave_Discussion_Warning": "Are you sure you want to leave the discussion \"{{roomName}}\"?",
   "Leave_Group_Warning": "Are you sure you want to leave the group \"{{roomName}}\"?",
   "Leave_Livechat_Warning": "Are you sure you want to leave the omnichannel with \"{{roomName}}\"?",
   "Leave_Private_Warning": "Are you sure you want to leave the discussion with \"{{roomName}}\"?",

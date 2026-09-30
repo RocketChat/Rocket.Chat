@@ -1,3 +1,4 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { MessageBlock, MessageMetrics, MessageMetricsItem, MessageMetricsItemLabel, MessageMetricsReply } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -48,6 +49,8 @@ const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps) => 
 			<MessageMetrics>
 				<MessageMetricsReply data-rid={rid} data-drid={drid} onClick={() => goToRoom(drid)} primary={hasUnread} icon='discussion'>
 					{t('Discussion')}
+					{/* The primary style alone signals unread, which isn't perceivable without color */}
+					{hasUnread && <VisuallyHidden elementType='span'>{t('Unread')}</VisuallyHidden>}
 				</MessageMetricsReply>
 				<DiscussionMetricsMembership drid={drid} />
 				<DiscussionMetricsParticipants drid={drid} />
