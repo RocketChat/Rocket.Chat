@@ -7,6 +7,7 @@ const mockedTranslations = [
 	'en',
 	'core',
 	{
+		No_replies: 'No replies',
 		__count__replies_one: '{{count}} reply',
 		__count__replies_other: '{{count}} replies',
 		__count__replies__date___one: '{{count}} reply, {{date}}',
@@ -24,14 +25,14 @@ const baseProps = {
 };
 
 describe('DiscussionsListItem', () => {
-	it('should show 0 replies when the discussion has no messages yet', () => {
+	it('should show No replies when the discussion has no messages yet', () => {
 		render(<DiscussionsListItem {...baseProps} dcount={undefined} dlm={undefined} />, {
 			wrapper: mockAppRoot()
 				.withTranslations(...mockedTranslations)
 				.build(),
 		});
 
-		expect(screen.getByText('0 replies')).toBeVisible();
+		expect(screen.getByText('No replies')).toBeVisible();
 	});
 
 	it('should show the reply count and the last message date', () => {

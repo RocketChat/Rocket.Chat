@@ -49,6 +49,19 @@ const DiscussionListItem = ({
 	...props
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
+
+	const getRepliesLabel = () => {
+		if (!dcount) {
+			return t('No_replies');
+		}
+
+		if (!dlm) {
+			return t('__count__replies', { count: dcount });
+		}
+
+		return t('__count__replies__date__', { count: dcount, date: formatDate(dlm) });
+	};
+
 	return (
 		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
 			<MessageLeftContainer>
@@ -64,11 +77,7 @@ const DiscussionListItem = ({
 					<MessageMetrics>
 						<MessageMetricsItem>
 							<MessageMetricsItemIcon name='discussion' />
-							<MessageMetricsItemLabel>
-								{dcount && dlm
-									? t('__count__replies__date__', { count: dcount, date: formatDate(dlm) })
-									: t('__count__replies', { count: dcount ?? 0 })}
-							</MessageMetricsItemLabel>
+							<MessageMetricsItemLabel>{getRepliesLabel()}</MessageMetricsItemLabel>
 						</MessageMetricsItem>
 					</MessageMetrics>
 				</MessageBlock>
