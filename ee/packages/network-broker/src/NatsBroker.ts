@@ -39,9 +39,9 @@ const NODE_ID_METADATA = 'rocketchat-node-id';
 const DISCOVERY_TIMEOUT = 1000;
 
 /**
- * Unlike moleculer, nats has no registry to wait on: a request to a subject
- * nobody is listening on fails immediately with `503`. That happens whenever a
- * peer is booting or being rolled, so back off and try again for a short while.
+ * A request to a subject nobody is listening on fails immediately with `503`.
+ * That happens whenever a peer is booting or being rolled, so back off and try
+ * again for a short while.
  *
  * Only `503` is retried. It means the request reached no responder at all, so
  * nothing ran and a second attempt cannot duplicate a side effect. Any other
@@ -55,10 +55,10 @@ const NO_RESPONDERS_CODE: string = ErrorCode.NoResponders;
 /** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
 const DISCOVERY_TTL = 1000;
 
-/** Every service but `settings` itself depends on these, as it does under moleculer. */
+/** Every service but `settings` itself depends on these. */
 const DEFAULT_DEPENDENCIES = ['settings', 'license'];
 
-/** How often a service still waiting on a remote dependency looks for it again - moleculer's `dependencyInterval`. */
+/** How often a service still waiting on a remote dependency looks for it again. */
 const DEPENDENCY_INTERVAL = 1000;
 
 const delay = async (ms: number): Promise<void> =>
@@ -171,8 +171,7 @@ export class NatsBroker implements IBroker {
 
 	/**
 	 * @param dependencyTimeout milliseconds a service may wait for its dependencies
-	 * before `start()` gives up - moleculer's `dependencyTimeout`, and like it `0`
-	 * waits forever
+	 * before `start()` gives up; `0` waits forever
 	 */
 	constructor(
 		private options: ConnectionOptions,
@@ -216,9 +215,9 @@ export class NatsBroker implements IBroker {
 	}
 
 	/**
-	 * Moleculer's `waitForServices`: a service is registered - and so reachable,
-	 * locally and remotely - only once everything it depends on is, and for as long
-	 * as that takes. That is what lets `started()` read from its dependencies.
+	 * A service is registered - and so reachable, locally and remotely - only once
+	 * everything it depends on is, and for as long as that takes. That is what
+	 * lets `started()` read from its dependencies.
 	 *
 	 * Services whose dependencies are met together are registered together before
 	 * any of their hooks run, so a `started()` can call into a sibling that happened
