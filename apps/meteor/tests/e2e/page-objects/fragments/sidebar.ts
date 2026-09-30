@@ -81,7 +81,11 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('listitem', { name: /^(Collapse|Expand) / }).first().getByRole('button').first();
+		return this.channelsList
+			.getByRole('listitem', { name: /^(Collapse|Expand) / })
+			.first()
+			.getByRole('button')
+			.first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -97,7 +101,14 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstChannelFromList(): Locator {
-		return this.channelsList.getByRole('listitem').filter({ has: this.page.getByRole('link') }).first();
+		return this.channelsList
+			.getByRole('listitem')
+			.filter({ has: this.page.getByRole('link') })
+			.first();
+	}
+
+	async waitForRoomListReady(): Promise<void> {
+		await expect(this.channelsList.getByRole('link').first()).toBeVisible();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {

@@ -14,8 +14,8 @@ import {
 	AdminMailer,
 } from './page-objects';
 import { AdminDeviceManagement } from './page-objects/admin-device-management';
-import { ToastMessages } from './page-objects/fragments';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { RoomSidebar, ToastMessages } from './page-objects/fragments';
+import { createTargetChannel, deleteChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -353,8 +353,19 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Mailer', () => {
+		let mailerChannel: string;
+
+		test.beforeAll(async ({ api }) => {
+			mailerChannel = await createTargetChannel(api);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await deleteChannel(api, mailerChannel);
+		});
+
 		test.beforeEach(async ({ page }) => {
 			await new AdminMailer(page).goto();
+			await new RoomSidebar(page).waitForRoomListReady();
 		});
 
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {

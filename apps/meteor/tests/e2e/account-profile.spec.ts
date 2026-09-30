@@ -9,6 +9,7 @@ import {
 	AccountTokens,
 	HomeChannel,
 } from './page-objects';
+import { createTargetChannel, deleteChannel } from './utils';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
@@ -17,8 +18,17 @@ test.use({ storageState: Users.user3.state });
 test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
+	let targetChannel: string;
 
 	const token = faker.string.alpha(10);
+
+	test.beforeAll(async ({ api }) => {
+		targetChannel = await createTargetChannel(api, { members: ['user3'] });
+	});
+
+	test.afterAll(async ({ api }) => {
+		await deleteChannel(api, targetChannel);
+	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -135,6 +145,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Omnichannel', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await new AccountOmnichannel(page).goto();
+			await poHomeChannel.sidebar.waitForRoomListReady();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -144,6 +155,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Feature Preview', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await new AccountFeaturePreview(page).goto();
+			await poHomeChannel.sidebar.waitForRoomListReady();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
@@ -153,6 +165,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Accessibility & Appearance', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await new AccountAccessibility(page).goto();
+			await poHomeChannel.sidebar.waitForRoomListReady();
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
