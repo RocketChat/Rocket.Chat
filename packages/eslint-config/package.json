@@ -20,8 +20,6 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
-		"@babel/core": "~7.29.7",
-		"@babel/eslint-parser": "~7.29.9",
 		"@eslint/js": "~10.0.1",
 		"@types/eslint": "~9.6.1",
 		"eslint": "~10.7.0",
