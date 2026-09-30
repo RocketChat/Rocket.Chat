@@ -3,5 +3,6 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist"
-	}
+	},
+	"exclude": ["./src/**/*.spec.ts", "./src/**/*.spec.tsx", "./src/testUtils.tsx", "./jest.config.ts"]
 }
