@@ -17011,7 +17011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:0.6.1":
+"adm-zip@npm:0.6.1, adm-zip@npm:^0.6.1":
   version: 0.6.1
   resolution: "adm-zip@npm:0.6.1"
   checksum: 10/072af04891b33a68aba6b6979d6eec56cbe8d5bca9a349c2e78f86cc64e872e75faf56341e20541c6ffd7bcfb931187157c24f141b97ad1f18ebd8bfacbcf437
