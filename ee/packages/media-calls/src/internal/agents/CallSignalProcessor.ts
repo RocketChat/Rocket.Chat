@@ -70,7 +70,24 @@ export class UserActorSignalProcessor {
 		this.throwIfSkipped = false;
 	}
 
+	/**
+	 * Whether this call negotiates media with the client at all. A `cti` call happens on an external
+	 * device, so the client has no peer connection to offer and nothing to negotiate.
+	 */
+	private get usesWebRTC(): boolean {
+		return this.call.service === 'webrtc';
+	}
+
 	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
+		if (!this.usesWebRTC) {
+			logger.debug({
+				msg: 'Skipping webrtc offer request for a call that carries no media',
+				callId: this.callId,
+				service: this.call.service,
+			});
+			return;
+		}
+
 		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', params });
 
 		await this.sendSignal({
@@ -197,6 +214,11 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
+		// A client with no media of its own has nothing to renegotiate
+		if (!this.usesWebRTC) {
+			return;
+		}
+
 		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
 
@@ -309,7 +331,7 @@ export class UserActorSignalProcessor {
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
-		if (this.role === 'caller' && this.signed) {
+		if (this.role === 'caller' && this.signed && this.usesWebRTC) {
 			// When the signed caller's client is reached, we immediatelly start the first negotiation
 			const negotiationId = await mediaCallDirector.startFirstNegotiation(this.call);
 			if (negotiationId) {

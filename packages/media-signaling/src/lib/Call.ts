@@ -1147,6 +1147,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const { negotiationId } = signal;
 
+		// A control-only call has no peer connection to offer from. Being asked for one means the server
+		// tracked the call as something it is not, but the call itself is still perfectly usable, so it is
+		// reported rather than answered with the critical error that would tear it down.
+		if (this.controlledRemotely) {
+			this.config.logger?.error('Received a webrtc offer request on a call that carries no media.', this.service);
+			return;
+		}
+
 		if (this.shouldIgnoreWebRTC()) {
 			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId, critical: true });
 			return;
