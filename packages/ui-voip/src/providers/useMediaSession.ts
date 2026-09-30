@@ -1,7 +1,6 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession, CallState, CallContact } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
-import { useEffect, useReducer } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { defaultSessionState } from '../context/MediaCallViewContext';
 import type { ConnectionState, SessionState } from '../context/definitions';
@@ -30,158 +29,138 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 	}
 };
 
-const reducer = (
-	reducerState: SessionState,
-	action:
-		| {
-				type: 'reset';
-		  }
-		| {
-				type: 'instance_updated';
-				payload: SessionState;
-		  }
-		| {
-				type: 'status_updated';
-				payload?: { status?: UserStatus };
-		  },
-): SessionState => {
-	if (action.type === 'instance_updated') {
-		return { ...reducerState, ...action.payload };
-	}
+type AvatarUrlGetter = ReturnType<typeof useUserAvatarPath>;
 
-	if (action.type === 'reset') {
+const deriveSessionState = (instance: MediaSignalingSession | undefined, getAvatarUrl: AvatarUrlGetter): SessionState => {
+	const instanceState = instance?.getState();
+	if (!instanceState) {
 		return defaultSessionState;
 	}
 
-	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
-		return { ...reducerState, peerInfo: { ...reducerState.peerInfo, status: action.payload?.status } };
+	const {
+		state: callState,
+		localParticipant: { role, muted, held },
+	} = instanceState;
+	const state = deriveWidgetStateFromCallState(callState, role);
+
+	if (!state) {
+		return defaultSessionState;
 	}
 
-	return reducerState;
+	const connectionState = deriveConnectionStateFromCallState(callState);
+
+	if (!instanceState.confirmed) {
+		return {
+			peerInfo: {
+				displayName: instanceState.title,
+				userId: 'unknown',
+				username: undefined,
+				callerId: undefined,
+			},
+			transferredBy: undefined,
+			state,
+			muted,
+			held,
+			connectionState,
+			hidden: false,
+			remoteHeld: false,
+			remoteMuted: false,
+			callId: instanceState.tempCallId,
+			startedAt: undefined,
+			supportedFeatures: [],
+			confirmed: instanceState.confirmed,
+		};
+	}
+
+	const {
+		hidden,
+		callId,
+		activeTimestamp: startedAt,
+		features: supportedFeatures,
+		transferredBy: callTransferredBy,
+		remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+	} = instanceState;
+
+	const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
+
+	const avatarUrl = (() => {
+		if (contact.username) {
+			return getAvatarUrl({ username: contact.username });
+		}
+
+		if (contact.type === 'user' && contact.id) {
+			return getAvatarUrl({ userId: contact.id });
+		}
+
+		return undefined;
+	})();
+
+	return {
+		state,
+		peerInfo: {
+			...derivePeerInfoFromInstanceContact(contact),
+			avatarUrl,
+		},
+		transferredBy,
+		muted,
+		held,
+		connectionState,
+		hidden,
+		remoteHeld,
+		remoteMuted,
+		callId,
+		startedAt,
+		supportedFeatures,
+		confirmed: instanceState.confirmed,
+	};
+};
+
+/** A store over the session's call state whose snapshot only changes when the session reports a change. */
+const createSessionStore = (instance: MediaSignalingSession | undefined, getAvatarUrl: AvatarUrlGetter) => {
+	let snapshot: SessionState | undefined;
+
+	return {
+		subscribe: (onStoreChange: () => void) => {
+			if (!instance) {
+				return () => undefined;
+			}
+
+			const handleChange = () => {
+				snapshot = undefined;
+				onStoreChange();
+			};
+
+			const offCbs = [instance.on('sessionStateChange', handleChange), instance.on('hiddenCall', handleChange)];
+
+			// the session may have changed between the first render and this subscription
+			handleChange();
+
+			return () => {
+				offCbs.forEach((offCb) => offCb());
+			};
+		},
+		getSnapshot: (): SessionState => {
+			snapshot ??= deriveSessionState(instance, getAvatarUrl);
+			return snapshot;
+		},
+	};
 };
 
 export const useMediaSession = (instance?: MediaSignalingSession): SessionState => {
-	const [mediaSession, dispatch] = useReducer(reducer, defaultSessionState);
-
 	const getAvatarUrl = useUserAvatarPath();
 
-	useEffect(() => {
-		if (!instance) {
-			dispatch({ type: 'reset' });
-			return;
+	const { subscribe, getSnapshot } = useMemo(() => createSessionStore(instance, getAvatarUrl), [instance, getAvatarUrl]);
+
+	const sessionState = useSyncExternalStore(subscribe, getSnapshot);
+
+	const peerUserId = sessionState.peerInfo && 'userId' in sessionState.peerInfo ? sessionState.peerInfo.userId : undefined;
+	const peerStatus = useUserPresence(peerUserId)?.status;
+
+	return useMemo(() => {
+		if (!peerStatus || !sessionState.peerInfo || !('userId' in sessionState.peerInfo)) {
+			return sessionState;
 		}
 
-		const updateSessionState = () => {
-			const instanceState = instance.getState();
-			if (!instanceState) {
-				dispatch({ type: 'reset' });
-				return;
-			}
-
-			const {
-				state: callState,
-				localParticipant: { role, muted, held },
-			} = instanceState;
-			const state = deriveWidgetStateFromCallState(callState, role);
-
-			if (!state) {
-				dispatch({ type: 'reset' });
-				return;
-			}
-
-			const connectionState = deriveConnectionStateFromCallState(callState);
-
-			if (!instanceState.confirmed) {
-				dispatch({
-					type: 'instance_updated',
-					payload: {
-						peerInfo: {
-							displayName: instanceState.title,
-							userId: 'unknown',
-							username: undefined,
-							callerId: undefined,
-						},
-						transferredBy: undefined,
-						state,
-						muted,
-						held,
-						connectionState,
-						hidden: false,
-						remoteHeld: false,
-						remoteMuted: false,
-						callId: instanceState.tempCallId,
-						startedAt: undefined,
-						supportedFeatures: [],
-						confirmed: instanceState.confirmed,
-					},
-				});
-				return;
-			}
-
-			const {
-				hidden,
-				callId,
-				activeTimestamp: startedAt,
-				features: supportedFeatures,
-				transferredBy: callTransferredBy,
-				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
-			} = instanceState;
-
-			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
-
-			const avatarUrl = (() => {
-				if (contact.username) {
-					return getAvatarUrl({ username: contact.username });
-				}
-
-				if (contact.type === 'user' && contact.id) {
-					return getAvatarUrl({ userId: contact.id });
-				}
-
-				return undefined;
-			})();
-
-			const peerInfo = {
-				...derivePeerInfoFromInstanceContact(contact),
-				avatarUrl,
-			};
-
-			dispatch({
-				type: 'instance_updated',
-				payload: {
-					state,
-					peerInfo,
-					transferredBy,
-					muted,
-					held,
-					connectionState,
-					hidden,
-					remoteHeld,
-					remoteMuted,
-					callId,
-					startedAt,
-					supportedFeatures,
-					confirmed: instanceState.confirmed,
-				},
-			});
-		};
-
-		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
-
-		updateSessionState();
-
-		return () => {
-			offCbs.forEach((offCb) => offCb());
-		};
-	}, [getAvatarUrl, instance]);
-
-	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
-
-	useEffect(() => {
-		if (status?.status) {
-			dispatch({ type: 'status_updated', payload: { status: status.status } });
-		}
-	}, [status?.status]);
-
-	return mediaSession;
+		return { ...sessionState, peerInfo: { ...sessionState.peerInfo, status: peerStatus } };
+	}, [sessionState, peerStatus]);
 };
