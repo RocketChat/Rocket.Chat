@@ -1,5 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useCannedResponseFilterOptions = (): string[][] => {
@@ -15,19 +16,11 @@ export const useCannedResponseFilterOptions = (): string[][] => {
 		[t],
 	);
 
-	const [options, setOptions] = useState(defaultOptions);
+	const { data: departmentOptions = [] } = useQuery({
+		queryKey: ['livechat-departments', { text: '' }],
+		queryFn: () => getDepartments({ text: '' }),
+		select: ({ departments }) => departments.map((department) => [department._id, department.name]),
+	});
 
-	useEffect(() => {
-		const fetchData = async (): Promise<void> => {
-			const { departments } = await getDepartments({ text: '' });
-
-			const newOptions = departments.map((department: any) => [department._id, department.name]);
-
-			setOptions(defaultOptions.concat(newOptions));
-		};
-
-		fetchData();
-	}, [defaultOptions, getDepartments]);
-
-	return options;
+	return useMemo(() => defaultOptions.concat(departmentOptions), [defaultOptions, departmentOptions]);
 };
