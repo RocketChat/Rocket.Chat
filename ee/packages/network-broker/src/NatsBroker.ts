@@ -590,4 +590,20 @@ export class NatsBroker implements IBroker {
 
 		console.log('NatsBroker started successfully.');
 	}
+
+	/** Every service gets to run `stopped()` while the connection is still up. */
+	async stop(): Promise<void> {
+		const results = await Promise.allSettled([...this.dependencies.keys()].map((instance) => this.destroyService(instance)));
+		for (const result of results) {
+			if (result.status === 'rejected') {
+				console.error('NatsBroker failed to stop a service', result.reason);
+			}
+		}
+
+		this.started = false;
+
+		if (this.nc && !this.nc.isClosed()) {
+			await this.nc.drain();
+		}
+	}
 }
