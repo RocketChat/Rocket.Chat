@@ -114,17 +114,21 @@ export const splitByPriority = (
 };
 
 /**
- * Keeps a single tile from sitting alone on the last row: when there is already an overflow tile, the last visible
- * tile joins it so the row fills up.
+ * Keeps a single tile from sitting alone on the last row: when there is already an overflow tile, the visible tile
+ * that least deserves its slot — the last of them, among equals — joins it so the row fills up.
  */
 export const absorbLonelyTile = (
 	visible: StageTile[],
 	hidden: StageTile[],
 	cols: number,
+	activeSpeakerId: string | null,
+	selfId: string,
 ): { visible: StageTile[]; hidden: StageTile[] } => {
 	const count = visible.length + (hidden.length > 0 ? 1 : 0);
-	if (cols > 1 && hidden.length > 0 && count % cols === 1) {
-		return { visible: visible.slice(0, -1), hidden: [visible[visible.length - 1], ...hidden] };
+	if (cols > 1 && visible.length > 0 && hidden.length > 0 && count % cols === 1) {
+		const priority = (tile: StageTile) => tilePriority(tile, activeSpeakerId, selfId);
+		const absorbed = visible.reduce((lowest, tile) => (priority(tile) <= priority(lowest) ? tile : lowest));
+		return { visible: visible.filter((tile) => tile !== absorbed), hidden: [absorbed, ...hidden] };
 	}
 	return { visible, hidden };
 };

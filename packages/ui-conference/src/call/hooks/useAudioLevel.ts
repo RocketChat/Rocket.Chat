@@ -2,10 +2,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 
 import { getAudioLevel, subscribeToAudioLevel } from '../lib/audioLevelStore';
 
-/**
- * Guarded because callers hand over whatever they have: a preview stream, a stub in a test, an object that is
- * stream-shaped but not a MediaStream. A level indicator is not worth throwing over.
- */
+/** Guarded because callers hand over whatever they have: a preview stream, a stub in a test, nothing at all. */
 const hasAudio = (stream?: MediaStream | null): stream is MediaStream =>
 	Boolean(stream) && typeof stream?.getAudioTracks === 'function' && stream.getAudioTracks().length > 0;
 

@@ -1,6 +1,8 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
@@ -96,6 +98,7 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 
 /** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand. */
 const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWidth, sendHeight, children }: TileFrameProps) => {
+	const { t } = useTranslation();
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
 	const ringColor = Palette.stroke['stroke-highlight'].toString();
@@ -133,15 +136,17 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 			<Box className={indicatorRowStyles}>
 				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
 				{muted ? (
-					<Box className={indicatorBadgeStyles}>
+					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
 						<Icon name='mic-off' size='x16' />
+						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
 					</Box>
 				) : (
 					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (
-					<Box className={indicatorBadgeStyles}>
+					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>
 						<Icon name='pause-shape-unfilled' size='x16' />
+						<VisuallyHidden>{t('On_Hold')}</VisuallyHidden>
 					</Box>
 				)}
 			</Box>

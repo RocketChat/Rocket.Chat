@@ -18,32 +18,14 @@ export const SYSTEM_DEFAULT_DEVICE_ID = 'default';
  * Browsers list the system default twice, as the `default` alias and under its own id. The alias is kept, so picking
  * it keeps following the system; its twin is found by `groupId`, since two different devices can share a name.
  */
-const order = <T>(devices: readonly T[], getId: (device: T) => string, getGroupId: (device: T) => string | undefined): T[] => {
-	const systemDefault = devices.find((device) => getId(device) === SYSTEM_DEFAULT_DEVICE_ID);
-	const defaultGroupId = systemDefault && getGroupId(systemDefault);
+export const orderDevices = <T extends { deviceId: string; groupId?: string }>(devices: readonly T[]): T[] => {
+	const systemDefault = devices.find(({ deviceId }) => deviceId === SYSTEM_DEFAULT_DEVICE_ID);
+	const defaultGroupId = systemDefault?.groupId;
 
-	const rest = devices.filter((device) => device !== systemDefault && !(defaultGroupId && getGroupId(device) === defaultGroupId));
+	const rest = devices.filter((device) => device !== systemDefault && !(defaultGroupId && device.groupId === defaultGroupId));
 
 	return systemDefault ? [systemDefault, ...rest] : rest;
 };
-
-export const orderDevices = <T extends { deviceId: string; groupId?: string }>(devices: readonly T[]): T[] =>
-	order(
-		devices,
-		({ deviceId }) => deviceId,
-		({ groupId }) => groupId,
-	);
-
-/**
- * The same for the audio devices the app hands around, which carry only `id` and a label. Pass `groupIds` from
- * `deviceGroupsOf` to drop the alias's twin; without it nothing is collapsed, since a duplicate beats a missing device.
- */
-export const orderAudioDevices = <T extends { id: string }>(devices: readonly T[], groupIds?: Map<string, string>): T[] =>
-	order(
-		devices,
-		({ id }) => id,
-		({ id }) => groupIds?.get(id),
-	);
 
 /**
  * Whether two device ids mean the same hardware: the `default` alias and its concrete twin do. With no groups to go

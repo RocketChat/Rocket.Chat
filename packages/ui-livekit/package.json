@@ -18,17 +18,17 @@
 	},
 	"dependencies": {
 		"@livekit/components-react": "2.9.23",
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
-		"@tanstack/react-query": "~5.65.1",
-		"livekit-client": "^2.5.0"
+		"livekit-client": "^2.20.1"
 	},
 	"devDependencies": {
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.3",
 		"@types/jest": "~30.0.0",
@@ -43,10 +43,12 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
+		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-dom": "*",
 		"react-i18next": "*"

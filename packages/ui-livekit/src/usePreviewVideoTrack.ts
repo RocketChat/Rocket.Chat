@@ -46,8 +46,9 @@ export const usePreviewVideoTrack = (
 		let opened: LocalVideoTrack | undefined;
 		const initialQuality = qualityRef.current;
 
+		// Not `exact`: a camera remembered from an earlier call can be gone, and the preview should still show one.
 		void createLocalVideoTrack({
-			...(deviceId && { deviceId: { exact: deviceId } }),
+			...(deviceId && { deviceId }),
 			...(initialQuality !== 'auto' && { resolution: RESOLUTIONS[initialQuality] }),
 		})
 			.then((next) => {
@@ -72,11 +73,14 @@ export const usePreviewVideoTrack = (
 			cancelled = true;
 			// Stopped rather than left running: a preview nobody is looking at should not keep the camera light on.
 			opened?.stop();
+			// What this attempt found is not what the next one will: neither its frame nor its failure is shown again.
+			setTrack(undefined);
+			setError(false);
 		};
 	}, [enabled, deviceId, onOpened]);
 
-	// The last track stays in state after the camera goes off, stopped; turning it back on must not show it again.
-	const shownTrack = enabled && track?.mediaStreamTrack.readyState !== 'ended' ? track : undefined;
+	// The render that turns the camera off comes before the cleanup that forgets the track.
+	const shownTrack = enabled ? track : undefined;
 	const shownError = enabled && error;
 
 	// Keeps the LocalVideoTrack identity, and so the element attached to it, stable while changing resolution.

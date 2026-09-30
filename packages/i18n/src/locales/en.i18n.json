@@ -21,10 +21,6 @@
     "other": "{{count}} messages pruned"
   },
   "__count__messages_selected": "{{count}} messages selected",
-  "__count__others": {
-    "one": "{{count}} other",
-    "other": "{{count}} others"
-  },
   "__count__participants_cannot_see_the_chat": {
     "one": "{{count}} person can't see the chat",
     "other": "{{count}} people can't see the chat"
@@ -5089,6 +5085,10 @@
   "OS_Uptime": "OS uptime",
   "Other": "Other",
   "Others": "Others",
+  "Others_count": {
+    "one": "{{count}} other",
+    "other": "{{count}} others"
+  },
   "others": "others",
   "Out_of_seats": "Out of seats",
   "Outbound": "Outbound",

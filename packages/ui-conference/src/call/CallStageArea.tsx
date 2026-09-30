@@ -54,7 +54,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 	return (
 		<Box
 			is='section'
-			aria-label={t('Voice_call')}
+			aria-label={t('Video_Conference')}
 			width='full'
 			height='full'
 			backgroundColor='transparent'

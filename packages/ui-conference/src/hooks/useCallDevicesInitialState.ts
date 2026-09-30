@@ -57,6 +57,13 @@ const sanitise = (value: unknown): StoredCallPreferences => {
 		}
 	}
 
+	// Optional, so they have no default to fall back to: one that is not a device id is no choice at all.
+	for (const field of Object.values(callDeviceIdField)) {
+		if (field in stored && typeof stored[field] !== 'string') {
+			delete stored[field];
+		}
+	}
+
 	return stored as StoredCallPreferences;
 };
 

@@ -207,6 +207,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 						icons={['mic', 'mic-off']}
 						titles={self.speakingWhileMuted ? [t('You_are_muted'), t('You_are_muted')] : [t('Mute'), t('Unmute')]}
 						pressed={self.muted}
+						aria-pressed={self.muted}
 						dangerWhenPressed
 						large
 						onToggle={toggleMic}
@@ -223,6 +224,8 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 						icons={['video', 'video-off']}
 						titles={[t('Stop_camera'), t('Start_camera')]}
 						pressed={!self.cameraOn}
+						// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
+						aria-pressed={self.cameraOn}
 						dangerWhenPressed
 						large
 						onToggle={toggleCamera}
@@ -234,6 +237,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				icons={['desktop-arrow-up', 'desktop-cross']}
 				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 				pressed={self.screenSharing}
+				aria-pressed={self.screenSharing}
 				large
 				onToggle={toggleScreenShare}
 			/>

@@ -8,8 +8,8 @@ import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixt
 
 /**
  * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
- * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail — and for the
- * reader, mirrored and saying what it sends.
+ * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail. The reader's own
+ * tile is mirrored and says what it sends; see `Self`.
  */
 const meta = {
 	component: ParticipantTile,

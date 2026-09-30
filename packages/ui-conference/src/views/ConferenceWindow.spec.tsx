@@ -144,7 +144,7 @@ describe('a call that runs in this window', () => {
 	it("puts the call's stage in the window and its controls in the window's bar", () => {
 		renderNative();
 
-		expect(screen.getByRole('region', { name: 'Voice_call' })).toBeInTheDocument();
+		expect(screen.getByRole('region', { name: 'Video_Conference' })).toBeInTheDocument();
 		expect(screen.getByRole('contentinfo')).toContainElement(screen.getByRole('button', { name: 'Leave_call' }));
 	});
 

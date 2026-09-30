@@ -56,3 +56,41 @@ it('reads the list again on refresh, and tells its readers', async () => {
 
 	unsubscribe();
 });
+
+it('keeps the newest read when an older one answers last', async () => {
+	const unsubscribe = subscribeToMediaDevices(jest.fn());
+	await flush();
+
+	let answerOlder: (list: MediaDeviceInfo[]) => void = () => undefined;
+	enumerateDevices
+		.mockReturnValueOnce(
+			new Promise((resolve) => {
+				answerOlder = resolve;
+			}),
+		)
+		.mockResolvedValueOnce([namedMic]);
+	refreshMediaDevices();
+	refreshMediaDevices();
+	await flush();
+
+	answerOlder([mic]);
+	await flush();
+
+	expect(getMediaDevices()).toEqual([namedMic]);
+	unsubscribe();
+});
+
+it('tells nobody when the list read again is the same', async () => {
+	const listener = jest.fn();
+	const unsubscribe = subscribeToMediaDevices(listener);
+	await flush();
+	const before = getMediaDevices();
+
+	enumerateDevices.mockResolvedValue([{ ...mic } as MediaDeviceInfo]);
+	refreshMediaDevices();
+	await flush();
+
+	expect(listener).toHaveBeenCalledTimes(1);
+	expect(getMediaDevices()).toBe(before);
+	unsubscribe();
+});

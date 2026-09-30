@@ -10,11 +10,24 @@ export type CallDeviceMenuButtonProps = { small?: boolean } & Omit<ComponentProp
 
 /** The chevron that opens a device menu during a call, fused to the toggle beside it: `danger` while that one is red. */
 const CallDeviceMenuButton = forwardRef<HTMLButtonElement, CallDeviceMenuButtonProps>(function CallDeviceMenuButton(
-	{ small: _small, indicator, ...menuProps },
+	{ small: _small, indicator, label, ...menuProps },
 	ref,
 ) {
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
-	return <ActionButton secondary large flexShrink={1} flexGrow={0} {...menuProps} icon={indicator ?? 'chevron-up'} ref={ref} />;
+	// Named after the spread, which carries the menu's name: the same as the toggle's beside it.
+	return (
+		<ActionButton
+			secondary
+			large
+			flexShrink={1}
+			flexGrow={0}
+			{...menuProps}
+			label={label}
+			aria-label={label}
+			icon={indicator ?? 'chevron-up'}
+			ref={ref}
+		/>
+	);
 });
 
 export default CallDeviceMenuButton;

@@ -48,7 +48,7 @@ it('opens the chosen microphone, and only the microphone', async () => {
 	const { result } = renderHook(() => useCallDevicePreview({ mic: true, cam: true }, { micId: 'yeti', camId: 'brio' }));
 
 	await waitFor(() => expect(result.current.stream).toBe(stream));
-	expect(getUserMedia).toHaveBeenCalledWith({ audio: { deviceId: { exact: 'yeti' } }, video: false });
+	expect(getUserMedia).toHaveBeenCalledWith({ audio: { deviceId: 'yeti' }, video: false });
 });
 
 it('shows no stream once the microphone is off, nor the stopped one when it comes back on', async () => {

@@ -18,12 +18,15 @@ const isProducingFrames = (track: MediaStreamTrack): boolean => {
 
 /** Calls `onChange` whenever one of the stream's video tracks pauses, resumes or ends, or a track comes or goes. */
 const subscribeToVideoTracks = (stream: MediaStream, onChange: () => void): (() => void) => {
-	const trackOffs: Array<() => void> = [];
+	const trackOffs = new Map<MediaStreamTrack, () => void>();
 	const attachTrackListeners = (t: MediaStreamTrack) => {
+		if (trackOffs.has(t)) {
+			return;
+		}
 		t.addEventListener('mute', onChange);
 		t.addEventListener('unmute', onChange);
 		t.addEventListener('ended', onChange);
-		trackOffs.push(() => {
+		trackOffs.set(t, () => {
 			t.removeEventListener('mute', onChange);
 			t.removeEventListener('unmute', onChange);
 			t.removeEventListener('ended', onChange);
@@ -35,13 +38,19 @@ const subscribeToVideoTracks = (stream: MediaStream, onChange: () => void): (() 
 		if (e.track.kind === 'video') attachTrackListeners(e.track);
 		onChange();
 	};
+	// A track gone from the stream is let go, rather than held until the stream is.
+	const onRemoveTrack = (e: MediaStreamTrackEvent) => {
+		trackOffs.get(e.track)?.();
+		trackOffs.delete(e.track);
+		onChange();
+	};
 	stream.addEventListener('addtrack', onAddTrack);
-	stream.addEventListener('removetrack', onChange);
+	stream.addEventListener('removetrack', onRemoveTrack);
 
 	return () => {
 		trackOffs.forEach((off) => off());
 		stream.removeEventListener('addtrack', onAddTrack);
-		stream.removeEventListener('removetrack', onChange);
+		stream.removeEventListener('removetrack', onRemoveTrack);
 	};
 };
 
