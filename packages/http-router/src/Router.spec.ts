@@ -752,4 +752,34 @@ describe('Router', () => {
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
 	});
+	describe('OpenAPI registration', () => {
+		it('should register documented routes under their openapi path', () => {
+			const api = new Router('/api');
+			const inner = new Router('/v1');
+
+			inner.get(
+				'banners/:id',
+				{
+					authRequired: true,
+					summary: 'Get a banner by id',
+					tags: ['Banners'],
+					query: ajv.compile({ type: 'object', properties: { platform: { type: 'string' } }, required: ['platform'] }),
+					response: { 200: dummyValidator },
+				},
+				async () => ({ statusCode: 200, body: { success: true } }),
+			);
+
+			api.use(inner);
+
+			const operation = api.typedRoutes['/api/v1/banners/{id}'].get;
+
+			expect(operation.summary).toBe('Get a banner by id');
+			expect(operation.parameters).toEqual([
+				{ name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+				{ name: 'platform', in: 'query', required: true, schema: { type: 'string' } },
+			]);
+			expect(operation.responses[200].description).toBeTruthy();
+			expect(operation.security).toEqual([{ userId: [], authToken: [] }]);
+		});
+	});
 });
