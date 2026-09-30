@@ -69,10 +69,6 @@ export default async function injectInitialData() {
 				value: false,
 			},
 			{
-				_id: 'Livechat_enabled',
-				value: true,
-			},
-			{
 				_id: 'Livechat_Require_Contact_Verification',
 				value: 'never',
 			},
