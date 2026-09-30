@@ -1,0 +1,30 @@
+apps/meteor/tests/end-to-end/api/livechat/24-routing.ts
+  s_e096bfcd4c51f3::t_f973c89632566f 622
+  s_e096bfcd4c51f3::t_952add41643d5f 120
+  s_e096bfcd4c51f3::t_dc74761944c718 10
+  s_e096bfcd4c51f3::t_909875eeed940c 177
+  s_e096bfcd4c51f3::t_5200c8fe42465b 279-285,290-291
+  s_e096bfcd4c51f3::t_730e42d0dc709c 493
+  s_e096bfcd4c51f3::t_0adff2cd8c3506 178
+  s_e096bfcd4c51f3::t_4d707e5ab3913a 55
+  s_e096bfcd4c51f3::t_9cdc24849c9bb1 57-58
+  s_e096bfcd4c51f3::t_c220dfff9ac345 121
+apps/meteor/tests/data/livechat/rooms.ts
+  s_e096bfcd4c51f3::t_7ee43c2cd2c6b9 431-444
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3879d6efc3be3cd9c79a46d9df694d3e1ad916a9",
+  "prompts": {},
+  "sessions": {
+    "s_e096bfcd4c51f3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3812e2-8b47-4023-81ec-232a12a758c4",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
