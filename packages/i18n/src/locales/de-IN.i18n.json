@@ -107,8 +107,6 @@
   "Accounts_OAuth_Google_callback_url": "Google-Callback-URL",
   "Accounts_OAuth_Google_id": "Google-ID",
   "Accounts_OAuth_Google_secret": "Geheimer Google Schlüssel",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy Port",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Mindestens ein Kleinbuchstabe",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Erzwingen, dass ein Kennwort mindestens ein Kleinbuchstabe enthält.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Mindestens eine Ziffer",

@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "கூகிள் இரகசிய",
   "Accounts_OAuth_Nextcloud": "அறிந்திருந்தால் இயக்கப்பட்டது",
   "Accounts_OAuth_Nextcloud_secret": "கிளையன்ட் சீக்ரெட்",
-  "Accounts_OAuth_Proxy_host": "ப்ராக்ஸி புரவலன்",
-  "Accounts_OAuth_Proxy_services": "பதிலாள் சேவைகள்",
   "Accounts_Password_Policy_AtLeastOneLowercase": "குறைந்த ஒரு கீழ்வீட்டில்",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "ஒரு கடவுச்சொல்லை குறைந்தபட்சம் ஒரு ஸ்மால்ஸ்கே கதாபாத்திரம் வைத்திருக்க வேண்டும்.",
   "Accounts_Password_Policy_AtLeastOneNumber": "குறைந்த ஒரு எண்",

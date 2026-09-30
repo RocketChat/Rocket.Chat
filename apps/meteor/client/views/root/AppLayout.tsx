@@ -2,11 +2,6 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
-import { useAppleOAuth } from './hooks/customOAuth/useAppleOAuth';
-import { useCustomOAuth } from './hooks/customOAuth/useCustomOAuth';
-import { useGitLabOAuth } from './hooks/customOAuth/useGitLabOAuth';
-import { useGithubOAuth } from './hooks/customOAuth/useGithubOAuth';
-import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
@@ -58,11 +53,6 @@ const AppLayout = () => {
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
-	useNextcloudOAuth();
-	useGitLabOAuth();
-	useGithubOAuth();
-	useAppleOAuth();
-	useCustomOAuth();
 	useCorsSSLConfig();
 	useAutoupdate();
 	useCodeHighlight();
