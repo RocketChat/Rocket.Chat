@@ -180,7 +180,8 @@ export const addUserToDirectRoomViaMethod = async ({
 			}),
 		});
 
-	const result = typeof res.body?.message === 'string' ? JSON.parse(res.body.message) : undefined;
+	const carriesMethodReply = (res.status === 200 || res.status === 400) && typeof res.body?.message === 'string';
+	const result = carriesMethodReply ? JSON.parse(res.body.message) : undefined;
 
 	if (res.status !== 200 || res.body?.success !== true || !result || result.error) {
 		throw new RequestFailedError('method.call/addUsersToRoom', res.status, result ?? res.body);
