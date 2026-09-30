@@ -2,6 +2,7 @@ import { ConferencePreflight } from '@rocket.chat/ui-conference';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePageError from './ConferencePageError';
+import { conferencePreflightMedia } from './components/ConferencePreflightMedia';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useStartConference } from './hooks/useStartConference';
 import { closeCallWindow } from './lib/callWindow';
@@ -44,6 +45,7 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 			// put anything they like over it.
 			defaultName={isDirect ? undefined : t('Meeting_in__roomName__', { roomName: name })}
 			capabilities={capabilities}
+			media={conferencePreflightMedia}
 			// Confirming here is what creates the call, so this is the one screen whose answer about ringing can
 			// still be acted on. Only offered where a ring is possible at all: a channel or a team announces a call
 			// rather than ringing it, and a caller without `videoconf-ring-users` has their ringing dropped by the

@@ -1,7 +1,8 @@
 import type { IRoom, IUser, IVideoConferenceUser, VideoConferenceCapabilities, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import type { Badge } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
+import type { Presenter } from '../components/CallPresenting';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 /**
@@ -152,6 +153,48 @@ export type ConferenceSlots = {
 	 * different way out, so the two are not one screen with two titles.
 	 */
 	joinRefused?: ReactNode;
+	/**
+	 * The call itself, for a provider that runs it in here — handed the two places in this window's frame where its
+	 * header and its controls go, so they sit in the window's own bars rather than in a strip of their own.
+	 */
+	renderCall?: (hosts: { header: HTMLElement; controls: HTMLElement }) => ReactNode;
+	/** A panel about the call's connection, which the application opens from inside the call. */
+	diagnostics?: ReactNode;
+	/** A member's microphone level, for a call whose audio the application holds. */
+	renderMemberActivity?: (uid: string) => ReactNode;
+	/** The preflight's self-view and device choices, for a provider that can be told which devices to use. */
+	preflightMedia?: PreflightMedia;
+};
+
+/**
+ * What the preflight shows of the reader's own camera and microphone, which only the application can open.
+ *
+ * `Provider` is mounted around the preview for as long as the preflight is on screen, so the preview's devices are
+ * opened once, shared by both halves, and closed when the reader leaves the screen.
+ */
+export type PreflightMedia = {
+	Provider: ComponentType<{ capabilities: VideoConferenceCapabilities; children: ReactNode }>;
+	/** The self-view, given the placeholder to show until there is a camera — with a note for when there won't be. */
+	renderPreview: (placeholder: (note?: string) => ReactNode) => ReactNode;
+	/** The device choices under the preview. */
+	renderDevices: () => ReactNode;
+};
+
+/**
+ * A call running inside this window, as the application reports it. Absent for a provider at an address of its own,
+ * whose call this window cannot see into.
+ */
+export type ConferenceMedia = {
+	/** Members with a hand up, in the order they raised it. */
+	raisedHands: string[];
+	/** Members whose microphone is off — there is nothing to ask of them. */
+	mutedMembers: ReadonlySet<string>;
+	/** Who is sharing a screen. */
+	presenters: Presenter[];
+	/** Asks one member to mute. Absent where the call cannot carry the request. */
+	muteMember?: (memberId: string) => void;
+	/** Stops the viewer's own screen share. */
+	stopPresenting?: () => void;
 };
 
 /**

@@ -8,10 +8,12 @@ export type {
 	ConferenceCall,
 	ConferenceChatAccess,
 	ConferenceFailure,
+	ConferenceMedia,
 	ConferenceMember,
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,
+	PreflightMedia,
 	UserPickerProps,
 } from './context/definitions';
 
@@ -33,8 +35,24 @@ export { default as ConferenceErrorState } from './components/ConferenceErrorSta
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 
-export { useCallDevicesInitialState, useCallRingPreference, callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference } from './hooks/useCallDevicesInitialState';
+export {
+	useCallDevicesInitialState,
+	useCallRingPreference,
+	useNoiseSuppressionPreference,
+	useVideoQualityPreference,
+	useBackgroundBlurPreference,
+	callPreferencesStorageKey,
+} from './hooks/useCallDevicesInitialState';
+export type {
+	CallPreferences,
+	CallRingPreference,
+	CallDevices,
+	CallDeviceKind,
+	NoiseMethod,
+	VideoQuality,
+	BlurLevel,
+	BlurModel,
+} from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -64,3 +82,5 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 
 // Shared with the application's own specs, which build the same calls and members this package's do.
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
+export type { Presenter } from './components/CallPresenting';
+export type { RaisedHand } from './components/CallRaisedHands';

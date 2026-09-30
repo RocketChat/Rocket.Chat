@@ -13,12 +13,14 @@ import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
 import ConferencePageError from '../ConferencePageError';
 import ConferenceUnauthorizedPage from '../ConferenceUnauthorizedPage';
+import { conferencePreflightMedia } from '../components/ConferencePreflightMedia';
 import ConferenceUserPicker from '../components/ConferenceUserPicker';
 import { useConferenceEmbedded } from '../hooks/useConferenceEmbedded';
 import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease';
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useNativeConferenceCall } from '../hooks/useNativeConferenceCall';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
@@ -37,7 +39,7 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  *
  * The window itself reaches no server and knows no route: this is the whole of the wiring between it and the
  * workspace — the reads, the five things that can be done to a call, the effects that keep a participant
- * counted as present, and the three parts of the window the product has to build itself.
+ * counted as present, and the parts of the window only the product can build — the chat, and a call that runs in here.
  */
 const ConferenceProvider = ({ callId, children }: { callId: string; children: ReactNode }) => {
 	const { call, room, conference } = useConferenceEmbedded(callId);
@@ -100,6 +102,17 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 		// The same thing hanging up does for a provider that runs the call in here: report the departure and
 		// close the window, rather than leave a dead frame open and the roster claiming they are still in it.
 		onLeave: leaveNow,
+	});
+
+	// For a provider that runs the call in here: joining it, and what the window is told about it.
+	const native = useNativeConferenceCall({
+		callId,
+		rid: room.rid,
+		call,
+		native: conference.embedded && !conference.url,
+		embedded: conference.embedded,
+		panel,
+		onEnded: leaveNow,
 	});
 
 	const thread = useMemo(
@@ -189,11 +202,14 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				loading: <PageLoading />,
 				unauthorized: <ConferenceUnauthorizedPage />,
 				joinRefused: <ConferencePageError />,
+				preflightMedia: conferencePreflightMedia,
+				...native.slots,
 			},
 			viewer: { uid, useRealName, displayAvatars, canRingUsers },
 			thread,
 			panel,
 			provider,
+			media: native.media,
 		}),
 		[
 			actions,
@@ -202,6 +218,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			conference,
 			canRingUsers,
 			displayAvatars,
+			native,
 			panel,
 			provider,
 			renderMemberStatus,

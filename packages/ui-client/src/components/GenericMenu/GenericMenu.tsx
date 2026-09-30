@@ -76,7 +76,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							key={`${title}-${key}`}
 						>
 							{(item) => (
-								<MenuItem key={item.id}>
+								<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
 									<GenericMenuItem {...item} />
 								</MenuItem>
 							)}
@@ -95,7 +95,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					{...props}
 				>
 					{handleItems(items).map((item) => (
-						<MenuItem key={item.id}>
+						<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
 							<GenericMenuItem {...item} />
 						</MenuItem>
 					))}
