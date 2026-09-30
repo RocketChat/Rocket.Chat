@@ -61,7 +61,7 @@ export type VideoConferenceEndpoints = {
 	 * What the client needs to reach the media server itself: where it is, a token for this user, and the room to
 	 * join. Only `service` for a provider that isn't LiveKit, which has no transport of ours to describe.
 	 */
-	'/v1/video-conference.livekit.transport.config': {
+	'/v1/video-conference.callConfig': {
 		GET: (params: { callId: string }) => {
 			service: string;
 			livekit?: { serverUrl: string; token: string; roomName: string };

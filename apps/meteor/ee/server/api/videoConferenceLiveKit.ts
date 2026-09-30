@@ -13,12 +13,12 @@ import { createLiveKitAccessToken, getLiveKitConfig, isLiveKitFullyConfigured } 
 
 const logger = new Logger('VideoConference/LiveKit/API');
 
-type TransportConfigResponse = {
+type CallConfigResponse = {
 	service: string;
 	livekit?: { serverUrl: string; token: string; roomName: string };
 };
 
-const transportConfigResponseSchema = ajv.compile<TransportConfigResponse>({
+const callConfigResponseSchema = ajv.compile<CallConfigResponse>({
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
@@ -49,13 +49,13 @@ const livekitRoomNameFor = (callId: string) => `mc-${callId}`;
 
 /** Credentials for the caller's own LiveKit call; other providers answer with their name only. */
 API.v1.get(
-	'video-conference.livekit.transport.config',
+	'video-conference.callConfig',
 	{
 		authRequired: true,
 		query: callIdQuerySchema,
 		rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 },
 		response: {
-			200: transportConfigResponseSchema,
+			200: callConfigResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
@@ -74,6 +74,7 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
+		// the only scenario that needs extra configuration for now is for livekit conferences, so we return early for other providers.
 		if (call.providerName !== 'livekit') {
 			return API.v1.success({ service: call.providerName });
 		}
