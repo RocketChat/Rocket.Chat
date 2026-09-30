@@ -18,6 +18,7 @@
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {
+			"dependsOn": ["^build"],
 			"outputs": ["coverage/**"]
 		},
 		"lint": {
