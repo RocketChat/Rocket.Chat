@@ -15,9 +15,9 @@ export function getLiveKitConfig(): LiveKitConfig {
 
 	return {
 		enabled: settings.get<boolean>('VideoConf_LiveKit_Enabled'),
-		url: settings.get<string>('VideoConf_LiveKit_Url') || '',
-		apiKey: settings.get<string>('VideoConf_LiveKit_Api_Key') || '',
-		apiSecret: settings.get<string>('VideoConf_LiveKit_Api_Secret') || '',
+		url: (settings.get<string>('VideoConf_LiveKit_Url') || '').trim(),
+		apiKey: (settings.get<string>('VideoConf_LiveKit_Api_Key') || '').trim(),
+		apiSecret: (settings.get<string>('VideoConf_LiveKit_Api_Secret') || '').trim(),
 		// A lifetime of zero or less would mint tokens that are already expired.
 		tokenTtlHours: tokenTtlHours > 0 ? tokenTtlHours : DEFAULT_TOKEN_TTL_HOURS,
 	};

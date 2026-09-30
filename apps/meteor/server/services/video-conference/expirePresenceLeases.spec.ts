@@ -12,6 +12,13 @@ const at = (offsetMs: number) => new Date(ts.getTime() + offsetMs);
 /** The one canonical record, as in `leaveCall.spec`: reads are copies of it and the write stubs mutate it. */
 let fixture: VideoConference;
 
+const markMemberLeft = async (_callId: string, uid: string, leftAt: Date) => {
+	const member = fixture.users.find((user) => user._id === uid);
+	if (member) {
+		(member as IVideoConferenceUser).leftAt = leftAt;
+	}
+};
+
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
 	// A real cursor is async-iterable, which is how the sweep walks it.
@@ -20,12 +27,7 @@ const VideoConferenceModelMock = {
 			yield cloneFixture(fixture);
 		},
 	})),
-	setUserLeftById: sinon.stub().callsFake(async (_callId: string, uid: string, leftAt: Date) => {
-		const member = fixture.users.find((user) => user._id === uid);
-		if (member) {
-			(member as IVideoConferenceUser).leftAt = leftAt;
-		}
-	}),
+	setUserLeftById: sinon.stub().callsFake(markMemberLeft),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
 		Object.assign(fixture, data);
 	}),
@@ -62,7 +64,9 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 		);
-		// `resetAll` only clears history — restore the single-call cursor for the tests that replace it.
+		// `resetAll` only clears history — restore the behaviours that some tests replace.
+		VideoConferenceModelMock.setUserLeftById.resetBehavior();
+		VideoConferenceModelMock.setUserLeftById.callsFake(markMemberLeft);
 		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
 			async *[Symbol.asyncIterator]() {
 				yield cloneFixture(fixture);

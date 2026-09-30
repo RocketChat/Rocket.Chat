@@ -11,9 +11,12 @@ import { LIVEKIT_CAPABILITIES } from './capabilities';
  */
 const proxyquire = require('proxyquire');
 
-const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire.noCallThru().load('../../../../server/lib/videoConfProviders', {
-	'../settings': { settings: { get: () => undefined } },
-});
+const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire
+	.noCallThru()
+	.noPreserveCache()
+	.load('../../../../server/lib/videoConfProviders', {
+		'../settings': { settings: { get: () => undefined } },
+	});
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');
 
