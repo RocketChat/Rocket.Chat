@@ -1,11 +1,11 @@
 name: UI Preview
 
-# Builds the standalone web client for a PR and publishes it to ghcr.io, where Rocket.Chat Desktop pulls it
-# anonymously (`rocketchat://ui-preview?pr=<number>`).
+# Builds the standalone web client for a PR (or develop) and publishes it to ghcr.io, where Rocket.Chat Desktop
+# pulls it anonymously (`rocketchat://ui-preview?pr=<number>`). A PR's preview is removed with its label or on close.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled]
-    paths:
+  push:
+    branches: [develop]
+    paths: &paths
       - 'apps/meteor/client/**'
       - 'apps/meteor/app/**'
       - 'apps/meteor/ee/client/**'
@@ -14,10 +14,13 @@ on:
       - 'packages/**'
       - 'ee/packages/**'
       - 'yarn.lock'
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, closed]
+    paths: *paths
 
 concurrency:
-  # Adding any other label must not cancel a preview build in progress.
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}${{ github.event.action == 'labeled' && github.event.label.name != 'preview' && format('-{0}', github.run_id) || '' }}
+  # Adding or removing any other label must not cancel a preview build in progress.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name != 'preview' && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
 
 env:
@@ -31,10 +34,13 @@ jobs:
     name: Build UI preview
     # Opt-in through the `preview` label. Publishing needs CR_PAT, which fork and Dependabot PRs do not receive.
     if: >-
-      contains(github.event.pull_request.labels.*.name, 'preview') &&
-      (github.event.action != 'labeled' || github.event.label.name == 'preview') &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.actor != 'dependabot[bot]'
+      github.event_name == 'push' || (
+        contains(github.event.pull_request.labels.*.name, 'preview') &&
+        github.event.action != 'unlabeled' && github.event.action != 'closed' &&
+        (github.event.action != 'labeled' || github.event.label.name == 'preview') &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.actor != 'dependabot[bot]'
+      )
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -96,18 +102,30 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           REPO: ${{ github.repository }}
         run: |
+          # `pr-<n>-<sha>` keeps every build of a PR findable after `pr-<n>` moves on, so cleanup can remove them all.
+          if [ -n "$NUMBER" ]; then tags="pr-$NUMBER,pr-$NUMBER-$HEAD_SHA,$HEAD_SHA"; else tags=develop; fi
           echo "$CR_PAT" | oras login ghcr.io -u "$CR_USER" --password-stdin
           cd ui-preview
-          oras push "$IMAGE:pr-$NUMBER,$HEAD_SHA" \
+          oras push "$IMAGE:$tags" \
             --artifact-type application/vnd.rocketchat.ui-preview.v1 \
             --annotation "org.opencontainers.image.source=https://github.com/$REPO" \
             --annotation "org.opencontainers.image.revision=$HEAD_SHA" \
             ui-preview.tar.gz:application/vnd.oci.image.layer.v1.tar+gzip
 
+      - name: Delete superseded develop builds
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.CR_PAT }}
+          PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
+        run: |
+          gh api --paginate "$PACKAGE" -q '.[] | select(.metadata.container.tags == []) | .id' |
+            xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
+
       - name: Comment on PR
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -134,4 +152,44 @@ jobs:
             gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -f body="$body"
           else
             gh api "repos/$REPO/issues/$NUMBER/comments" -f body="$body"
+          fi
+
+  remove:
+    name: Remove UI preview
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository && (
+        (github.event.action == 'unlabeled' && github.event.label.name == 'preview') ||
+        (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview'))
+      )
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Delete from ghcr.io
+        env:
+          GH_TOKEN: ${{ secrets.CR_PAT }}
+          PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh api --paginate "$PACKAGE" \
+            -q ".[] | select(any(.metadata.container.tags[]; . == \"pr-$NUMBER\" or startswith(\"pr-$NUMBER-\"))) | .id" |
+            xargs -r -I{} gh api -X DELETE "$PACKAGE/{}"
+
+      - name: Update PR comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          marker='<!-- ui-preview -->'
+          body="$marker
+          ### 🖥️ UI preview
+
+          Removed from \`$IMAGE\`. Add the \`preview\` label again to publish a new one."
+
+          comment_id=$(gh api "repos/$REPO/issues/$NUMBER/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -f body="$body"
           fi
