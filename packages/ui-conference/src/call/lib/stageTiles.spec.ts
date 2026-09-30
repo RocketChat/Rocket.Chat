@@ -57,19 +57,19 @@ describe('absorbLonelyTile', () => {
 	it('leaves a full last row alone', () => {
 		const visible = tiles(8);
 		const hidden = [tile('x')];
-		expect(absorbLonelyTile(visible, hidden, 3)).toEqual({ visible, hidden });
+		expect(absorbLonelyTile(visible, hidden, 3, 'me')).toEqual({ visible, hidden });
 	});
 
 	// Six visible and an overflow in three columns leaves the overflow alone on its row.
 	it('folds the last visible tile into the overflow', () => {
-		const result = absorbLonelyTile(tiles(6), [tile('x')], 3);
+		const result = absorbLonelyTile(tiles(6), [tile('x')], 3, 'me');
 		expect(result.visible.map(({ id }) => id)).toEqual(['p0', 'p1', 'p2', 'p3', 'p4']);
 		expect(result.hidden.map(({ id }) => id)).toEqual(['p5', 'x']);
 	});
 
 	// Two screens ahead of four visible tiles and an overflow in three columns: the overflow would sit alone.
 	it('counts the cells before the tiles', () => {
-		const result = absorbLonelyTile(tiles(4), [tile('x')], 3, 2);
+		const result = absorbLonelyTile(tiles(4), [tile('x')], 3, 'me', 2);
 		expect(result.visible.map(({ id }) => id)).toEqual(['p0', 'p1', 'p2']);
 		expect(result.hidden.map(({ id }) => id)).toEqual(['p3', 'x']);
 	});
@@ -77,12 +77,27 @@ describe('absorbLonelyTile', () => {
 	// Screens can fill the grid, leaving the overflow tile the only one for people.
 	it('has nothing to fold when no tile is visible', () => {
 		const hidden = tiles(2);
-		expect(absorbLonelyTile([], hidden, 3, 9)).toEqual({ visible: [], hidden });
+		expect(absorbLonelyTile([], hidden, 3, 'me', 9)).toEqual({ visible: [], hidden });
+	});
+
+	// The tiles that won their slots with a camera, or by being the reader, are not the ones to give one up.
+	it('folds the tile that least deserves its slot, not whichever came last', () => {
+		const visible = [
+			tile('me'),
+			tile('ada'),
+			tile('bob'),
+			tile('cam', { cameraStream: stream }),
+			tile('eve'),
+			tile('late', { cameraStream: stream }),
+		];
+		const result = absorbLonelyTile(visible, [tile('x')], 3, 'me');
+		expect(result.visible.map(({ id }) => id)).toEqual(['me', 'ada', 'bob', 'cam', 'late']);
+		expect(result.hidden.map(({ id }) => id)).toEqual(['eve', 'x']);
 	});
 
 	it('does nothing without an overflow to fold into', () => {
 		const visible = tiles(4);
-		expect(absorbLonelyTile(visible, [], 3)).toEqual({ visible, hidden: [] });
+		expect(absorbLonelyTile(visible, [], 3, 'me')).toEqual({ visible, hidden: [] });
 	});
 });
 

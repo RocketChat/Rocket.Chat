@@ -882,7 +882,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-i5jt5w"
-                style="grid-template-columns: repeat(5, -6.4px); grid-template-rows: repeat(1, 0px);"
+                style="grid-template-columns: repeat(5, 0px); grid-template-rows: repeat(1, 0px);"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-15z62zt"

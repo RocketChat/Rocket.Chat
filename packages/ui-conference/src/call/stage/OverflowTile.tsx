@@ -36,7 +36,7 @@ const OverflowTile = ({ hidden }: OverflowTileProps) => {
 			</Box>
 			{hidden.length > 2 && (
 				<Box fontScale='c2' marginBlockStart={4} color='font-secondary-info'>
-					{t('__count__others', { count: hidden.length })}
+					{t('Others_count', { count: hidden.length - 2 })}
 				</Box>
 			)}
 		</Box>

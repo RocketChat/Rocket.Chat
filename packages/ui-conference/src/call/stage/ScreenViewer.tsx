@@ -13,7 +13,7 @@ const ScreenViewer = ({ stream, label }: ScreenViewerProps) => {
 	const [videoRef] = usePlayMediaStream(stream);
 	return (
 		<Box className={mainStreamStyles}>
-			<video ref={videoRef} preload='metadata' muted style={{ width: '100%', height: '100%', objectFit: 'contain' }}>
+			<video ref={videoRef} playsInline preload='metadata' muted style={{ width: '100%', height: '100%', objectFit: 'contain' }}>
 				<track kind='captions' />
 			</video>
 			<Box className={ownBadgeStyles} fontScale='c1'>

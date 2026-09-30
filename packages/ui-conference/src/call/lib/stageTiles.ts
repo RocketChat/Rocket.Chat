@@ -69,18 +69,21 @@ export const splitByPriority = (tiles: StageTile[], capacity: number, selfId: st
 };
 
 /**
- * Keeps a single tile from sitting alone on the last row: when there is already an overflow tile, the last visible
- * tile joins it so the row fills up. `leadingCells` are the grid's cells before the tiles, such as shared screens.
+ * Keeps a single tile from sitting alone on the last row: when there is already an overflow tile, the visible tile
+ * that least deserves its slot — the last of them, among equals — joins it so the row fills up. `leadingCells` are
+ * the grid's cells before the tiles, such as shared screens.
  */
 export const absorbLonelyTile = (
 	visible: StageTile[],
 	hidden: StageTile[],
 	cols: number,
+	selfId: string,
 	leadingCells = 0,
 ): { visible: StageTile[]; hidden: StageTile[] } => {
 	const count = leadingCells + visible.length + (hidden.length > 0 ? 1 : 0);
 	if (cols > 1 && visible.length > 0 && hidden.length > 0 && count % cols === 1) {
-		return { visible: visible.slice(0, -1), hidden: [visible[visible.length - 1], ...hidden] };
+		const absorbed = visible.reduce((lowest, tile) => (tilePriority(tile, selfId) <= tilePriority(lowest, selfId) ? tile : lowest));
+		return { visible: visible.filter((tile) => tile !== absorbed), hidden: [absorbed, ...hidden] };
 	}
 	return { visible, hidden };
 };

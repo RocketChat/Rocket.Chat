@@ -42,6 +42,7 @@ const TilePicture = ({ displayName, avatarUrl, cameraStream, avatarSize, mirrore
 	return cameraActive ? (
 		<video
 			ref={videoRef}
+			playsInline
 			preload='metadata'
 			muted
 			style={{

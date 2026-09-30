@@ -28,11 +28,15 @@ const GridLayout = ({ screens, tiles, selfId }: GridLayoutProps) => {
 		[tiles, screens.length, selfId],
 	);
 
-	const [measureRef, layout] = useTileGridLayout(screens.length + split.visible.length + (split.hidden.length > 0 ? 1 : 0));
-	const { cols, rows, cellWidth, cellHeight } = layout;
+	const [measureRef, layoutFor] = useTileGridLayout();
+	const { cols: measuredCols } = layoutFor(screens.length + split.visible.length + (split.hidden.length > 0 ? 1 : 0));
 
-	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, cols, screens.length);
+	const { visible, hidden } = absorbLonelyTile(split.visible, split.hidden, measuredCols, selfId, screens.length);
 	const cellCount = screens.length + visible.length + (hidden.length > 0 ? 1 : 0);
+
+	// Laid out again for the cells actually drawn, in the same columns: an absorbed tile takes its row with it.
+	const layout = layoutFor(cellCount, measuredCols);
+	const { cols, rows, cellWidth, cellHeight } = layout;
 
 	const { width, height } = gridBox(layout);
 
