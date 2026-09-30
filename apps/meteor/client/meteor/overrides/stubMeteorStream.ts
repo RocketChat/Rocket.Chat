@@ -2,6 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { trackMeteorLogin } from './ddpSdkCollectionBridge';
 import { type DDPMessage, parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
@@ -144,6 +145,7 @@ function installStubMeteorStream(): void {
 				// SECOND `loginWithToken` on the same socket — extra ~100-200ms on
 				// every page load and a divergent token in `sdk.account.user`.
 				if (frame.method === 'login' && typeof frame.id === 'string') {
+					trackMeteorLogin(frame.id);
 					ddp.onResult(frame.id, (payload) => {
 						if ('error' in payload && payload.error) return;
 						if (payload.result) adoptAccountFromMeteorLoginResult(payload.result);
@@ -216,38 +218,15 @@ function installStubMeteorStream(): void {
 			firstConnectHandled = true;
 			return;
 		}
+		// Belt-and-suspenders for the EE force-logout path, where the force_logout stream message can be
+		// lost while ddp-streamer closes the socket: forces the next _pollStoredLoginToken to re-validate
+		// the stored token. Done once per reconnect rather than per 'disconnected', which fires on every
+		// failed retry and would queue a login per attempt for the server to receive the moment it is back.
+		(Accounts as unknown as { _lastLoginTokenWhenPolled?: string | null })._lastLoginTokenWhenPolled = null;
 		try {
 			fire('reset');
 		} catch (err) {
 			console.warn('[stubMeteorStream] reset on SDK reconnect failed', err);
-		}
-	});
-
-	// Belt-and-suspenders: when the underlying SDK socket disconnects, also reset
-	// `Accounts._lastLoginTokenWhenPolled` so the next `_pollStoredLoginToken`
-	// (whether triggered by the 3s polling timer or an external poke like a test's
-	// `loginByUserState`) is forced to compare against `null` and fire a fresh
-	// login if the stored token still exists. This covers the gap where neither
-	// `useForceLogout` (stream message lost in the broker race) nor
-	// `_reconnectStopper`'s `makeClientLoggedOut` ran — without this, a stored
-	// token equal to the cached `_lastLoginTokenWhenPolled` short-circuits the
-	// poller and the user sits with stale credentials until the next genuine
-	// token rotation.
-	// Belt-and-suspenders for the EE force-logout path. The existing recovery
-	// mechanisms (useForceLogout via stream message; _reconnectStopper via
-	// fire('reset') calling makeClientLoggedOut on auth failure) BOTH clear
-	// _lastLoginTokenWhenPolled when they run, but in microservices the
-	// notify-user/<uid>/force_logout stream traverses
-	// rocketchat-main → broker → ddp-streamer → WS while the close fires
-	// directly on ddp-streamer — so the stream message can be lost mid-flight.
-	// Wire a direct sdk.connection.on('disconnected') listener that nulls
-	// _lastLoginTokenWhenPolled so the next _pollStoredLoginToken call always
-	// compares against null and fires a login if a token is stored.
-	sdk.connection.on('disconnected', () => {
-		try {
-			(Accounts as unknown as { _lastLoginTokenWhenPolled?: string | null })._lastLoginTokenWhenPolled = null;
-		} catch {
-			// ignore — we just want the poller to wake up next time
 		}
 	});
 }
