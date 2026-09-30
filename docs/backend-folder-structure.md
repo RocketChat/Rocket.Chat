@@ -50,7 +50,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `startup/` | Boot-time configuration and one-off initialization (`initialData.ts`, `rateLimiter.js`, `robots.js`, `migrations/`). |
 | `routes/` | Non-REST HTTP routes (avatar serving, etc.). |
 | `database/` | Mongo connection utilities (`trash`, `readSecondaryPreferred`, transaction helpers). |
-| `modules/` | Larger self-contained subsystems (`apps/` — the Apps-Engine host: bridges and converters, core-apps, listeners, notifications, streamer). |
+| `modules/` | Larger self-contained subsystems: `apps/` (the Apps-Engine host: bridges and converters) and `core-apps/`. |
 | `features/` | Feature-flag style subsystems (e.g. `EmailInbox/`). |
 | `configuration/` | Runtime configuration glue (OAuth, CAS, LDAP wiring). |
 | `email/`, `ufs/`, `oauth2-server/`, `deasync/` | Infrastructure kept as-is: mailer transport, Upload-File-System storage engine, OAuth2 provider implementation, deasync shim. |
