@@ -25,7 +25,8 @@ import { clickableItem } from '../../../../../lib/clickableItem';
 export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
-	dcount: number;
+	// Absent until the discussion receives its first message
+	dcount: number | undefined;
 	dlm: Date | undefined;
 	formatDate: (date: Date) => string;
 	username: IDiscussionMessage['u']['username'];
@@ -66,7 +67,7 @@ const DiscussionListItem = ({
 							<MessageMetricsItemLabel>
 								{dcount && dlm
 									? t('__count__replies__date__', { count: dcount, date: formatDate(dlm) })
-									: t('__count__replies', { count: dcount })}
+									: t('__count__replies', { count: dcount ?? 0 })}
 							</MessageMetricsItemLabel>
 						</MessageMetricsItem>
 					</MessageMetrics>
