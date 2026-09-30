@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { MarkupInteractionContext } from '.';
 import Markup from './Markup';
 
-jest.mock('highlight.js', () => ({
+jest.mock('highlight.js/lib/common', () => ({
 	highlightElement: (): void => undefined,
 }));
 

@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/common';
 import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 

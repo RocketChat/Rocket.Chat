@@ -222,7 +222,27 @@ export default defineConfig({
 			{ find: /^swiper\/modules\/zoom\.css$/, replacement: join(swiperRoot, 'modules/zoom.css') },
 			...workspaceSourceAliases,
 		],
-		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage'],
+		// Workspace sources resolve dependencies from the root node_modules, while apps/meteor keeps its own copies
+		// (hoistingLimits), so anything both import would otherwise ship twice.
+		dedupe: [
+			'react',
+			'react-dom',
+			'i18next',
+			'react-i18next',
+			'@tanstack/react-query',
+			'@rocket.chat/fuselage',
+			'@rocket.chat/fuselage-forms',
+			'@rocket.chat/fuselage-hooks',
+			'@rocket.chat/fuselage-tokens',
+			'@rocket.chat/styled',
+			'react-hook-form',
+			'react-error-boundary',
+			'date-fns',
+			'dompurify',
+			'highlight.js',
+			'clsx',
+			'fast-deep-equal',
+		],
 	},
 	define: {
 		'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
