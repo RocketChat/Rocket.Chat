@@ -154,8 +154,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud ID",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
   "Accounts_OAuth_Nextcloud_URL": "URL сервера Nextcloud",
-  "Accounts_OAuth_Proxy_host": "Прокси хост",
-  "Accounts_OAuth_Proxy_services": "Прокси сервисы",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Хотя бы одну букву в нижнем регистре",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Убедитесь, что пароль содержит хотя бы одну букву в нижнем регистре.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Хотя бы одну цифру",

@@ -99,8 +99,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "เปิดใช้ OAuth แล้ว",
   "Accounts_OAuth_Nextcloud_secret": "ความลับของลูกค้า",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "บริการพร็อกซี่",
   "Accounts_Password_Policy_AtLeastOneLowercase": "น้อยหนึ่งตัว",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "บังคับให้รหัสผ่านมีอักขระตัวพิมพ์เล็กอย่างน้อยหนึ่งตัว",
   "Accounts_Password_Policy_AtLeastOneNumber": "น้อยหนึ่งหมายเลข",

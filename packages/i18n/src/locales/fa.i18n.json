@@ -126,8 +126,6 @@
   "Accounts_OAuth_Nextcloud_id": "شناسه ",
   "Accounts_OAuth_Nextcloud_secret": "رمز مشتری",
   "Accounts_OAuth_Nextcloud_URL": "نشانی اینترنتی سرور بعدی",
-  "Accounts_OAuth_Proxy_host": "میزبان پروکسی",
-  "Accounts_OAuth_Proxy_services": "خدمات پروکسی",
   "Accounts_Password_Policy_AtLeastOneLowercase": "حداقل یک حرف کوچک",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "پسورد باید شامل حداقل یک حرف کوچک باشد.",
   "Accounts_Password_Policy_AtLeastOneNumber": "حداقل یک عدد",

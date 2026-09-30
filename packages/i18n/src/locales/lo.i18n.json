@@ -110,8 +110,6 @@
   "Accounts_OAuth_Google_secret": "ກູໂກ Secret",
   "Accounts_OAuth_Nextcloud": "OAuth ເປີດໃຊ້ວຽກ",
   "Accounts_OAuth_Nextcloud_secret": "ລັບລູກຄ້າ",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy services",
   "Accounts_Password_Policy_AtLeastOneLowercase": "ຢູ່ທີ່ນ້ອຍໆນ້ອຍໆ",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "ບັງຄັບໃຊ້ວ່າລະຫັດຜ່ານມີຢ່າງຫນ້ອຍຫນຶ່ງຕົວອັກສອນຕົວນ້ອຍ.",
   "Accounts_Password_Policy_AtLeastOneNumber": "ຢູ່ທີ່ນ້ອຍຫນຶ່ງຈໍານວນ",

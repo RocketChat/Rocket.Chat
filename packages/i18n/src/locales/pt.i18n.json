@@ -125,8 +125,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud id",
   "Accounts_OAuth_Nextcloud_secret": "Segredo",
   "Accounts_OAuth_Nextcloud_URL": "URL do servidor Nextcloud",
-  "Accounts_OAuth_Proxy_host": "Host de Proxy",
-  "Accounts_OAuth_Proxy_services": "Serviços de Proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Pelo menos uma minúscula",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Impor que a senha contenha pelo menos um caractere minúsculo.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Pelo menos um numero",
