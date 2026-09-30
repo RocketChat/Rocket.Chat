@@ -43,7 +43,7 @@ Changing any of them re-evaluates the provider registration; no restart is neede
   nothing that asks the SFU who is in a room. Presence is held by the same
   [leases](../video-conference-persistent-chat/README.md#knowing-who-is-still-in-the-call) every provider uses. Asking
   LiveKit as well meant two records that could disagree, and the disagreement is worse than the staleness it would fix.
-- **Credentials follow conference access, not room access.** `video-conference.livekit.transport.config` authorizes
+- **Credentials follow conference access, not room access.** `video-conference.callConfig` authorizes
   with `canAccessConference`, like every conference endpoint. A member added from outside the room (the third person
   in a DM call) has no subscription to check, and checking for one refused them their own call.
 
