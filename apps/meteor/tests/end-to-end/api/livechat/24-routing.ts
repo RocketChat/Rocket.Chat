@@ -50,10 +50,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(botUser.user);
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+			await deleteUser(botUser.user);
 		});
 
 		it('should assign conversation to bot', async () => {

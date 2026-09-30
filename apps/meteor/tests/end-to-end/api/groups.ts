@@ -2130,9 +2130,9 @@ describe('[Groups]', () => {
 				}),
 			);
 			await deleteTeam(credentials, team.name);
-			await deleteUser(testUser);
 			await updatePermission('create-c', ['admin', 'user']);
 			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
+			await deleteUser(testUser);
 		});
 
 		it('should change the type of the group to a channel', async () => {
