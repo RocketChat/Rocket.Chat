@@ -439,7 +439,12 @@ export const closeOpenRoomsServedBy = async (agentId: string): Promise<void> => 
 		.query({ 'agents[]': agentId, 'open': true, 'count': 100 })
 		.expect(200);
 
-	await Promise.all((body.rooms as IOmnichannelRoom[]).map((room) => closeOmnichannelRoom(room._id)));
+	const rooms = body.rooms as IOmnichannelRoom[];
+	await Promise.all(rooms.map((room) => closeOmnichannelRoom(room._id)));
+
+	if (body.total > rooms.length) {
+		await closeOpenRoomsServedBy(agentId);
+	}
 };
 
 export const bulkCreateLivechatRooms = async (
