@@ -597,6 +597,55 @@ describe('NatsBroker.destroyService', () => {
 	});
 });
 
+describe('NatsBroker.stop', () => {
+	it('should stop every service before closing the connection', async () => {
+		const { broker, nc, accounts, deviceManagement, files } = await start();
+		const stopped = [accounts, deviceManagement, files].map((service) => jest.spyOn(service, 'stopped'));
+
+		await broker.stop();
+
+		stopped.forEach((spy) => expect(spy).toHaveBeenCalled());
+		expect(nc.stoppedServices).toEqual(expect.arrayContaining(['settings', 'license', 'accounts', 'device-management', 'files']));
+		expect(nc.isClosed()).toBe(true);
+	});
+
+	it('should still stop the other services and close the connection when one fails to stop', async () => {
+		const { broker, nc, accounts, files } = await start();
+		jest.spyOn(accounts, 'stopped').mockRejectedValueOnce(new Error('stuck'));
+		const filesStopped = jest.spyOn(files, 'stopped');
+		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		await broker.stop();
+
+		expect(filesStopped).toHaveBeenCalled();
+		expect(nc.isClosed()).toBe(true);
+		expect(consoleError).toHaveBeenCalledWith('NatsBroker failed to stop a service', expect.any(Error));
+
+		consoleError.mockRestore();
+	});
+
+	it('should let a start still waiting on dependencies finish without registering anything', async () => {
+		jest.useFakeTimers();
+		const nc = new FakeNatsConnection();
+		(connect as jest.Mock).mockResolvedValue(nc);
+		// times the start out before the clock runs out, should stop fail to release it
+		const broker = new NatsBroker({}, 'node-a', 6_500);
+		await broker.createService(new Accounts());
+
+		const starting = broker.start().then(
+			() => 'started',
+			(e: unknown) => e,
+		);
+		await jest.advanceTimersByTimeAsync(0);
+
+		await broker.stop();
+		await jest.advanceTimersByTimeAsync(7_000);
+
+		expect(await starting).toBe('started');
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(false);
+	});
+});
+
 describe('NatsBroker.emitToOne', () => {
 	/** A second node on the same NATS connection, running only another instance of device-management. */
 	const startSecondNode = async (nc: FakeNatsConnection): Promise<void> => {

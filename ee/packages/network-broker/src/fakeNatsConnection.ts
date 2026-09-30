@@ -34,6 +34,10 @@ export class FakeNatsConnection {
 		this.closed = true;
 	}
 
+	async drain(): Promise<void> {
+		this.closed = true;
+	}
+
 	subscribe(
 		subject: string,
 		{ callback, queue }: { callback: (error: null, msg: Msg) => void; queue?: string },
