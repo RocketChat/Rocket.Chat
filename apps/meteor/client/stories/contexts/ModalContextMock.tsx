@@ -16,13 +16,13 @@ const ModalContextMock = ({ children }: ModalContextMockProps) => {
 		(): ContextType<typeof ModalContext> =>
 			context?.modal
 				? {
+						...context,
 						modal: {
 							...context.modal,
 							setModal: (modal): void => {
 								logAction('setModal', modal);
 							},
 						},
-						currentModal: context.currentModal,
 					}
 				: undefined,
 		[context],

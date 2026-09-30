@@ -24,6 +24,7 @@ import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
+	CurrentModalContextValue,
 	Device,
 	DeviceContext,
 	LoginService,
@@ -44,6 +45,7 @@ import {
 	UserContext,
 	ActionManagerContext,
 	ModalContext,
+	CurrentModalContext,
 	UserPresenceContext,
 	AuthenticationContext,
 	ToastMessagesContext,
@@ -241,14 +243,12 @@ export class MockedAppRootBuilder {
 
 	private subscription: SubscriptionWithRoom | undefined = undefined;
 
+	private currentModal: CurrentModalContextValue = { component: null };
+
 	private modal: ModalContextValue = {
-		currentModal: { component: null },
 		modal: {
 			setModal: (modal) => {
-				this.modal = {
-					...this.modal,
-					currentModal: { component: modal },
-				};
+				this.currentModal = { component: modal };
 				this.events.emit('update-modal');
 			},
 		},
@@ -675,7 +675,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withOpenModal(modal: ReactNode) {
-		this.modal.currentModal = { component: modal };
+		this.currentModal = { component: modal };
 
 		return this;
 	}
@@ -831,7 +831,9 @@ export class MockedAppRootBuilder {
 
 		const subscribeToModal = (onStoreChange: () => void) => this.events.on('update-modal', onStoreChange);
 
-		const getModalSnapshot = () => this.modal;
+		const getModalSnapshot = () => this.currentModal;
+
+		const { modal } = this;
 
 		void i18n.init();
 
@@ -848,7 +850,7 @@ export class MockedAppRootBuilder {
 				};
 			}, []);
 
-			const modal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
+			const currentModal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
 
 			return (
 				<QueryClientProvider client={queryClient}>
@@ -867,44 +869,46 @@ export class MockedAppRootBuilder {
 												<AuthenticationContext.Provider value={authentication}>
 													<MockedDeviceContext {...deviceContext}>
 														<ModalContext.Provider value={modal}>
-															<AuthorizationContext.Provider value={authorization}>
-																{/* <EmojiPickerProvider>
+															<CurrentModalContext.Provider value={currentModal}>
+																<AuthorizationContext.Provider value={authorization}>
+																	{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-																<UserPresenceContext.Provider value={userPresence}>
-																	<ActionManagerContext.Provider
-																		value={{
-																			generateTriggerId: () => '',
-																			emitInteraction: () => Promise.reject(new Error('not implemented')),
-																			getInteractionPayloadByViewId: () => undefined,
-																			handleServerInteraction: () => undefined,
-																			off: () => undefined,
-																			on: () => undefined,
-																			openView: () => undefined,
-																			disposeView: () => undefined,
-																			notifyBusy: () => undefined,
-																			notifyIdle: () => undefined,
-																		}}
-																	>
-																		<VideoConfContext.Provider value={videoConf}>
-																			{/* <CallProvider>
+																	<UserPresenceContext.Provider value={userPresence}>
+																		<ActionManagerContext.Provider
+																			value={{
+																				generateTriggerId: () => '',
+																				emitInteraction: () => Promise.reject(new Error('not implemented')),
+																				getInteractionPayloadByViewId: () => undefined,
+																				handleServerInteraction: () => undefined,
+																				off: () => undefined,
+																				on: () => undefined,
+																				openView: () => undefined,
+																				disposeView: () => undefined,
+																				notifyBusy: () => undefined,
+																				notifyIdle: () => undefined,
+																			}}
+																		>
+																			<VideoConfContext.Provider value={videoConf}>
+																				{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																			{wrappers.reduce<ReactNode>(
-																				(children, wrapper) => wrapper(children),
-																				<>
-																					{children}
-																					{modal.currentModal.component}
-																				</>,
-																			)}
-																			{/* </OmnichannelProvider>
+																				{wrappers.reduce<ReactNode>(
+																					(children, wrapper) => wrapper(children),
+																					<>
+																						{children}
+																						{currentModal.component}
+																					</>,
+																				)}
+																				{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																		</VideoConfContext.Provider>
-																	</ActionManagerContext.Provider>
-																</UserPresenceContext.Provider>
-																{/*
+																			</VideoConfContext.Provider>
+																		</ActionManagerContext.Provider>
+																	</UserPresenceContext.Provider>
+																	{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-															</AuthorizationContext.Provider>
+																</AuthorizationContext.Provider>
+															</CurrentModalContext.Provider>
 														</ModalContext.Provider>
 													</MockedDeviceContext>
 												</AuthenticationContext.Provider>

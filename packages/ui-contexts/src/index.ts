@@ -4,7 +4,7 @@ export { AuthorizationContext, type AuthorizationContextValue } from './Authoriz
 export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
-export { ModalContext, type ModalContextValue } from './ModalContext';
+export { CurrentModalContext, type CurrentModalContextValue, ModalContext, type ModalContextValue } from './ModalContext';
 export * from './RouterContext';
 export {
 	RoomToolboxContext,
