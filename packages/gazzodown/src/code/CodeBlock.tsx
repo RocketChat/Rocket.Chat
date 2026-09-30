@@ -2,11 +2,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import hljs from 'highlight.js';
 import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import hljs, { isHighlightReady, loadHighlightLanguages } from './highlight';
 
 export type CodeBlockProps = {
 	language?: string;
@@ -67,10 +67,29 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 			return;
 		}
 
-		hljs.highlightElement(element);
-		if (!element.classList.contains('hljs')) {
-			element.classList.add('hljs');
+		const highlight = () => {
+			hljs.highlightElement(element);
+			if (!element.classList.contains('hljs')) {
+				element.classList.add('hljs');
+			}
+		};
+
+		if (isHighlightReady(language)) {
+			highlight();
+			return;
 		}
+
+		let cancelled = false;
+		loadHighlightLanguages(language).then(
+			() => {
+				if (!cancelled) highlight();
+			},
+			(error) => console.error(error),
+		);
+
+		return () => {
+			cancelled = true;
+		};
 	}, [language, content]);
 
 	const handleCopy = useCallback(async () => {
