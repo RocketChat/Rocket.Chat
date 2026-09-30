@@ -75,4 +75,20 @@ describe('SettingField', () => {
 
 		expect(dispatchMock).toHaveBeenCalledWith([{ _id: 'Test_Setting', value: true }]);
 	});
+
+	it('should show the new value before it is persisted', async () => {
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+		render(<SettingField settingId='Test_Setting' />, {
+			wrapper: mockAppRoot()
+				.wrap((children) => <EditableSettingsProvider>{children}</EditableSettingsProvider>)
+				.withSetting('Test_Setting', false, settingStructure)
+				.build(),
+		});
+
+		await user.click(screen.getByRole('checkbox'));
+
+		expect(screen.getByRole('checkbox')).toBeChecked();
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
 });

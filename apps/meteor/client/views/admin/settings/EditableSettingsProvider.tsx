@@ -46,25 +46,28 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 				}));
 			},
 			mutate: (changes) => {
-				set(({ state, initialState }) => ({
-					state: initialState
-						.filter((x) => !defaultOmit.includes(x._id))
-						.map((persisted): EditableSetting => {
-							const current = state.find(({ _id }) => _id === persisted._id);
-							if (!current) throw new Error(`Setting ${persisted._id} not found`);
+				set(({ state, initialState }) => {
+					const currentById = new Map(state.map((setting) => [setting._id, setting]));
+					return {
+						state: initialState
+							.filter((x) => !defaultOmit.includes(x._id))
+							.map((persisted): EditableSetting => {
+								const current = currentById.get(persisted._id);
+								if (!current) throw new Error(`Setting ${persisted._id} not found`);
 
-							const change = changes.find(({ _id }) => _id === current._id);
+								const change = changes.find(({ _id }) => _id === current._id);
 
-							if (!change) {
-								return current;
-							}
+								if (!change) {
+									return current;
+								}
 
-							return {
-								...current,
-								...change,
-							};
-						}),
-				}));
+								return {
+									...current,
+									...change,
+								};
+							}),
+					};
+				});
 			},
 		})),
 	);
