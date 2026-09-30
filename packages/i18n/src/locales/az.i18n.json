@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google Gizli",
   "Accounts_OAuth_Nextcloud": "OAuth enabled",
   "Accounts_OAuth_Nextcloud_secret": "Müştəri sirri",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "Proxy xidmətləri",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Ən kiçik bir kiçik kassada",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Bir parol ən azı bir kiçik kəlməni ehtiva edir.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Ən az bir ədəd",

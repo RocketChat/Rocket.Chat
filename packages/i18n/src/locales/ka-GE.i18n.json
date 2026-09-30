@@ -127,8 +127,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud-ის ID",
   "Accounts_OAuth_Nextcloud_secret": "კლიენტის კოდი",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud-ის სერვერ-ის მისამართი",
-  "Accounts_OAuth_Proxy_host": "პროქსი ჰოსტი",
-  "Accounts_OAuth_Proxy_services": "პროქსი სერვისები",
   "Accounts_Password_Policy_AtLeastOneLowercase": "მინიმუმ 1 პატარა ასო",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "დარწმუნდით რომ პაროლი შეიცავს მინიმუმ 1 პატარა ასოს.",
   "Accounts_Password_Policy_AtLeastOneNumber": "მინიმუმ 1 ციფრი",

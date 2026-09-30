@@ -111,8 +111,6 @@
   "Accounts_OAuth_Google_secret": "Google秘密",
   "Accounts_OAuth_Nextcloud": "OAuth已启用",
   "Accounts_OAuth_Nextcloud_secret": "客户秘密",
-  "Accounts_OAuth_Proxy_host": "代理主机",
-  "Accounts_OAuth_Proxy_services": "代理服务",
   "Accounts_Password_Policy_AtLeastOneLowercase": "至少一个小写",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "强制密码至少包含一个小写字符。",
   "Accounts_Password_Policy_AtLeastOneNumber": "至少一个号码",

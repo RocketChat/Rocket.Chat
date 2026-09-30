@@ -153,8 +153,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud azonosító",
   "Accounts_OAuth_Nextcloud_secret": "Ügyféltitok",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud-kiszolgáló URL",
-  "Accounts_OAuth_Proxy_host": "Proxykiszolgáló",
-  "Accounts_OAuth_Proxy_services": "Proxyszolgáltatások",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Legalább egy kisbetű",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Kényszerítés, hogy a jelszó legalább egy kisbetűs karaktert tartalmazzon.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Legalább egy szám",

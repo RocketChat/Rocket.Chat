@@ -171,8 +171,6 @@
   "Accounts_OAuth_Nextcloud_id": "ID w serwisie Nextcloud",
   "Accounts_OAuth_Nextcloud_secret": "Tajny klucz klienta",
   "Accounts_OAuth_Nextcloud_URL": "URL serwera Nextcloud",
-  "Accounts_OAuth_Proxy_host": "Host proxy",
-  "Accounts_OAuth_Proxy_services": "Usługi Proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Co najmniej jedna mała litera",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Wymuś, aby hasło zawierało co najmniej jedną małą literę.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Przynajmniej jedna cyfra",

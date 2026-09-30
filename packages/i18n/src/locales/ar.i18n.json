@@ -138,8 +138,6 @@
   "Accounts_OAuth_Nextcloud_id": "معرف Nextcloud",
   "Accounts_OAuth_Nextcloud_secret": "كلمة سر العميل",
   "Accounts_OAuth_Nextcloud_URL": "عنوان URL لخادم Nextcloud",
-  "Accounts_OAuth_Proxy_host": "مضيف الوكيل",
-  "Accounts_OAuth_Proxy_services": "خدمات الوكيل",
   "Accounts_Password_Policy_AtLeastOneLowercase": "حرف صغير واحد على الأقل",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "فرض احتواء كلمة المرور على حرف واحد صغير على الأقل.",
   "Accounts_Password_Policy_AtLeastOneNumber": "رقم واحد على الأقل",
