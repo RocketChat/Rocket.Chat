@@ -48,4 +48,14 @@ describe('deviceMenuSelection', () => {
 
 		expect(deviceMenuSelection({ devices, selectedIds: { audioinput: 'built-in' } }, 'audioinput').selected?.id).toBe('default');
 	});
+
+	it("does not take the speaker's `default` for the microphone's", () => {
+		const devices = [
+			device('default', 'Default - Built-in', 'g1'),
+			device('built-in', 'Built-in', 'g1'),
+			device('default', 'Default - Headphones', 'g2', 'audiooutput'),
+		];
+
+		expect(deviceMenuSelection({ devices, selectedIds: { audioinput: 'built-in' } }, 'audioinput').selected?.id).toBe('default');
+	});
 });

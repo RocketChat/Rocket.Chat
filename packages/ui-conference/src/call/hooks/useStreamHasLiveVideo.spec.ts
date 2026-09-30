@@ -11,8 +11,16 @@ class FakeTrack extends EventTarget {
 
 	readyState: MediaStreamTrackState = 'live';
 
+	deviceId: string;
+
+	/** A camera names its device; a processor's output has none. */
+	constructor(deviceId = 'facetime') {
+		super();
+		this.deviceId = deviceId;
+	}
+
 	getSettings() {
-		return { deviceId: 'facetime' };
+		return { deviceId: this.deviceId };
 	}
 
 	set(change: 'mute' | 'unmute' | 'ended') {
@@ -35,6 +43,11 @@ class FakeStream extends EventTarget {
 	add(track: FakeTrack) {
 		this.tracks.push(track);
 		this.dispatchEvent(Object.assign(new Event('addtrack'), { track }));
+	}
+
+	remove(track: FakeTrack) {
+		this.tracks = this.tracks.filter((t) => t !== track);
+		this.dispatchEvent(Object.assign(new Event('removetrack'), { track }));
 	}
 }
 
@@ -78,6 +91,39 @@ it('shows a camera added to the stream, and follows it from then on', () => {
 
 	act(() => track.set('mute'));
 	expect(result.current).toBe(false);
+});
+
+it('stops showing a camera taken out of the stream, and stops listening to it', () => {
+	const track = new FakeTrack();
+	const stream = new FakeStream();
+	stream.tracks.push(track);
+	const removeEventListener = jest.spyOn(track, 'removeEventListener');
+
+	const { result } = render(stream);
+	expect(result.current).toBe(true);
+
+	act(() => stream.remove(track));
+	expect(result.current).toBe(false);
+	expect(removeEventListener).toHaveBeenCalledWith('mute', expect.any(Function));
+});
+
+// A processed track reports `muted` until its first frame and may never announce the unmute, so it is not trusted.
+it('shows a muted track with no device behind it', () => {
+	const track = new FakeTrack('');
+	track.muted = true;
+	const stream = new FakeStream();
+	stream.tracks.push(track);
+
+	expect(render(stream).result.current).toBe(true);
+});
+
+it('does not show a disabled track, device or not', () => {
+	const track = new FakeTrack('');
+	track.enabled = false;
+	const stream = new FakeStream();
+	stream.tracks.push(track);
+
+	expect(render(stream).result.current).toBe(false);
 });
 
 it('has no video without a stream', () => {

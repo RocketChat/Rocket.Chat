@@ -22,8 +22,12 @@ export const selectedDevice = (rows: DeviceRow[], chosenId: string | undefined, 
 	return rows.find((row) => isSameDevice(row.id, chosenId, groupIds));
 };
 
-/** One kind's rows and the one of them in use. */
+/**
+ * One kind's rows and the one of them in use. Grouped within the kind: `default` is the id of the system's
+ * microphone and of its speaker alike, and the two are different hardware.
+ */
 export const deviceMenuSelection = ({ devices, selectedIds }: Pick<DeviceSelection, 'devices' | 'selectedIds'>, kind: MediaDeviceKind) => {
 	const rows = deviceMenuRows(devices, kind);
-	return { rows, selected: selectedDevice(rows, selectedIds[kind], deviceGroupsOf(devices)) };
+	const groups = deviceGroupsOf(devices.filter((device) => device.kind === kind));
+	return { rows, selected: selectedDevice(rows, selectedIds[kind], groups) };
 };

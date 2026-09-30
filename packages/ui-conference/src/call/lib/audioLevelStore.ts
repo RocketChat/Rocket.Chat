@@ -28,12 +28,27 @@ const startMeter = (stream: MediaStream, ctx: AudioContext): Meter => {
 	const buf = new Uint8Array(analyser.fftSize);
 	let lastUpdate = 0;
 	let rafId = 0;
+	let stopped = false;
+
+	// A context made before the reader has interacted with the page starts suspended, and measures nothing until
+	// resumed — which the browser only allows from an interaction.
+	const resume = () => {
+		if (ctx.state === 'suspended') {
+			void ctx.resume().catch(() => undefined);
+		}
+	};
+	resume();
+	document.addEventListener('pointerdown', resume, true);
+	document.addEventListener('keydown', resume, true);
 
 	const meter: Meter = {
 		level: 0,
 		listeners: new Set(),
 		stop: () => {
+			stopped = true;
 			cancelAnimationFrame(rafId);
+			document.removeEventListener('pointerdown', resume, true);
+			document.removeEventListener('keydown', resume, true);
 			try {
 				source.disconnect();
 			} catch {
@@ -53,7 +68,10 @@ const startMeter = (stream: MediaStream, ctx: AudioContext): Meter => {
 				meter.listeners.forEach((listener) => listener());
 			}
 		}
-		rafId = requestAnimationFrame(tick);
+		// A listener above may have been the last to leave, stopping the meter mid-tick.
+		if (!stopped) {
+			rafId = requestAnimationFrame(tick);
+		}
 	};
 	rafId = requestAnimationFrame(tick);
 
@@ -69,7 +87,14 @@ export const subscribeToAudioLevel = (stream: MediaStream, listener: () => void)
 
 	let meter = meters.get(stream);
 	if (!meter) {
-		meter = startMeter(stream, new AC());
+		const ctx = new AC();
+		try {
+			meter = startMeter(stream, ctx);
+		} catch {
+			// Something stream-shaped that is not a MediaStream; a level indicator is not worth throwing over.
+			void ctx.close().catch(() => undefined);
+			return () => undefined;
+		}
 		meters.set(stream, meter);
 	}
 	const current = meter;
