@@ -887,6 +887,7 @@ export class MockedAppRootBuilder {
 																				on: () => undefined,
 																				openView: () => undefined,
 																				disposeView: () => undefined,
+																				isBusy: () => false,
 																				notifyBusy: () => undefined,
 																				notifyIdle: () => undefined,
 																			}}

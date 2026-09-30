@@ -10,6 +10,7 @@ export interface IActionManager {
 	on(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
 	off(viewId: string, listener: (data: any) => any): void;
 	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
+	isBusy(): boolean;
 	notifyBusy(): void;
 	notifyIdle(): void;
 	generateTriggerId(appId: string | undefined): string;

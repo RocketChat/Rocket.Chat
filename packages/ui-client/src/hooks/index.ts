@@ -2,6 +2,7 @@ export * from './useDefaultSettingFeaturePreviewList';
 export * from './useDocumentTitle';
 export * from './useDontAskAgain';
 export * from './useDropdownVisibility';
+export * from './useEmitterValue';
 export * from './useEmbeddedLayout';
 export * from './useFeaturePreview';
 export * from './useFeaturePreviewList';

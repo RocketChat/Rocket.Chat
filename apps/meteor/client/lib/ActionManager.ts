@@ -22,6 +22,8 @@ export class ActionManager implements IActionManager {
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
 
+	protected busy = false;
+
 	protected appIdByTriggerId = new Map<string, string | undefined>();
 
 	protected viewInstances = new Map<
@@ -58,11 +60,17 @@ export class ActionManager implements IActionManager {
 		return this.events.off(eventName, listener);
 	}
 
+	public isBusy() {
+		return this.busy;
+	}
+
 	public notifyBusy() {
+		this.busy = true;
 		this.events.emit('busy', { busy: true });
 	}
 
 	public notifyIdle() {
+		this.busy = false;
 		this.events.emit('busy', { busy: false });
 	}
 
