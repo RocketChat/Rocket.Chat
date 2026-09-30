@@ -255,6 +255,15 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
+		// If anonymous users have access we don't need to check permissions for logged in users.
+		const hasPermission = settings.get<boolean>('Accounts_AllowAnonymousRead')
+			? true
+			: userId && !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid));
+
+		if (!hasPermission) {
+			return API.v1.unauthorized('Not allowed');
+		}
+
 		// Non-embedded calls are joinable anonymously, as long as the room is accessible (Accounts_AllowAnonymousRead)
 		// Embedded calls only work for logged in users, so `canAccessRoomIdAsync` is a fallback for older providers
 		// and respects the `Accounts_AllowAnonymousRead` setting internally.
@@ -264,13 +273,6 @@ API.v1.post(
 
 		if (!canAccessConference) {
 			return API.v1.failure('invalid-params');
-		}
-
-		if (
-			!settings.get<boolean>('Accounts_AllowAnonymousRead') &&
-			(!userId || !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid)))
-		) {
-			return API.v1.forbidden('Not allowed');
 		}
 
 		let url: string | undefined;
