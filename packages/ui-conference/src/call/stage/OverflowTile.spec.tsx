@@ -13,7 +13,7 @@ void i18n.use(initReactI18next).init({
 
 const people = (count: number) => Array.from({ length: count }, (_, i) => ({ displayName: `Person ${i}` }));
 
-const renderTile = (hidden: { displayName: string }[]) =>
+const renderTile = (hidden: { displayName: string; avatarUrl?: string }[]) =>
 	render(
 		<I18nextProvider i18n={i18n}>
 			<OverflowTile hidden={hidden} />
@@ -25,6 +25,14 @@ it('counts only the people who have no face shown', () => {
 	renderTile(people(4));
 
 	expect(screen.getByText('2 others')).toBeInTheDocument();
+});
+
+// The faces are the only place these people appear on the stage, so they are named, avatar or not.
+it('names the faces it shows', () => {
+	renderTile([{ displayName: 'Ada', avatarUrl: '/avatar/ada' }, { displayName: 'Grace' }, { displayName: 'Alan' }]);
+
+	expect(screen.getByRole('img', { name: 'Ada' })).toBeInTheDocument();
+	expect(screen.getByRole('img', { name: 'Grace' })).toBeInTheDocument();
 });
 
 it('says "1 other" for a single one behind the faces', () => {

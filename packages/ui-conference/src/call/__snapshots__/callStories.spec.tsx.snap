@@ -12,7 +12,7 @@ exports[`call stories renders AudioDevicePicker MicrophoneOn without crashing 1`
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          aria-label="Device settings"
+          aria-label="Device options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_0_"
           label="Device options"
@@ -44,7 +44,7 @@ exports[`call stories renders AudioDevicePicker Muted without crashing 1`] = `
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          aria-label="Device settings"
+          aria-label="Device options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_2_"
           label="Device options"
@@ -89,7 +89,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="true"
-                  aria-label="Device settings"
+                  aria-label="Device options"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                   id="react-aria-_r_4_"
                   label="Device options"
@@ -109,6 +109,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               >
                 <button
                   aria-label="Mute"
+                  aria-pressed="false"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                   label="Mute"
                   title="Mute"
@@ -132,7 +133,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="true"
-                  aria-label="Camera"
+                  aria-label="Camera options"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                   id="react-aria-_r_6_"
                   label="Camera options"
@@ -152,6 +153,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               >
                 <button
                   aria-label="Camera"
+                  aria-pressed="false"
                   class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                   label="Camera"
                   title="Start camera"
@@ -168,6 +170,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
             </div>
             <button
               aria-label="Share screen"
+              aria-pressed="false"
               class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
               label="Share screen"
               title="Share screen"
@@ -224,7 +227,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Device settings"
+                aria-label="Device options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_8_"
                 label="Device options"
@@ -244,6 +247,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
             >
               <button
                 aria-label="Mute"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
                 title="Mute"
@@ -267,7 +271,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Camera"
+                aria-label="Camera options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_a_"
                 label="Camera options"
@@ -287,6 +291,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
             >
               <button
                 aria-label="Camera"
+                aria-pressed="true"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Camera"
                 title="Stop camera"
@@ -303,6 +308,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
           </div>
           <button
             aria-label="Share screen"
+            aria-pressed="true"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share screen"
             title="Stop sharing screen"
@@ -358,7 +364,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Device settings"
+                aria-label="Device options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_c_"
                 label="Device options"
@@ -378,6 +384,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
             >
               <button
                 aria-label="Mute"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
                 title="Mute"
@@ -401,7 +408,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Camera"
+                aria-label="Camera options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_e_"
                 label="Camera options"
@@ -421,6 +428,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
             >
               <button
                 aria-label="Camera"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                 label="Camera"
                 title="Start camera"
@@ -437,6 +445,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
           </div>
           <button
             aria-label="Share screen"
+            aria-pressed="false"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share screen"
             title="Share screen"
@@ -492,7 +501,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Device settings"
+                aria-label="Device options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_g_"
                 label="Device options"
@@ -512,6 +521,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             >
               <button
                 aria-label="Mute"
+                aria-pressed="true"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
                 title="Unmute"
@@ -535,7 +545,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Camera"
+                aria-label="Camera options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_i_"
                 label="Camera options"
@@ -555,6 +565,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             >
               <button
                 aria-label="Camera"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                 label="Camera"
                 title="Start camera"
@@ -571,6 +582,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
           </div>
           <button
             aria-label="Share screen"
+            aria-pressed="false"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share screen"
             title="Share screen"
@@ -626,7 +638,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Device settings"
+                aria-label="Device options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_k_"
                 label="Device options"
@@ -646,6 +658,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             >
               <button
                 aria-label="Mute"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 label="Mute"
                 title="Mute"
@@ -669,7 +682,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="true"
-                aria-label="Camera"
+                aria-label="Camera options"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
                 id="react-aria-_r_m_"
                 label="Camera options"
@@ -689,6 +702,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             >
               <button
                 aria-label="Camera"
+                aria-pressed="false"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
                 label="Camera"
                 title="Start camera"
@@ -705,6 +719,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
           </div>
           <button
             aria-label="Share screen"
+            aria-pressed="false"
             class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share screen"
             title="Share screen"
@@ -761,12 +776,7 @@ exports[`call stories renders CallHeader Named without crashing 1`] = `
             00
           </time>
           <span
-            class="rcx-box rcx-box--full rcx-css-tq5v57"
-          >
-            |
-          </span>
-          <span
-            class="rcx-box rcx-box--full rcx-css-1te28na"
+            class="rcx-box rcx-box--full rcx-css-mja23g"
           >
             Weekly sync
           </span>
@@ -816,7 +826,7 @@ exports[`call stories renders CallStageArea Alone without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;"
       >
         <section
-          aria-label="Voice call"
+          aria-label="Conference call"
           class="rcx-box rcx-box--full rcx-css-174yuuf"
         >
           <div
@@ -871,7 +881,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;"
       >
         <section
-          aria-label="Voice call"
+          aria-label="Conference call"
           class="rcx-box rcx-box--full rcx-css-174yuuf"
         >
           <div
@@ -950,6 +960,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-t6ng91"
+                        title="Microphone muted"
                       >
                         <i
                           aria-hidden="true"
@@ -957,6 +968,11 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                         >
                           
                         </i>
+                        <div
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          Microphone muted
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1005,6 +1021,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-t6ng91"
+                        title="On hold"
                       >
                         <i
                           aria-hidden="true"
@@ -1012,6 +1029,11 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
                         >
                           
                         </i>
+                        <div
+                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                        >
+                          On hold
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1038,7 +1060,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          aria-label="Camera"
+          aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_o_"
           label="Camera options"
@@ -1070,7 +1092,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          aria-label="Camera"
+          aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_q_"
           label="Camera options"
@@ -1132,7 +1154,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         <button
           aria-expanded="false"
           aria-haspopup="true"
-          aria-label="Camera"
+          aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_s_"
           label="Camera options"
@@ -1220,6 +1242,7 @@ exports[`call stories renders ParticipantTile Held without crashing 1`] = `
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-t6ng91"
+                title="On hold"
               >
                 <i
                   aria-hidden="true"
@@ -1227,6 +1250,11 @@ exports[`call stories renders ParticipantTile Held without crashing 1`] = `
                 >
                   
                 </i>
+                <div
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  On hold
+                </div>
               </div>
             </div>
           </div>
@@ -1268,6 +1296,7 @@ exports[`call stories renders ParticipantTile Muted without crashing 1`] = `
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-t6ng91"
+                title="Microphone muted"
               >
                 <i
                   aria-hidden="true"
@@ -1275,6 +1304,11 @@ exports[`call stories renders ParticipantTile Muted without crashing 1`] = `
                 >
                   
                 </i>
+                <div
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  Microphone muted
+                </div>
               </div>
             </div>
           </div>

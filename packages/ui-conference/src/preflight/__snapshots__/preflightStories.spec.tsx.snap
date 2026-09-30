@@ -19,7 +19,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_0_"
               title="MacBook Pro Microphone"
@@ -54,7 +54,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_2_"
               title="MacBook Pro Speakers"
@@ -89,7 +89,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Camera"
+              aria-label="Camera: FaceTime HD Camera"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_4_"
               title="FaceTime HD Camera"
@@ -144,7 +144,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_6_"
               title="MacBook Pro Microphone"
@@ -179,7 +179,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_8_"
               title="MacBook Pro Speakers"
@@ -214,7 +214,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Camera"
+              aria-label="Camera: FaceTime HD Camera"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_a_"
               title="FaceTime HD Camera"
@@ -269,7 +269,7 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Microphone"
+              aria-label="Microphone: MacBook Pro Microphone"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_c_"
               title="MacBook Pro Microphone"
@@ -304,7 +304,7 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
             <button
               aria-expanded="false"
               aria-haspopup="true"
-              aria-label="Speaker"
+              aria-label="Speaker: MacBook Pro Speakers"
               class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_e_"
               title="MacBook Pro Speakers"

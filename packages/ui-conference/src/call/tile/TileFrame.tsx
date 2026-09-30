@@ -1,6 +1,8 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { TileParticipant } from '../lib/stageTiles';
 
@@ -62,25 +64,31 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 };
 
 /** Everything a tile says over the picture: who it is, and whether their microphone is off or they are on hold. */
-const TileFrame = ({ displayName, muted, held, children }: TileFrameProps) => (
-	<Box className={tileStyles}>
-		{children}
-		<Box className={labelStyles} fontScale='p1'>
-			{displayName}
+const TileFrame = ({ displayName, muted, held, children }: TileFrameProps) => {
+	const { t } = useTranslation();
+
+	return (
+		<Box className={tileStyles}>
+			{children}
+			<Box className={labelStyles} fontScale='p1'>
+				{displayName}
+			</Box>
+			<Box className={indicatorRowStyles}>
+				{muted && (
+					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
+						<Icon name='mic-off' size='x16' />
+						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
+					</Box>
+				)}
+				{held && (
+					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>
+						<Icon name='pause-shape-unfilled' size='x16' />
+						<VisuallyHidden>{t('On_Hold')}</VisuallyHidden>
+					</Box>
+				)}
+			</Box>
 		</Box>
-		<Box className={indicatorRowStyles}>
-			{muted && (
-				<Box className={indicatorBadgeStyles}>
-					<Icon name='mic-off' size='x16' />
-				</Box>
-			)}
-			{held && (
-				<Box className={indicatorBadgeStyles}>
-					<Icon name='pause-shape-unfilled' size='x16' />
-				</Box>
-			)}
-		</Box>
-	</Box>
-);
+	);
+};
 
 export default TileFrame;
