@@ -1,0 +1,49 @@
+ee/packages/xmpp-server/tests/end-to-end/helper/xmpp-client.ts
+  s_fb4a3714124a13::t_ee34200edb0d32 319-320
+  s_fb4a3714124a13::t_2e0804ca6a15f0 240-243
+  s_fb4a3714124a13::t_aa16d1e78e8b7e 36-40
+  s_fb4a3714124a13::t_a03faa034f6a71 170-172
+  s_fb4a3714124a13::t_cefcc762956920 321
+docs/features/xmpp-server.md
+  s_fb4a3714124a13::t_5fd92633cf3de6 163-175
+  s_fb4a3714124a13::t_109b479fad1e6b 176
+  s_fb4a3714124a13::t_651ee99f316c02 52,131
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_fb4a3714124a13::t_914fa8a22f62ec 93-105
+  s_fb4a3714124a13::t_15825ec2d615da 173,257-269
+  s_fb4a3714124a13::t_3fe3794afcd61e 20
+  s_fb4a3714124a13::t_a35d50541db3ee 162-172
+  s_fb4a3714124a13::t_1615c8f8f8e66b 24
+  s_fb4a3714124a13::t_368c68b0c86330 174
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_fb4a3714124a13::t_131745d0142883 80-102
+  s_fb4a3714124a13::t_3118139e11fc26 15
+  s_fb4a3714124a13::t_9e0c665e14137a 21
+  s_fb4a3714124a13::t_9d3a5ae92834de 103
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_fb4a3714124a13::t_6149ec467350cc 25
+  s_fb4a3714124a13::t_ff1e9e3d5e0df0 195-207
+  s_fb4a3714124a13::t_7f43723a1a9984 113-125,208
+  s_fb4a3714124a13::t_cfcab22c759ead 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "0f5b19086c4044d72af74b6edb67d2a6d542906b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_fb4a3714124a13": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "698e2b08-6381-45e0-86fc-f30be71690f2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
