@@ -1,0 +1,28 @@
+apps/meteor/ee/server/api/videoConferenceLiveKit.ts
+  s_0c348313b0334a::t_3db11273fce292 16,21
+  h_4c386397e672f4 77
+  s_0c348313b0334a::t_7e421d872f21eb 52,58
+packages/rest-typings/src/v1/videoConference/index.ts
+  s_0c348313b0334a::t_2edec121db021b 64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f81faaac848d9d81802500611af4cefdf1bb9333",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0c348313b0334a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3d091d57-c0df-48c5-81eb-77fc20e550c7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
