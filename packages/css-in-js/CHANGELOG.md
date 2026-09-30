@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.33.2-rc.0
+
+### Patch Changes
+
+- ([#41880](https://github.com/RocketChat/Rocket.Chat/pull/41880)) Moved `@rocket.chat/css-in-js` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.33.1 release. The exported API and its declarations are unchanged.
+
+- <details><summary>Updated dependencies [131bbceaff27f5c3f0156fdb21a4b2a79129c851, 5e8a7cb1432e5078ca87360a4c0ae83a0f21dd7b]:</summary>
+  - @rocket.chat/css-supports@0.31.26-rc.0
+  - @rocket.chat/stylis-logical-props-middleware@0.31.26-rc.0
+
+  </details>
+
 ## 0.33.1
 
 ### Patch Changes

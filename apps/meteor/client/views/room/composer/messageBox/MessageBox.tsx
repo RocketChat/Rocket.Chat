@@ -89,7 +89,7 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(
+	const { initialValue, persistLocal, flushDraft, discardDraft } = useDraft(
 		room._id,
 		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
 		tmid,
@@ -100,7 +100,10 @@ const MessageBox = ({
 		(node: HTMLTextAreaElement) => {
 			if (!chat.composer) {
 				chat.setComposerAPI(
-					createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }),
+					createComposerAPI(node, persistLocal, discardDraft, initialValue, quoteChainLimit, messageComposerRef, {
+						rid: room._id,
+						tmid,
+					}),
 				);
 			}
 
@@ -113,7 +116,7 @@ const MessageBox = ({
 				chat.setComposerAPI();
 			};
 		},
-		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
+		[chat, discardDraft, flushDraft, initialValue, persistLocal, quoteChainLimit, room._id, tmid],
 	);
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');
@@ -146,7 +149,6 @@ const MessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
-		flushDraft('');
 
 		void onSend?.({
 			value: text,

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.2.1",
+	"version": "0.3.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/federation-sdk": "0.8.0",
+		"@rocket.chat/federation-sdk": "0.8.1",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
