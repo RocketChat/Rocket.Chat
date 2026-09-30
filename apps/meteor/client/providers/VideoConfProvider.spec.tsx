@@ -91,6 +91,18 @@ it('tells the manager which flow it is in', async () => {
 	expect(setConferenceWindowEnabled).toHaveBeenLastCalledWith(true);
 });
 
+// The manager outlives the provider, so a listener left behind keeps a dead provider's state setter alive.
+it('releases the outgoing call listeners on unmount', () => {
+	const { unmount } = renderProvider(false);
+	expect(VideoConfManager.has('direct/stopped')).toBe(true);
+	expect(VideoConfManager.has('calling/ended')).toBe(true);
+
+	unmount();
+
+	expect(VideoConfManager.has('direct/stopped')).toBe(false);
+	expect(VideoConfManager.has('calling/ended')).toBe(false);
+});
+
 // A provider's own call URL is opened as it always was, with no watch on the window: the join was posted before
 // it opened, and the page there is not ours to poll.
 it('opens the provider URL the manager hands it', async () => {
