@@ -1,15 +1,9 @@
-import {
-	type IOmnichannelAgent,
-	type OmichannelRoutingConfig,
-	OmnichannelSortingMechanismSettingType,
-	LivechatInquiryStatus,
-} from '@rocket.chat/core-typings';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { type IOmnichannelAgent, OmnichannelSortingMechanismSettingType, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
 import { useUser, useSetting, usePermission, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useState, useEffect, useMemo, memo, useRef } from 'react';
+import { useEffect, useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
@@ -62,9 +56,22 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const getRoutingConfig = useEndpoint('GET', '/v1/livechat/config/routing');
 
-	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
-
 	const accessible = hasAccess && omniChannelEnabled;
+
+	const { data: routeConfig } = useQuery({
+		queryKey: ['/v1/livechat/config/routing', omnichannelRouting],
+		queryFn: async () => {
+			try {
+				const { config } = await getRoutingConfig();
+				return config;
+			} catch (error) {
+				loggerRef.current.error(`update() error in routeConfig ${error}`);
+				throw error;
+			}
+		},
+		enabled: accessible,
+		placeholderData: keepPreviousData,
+	});
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
@@ -99,25 +106,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			});
 		});
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
-
-	useEffect(() => {
-		if (!accessible) {
-			return;
-		}
-
-		const update = async (): Promise<void> => {
-			try {
-				const { config } = await getRoutingConfig();
-				setRouteConfig(config);
-			} catch (error) {
-				loggerRef.current.error(`update() error in routeConfig ${error}`);
-			}
-		};
-
-		if (omnichannelRouting || !omnichannelRouting) {
-			update();
-		}
-	}, [accessible, getRoutingConfig, omnichannelRouting, setRouteConfig]);
 
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
