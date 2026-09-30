@@ -8,6 +8,7 @@ import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
@@ -164,7 +165,7 @@ describe('ThreadMessageList', () => {
 			loadMessageAround: jest.fn(),
 		});
 
-		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom setShouldJumpToBottom={jest.fn()} />, {
+		render(<ThreadMessageList mainMessage={mainMessage} />, {
 			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
 		});
 
@@ -176,6 +177,63 @@ describe('ThreadMessageList', () => {
 		await user.pointer({ keys: '[/MouseLeft]' });
 
 		expect(fetchPreviousPage).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('ThreadMessageList message deep link', () => {
+	const mainMessage = createFakeMessage<IThreadMainMessage>({
+		_id: 'thread-id',
+		rid: room._id,
+		msg: 'main message',
+		tcount: 1,
+		u: {
+			_id: 'user-id',
+			username: 'user',
+			name: 'User',
+		},
+	});
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+		(setMessageJumpQueryStringParameter as jest.Mock).mockClear();
+		(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+			data: { messages: [createThreadMessage(1)] },
+			isLoading: false,
+			fetchNextPage: jest.fn(),
+			hasNextPage: false,
+			isFetchingNextPage: false,
+			fetchPreviousPage: jest.fn(),
+			hasPreviousPage: false,
+			isFetchingPreviousPage: false,
+			loadMessageAround: jest.fn(),
+		});
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	const wrapper = mockAppRoot()
+		.withJohnDoe()
+		.withSetting('Message_GroupingPeriod', 300)
+		.withRouter({ getSearchParameters: () => ({ msg: 'reply-1' }) })
+		.build();
+
+	it('clears the `msg` parameter once the linked reply is loaded', () => {
+		render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+
+		jest.advanceTimersByTime(500);
+
+		expect(setMessageJumpQueryStringParameter).toHaveBeenCalledWith(null);
+	});
+
+	it('does not touch the `msg` parameter after unmounting', () => {
+		const { unmount } = render(<ThreadMessageList mainMessage={mainMessage} />, { wrapper });
+
+		unmount();
+		jest.advanceTimersByTime(500);
+
+		expect(setMessageJumpQueryStringParameter).not.toHaveBeenCalled();
 	});
 });
 
@@ -208,7 +266,7 @@ describe('ThreadMessageList accessibility', () => {
 	};
 
 	const renderThreadMessageList = () =>
-		render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		render(<ThreadMessageList mainMessage={mainMessage} />, {
 			wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).withUserPreference('displayAvatars', true).build(),
 		});
 

@@ -6,7 +6,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
-import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -54,11 +54,10 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 
 export type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
-	shouldJumpToBottom: boolean;
-	setShouldJumpToBottom: (shouldJumpToBottom: boolean) => void;
 };
 
-const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBottom }: ThreadMessageListProps) => {
+/** Mount one per thread (`key` by the main message id): its scroll bookkeeping belongs to a single thread. */
+const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps) => {
 	const { t } = useTranslation();
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
@@ -76,6 +75,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		jumpToRecent,
 	} = useThreadMessagesQuery(mainMessage._id);
 	const messages = useMemo(() => data?.messages ?? [], [data?.messages]);
+	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
 
 	const userInteractedRef = useRef(false);
 	const isJumpingToMessageRef = useRef(false);
@@ -224,16 +224,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const lastThreadJumpKeyRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
-		lastThreadJumpKeyRef.current = undefined;
-		loadingWindowKeyRef.current = undefined;
-		prevItemsLengthRef.current = 0;
-		initialScrollDoneRef.current = false;
-		userInteractedRef.current = false;
-		isJumpingToMessageRef.current = false;
-		isPrependRef.current = false;
-	}, [mainMessage._id]);
-
-	useEffect(() => {
 		if (!msgJumpParam) {
 			isJumpingToMessageRef.current = false;
 			return;
@@ -340,9 +330,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				setMessageJumpQueryStringParameter(null);
 			}
 		};
-		setTimeout(() => {
-			clearMsgJumpParam();
-		}, 500);
+		const timeout = setTimeout(clearMsgJumpParam, 500);
+		return () => clearTimeout(timeout);
 	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {

@@ -89,8 +89,6 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 	const sendToChannelID = useId();
 	const t = useTranslation();
 
-	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
-
 	return (
 		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...boxProps} {...fileUploadTriggerProps}>
@@ -107,11 +105,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 					height='full'
 				>
 					<MessageListErrorBoundary>
-						<ThreadMessageList
-							mainMessage={mainMessage}
-							shouldJumpToBottom={shouldJumpToBottom}
-							setShouldJumpToBottom={setShouldJumpToBottom}
-						/>
+						<ThreadMessageList key={mainMessage._id} mainMessage={mainMessage} />
 					</MessageListErrorBoundary>
 
 					<RoomComposer aria-label={t('Thread_composer')}>
