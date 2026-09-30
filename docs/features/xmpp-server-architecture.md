@@ -168,7 +168,21 @@ yarn workspace @rocket.chat/xmpp-server-service ms
 
 The process starts only after Meteor's `settings` and `license` services are reachable, as every networked service does. The S2S listener binds `XMPP_Server_Port` (default 5269) in this process. The health check listens on `PORT` (default 3039), and moleculer metrics use the broker's usual port (9458). The generic `ee/apps/Dockerfile` builds it with `SERVICE=xmpp-server-service`. Each service process opens its own listener, so run a single instance of this service per domain.
 
-`GET /stats` on the health port returns running totals of every inbound event the protocol core has decoded, keyed by event name. With `XMPP_DECODE_ONLY=true`, stanzas are still parsed, routed and answered at the protocol level, but no inbound event reaches Rocket.Chat, hosted-MUC joins skip the database authorization check, and remote-MUC joins request no discussion history (`<history maxstanzas="0"/>`). In normal mode that history is how the server catches up on messages sent while it was offline. In decode-only mode it would only replay the same backlog on every restart. Use it to load-test decoding alone: sample `/stats` twice and divide by the interval.
+`GET /stats` on the health port returns a JSON snapshot:
+- `decoded`: running totals of every inbound event the protocol core has decoded, keyed by event name.
+- `inflight`, `completed` and `failed`: the Rocket.Chat-side handling of those events. A handler counts as in flight from the moment its event is decoded until its database writes and broker calls settle.
+- `decodeOnly`: whether the service runs with `XMPP_DECODE_ONLY=true`.
+- `durations`: raw handler-latency histogram buckets.
+- `eventLoopLagP99Ms`: the worst event-loop delay since the previous read.
+- `rssBytes`.
+
+`GET /metrics` exposes the same data in Prometheus format, plus the Node defaults.
+
+Inbound handling has no queue and no concurrency limit: handlers are started as stanzas arrive and never throttle the socket. An overloaded service therefore accepts everything and falls behind silently. What grows is `inflight`, not refused traffic.
+
+With `XMPP_DECODE_ONLY=true`, stanzas are still parsed, routed and answered at the protocol level, but no inbound event reaches Rocket.Chat, hosted-MUC joins skip the database authorization check, and remote-MUC joins request no discussion history (`<history maxstanzas="0"/>`). In normal mode that history is how the server catches up on messages sent while it was offline. In decode-only mode it would only replay the same backlog on every restart. Use it to load-test decoding alone.
+
+`XMPP_DNS_OVERRIDES=domain=host:port,…` answers S2S lookups for the listed domains without DNS; every other domain still resolves normally. It exists so load-test peers on local ports can pass dialback.
 
 `LOG_LEVEL` (`warn`, `info` or `debug`) sets the process's log level. Without it, loggers stay at `warn`, because the `Log_Level` admin setting only takes effect inside Meteor's own process. At `debug`, every inbound event is logged as `XMPP event` with its payload, including the XML of the stanza that produced it. Payloads are only serialized when debug is enabled, so leave it off during throughput runs.
 
@@ -186,3 +200,70 @@ Deliberately minimal:
 - **Unit** (jest, `@rocket.chat/jest-presets/server`, colocated `*.spec.ts`): dialback key vectors (XEP-0185), JID escaping round-trips, `StanzaParser` hardening cases, `MucRoom` state machine with a stubbed sender, mapping helpers, hook bail conditions.
 - **Package integration** (`tests/integration/`): two in-memory `XMPPServer` instances on ephemeral ports with an injected DNS resolver and self-signed certs — full dialback dance, queue flush, spoof rejection, MUC join/broadcast/kick; a scripted `FakeXmppPeer` for negative paths.
 - **E2E** (`tests/end-to-end/`, mirroring `federation-matrix/tests/`): a Prosody container as the remote peer plus a scripted `@xmpp/client`, covering DMs, presence and both MUC directions against a running Rocket.Chat.
+
+### Load testing
+
+`ee/apps/xmpp-server-service/loadtest/` is a load generator. It answers two questions:
+- **`--mode ramp`** (the default): up to which constant rate does the service keep up?
+- **`--mode max`**: how many events per second can it process at most?
+
+Shared setup:
+- Each fake remote domain `lt<i>.test` is a real `XMPPServer` on port `15269+i`. Each opens its own inbound S2S socket to the service.
+- Scenarios:
+  - `dm`: 1:1 messages
+  - `presence`: online/away flips
+  - `muc`: groupchat into a hosted room, whose reflections also give an XMPP-side echo latency
+  - `mix`: weighted combinations of the three
+- A warm-up runs before measuring, so first-contact costs (creating remote users, DM rooms and room joins) are excluded unless `--cold` is passed.
+
+```sh
+yarn workspace @rocket.chat/xmpp-server build
+# the service must know how to dial back to the peers
+XMPP_DNS_OVERRIDES=$(yarn workspace @rocket.chat/xmpp-server-service loadtest overrides --domains 4) \
+  yarn workspace @rocket.chat/xmpp-server-service ms2
+RC_USER=admin RC_PASSWORD=… yarn workspace @rocket.chat/xmpp-server-service loadtest run --scenario dm --mode max
+```
+
+The generator creates `lt-local-<n>` users and, for `muc`, a hosted channel `lt-muc` through the REST API. `--configure <domain>` also enables the XMPP server settings. The peers connect to the service on `XMPP_Server_Port` unless `--rc-port` says otherwise. They always offer STARTTLS, because a service with a certificate configured refuses dialback over cleartext.
+
+#### Ramp mode
+
+The generator sends at a fixed arrival rate that never waits on the service, so a slow service shows up as backlog instead of lowering the load. It raises the rate step by step and waits for the backlog to drain after each step. A step does **not** count as kept up when any of these hold:
+- the service processed less than 95% of what was sent;
+- the backlog (sent minus processed) kept growing;
+- handler p99 went above 1 s;
+- the service's event-loop p99 went above 100 ms;
+- the backlog did not drain;
+- any handler failed, any send failed, or `/stats` timed out.
+
+The run reports the last step that kept up. Steps where the generator itself missed the target rate or lagged are flagged as generator-bound, and steps cut short by Ctrl-C are flagged as interrupted. Neither kind ever counts as the ceiling.
+
+#### Max mode
+
+The generator keeps the service saturated without flooding it. It holds a queue of about `--queue-seconds` (default 0.5 s) of the service's recent throughput ahead of what the service has processed, and re-sizes that queue as throughput changes.
+
+The rate the service processes at, measured after a settle period, is its maximum throughput. Handler latency in this mode is mostly time spent in that queue, so read it as queueing delay, not service time.
+
+The result is flagged as not trustworthy when:
+- handlers or sends failed;
+- the backlog did not drain;
+- fewer than 5 s were measured;
+- the generator could not keep the queue at least half full. The service was then sometimes idle, so the figure is only a floor.
+
+#### Checking the results
+
+Every run ends with an accounting of events. Every send must be decoded exactly once and handled exactly once. For `dm` and `muc` the run also counts the messages in Mongo by `federation.eventId`, which catches lost and duplicated messages.
+
+All of it goes into `loadtest-<runId>.json`. Ctrl-C ends the current measurement early and still drains, checks and writes the report; a second Ctrl-C exits at once.
+
+The generator was calibrated against a fake service whose capacity was known from its own job timings:
+- ramp mode passed at 400/s and failed at 500/s, against a capacity of 449/s;
+- max mode measured 454/s, against a capacity of 456/s;
+- injected handler failures were reported;
+- a service faster than the generator (about 130k events/s on one core) was flagged as generator-bound.
+
+Run each scenario twice:
+1. With `XMPP_DECODE_ONLY=true` on the service. `/stats` reports the mode and the generator adapts. This gives the parsing and routing ceiling.
+2. Normally.
+
+A large gap between the two puts the bottleneck on the Rocket.Chat side. Suspects are the Mongo pool and the `Room`/`Message` broker calls, which run inside Meteor, so watch Meteor's CPU as well.

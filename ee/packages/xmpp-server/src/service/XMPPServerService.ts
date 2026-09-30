@@ -16,6 +16,7 @@ import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
 import { domainOfJid, toBareJid } from './helpers/jid';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
+import type { XmppDnsResolver } from '../s2s/dnsResolver';
 
 /** Adapts the RC single-argument Logger to the pino-style logger the protocol core expects. */
 function toCoreLogger(logger: Logger): CoreLogger {
@@ -70,9 +71,16 @@ const INBOUND_EVENTS = [
 	'muc.remoteSessionLost',
 ] as const satisfies readonly (keyof XMPPServerEventMap)[];
 
+/** Called when an inbound event starts being handled; the returned callback is called once it settles. */
+export type InboundHandlerObserver = (event: keyof XMPPServerEventMap) => (outcome: 'ok' | 'error') => void;
+
 export type XMPPServerServiceOptions = {
 	/** When false, inbound traffic is decoded and counted but never reaches Rocket.Chat. Default true. */
 	forwardToRocketChat?: boolean;
+	/** Lets the host measure how far Rocket.Chat-side handling lags behind what arrives on the wire. */
+	observeHandler?: InboundHandlerObserver;
+	/** Replaces DNS resolution of remote domains, e.g. to point load-test peers at local ports. */
+	resolver?: XmppDnsResolver;
 };
 
 export class XMPPServerService extends ServiceClass implements IXMPPServerService {
@@ -81,6 +89,10 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	private readonly logger = new Logger('XMPPServer');
 
 	private readonly forwardToRocketChat: boolean;
+
+	private readonly observeHandler: InboundHandlerObserver | undefined;
+
+	private readonly resolver: XmppDnsResolver | undefined;
 
 	private readonly inboundEventCounts = new Map<string, number>(INBOUND_EVENTS.map((type) => [type, 0]));
 
@@ -92,9 +104,11 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private reconfiguring: Promise<void> = Promise.resolve();
 
-	constructor({ forwardToRocketChat = true }: XMPPServerServiceOptions = {}) {
+	constructor({ forwardToRocketChat = true, observeHandler, resolver }: XMPPServerServiceOptions = {}) {
 		super();
 		this.forwardToRocketChat = forwardToRocketChat;
+		this.observeHandler = observeHandler;
+		this.resolver = resolver;
 	}
 
 	override async created(): Promise<void> {
@@ -167,7 +181,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		await this.stopServer();
 
 		try {
-			const server = new XMPPServer(this.toCoreConfig(config));
+			const server = new XMPPServer(this.toCoreConfig(config), { resolver: this.resolver });
 			this.observeInboundEvents(server);
 			if (this.forwardToRocketChat) {
 				this.attachHandlers(server, config);
@@ -524,21 +538,23 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private attachHandlers(server: XMPPServer, _config: XMPPServerConfiguration): void {
 		server.on('message.received', (event) => {
-			this.onIncomingMessage(event).catch((err) => this.logger.error({ msg: 'Failed to handle inbound XMPP message', err }));
+			this.track('message.received', this.onIncomingMessage(event), 'Failed to handle inbound XMPP message');
 		});
 
 		server.on('presence.received', (event) => {
-			this.onIncomingPresence(event).catch((err) => this.logger.error({ msg: 'Failed to handle inbound XMPP presence', err }));
+			this.track('presence.received', this.onIncomingPresence(event), 'Failed to handle inbound XMPP presence');
 		});
 
 		// v1 policy: auto-accept a subscription request only from someone we already share a DM with.
 		server.on('presence.subscriptionRequest', (event) => {
-			this.onSubscriptionRequest(event).catch((err) => this.logger.error({ msg: 'Failed to handle XMPP subscription request', err }));
+			this.track('presence.subscriptionRequest', this.onSubscriptionRequest(event), 'Failed to handle XMPP subscription request');
 		});
 
 		server.on('muc.occupantJoined', (event) => {
-			this.onHostedOccupantJoined(`${event.roomId}@${server.mucDomain}`, event.jid).catch((err) =>
-				this.logger.error({ msg: 'Failed to handle hosted MUC join', err }),
+			this.track(
+				'muc.occupantJoined',
+				this.onHostedOccupantJoined(`${event.roomId}@${server.mucDomain}`, event.jid),
+				'Failed to handle hosted MUC join',
 			);
 		});
 
@@ -547,26 +563,44 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			if (event.reason === 'kicked') {
 				return;
 			}
-			this.onHostedOccupantLeft(`${event.roomId}@${server.mucDomain}`, event.jid).catch((err) =>
-				this.logger.error({ msg: 'Failed to handle hosted MUC leave', err }),
+			this.track(
+				'muc.occupantLeft',
+				this.onHostedOccupantLeft(`${event.roomId}@${server.mucDomain}`, event.jid),
+				'Failed to handle hosted MUC leave',
 			);
 		});
 
 		server.on('muc.messageReceived', (event) => {
-			this.persistMucMessage(`${event.roomId}@${server.mucDomain}`, event.fromJid, event.body, event.id).catch((err) =>
-				this.logger.error({ msg: 'Failed to persist hosted MUC message', err }),
+			this.track(
+				'muc.messageReceived',
+				this.persistMucMessage(`${event.roomId}@${server.mucDomain}`, event.fromJid, event.body, event.id),
+				'Failed to persist hosted MUC message',
 			);
 		});
 
 		server.on('muc.remoteMessage', (event) => {
-			this.onRemoteMucMessage(event.roomJid, event.fromNick, event.body, event.id).catch((err) =>
-				this.logger.error({ msg: 'Failed to persist remote MUC message', err }),
+			this.track(
+				'muc.remoteMessage',
+				this.onRemoteMucMessage(event.roomJid, event.fromNick, event.body, event.id),
+				'Failed to persist remote MUC message',
 			);
 		});
 
 		server.on('muc.inviteReceived', (event) => {
-			this.onMucInvite(event).catch((err) => this.logger.error({ msg: 'Failed to handle MUC invite', err }));
+			this.track('muc.inviteReceived', this.onMucInvite(event), 'Failed to handle MUC invite');
 		});
+	}
+
+	/** Handlers run detached from the stanza that triggered them; failures are logged, never thrown back into the stream. */
+	private track(event: keyof XMPPServerEventMap, handling: Promise<void>, failureMessage: string): void {
+		const settle = this.observeHandler?.(event);
+		handling.then(
+			() => settle?.('ok'),
+			(err) => {
+				settle?.('error');
+				this.logger.error({ msg: failureMessage, err });
+			},
+		);
 	}
 
 	/**

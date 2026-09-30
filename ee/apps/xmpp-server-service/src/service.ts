@@ -6,6 +6,9 @@ import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
+import { parseDnsOverrides } from './dnsOverrides';
+import { createInboundMetrics } from './metrics';
+
 const PORT = process.env.PORT || 3039;
 
 const DECODE_ONLY = process.env.XMPP_DECODE_ONLY === 'true';
@@ -28,9 +31,16 @@ void (async () => {
 	api.setBroker(startBroker());
 
 	// need to import service after models are registered
-	const { XMPPServerService } = await import('@rocket.chat/xmpp-server');
+	const { XMPPServerService, resolveXmppServer } = await import('@rocket.chat/xmpp-server');
 
-	const xmppServer = new XMPPServerService({ forwardToRocketChat: !DECODE_ONLY });
+	const metrics = createInboundMetrics({ decodeOnly: DECODE_ONLY });
+
+	const xmppServer = new XMPPServerService({
+		forwardToRocketChat: !DECODE_ONLY,
+		observeHandler: metrics.observeHandler,
+		resolver: parseDnsOverrides(process.env.XMPP_DNS_OVERRIDES, resolveXmppServer),
+	});
+	metrics.setDecodedSource(() => xmppServer.getInboundEventCounts());
 
 	api.registerService(xmppServer);
 
@@ -48,9 +58,13 @@ void (async () => {
 				res.end('not healthy');
 			}
 		})
-		.get('/stats', function (_req, res) {
+		.get('/stats', async function (_req, res) {
 			res.setHeader('Content-Type', 'application/json');
-			res.end(JSON.stringify(xmppServer.getInboundEventCounts()));
+			res.end(JSON.stringify(await metrics.stats()));
+		})
+		.get('/metrics', async function (_req, res) {
+			res.setHeader('Content-Type', metrics.registry.contentType);
+			res.end(await metrics.registry.metrics());
 		})
 		.listen(PORT);
 })();
