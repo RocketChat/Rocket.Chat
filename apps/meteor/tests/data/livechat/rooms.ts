@@ -428,6 +428,20 @@ export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Pro
 		.expect(200);
 };
 
+/**
+ * Closes every open room the agent is serving, which users.delete otherwise refuses with user-last-owner.
+ * Rooms are listed rather than tracked by the test: routing also hands agents inquiries queued by earlier specs.
+ */
+export const closeOpenRoomsServedBy = async (agentId: string): Promise<void> => {
+	const { body } = await request
+		.get(api('livechat/rooms'))
+		.set(credentials)
+		.query({ 'agents[]': agentId, 'open': true, 'count': 100 })
+		.expect(200);
+
+	await Promise.all((body.rooms as IOmnichannelRoom[]).map((room) => closeOmnichannelRoom(room._id)));
+};
+
 export const bulkCreateLivechatRooms = async (
 	amount: number,
 	department?: string,
