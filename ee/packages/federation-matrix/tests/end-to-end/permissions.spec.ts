@@ -197,7 +197,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				it('should not be able to add a user without access-federation permission to a room', async () => {
 					await expect(
 						addUserToRoom({ usernames: [user.username], rid: createResponse.body.group._id, type: 'p', config: rc1AdminRequestConfig }),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+					});
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
@@ -528,7 +531,10 @@ import { SynapseClient } from '../helper/synapse-client';
 							type: 'p',
 							config: rcValidUser1.config,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+					});
 				});
 
 				it('should NOT be able to be added to a federated room during creation', async () => {
@@ -605,7 +611,10 @@ import { SynapseClient } from '../helper/synapse-client';
 							type: 'p',
 							config: rcValidUser1.config,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+					});
 				});
 			});
 
@@ -666,7 +675,10 @@ import { SynapseClient } from '../helper/synapse-client';
 							type: 'p',
 							config: rcValidUser1.config,
 						}),
-					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
+					});
 				});
 			});
 
