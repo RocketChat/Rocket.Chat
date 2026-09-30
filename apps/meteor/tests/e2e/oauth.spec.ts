@@ -112,35 +112,6 @@ test.describe('OAuth', () => {
 		});
 	});
 
-	test.describe('Proxy Redirect', () => {
-		test.beforeAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', 'test')).status()).toBe(200);
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect')).status()).toBe(200);
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', false)).status()).toBe(200);
-			await expect.poll(() => getOAuthServiceLoginStyle(api, customOAuthService)).toBe('redirect');
-		});
-
-		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false);
-			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect');
-			await setSettingValueById(api, 'Accounts_OAuth_Proxy_services', '');
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Use_Modern_Flow', true)).status()).toBe(200);
-		});
-
-		test('redirect login through the proxy', async ({ page }) => {
-			await test.step('expect Custom OAuth button to be visible', async () => {
-				await poRegistration.goto();
-				await expect(poRegistration.btnLoginWithCustomOAuth).toBeVisible();
-			});
-
-			await test.step('expect authorize flow to be redirected through the proxy', async () => {
-				await poRegistration.btnLoginWithCustomOAuth.click();
-				await expect(page).toHaveURL(/^https:\/\/oauth-proxy\.rocket\.chat\/redirect\//);
-			});
-		});
-	});
-
 	test.describe('Iframe login', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test-login_style', 'redirect')).status()).toBe(200);

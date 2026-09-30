@@ -161,8 +161,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud-Id",
   "Accounts_OAuth_Nextcloud_secret": "Klient-secret",
   "Accounts_OAuth_Nextcloud_URL": "Server-URL til Nexcloud",
-  "Accounts_OAuth_Proxy_host": "Proxy-vært",
-  "Accounts_OAuth_Proxy_services": "Proxy-tjenester",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Mindst et lille bogstav",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Kræv at et kodeord indeholder mindst et lille bogstav.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Mindst et tal",

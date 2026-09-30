@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth Galluogi",
   "Accounts_OAuth_Nextcloud_secret": "Secret Cleient",
-  "Accounts_OAuth_Proxy_host": "Cynorthwy-ydd Dirprwy",
-  "Accounts_OAuth_Proxy_services": "Gwasanaethau Dirprwyol",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Ar Leiaf Un Lleiaf",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Gorfodi bod cyfrinair yn cynnwys o leiaf un cymeriad isaf.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Ar Nifer Ar Gyfer Un",

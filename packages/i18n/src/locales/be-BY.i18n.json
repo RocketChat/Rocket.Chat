@@ -106,8 +106,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth enabled",
   "Accounts_OAuth_Nextcloud_secret": "кліент Secret",
-  "Accounts_OAuth_Proxy_host": "хост проксі",
-  "Accounts_OAuth_Proxy_services": "Проксі-паслугі",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Па меншай меры адзін малымі",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Прымусова, што пароль змяшчае па меншай меры адзін сімвал ніжняга рэгістра.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Па меншай меры адзін нумар",

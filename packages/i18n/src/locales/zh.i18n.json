@@ -269,8 +269,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud ID",
   "Accounts_OAuth_Nextcloud_secret": "客户端秘密",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud 服务器 URL",
-  "Accounts_OAuth_Proxy_host": "代理主机",
-  "Accounts_OAuth_Proxy_services": "代理服务",
   "Accounts_Password_Policy_AtLeastOneLowercase": "至少一个小写字符",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "确保密码包含至少一个小写字符。",
   "Accounts_Password_Policy_AtLeastOneNumber": "至少一个数字",

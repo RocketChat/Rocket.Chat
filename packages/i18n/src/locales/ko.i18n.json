@@ -155,8 +155,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud ID",
   "Accounts_OAuth_Nextcloud_secret": "Client 암호",
   "Accounts_OAuth_Nextcloud_URL": "Nextcloud 서버 URL",
-  "Accounts_OAuth_Proxy_host": "Proxy host",
-  "Accounts_OAuth_Proxy_services": "프록시 서비스",
   "Accounts_Password_Policy_AtLeastOneLowercase": "하나 이상의 소문자",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "비밀번호에 하나 이상의 소문자가 포함되도록 합니다.",
   "Accounts_Password_Policy_AtLeastOneNumber": "하나 이상의 숫자",
