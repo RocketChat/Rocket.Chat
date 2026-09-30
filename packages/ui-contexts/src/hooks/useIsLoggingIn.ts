@@ -1,8 +1,6 @@
-import { useContext } from 'react';
-
-import { AuthenticationContext } from '../AuthenticationContext';
+import { useAuthenticationContext } from '../AuthenticationContext';
 
 export const useIsLoggingIn = () => {
-	const { isLoggingIn } = useContext(AuthenticationContext);
+	const { isLoggingIn } = useAuthenticationContext();
 	return isLoggingIn;
 };

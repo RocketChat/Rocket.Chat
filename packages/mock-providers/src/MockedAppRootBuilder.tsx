@@ -24,11 +24,13 @@ import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
+	AuthenticationContextValue,
 	CurrentModalContextValue,
 	Device,
 	DeviceContext,
 	LoginService,
 	ModalContextValue,
+	RouterContextValue,
 	ServerConnectionStatus,
 	ServerContextValue,
 	SettingsContextQuery,
@@ -38,7 +40,7 @@ import type {
 } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
-	RouterContext,
+	RouterContextProvider,
 	ServerContext,
 	SettingsContext,
 	TranslationContext,
@@ -47,7 +49,7 @@ import {
 	ModalContext,
 	CurrentModalContext,
 	UserPresenceContext,
-	AuthenticationContext,
+	AuthenticationContextProvider,
 	ToastMessagesContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
@@ -139,7 +141,7 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private router: ContextType<typeof RouterContext> = {
+	private router: RouterContextValue = {
 		buildRoutePath: () => '/',
 		defineRoutes: () => () => undefined,
 		getLocationPathname: () => '/',
@@ -269,7 +271,7 @@ export class MockedAppRootBuilder {
 
 	private authServices: LoginService[] = [];
 
-	private authentication: ContextType<typeof AuthenticationContext> = {
+	private authentication: AuthenticationContextValue = {
 		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
@@ -514,7 +516,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+	withRouter(overrides: Partial<RouterContextValue>): this {
 		this.router = { ...this.router, ...overrides };
 		return this;
 	}
@@ -855,7 +857,7 @@ export class MockedAppRootBuilder {
 			return (
 				<QueryClientProvider client={queryClient}>
 					<ServerContext.Provider value={server}>
-						<RouterContext.Provider value={router}>
+						<RouterContextProvider value={router}>
 							<SettingsContext.Provider value={settings}>
 								<I18nextProvider i18n={i18n}>
 									<TranslationContext.Provider value={translation}>
@@ -866,7 +868,7 @@ export class MockedAppRootBuilder {
 																	<AvatarUrlProvider>
 																			<CustomSoundProvider> */}
 											<UserContext.Provider value={user}>
-												<AuthenticationContext.Provider value={authentication}>
+												<AuthenticationContextProvider value={authentication}>
 													<MockedDeviceContext {...deviceContext}>
 														<ModalContext.Provider value={modal}>
 															<CurrentModalContext.Provider value={currentModal}>
@@ -911,7 +913,7 @@ export class MockedAppRootBuilder {
 															</CurrentModalContext.Provider>
 														</ModalContext.Provider>
 													</MockedDeviceContext>
-												</AuthenticationContext.Provider>
+												</AuthenticationContextProvider>
 											</UserContext.Provider>
 											{/* 					</CustomSoundProvider>
 																	</AvatarUrlProvider>
@@ -922,7 +924,7 @@ export class MockedAppRootBuilder {
 									</TranslationContext.Provider>
 								</I18nextProvider>
 							</SettingsContext.Provider>
-						</RouterContext.Provider>
+						</RouterContextProvider>
 					</ServerContext.Provider>
 				</QueryClientProvider>
 			);

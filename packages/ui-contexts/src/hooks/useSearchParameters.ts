@@ -1,8 +1,8 @@
-import { useContext, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 export const useSearchParameters = () => {
-	const { getSearchParameters, subscribeToRouteChange } = useContext(RouterContext);
+	const { getSearchParameters, subscribeToRouteChange } = useRouter();
 	return useSyncExternalStore(subscribeToRouteChange, getSearchParameters);
 };

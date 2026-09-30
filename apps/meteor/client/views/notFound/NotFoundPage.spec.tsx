@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { MutableRefObject } from 'react';
@@ -6,7 +7,7 @@ import NotFoundPage from './NotFoundPage';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 
 it('should look good', async () => {
-	render(<NotFoundPage />);
+	render(<NotFoundPage />, { wrapper: mockAppRoot().build() });
 
 	await expect(screen.findByRole('heading')).resolves.toHaveTextContent('Page_not_found');
 
@@ -14,7 +15,7 @@ it('should look good', async () => {
 });
 
 it('should have correct tab order', async () => {
-	render(<NotFoundPage />);
+	render(<NotFoundPage />, { wrapper: mockAppRoot().build() });
 
 	expect(document.body).toHaveFocus();
 

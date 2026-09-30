@@ -1,5 +1,5 @@
 export { AttachmentContext, type AttachmentContextValue } from './AttachmentContext';
-export { type AuthenticationContextValue, AuthenticationContext, type LoginService } from './AuthenticationContext';
+export { type AuthenticationContextValue, AuthenticationContextProvider, type LoginService } from './AuthenticationContext';
 export { AuthorizationContext, type AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
@@ -68,7 +68,6 @@ export { useRoleIdResolver } from './hooks/useRoleIdResolver';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoomToolbox } from './hooks/useRoomToolbox';
-export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useSearchParameter } from './hooks/useSearchParameter';

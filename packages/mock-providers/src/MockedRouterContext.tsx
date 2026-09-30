@@ -1,11 +1,12 @@
-import { RouterContext } from '@rocket.chat/ui-contexts';
-import type { ContextType, ReactNode } from 'react';
+import type { RouterContextValue } from '@rocket.chat/ui-contexts';
+import { RouterContextProvider } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
 
-export type MockedRouterContextProps = { children: ReactNode; router?: Partial<ContextType<typeof RouterContext>> };
+export type MockedRouterContextProps = { children: ReactNode; router?: Partial<RouterContextValue> };
 
 export const MockedRouterContext = ({ children, router }: MockedRouterContextProps) => {
 	return (
-		<RouterContext.Provider
+		<RouterContextProvider
 			value={{
 				subscribeToRouteChange: () => () => undefined,
 				getLocationPathname: () => '/',
@@ -23,6 +24,6 @@ export const MockedRouterContext = ({ children, router }: MockedRouterContextPro
 			}}
 		>
 			{children}
-		</RouterContext.Provider>
+		</RouterContextProvider>
 	);
 };

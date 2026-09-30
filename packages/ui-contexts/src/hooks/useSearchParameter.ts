@@ -1,9 +1,9 @@
-import { useCallback, useContext, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 export const useSearchParameter = (name: string): string | undefined => {
-	const { getSearchParameters, subscribeToRouteChange } = useContext(RouterContext);
+	const { getSearchParameters, subscribeToRouteChange } = useRouter();
 
 	const getSnapshot = useCallback(() => {
 		const searchParameters = getSearchParameters();

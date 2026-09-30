@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { TFunction } from 'i18next';
 
@@ -48,7 +49,7 @@ describe('normalizeThreadMessage', () => {
 
 		// Still renders (as plain text AST through Markup)
 		expect(result).not.toBeNull();
-		const { container } = render(<>{result}</>);
+		const { container } = render(<>{result}</>, { wrapper: mockAppRoot().build() });
 		expect(container.textContent).toContain('This message is longer than the limit');
 	});
 
@@ -60,7 +61,7 @@ describe('normalizeThreadMessage', () => {
 
 		expect(mockedParse).not.toHaveBeenCalled();
 
-		render(<>{result}</>);
+		render(<>{result}</>, { wrapper: mockAppRoot().build() });
 
 		// `getByText` matches an element whose own text equals the query, so these only pass if each
 		// line got its own block. A single text node holding the `\n` would normalize to
@@ -79,7 +80,7 @@ describe('normalizeThreadMessage', () => {
 		const message = { msg: '', mentions: [], attachments: [{ title: 'file.pdf' }] } as unknown as IMessage;
 		const result = normalizeThreadMessage(message, t);
 
-		const { container } = render(<>{result}</>);
+		const { container } = render(<>{result}</>, { wrapper: mockAppRoot().build() });
 		expect(container.textContent).toBe('file.pdf');
 	});
 
@@ -87,7 +88,7 @@ describe('normalizeThreadMessage', () => {
 		const message = { msg: '', mentions: [], attachments: [{ description: 'desc' }] } as unknown as IMessage;
 		const result = normalizeThreadMessage(message, t);
 
-		const { container } = render(<>{result}</>);
+		const { container } = render(<>{result}</>, { wrapper: mockAppRoot().build() });
 		expect(container.textContent).toBe('desc');
 	});
 

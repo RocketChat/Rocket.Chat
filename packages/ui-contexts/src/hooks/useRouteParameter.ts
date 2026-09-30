@@ -1,9 +1,9 @@
-import { useCallback, useContext, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 export const useRouteParameter = (name: string): string | undefined => {
-	const router = useContext(RouterContext);
+	const router = useRouter();
 
 	const getSnapshot = useCallback(() => {
 		return router.getRouteParameters()[name];

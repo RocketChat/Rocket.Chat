@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { AuthenticationContextValue, SessionContextValue } from '@rocket.chat/ui-contexts';
-import { AuthenticationContext, SessionContext, UserContext } from '@rocket.chat/ui-contexts';
+import { AuthenticationContextProvider, SessionContext, UserContext } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { useContext } from 'react';
@@ -128,7 +128,7 @@ it('keeps the login page up while someone is logging in at it', () => {
 	renderGate(
 		mockAppRoot()
 			.withAnonymous()
-			.wrap((children) => <AuthenticationContext.Provider value={loggingIn}>{children}</AuthenticationContext.Provider>),
+			.wrap((children) => <AuthenticationContextProvider value={loggingIn}>{children}</AuthenticationContextProvider>),
 	);
 
 	expect(screen.getByText('login-page')).toBeInTheDocument();

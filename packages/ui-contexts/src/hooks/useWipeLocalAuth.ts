@@ -1,5 +1,3 @@
-import { useContext } from 'react';
+import { useAuthenticationContext } from '../AuthenticationContext';
 
-import { AuthenticationContext } from '../AuthenticationContext';
-
-export const useWipeLocalAuth = (): (() => void) => useContext(AuthenticationContext).wipeLocalAuth;
+export const useWipeLocalAuth = (): (() => void) => useAuthenticationContext().wipeLocalAuth;

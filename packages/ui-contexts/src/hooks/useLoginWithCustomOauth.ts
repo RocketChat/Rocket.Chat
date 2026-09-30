@@ -1,5 +1,3 @@
-import { useContext } from 'react';
+import { useAuthenticationContext } from '../AuthenticationContext';
 
-import { AuthenticationContext } from '../AuthenticationContext';
-
-export const useLoginWithCustomOauth = () => useContext(AuthenticationContext).loginWithCustomOauth;
+export const useLoginWithCustomOauth = () => useAuthenticationContext().loginWithCustomOauth;
