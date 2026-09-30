@@ -47,7 +47,8 @@ export type CallDeviceSelection = {
 	/** A microphone or a speaker, told apart by the device's own `type`. */
 	selectAudioDevice: (device: Device) => void;
 	selectCamera: (deviceId: string) => void;
-	currentCameraId?: string;
+	/** The device the call has open for each kind, as the call reports it rather than as it was asked for. */
+	activeDeviceIds: Partial<Record<MediaDeviceKind, string>>;
 };
 
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');

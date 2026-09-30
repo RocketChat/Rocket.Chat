@@ -2,7 +2,7 @@ import { Box, RadioButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
+import { useAvailableDevices } from '@rocket.chat/ui-contexts';
 import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
 import type { MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -27,10 +27,9 @@ const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 
 	const { self } = useCallState();
-	const { devices, selectAudioDevice } = useCallDeviceSelection();
+	const { devices, selectAudioDevice, activeDeviceIds } = useCallDeviceSelection();
 
 	const availableDevices = useAvailableDevices();
-	const selectedAudioDevices = useSelectedDevices();
 
 	// Which hardware each id belongs to, so the system default's duplicate can be told from a second device that
 	// merely shares its name.
@@ -58,9 +57,9 @@ const AudioDevicePicker = () => {
 					)}
 				</Box>
 			),
-			// Matched by hardware, not by id: this list keeps the `default` alias while the app's selection is usually
-			// the concrete twin of it.
-			addon: <RadioButton checked={isSameDevice(device.id, selectedAudioDevices?.audioInput?.id, deviceGroups)} />,
+			// Matched by hardware, not by id: this list keeps the `default` alias while the device the call opened is
+			// usually the concrete twin of it.
+			addon: <RadioButton checked={isSameDevice(device.id, activeDeviceIds.audioinput, deviceGroups)} />,
 		};
 	});
 
@@ -86,7 +85,7 @@ const AudioDevicePicker = () => {
 					)}
 				</Box>
 			),
-			addon: <RadioButton checked={isSameDevice(device.id, selectedAudioDevices?.audioOutput?.id, deviceGroups)} />,
+			addon: <RadioButton checked={isSameDevice(device.id, activeDeviceIds.audiooutput, deviceGroups)} />,
 			onClick(e?: MouseEvent<HTMLElement>) {
 				e?.preventDefault();
 				e?.stopPropagation();
@@ -145,7 +144,7 @@ const AudioDevicePicker = () => {
 					const id = deviceId.replace('-input', '');
 					// Choosing the device already in use is not a change; putting it through the switch anyway restarts a
 					// track that was working.
-					if (id === selectedAudioDevices?.audioInput?.id) {
+					if (id === activeDeviceIds.audioinput) {
 						return;
 					}
 					const device = availableDevices?.audioInput?.find((device) => device.id === id);
@@ -157,7 +156,7 @@ const AudioDevicePicker = () => {
 
 				if (deviceId.includes('-output')) {
 					const id = deviceId.replace('-output', '');
-					if (id === selectedAudioDevices?.audioOutput?.id) {
+					if (id === activeDeviceIds.audiooutput) {
 						return;
 					}
 					const device = availableDevices?.audioOutput?.find((device) => device.id === id);

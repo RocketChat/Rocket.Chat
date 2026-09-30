@@ -106,9 +106,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
 	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
 
-	// Only for the app's output-device setter, which insists on an element: LiveKit sets the sink on its own.
-	const [outputElement] = useState(() => new Audio());
-	const deviceSelection = useCallDeviceSwitching(room, localCameraPub, arrival, outputElement);
+	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });

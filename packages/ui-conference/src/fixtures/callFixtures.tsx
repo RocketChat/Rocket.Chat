@@ -60,7 +60,7 @@ export const buildDeviceSelection = (overrides: Partial<CallDeviceSelection> = {
 	devices: fakeDevices,
 	selectAudioDevice: action('selectAudioDevice'),
 	selectCamera: action('selectCamera'),
-	currentCameraId: 'facetime',
+	activeDeviceIds: { audioinput: 'default', audiooutput: 'default', videoinput: 'facetime' },
 	...overrides,
 });
 
