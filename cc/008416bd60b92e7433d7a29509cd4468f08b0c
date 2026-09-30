@@ -1,0 +1,25 @@
+apps/meteor/server/api/v1/rooms.ts
+  h_4c386397e672f4 1773
+  s_6a5ae0f724fffc::t_d77be5c10c4caf 1770-1772
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "cc008416bd60b92e7433d7a29509cd4468f08b0c",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_6a5ae0f724fffc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b68cdf-6b26-4893-bacb-30ad5c6ad7e2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}

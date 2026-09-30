@@ -1,0 +1,19 @@
+docs/service-brokers.md
+  s_a3d0eb8bd3caff::t_4cf6124d9525bc 123,285-286
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ef62cde123eb2b44b1ae9f071c7708f86ac56627",
+  "prompts": {},
+  "sessions": {
+    "s_a3d0eb8bd3caff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7dca468-7cff-4f29-878e-3e0b0f3b6d9b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

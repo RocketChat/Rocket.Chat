@@ -1,0 +1,14 @@
+apps/meteor/server/api/v1/rooms.ts
+  h_4c386397e672f4 1770-1773
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9a75186cd2ce5cf4ac615c552110a461de2b141b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

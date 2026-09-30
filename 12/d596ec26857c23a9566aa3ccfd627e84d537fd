@@ -1,0 +1,32 @@
+ee/packages/network-broker/src/nats.test.ts
+  s_26f749bfffb2b1::t_b3be9d48f50cf1 3-5,7-13,17-26,28-31,33-34,36-40,49-54,56-66,68-80,82-83
+  s_26f749bfffb2b1::t_38c4f7911b94b1 55,67
+  s_26f749bfffb2b1::t_67633974a3fc45 1-2,6,14-16,27,32,35,41-48,81
+ee/packages/network-broker/src/NatsBroker.test.ts
+  s_26f749bfffb2b1::t_9f6c1698cd483b 616,622-624,627,631-638,642
+  s_26f749bfffb2b1::t_38c4f7911b94b1 614
+  s_26f749bfffb2b1::t_71a562a6f9d56f 600-613,615,617-621,625-626,628-630,639-641,643-648
+ee/packages/network-broker/src/fakeNatsConnection.ts
+  s_26f749bfffb2b1::t_5dcf5138e497c9 37-40
+ee/packages/network-broker/src/nats.ts
+  s_26f749bfffb2b1::t_6ff1ba8cd3610a 6,14-25,27-33
+  s_26f749bfffb2b1::t_359f9e42320716 13
+ee/packages/network-broker/src/NatsBroker.ts
+  s_26f749bfffb2b1::t_5325cd0c4ebed8 593-608
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "12d596ec26857c23a9566aa3ccfd627e84d537fd",
+  "prompts": {},
+  "sessions": {
+    "s_26f749bfffb2b1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d88e19aa-5202-4496-a4f2-0f1cb4a5f5e2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
