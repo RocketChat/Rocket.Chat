@@ -23,6 +23,13 @@ test.describe.serial('Sidebar', () => {
 		await poHomeChannel.goto();
 	});
 
+	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+		await poHomeChannel.sidebar.waitForRoom(targetChannel);
+
+		const results = await makeAxeBuilder(poHomeChannel.sidebar.a11yScope).analyze();
+		expect(results.violations).toEqual([]);
+	});
+
 	test.describe('global header', async () => {
 		test('should display recent chats when navbar search is clicked', async () => {
 			await poHomeChannel.navbar.searchInput.click();

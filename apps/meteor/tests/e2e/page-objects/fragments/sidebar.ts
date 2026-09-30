@@ -21,6 +21,8 @@ export abstract class Sidebar {
 }
 
 export class RoomSidebar extends Sidebar {
+	readonly a11yScope = '#sidebar-region';
+
 	readonly menuOptions: MenuOptions;
 
 	readonly menuMoveTo: MenuMoveTo;
@@ -81,11 +83,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList
-			.getByRole('listitem', { name: /^(Collapse|Expand) / })
-			.first()
-			.getByRole('button')
-			.first();
+		return this.channelsList.getByRole('listitem').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -100,15 +98,8 @@ export class RoomSidebar extends Sidebar {
 		return this.channelsList.getByRole('listitem', { name: 'Collapse Direct messages' });
 	}
 
-	get firstChannelFromList(): Locator {
-		return this.channelsList
-			.getByRole('listitem')
-			.filter({ has: this.page.getByRole('link') })
-			.first();
-	}
-
-	async waitForRoomListReady(): Promise<void> {
-		await expect(this.channelsList.getByRole('link').first()).toBeVisible();
+	async waitForRoom(name: string): Promise<void> {
+		await expect(this.getSidebarItemByName(name)).toBeVisible();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {
