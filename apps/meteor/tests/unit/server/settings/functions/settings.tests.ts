@@ -534,6 +534,32 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
+	it('should keep the stored value when the default value in code changes', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		// stored before the default changed: one untouched (still equal to the old default), one explicitly changed
+		await settingsRegistry.add('untouched_setting', true, { type: 'boolean' });
+		await settingsRegistry.add('changed_setting', true, { type: 'boolean' });
+		await Settings.updateValueById('changed_setting', false);
+
+		await settingsRegistry.add('untouched_setting', false, { type: 'boolean' });
+		await settingsRegistry.add('changed_setting', false, { type: 'boolean' });
+
+		expect(settings.get('untouched_setting')).to.be.equal(true);
+		expect(Settings.findOne({ _id: 'untouched_setting' }).value).to.be.equal(true);
+		expect(settings.get('changed_setting')).to.be.equal(false);
+		expect(Settings.findOne({ _id: 'changed_setting' }).value).to.be.equal(false);
+
+		// the default changes along with other metadata
+		await settingsRegistry.add('untouched_setting', false, { type: 'boolean', public: true });
+
+		expect(settings.get('untouched_setting')).to.be.equal(true);
+		expect(Settings.findOne({ _id: 'untouched_setting' })).to.include({ value: true, packageValue: false, public: true });
+	});
+
 	it('should not update (reset) cached setting with value in code if some prop in code changes (including value)', async () => {
 		Settings.setDelay(1000);
 		const settings = new CachedSettings();
