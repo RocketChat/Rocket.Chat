@@ -44,5 +44,10 @@ Unit tests are colocated (`src/**/*.spec.ts`). Integration tests under
 injected DNS resolver and self-signed certificates, exercising dialback,
 messaging, presence and cross-server MUC without any external peer.
 
-Interop against a real third-party server (Prosody/ejabberd) is a manual/e2e
-step tracked separately — see the architecture doc.
+```sh
+yarn test:e2e   # against a running Rocket.Chat, xmpp-server-service and XMPP server
+```
+
+The end-to-end suite (`tests/end-to-end/`) drives real XMPP users on a real
+server such as ejabberd. Its setup and environment variables are in
+[the architecture doc](../../../docs/features/xmpp-server-architecture.md#end-to-end-tests).

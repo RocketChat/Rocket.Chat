@@ -134,3 +134,69 @@ Usually **none** — this is standard XMPP federation, and public XMPP servers f
 - Presence subscriptions have no UI; the auto-accept policy above is fixed.
 - Single-instance deployments only: in a multi-instance cluster each instance would bind its own listener with independent state.
 - Direct TLS on port 5270 (XEP-0368) is not supported; STARTTLS on 5269 only.
+
+## Known bugs
+
+Each bug below was found by the end-to-end suite (`ee/packages/xmpp-server/tests/end-to-end/`), which keeps a skipped test for it. The test's comment links back here. To confirm a fix, turn that test back into a plain `it` and run the suite as the [architecture doc](xmpp-server-architecture.md#end-to-end-tests) describes.
+
+### Concurrent copies of one message are all stored
+
+When several copies of the same stanza arrive at once, Rocket.Chat stores every copy. Deduplication checks whether the message is already stored and inserts it if not, and nothing makes that check and the insert atomic. The event id index is not unique, and inbound handlers run concurrently, so copies that arrive together all pass the check.
+
+- **Room hosted by the XMPP server**: the room sends one copy per Rocket.Chat member session, so a message posted there is stored once per Rocket.Chat member.
+- **Direct messages**: a stanza redelivered with the same id straight after the first is stored twice. Copies that arrive a second or more apart are deduplicated correctly.
+
+Where: the message persistence path in `ee/packages/xmpp-server/src/service/XMPPServerService.ts`. Tests: `remote-muc.spec.ts` ("stores a message from the room once…") and `direct-messages.spec.ts` ("stores a redelivered stanza id once").
+
+### A member's own message comes back from a room that assigns its own ids
+
+When a Rocket.Chat member posts in a room hosted by the XMPP server, the room reflects the message to every other Rocket.Chat member's session. Rocket.Chat recognizes that reflection as its own only if the message id it sent comes back unchanged. A room that archives messages (MAM) replaces it with its own XEP-0359 stanza id, as ejabberd and Prosody do. The reflection is then stored again, once per other member, under a synthetic `nick#room` user.
+
+Where: remote-room message handling in `XMPPServerService.ts`. Test: `remote-muc.spec.ts` ("does not store a member's own message again…").
+
+### Copies without any id are never deduplicated
+
+When a room-message stanza carries neither an `id` nor a stanza id, each copy gets a random event id, so every copy is stored. Whether a fix should cover this case is a design decision. Deduplicating by content is lossy; an alternative is to accept room messages from only one member session per room.
+
+Test: `remote-muc.spec.ts` ("stores a message sent without an id once").
+
+### Edits reach XMPP users as new messages
+
+Editing a message in a federated room or DM re-sends the new text to XMPP as an ordinary message, so XMPP users see a second message. The "v1 limitations" above describe edits as local-only, which is not what happens. The fix is either to skip edits in the outgoing message hook or to send them as XEP-0308 corrections.
+
+Where: the outgoing message hook in `apps/meteor/ee/server/hooks/xmpp/`. Test: `hosted-muc.spec.ts` ("delivers an edit as an XEP-0308 correction…").
+
+### A second invite into a mirrored room does not make the user a member
+
+The first Rocket.Chat user invited from the XMPP side gets the mirrored channel and a subscription. A later invite into the same room only joins the invitee's session: they appear as an occupant on the XMPP side but are never subscribed to the channel in Rocket.Chat.
+
+Where: invite handling in `XMPPServerService.ts`. Test: `remote-muc.spec.ts` ("subscribes a second local user invited from the XMPP side").
+
+### Presence from XMPP users is ignored
+
+Every inbound presence is discarded. The remote user is loaded without the field that marks it as an XMPP user, so it never passes the federated-user check, and its status never changes.
+
+Where: inbound presence handling in `XMPPServerService.ts`. Test: `presence.spec.ts` ("applies a contact's presence to their Rocket.Chat user").
+
+### Rocket.Chat status changes do not reach XMPP contacts
+
+After a Rocket.Chat user changes status, the XMPP server never receives a presence from them. The user holds a live session, their status really changes, and the DM with the contact is marked as XMPP-federated. The cause is not yet known; the service's debug log (`LOG_LEVEL=debug`) is the place to start.
+
+Test: `presence.spec.ts` ("relays a Rocket.Chat status change to subscribed contacts").
+
+### Allow list changes need a service restart
+
+Changes to `XMPP_Server_Domain_Allow_List` are only applied when the service restarts. Only listener-affecting settings trigger a restart, and the update path that runs without one refreshes the presence flag alone, so the running server keeps enforcing the old list.
+
+Where: configuration handling in `XMPPServerService.ts`. Test: `connectivity.spec.ts` ("drops messages from a domain outside the allow list").
+
+### Kicked XMPP users are not told they were removed
+
+When Rocket.Chat removes an XMPP user from a room it hosts, the other occupants get the `unavailable` presence with status 307, but the removed user does not. Their client keeps showing them in the room.
+
+Where: `ee/packages/xmpp-server/src/muc/MucRoom.ts`. Test: `hosted-muc.spec.ts` ("tells the kicked XMPP user they were removed").
+
+### Suspected, not covered by a test yet
+
+- Every inbound message from an XMPP user resets that user's Rocket.Chat status to offline, which would undo any presence that had been applied.
+- Hosted-room occupants are never removed when the server-to-server connection to their server drops, so later messages keep being sent to them.

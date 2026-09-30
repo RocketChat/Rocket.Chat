@@ -199,7 +199,56 @@ Deliberately minimal:
 
 - **Unit** (jest, `@rocket.chat/jest-presets/server`, colocated `*.spec.ts`): dialback key vectors (XEP-0185), JID escaping round-trips, `StanzaParser` hardening cases, `MucRoom` state machine with a stubbed sender, mapping helpers, hook bail conditions.
 - **Package integration** (`tests/integration/`): two in-memory `XMPPServer` instances on ephemeral ports with an injected DNS resolver and self-signed certs — full dialback dance, queue flush, spoof rejection, MUC join/broadcast/kick; a scripted `FakeXmppPeer` for negative paths.
-- **E2E** (`tests/end-to-end/`, mirroring `federation-matrix/tests/`): a Prosody container as the remote peer plus a scripted `@xmpp/client`, covering DMs, presence and both MUC directions against a running Rocket.Chat.
+- **End-to-end** (`tests/end-to-end/`): real XMPP users on a real XMPP server talking to a running Rocket.Chat; see below.
+
+### End-to-end tests
+
+The suite checks that Rocket.Chat reacts correctly to traffic from a real XMPP server. It runs locally against servers you already have running and sets none of them up; it is not part of CI.
+
+```
+                ┌─ @xmpp/client (C2S) ──▶ XMPP server (ejabberd) ──S2S──┐
+node --test ────┤                                                        ▼
+                └─ REST ──────────────▶ Rocket.Chat ──broker──▶ xmpp-server-service
+```
+
+- **Runner**: the built-in `node:test` runner, which loads the TypeScript specs through `tsx`, the loader the Meteor API suite uses. `tsx` lets the specs import the shared test helpers: the REST helpers and test admin from `apps/meteor/tests/data`, `retry` from the API suite, and the `DDPListener` from the Matrix federation suite.
+- **XMPP side**: `helper/xmpp-client.ts`. Each suite registers fresh accounts in-band (XEP-0077) and removes them when it finishes. Every inbound stanza is recorded, so a wait never misses one that arrived before it started.
+- **Rocket.Chat side**: `helper/rocketchat.ts`, a set of thin wrappers over the shared helpers, logged in as the repo's test admin. Test users keep an unverified email, because email 2FA would otherwise block their login. Presence tests also give the user a live DDP session, since a user with no session never shows a status.
+- **Preflight**: every suite first checks the Rocket.Chat XMPP settings and the service's `/stats` (a decode-only service never forwards to Rocket.Chat). It then sends an S2S ping from an XMPP user to Rocket.Chat's domain, which proves federation in both directions. If a check fails, the suite stops and says what to fix.
+- **Coverage**: connectivity (ping, disco, allow list), direct messages, presence and subscriptions, rooms hosted by Rocket.Chat, and rooms hosted by the XMPP server. Each MUC spec has a "several Rocket.Chat members" block for duplicated messages. Cases that fail today are `it.skip` and link to [Known bugs](xmpp-server.md#known-bugs).
+
+What the servers need:
+
+- **ejabberd**:
+  - `mod_register` allows registration, and `registration_timeout: infinity` is set; without it, ejabberd accepts one registration per IP every ten minutes.
+  - `mod_muc` and `mod_mam` are on, so rooms can archive. Archiving rooms stamp XEP-0359 stanza ids, which some of the duplicate cases depend on.
+  - `s2s_use_starttls: optional` is set when Rocket.Chat has no TLS certificate.
+- **Rocket.Chat**:
+  - The repo's test admin exists, as it does under `TEST_MODE` (`apps/meteor/tests/data/user.ts`).
+  - The XMPP server is enabled, and its allow list is empty or includes the XMPP server's domain.
+- **xmpp-server-service**: runs without `XMPP_DECODE_ONLY`.
+- **Name resolution**: each server resolves the other's domain and MUC subdomain, through DNS, `/etc/hosts` or `XMPP_DNS_OVERRIDES` on the service.
+- **Node**: trusts the XMPP server's certificate, for example with `NODE_EXTRA_CA_CERTS` pointing at a local mkcert root.
+
+```sh
+NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" XMPP_E2E_XMPP_DOMAIN=xmpp.host \
+yarn workspace @rocket.chat/xmpp-server test:e2e
+```
+
+To run one file, or a single case by name, call the runner directly from `ee/packages/xmpp-server`:
+
+```sh
+node --import tsx --test --test-name-pattern='stores a message from the room once' tests/end-to-end/remote-muc.spec.ts
+```
+
+| Variable | Default |
+|---|---|
+| `XMPP_E2E_XMPP_DOMAIN` | required: the XMPP server's domain |
+| `XMPP_E2E_XMPP_SERVICE` | `xmpp://localhost:5222` |
+| `XMPP_E2E_XMPP_MUC_DOMAIN` | `conference.<domain>` |
+| `TEST_API_URL` | `http://localhost:3000`. The same variable as every other e2e suite. |
+| `XMPP_E2E_RC_DDP_URL` | `TEST_API_URL`. With microservices, point it at the DDP streamer (for example `http://localhost:4000`): it owns websocket sessions, and presence depends on them. |
+| `XMPP_E2E_SERVICE_URL` | `http://localhost:3039`. When it does not answer, the `/stats` checks are skipped. |
 
 ### Load testing
 
