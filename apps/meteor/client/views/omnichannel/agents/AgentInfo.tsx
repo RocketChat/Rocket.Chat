@@ -7,6 +7,8 @@ import {
 	ContextualbarSkeletonBody,
 	InfoPanelLabel,
 	InfoPanelText,
+	UserInfoAvatar,
+	UserInfoUsername,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 
 import AgentInfoAction from './AgentInfoAction';
 import { useRemoveAgent } from './hooks/useRemoveAgent';
-import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 

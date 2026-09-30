@@ -11,3 +11,4 @@ export { default as Away } from './Away';
 export { default as Online } from './Online';
 export { default as Offline } from './Offline';
 export { default as Loading } from './Loading';
+export { default as ReactiveUserStatus } from './ReactiveUserStatus';

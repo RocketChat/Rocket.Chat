@@ -3,7 +3,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { VideoConfPopupInfo } from '@rocket.chat/ui-video-conf';
 
-import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
+import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 
 export type VideoConfPopupCallerInfoProps = {
 	caller: VideoConference['createdBy'];

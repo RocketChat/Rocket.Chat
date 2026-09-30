@@ -9,6 +9,8 @@ import {
 	ContextualbarContent,
 	ContextualbarDialog,
 	FormSkeleton,
+	UserCardRole,
+	UserInfo,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,12 +19,16 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { UserCardRole } from '../../../../components/UserCard';
-import { UserInfo } from '../../../../components/UserInfo';
+import MarkdownText from '../../../../components/MarkdownText';
+import UTCClock from '../../../../components/UTCClock';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
+import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
+
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
+const renderLocalTime = (utcOffset: number) => <UTCClock utcOffset={utcOffset} />;
 
 export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
@@ -36,6 +42,7 @@ export type UserInfoWithDataProps = {
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
+	const timeAgo = useTimeAgo();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const { isPending, isError, data } = useQuery({
@@ -117,6 +124,9 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 				<UserInfo
 					{...user}
 					invitationDate={invitationDate}
+					timeAgo={timeAgo}
+					renderMarkdown={renderMarkdown}
+					renderLocalTime={renderLocalTime}
 					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
 				/>
 			)}

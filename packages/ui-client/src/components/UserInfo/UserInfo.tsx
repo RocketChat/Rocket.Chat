@@ -1,8 +1,14 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
+import { memo, useId } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useUserCustomFields } from '../../hooks/useUserCustomFields';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import {
-	useUserDisplayName,
-	ContextualbarScrollableContent,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -11,16 +17,7 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import { memo, useId } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import MarkdownText from '../MarkdownText';
-import UTCClock from '../UTCClock';
+} from '../InfoPanel';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
@@ -53,6 +50,9 @@ export type UserInfoProps = UserInfoDataProps & {
 	roles: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
+	timeAgo: (time: string) => string;
+	renderMarkdown: (content: string) => ReactNode;
+	renderLocalTime: (utcOffset: number) => ReactNode;
 };
 
 const UserInfo = ({
@@ -77,10 +77,12 @@ const UserInfo = ({
 	freeSwitchExtension,
 	abacAttributes,
 	invitationDate,
+	timeAgo,
+	renderMarkdown,
+	renderLocalTime,
 	...props
 }: UserInfoProps) => {
 	const { t } = useTranslation();
-	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 
@@ -139,18 +141,14 @@ const UserInfo = ({
 					{utcOffset && Number.isInteger(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
-							<InfoPanelText>
-								<UTCClock utcOffset={utcOffset} />
-							</InfoPanelText>
+							<InfoPanelText>{renderLocalTime(utcOffset)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
-								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
+							<InfoPanelText withTruncatedText={false}>{renderMarkdown(bio)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -204,9 +202,7 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
-									<InfoPanelText>
-										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
+									<InfoPanelText>{renderMarkdown(customField.value)}</InfoPanelText>
 								</InfoPanelField>
 							),
 					)}

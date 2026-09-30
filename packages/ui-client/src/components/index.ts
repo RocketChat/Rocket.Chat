@@ -29,3 +29,5 @@ export { default as GenericNoResults, type GenericNoResultsProps } from './Gener
 export { default as GenericError, type GenericErrorProps } from './GenericError/GenericError';
 export { default as FilterByText, type FilterByTextProps } from './FilterByText';
 export * from './FormSkeleton';
+export * from './UserCard';
+export * from './UserInfo';

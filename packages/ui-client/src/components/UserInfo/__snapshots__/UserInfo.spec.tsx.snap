@@ -92,11 +92,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                      >
-                        🛴 currently working on User Card
-                      </div>
+                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -186,11 +182,7 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -383,11 +375,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                     <div
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                      >
-                        🛴 currently working on User Card
-                      </div>
+                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -477,11 +465,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -523,7 +507,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        January 1st, 2025
+                        Wed, 01 Jan 2025 12:00:00 GMT
                       </div>
                     </div>
                   </div>
@@ -688,11 +672,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                     <div
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                      >
-                        🛴 currently working on User Card
-                      </div>
+                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -782,11 +762,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -1039,11 +1015,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                     <div
                       class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                      >
-                        🛴 currently working on User Card
-                      </div>
+                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -1133,11 +1105,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
