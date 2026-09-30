@@ -39,4 +39,24 @@ describe('LiveKit configuration', () => {
 			expect(isLiveKitFullyConfigured()).to.be.false;
 		});
 	});
+
+	it('is not configured while disabled, even with a server and credentials', () => {
+		values.VideoConf_LiveKit_Enabled = false;
+
+		expect(isLiveKitFullyConfigured()).to.be.false;
+	});
+
+	it('uses the configured token lifetime', () => {
+		values.VideoConf_LiveKit_Token_TTL = 2;
+
+		expect(getLiveKitConfig().tokenTtlHours).to.equal(2);
+	});
+
+	[undefined, 0, -1].forEach((ttl) => {
+		it(`falls back to a 6 hour token lifetime when it is ${ttl}`, () => {
+			values.VideoConf_LiveKit_Token_TTL = ttl;
+
+			expect(getLiveKitConfig().tokenTtlHours).to.equal(6);
+		});
+	});
 });
