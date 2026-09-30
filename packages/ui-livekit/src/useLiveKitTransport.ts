@@ -4,14 +4,15 @@ import { useQuery } from '@tanstack/react-query';
 
 /** Credentials to reach the media server for this call; refused credentials surface as an error, never as `null`. */
 export const useLiveKitTransport = (callId: string, enabled: boolean) => {
-	const getTransportConfig = useEndpoint('GET', '/v1/video-conference.livekit.transport.config');
+	const getCallConfig = useEndpoint('GET', '/v1/video-conference.callConfig');
 
 	return useQuery({
-		queryKey: [...videoConferenceInfoQueryKey(callId), 'livekit-transport'],
+		queryKey: [...videoConferenceInfoQueryKey(callId), 'call-config'],
 		queryFn: async () => {
-			const { livekit } = await getTransportConfig({ callId });
+			const { livekit } = await getCallConfig({ callId });
+			// The server answers a LiveKit call with its configuration or an error, never with neither.
 			if (!livekit) {
-				throw new Error('error-videoconf-livekit-transport-unavailable');
+				throw new Error('error-videoconf-unexpected');
 			}
 			return livekit;
 		},
