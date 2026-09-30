@@ -1,8 +1,10 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, lazy, Suspense, useEffect, useState } from 'react';
 
-import { ImageGallery } from '../components/ImageGallery';
+import { ImageGalleryLoading } from '../components/ImageGallery/ImageGalleryLoading';
 import { ImageGalleryContext } from '../contexts/ImageGalleryContext';
-import ImageGalleryData from '../views/room/ImageGallery/ImageGalleryData';
+
+const ImageGallery = lazy(() => import('../components/ImageGallery/ImageGallery').then(({ ImageGallery }) => ({ default: ImageGallery })));
+const ImageGalleryData = lazy(() => import('../views/room/ImageGallery/ImageGalleryData'));
 
 export type ImageGalleryProviderProps = {
 	children: ReactNode;
@@ -43,9 +45,15 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 		<ImageGalleryContext.Provider value={{ imageId: imageId || '', isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
 			{children}
 			{!!singleImageUrl && (
-				<ImageGallery images={[{ _id: singleImageUrl, url: singleImageUrl }]} onClose={() => setSingleImageUrl(undefined)} />
+				<Suspense fallback={<ImageGalleryLoading onClose={() => setSingleImageUrl(undefined)} />}>
+					<ImageGallery images={[{ _id: singleImageUrl, url: singleImageUrl }]} onClose={() => setSingleImageUrl(undefined)} />
+				</Suspense>
 			)}
-			{!!imageId && <ImageGalleryData />}
+			{!!imageId && (
+				<Suspense fallback={<ImageGalleryLoading onClose={() => setImageId(undefined)} />}>
+					<ImageGalleryData />
+				</Suspense>
+			)}
 		</ImageGalleryContext.Provider>
 	);
 };
