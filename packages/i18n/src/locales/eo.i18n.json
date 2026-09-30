@@ -100,8 +100,6 @@
   "Accounts_OAuth_Google_secret": "Google Sekreta",
   "Accounts_OAuth_Nextcloud": "OAuth enabled",
   "Accounts_OAuth_Nextcloud_secret": "Kliento Sekreta",
-  "Accounts_OAuth_Proxy_host": "Proxy-Gastiganto",
-  "Accounts_OAuth_Proxy_services": "Prokservaj Servoj",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Ĉe Plej Malfrua Unu Malsupra",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Certigu, ke pasvorto enhavas almenaŭ unu minusklaran karakteron.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Ĉe Plej Malpli Numero",

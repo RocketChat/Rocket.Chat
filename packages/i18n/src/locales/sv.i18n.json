@@ -320,8 +320,6 @@
   "Accounts_OAuth_Nextcloud_id": "Nextcloud-id",
   "Accounts_OAuth_Nextcloud_secret": "Klienthemlighet",
   "Accounts_OAuth_Nextcloud_URL": "Server-URL till Nextcloud",
-  "Accounts_OAuth_Proxy_host": "Proxyvärd",
-  "Accounts_OAuth_Proxy_services": "Proxytjänster",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Minst en liten bokstav",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Kräv att lösenord innehåller minst en liten bokstav.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Åtminstone en siffra",

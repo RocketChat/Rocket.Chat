@@ -104,8 +104,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth ir iespējots",
   "Accounts_OAuth_Nextcloud_secret": "Client secret",
-  "Accounts_OAuth_Proxy_host": "Starpniekservera resursdators",
-  "Accounts_OAuth_Proxy_services": "Starpniekservera pakalpojumi",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Vismaz viens mazais burts",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Nodrošināt, ka parole satur vismaz vienu mazo rakstuzīmi.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Vismaz viens cipars",

@@ -102,8 +102,6 @@
   "Accounts_OAuth_Google_secret": "Google Tajnosť",
   "Accounts_OAuth_Nextcloud": "Služba OAuth je povolená",
   "Accounts_OAuth_Nextcloud_secret": "Klientska Tajnosť",
-  "Accounts_OAuth_Proxy_host": "Hostiteľ proxy",
-  "Accounts_OAuth_Proxy_services": "Služby proxy",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Najmenej jedno malé písmeno",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Vynútiť, aby heslo obsahovalo aspoň jedno malé písmeno.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Najmenej jedno číslo",

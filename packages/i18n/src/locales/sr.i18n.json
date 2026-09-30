@@ -77,7 +77,6 @@
   "Accounts_OAuth_Gitlab_identity_path": "Путања до идентитета",
   "Accounts_OAuth_Gitlab_secret": "Тајна клијента",
   "Accounts_OAuth_Nextcloud_secret": "Тајна клијента",
-  "Accounts_OAuth_Proxy_host": "Прокси хост",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Најмање једно мало слово",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Захтева да лозинка садржи најмање једно мало слово.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Најмање један број",

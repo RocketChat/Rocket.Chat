@@ -99,8 +99,6 @@
   "Accounts_OAuth_Google_secret": "Google secret",
   "Accounts_OAuth_Nextcloud": "OAuth enabled",
   "Accounts_OAuth_Nextcloud_secret": "Үйлчлүүлэгчийн нууц",
-  "Accounts_OAuth_Proxy_host": "Прокси хост",
-  "Accounts_OAuth_Proxy_services": "Прокси үйлчилгээ",
   "Accounts_Password_Policy_AtLeastOneLowercase": "Хамгийн багадаа нэг жижиг үсэг",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Нууц үгэнд дор хаяж нэг жижиг үсэг орсон байх ёстой.",
   "Accounts_Password_Policy_AtLeastOneNumber": "Хамгийн багадаа нэг дугаар",
