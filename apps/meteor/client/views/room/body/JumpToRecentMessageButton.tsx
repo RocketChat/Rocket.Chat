@@ -26,6 +26,14 @@ const buttonStyle = css`
 			transform 0.5s linear,
 			visibility 0s linear 0.5s;
 	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+
+		&.not {
+			transition: none;
+		}
+	}
 `;
 
 const JumpToRecentMessageButton = ({ visible, onClick, text }: JumpToRecentMessageButtonProps) => (
