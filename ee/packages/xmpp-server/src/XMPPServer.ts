@@ -6,7 +6,7 @@ import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config';
 import { resolveConfig } from './config';
 import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
 import type { ConnectionStatus, XMPPServerEventMap } from './events';
-import { normalizeUserBareJid } from './jid/normalize';
+import { normalizeRoomJid, normalizeUserBareJid } from './jid/normalize';
 import type { Logger } from './logger';
 import type { MucOccupant } from './muc/MucRoom';
 import { MucService } from './muc/MucService';
@@ -310,8 +310,15 @@ export class XMPPServer {
 		}
 	}
 
+	/** Keys a remote room session so that every spelling of the room's JID finds it. */
 	private remoteKey(localJid: string, roomJid: string): string {
-		return `${localJid.split('/')[0]}|${roomJid}`;
+		let room = roomJid;
+		try {
+			room = normalizeRoomJid(roomJid);
+		} catch {
+			// A malformed address is kept as given and matches no session
+		}
+		return `${localJid.split('/')[0]}|${room}`;
 	}
 
 	/** Low-level send used by the routing/handler layers. Rejects if the server is stopped. */

@@ -2,15 +2,19 @@
 
 - **Status:** accepted
 - **Date:** 2026-08
-- **Scope:** `src/jid/normalize.ts`, every trust comparison in `src/stream/` and `src/s2s/`
+- **Scope:** `src/jid/normalize.ts`, every trust comparison in `src/stream/` and `src/s2s/`, remote room JIDs in `src/muc/MucService.ts` and `src/XMPPServer.ts`
 
 ## Decision
 
 `normalizeDomain` trims, strips a trailing dot, converts to ASCII with Node's `domainToASCII`
 (IDNA) and lowercases. It throws `InvalidJidError` for anything that does not survive the
 conversion. Every comparison that decides trust (dialback domains, the spoof check, allow and
-deny lists, the stream `to`) goes through it. Localparts and resources are not normalized
-beyond XEP-0106 escaping.
+deny lists, the stream `to`) goes through it. User localparts and resources are not
+normalized beyond XEP-0106 escaping.
+
+Remote room JIDs are the exception: `normalizeRoomJid` also lowercases the localpart. It is
+applied to the room JID of every incoming invitation and to the room part of every remote
+room session key.
 
 ## Why
 
@@ -19,6 +23,13 @@ IDNA plus case folding is exactly the equivalence DNS uses, and it is what the r
 look up. Full RFC 7622 PRECIS profiles for localparts and resources would need a stringprep
 library and would only matter for matching user identities that are never compared for
 trust.
+
+A remote room JID is compared for identity: it is the key of the channel that mirrors the
+room ([remote-muc R1](../specs/remote-muc.md)) and of the sessions that carry its traffic. A
+direct invitation (XEP-0249) carries a room JID typed by the inviter's client, so two
+invitations into one room can spell it differently, and without folding case each spelling
+would get its own channel. RFC 7622 maps localpart case, and MUC services treat room names
+case-insensitively, so lowercasing loses nothing.
 
 ### Alternatives rejected
 
@@ -29,5 +40,5 @@ trust.
 ## Consequences
 
 - A localpart with unusual Unicode is passed through as the peer sent it; two spellings that
-  PRECIS would fold are two users.
+  PRECIS would fold are two users. For rooms, only case is folded.
 - Any new comparison of domains must call `normalizeDomain` on both sides.

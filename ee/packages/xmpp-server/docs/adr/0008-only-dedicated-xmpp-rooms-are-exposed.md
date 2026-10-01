@@ -2,7 +2,7 @@
 
 - **Status:** accepted
 - **Date:** 2026-08
-- **Scope:** `src/muc/MucService.ts`, `src/service/XMPPServerService.ts` (`authorizeMucJoin`), client touch points
+- **Scope:** `src/muc/MucService.ts`, `src/service/XMPPServerService.ts` (`authorizeMucJoin`, `onMucInvite`), `src/service/helpers/remoteRoom.ts`, client touch points
 
 ## Decision
 
@@ -40,5 +40,15 @@ bookmark handling are client features that can be added on top of the same sessi
 - The toggle is mutually exclusive with the Matrix one; a room federates one way or not at all.
 - Renaming a hosted room does not change its MUC JID.
 - `xmppFederation.muc` is the lookup key for every inbound room stanza.
-- Mirrored rooms are created as public channels named `xmpp_<room>` with the invitee as the
-  only member; later invitees are expected to be added by the same path.
+- Mirrored rooms are created as public channels with the invitee as the only member; later
+  invitees are expected to be added by the same path.
+- A mirrored room is shown as `<localpart>:<room domain>` (`fname`), as Matrix rooms are, and
+  is named after its whole JID, with every character outside `[0-9a-zA-Z-_.]` replaced by
+  `_` and the first 8 hex digits of the JID's SHA-256 appended: `team@conference.remote.tld`
+  shows as `team:conference.remote.tld` and is named `team_conference.remote.tld-<hash>`.
+  Room names are unique across the workspace and XEP-0045 gives a room no identifier other
+  than its JID, so the name is derived from it. `<localpart>:<domain>` itself would be unique
+  but fails Rocket.Chat's channel-name validation. The replacement alone would merge rooms
+  whose names differ only in replaced characters (`café` and `cafè`, any two CJK names of
+  the same length), which a Matrix room id, random ASCII, never has; the hash keeps them
+  apart and keeps a local channel from taking the name first by accident.

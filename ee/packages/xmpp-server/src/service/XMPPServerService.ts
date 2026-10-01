@@ -23,6 +23,7 @@ import { domainOfJid, toBareJid } from './helpers/jid';
 import { deriveInboundMessageId } from './helpers/messageId';
 import type { InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
+import { mirroredRoomDisplayName, mirroredRoomName } from './helpers/remoteRoom';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
 import type { XmppDnsResolver } from '../s2s/dnsResolver';
 
@@ -789,12 +790,12 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (room) {
 			await Room.addUserToRoom(room._id, localUser, inviter);
 		} else {
-			const roomName = event.roomJid.split('@')[0];
 			const created = await Room.create(localUser._id, {
 				type: 'c',
-				name: `xmpp_${roomName}`,
+				name: mirroredRoomName(event.roomJid),
 				members: [localUser.username as string],
 				extraData: {
+					fname: mirroredRoomDisplayName(event.roomJid),
 					xmppFederation: { version: 1, role: 'remote-muc', muc: event.roomJid, origin: domainOfJid(event.roomJid) },
 				},
 			});

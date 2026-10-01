@@ -1,5 +1,5 @@
 import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain, normalizeUserBareJid } from './normalize';
+import { isDomainAllowed, normalizeDomain, normalizeRoomJid, normalizeUserBareJid } from './normalize';
 
 describe('normalizeUserBareJid', () => {
 	it('drops the resource and normalizes the domain only', () => {
@@ -11,6 +11,18 @@ describe('normalizeUserBareJid', () => {
 		expect(() => normalizeUserBareJid('@remote.tld')).toThrow(InvalidJidError);
 		expect(() => normalizeUserBareJid('a@b@remote.tld')).toThrow(InvalidJidError);
 		expect(() => normalizeUserBareJid('alice@')).toThrow(InvalidJidError);
+	});
+});
+
+describe('normalizeRoomJid', () => {
+	it('drops the resource and lowercases the localpart as well as the domain (remote-muc R1)', () => {
+		expect(normalizeRoomJid('Team@Conference.Remote.TLD/nick')).toBe('team@conference.remote.tld');
+		expect(normalizeRoomJid('Café@müller.example')).toBe('café@xn--mller-kva.example');
+	});
+
+	it('throws for a JID that names no room', () => {
+		expect(() => normalizeRoomJid('conference.remote.tld')).toThrow(InvalidJidError);
+		expect(() => normalizeRoomJid('team@')).toThrow(InvalidJidError);
 	});
 });
 

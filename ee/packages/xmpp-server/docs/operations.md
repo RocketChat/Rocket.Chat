@@ -140,8 +140,8 @@ up:
   of the channel-creation dialog or later through **Members → Add users**. They become a
   member and receive a MUC invitation.
 - **Join a room hosted on a remote XMPP server**: not possible proactively. A remote user must
-  invite you; accepting joins you to the remote room, which appears as a channel in your
-  sidebar.
+  invite you; accepting joins you to the remote room, which appears in your sidebar as
+  `<room>:<conference domain>`.
 
 ### From the XMPP side
 

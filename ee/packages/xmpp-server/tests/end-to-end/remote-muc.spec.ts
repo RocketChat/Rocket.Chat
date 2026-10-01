@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { after, before, describe, it } from 'node:test';
 import { setTimeout as sleep } from 'node:timers/promises';
 
@@ -39,7 +40,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 
 	after(() => teardown(rc));
 
-	/** A members-only room owned by alice; Rocket.Chat mirrors it as the channel `xmpp_<localpart>`. */
+	/** A members-only room owned by alice; Rocket.Chat mirrors it as a channel named after its JID. */
 	async function openRoom({
 		archive,
 		disclosesJids = false,
@@ -54,7 +55,8 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 		rc.cleanup.add(() => alice.destroyRoom(roomJid));
 		// Occupants whose real JID the room hides are materialized as `<nick>#<room JID>`
 		forgetRemoteUserOnCleanup(rc, `${nick}#${roomJid}`);
-		return { roomJid, shadowName: `xmpp_${localpart}` };
+		const hash = createHash('sha256').update(roomJid).digest('hex').slice(0, 8);
+		return { roomJid, shadowName: `${roomJid.replace(/[^0-9a-zA-Z-_.]/g, '_')}-${hash}` };
 	}
 
 	async function inviteFromXmpp(roomJid: string, user: LocalUser): Promise<void> {
@@ -82,6 +84,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 		deleteRoomOnCleanup(rc, room._id);
 		assert.equal(room.xmppFederation?.role, 'remote-muc');
 		assert.equal(room.xmppFederation?.muc, roomJid);
+		assert.equal(room.fname, roomJid.replace('@', ':'));
 		return room;
 	}
 
@@ -101,7 +104,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			({ roomJid, shadowName } = await openRoom({ archive: true }));
 		});
 
-		it('mirrors the room in Rocket.Chat when a local user is invited', async () => {
+		it('mirrors the room in Rocket.Chat when a local user is invited (R1)', async () => {
 			await inviteFromXmpp(roomJid, a);
 			shadow = await waitForShadowRoom(shadowName, roomJid);
 			assert.ok((await listMemberUsernames(a, shadow)).includes(a.username));

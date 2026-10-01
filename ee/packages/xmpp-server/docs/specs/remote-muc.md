@@ -1,18 +1,29 @@
 ---
 status: partial
 standards: [XEP-0045, XEP-0249]
-adrs: [0006, 0007, 0008, 0009, 0012, 0015]
+adrs: [0006, 0007, 0008, 0009, 0011, 0012, 0015]
 code:
   [
     src/muc/RemoteMucSession.ts,
     src/muc/MucService.ts,
     src/muc/stanzas.ts,
+    src/jid/normalize.ts,
     src/XMPPServer.ts,
     src/service/XMPPServerService.ts,
+    src/service/helpers/remoteRoom.ts,
     src/service/helpers/xmppUser.ts,
     apps/meteor/ee/server/hooks/xmpp/index.ts,
   ]
-tests: [src/muc/RemoteMucSession.spec.ts, src/muc/stanzas.spec.ts, tests/integration/muc.spec.ts, tests/end-to-end/remote-muc.spec.ts]
+tests:
+  [
+    src/muc/RemoteMucSession.spec.ts,
+    src/muc/MucService.spec.ts,
+    src/muc/stanzas.spec.ts,
+    src/jid/normalize.spec.ts,
+    src/service/helpers/remoteRoom.spec.ts,
+    tests/integration/muc.spec.ts,
+    tests/end-to-end/remote-muc.spec.ts,
+  ]
 ---
 
 # Spec: Remote rooms
@@ -34,9 +45,17 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
 
 - **R1** A MUC invitation addressed to a local user, mediated (XEP-0045 §7.8.2) or direct
   (XEP-0249), creates the inviter's user record and, when no room mirrors that MUC yet, a
-  public channel named `xmpp_<room localpart>` stamped
-  `xmppFederation: { role: 'remote-muc', muc: <room JID>, origin: <room domain> }` with the
-  invitee as its first member. An invitation into a MUC that is already mirrored adds the
+  public channel with the invitee as its first member. The room JID is taken as a bare JID
+  with its localpart lowercased and its domain normalized
+  ([ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md)); an invitation
+  whose room JID names no room is dropped. The channel
+  ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)):
+  - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use);
+  - is named the room JID with every character outside `[0-9a-zA-Z-_.]` replaced by `_`,
+    followed by `-` and the first 8 hex digits of the SHA-256 of the room JID;
+  - is stamped `xmppFederation: { role: 'remote-muc', muc: <room JID>, origin: <room domain> }`.
+
+  An invitation into a MUC that is already mirrored, in any spelling of its JID, adds the
   invitee as a member of the existing channel.
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
@@ -107,6 +126,10 @@ the author from `fromJid` or the per-room key.
 - Reconnecting a session the room dropped: `muc.remoteSessionLost` is declared but never
   emitted, and `RemoteMucSession.markStale` is never called.
 - Direct invitations sent by Rocket.Chat; the hosted-room side sends mediated invites only.
+- A channel-name validation setting stricter than R1's character set: the channel cannot
+  be created and the invitation is dropped.
+- Full RFC 7622 PRECIS for room localparts: R1 lowercases, nothing more.
+- Unescaping XEP-0106 localparts (`team\20room`) for the displayed name.
 
 ## Known defects
 

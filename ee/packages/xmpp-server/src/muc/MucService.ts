@@ -4,6 +4,7 @@ import type Element from 'ltx/lib/Element';
 import type { ResolvedXMPPServerConfig } from '../config';
 import type { XMPPServerEventMap } from '../events';
 import type { MucRoomDescription } from '../iq/disco';
+import { normalizeRoomJid } from '../jid/normalize';
 import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
@@ -127,7 +128,14 @@ export class MucService {
 		if (!invite) {
 			return false;
 		}
-		this.deps.events.emit('muc.inviteReceived', invite);
+		let roomJid: string;
+		try {
+			roomJid = normalizeRoomJid(invite.roomJid);
+		} catch (err) {
+			this.logger.warn({ err, roomJid: invite.roomJid }, 'Dropping MUC invite with an invalid room JID');
+			return true;
+		}
+		this.deps.events.emit('muc.inviteReceived', { ...invite, roomJid });
 		return true;
 	}
 
