@@ -11274,6 +11274,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
+    "@react-aria/dialog": "npm:^3.5.21"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "workspace:~"
@@ -11300,6 +11301,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.7"
+    date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.4.16"
     eslint: "npm:~10.7.0"
     i18next: "npm:~26.4.2"

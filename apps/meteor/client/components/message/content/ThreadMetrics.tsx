@@ -7,11 +7,11 @@ import {
 	MessageMetricsItemLabel,
 } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
 export type ThreadMetricsProps = {

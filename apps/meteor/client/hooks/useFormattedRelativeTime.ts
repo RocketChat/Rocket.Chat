@@ -1,5 +1,4 @@
+import { formatDurationMs } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
-
-import { formatDurationMs } from '../lib/utils/dateFormat';
 
 export const useFormattedRelativeTime = (timeMs: number): string => useMemo(() => formatDurationMs(timeMs), [timeMs]);
