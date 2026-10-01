@@ -1,0 +1,28 @@
+ee/packages/xmpp-server/docs/operations.md
+  s_676495b213565f::t_d4c90438f0cf8c 1-198
+ee/packages/xmpp-server/docs/architecture.md
+  s_676495b213565f::t_ef3a15ee77884a 1-323
+ee/packages/xmpp-server/README.md
+  s_676495b213565f::t_9fe5406043fd29 3-5,7,9-16,18,20-25,34-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "33b07860f4315aee25e7ad2a71ffff10cfecfbd1",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
