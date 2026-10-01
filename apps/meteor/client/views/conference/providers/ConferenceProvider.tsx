@@ -28,8 +28,8 @@ import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease'
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
-import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
+import { PEXIP_PROVIDER_NAME } from '../lib/callWindow';
 
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 

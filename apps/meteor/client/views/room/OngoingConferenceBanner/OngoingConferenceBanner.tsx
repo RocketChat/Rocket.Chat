@@ -3,8 +3,8 @@ import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useTranslation } from 'react-i18next';
 
-import { useVideoConfList } from '../contextualBar/VideoConference/VideoConfList/useVideoConfList';
 import { useRoom } from '../contexts/RoomContext';
+import { useVideoConfList } from '../contextualBar/VideoConference/VideoConfList/useVideoConfList';
 
 /**
  * A way into the call a discussion was opened for.
