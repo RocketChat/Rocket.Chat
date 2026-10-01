@@ -5068,11 +5068,11 @@
   "OS_Uptime": "OS uptime",
   "Other": "Other",
   "Others": "Others",
+  "others": "others",
   "Others_count": {
     "one": "{{count}} other",
     "other": "{{count}} others"
   },
-  "others": "others",
   "Out_of_seats": "Out of seats",
   "Outbound": "Outbound",
   "Outbound_message": "Outbound message",
