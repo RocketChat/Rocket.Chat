@@ -30,15 +30,10 @@ async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 	return body;
 }
 
+const isHttpUrl = (value: string): boolean => URL.canParse(value) && ['http:', 'https:'].includes(new URL(value).protocol);
+
 export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
 	const importer = Importers.get(importerKey);
-	let parsedUrl: URL | undefined;
-	try {
-		parsedUrl = new URL(fileUrl);
-	} catch (error) {
-		void error;
-	}
-	const isUrl = parsedUrl?.protocol === 'http:' || parsedUrl?.protocol === 'https:';
 	if (!importer) {
 		throw new Meteor.Error(
 			'error-importer-not-defined',
@@ -46,7 +41,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 			'downloadImportFile',
 		);
 	}
-	if (!isUrl) {
+	if (!isHttpUrl(fileUrl)) {
 		throw new Meteor.Error('error-invalid-import-file-url', fileUrl, 'downloadPublicImportFile');
 	}
 

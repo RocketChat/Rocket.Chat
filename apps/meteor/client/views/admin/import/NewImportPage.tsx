@@ -8,7 +8,6 @@ import {
 	Margins,
 	Select,
 	InputBox,
-	TextInput,
 	UrlInput,
 	FieldLabel,
 	FieldRow,
@@ -168,38 +167,11 @@ function NewImportPage() {
 		}
 	};
 
-	const [filePath, setFilePath] = useSafely(useState(''));
-
-	const handleFilePathChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setFilePath(event.currentTarget.value);
-	};
-
-	const handleFilePathImportButtonClick = async () => {
-		if (!importerKey) {
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			await downloadPublicImportFile({ importerKey, fileUrl: filePath });
-			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			router.navigate('/admin/import/prepare');
-		} catch (error) {
-			handleError(error, t('Failed_To_upload_Import_File'));
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	const importerKeySelectId = useId();
 	const fileTypeSelectId = useId();
 	const fileSourceInputId = useId();
 	const handleImportButtonClick =
-		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
-		(fileType === 'url' && handleFileUrlImportButtonClick) ||
-		(fileType === 'path' && handleFilePathImportButtonClick) ||
-		undefined;
+		(fileType === 'upload' && handleFileUploadImportButtonClick) || (fileType === 'url' && handleFileUrlImportButtonClick) || undefined;
 
 	return (
 		<Page>
@@ -258,7 +230,6 @@ function NewImportPage() {
 										options={[
 											['upload', t('Upload')],
 											['url', t('Public_URL')],
-											['path', t('Server_File_Path')],
 										]}
 									/>
 								</FieldRow>
@@ -305,16 +276,6 @@ function NewImportPage() {
 										</FieldLabel>
 										<FieldRow>
 											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
-										</FieldRow>
-									</Field>
-								)}
-								{fileType === 'path' && (
-									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_Path')}
-										</FieldLabel>
-										<FieldRow>
-											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
 										</FieldRow>
 									</Field>
 								)}

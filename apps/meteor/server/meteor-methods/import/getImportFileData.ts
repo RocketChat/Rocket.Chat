@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
@@ -56,7 +55,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	const fileName = instance.importRecord.file;
 	if (fileName) {
-		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		await instance.prepareUsingLocalFile(fullFilePath);
 	}
 

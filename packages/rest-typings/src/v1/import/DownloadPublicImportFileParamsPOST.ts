@@ -10,7 +10,7 @@ const DownloadPublicImportFileParamsPostSchema = {
 	properties: {
 		fileUrl: {
 			type: 'string',
-			pattern: '^https?://',
+			format: 'http_url',
 		},
 		importerKey: {
 			type: 'string',
