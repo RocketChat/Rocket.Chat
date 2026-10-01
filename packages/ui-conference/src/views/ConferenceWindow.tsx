@@ -128,7 +128,9 @@ const ConferenceWindow = () => {
 		);
 	}
 
-	if (session.loading) {
+	// Waits for the room even with a session: a call started on the start screen arrives joined before its provider
+	// is known, and until then an embedded call reads as a join with no URL.
+	if (session.loading || room.loading) {
 		return <>{slots.loading}</>;
 	}
 
@@ -137,10 +139,6 @@ const ConferenceWindow = () => {
 	}
 
 	if (!session.joined) {
-		if (room.loading) {
-			return <>{slots.loading}</>;
-		}
-
 		return (
 			// No `confirming`: joining takes this screen down with it — `session.loading` is that very request, and
 			// it returns the loading slot above — so there is no button left to report it on.

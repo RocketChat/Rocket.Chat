@@ -148,3 +148,25 @@ describe('a call that runs in this window', () => {
 		expect(screen.queryByRole('button', { name: 'Leave_call' })).not.toBeInTheDocument();
 	});
 });
+
+// Starting a call joins on the start screen, so this window opens joined while the call it belongs to is still being
+// read — and an embedded provider is only known from that read. Until then it is loading, not a failed join.
+it('waits for the call rather than reporting a join with no URL', () => {
+	const AppRoot = mockAppRoot().withJohnDoe().build();
+	const value = buildConferenceContext({
+		session: { joined: true, embedded: false, loading: false },
+		room: { rid: 'room-id', loading: true },
+		slots: { loading: <div role='progressbar' /> },
+	});
+
+	render(
+		<AppRoot>
+			<ConferenceContext.Provider value={value}>
+				<ConferenceWindow />
+			</ConferenceContext.Provider>
+		</AppRoot>,
+	);
+
+	expect(screen.getByRole('progressbar')).toBeInTheDocument();
+	expect(screen.queryByText('error-videoconf-unexpected')).not.toBeInTheDocument();
+});
