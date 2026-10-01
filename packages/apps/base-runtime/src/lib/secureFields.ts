@@ -57,7 +57,10 @@ function walk(value: unknown, seen: WeakMap<object, unknown>): unknown {
 	}
 
 	if (value instanceof Map) {
-		value.forEach((item, key) => value.set(key, walk(item, seen)));
+		const entries = [...value].map(([key, item]) => [walk(key, seen), walk(item, seen)] as const);
+
+		value.clear();
+		entries.forEach(([key, item]) => value.set(key, item));
 
 		return value;
 	}

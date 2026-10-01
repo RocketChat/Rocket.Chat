@@ -161,6 +161,23 @@ describe('applySecureFieldsDeep', () => {
 		assert.ok(!('apiToken' in result.room));
 	});
 
+	it('applies secure fields on Map keys, Map values and Set values', () => {
+		const key = markedRoom();
+		const item = markedRoom();
+		const member = markedRoom();
+
+		const result = applySecureFieldsDeep({ byRoom: new Map([[key, item]]), rooms: new Set([member]) } as any);
+
+		const [[resultKey, resultItem]] = [...result.byRoom];
+		const [resultMember] = [...result.rooms];
+
+		for (const room of [resultKey, resultItem, resultMember]) {
+			assert.deepStrictEqual(room, { id: 'general', abacAttributes: { department: 'support' } });
+		}
+		assert.strictEqual(result.byRoom.size, 1);
+		assert.strictEqual(result.rooms.size, 1);
+	});
+
 	it('throws when a marked object arrives while the app is unavailable', () => {
 		AppObjectRegistry.clear();
 
