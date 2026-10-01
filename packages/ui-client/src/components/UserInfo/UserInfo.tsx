@@ -16,15 +16,9 @@ import {
 	InfoPanelLabel,
 	InfoPanelSection,
 	InfoPanelText,
-} from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import { memo, useId } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import MarkdownText from '../MarkdownText';
+	InfoPanelTitle,
+} from '../InfoPanel';
+import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
 import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
@@ -97,6 +91,8 @@ const UserInfo = ({
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
+	const MarkdownText = useContext(MarkdownTextContext);
+
 	const usernameId = useId();
 
 	const profileDetails = [

@@ -18,8 +18,11 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/onboarding-ui": "~0.37.3",
-		"dompurify": "~3.4.12"
+		"@react-aria/dialog": "^3.5.21",
+		"@rocket.chat/onboarding-ui": "workspace:^",
+		"@rocket.chat/tools": "workspace:~",
+		"date-fns": "~4.1.0",
+		"dompurify": "~3.4.16"
 	},
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",

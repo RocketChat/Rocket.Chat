@@ -2,8 +2,8 @@ import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { GenericMenu, UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '@rocket.chat/ui-client';
+import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

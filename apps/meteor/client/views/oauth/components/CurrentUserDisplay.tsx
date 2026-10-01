@@ -1,11 +1,20 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/ui-client';
+import { css } from '@rocket.chat/css-in-js';
+import { UserCard, UserCardInfo, UserCardRole, UserStatus } from '@rocket.chat/ui-client';
 import { useRolesDescription, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
-import { UserCard, UserCardRole } from '../../../components/UserCard';
+import MarkdownText from '../../../components/MarkdownText';
+
+const clampStyle = css`
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	word-break: break-all;
+`;
 
 export type CurrentUserDisplayProps = {
 	user: IUser;

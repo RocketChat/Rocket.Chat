@@ -2,8 +2,6 @@ import { useUTCClock } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTimezoneTime } from '../hooks/useTimezoneTime';
-
 export type LocalTimeProps = {
 	utcOffset: number;
 };

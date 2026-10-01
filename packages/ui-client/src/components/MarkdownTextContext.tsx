@@ -14,5 +14,4 @@ const PlainText = ({ content, withTruncatedText = false }: MarkdownTextComponent
 	<Box withTruncatedText={withTruncatedText}>{content}</Box>
 );
 
-// TODO: drop this context once MarkdownText's dependencies (emoji parsing, parser limits) move to ui-client or are reachable through existing contexts
 export const MarkdownTextContext = createContext<ComponentType<MarkdownTextComponentProps>>(PlainText);
