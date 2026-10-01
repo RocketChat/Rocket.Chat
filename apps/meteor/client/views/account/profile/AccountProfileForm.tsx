@@ -184,7 +184,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(values);
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar: '' });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -200,12 +200,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					<Controller
 						control={control}
 						name='avatar'
-						render={({ field: { onChange } }) => (
+						render={({ field: { onChange, value } }) => (
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
 								name={userFullName}
 								username={username}
+								avatarObj={value}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
 							/>
