@@ -35,7 +35,8 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   (XEP-0249), creates the inviter's user record and, when no room mirrors that MUC yet, a
   public channel named `xmpp_<room localpart>` stamped
   `xmppFederation: { role: 'remote-muc', muc: <room JID>, origin: <room domain> }` with the
-  invitee as its first member.
+  invitee as its first member. An invitation into a MUC that is already mirrored adds the
+  invitee as a member of the existing channel.
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
@@ -90,14 +91,6 @@ on start, and persists `muc.remoteMessage`.
 - Direct invitations sent by Rocket.Chat; the hosted-room side sends mediated invites only.
 
 ## Known defects
-
-### D1 A second invite into a mirrored room does not make the user a member
-
-The first local user invited from the XMPP side gets the mirrored channel and a
-subscription. A later invite into the same room only joins the invitee's session: they
-appear as an occupant on the XMPP side but are never subscribed to the channel in
-Rocket.Chat. Where: `onMucInvite` only adds members when it creates the room. Test:
-`remote-muc.spec.ts`, "subscribes a second local user invited from the XMPP side".
 
 Defects that show in remote rooms but are owned elsewhere:
 

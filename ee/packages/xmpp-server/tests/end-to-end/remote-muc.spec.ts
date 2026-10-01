@@ -128,8 +128,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await waitForOccupant(roomJid, b);
 		});
 
-		// Known defect: ../../docs/specs/remote-muc.md#d1-a-second-invite-into-a-mirrored-room-does-not-make-the-user-a-member
-		it.skip('subscribes a second local user invited from the XMPP side', async () => {
+		it('subscribes a second local user invited from the XMPP side (R1)', async () => {
 			await inviteFromXmpp(roomJid, c);
 			await waitForOccupant(roomJid, c);
 			await retry(

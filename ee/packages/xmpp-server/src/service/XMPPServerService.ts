@@ -680,7 +680,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		await Message.saveMessageFromFederation({ fromId, rid, federation_event_id: eventId, msg: body, ts: new Date() });
 	}
 
-	/** Materializes a remote MUC as a shadow room and joins it on behalf of the invited local user. */
+	/** Makes the invited local user a member of the remote MUC's shadow room, creating it on first invite, and joins them into the MUC. */
 	private async onMucInvite(event: { roomJid: string; toLocalJid: string; fromJid: string }): Promise<void> {
 		if (!this.server) {
 			return;
@@ -691,10 +691,12 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 
-		await createOrUpdateXMPPUser({ jid: toBareJid(event.fromJid) });
+		const inviter = await createOrUpdateXMPPUser({ jid: toBareJid(event.fromJid) });
 
 		let room = await Rooms.findOne({ 'xmppFederation.muc': event.roomJid }, { projection: { _id: 1, xmppFederation: 1 } });
-		if (!room) {
+		if (room) {
+			await Room.addUserToRoom(room._id, localUser, inviter);
+		} else {
 			const roomName = event.roomJid.split('@')[0];
 			const created = await Room.create(localUser._id, {
 				type: 'c',
