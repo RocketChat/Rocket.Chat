@@ -27,7 +27,7 @@ export function setSandboxRequire(newRequire: SandboxRequire): void {
 
 /**
  * Extra globals bound into the app's eval shell on top of the common ones
- * (`exports`, `module`, `require`, `console`, `globalThis`). Node needs none;
+ * (`exports`, `module`, `require`, `globalThis`). Node needs none;
  * Deno injects a `Buffer` and shadows `Deno` with `undefined`. Injecting them
  * as data keeps the eval-shell skeleton single-source.
  */
