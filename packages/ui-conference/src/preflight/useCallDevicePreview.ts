@@ -8,8 +8,6 @@ type CallDevicePreview = {
 	stream: MediaStream | null;
 	/** Every camera, microphone and speaker the browser lists. */
 	devices: MediaDeviceInfo[];
-	/** Set when the browser refused — no permission, or no device. The screen says so rather than showing nothing. */
-	error: boolean;
 };
 
 /**
@@ -22,7 +20,6 @@ type CallDevicePreview = {
 export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDevices): CallDevicePreview => {
 	const [stream, setStream] = useState<MediaStream | null>(null);
 	const { devices, refresh } = useMediaDevices();
-	const [error, setError] = useState(false);
 
 	useEffect(() => {
 		// Only the microphone is opened here: asking for no track at all is a rejection, not an empty stream.
@@ -46,14 +43,12 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 					next.getTracks().forEach((track) => track.stop());
 					return;
 				}
-				setError(false);
 				setStream(next);
 				// Only now are the labels populated, so this waits for the permission rather than racing it.
 				refresh();
 			})
 			.catch(() => {
 				if (!cancelled) {
-					setError(true);
 					setStream(null);
 				}
 			});
@@ -67,5 +62,5 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 	// The last stream stays in state after the mic goes off, stopped; turning it back on must not show it again.
 	const shownStream = mic && stream?.active ? stream : null;
 
-	return { stream: shownStream, devices, error };
+	return { stream: shownStream, devices };
 };

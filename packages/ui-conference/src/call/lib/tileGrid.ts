@@ -16,7 +16,8 @@ const scoreAspect = (aspect: number): number => {
 		return -Math.abs(Math.log(aspect / TARGET_ASPECT)) * 0.5;
 	}
 	if (aspect < MIN_ACCEPTABLE_ASPECT) {
-		return -Math.abs(Math.log(MIN_ACCEPTABLE_ASPECT / aspect)) * 2.0;
+		// Continues from the band's edge score, so just outside the band never beats just inside it.
+		return scoreAspect(MIN_ACCEPTABLE_ASPECT) - Math.log(MIN_ACCEPTABLE_ASPECT / aspect) * 2.0;
 	}
 	return -Math.abs(Math.log(aspect / MAX_ACCEPTABLE_ASPECT)) * 2.0;
 };

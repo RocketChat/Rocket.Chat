@@ -32,12 +32,11 @@ beforeEach(() => {
 });
 
 // Asking the browser for no track at all is rejected, which used to show a camera-only preflight as failing.
-it('opens nothing and reports no error when only the camera is on', async () => {
+it('opens nothing when only the camera is on', async () => {
 	const { result } = renderHook(() => useCallDevicePreview({ mic: false, cam: true }, { camId: 'brio' }));
 
 	await waitFor(() => expect(enumerateDevices).toHaveBeenCalled());
 	expect(getUserMedia).not.toHaveBeenCalled();
-	expect(result.current.error).toBe(false);
 	expect(result.current.stream).toBeNull();
 });
 

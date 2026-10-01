@@ -148,13 +148,12 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 
 	const actions = useMemo(
 		(): CallActions => ({
+			// Remembered only once the device switched, so a refused prompt is not stored as the next call's choice.
 			toggleMic: () => {
-				persistDevicePreference({ mic: !micEnabled });
-				localParticipant.setMicrophoneEnabled(!micEnabled).catch(onToggleError);
+				localParticipant.setMicrophoneEnabled(!micEnabled).then(() => persistDevicePreference({ mic: !micEnabled }), onToggleError);
 			},
 			toggleCamera: () => {
-				persistDevicePreference({ cam: !camEnabled });
-				localParticipant.setCameraEnabled(!camEnabled).catch(onToggleError);
+				localParticipant.setCameraEnabled(!camEnabled).then(() => persistDevicePreference({ cam: !camEnabled }), onToggleError);
 			},
 			toggleScreenShare: () => {
 				localParticipant.setScreenShareEnabled(!screenEnabled).catch(onToggleError);

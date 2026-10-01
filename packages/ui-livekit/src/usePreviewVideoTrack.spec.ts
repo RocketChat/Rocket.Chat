@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack } from 'livekit-client';
 
@@ -11,7 +11,7 @@ jest.mock('livekit-client', () => ({
 const mockedCreateLocalVideoTrack = jest.mocked(createLocalVideoTrack);
 
 const makeTrack = () => {
-	const mediaStreamTrack = { readyState: 'live' };
+	const mediaStreamTrack = Object.assign(new EventTarget(), { readyState: 'live' });
 	const stop = jest.fn(() => {
 		mediaStreamTrack.readyState = 'ended';
 	});
@@ -74,6 +74,21 @@ it('does not show the stopped track again when the camera comes back on', async 
 	rerender({ enabled: false });
 	rerender({ enabled: true });
 	expect(result.current.track).toBeUndefined();
+});
+
+// An unplugged camera's last frame is not a preview: the screen says it is gone.
+it('drops the camera that ends on its own', async () => {
+	const track = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValue(track);
+
+	const { result } = renderHook(() => usePreviewVideoTrack(true, {}));
+	await waitFor(() => expect(result.current.track).toBe(track));
+
+	act(() => {
+		track.mediaStreamTrack.dispatchEvent(new Event('ended'));
+	});
+	expect(result.current.track).toBeUndefined();
+	expect(result.current.error).toBe(true);
 });
 
 // Trying again is not failing again: the note waits for this attempt's own answer.

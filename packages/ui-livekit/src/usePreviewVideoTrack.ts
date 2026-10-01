@@ -36,6 +36,13 @@ export const usePreviewVideoTrack = (enabled: boolean, { deviceId, onOpen = noop
 					next.stop();
 					return;
 				}
+				// An unplugged or seized camera ends the track without a render; without this its last frame stays up.
+				next.mediaStreamTrack.addEventListener('ended', () => {
+					if (!cancelled) {
+						setTrack(undefined);
+						setError(true);
+					}
+				});
 				setError(false);
 				setTrack(next);
 				onOpened();

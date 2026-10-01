@@ -14,6 +14,11 @@ describe('pickTileGridLayout', () => {
 	it('stacks tiles in a tall container', () => {
 		expect(pickTileGridLayout(2, 400, 800)).toEqual({ rows: 2, cols: 1 });
 	});
+
+	// Three columns would leave tiles just taller than 3:4 and two cells empty; a full two by two is in the band.
+	it('prefers a full grid in the band over one just outside it', () => {
+		expect(pickTileGridLayout(4, 111, 100)).toEqual({ rows: 2, cols: 2 });
+	});
 });
 
 describe('clampCellToAspectBand', () => {

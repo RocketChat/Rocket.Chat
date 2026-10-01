@@ -14,10 +14,11 @@ const AudioDevicePicker = () => {
 
 	const requestPermission = useDevicePermissionPrompt2();
 
-	// Asked on opening, since a call joined muted may not have the permission that names the devices yet.
+	// Asked on opening, since a call joined muted may not have the permission that names the devices yet. Any
+	// microphone will do: the app's chosen one can be unplugged, and the menu exists to pick another.
 	const askForDevices = useCallback(
 		() =>
-			requestPermission({ actionType: 'device-change' }).then((stream) => {
+			requestPermission({ actionType: 'device-change', constraints: { audio: true } }).then((stream) => {
 				stopTracks(stream);
 				refreshMediaDevices();
 			}),
