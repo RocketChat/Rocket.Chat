@@ -41,9 +41,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const query = useDebouncedValue(
 		useMemo(() => {
-			if (searchText !== prevRoomFilterText.current) {
-				setCurrent(0);
-			}
 			return {
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
@@ -53,7 +50,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
 			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
+		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types]),
 		500,
 	);
 
@@ -69,8 +66,11 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilterText.current = searchText;
-	}, [searchText]);
+		if (searchText !== prevRoomFilterText.current) {
+			setCurrent(0);
+			prevRoomFilterText.current = searchText;
+		}
+	}, [searchText, setCurrent]);
 
 	const headers = (
 		<>
