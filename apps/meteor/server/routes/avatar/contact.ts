@@ -34,8 +34,8 @@ export const contactAvatar = async function (request: IncomingMessage, res: Serv
 
 	const contactId = decodeURIComponent(req.url.slice(1).replace(/\?.*$/, ''));
 
-	const contact = await Contacts.findOneById<Pick<IContact, '_id' | 'uid' | 'displayName' | 'folderId' | 'externalId'>>(contactId, {
-		projection: { uid: 1, displayName: 1, folderId: 1, externalId: 1 },
+	const contact = await Contacts.findOneById<Pick<IContact, '_id' | 'uid' | 'displayName'>>(contactId, {
+		projection: { uid: 1, displayName: 1 },
 	});
 
 	if (!contact || !(await isRequestFromOwner(req, contact.uid))) {
@@ -46,8 +46,7 @@ export const contactAvatar = async function (request: IncomingMessage, res: Serv
 
 	setCacheAndDispositionHeaders(req, res);
 
-	const file =
-		contact.folderId && contact.externalId ? await Avatars.findOneContactAvatar(contact.uid, contact.folderId, contact.externalId) : null;
+	const file = await Avatars.findOneContactAvatar(contact._id);
 
 	if (file) {
 		void serveAvatarFile(file, req, res, next);

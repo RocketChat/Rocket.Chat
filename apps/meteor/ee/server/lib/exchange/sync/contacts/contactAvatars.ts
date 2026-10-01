@@ -1,5 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Avatars } from '@rocket.chat/models';
+import type { IContact, IUser } from '@rocket.chat/core-typings';
+import { Avatars, Contacts } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../../../server/lib/media/file-upload';
 import type { ExchangeContactPhoto } from '../../definition/types';
@@ -10,26 +10,26 @@ const store = () => FileUpload.getStore('Avatars');
 
 export const saveContactAvatar = async (
 	ownerId: IUser['_id'],
-	folderId: string,
-	{ data, contentType, externalId }: ExchangeContactPhoto,
+	contactId: IContact['_id'],
+	{ data, contentType }: ExchangeContactPhoto,
 ): Promise<void> => {
-	const current = await Avatars.findOneContactAvatar(ownerId, folderId, externalId, { projection: { _id: 1 } });
+	const current = await Avatars.findOneContactAvatar(contactId, { projection: { _id: 1 } });
 
 	if (current) {
 		await store().deleteById(current._id);
 	}
 
-	await store().insert({ userId: ownerId, folderId, externalId, type: contentType, size: data.byteLength }, Buffer.from(data));
+	await store().insert({ userId: ownerId, contactId, type: contentType, size: data.byteLength }, Buffer.from(data));
 };
 
-export const deleteContactAvatars = async (
-	ownerId: IUser['_id'],
-	folderId: string,
-	externalIds?: { in: string[] } | { notIn: string[] },
-): Promise<void> => {
+export const deleteContactAvatars = async (contactIds: IContact['_id'][]): Promise<void> => {
+	if (!contactIds.length) {
+		return;
+	}
+
 	// Concurrent because on  every backend but the local ones that is a network round trip.
 	await forEachWithConcurrency(
-		Avatars.findContactAvatars(ownerId, folderId, externalIds, { projection: { _id: 1, store: 1 } }),
+		Avatars.findContactAvatars(contactIds, { projection: { _id: 1, store: 1 } }),
 		AVATAR_DELETE_CONCURRENCY,
 		async ({ _id, store: storeName }) => {
 			if (!storeName) {
@@ -40,4 +40,20 @@ export const deleteContactAvatars = async (
 			await FileUpload.getStoreByName(storeName).delete(_id);
 		},
 	);
+};
+
+export const deleteFolderContactAvatars = async (
+	uid: IUser['_id'],
+	folderId: string,
+	externalIds?: { in: string[] } | { notIn: string[] },
+): Promise<void> => {
+	const contactIds: string[] = [];
+
+	for await (const { _id } of Contacts.findImportedByFolder<Pick<IContact, '_id'>>(uid, folderId, externalIds, {
+		projection: { _id: 1 },
+	})) {
+		contactIds.push(_id);
+	}
+
+	await deleteContactAvatars(contactIds);
 };
