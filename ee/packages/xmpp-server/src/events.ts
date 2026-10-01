@@ -57,6 +57,16 @@ export type XMPPServerEventMap = {
 	'muc.remoteJoinFailed': { roomJid: string; localJid: string; condition: string };
 	'muc.remoteOccupantJoined': { roomJid: string; occupant: MucRemoteOccupant };
 	'muc.remoteOccupantLeft': { roomJid: string; nick: string };
-	'muc.remoteMessage': { roomJid: string; fromNick: string; body: string; id?: string; replaceId?: string; raw: Element };
+	'muc.remoteMessage': {
+		roomJid: string;
+		fromNick: string;
+		body: string;
+		/** The room-assigned XEP-0359 stanza id when present, otherwise the sender's. */
+		id?: string;
+		/** The id the sender gave the message, which survives the room assigning its own. */
+		originId?: string;
+		replaceId?: string;
+		raw: Element;
+	};
 	'muc.remoteSessionLost': { roomJid: string; localJid: string };
 };

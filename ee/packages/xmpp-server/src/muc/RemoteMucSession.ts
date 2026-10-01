@@ -23,7 +23,7 @@ export type RemoteMucSessionDeps = {
 	onJoinFailed: (condition: string) => void;
 	onOccupantJoined: (occupant: MucRemoteOccupant) => void;
 	onOccupantLeft: (nick: string) => void;
-	onMessage: (params: { fromNick: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
+	onMessage: (params: { fromNick: string; body: string; id?: string; originId?: string; replaceId?: string; raw: Element }) => void;
 };
 
 /**
@@ -119,8 +119,9 @@ export class RemoteMucSession {
 		}
 		// Every local member holds a session, so the same message arrives once per member:
 		// prefer the room-assigned XEP-0359 id, which makes deduplication reliable.
+		const originId = message.getChild('origin-id', NS_SID)?.attrs.id ?? message.attrs.id;
 		const stanzaId = message.getChild('stanza-id', NS_SID)?.attrs.id ?? message.attrs.id;
-		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, replaceId: parseReplaceId(message), raw: message });
+		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, originId, replaceId: parseReplaceId(message), raw: message });
 	}
 
 	markStale(): void {

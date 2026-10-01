@@ -181,8 +181,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await expectStoredOnce(members[0], shadow, text);
 		});
 
-		// Known defect: ../../docs/specs/message-deduplication.md#d2-a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids
-		it.skip("does not store a member's own message again when the room reflects it to the other sessions", async () => {
+		it("does not store a member's own message again when the room reflects it to the other sessions", async () => {
 			const text = `reflected ${uniqueSuffix()}`;
 			await sendMessage(members[0], shadow._id, text);
 			await alice.waitFor(isGroupchat({ roomJid, nick: members[0].username, body: text }), 'the Rocket.Chat message');

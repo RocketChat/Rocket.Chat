@@ -645,6 +645,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		fromNick,
 		body,
 		id: stanzaId,
+		originId,
 		replaceId,
 	}: XMPPServerEventMap['muc.remoteMessage']): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': roomJid }, { projection: { _id: 1 } });
@@ -652,9 +653,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 
-		// Messages we relayed carry their Rocket.Chat message id (corrections point at it) and come back
-		// reflected to every local member's session — under a nick only the author's own session would recognize.
-		const relayedId = replaceId ?? stanzaId;
+		// Our own relays come back to the other members' sessions, under a nick only the author's session recognizes
+		const relayedId = replaceId ?? originId;
 		if (relayedId && (await Messages.findOneById(relayedId, { projection: { _id: 1 } }))) {
 			return;
 		}

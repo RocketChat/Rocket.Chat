@@ -58,8 +58,8 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   occupant JID with the message `_id` as id, after joining when the member has no session.
   Edits are sent as corrections ([message-corrections](message-corrections.md)).
 - **R9** The room's reflection of our own message is not stored again: the session skips its
-  own nick, and the service skips a message whose replace id or stanza id is a stored
-  Rocket.Chat message id.
+  own nick, and the service skips a message whose replace id or sender-given id is a stored
+  Rocket.Chat message id ([message-deduplication R3](message-deduplication.md)).
 - **R10** The discussion history the room replays on join is stored like any other message
   and deduplicated by R7, which is how messages sent while the service was down are caught
   up. In decode-only mode no history is requested.
@@ -94,7 +94,6 @@ on start, and persists `muc.remoteMessage`.
 
 Defects that show in remote rooms but are owned elsewhere:
 
-- own message stored again under a room-assigned id: [message-deduplication D2](message-deduplication.md#d2-a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids)
 - messages without any id: [message-deduplication D3](message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated)
 - corrections stored as new messages: [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages)
 

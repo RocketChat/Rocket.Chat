@@ -29,8 +29,9 @@ way. Without a dedup rule a three-member mirrored room stores every message thre
   otherwise the stanza `id`, otherwise a random id. The origin domain is the sender's domain
   for a DM and a hosted room, and the room's domain for a remote room.
 - **R3** In a remote room, a `groupchat` from the session's own nick is ignored, and a message
-  whose replace id or stanza id is the `_id` of a stored Rocket.Chat message is ignored: it
-  is our own relay reflected to another member's session.
+  whose replace id, or the id its sender gave it (the XEP-0359 `<origin-id/>`, otherwise the
+  stanza `id`), is the `_id` of a stored Rocket.Chat message is ignored: it is our own relay
+  reflected to another member's session, whatever stanza id the room assigned it.
 - **R4** The outgoing hook never relays a message that carries `federation.eventId`, so a
   stored inbound message is not echoed back.
 - **R5** In a hosted room, local members receive no stanza at all; copies reach Rocket.Chat
@@ -48,8 +49,10 @@ any copy whose id is in the set. That is enough because the service runs as one 
 XMPP domain ([ADR 0002](../adr/0002-integration-service-runs-only-as-a-microservice.md)); it
 avoids a unique index on `federation.eventId`, a field Matrix federation writes too.
 
-`RemoteMucSession.handleMessage` prefers the stanza id and skips the own nick;
-`onRemoteMucMessage` does the own-relay lookup by `_id`.
+`RemoteMucSession.handleMessage` skips the own nick and reports two ids: the room's stanza id
+for deduplication and the sender's id for R3. `onRemoteMucMessage` does the own-relay lookup
+by `_id` with the replace id or the sender's id. R3 relies on the room keeping the sender's
+`id` attribute on the reflection, as XEP-0045 §7.4 asks and as ejabberd and Prosody do.
 
 ## Out of scope
 
@@ -58,15 +61,6 @@ avoids a unique index on `federation.eventId`, a field Matrix federation writes 
   receipts) adds it and updates this spec.
 
 ## Known defects
-
-### D2 A member's own message comes back from a room that assigns its own ids
-
-When a Rocket.Chat member posts in a remote room, the room reflects the message to every
-other member's session. R3 recognizes the reflection only if the id we sent comes back
-unchanged. A room that archives messages replaces it with its own XEP-0359 stanza id, as
-ejabberd and Prosody do, so the reflection is stored again, once per other member, under a
-synthetic `nick#room` user. Where: `onRemoteMucMessage`. Test: `remote-muc.spec.ts`, "does
-not store a member's own message again when the room reflects it to the other sessions".
 
 ### D3 Copies without any id are never deduplicated
 
@@ -78,8 +72,9 @@ an id once".
 
 ## Open questions
 
-- For D2, recording the id we sent alongside the room's id (the XEP-0359 `origin-id`) would
-  let the reflection be matched. Is that the same change [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages) needs?
+- Should Rocket.Chat stamp its outbound room messages with `<origin-id/>` (R7), so that R3
+  also holds in a room that rewrites the `id` attribute? Is that the same change
+  [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages) needs?
 
 ## References
 

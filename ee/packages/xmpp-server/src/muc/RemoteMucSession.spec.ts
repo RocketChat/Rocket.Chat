@@ -69,4 +69,30 @@ describe('RemoteMucSession', () => {
 
 		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ fromNick: 'bob', body: 'fixed', id: 'm2', replaceId: 'm1' }));
 	});
+
+	it('reports the id the sender gave a message alongside the one the room assigned (message-deduplication R2, R3)', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='rc-msg-id'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='room-id' by='team@conference.remote.tld'/></message>",
+			),
+		);
+
+		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'room-id', originId: 'rc-msg-id' }));
+	});
+
+	it('prefers the XEP-0359 origin id over the stanza id as the sender id', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='client-id'><body>hi</body><origin-id xmlns='urn:xmpp:sid:0' id='origin'/></message>",
+			),
+		);
+
+		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'client-id', originId: 'origin' }));
+	});
 });
