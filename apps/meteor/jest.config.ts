@@ -43,6 +43,7 @@ export default {
 				'<rootDir>/ee/server/cron/**/*.spec.ts',
 				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
+				'<rootDir>/lib/authorization/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/services/upload/*.spec.ts',
