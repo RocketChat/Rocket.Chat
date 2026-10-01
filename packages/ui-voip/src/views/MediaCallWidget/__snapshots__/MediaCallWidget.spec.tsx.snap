@@ -1594,8 +1594,10 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
           id="rcx-media-call-widget-title"
         >
           <time
+            aria-live="off"
             class="rcx-box rcx-box--full rcx-css-2eyztw"
             datetime="PT0H0M0S"
+            role="timer"
           >
             00
             :
