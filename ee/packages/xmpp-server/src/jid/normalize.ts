@@ -20,6 +20,18 @@ export function normalizeDomain(domain: string): string {
 	return ascii.toLowerCase();
 }
 
+/** A user's bare JID (`local@domain`) with its domain normalized; throws for anything that names no user. */
+export function normalizeUserBareJid(jid: string): string {
+	const [bare] = jid.split('/');
+	const at = bare.lastIndexOf('@');
+	const local = bare.slice(0, at);
+	if (at <= 0 || local.includes('@')) {
+		throw new InvalidJidError(jid);
+	}
+
+	return `${local}@${normalizeDomain(bare.slice(at + 1))}`;
+}
+
 export function isDomainAllowed(domain: string, allowedDomains?: string[], deniedDomains?: string[]): boolean {
 	const normalized = normalizeDomain(domain);
 

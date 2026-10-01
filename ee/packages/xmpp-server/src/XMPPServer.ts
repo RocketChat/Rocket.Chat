@@ -6,6 +6,7 @@ import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config';
 import { resolveConfig } from './config';
 import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
 import type { ConnectionStatus, XMPPServerEventMap } from './events';
+import { normalizeUserBareJid } from './jid/normalize';
 import type { Logger } from './logger';
 import type { MucOccupant } from './muc/MucRoom';
 import { MucService } from './muc/MucService';
@@ -245,7 +246,12 @@ export class XMPPServer {
 			},
 			onOccupantJoined: (occupant) => this.emitter.emit('muc.remoteOccupantJoined', { roomJid: params.roomJid, occupant }),
 			onOccupantLeft: (nick) => this.emitter.emit('muc.remoteOccupantLeft', { roomJid: params.roomJid, nick }),
-			onMessage: (msg) => this.emitter.emit('muc.remoteMessage', { roomJid: params.roomJid, ...msg }),
+			onMessage: (msg) =>
+				this.emitter.emit('muc.remoteMessage', {
+					roomJid: params.roomJid,
+					...msg,
+					fromJid: this.disclosedRemoteOccupantJid(params.roomJid, msg.fromNick),
+				}),
 		});
 		this.remoteMucSessions.set(key, session);
 		await session.join();
@@ -281,6 +287,27 @@ export class XMPPServer {
 			throw new NotJoinedToRemoteRoomError(roomJid, localJid);
 		}
 		await session.sendMessage(message);
+	}
+
+	/**
+	 * Who the occupant holding `nick` really is, as far as the room told any of our sessions.
+	 * Never a JID on our own domains: their users only ever speak in the room through us.
+	 */
+	private disclosedRemoteOccupantJid(roomJid: string, nick: string): string | undefined {
+		const realJid = [...this.remoteMucSessions.values()]
+			.filter((session) => session.roomJid === roomJid)
+			.map((session) => session.realJidOf(nick))
+			.find(Boolean);
+		if (!realJid) {
+			return undefined;
+		}
+		try {
+			const bareJid = normalizeUserBareJid(realJid);
+			const domain = bareJid.slice(bareJid.lastIndexOf('@') + 1);
+			return domain === this.domain || domain === this.mucDomain ? undefined : bareJid;
+		} catch {
+			return undefined;
+		}
 	}
 
 	private remoteKey(localJid: string, roomJid: string): string {

@@ -10,6 +10,7 @@ import {
 	deleteRoomOnCleanup,
 	expectStoredOnce,
 	findRoomByName,
+	findUser,
 	forgetRemoteUserOnCleanup,
 	inviteToRoom,
 	leaveRoom,
@@ -39,12 +40,20 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 	after(() => teardown(rc));
 
 	/** A members-only room owned by alice; Rocket.Chat mirrors it as the channel `xmpp_<localpart>`. */
-	async function openRoom({ archive }: { archive: boolean }): Promise<{ roomJid: string; shadowName: string }> {
+	async function openRoom({
+		archive,
+		disclosesJids = false,
+		nick = alice.username,
+	}: {
+		archive: boolean;
+		disclosesJids?: boolean;
+		nick?: string;
+	}): Promise<{ roomJid: string; shadowName: string }> {
 		const localpart = `xe2e-room-${uniqueSuffix()}`;
-		const roomJid = await alice.createRoom(localpart, { membersOnly: true, archive });
+		const roomJid = await alice.createRoom(localpart, { membersOnly: true, archive, disclosesJids, nick });
 		rc.cleanup.add(() => alice.destroyRoom(roomJid));
-		// Remote occupants are materialized as `<nick>#<room JID>`
-		forgetRemoteUserOnCleanup(rc, `${alice.username}#${roomJid}`);
+		// Occupants whose real JID the room hides are materialized as `<nick>#<room JID>`
+		forgetRemoteUserOnCleanup(rc, `${nick}#${roomJid}`);
 		return { roomJid, shadowName: `xmpp_${localpart}` };
 	}
 
@@ -99,7 +108,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await waitForOccupant(roomJid, a);
 		});
 
-		it('relays messages both ways', async () => {
+		it('relays messages both ways, authored per room when the room hides real JIDs (R6)', async () => {
 			const inbound = `hello from the room ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, inbound);
 			const stored = await expectStoredOnce(a, shadow, inbound);
@@ -142,6 +151,39 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 		it('leaves the room when a member leaves in Rocket.Chat', async () => {
 			await leaveRoom(b, shadow);
 			await alice.waitFor(isOccupantPresence(roomJid, b.username, { type: 'unavailable' }), `${b.username} to leave`);
+		});
+	});
+
+	describe('in rooms that disclose real JIDs', () => {
+		let a: LocalUser;
+		let rooms: { roomJid: string; shadow: IRoom; nick: string }[];
+
+		before(async () => {
+			a = await createLocalUser(rc, 'a');
+			rooms = [];
+			for (const nick of [alice.username, `ally-${uniqueSuffix()}`]) {
+				const opened = await openRoom({ archive: true, disclosesJids: true, nick });
+				await inviteFromXmpp(opened.roomJid, a);
+				rooms.push({ roomJid: opened.roomJid, shadow: await waitForShadowRoom(opened.shadowName, opened.roomJid), nick });
+				await waitForOccupant(opened.roomJid, a);
+			}
+		});
+
+		it("authors a message by the sender's own user, the one their JID names (R6, addressing R9)", async () => {
+			const text = `from a disclosing room ${uniqueSuffix()}`;
+			await alice.sendGroupchat(rooms[0].roomJid, text);
+			const stored = await expectStoredOnce(a, rooms[0].shadow, text);
+			assert.equal(stored.u.username, alice.jid);
+		});
+
+		it('keeps that one user in every room and names it by the nick last seen (R6, addressing R10)', async () => {
+			const text = `under another nick ${uniqueSuffix()}`;
+			await alice.sendGroupchat(rooms[1].roomJid, text);
+			const stored = await expectStoredOnce(a, rooms[1].shadow, text);
+			assert.equal(stored.u.username, alice.jid);
+
+			const user = await findUser(rc, alice.jid);
+			assert.equal(user.name, rooms[1].nick);
 		});
 	});
 

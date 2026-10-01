@@ -46,6 +46,15 @@ export class RemoteMucSession {
 
 	constructor(private readonly deps: RemoteMucSessionDeps) {}
 
+	get roomJid(): string {
+		return this.deps.roomJid;
+	}
+
+	/** The real JID the room disclosed for the occupant now holding `nick`, if it disclosed one to this session. */
+	realJidOf(nick: string): string | undefined {
+		return this.occupants.get(nick)?.jid;
+	}
+
 	private get occupantJid(): string {
 		return `${this.deps.localJid.split('/')[0].split('@')[0]}@${this.deps.localJid.split('@')[1]}/${REMOTE_RESOURCE}`;
 	}

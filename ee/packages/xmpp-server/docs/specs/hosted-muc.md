@@ -1,7 +1,7 @@
 ---
 status: partial
 standards: [XEP-0045]
-adrs: [0006, 0008, 0009, 0012]
+adrs: [0006, 0008, 0009, 0012, 0015]
 code:
   [
     src/muc/MucService.ts,
@@ -54,7 +54,8 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   remote occupant receives the newcomer's presence, the newcomer receives their own presence
   with status code 110, and then the room subject. Status 201 is never sent.
 - **R7** An admitted remote occupant becomes a member of the Rocket.Chat room: their user
-  record is created or refreshed and a subscription created, unless one exists.
+  record is created or refreshed, renamed to their nick ([addressing R10](addressing.md)),
+  and a subscription created, unless one exists.
 - **R8** An `unavailable` presence from an occupant removes them from the room, is broadcast
   to the remaining remote occupants, and removes their Rocket.Chat subscription without
   running the room-leave callbacks.
@@ -75,7 +76,8 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 
 - **R13** A `groupchat` message with a body from a current occupant (identified by their
   real JID) is reflected to every other remote occupant under the occupant's nick with the
-  original id, and stored in the Rocket.Chat room with the occupant's user as author.
+  original id, and stored in the Rocket.Chat room with the occupant's user as author,
+  renamed to their nick.
 - **R14** A message saved by a local member is sent to every remote occupant as a `groupchat`
   from `<room>/<username>` with the message `_id` as id. Edits are sent as corrections
   ([message-corrections](message-corrections.md)).

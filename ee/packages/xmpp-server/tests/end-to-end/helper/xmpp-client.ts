@@ -176,11 +176,17 @@ export class XmppUser {
 		return this.send(xml('presence', { to, type }, ...(show ? [xml('show', {}, show)] : [])));
 	}
 
-	/** Creates a room on the XMPP server's MUC service, owned by this user, and returns its JID. */
-	async createRoom(localpart: string, { membersOnly = true, archive = true } = {}): Promise<string> {
+	/**
+	 * Creates a room on the XMPP server's MUC service, owned by this user under `nick`, and returns its JID.
+	 * `disclosesJids` makes it non-anonymous; otherwise it is semi-anonymous, ejabberd's default.
+	 */
+	async createRoom(
+		localpart: string,
+		{ membersOnly = true, archive = true, disclosesJids = false, nick = this.username } = {},
+	): Promise<string> {
 		const roomJid = `${localpart}@${config.xmpp.mucDomain}`;
 		const after = this.cursor();
-		await this.send(xml('presence', { to: `${roomJid}/${this.username}` }, xml('x', { xmlns: NS.muc })));
+		await this.send(xml('presence', { to: `${roomJid}/${nick}` }, xml('x', { xmlns: NS.muc })));
 		await this.waitFor(isMucSelfPresence(roomJid), `self-presence in new room ${roomJid}`, { after });
 
 		const field = (name: string, value: string) => xml('field', { var: name }, xml('value', {}, value));
@@ -196,6 +202,7 @@ export class XmppUser {
 					field('FORM_TYPE', 'http://jabber.org/protocol/muc#roomconfig'),
 					field('muc#roomconfig_membersonly', membersOnly ? '1' : '0'),
 					field('muc#roomconfig_publicroom', membersOnly ? '0' : '1'),
+					field('muc#roomconfig_whois', disclosesJids ? 'anyone' : 'moderators'),
 					// ejabberd's name for XEP-0313 room archiving, which also makes the room stamp XEP-0359 stanza ids
 					field('mam', archive ? '1' : '0'),
 				),

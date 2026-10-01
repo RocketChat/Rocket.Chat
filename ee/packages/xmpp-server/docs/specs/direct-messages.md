@@ -1,7 +1,7 @@
 ---
 status: partial
 standards: [RFC 6121]
-adrs: [0006, 0007]
+adrs: [0006, 0007, 0015]
 code:
   [
     src/handlers/parse.ts,
@@ -33,8 +33,9 @@ pre-arranging anything.
 
 - **R1** A `<message/>` of type `chat` or `normal` with a `<body/>`, from an authenticated
   domain, addressed to `<username>@<domain>`, is stored as a message in the DM room between
-  that local user and the sender. The sender's user record is created or refreshed first
-  ([ADR 0006](../adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md)); the DM room is
+  that local user and the sender. The sender's user record is created or refreshed first,
+  keeping the name it has ([ADR 0006](../adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md),
+  [addressing R9, R10](addressing.md)); the DM room is
   created when it does not exist and stamped `xmppFederation: { role: 'dm', with: <sender bare JID>, origin: <sender domain> }`.
 - **R2** A message to a username that does not exist is dropped. No error stanza is sent.
 - **R3** A message without a `<body/>`, or of any other type, is ignored by this capability.

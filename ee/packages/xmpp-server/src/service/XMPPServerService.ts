@@ -583,7 +583,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		server.on('muc.occupantJoined', (event) => {
 			this.track(
 				'muc.occupantJoined',
-				this.onHostedOccupantJoined(`${event.roomId}@${server.mucDomain}`, event.jid),
+				this.onHostedOccupantJoined(`${event.roomId}@${server.mucDomain}`, event.jid, event.nick),
 				'Failed to handle hosted MUC join',
 			);
 		});
@@ -633,13 +633,13 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	 * A remote occupant joined a room we host: materialize them locally and give them a
 	 * subscription so they show up in the members list. Invited users already have one.
 	 */
-	private async onHostedOccupantJoined(mucJid: string, occupantJid: string): Promise<void> {
+	private async onHostedOccupantJoined(mucJid: string, occupantJid: string, nick: string): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid });
 		if (!room) {
 			return;
 		}
 
-		const user = await createOrUpdateXMPPUser({ jid: toBareJid(occupantJid) });
+		const user = await createOrUpdateXMPPUser({ jid: toBareJid(occupantJid), name: nick });
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } });
 		if (subscription) {
 			return;
@@ -662,14 +662,14 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	/** Persists a message received in a hosted MUC room (author addressed by real JID). */
 	private async persistMucMessage(
 		mucJid: string,
-		{ fromJid, body, id, replaceId }: XMPPServerEventMap['muc.messageReceived'],
+		{ fromJid, fromNick, body, id, replaceId }: XMPPServerEventMap['muc.messageReceived'],
 	): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid }, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
 		const authorJid = toBareJid(fromJid);
-		const author = await createOrUpdateXMPPUser({ jid: authorJid });
+		const author = await createOrUpdateXMPPUser({ jid: authorJid, name: fromNick });
 		await this.receiveMessage({
 			rid: room._id,
 			author,
@@ -682,10 +682,11 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		});
 	}
 
-	/** Persists a message received in a remote MUC we joined (author is an opaque nick). */
+	/** Persists a message received in a remote MUC we joined, authored by the occupant's own user record when the room says who they are. */
 	private async onRemoteMucMessage({
 		roomJid,
 		fromNick,
+		fromJid,
 		body,
 		id: stanzaId,
 		originId,
@@ -703,9 +704,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (relayedId && (await Messages.findOneById(relayedId, { projection: { _id: 1 } }))) {
 			return;
 		}
-		// Remote occupants rarely disclose a real JID; synthesize a stable per-nick JID
-		const syntheticJid = `${fromNick}#${roomJid}`;
-		const author = await createOrUpdateXMPPUser({ jid: syntheticJid, name: fromNick });
+		// Without a real JID nothing ties the nick to the same person in another room
+		const author = await createOrUpdateXMPPUser({ jid: fromJid ?? `${fromNick}#${roomJid}`, name: fromNick });
 		await this.receiveMessage({
 			rid: room._id,
 			author,

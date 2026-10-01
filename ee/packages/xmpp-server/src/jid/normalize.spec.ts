@@ -1,5 +1,18 @@
 import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain } from './normalize';
+import { isDomainAllowed, normalizeDomain, normalizeUserBareJid } from './normalize';
+
+describe('normalizeUserBareJid', () => {
+	it('drops the resource and normalizes the domain only', () => {
+		expect(normalizeUserBareJid('Alice@Remote.TLD/phone')).toBe('Alice@remote.tld');
+	});
+
+	it('throws for a JID that names no user', () => {
+		expect(() => normalizeUserBareJid('remote.tld')).toThrow(InvalidJidError);
+		expect(() => normalizeUserBareJid('@remote.tld')).toThrow(InvalidJidError);
+		expect(() => normalizeUserBareJid('a@b@remote.tld')).toThrow(InvalidJidError);
+		expect(() => normalizeUserBareJid('alice@')).toThrow(InvalidJidError);
+	});
+});
 
 describe('normalizeDomain', () => {
 	it('lowercases and trims', () => {

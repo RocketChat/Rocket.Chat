@@ -9,18 +9,19 @@ import { domainOfJid, toBareJid } from './jid';
  * bare JID (`alice@remote.tld`). We set `federated: true` (so client remote-user
  * treatment applies) plus `xmppFederation`, but deliberately NOT `federation`,
  * keeping the user out of every Matrix code path (`isUserNativeFederated` stays false).
+ *
+ * `name` is the nick the user was last seen under; without one, the name already stored is kept.
  */
 export async function createOrUpdateXMPPUser(options: { jid: string; name?: string }): Promise<IUser> {
 	const jid = toBareJid(options.jid);
 	const origin = domainOfJid(jid);
-	const name = options.name || jid;
 
 	const user = await Users.findOneAndUpdate(
 		{ username: jid },
 		{
 			$set: {
 				username: jid,
-				name,
+				...(options.name && { name: options.name }),
 				type: 'user' as const,
 				status: UserStatus.OFFLINE,
 				active: true,
@@ -31,6 +32,7 @@ export async function createOrUpdateXMPPUser(options: { jid: string; name?: stri
 				_updatedAt: new Date(),
 			},
 			$setOnInsert: {
+				...(!options.name && { name: jid }),
 				createdAt: new Date(),
 			},
 		},

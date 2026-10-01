@@ -98,6 +98,38 @@ describe('RemoteMucSession', () => {
 		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'room-id', originId: 'rc-msg-id' }));
 	});
 
+	describe('real JIDs of occupants (remote-muc R6)', () => {
+		const occupantPresence = (nick: string, item: string, type?: string): Element =>
+			p(
+				`<presence from='team@conference.remote.tld/${nick}'${type ? ` type='${type}'` : ''}><x xmlns='http://jabber.org/protocol/muc#user'><item ${item} affiliation='member' role='participant'/></x></presence>`,
+			);
+
+		it('knows the real JID a non-anonymous room discloses for a nick', () => {
+			const { session } = createSession();
+
+			session.handlePresence(occupantPresence('bob', "jid='bob@remote.tld/phone'"));
+
+			expect(session.realJidOf('bob')).toBe('bob@remote.tld/phone');
+		});
+
+		it('knows no real JID when a semi-anonymous room hides it', () => {
+			const { session } = createSession();
+
+			session.handlePresence(occupantPresence('bob', ''));
+
+			expect(session.realJidOf('bob')).toBeUndefined();
+		});
+
+		it('forgets the real JID once the occupant leaves, so a later holder of the nick is not taken for them', () => {
+			const { session } = createSession();
+
+			session.handlePresence(occupantPresence('bob', "jid='bob@remote.tld/phone'"));
+			session.handlePresence(occupantPresence('bob', "jid='bob@remote.tld/phone'", 'unavailable'));
+
+			expect(session.realJidOf('bob')).toBeUndefined();
+		});
+	});
+
 	it('prefers the XEP-0359 origin id over the stanza id as the sender id', () => {
 		const onMessage = jest.fn();
 		const { session } = createSession({ onMessage });

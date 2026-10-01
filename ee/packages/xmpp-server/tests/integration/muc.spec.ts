@@ -94,6 +94,34 @@ describe('MUC integration: hosted room joined across servers', () => {
 		await expect(remoteServer.mucSendToRemoteRoom({ localJid: 'erin@b.localhost', roomJid, body: 'lost' })).rejects.toThrow(/No session/);
 	});
 
+	it('reports the real JID a room discloses for the sender, but never one on our own domain (remote-muc R6)', async () => {
+		hostServer.mucCreateRoom({ roomId: 'disclosing', public: true });
+		hostServer.mucAddLocalOccupant({ roomId: 'disclosing', localJid: 'diego@a.localhost', nick: 'diego' });
+
+		const roomJid = `disclosing@${hostServer.mucDomain}`;
+		const hostSideJoins: string[] = [];
+		const remoteMessages: { fromNick: string; fromJid?: string; body: string }[] = [];
+		hostServer.on('muc.occupantJoined', (e) => hostSideJoins.push(e.nick));
+		remoteServer.on('muc.remoteMessage', (e) => {
+			if (e.roomJid === roomJid) {
+				remoteMessages.push({ fromNick: e.fromNick, fromJid: e.fromJid, body: e.body });
+			}
+		});
+
+		await remoteServer.mucJoinRemoteRoom({ localJid: 'frank@b.localhost', roomJid, nick: 'frank' });
+		await remoteServer.mucJoinRemoteRoom({ localJid: 'grace@b.localhost', roomJid, nick: 'grace' });
+		await waitFor(() => (hostSideJoins.includes('frank') && hostSideJoins.includes('grace') ? true : undefined));
+
+		hostServer.mucBroadcastMessage({ roomId: 'disclosing', fromNick: 'diego', body: 'from diego', id: 'd1' });
+		await waitFor(() => (remoteMessages.filter((m) => m.body === 'from diego').length === 2 ? true : undefined));
+		expect(remoteMessages.filter((m) => m.body === 'from diego').map((m) => m.fromJid)).toEqual(['diego@a.localhost', 'diego@a.localhost']);
+
+		// The room reflects grace's message to frank's session, naming a JID on frank's own domain
+		await remoteServer.mucSendToRemoteRoom({ localJid: 'grace@b.localhost', roomJid, body: 'from grace', id: 'g3' });
+		const reflected = await waitFor(() => remoteMessages.find((m) => m.body === 'from grace'));
+		expect(reflected).toMatchObject({ fromNick: 'grace', fromJid: undefined });
+	});
+
 	it('invites a remote user into a hosted room and lets them accept', async () => {
 		hostServer.mucCreateRoom({ roomId: 'invited', public: false });
 		hostServer.mucAddLocalOccupant({

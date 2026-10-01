@@ -60,6 +60,8 @@ export type XMPPServerEventMap = {
 	'muc.remoteMessage': {
 		roomJid: string;
 		fromNick: string;
+		/** The sender's bare real JID, when the room disclosed it to any of our sessions; never one of our own domains. */
+		fromJid?: string;
 		body: string;
 		/** The room-assigned XEP-0359 stanza id when present, otherwise the sender's. */
 		id?: string;
