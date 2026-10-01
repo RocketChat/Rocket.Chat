@@ -6,7 +6,7 @@ frontmatter of the specs in [specs/](specs/); edit the spec, then this table.
 
 Status: `implemented`, `partial` (the spec's Out of scope says what is missing), `planned`
 (a spec exists, no plan yet), `intent` (wanted, requirements open), `not-planned` (reason in
-Notes), `pending triage` (decision not yet taken).
+Notes).
 
 ## Core specifications
 
@@ -32,18 +32,19 @@ Notes), `pending triage` (decision not yet taken).
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound |
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | planned | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
 | [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | planned | [file-transfer](specs/file-transfer.md) | required for the end product; transport open |
+| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | planned | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path in rooms |
+| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | planned | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | planned | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
+| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | planned | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
 
-## Pending triage
+## Not planned
 
-Listed as unsupported during the proof of concept. Each is decided one at a time: `planned`
-(a spec), `intent` (an intent file), or `not-planned` (a reason here).
+Decided against, with the reason. A row moves out of here by an intent or a spec that says
+why the reason no longer holds.
 
 | Standard | Title | Status | Owner | Notes |
 | --- | --- | --- | --- | --- |
-| [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV records for XMPP over TLS | pending triage | | direct TLS on 5270; STARTTLS on 5269 only today ([ADR 0004](adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md)) |
-| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | pending triage | | no acknowledgements; a dropped stream may lose in-flight stanzas |
-| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | pending triage | | rooms serve no history over XMPP |
-| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | pending triage | | no typing indicators |
-| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | pending triage | | with XEP-0066; see [file-transfer](specs/file-transfer.md) open questions |
-| [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | pending triage | | the native server is in-process; XEP-0114 is what the Matrix-bridge XMPP integration uses |
+| [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV records for XMPP over TLS | not-planned | | STARTTLS on 5269 is enough for the end product; direct TLS would add a second listener and SRV name for a transport peers treat as optional ([ADR 0004](adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md)) |
+| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | not-planned | | optional on S2S and peers interoperate without it; only guards stanzas lost on a socket that dies mid-write, documented in [s2s-connectivity](specs/s2s-connectivity.md) R10. Revisit if operations show losses |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent weighs MAM against XEP-0045 history on join |
+| [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | not-planned | | the native server is a server, not a component attached to another one; administrators who want a component have the Matrix-bridge XMPP integration ([ADR 0002](adr/0002-integration-service-runs-only-as-a-microservice.md)) |
