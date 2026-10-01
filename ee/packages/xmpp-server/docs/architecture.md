@@ -183,7 +183,8 @@ entry:
 
 ```
 invite received        → normalize room JID → upsert inviter → create shadow room
-                         <room>_<muc domain>-<hash>, shown as <room>:<muc domain> (role 'remote-muc')
+                         private group <room>_<muc domain>-<hash>, shown as <room>:<muc domain>
+                         (role 'remote-muc')
                          with the invitee as member → joinRemoteMUC
 member added/joins     → afterAddedToRoom → joinRemoteMUC (own session, nick = username)
 member leaves/removed  → leaveRemoteMUC

@@ -791,7 +791,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			await Room.addUserToRoom(room._id, localUser, inviter);
 		} else {
 			const created = await Room.create(localUser._id, {
-				type: 'c',
+				type: 'p',
 				name: mirroredRoomName(event.roomJid),
 				members: [localUser.username as string],
 				extraData: {

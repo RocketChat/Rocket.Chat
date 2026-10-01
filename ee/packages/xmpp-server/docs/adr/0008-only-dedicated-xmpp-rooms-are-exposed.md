@@ -40,8 +40,11 @@ bookmark handling are client features that can be added on top of the same sessi
 - The toggle is mutually exclusive with the Matrix one; a room federates one way or not at all.
 - Renaming a hosted room does not change its MUC JID.
 - `xmppFederation.muc` is the lookup key for every inbound room stanza.
-- Mirrored rooms are created as public channels with the invitee as the only member; later
-  invitees are expected to be added by the same path.
+- Mirrored rooms are created as private groups with the invitee as the only member; later
+  invitees are expected to be added by the same path, or by a member from Rocket.Chat. The
+  remote room's configuration is not read, and most rooms that invite are members-only: as
+  a public channel, a members-only room would be readable by the whole workspace, and
+  anyone who joined it would see the room while their own session was refused.
 - A mirrored room is shown as `<localpart>:<room domain>` (`fname`), as Matrix rooms are, and
   is named after its whole JID, with every character outside `[0-9a-zA-Z-_.]` replaced by
   `_` and the first 8 hex digits of the JID's SHA-256 appended: `team@conference.remote.tld`

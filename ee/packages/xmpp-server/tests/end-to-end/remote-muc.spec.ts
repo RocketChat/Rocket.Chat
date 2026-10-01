@@ -70,18 +70,19 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 		await inviteToRoom(inviter, shadow, user.username);
 	}
 
-	async function waitForShadowRoom(shadowName: string, roomJid: string): Promise<IRoom> {
+	async function waitForShadowRoom(shadowName: string, roomJid: string, invitee: LocalUser): Promise<IRoom> {
 		let shadow: IRoom | undefined;
 		await retry(
 			`Rocket.Chat to mirror ${roomJid}`,
 			async () => {
-				shadow = await findRoomByName(rc.admin, shadowName);
+				shadow = await findRoomByName(invitee.config, shadowName);
 				assert.ok(shadow, `no shadow room for ${roomJid} yet`);
 			},
 			polling,
 		);
 		const room = shadow as IRoom;
 		deleteRoomOnCleanup(rc, room._id);
+		assert.equal(room.t, 'p');
 		assert.equal(room.xmppFederation?.role, 'remote-muc');
 		assert.equal(room.xmppFederation?.muc, roomJid);
 		assert.equal(room.fname, roomJid.replace('@', ':'));
@@ -106,9 +107,13 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 
 		it('mirrors the room in Rocket.Chat when a local user is invited (R1)', async () => {
 			await inviteFromXmpp(roomJid, a);
-			shadow = await waitForShadowRoom(shadowName, roomJid);
+			shadow = await waitForShadowRoom(shadowName, roomJid, a);
 			assert.ok((await listMemberUsernames(a, shadow)).includes(a.username));
 			await waitForOccupant(roomJid, a);
+		});
+
+		it('keeps the mirrored room out of reach of local users nobody added (R1)', async () => {
+			assert.equal(await findRoomByName(c.config, shadowName), undefined);
 		});
 
 		it('relays messages both ways, authored per room when the room hides real JIDs (R6)', async () => {
@@ -167,7 +172,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			for (const nick of [alice.username, `ally-${uniqueSuffix()}`]) {
 				const opened = await openRoom({ archive: true, disclosesJids: true, nick });
 				await inviteFromXmpp(opened.roomJid, a);
-				rooms.push({ roomJid: opened.roomJid, shadow: await waitForShadowRoom(opened.shadowName, opened.roomJid), nick });
+				rooms.push({ roomJid: opened.roomJid, shadow: await waitForShadowRoom(opened.shadowName, opened.roomJid, a), nick });
 				await waitForOccupant(opened.roomJid, a);
 			}
 		});
@@ -200,7 +205,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			const opened = await openRoom({ archive: true });
 			roomJid = opened.roomJid;
 			await inviteFromXmpp(roomJid, members[0]);
-			shadow = await waitForShadowRoom(opened.shadowName, roomJid);
+			shadow = await waitForShadowRoom(opened.shadowName, roomJid, members[0]);
 			await waitForOccupant(roomJid, members[0]);
 		});
 
@@ -259,7 +264,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			const opened = await openRoom({ archive: false });
 			roomJid = opened.roomJid;
 			await inviteFromXmpp(roomJid, members[0]);
-			shadow = await waitForShadowRoom(opened.shadowName, roomJid);
+			shadow = await waitForShadowRoom(opened.shadowName, roomJid, members[0]);
 			await waitForOccupant(roomJid, members[0]);
 			const after = alice.cursor();
 			await addFromRocketChat(roomJid, members[0], shadow, members[1]);

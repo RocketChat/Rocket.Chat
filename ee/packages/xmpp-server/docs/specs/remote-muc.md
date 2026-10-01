@@ -45,10 +45,11 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
 
 - **R1** A MUC invitation addressed to a local user, mediated (XEP-0045 §7.8.2) or direct
   (XEP-0249), creates the inviter's user record and, when no room mirrors that MUC yet, a
-  public channel with the invitee as its first member. The room JID is taken as a bare JID
-  with its localpart lowercased and its domain normalized
+  private group (`t: 'p'`) with the invitee as its first member, whatever the remote room's
+  configuration, so only invitees and the members they add can see it. The room JID is
+  taken as a bare JID with its localpart lowercased and its domain normalized
   ([ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md)); an invitation
-  whose room JID names no room is dropped. The channel
+  whose room JID names no room is dropped. The group
   ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)):
   - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use), with
     the globe icon;
@@ -140,9 +141,9 @@ Defects that show in remote rooms but are owned elsewhere:
 
 ## Open questions
 
-- The mirrored channel is created as a public channel (`t: 'c'`) visible to the whole
-  workspace, though only invitees are joined into the remote room. Should it be a private
-  group?
+- Should a remote room that is public and open (disco#info `muc_public` and `muc_open`) be
+  mirrored as a public channel, the way Matrix maps join rules, following later
+  configuration changes (status 104)?
 - Should remote occupants become members of the mirrored channel, so the member list is
   truthful, or stay as authors only?
 - When the remote room drops a session (room destroyed, kick, server restart), should the
