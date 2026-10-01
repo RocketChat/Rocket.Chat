@@ -53,7 +53,7 @@ describe('XMPP federation: connectivity', () => {
 		});
 	});
 
-	// Known bug: ../../../../../docs/features/xmpp-server.md#allow-list-changes-need-a-service-restart
+	// Known defect: ../../docs/specs/configuration-and-lifecycle.md#d1-allow-list-changes-need-a-service-restart
 	it.skip('drops messages from a domain outside the allow list', async () => {
 		const original = await getSetting<string>(rc, 'XMPP_Server_Domain_Allow_List');
 		try {

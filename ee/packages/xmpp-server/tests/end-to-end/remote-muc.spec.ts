@@ -110,7 +110,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await alice.waitFor(isGroupchat({ roomJid, nick: a.username, body: outbound }), 'the Rocket.Chat message');
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#corrections-from-xmpp-users-arrive-as-new-messages
+		// Known defect: ../../docs/specs/message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages
 		it.skip('applies a correction from an occupant to the stored message', async () => {
 			const id = `e2e-${uniqueSuffix()}`;
 			const text = `before correction ${uniqueSuffix()}`;
@@ -128,7 +128,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await waitForOccupant(roomJid, b);
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#a-second-invite-into-a-mirrored-room-does-not-make-the-user-a-member
+		// Known defect: ../../docs/specs/remote-muc.md#d1-a-second-invite-into-a-mirrored-room-does-not-make-the-user-a-member
 		it.skip('subscribes a second local user invited from the XMPP side', async () => {
 			await inviteFromXmpp(roomJid, c);
 			await waitForOccupant(roomJid, c);
@@ -176,14 +176,14 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			assert.equal((await messagesWithText(members[0], shadow, early)).length, 1);
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#concurrent-copies-of-one-message-are-all-stored
+		// Known defect: ../../docs/specs/message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored
 		it.skip('stores a message from the room once, whatever the number of member sessions', async () => {
 			const text = `fan-out ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, text);
 			await expectStoredOnce(members[0], shadow, text);
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids
+		// Known defect: ../../docs/specs/message-deduplication.md#d2-a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids
 		it.skip("does not store a member's own message again when the room reflects it to the other sessions", async () => {
 			const text = `reflected ${uniqueSuffix()}`;
 			await sendMessage(members[0], shadow._id, text);
@@ -225,7 +225,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await waitForOccupant(roomJid, members[1], after);
 		});
 
-		// Known bug: ../../../../../docs/features/xmpp-server.md#copies-without-any-id-are-never-deduplicated
+		// Known defect: ../../docs/specs/message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated
 		it.skip('stores a message sent without an id once', async () => {
 			const text = `no id ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, text, { id: null });

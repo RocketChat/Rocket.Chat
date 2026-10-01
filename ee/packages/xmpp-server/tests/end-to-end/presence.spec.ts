@@ -58,7 +58,7 @@ describe('XMPP federation: presence', () => {
 		assert.equal(bob.received(isSubscriptionReply(local.jid, 'subscribed')).length, 0);
 	});
 
-	// Known bug: ../../../../../docs/features/xmpp-server.md#rocketchat-status-changes-do-not-reach-xmpp-contacts
+	// Known defect: ../../docs/specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts
 	it.skip('relays a Rocket.Chat status change to subscribed contacts', async () => {
 		const after = alice.cursor();
 		await setStatus(local, 'away');
@@ -67,7 +67,7 @@ describe('XMPP federation: presence', () => {
 		});
 	});
 
-	// Known bug: ../../../../../docs/features/xmpp-server.md#presence-from-xmpp-users-is-ignored
+	// Known defect: ../../docs/specs/presence.md#d1-presence-from-xmpp-users-is-ignored
 	it.skip("applies a contact's presence to their Rocket.Chat user", async () => {
 		await alice.sendPresence({ to: local.jid, show: 'dnd' });
 		await retry(

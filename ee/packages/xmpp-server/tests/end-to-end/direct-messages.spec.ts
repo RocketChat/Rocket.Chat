@@ -51,7 +51,7 @@ describe('XMPP federation: direct messages', () => {
 		assert.equal(remoteUser?.federated, true);
 	});
 
-	// Known bug: ../../../../../docs/features/xmpp-server.md#concurrent-copies-of-one-message-are-all-stored
+	// Known defect: ../../docs/specs/message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored
 	it.skip('stores a redelivered stanza id once', async () => {
 		const text = `redelivered ${uniqueSuffix()}`;
 		const id = `e2e-${uniqueSuffix()}`;
@@ -88,7 +88,7 @@ describe('XMPP federation: direct messages', () => {
 		assert.notEqual(correction.attrs.id, original._id, 'a correction needs an id of its own');
 	});
 
-	// Known bug: ../../../../../docs/features/xmpp-server.md#corrections-from-xmpp-users-arrive-as-new-messages
+	// Known defect: ../../docs/specs/message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages
 	it.skip('applies a correction from the XMPP user to the stored message', async () => {
 		const id = `e2e-${uniqueSuffix()}`;
 		const text = `before correction ${uniqueSuffix()}`;
