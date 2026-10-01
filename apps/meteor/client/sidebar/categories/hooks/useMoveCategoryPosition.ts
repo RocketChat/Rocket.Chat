@@ -1,13 +1,14 @@
+import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { withDynamicFirst } from '../../hooks/useCategoryList';
-import { useSidebarSectionsOrder } from '../../hooks/useSidebarSectionsOrder';
 
 export const useMoveCategoryPosition = () => {
 	const { rawCategories } = useUserSidebarCategories();
-	const sidebarSectionsOrder = useSidebarSectionsOrder();
+	const sidebarSectionsOrder: readonly string[] = useUserPreference<string[]>('sidebarSectionsOrder') ?? SIDEBAR_SYSTEM_GROUP_KEYS;
 	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
 
 	return useCallback(
