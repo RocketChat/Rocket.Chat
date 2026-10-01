@@ -141,9 +141,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	 *
 	 * Membership of the call counts on its own, because someone added from outside the room has no subscription to
 	 * check. See [video conferences](../../../docs/features/video-conference.md).
+	 *
+	 * `videoconf-access` permission superseeds any other membership check. Not having it means no access to videoconf at all.
 	 */
 	async canAccessConference(call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>, userId?: IUser['_id']): Promise<boolean> {
 		if (!userId) {
+			return false;
+		}
+
+		if (!(await this.hasPermission(userId, 'videoconf-access'))) {
 			return false;
 		}
 

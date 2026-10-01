@@ -2,9 +2,7 @@ import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload } from '@rocket.chat
 import { VideoConf } from '@rocket.chat/core-services';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
-import { settings } from '../../settings';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';
@@ -22,18 +20,8 @@ export class VideoConfModule implements IUiKitCoreApp {
 		}
 
 		if (actionId === 'join') {
-			const call = await VideoConf.get(callId);
-			if (!call) {
-				throw new Error('invalid call');
-			}
-
-			if (
-				!settings.get<boolean>('Accounts_AllowAnonymousRead') &&
-				(!userId || !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid)))
-			) {
-				throw new Error('not-allowed');
-			}
-
+			// TODO: Verify if we need to gate this behind the `videoconf-access` permission
+			// If needed to gate behind it, find out if it should also support anonymous join (Accounts_AllowAnonymousRead)
 			await VideoConf.join(userId, callId, {});
 		}
 

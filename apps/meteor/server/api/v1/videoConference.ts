@@ -193,6 +193,10 @@ API.v1.post(
 		const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 		const { userId } = this;
 
+		if (!(await hasPermissionAsync(this.user, 'videoconf-access'))) {
+			return API.v1.forbidden('Not allowed');
+		}
+
 		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
 			return API.v1.forbidden('Not allowed');
 		}
@@ -327,6 +331,10 @@ API.v1.post(
 		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await hasPermissionAsync(userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
 		}
 
 		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
@@ -606,6 +614,10 @@ API.v1.get(
 		},
 	},
 	async function action() {
+		if (!(await hasPermissionAsync(this.userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
+		}
+
 		return API.v1.success({ calls: await VideoConf.listJoinableCalls(this.userId) });
 	},
 );
@@ -627,6 +639,10 @@ API.v1.get(
 		const { userId } = this;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
+
+		if (!(await hasPermissionAsync(this.userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
+		}
 
 		// TODO: answer 404 when a conference is missing or is not the caller's
 		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —

@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Message, Presence, Room, Authorization } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Message, Presence, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -54,7 +54,7 @@ import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
@@ -823,7 +823,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-call-target');
 		}
 
-		const userCanBeCalled = await Authorization.hasAtLeastOnePermission(calleeId, ['call-management', 'videoconf-join-call']);
+		const userCanBeCalled = await hasPermissionAsync(calleeId, 'videoconf-access');
 
 		if (!userCanBeCalled) {
 			throw new Error('invalid-call-target');

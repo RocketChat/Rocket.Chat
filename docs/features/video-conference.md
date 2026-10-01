@@ -18,6 +18,12 @@ DM. That asymmetry is deliberate, and most of what follows is a consequence of i
 
 - Access to a conference is membership **or** access to a room the conference lives in. Checking only the room
   refuses people their own call.
+- None of that counts for a user without the permission to use video conferences at all (`videconf-access`). It is the
+  one gate every way into a call passes, membership included: without it a user cannot start, join or be called, and their client never subscribes to conference events. The only way in without the permission is anonymous access being enabled (`Accounts_AllowAnonymousRead`) — a non-embedded provider can support external users (e.g. member without a rocket.chat account),
+  so we disregard the permission if that's the use case. Embedded providers do not follow this rule, and always requires permissions.
+- `videoconf-access` permission should only work in the global scope (cannot be granted per-room), meaning a scope should
+  never be passed when checking this specific permission. It precedes `call-management`, meaning that in order to create a new
+  conference, you need both permissions. The `call-management` permission can still be scoped, as it did before.
 - Broadcasting the end of a call has to reach members who have no subscription to walk.
 - A notification can only carry a room the recipient can actually open.
 - The call's chat may be unreadable to some of the people in the call. See [Chat access](#chat-access).
