@@ -19,5 +19,14 @@ export const useDesktopTelephonyListener = (openWidget: (peerInfo: PeerInfo) => 
 			}
 			openWidget({ number: phoneNumber });
 		});
+
+		// onTelephonyCallRequested returns no cleanup, and registered callbacks overwrite the previous ones
+		// so a noop needs to be set on the effect's cleanup to ensure a stale `openWidget` is not called.
+		return () => {
+			if (typeof window.RocketChatDesktop?.onTelephonyCallRequested !== 'function') {
+				return;
+			}
+			window.RocketChatDesktop.onTelephonyCallRequested(() => undefined);
+		};
 	}, [openWidget]);
 };
