@@ -130,12 +130,28 @@ Not pinned by a test. Hosted-room occupants are keyed by JID and only leave on a
 removes them, so later messages keep being sent to them and the room roster is stale until
 their server reconnects.
 
+### D3 A new topic does not reach occupants already in the room
+
+XEP-0045 §8.1 has the room send every occupant a message carrying the new `<subject/>` when
+it changes. A topic changed in Rocket.Chat becomes the subject only for whoever joins next
+(R2); occupants already in the room keep the old one. Where: `MucRoom.setSubject` stores the
+subject without broadcasting it. Test: `hosted-muc.spec.ts`, "tells occupants already in
+the room about a new topic".
+
+### D4 A deleted room keeps running until the service restarts
+
+Deleting a hosted room in Rocket.Chat leaves it registered with the protocol core. Remote
+occupants still in it keep exchanging messages through our server, a public one stays
+listed by `disco#items` ([service-discovery R4](service-discovery.md)) and `disco#info`
+still describes it instead of answering `item-not-found` ([service-discovery R6](service-discovery.md)).
+New joins are refused, since no Rocket.Chat room hosts the JID. Where: nothing calls
+`mucDestroyRoom` when a room is deleted. Test: `hosted-muc.spec.ts`, "closes the room when it
+is deleted in Rocket.Chat".
+
 ## Open questions
 
 - Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and
   ignores it.
-- Should `muc.subjectChanged` be implemented so that a topic change on the Rocket.Chat side
-  reaches occupants (§8.1) and vice versa?
 - Should the room send history on join from Rocket.Chat's message history, or is that a job
   for MAM (pending triage)?
 

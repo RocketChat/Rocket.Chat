@@ -335,6 +335,12 @@ export const isGroupchat =
 		(nick === undefined || stanza.attrs.from?.split('/')[1] === nick) &&
 		(body === undefined || stanza.getChildText('body') === body);
 
+/** The room telling its occupants its subject (XEP-0045 §8.1). */
+export const isRoomSubject =
+	({ roomJid, subject }: { roomJid: string; subject: string }): Predicate =>
+	(stanza) =>
+		isGroupchat({ roomJid })(stanza) && stanza.getChildText('subject') === subject;
+
 /** A mediated (XEP-0045) or direct (XEP-0249) invitation into the given room. */
 export const isRoomInvite =
 	(roomJid: string): Predicate =>

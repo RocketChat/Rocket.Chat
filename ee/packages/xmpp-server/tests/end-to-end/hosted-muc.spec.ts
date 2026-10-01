@@ -7,6 +7,7 @@ import { polling, uniqueSuffix } from './helper/config';
 import {
 	createHostedRoom,
 	createLocalUser,
+	deleteRoom,
 	deleteRoomOnCleanup,
 	expectStoredOnce,
 	findUser,
@@ -15,6 +16,7 @@ import {
 	leaveRoom,
 	listMemberUsernames,
 	sendMessage,
+	setRoomTopic,
 	setRoomType,
 	teardown,
 	updateMessage,
@@ -22,7 +24,16 @@ import {
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat, RoomRef } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
-import { NS, StanzaError, isGroupchat, isOccupantPresence, isRoomInvite, replacedId, statusCodes } from './helper/xmpp-client';
+import {
+	NS,
+	StanzaError,
+	isGroupchat,
+	isOccupantPresence,
+	isRoomInvite,
+	isRoomSubject,
+	replacedId,
+	statusCodes,
+} from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
 import { createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
@@ -325,6 +336,36 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 					assert.equal(await isListed(), true);
 					assert.ok((await features()).includes('muc_open'));
 				},
+				polling,
+			);
+		});
+	});
+
+	describe('after a change made in Rocket.Chat', () => {
+		// Known defect: ../../docs/specs/hosted-muc.md#d3-a-new-topic-does-not-reach-occupants-already-in-the-room
+		it.skip('tells occupants already in the room about a new topic', async () => {
+			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-topic-${uniqueSuffix()}` });
+			const muc = mucJidOf(room);
+			await alice.joinRoom(muc);
+			await waitForMember(owner, room, alice.jid);
+
+			const topic = `topic ${uniqueSuffix()}`;
+			await setRoomTopic(owner, room, topic);
+			await alice.waitFor(isRoomSubject({ roomJid: muc, subject: topic }), 'the new subject');
+		});
+
+		// Known defect: ../../docs/specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts
+		it.skip('closes the room when it is deleted in Rocket.Chat', async () => {
+			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-deleted-${uniqueSuffix()}` });
+			const muc = mucJidOf(room);
+			await alice.joinRoom(muc);
+			await waitForMember(owner, room, alice.jid);
+
+			await deleteRoom(rc, room);
+			await retry(
+				`${muc} to be gone`,
+				() =>
+					assert.rejects(alice.discoInfo(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'item-not-found'),
 				polling,
 			);
 		});

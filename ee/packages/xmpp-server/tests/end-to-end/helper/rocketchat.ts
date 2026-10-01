@@ -244,6 +244,14 @@ export async function setRoomType(user: LocalUser, room: RoomRef, type: 'c' | 'p
 	return { _id: room._id, t: type };
 }
 
+export async function setRoomTopic(user: LocalUser, room: RoomRef, topic: string): Promise<void> {
+	await post(user.config, `${endpointPrefix[room.t]}.setTopic`, { roomId: room._id, topic });
+}
+
+export async function deleteRoom(rc: RocketChat, room: RoomRef): Promise<void> {
+	await post(rc.admin, 'rooms.delete', { roomId: room._id });
+}
+
 export async function listMemberUsernames(user: LocalUser, room: RoomRef): Promise<string[]> {
 	const { members } = await getRoomMembers(room._id, user.config);
 	return members.map((member) => member.username as string);

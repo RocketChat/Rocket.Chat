@@ -54,7 +54,9 @@ it for every IQ that is not a ping.
 
 ## Known defects
 
-None.
+Defects that show in service discovery but are owned elsewhere:
+
+- deleted hosted rooms: [hosted-muc D4](hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts)
 
 ## Open questions
 
