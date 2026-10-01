@@ -56,7 +56,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			avatarETag,
 			name,
 			username,
-			phone,
+			phones,
 			createdAt,
 			roles = [],
 			status,
@@ -80,7 +80,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phones,
 			utcOffset,
 			customFields: {
 				...data.user.customFields,
