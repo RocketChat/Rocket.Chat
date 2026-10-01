@@ -1,0 +1,37 @@
+ee/packages/xmpp-server/docs/compliance.md
+  s_676495b213565f::t_1a50fcafa92a4c 49
+  s_676495b213565f::t_8e10f69c798cb1 35-36
+  s_676495b213565f::t_1fe2ef45afb182 40,42-43
+  s_676495b213565f::t_95f0fac0ad0173 47
+  s_676495b213565f::t_a990ac70c2b9dc 9
+  s_676495b213565f::t_d165347b87f15d 50
+  s_676495b213565f::t_ae74fc4aa52f71 48
+  s_676495b213565f::t_8150117969cf6a 38
+ee/packages/xmpp-server/docs/specs/chat-states.md
+  s_676495b213565f::t_df1e8fd30967d5 1-78
+ee/packages/xmpp-server/docs/intents/room-history.md
+  s_676495b213565f::t_b3bccee0fd1401 1-53
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_676495b213565f::t_f6c8dd78801dc9 3,14-18,23-26,30-57,65,75-79,82,87,91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c41a38be82f58b68e825501b8e7f1a94f4fa47ad",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
