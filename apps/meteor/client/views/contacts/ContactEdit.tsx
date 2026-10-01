@@ -1,5 +1,5 @@
 import type { IContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Divider, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider, Icon, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import {
 	ContextualbarClose,
@@ -148,7 +148,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 									<IconButton
 										secondary
 										marginInlineStart={4}
-										icon='trash'
+										icon={<Icon name='trash' size='x20' />}
 										aria-label={t('Remove_email')}
 										title={t('Remove_email')}
 										onClick={() => emailFields.remove(index)}
@@ -187,7 +187,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 									<IconButton
 										secondary
 										marginInlineStart={4}
-										icon='trash'
+										icon={<Icon name='trash' size='x20' />}
 										aria-label={t('Remove_phone')}
 										title={t('Remove_phone')}
 										onClick={() => phoneFields.remove(index)}

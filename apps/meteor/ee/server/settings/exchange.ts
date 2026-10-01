@@ -116,6 +116,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('Exchange_Contacts_Sync_Enabled', false, {
 						type: 'boolean',
+						public: true,
 						enableQuery: serverOnly,
 						invalidValue: false,
 					});
