@@ -103,7 +103,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
-							{messageType.text(t, message)}
+							<span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{messageType.text(t, message)}</span>
 						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
