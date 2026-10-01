@@ -8,7 +8,18 @@ import type {
 	LocalContactUpdate,
 } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Collection, Db, DeleteResult, Filter, FindCursor, FindOptions, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
+import type {
+	Collection,
+	Db,
+	DeleteResult,
+	Document,
+	Filter,
+	FindCursor,
+	FindOptions,
+	IndexDescription,
+	UpdateFilter,
+	UpdateResult,
+} from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -116,6 +127,25 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 			modifiedCount: result.modifiedCount,
 			upsertedCount: result.upsertedCount,
 		};
+	}
+
+	public findImportedByFolder<P extends Document = IContact>(
+		uid: IUser['_id'],
+		folderId: string,
+		externalIds?: { in: string[] } | { notIn: string[] },
+		options?: FindOptions<P extends IContact ? IContact : P>,
+	): FindCursor<P> {
+		const query: Filter<IContact> = { uid, source: OUTLOOK, folderId };
+
+		if (externalIds && 'in' in externalIds) {
+			query.externalId = { $in: externalIds.in };
+		}
+
+		if (externalIds && 'notIn' in externalIds) {
+			query.externalId = { $type: 'string', $nin: externalIds.notIn };
+		}
+
+		return this.find<P>(query, options);
 	}
 
 	public deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult> {
