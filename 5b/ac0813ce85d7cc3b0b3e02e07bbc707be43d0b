@@ -1,0 +1,24 @@
+ee/packages/xmpp-server/CLAUDE.md
+  s_a3e3c6120cb963::t_1a01b77450a3b1 50-52
+ee/packages/xmpp-server/docs/adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md
+  s_a3e3c6120cb963::t_f0d1a6997c33c5 1-23,26-29,32-95,98
+  s_a3e3c6120cb963::t_22af068943aabb 24-25,30-31,96-97
+ee/packages/xmpp-server/docs/architecture.md
+  s_a3e3c6120cb963::t_1a01b77450a3b1 84,135-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "5bac0813ce85d7cc3b0b3e02e07bbc707be43d0b",
+  "prompts": {},
+  "sessions": {
+    "s_a3e3c6120cb963": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54a1a096-7d76-4f28-8e98-12072a997e92",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
