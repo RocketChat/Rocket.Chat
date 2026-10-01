@@ -1,12 +1,25 @@
 # @rocket.chat/ui-composer
 
+## 6.0.0-rc.0
+
+### Minor Changes
+
+- ([#41020](https://github.com/RocketChat/Rocket.Chat/pull/41020)) Adds a **Realtime Message Composer**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Message → **Realtime message composer**). While the feature preview is off, the message composer keeps its current plain-text behavior.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eeca122b913518d2231f9d9568a10873705845ee, 4be043d9356fd50d2e3e1b585008368f90e95505, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 6843a962e18a7c37986bc08e8a7cc9bbd8072b77, 37faaa89ad1b4b721d6054e40a91327bd8140525, e61b41d340e2722037de67551982fd70773d0617]:</summary>
+  - @rocket.chat/ui-client@35.0.0-rc.0
+
+  </details>
+
 ## 5.0.0
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/ui-client@34.0.0
+
   </details>
 
 ## 5.0.0-rc.0
@@ -14,8 +27,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 742009a09148e33d141f50691cdec0f7e9818535]:</summary>
-
   - @rocket.chat/ui-client@34.0.0-rc.0
+
   </details>
 
 ## 4.0.0
@@ -23,8 +36,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
-
   - @rocket.chat/ui-client@33.0.0
+
   </details>
 
 ## 4.0.0-rc.0
@@ -32,8 +45,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [4b57346a59b5c9433c25845c886be11af1bf71d4]:</summary>
-
   - @rocket.chat/ui-client@33.0.0-rc.0
+
   </details>
 
 ## 3.0.0
@@ -41,8 +54,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-client@32.0.0
+
   </details>
 
 ## 3.0.0-rc.0
@@ -50,8 +63,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-client@32.0.0-rc.0
+
   </details>
 
 ## 2.0.0
@@ -59,8 +72,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
-
   - @rocket.chat/ui-client@31.0.0
+
   </details>
 
 ## 2.0.0-rc.0
@@ -68,8 +81,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
-
   - @rocket.chat/ui-client@31.0.0-rc.0
+
   </details>
 
 ## 1.0.0
@@ -81,8 +94,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a]:</summary>
-
   - @rocket.chat/ui-client@30.0.0
+
   </details>
 
 ## 1.0.0-rc.2
@@ -90,8 +103,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-client@30.0.0-rc.2
+
   </details>
 
 ## 1.0.0-rc.1
@@ -99,8 +112,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-client@30.0.0-rc.1
+
   </details>
 
 ## 1.0.0-rc.0
@@ -112,8 +125,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [543b6c8cbde0d084a3a923acf4845b68db80206a]:</summary>
-
   - @rocket.chat/ui-client@30.0.0-rc.0
+
   </details>
 
 ## 0.6.0

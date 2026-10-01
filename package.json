@@ -35,6 +35,9 @@
 	},
 	"resolutions": {
 		"@rocket.chat/fuselage@npm:^0.92.0": "patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-6fa39ac4c9.patch",
+		"@rocket.chat/css-in-js": "workspace:~",
+		"@rocket.chat/css-supports": "workspace:~",
+		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
 		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"browserslist": "^4.28.7",
@@ -49,7 +52,6 @@
 		"vite/postcss": "8.5.26",
 		"external-editor/tmp": "0.2.7",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
-		"adm-zip": "0.6.0",
 		"axios@npm:^1.6.1": "1.18.0",
 		"axios@npm:^1.7.4": "1.18.0",
 		"axios@npm:^1.7.8": "1.18.0",
@@ -97,13 +99,13 @@
 		"wait-on/joi": "17.13.4",
 		"webpack-dev-server/launch-editor": "2.14.1",
 		"webpack-dev-server/http-proxy-middleware": "2.0.10",
-		"@changesets/parse/js-yaml": "4.3.1",
-		"@eslint/eslintrc/js-yaml": "4.3.1",
-		"cosmiconfig/js-yaml": "4.3.1",
-		"mocha/js-yaml": "4.3.1",
-		"@istanbuljs/load-nyc-config/js-yaml": "3.15.1",
-		"depcheck/js-yaml": "3.15.1",
-		"read-yaml-file/js-yaml": "3.15.1",
+		"@changesets/parse/js-yaml": "4.3.2",
+		"@eslint/eslintrc/js-yaml": "4.3.2",
+		"cosmiconfig/js-yaml": "4.3.2",
+		"mocha/js-yaml": "4.3.2",
+		"@istanbuljs/load-nyc-config/js-yaml": "3.15.2",
+		"depcheck/js-yaml": "3.15.2",
+		"read-yaml-file/js-yaml": "3.15.2",
 		"@jest/transform/@babel/core": "7.29.7",
 		"@storybook/test-runner/@babel/core": "7.29.7",
 		"eslint-plugin-react-hooks/@babel/core": "7.29.7",
@@ -214,20 +216,21 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
-		"@types/node": "~24.13.2",
+		"@types/node": "~24.13.6",
+		"eslint": "~10.7.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
-		"turbo": "2.9.14",
+		"turbo": "2.11.5",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.18.0",
+	"packageManager": "yarn@4.18.1",
 	"engines": {
 		"node": ">=22.22.3 <23 || >=24.15.0 <25",
-		"yarn": "4.18.0"
+		"yarn": "4.18.1"
 	},
 	"volta": {
 		"node": "24.15.0",
-		"yarn": "4.18.0"
+		"yarn": "4.18.1"
 	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",

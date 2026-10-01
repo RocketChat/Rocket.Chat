@@ -52,6 +52,45 @@ export function addSettings(): Promise<void> {
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 
+				await this.section('VideoConf_LiveKit', async function () {
+					await this.add('VideoConf_LiveKit_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						alert: 'VideoConf_LiveKit_Alpha_Alert',
+						i18nDescription: 'VideoConf_LiveKit_Enabled_Description',
+					});
+
+					const livekitEnabled = { _id: 'VideoConf_LiveKit_Enabled', value: true };
+
+					await this.add('VideoConf_LiveKit_Url', '', {
+						type: 'string',
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Api_Key', '', {
+						type: 'string',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Api_Secret', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: [livekitEnabled],
+					});
+
+					await this.add('VideoConf_LiveKit_Token_TTL', 6, {
+						type: 'int',
+						invalidValue: 6,
+						i18nDescription: 'VideoConf_LiveKit_Token_TTL_Description',
+						enableQuery: [livekitEnabled],
+					});
+				});
+
 				// The switch for the whole call-window experience; off means the client behaves as it did before
 				// any of it existed. Deliberately not gated on `VideoConf_Enable_Persistent_Chat`, so a workspace
 				// already running persistent chat sees no change until this is turned on. See [the feature
