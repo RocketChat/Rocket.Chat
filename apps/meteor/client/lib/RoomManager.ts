@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useMemo, useSyncExternalStore } from 'react';
+import type { CacheSnapshot } from 'virtua';
 
 import { getConfig } from './utils/getConfig';
 import { LegacyRoomManager } from '../../app/ui-utils/client';
@@ -15,6 +16,11 @@ class RoomStore extends Emitter<{
 
 	scroll?: number;
 
+	cache?: CacheSnapshot;
+
+	// Message count the cache snapshot was taken against, since virtua's cache is positional.
+	cacheMessageCount?: number;
+
 	lm?: Date;
 
 	atBottom = true;
@@ -25,7 +31,19 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime, atBottom }: { scroll?: number; lastTime?: Date; atBottom?: boolean }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+		cache,
+		cacheMessageCount,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+		cache?: CacheSnapshot;
+		cacheMessageCount?: number;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
@@ -35,6 +53,10 @@ class RoomStore extends Emitter<{
 
 		if (atBottom !== undefined) {
 			this.atBottom = atBottom;
+		}
+		if (cache !== undefined) {
+			this.cache = cache;
+			this.cacheMessageCount = cacheMessageCount;
 		}
 		if (scroll || lastTime) {
 			this.emit('changed');
