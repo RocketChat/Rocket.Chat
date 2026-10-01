@@ -91,9 +91,21 @@ it('re-registers the callback when the openWidget reference changes', () => {
 	const newOpenWidget = jest.fn();
 	rerender({ openWidget: newOpenWidget });
 
-	expect(bridge.onTelephonyCallRequested).toHaveBeenCalledTimes(2);
+	// register, noop from the previous effect's cleanup, register again
+	expect(bridge.onTelephonyCallRequested).toHaveBeenCalledTimes(3);
 
 	bridge.fire('5551234567');
 
 	expect(newOpenWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '5551234567' });
+});
+
+it('replaces the callback with a noop on unmount so a stale openWidget is not called', () => {
+	const bridge = setupDesktopBridge();
+	const openWidget = jest.fn();
+	const { unmount } = renderHook(() => useDesktopTelephonyListener(openWidget));
+
+	unmount();
+	bridge.fire('5551234567');
+
+	expect(openWidget).not.toHaveBeenCalled();
 });
