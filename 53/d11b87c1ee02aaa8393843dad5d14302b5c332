@@ -1,0 +1,47 @@
+apps/meteor/tests/end-to-end/api/livechat/contacts.ts
+  s_7fdee83f5e44e2::t_37a1dac96312bb 849
+apps/meteor/tests/end-to-end/api/teams.ts
+  s_7fdee83f5e44e2::t_39be98b32d93ba 2142
+apps/meteor/tests/end-to-end/apps/app-logs-nested-requests.ts
+  s_7fdee83f5e44e2::t_89205d11680ad0 2,6,28
+  s_7fdee83f5e44e2::t_abff30ee2445ba 31
+  s_7fdee83f5e44e2::t_0485ed103b8db3 29
+apps/meteor/tests/end-to-end/api/groups.ts
+  s_7fdee83f5e44e2::t_3294f1316acc5c 1048,2469-2473
+apps/meteor/tests/end-to-end/api/channels.ts
+  s_7fdee83f5e44e2::t_89205d11680ad0 2320,2348
+  s_7fdee83f5e44e2::t_ead46ffa2fda25 1532
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  s_7fdee83f5e44e2::t_12c49c1007bcba 2731,2741,2756,2762
+apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts
+  s_7fdee83f5e44e2::t_89205d11680ad0 211,215,293
+apps/meteor/tests/data/uploads.helper.ts
+  s_7fdee83f5e44e2::t_d640d8ac92ac46 333-336
+apps/meteor/tests/end-to-end/apps/installation.ts
+  s_7fdee83f5e44e2::t_69cf79253dd7be 89
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_7fdee83f5e44e2::t_39be98b32d93ba 1639-1640,1647-1649,2829-2832
+apps/meteor/tests/end-to-end/api/users.ts
+  s_7fdee83f5e44e2::t_69cf79253dd7be 978,1025,1049,1149,1213
+  s_7fdee83f5e44e2::t_4f9e45a1fb990a 5344-5345
+  s_7fdee83f5e44e2::t_03609e80e251e0 24,4117,4183,4271,4321-4324
+  s_7fdee83f5e44e2::t_9174684999b72a 693,699-704
+apps/meteor/tests/end-to-end/api/autotranslate.ts
+  s_7fdee83f5e44e2::t_468ebbb840328d 401-402,454-455,563,565
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "53d11b87c1ee02aaa8393843dad5d14302b5c332",
+  "prompts": {},
+  "sessions": {
+    "s_7fdee83f5e44e2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c59cb318-8504-4646-a3a7-102396cfd1d6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

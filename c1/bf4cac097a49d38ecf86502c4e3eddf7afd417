@@ -1,0 +1,14 @@
+apps/meteor/ee/server/api/v1/omnichannel/tags.ts
+  h_4c386397e672f4 83,105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c1bf4cac097a49d38ecf86502c4e3eddf7afd417",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

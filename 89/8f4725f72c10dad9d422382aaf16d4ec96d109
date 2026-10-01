@@ -1,0 +1,70 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_fb4a3714124a13::t_780d98043cf638 2-8
+  s_fb4a3714124a13::t_9ed9ffc8ec9c58 38-41
+ee/packages/xmpp-server/src/xml/namespaces.ts
+  s_fb4a3714124a13::t_831b9fcffb8ce6 17-18
+ee/packages/xmpp-server/src/muc/stanzas.spec.ts
+  s_fb4a3714124a13::t_ca4e0f5d2962a7 13-14
+  s_fb4a3714124a13::t_ab3f0f3cfcd6c1 61-75
+ee/packages/xmpp-server/src/events.ts
+  s_fb4a3714124a13::t_0b88dc0fdb7b8f 60
+ee/packages/xmpp-server/src/xml/correction.ts
+  s_fb4a3714124a13::t_60ec875b0bff47 1-13
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_fb4a3714124a13::t_bc65df71d2f92a 3-9
+  s_fb4a3714124a13::t_18fb329d7af2d6 651-657,663-666
+  s_fb4a3714124a13::t_183087536e1c81 239
+  s_fb4a3714124a13::t_d310bd89d8c90c 265
+  s_fb4a3714124a13::t_fc7d917f67f7c4 590
+  s_fb4a3714124a13::t_3452a38198f98a 238,248,254
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_fb4a3714124a13::t_6cd3e00747801e 229,231
+  s_fb4a3714124a13::t_d62543be211d74 183
+  s_fb4a3714124a13::t_69141f7de4f6c3 188-189
+  s_fb4a3714124a13::t_494db7998f9fc1 24-25
+ee/packages/xmpp-server/src/muc/stanzas.ts
+  s_fb4a3714124a13::t_39073be6f78130 4
+  s_fb4a3714124a13::t_92d7e3d1dd7403 41-48,53
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_fb4a3714124a13::t_8748099a7f8952 26
+  s_fb4a3714124a13::t_51ec11dc710bbd 6
+  s_fb4a3714124a13::t_50d45532f83466 123
+  s_fb4a3714124a13::t_989e9d741b57ec 59,61-66
+docs/features/xmpp-server.md
+  s_fb4a3714124a13::t_94be54b5d640c3 52
+  s_fb4a3714124a13::t_aa68b4fe4a28e2 131
+ee/packages/xmpp-server/src/handlers/parse.ts
+  s_fb4a3714124a13::t_92da0a34f9aba9 4
+  s_fb4a3714124a13::t_470982ca9a3ada 29
+ee/packages/xmpp-server/src/muc/RemoteMucSession.spec.ts
+  s_fb4a3714124a13::t_078a95111c0286 1,5,8,10-12,26,28-32,50-71
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_fb4a3714124a13::t_97bdeb34a6bd07 26
+  s_fb4a3714124a13::t_9162b4873ce13e 201-202
+  s_fb4a3714124a13::t_b9b36d15fd11c2 19
+  s_fb4a3714124a13::t_ca043d929536bf 268-279,281,283
+  s_fb4a3714124a13::t_d301699d0699cd 143-148
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_fb4a3714124a13::t_9db6c45a73f894 223
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "898f4725f72c10dad9d422382aaf16d4ec96d109",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_fb4a3714124a13": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "698e2b08-6381-45e0-86fc-f30be71690f2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+ee/packages/xmpp-server/tests/end-to-end/presence.spec.ts
+  s_676495b213565f::t_c19f926de715e8 70
+  s_676495b213565f::t_ca0447730b7a30 61
+ee/packages/xmpp-server/docs/specs/message-retraction.md
+  s_676495b213565f::t_2fc2f014498ad7 1-73
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_676495b213565f::t_4ff50cc8849095 1-100
+ee/packages/xmpp-server/docs/specs/presence.md
+  s_676495b213565f::t_f6d38a041457de 1-98
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_676495b213565f::t_c218e4638a01fe 91
+  s_676495b213565f::t_960ad85c4e91f6 54
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_676495b213565f::t_d0650b98fa8d68 1-105
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_676495b213565f::t_8f5ff3b63f9339 1-76
+ee/packages/xmpp-server/docs/specs/delivery-receipts.md
+  s_676495b213565f::t_e6ee142ef74543 1-73
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_676495b213565f::t_90c26ca9ff5bcb 1-96
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_676495b213565f::t_0808ab9ea3c2c7 193
+  s_676495b213565f::t_ff7e4b6f505d94 93
+  s_676495b213565f::t_558e4e798c2fc7 162
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_676495b213565f::t_40fc3245b2d8da 1-141
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_676495b213565f::t_a394524ae237b9 1-69
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_676495b213565f::t_56a780abf4e676 1-138
+ee/packages/xmpp-server/docs/specs/message-corrections.md
+  s_676495b213565f::t_8708b42c255f48 1-106
+ee/packages/xmpp-server/docs/specs/ping.md
+  s_676495b213565f::t_24fbf9c83613da 1-49
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_676495b213565f::t_96cf2558e7a148 1-122
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_676495b213565f::t_e3cca55e958f63 113
+  s_676495b213565f::t_41788f32907f12 179
+  s_676495b213565f::t_a1a252dad3f301 186
+  s_676495b213565f::t_54f4603bf9e5dc 131
+  s_676495b213565f::t_d0581c86ebcdf9 228
+ee/packages/xmpp-server/tests/end-to-end/connectivity.spec.ts
+  s_676495b213565f::t_27cb2c3cd991c7 56
+ee/packages/xmpp-server/docs/specs/service-discovery.md
+  s_676495b213565f::t_9dd8cafe28fa43 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8227d13ce16d6260f7ba1476f27ceee4391eb238",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
