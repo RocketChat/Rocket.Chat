@@ -20,6 +20,8 @@ import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
 import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
 import { domainOfJid, toBareJid } from './helpers/jid';
+import { deriveInboundMessageId } from './helpers/messageId';
+import type { InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
 import type { XmppDnsResolver } from '../s2s/dnsResolver';
@@ -51,6 +53,21 @@ const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1
 
 /** The room JID's localpart is the MUC room id used by the protocol core. */
 const mucLocalpart = (mucJid: string): string => mucJid.split('@')[0];
+
+/** A message from the wire, in whichever kind of room it arrived. */
+type InboundMessage = {
+	rid: string;
+	author: IUser;
+	/** Identifies the author for corrections; see `deriveInboundMessageId`. */
+	authorKey: string;
+	/** Scopes the event id: the sender's domain, or the room's for a remote room. */
+	originDomain: string;
+	body: string;
+	/** Deduplicates copies: the room-assigned id when there is one, otherwise the sender's. */
+	stanzaId?: string;
+	senderId?: string;
+	replaceId?: string;
+};
 
 const INBOUND_EVENTS = [
 	'connection.established',
@@ -110,6 +127,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	private fingerprint: ListenerFingerprint | undefined;
 
 	private presenceEnabled = false;
+
+	private messageIdSecret = '';
 
 	private reconfiguring: Promise<void> = Promise.resolve();
 
@@ -177,6 +196,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			await this.stopServer();
 			return;
 		}
+
+		this.messageIdSecret = config.messageIdSecret;
 
 		const fingerprint = this.fingerprintOf(config);
 
@@ -475,7 +496,16 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			);
 		}
 
-		await this.saveFederatedMessage(rid, remoteUser._id, domainOfJid(remoteJid), event.body, event.id);
+		await this.receiveMessage({
+			rid,
+			author: remoteUser,
+			authorKey: remoteJid,
+			originDomain: domainOfJid(remoteJid),
+			body: event.body,
+			stanzaId: event.id,
+			senderId: event.id,
+			replaceId: event.replaceId,
+		});
 	}
 
 	private toCoreConfig(config: XMPPServerConfiguration): XMPPServerConfig {
@@ -573,7 +603,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		server.on('muc.messageReceived', (event) => {
 			this.track(
 				'muc.messageReceived',
-				this.persistMucMessage(`${event.roomId}@${server.mucDomain}`, event.fromJid, event.body, event.id),
+				this.persistMucMessage(`${event.roomId}@${server.mucDomain}`, event),
 				'Failed to persist hosted MUC message',
 			);
 		});
@@ -630,13 +660,26 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	}
 
 	/** Persists a message received in a hosted MUC room (author addressed by real JID). */
-	private async persistMucMessage(mucJid: string, fromJid: string, body: string, stanzaId?: string): Promise<void> {
+	private async persistMucMessage(
+		mucJid: string,
+		{ fromJid, body, id, replaceId }: XMPPServerEventMap['muc.messageReceived'],
+	): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': mucJid }, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
-		const author = await createOrUpdateXMPPUser({ jid: toBareJid(fromJid) });
-		await this.saveFederatedMessage(room._id, author._id, domainOfJid(fromJid), body, stanzaId);
+		const authorJid = toBareJid(fromJid);
+		const author = await createOrUpdateXMPPUser({ jid: authorJid });
+		await this.receiveMessage({
+			rid: room._id,
+			author,
+			authorKey: authorJid,
+			originDomain: domainOfJid(fromJid),
+			body,
+			stanzaId: id,
+			senderId: id,
+			replaceId,
+		});
 	}
 
 	/** Persists a message received in a remote MUC we joined (author is an opaque nick). */
@@ -646,6 +689,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		body,
 		id: stanzaId,
 		originId,
+		senderId,
+		occupantId,
 		replaceId,
 	}: XMPPServerEventMap['muc.remoteMessage']): Promise<void> {
 		const room = await Rooms.findOne({ 'xmppFederation.muc': roomJid }, { projection: { _id: 1 } });
@@ -661,12 +706,22 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		// Remote occupants rarely disclose a real JID; synthesize a stable per-nick JID
 		const syntheticJid = `${fromNick}#${roomJid}`;
 		const author = await createOrUpdateXMPPUser({ jid: syntheticJid, name: fromNick });
-		await this.saveFederatedMessage(room._id, author._id, domainOfJid(roomJid), body, stanzaId);
+		await this.receiveMessage({
+			rid: room._id,
+			author,
+			// XEP-0308 requires the same nick; the occupant id keeps a later holder of the nick from correcting
+			authorKey: occupantId ? `${fromNick}\0${occupantId}` : fromNick,
+			originDomain: domainOfJid(roomJid),
+			body,
+			stanzaId,
+			senderId,
+			replaceId,
+		});
 	}
 
-	/** Stores an inbound message once, however many copies of it arrive and however close together. */
-	private async saveFederatedMessage(rid: string, fromId: string, originDomain: string, body: string, stanzaId?: string): Promise<void> {
-		const eventId = `xmpp:${originDomain}:${stanzaId ?? Random.id()}`;
+	/** Stores an inbound message, or applies it to the one it corrects, once however many copies arrive and however close together. */
+	private async receiveMessage(message: InboundMessage): Promise<void> {
+		const eventId = `xmpp:${message.originDomain}:${message.stanzaId ?? Random.id()}`;
 		if (this.eventIdsBeingSaved.has(eventId)) {
 			return;
 		}
@@ -675,10 +730,46 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			if (await Messages.findOneByFederationId(eventId)) {
 				return;
 			}
-			await Message.saveMessageFromFederation({ fromId, rid, federation_event_id: eventId, msg: body, ts: new Date() });
+			if (message.replaceId && (await this.applyCorrection(message, message.replaceId))) {
+				return;
+			}
+			await this.storeMessage(message, eventId);
 		} finally {
 			this.eventIdsBeingSaved.delete(eventId);
 		}
+	}
+
+	/** Replaces the text of the message `replaceId` names; false when the author has no such message in the room. */
+	private async applyCorrection({ rid, author, authorKey, body }: InboundMessage, replaceId: string): Promise<boolean> {
+		const id = this.deriveMessageId({ rid, authorKey, senderId: replaceId });
+		const original = id && (await Messages.findOneById(id));
+		if (!original || original.rid !== rid || original.u._id !== author._id) {
+			return false;
+		}
+		// Every member session of a remote room delivers its own copy of the correction
+		if (original.msg !== body) {
+			await Message.updateMessage({ ...original, msg: body }, author, original);
+		}
+		return true;
+	}
+
+	private async storeMessage({ rid, author, authorKey, body, senderId }: InboundMessage, eventId: string): Promise<void> {
+		const id = senderId && this.deriveMessageId({ rid, authorKey, senderId });
+		// A sender that reuses one of its ids keeps the first message reachable and stores the new one under a random id
+		const isIdFree = id && !(await Messages.findOneById(id, { projection: { _id: 1 } }));
+		await Message.saveMessageFromFederation({
+			...(isIdFree && { _id: id }),
+			fromId: author._id,
+			rid,
+			federation_event_id: eventId,
+			msg: body,
+			ts: new Date(),
+		});
+	}
+
+	/** Nothing until the secret is loaded: an id derived without it could be predicted, and would stay that way. */
+	private deriveMessageId(key: InboundMessageKey): string | undefined {
+		return this.messageIdSecret ? deriveInboundMessageId(this.messageIdSecret, key) : undefined;
 	}
 
 	/** Makes the invited local user a member of the remote MUC's shadow room, creating it on first invite, and joins them into the MUC. */

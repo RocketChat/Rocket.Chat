@@ -1,4 +1,5 @@
 import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
+import { Random } from '@rocket.chat/random';
 
 import { settingsRegistry } from '.';
 
@@ -224,6 +225,13 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 				modules: ['federation'],
 				invalidValue: false,
 				enableQuery,
+			});
+
+			// Not enterprise: an invalidValue would replace the secret when the license lapses and orphan every derived id
+			await this.add('XMPP_Server_Message_Id_Secret', Random.secret(), {
+				type: 'string',
+				secret: true,
+				hidden: true,
 			});
 		});
 	});

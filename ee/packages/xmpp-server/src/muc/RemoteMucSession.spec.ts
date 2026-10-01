@@ -70,6 +70,21 @@ describe('RemoteMucSession', () => {
 		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ fromNick: 'bob', body: 'fixed', id: 'm2', replaceId: 'm1' }));
 	});
 
+	it('reports the id attribute a correction references and the XEP-0421 occupant id, whatever id the room assigned (message-corrections R4)', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m1'><body>hi</body><origin-id xmlns='urn:xmpp:sid:0' id='o1'/><stanza-id xmlns='urn:xmpp:sid:0' id='room-id' by='team@conference.remote.tld'/><occupant-id xmlns='urn:xmpp:occupant-id:0' id='occ-bob'/></message>",
+			),
+		);
+
+		expect(onMessage).toHaveBeenCalledWith(
+			expect.objectContaining({ id: 'room-id', originId: 'o1', senderId: 'm1', occupantId: 'occ-bob' }),
+		);
+	});
+
 	it('reports the id the sender gave a message alongside the one the room assigned (message-deduplication R2, R3)', () => {
 		const onMessage = jest.fn();
 		const { session } = createSession({ onMessage });

@@ -10,6 +10,7 @@ import {
 	splitOccupantJid,
 } from './stanzas';
 import type { MucRole } from './stanzas';
+import { parseReplaceId } from '../xml/correction';
 import { buildStanzaError } from '../xml/errors';
 
 export type MucOccupant = {
@@ -26,7 +27,7 @@ type BroadcastMessage = { fromNick: string; body: string; id?: string; replaceId
 export type MucRoomEvents = {
 	occupantJoined: (occupant: MucOccupant) => void;
 	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked') => void;
-	message: (params: { fromNick: string; fromJid: string; body: string; id?: string; raw: Element }) => void;
+	message: (params: { fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
 };
 
 export type MucRoomDeps = {
@@ -181,7 +182,14 @@ export class MucRoom {
 		}
 
 		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id });
-		this.deps.emit('message', { fromNick: occupant.nick, fromJid: occupant.realJid, body, id: message.attrs.id, raw: message });
+		this.deps.emit('message', {
+			fromNick: occupant.nick,
+			fromJid: occupant.realJid,
+			body,
+			id: message.attrs.id,
+			replaceId: parseReplaceId(message),
+			raw: message,
+		});
 	}
 
 	/** Broadcasts a message authored on the Rocket.Chat side into the room. */

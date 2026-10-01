@@ -9,7 +9,7 @@ export type IncomingChatMessage = {
 	body: string;
 	id?: string;
 	thread?: string;
-	/** XEP-0308 correction target, parsed when present (not acted on in v1). */
+	/** The sender's id for the message this one corrects (XEP-0308). */
 	replaceId?: string;
 	raw: Element;
 };
@@ -49,7 +49,7 @@ export type XMPPServerEventMap = {
 
 	'muc.occupantJoined': { roomId: string; nick: string; jid: string; role: string };
 	'muc.occupantLeft': { roomId: string; nick: string; jid: string; reason?: 'left' | 'kicked' };
-	'muc.messageReceived': { roomId: string; fromNick: string; fromJid: string; body: string; id?: string; raw: Element };
+	'muc.messageReceived': { roomId: string; fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element };
 	'muc.subjectChanged': { roomId: string; fromNick: string; subject: string };
 	'muc.inviteReceived': { roomJid: string; toLocalJid: string; fromJid: string; reason?: string; password?: string };
 
@@ -65,6 +65,10 @@ export type XMPPServerEventMap = {
 		id?: string;
 		/** The id the sender gave the message, which survives the room assigning its own. */
 		originId?: string;
+		/** The stanza's `id` attribute, which XEP-0308 corrections reference. */
+		senderId?: string;
+		/** The XEP-0421 id that tells apart occupants who held the same nick. */
+		occupantId?: string;
 		replaceId?: string;
 		raw: Element;
 	};

@@ -90,8 +90,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner message');
 		});
 
-		// Known defect: ../../docs/specs/message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages
-		it.skip('applies a correction from the XMPP user to the stored message', async () => {
+		it('applies a correction from the XMPP user to the stored message (message-corrections R4)', async () => {
 			const id = `e2e-${uniqueSuffix()}`;
 			const text = `before correction ${uniqueSuffix()}`;
 			await alice.sendGroupchat(muc, text, { id });
@@ -157,6 +156,19 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await sendMessage(owner, room._id, outbound);
 			await alice.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner reply');
 			await bob.waitFor(isGroupchat({ roomJid: muc, nick: owner.username, body: outbound }), 'the owner reply');
+		});
+
+		it("does not let an XMPP user correct another occupant's message (message-corrections R7)", async () => {
+			const id = `e2e-${uniqueSuffix()}`;
+			const text = `not yours ${uniqueSuffix()}`;
+			await alice.sendGroupchat(muc, text, { id });
+			const original = await waitForMessage(owner, room, text);
+
+			const forged = `forged correction ${uniqueSuffix()}`;
+			await bob.sendGroupchat(muc, forged, { replaces: id });
+			const stored = await waitForMessage(owner, room, forged);
+			assert.notEqual(stored._id, original._id);
+			assert.equal((await waitForMessage(owner, room, text))._id, original._id);
 		});
 
 		// Known defect: ../../docs/specs/message-corrections.md#d2-the-room-strips-corrections-it-relays-between-xmpp-users

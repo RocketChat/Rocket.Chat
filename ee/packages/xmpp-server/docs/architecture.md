@@ -117,7 +117,8 @@ as `XMPPServer` and exposes `isRunning`, `sendMessage`, `registerHostedRoom`,
   logged and reported to the `observeHandler` hook, never thrown back into the stream.
 - `src/service/helpers/xmppUser.ts` upserts remote users; `helpers/presence.ts` maps status
   to presence and back; `helpers/jid.ts` has `toBareJid` and `domainOfJid`;
-  `configuration.ts` reads the settings.
+  `helpers/messageId.ts` derives the `_id` of inbound messages; `configuration.ts` reads the
+  settings.
 
 ## Data model and Matrix coexistence
 
@@ -135,7 +136,10 @@ This is guaranteed structurally ([ADR 0006](adr/0006-remote-users-are-local-user
 - **Message dedup and loop-breaking** reuse the federation stamp: inbound messages are saved via
   `Message.saveMessageFromFederation` with `federation.eventId = 'xmpp:<origin-domain>:<stanza-id>'`;
   the outgoing hook skips any message that already carries one
-  ([ADR 0007](adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md)).
+  ([ADR 0007](adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md)). Their
+  `_id` is derived from the room, the author and the sender's id, so a later correction can
+  find them by primary key
+  ([ADR 0014](adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
 
 ## Message flow, end to end
 
@@ -192,7 +196,9 @@ remote server connects (or reuses a session) → InboundSession authenticates th
   → XMPPServer: remote-MUC session? invite? else StanzaRouter → typed event
   → service handler:
       1:1 message  → resolve local target → upsert remote user → find/create DM room
-                     (stamped xmppFederation role 'dm') → dedupe → saveMessageFromFederation
+                     (stamped xmppFederation role 'dm') → dedupe → a correction updates the
+                     message it replaces (Message.updateMessage), anything else is saved
+                     under its derived _id (saveMessageFromFederation)
       MUC message  → resolve room by xmppFederation.muc → same save path
       occupants    → upsert user, create/remove subscription
       MUC invite   → see above

@@ -95,7 +95,6 @@ on start, and persists `muc.remoteMessage`.
 Defects that show in remote rooms but are owned elsewhere:
 
 - messages without any id: [message-deduplication D3](message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated)
-- corrections stored as new messages: [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages)
 
 ## Open questions
 

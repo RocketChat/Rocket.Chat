@@ -79,9 +79,7 @@ from the UI goes through `federation.beforeCreateDirectMessage` (stamps the room
 
 ## Known defects
 
-None of its own. Defects that show in DMs are owned by the cross-cutting specs:
-
-- a correction stored as a new message: [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages)
+None.
 
 ## Open questions
 

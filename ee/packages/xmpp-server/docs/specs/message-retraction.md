@@ -65,8 +65,17 @@ None; not implemented.
   `Message_AllowDeleting_BlockDeleteInMinutes`) apply to inbound retractions, or does the
   sender's server decide?
 - R7: should a moderator's deletion in a hosted room be relayed as XEP-0425, or left local?
-- Messages stored before this capability ships have no origin id recorded; retractions for
-  them cannot be matched. Accept, or backfill from `federation.eventId`?
+- Inbound messages stored since [ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)
+  can be found by the sender's id through their derived `_id`, and by the room's id through
+  `federation.eventId`. Messages stored before it can only be found by `federation.eventId`.
+  Accept, or backfill?
+- A retraction in a remote room of a Rocket.Chat user's own message references the stanza id
+  the room assigned it, which is never recorded (ADR 0014, Consequences). Where should it be
+  recorded, given that `federation.eventId` would stop the outgoing hook relaying edits?
+- With a client that sets an `<origin-id/>` different from its `id` attribute, the derived
+  `_id` follows the `id` attribute (what corrections reference), so a DM retraction by origin
+  id falls back to `federation.eventId`, which uses the `id` attribute too. Is a lookup by
+  origin id needed at all?
 
 ## References
 

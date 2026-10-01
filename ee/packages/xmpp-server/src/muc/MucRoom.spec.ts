@@ -91,6 +91,20 @@ describe('MucRoom', () => {
 		expect(events.find((e) => e.event === 'message')).toBeDefined();
 	});
 
+	it('reports the message a received correction replaces (message-corrections R3)', async () => {
+		const { room, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		events.length = 0;
+
+		room.handleGroupchatMessage(
+			p(
+				`<message from='alice@remote.tld/pc' to='${ROOM}' type='groupchat' id='m2'><body>fixed</body><replace xmlns='urn:xmpp:message-correct:0' id='m1'/></message>`,
+			),
+		);
+
+		expect(events.find((e) => e.event === 'message')?.args[0]).toMatchObject({ body: 'fixed', id: 'm2', replaceId: 'm1' });
+	});
+
 	it('does not deliver stanzas to local (virtual) occupants but keeps them in the roster', async () => {
 		const { room, sent } = setup();
 		room.addLocalOccupant({ nick: 'carol', realJid: 'carol@rc.tld' });

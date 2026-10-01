@@ -87,8 +87,7 @@ describe('XMPP federation: direct messages', () => {
 		assert.notEqual(correction.attrs.id, original._id, 'a correction needs an id of its own');
 	});
 
-	// Known defect: ../../docs/specs/message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages
-	it.skip('applies a correction from the XMPP user to the stored message', async () => {
+	it('applies a correction from the XMPP user to the stored message (message-corrections R4)', async () => {
 		const id = `e2e-${uniqueSuffix()}`;
 		const text = `before correction ${uniqueSuffix()}`;
 		await alice.sendChat(local.jid, text, { id });

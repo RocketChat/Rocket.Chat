@@ -16,3 +16,5 @@ export const NS_CONFERENCE = 'jabber:x:conference';
 export const NS_SID = 'urn:xmpp:sid:0';
 /** XEP-0308 last message correction. */
 export const NS_CORRECT = 'urn:xmpp:message-correct:0';
+/** XEP-0421 anonymous unique occupant identifiers. */
+export const NS_OCCUPANT_ID = 'urn:xmpp:occupant-id:0';

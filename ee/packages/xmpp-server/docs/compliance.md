@@ -28,7 +28,8 @@ Notes).
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | implemented | [ping](specs/ping.md) | answers only; never sends |
 | [XEP-0220](https://xmpp.org/extensions/xep-0220.html) | Server Dialback | implemented | [s2s-connectivity](specs/s2s-connectivity.md) | all three roles |
 | [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | partial | [remote-muc](specs/remote-muc.md) | inbound only; hosted rooms send mediated invites |
-| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | partial | [message-corrections](specs/message-corrections.md) | outbound; inbound parsed, not applied |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | partial | [message-corrections](specs/message-corrections.md) | both ways; hosted rooms strip corrections they relay between XMPP users |
+| [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | partial | [message-corrections](specs/message-corrections.md) | read in remote rooms to tell apart occupants who held the same nick; hosted rooms do not stamp it |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound |
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | planned | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
 | [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | planned | [file-transfer](specs/file-transfer.md) | required for the end product; transport open |

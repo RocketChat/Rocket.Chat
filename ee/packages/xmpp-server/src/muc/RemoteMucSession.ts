@@ -4,7 +4,7 @@ import type { MucRemoteOccupant } from '../events';
 import { splitOccupantJid } from './stanzas';
 import { xml } from '../xml/build';
 import { buildReplace, parseReplaceId } from '../xml/correction';
-import { NS_MUC, NS_MUC_USER, NS_SID } from '../xml/namespaces';
+import { NS_MUC, NS_MUC_USER, NS_OCCUPANT_ID, NS_SID } from '../xml/namespaces';
 
 const REMOTE_RESOURCE = 'rocketchat';
 
@@ -23,7 +23,16 @@ export type RemoteMucSessionDeps = {
 	onJoinFailed: (condition: string) => void;
 	onOccupantJoined: (occupant: MucRemoteOccupant) => void;
 	onOccupantLeft: (nick: string) => void;
-	onMessage: (params: { fromNick: string; body: string; id?: string; originId?: string; replaceId?: string; raw: Element }) => void;
+	onMessage: (params: {
+		fromNick: string;
+		body: string;
+		id?: string;
+		originId?: string;
+		senderId?: string;
+		occupantId?: string;
+		replaceId?: string;
+		raw: Element;
+	}) => void;
 };
 
 /**
@@ -121,7 +130,16 @@ export class RemoteMucSession {
 		// prefer the room-assigned XEP-0359 id, which makes deduplication reliable.
 		const originId = message.getChild('origin-id', NS_SID)?.attrs.id ?? message.attrs.id;
 		const stanzaId = message.getChild('stanza-id', NS_SID)?.attrs.id ?? message.attrs.id;
-		this.deps.onMessage({ fromNick: nick, body, id: stanzaId, originId, replaceId: parseReplaceId(message), raw: message });
+		this.deps.onMessage({
+			fromNick: nick,
+			body,
+			id: stanzaId,
+			originId,
+			senderId: message.attrs.id,
+			occupantId: message.getChild('occupant-id', NS_OCCUPANT_ID)?.attrs.id,
+			replaceId: parseReplaceId(message),
+			raw: message,
+		});
 	}
 
 	markStale(): void {

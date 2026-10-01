@@ -144,7 +144,7 @@ export class MucService {
 				break;
 			}
 			case 'message': {
-				const [msg] = args as [{ fromNick: string; fromJid: string; body: string; id?: string; raw: Element }];
+				const [msg] = args as [{ fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element }];
 				this.deps.events.emit('muc.messageReceived', { roomId, ...msg });
 				break;
 			}

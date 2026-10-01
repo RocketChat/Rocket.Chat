@@ -110,8 +110,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			await alice.waitFor(isGroupchat({ roomJid, nick: a.username, body: outbound }), 'the Rocket.Chat message');
 		});
 
-		// Known defect: ../../docs/specs/message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages
-		it.skip('applies a correction from an occupant to the stored message', async () => {
+		it('applies a correction from an occupant to the stored message (message-corrections R4)', async () => {
 			const id = `e2e-${uniqueSuffix()}`;
 			const text = `before correction ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, text, { id });

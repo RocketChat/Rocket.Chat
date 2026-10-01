@@ -7,6 +7,7 @@ export type XMPPServerConfiguration = {
 	mucSubdomain: string;
 	domainAllowList: string[];
 	presenceEnabled: boolean;
+	messageIdSecret: string;
 };
 
 export const XMPP_SETTING_KEYS = [
@@ -18,6 +19,7 @@ export const XMPP_SETTING_KEYS = [
 	'XMPP_Server_MUC_Subdomain',
 	'XMPP_Server_Domain_Allow_List',
 	'XMPP_Server_Presence_Enabled',
+	'XMPP_Server_Message_Id_Secret',
 ] as const;
 
 export type XMPPSettingKey = (typeof XMPP_SETTING_KEYS)[number];
@@ -46,5 +48,6 @@ export async function readXMPPServerConfiguration(
 		mucSubdomain: await get('XMPP_Server_MUC_Subdomain', 'conference'),
 		domainAllowList: parseAllowList(await get('XMPP_Server_Domain_Allow_List', '')),
 		presenceEnabled: await get('XMPP_Server_Presence_Enabled', true),
+		messageIdSecret: await get('XMPP_Server_Message_Id_Secret', ''),
 	};
 }
