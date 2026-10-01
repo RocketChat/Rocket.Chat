@@ -37,6 +37,10 @@ both, each runs separately. Meteor's Jest client and server projects retain thei
 jsdom and Node environments. Vitest, Playwright, and API tests against a separate
 server are unsupported.
 
+Add `--testRunner jest` or `--testRunner mocha` to either command to run only that
+runner. This avoids unrelated suites when you know which runner tests the selected
+code. Without this option, all configured runners run.
+
 Runners with no matching tests print `No tests were found` and finish successfully,
 so Jest and Mocha can run independently. This also applies if neither finds tests.
 
@@ -59,8 +63,10 @@ unchanged.
 - **Survived**: tests passed with the change; inspect assertions and boundary cases.
 - **NoCoverage**: the selected suite did not exercise the changed code.
 - **Timeout**: testing the mutation exceeded the time limit; investigate unexpected timeouts.
+- **RuntimeError**: a mutant caused an execution error; inspect its reason in the report.
 
-Survivors do not fail the command. Configuration errors, failing baseline tests,
+Survivors and individual runtime-error mutants do not fail the command.
+Configuration errors, failing baseline tests,
 and incomplete runs return a nonzero exit code. A failed run may leave a partial
 report; check the terminal output before relying on it. Review surviving mutations,
 improve the relevant tests, and rerun the command.

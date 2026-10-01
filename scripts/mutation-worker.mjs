@@ -25,7 +25,7 @@ try {
 		options.disableTypeChecks = false;
 	} else options.jest = await loadMutationJestConfig();
 	const mutants = await new Stryker(options).runMutationTest();
-	if (mutants.some(({ status }) => status === 'Pending' || status === 'RuntimeError')) {
+	if (mutants.some(({ status }) => status === 'Pending')) {
 		throw new Error('Mutation testing did not complete successfully. Check the report and terminal output.');
 	}
 } catch (error) {

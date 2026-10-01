@@ -141,7 +141,8 @@ test.each([-1, 0, 1])('server checks %s', (value) => {
 });
 `,
 	);
-	await run(directory).catch((error) => assert.fail(error.stdout + error.stderr));
+	await write(directory, '.mocharc.js', "throw new Error('Mocha must not run when Jest is selected');");
+	await run(directory, '--diff', '--testRunner', 'jest').catch((error) => assert.fail(error.stdout + error.stderr));
 	const result = await report(directory);
 	for (const file of ['src/isPositive.ts', 'src/isNegative.ts']) {
 		assert.ok(result.files[file].mutants.length > 0);
@@ -185,7 +186,7 @@ test('test-only changes skip mutation testing and preserve existing reports', as
 	assert.equal(await readFile(resolve(directory, 'reports/mutation/jest/mutation.html'), 'utf8'), 'previous report');
 });
 
-test('explicit selection checks unchanged code without a Git base and reports survivors without failing', async (t) => {
+test('explicit selection checks unchanged code without a Git base and reports survivors and runtime errors without failing', async (t) => {
 	const directory = await fixture(t);
 	await git(directory, 'add', 'packages/example/src/isPositive.ts');
 	await git(directory, 'commit', '-qm', 'Fixture correct production code');
@@ -195,19 +196,27 @@ test('explicit selection checks unchanged code without a Git base and reports su
 		'src/isPositive.spec.ts',
 		`
 import { isPositive } from 'local';
+if (!isPositive(1)) throw new Error('Mutant failed during module loading');
 test('positive input', () => expect(isPositive(1)).toBe(true));
 `,
 	);
 	await run(directory, 'packages/example', '--mutate', 'src/isPositive.ts');
 	const { mutants } = (await report(directory)).files['src/isPositive.ts'];
-	assert.ok(mutants.some(({ status }) => status === 'Killed'));
+	assert.ok(mutants.some(({ status }) => status === 'RuntimeError'));
 	assert.ok(mutants.some(({ status }) => status === 'Survived'));
 	assert.equal(await readFile(resolve(directory, 'src/isPositive.ts'), 'utf8'), source);
 });
 
 test('unsupported arguments fail before touching reports', async (t) => {
 	const directory = await commandFixture(t);
-	for (const args of [['--diff', '--plan'], ['packages/example'], ['--diff', '--mutate', 'src/isPositive.ts']]) {
+	for (const args of [
+		['--diff', '--plan'],
+		['packages/example'],
+		['--diff', '--mutate', 'src/isPositive.ts'],
+		['--diff', '--testRunner'],
+		['--diff', '--testRunner', 'vitest'],
+		['--diff', '--testRunner', 'jest', '--testRunner', 'mocha'],
+	]) {
 		await assert.rejects(run(directory, ...args), { code: 2 });
 	}
 	await assert.rejects(readFile(resolve(directory, 'reports/mutation/jest/mutation.json')), { code: 'ENOENT' });
@@ -222,6 +231,16 @@ test('runner failures set the command exit code while allowing the next runner t
 	await assert.rejects(run(directory, 'packages/example', '--mutate', 'src/isPositive.ts'), (error) => {
 		assert.equal(error.code, 3);
 		assert.match(error.stdout, /worker: jest[\s\S]*worker: mocha/);
+		return true;
+	});
+	const { stdout } = await run(directory, 'packages/example', '--mutate', 'src/isPositive.ts', '--testRunner', 'mocha');
+	assert.match(stdout, /worker: mocha/);
+	assert.doesNotMatch(stdout, /worker: jest/);
+	await rm(resolve(directory, '.mocharc.js'));
+	await assert.rejects(run(directory, 'packages/example', '--mutate', 'src/isPositive.ts', '--testRunner', 'mocha'), (error) => {
+		assert.equal(error.code, 2);
+		assert.match(error.stderr, /No configured mocha runner/);
+		assert.doesNotMatch(error.stdout, /worker:/);
 		return true;
 	});
 });

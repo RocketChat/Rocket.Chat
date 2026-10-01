@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { planDiff, planExplicit, UsageError } from './mutation-diff.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const usage = 'Usage: yarn test:mutation --diff\n       yarn test:mutation <package-path> --mutate <source-patterns>';
+const usage =
+	'Usage: yarn test:mutation --diff [--testRunner jest|mocha]\n       yarn test:mutation <package-path> --mutate <source-patterns> [--testRunner jest|mocha]';
 
 async function runJob({ packagePath, testRunner, targets }) {
 	console.log(`\n${packagePath} (${testRunner}): ${targets.join(', ')}`);
@@ -37,11 +38,20 @@ async function runJob({ packagePath, testRunner, targets }) {
 
 async function main() {
 	const args = process.argv.slice(2);
+	const runnerIndex = args.indexOf('--testRunner');
+	let testRunner;
+	if (runnerIndex !== -1) {
+		testRunner = args[runnerIndex + 1];
+		if (!['jest', 'mocha'].includes(testRunner)) throw new UsageError('--testRunner must be jest or mocha.');
+		args.splice(runnerIndex, 2);
+	}
 	let plan;
 	if (args.length === 1 && args[0] === '--diff') plan = planDiff(root);
 	else if (args.length === 3 && !args[0].startsWith('-') && args[1] === '--mutate') plan = planExplicit(root, args[0], args[2]);
 	else throw new UsageError(usage);
-	const { jobs, skipped } = plan;
+	const { skipped } = plan;
+	const jobs = testRunner ? plan.jobs.filter((job) => job.testRunner === testRunner) : plan.jobs;
+	if (plan.jobs.length && !jobs.length) throw new UsageError(`No configured ${testRunner} runner for the selected production targets.`);
 	for (const { file, reason } of skipped) console.log(`Skipped ${file}: ${reason}`);
 	if (!jobs.length) console.log('No changed production lines to mutation-test.');
 	let exitCode = 0;
