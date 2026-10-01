@@ -228,6 +228,13 @@ Deliberately minimal:
   of a hosted room.
 - `channels.invite`/`groups.invite` pass raw usernames through for hosted MUCs, since the
   invited JID has no local user record yet.
+- `xmppFederation` is published with the room (`publishFields.ts`, `adminFields.ts`) and
+  copied onto client rooms and subscriptions, so the display rules Matrix rooms get also
+  apply to every XMPP room: `roomName` shows `fname` (client and server room types, the
+  parent-discussion header) and the room icon is the globe (`useRoomIcon`, `getIcon`).
+  The checks are `isRoomFederated(room) || isRoomXMPPFederated(room)`; the Matrix-only
+  restrictions behind `isRoomFederated` alone (blocked actions, the composer, room settings)
+  do not apply.
 - Everything else renders as ordinary rooms and users.
 
 ## Testing layout

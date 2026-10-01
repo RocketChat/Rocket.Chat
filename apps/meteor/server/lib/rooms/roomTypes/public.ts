@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated, TeamType } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, isRoomXMPPFederated, TeamType } from '@rocket.chat/core-typings';
 
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -50,7 +50,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	async roomName(room, _userId?) {
-		if (room.prid || isRoomFederated(room)) {
+		if (room.prid || isRoomFederated(room) || isRoomXMPPFederated(room)) {
 			return room.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {

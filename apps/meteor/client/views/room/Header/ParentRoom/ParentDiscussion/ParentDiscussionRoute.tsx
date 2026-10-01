@@ -27,6 +27,7 @@ const ParentDiscussionRoute = ({ room }: ParentDiscussionRouteProps) => {
 						fname: subscription.fname,
 						u: subscription.u,
 						federated: (subscription as any).federated as IRoom['federated'],
+						xmppFederation: (subscription as any).xmppFederation as IRoom['xmppFederation'],
 					}
 				: undefined,
 		[subscription],

@@ -50,7 +50,8 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   ([ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md)); an invitation
   whose room JID names no room is dropped. The channel
   ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)):
-  - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use);
+  - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use), with
+    the globe icon;
   - is named the room JID with every character outside `[0-9a-zA-Z-_.]` replaced by `_`,
     followed by `-` and the first 8 hex digits of the SHA-256 of the room JID;
   - is stamped `xmppFederation: { role: 'remote-muc', muc: <room JID>, origin: <room domain> }`.
