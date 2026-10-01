@@ -2531,7 +2531,7 @@ describe('[Chat]', () => {
 				otherUser = await createUser({ username });
 				otherUserCredentials = await login(otherUser.username, password);
 				parentThreadId = (await sendSimpleMessage({ roomId: testChannel._id })).body.message._id;
-				await addUserToRoom({ rid: testChannel._id, usernames: [otherUser.username] });
+				await addUserToRoom({ rid: testChannel._id, usernames: [otherUser.username], type: 'c' });
 			});
 
 			after(() => Promise.all([deleteUser(otherUser), deleteMessage({ msgId: parentThreadId, roomId: testChannel._id })]));
