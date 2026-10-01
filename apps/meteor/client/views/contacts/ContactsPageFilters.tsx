@@ -26,6 +26,7 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 	const syncContacts = useContactsSync();
 	const isExchangeIntegrationEnabled = useSetting('Outlook_Calendar_Enabled', false);
 	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
+	const isContactSyncEnabled = useSetting('Exchange_Contacts_Sync_Enabled', false);
 
 	return (
 		<Box
@@ -50,7 +51,7 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 			</Box>
 			<Box display='flex' margin='x4' alignItems='center'>
 				<ButtonGroup>
-					{isExchangeIntegrationEnabled && isServerManaged && (
+					{isExchangeIntegrationEnabled && isServerManaged && isContactSyncEnabled && (
 						<Button icon='reload' loading={syncContacts.isPending} onClick={() => syncContacts.mutate()}>
 							{`${t('Sync')} (${total})`}
 						</Button>
