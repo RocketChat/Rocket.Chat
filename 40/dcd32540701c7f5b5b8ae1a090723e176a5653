@@ -1,0 +1,32 @@
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_320402e3005d88::t_0185fdecbc7744 26
+  s_320402e3005d88::t_32a1638a28141e 122,124
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_320402e3005d88::t_1d2e61164703d3 184
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_320402e3005d88::t_ec4dab6957a8e8 648,656-657
+ee/packages/xmpp-server/src/events.ts
+  s_320402e3005d88::t_a7e3546b95651b 60-70
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_320402e3005d88::t_3bad973a286de6 32-34,52-55,75-77
+ee/packages/xmpp-server/src/muc/RemoteMucSession.spec.ts
+  s_320402e3005d88::t_0ce539eb20d4e1 72-97
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_320402e3005d88::t_3bad973a286de6 61-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "40dcd32540701c7f5b5b8ae1a090723e176a5653",
+  "prompts": {},
+  "sessions": {
+    "s_320402e3005d88": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aa293c6e-d62f-4c8f-a929-15a0e65aca05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
