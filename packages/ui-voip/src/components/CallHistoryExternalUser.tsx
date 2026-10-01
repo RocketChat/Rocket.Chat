@@ -7,7 +7,7 @@ export type CallHistoryExternalUserProps = {
 	showIcon?: boolean;
 };
 
-const CallHistoryExternalUser = ({ contact: { number }, showIcon = true }: CallHistoryExternalUserProps) => {
+const CallHistoryExternalUser = ({ contact: { number, displayName }, showIcon = true }: CallHistoryExternalUserProps) => {
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
 			<Box marginInlineEnd={8}>
@@ -18,7 +18,7 @@ const CallHistoryExternalUser = ({ contact: { number }, showIcon = true }: CallH
 					<Icon name='phone' size={20} />
 				</Box>
 			)}
-			<Box>{number}</Box>
+			<Box>{displayName || number}</Box>
 		</Box>
 	);
 };
