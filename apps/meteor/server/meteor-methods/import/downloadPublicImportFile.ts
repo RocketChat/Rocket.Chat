@@ -30,7 +30,8 @@ async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 	return body;
 }
 
-const isHttpUrl = (value: string): boolean => URL.canParse(value) && ['http:', 'https:'].includes(new URL(value).protocol);
+const isHttpUrl = (value: unknown): value is string =>
+	typeof value === 'string' && URL.canParse(value) && ['http:', 'https:'].includes(new URL(value).protocol);
 
 export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
 	const importer = Importers.get(importerKey);

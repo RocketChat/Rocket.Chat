@@ -10,6 +10,7 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { sanitizeFileName } from '../../lib/media/file/functions/sanitizeFileName';
 
 export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
@@ -55,7 +56,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	const fileName = instance.importRecord.file;
 	if (fileName) {
-		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, sanitizeFileName(fileName));
 		await instance.prepareUsingLocalFile(fullFilePath);
 	}
 

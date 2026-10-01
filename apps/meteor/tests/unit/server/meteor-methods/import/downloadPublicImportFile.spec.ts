@@ -80,8 +80,17 @@ describe('executeDownloadPublicImportFile', () => {
 		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
 	});
 
-	['/tmp/import.zip', 'file:///tmp/import.zip', 'https://', 'http://:80', 'httpfoo', 'ftp://example.com/import.zip'].forEach((fileUrl) => {
-		it(`rejects ${fileUrl} before creating an import`, async () => {
+	[
+		'/tmp/import.zip',
+		'file:///tmp/import.zip',
+		'https://',
+		'http://:80',
+		'httpfoo',
+		'ftp://example.com/import.zip',
+		['https://example.com/import.zip'],
+		undefined,
+	].forEach((fileUrl) => {
+		it(`rejects ${JSON.stringify(fileUrl)} before creating an import`, async () => {
 			await expect(executeDownloadPublicImportFile('user-id', fileUrl, 'csv')).to.be.rejectedWith('error-invalid-import-file-url');
 
 			expect(stubs.newOperation.called).to.be.false;
