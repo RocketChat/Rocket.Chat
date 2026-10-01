@@ -88,7 +88,7 @@ async function handleIncomingMessage(message: unknown): Promise<void> {
 	try {
 		// Process PING command first as it is not JSON RPC
 		if (message === COMMAND_PING) {
-			void Messenger.pongResponse();
+			Messenger.pongResponse();
 			return;
 		}
 
@@ -125,6 +125,10 @@ export function startMainLoop(): void {
 	// Without a connected IPC channel this process has no host to serve; exit
 	// instead of lingering as an orphan when the host dies or disconnects
 	process.on('disconnect', () => process.exit(0));
+
+	if (!process.connected) {
+		process.exit(0);
+	}
 
 	// The host waits for this notification before sending any message
 	Messenger.sendNotification({ method: 'ready', params: [] });

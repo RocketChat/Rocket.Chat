@@ -114,8 +114,9 @@ export async function successResponse({ id, result, meta }: SuccessResponseDescr
 	await ipcChannel.send(rpc);
 }
 
-export function pongResponse(): Promise<void> {
-	return ipcChannel.send(COMMAND_PONG);
+// A PONG that fails to send counts as a missed ping on the host
+export function pongResponse(): void {
+	ipcChannel.send(COMMAND_PONG).catch((error) => console.error('Failed to send PONG to the host process', error));
 }
 
 export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
@@ -147,7 +148,7 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 export function sendNotification({ method, params, meta }: NotificationDescriptor) {
 	const request = jsonrpc.notification(method, params, meta);
 
-	void ipcChannel.send(request);
+	ipcChannel.send(request).catch((error) => console.error(`Failed to send the "${method}" notification to the host process`, error));
 }
 
 export function log(params: jsonrpc.RpcParams) {

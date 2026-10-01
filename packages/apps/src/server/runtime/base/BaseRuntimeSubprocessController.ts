@@ -300,12 +300,8 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		const { promise, abort } = this.waitForResponse(request, options);
 
-		try {
-			this.debug('Sending message to subprocess %s', inspect(message));
-			this.messenger.send(request);
-		} catch (e) {
-			abort(e);
-		}
+		this.debug('Sending message to subprocess %s', inspect(message));
+		this.messenger.send(request).catch(abort);
 
 		return promise.finally(() => {
 			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
@@ -463,7 +459,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 				result = jsonrpc.error((message as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.messenger.send(result);
+			this.messenger.send(result).catch((error) => {
+				console.error(`[${this.getAppId()}] Failed to send the result of "${method}" to the subprocess`, error);
+			});
 
 			return;
 		}

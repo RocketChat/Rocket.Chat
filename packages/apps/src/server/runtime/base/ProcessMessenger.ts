@@ -9,14 +9,18 @@ type Message = JsonRpc | typeof COMMAND_PING;
 export class ProcessMessenger {
 	private process: ChildProcess | undefined;
 
-	private _sendStrategy: (message: Message) => void;
+	private _sendStrategy: (message: Message) => Promise<void>;
 
 	constructor() {
 		this._sendStrategy = this.strategyError;
 	}
 
-	public send(message: Message) {
-		this._sendStrategy(message);
+	/**
+	 * Settles once Node hands the message to the IPC channel, and rejects when
+	 * the message cannot be serialized or the channel is closed.
+	 */
+	public send(message: Message): Promise<void> {
+		return this._sendStrategy(message);
 	}
 
 	public setReceiver(process: ChildProcess) {
@@ -39,15 +43,18 @@ export class ProcessMessenger {
 		}
 	}
 
-	private strategyError(_message: Message) {
+	private async strategyError(_message: Message): Promise<void> {
 		throw new Error('No process configured to receive a message');
 	}
 
-	private strategySend(message: Message) {
-		if (!this.process?.connected) {
-			throw new Error('The IPC channel to the subprocess is closed');
-		}
+	private strategySend(message: Message): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (!this.process?.connected) {
+				reject(new Error('The IPC channel to the subprocess is closed'));
+				return;
+			}
 
-		this.process.send(sanitizeForIpc(message));
+			this.process.send(sanitizeForIpc(message), (error) => (error ? reject(error) : resolve()));
+		});
 	}
 }

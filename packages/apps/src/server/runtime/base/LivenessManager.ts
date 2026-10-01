@@ -191,7 +191,8 @@ export class LivenessManager {
 				this.pingAbortController.removeAllListeners('abort');
 			});
 
-		this.messenger.send(COMMAND_PING);
+		// A ping that fails to send counts as a ping without a response
+		this.messenger.send(COMMAND_PING).catch((error) => this.debug('Failed to send ping: %s', error.message));
 	}
 
 	private handleError(err: Error) {
