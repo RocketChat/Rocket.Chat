@@ -28,11 +28,10 @@ jest.mock('../../views/room/contexts/RoomContext', () => ({
 	useRoom: () => fakeRoom,
 }));
 
-const renderAction = (conferenceWindowEnabled: boolean) =>
+const renderAction = (conferenceWindowEnabled: boolean, permissions: string[] = ['videoconf-access', 'call-management']) =>
 	renderHook(() => useVideoCallRoomAction(), {
-		wrapper: mockAppRoot()
-			.withJohnDoe()
-			.withPermission('call-management')
+		wrapper: permissions
+			.reduce((root, permission) => root.withPermission(permission), mockAppRoot().withJohnDoe())
 			.withSetting('VideoConf_Conference_Window_Enabled', conferenceWindowEnabled)
 			.build(),
 	});
@@ -87,4 +86,25 @@ it.each([true, false])('says so and opens nothing when the provider is unavailab
 	expect(dispatchWarning).toHaveBeenCalledWith('error-videoconf-provider-not-configured');
 	expect(startCall).not.toHaveBeenCalled();
 	expect(dispatchOutgoing).not.toHaveBeenCalled();
+});
+
+// `videoconf-access` gates the feature as a whole and comes before `call-management`: whoever may not be in a
+// conference at all may not open one either, however the room is configured.
+// See [video conferences](../../../../docs/features/video-conference.md).
+it('offers nothing without the videoconf-access permission, even with call-management', () => {
+	const { result } = renderAction(true, ['call-management']);
+
+	expect(result.current).toBeUndefined();
+});
+
+it('offers nothing with videoconf-access alone', () => {
+	const { result } = renderAction(true, ['videoconf-access']);
+
+	expect(result.current).toBeUndefined();
+});
+
+it('offers the action when both permissions are granted', () => {
+	const { result } = renderAction(true);
+
+	expect(result.current).toEqual(expect.objectContaining({ id: 'start-video-call' }));
 });
