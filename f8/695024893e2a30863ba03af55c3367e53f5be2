@@ -1,0 +1,33 @@
+ee/packages/xmpp-server/tests/end-to-end/helper/rocketchat.ts
+  s_35ff60f1f47ba0::t_5bb0ea02b3f542 242-246
+ee/packages/xmpp-server/docs/architecture.md
+  s_35ff60f1f47ba0::t_412ea0989a7ff6 171
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_35ff60f1f47ba0::t_e19c99dd2c8652 41-44
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_35ff60f1f47ba0::t_885da88ace859b 285-331
+  s_35ff60f1f47ba0::t_acc3c150cdd764 18,23
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_35ff60f1f47ba0::t_a32dd71d334074 158-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f8695024893e2a30863ba03af55c3367e53f5be2",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_35ff60f1f47ba0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbf28915-4ee9-4f6e-9a30-affdb5395610",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
