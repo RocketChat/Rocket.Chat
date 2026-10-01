@@ -168,6 +168,7 @@ room created           → beforeCreateRoom turns the transient xmppFederated fl
                        → afterCreateRoom → registerHostedRoom
                        → each initial member: local → addHostedRoomMember (virtual occupant)
                                               JID   → inviteToHostedRoom (mediated invite)
+settings saved         → watch.rooms → re-read the room → re-register (public/hidden, subject)
 member added later     → beforeAddUsersToRoom: bare JIDs are materialized as local users first
                                                (and rejected outright for non-XMPP rooms)
                        → afterAddedToRoom: same local/remote split, skipped when the inviter is remote

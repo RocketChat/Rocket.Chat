@@ -239,6 +239,11 @@ export async function leaveRoom(user: LocalUser, room: RoomRef): Promise<void> {
 	await post(user.config, `${endpointPrefix[room.t]}.leave`, { roomId: room._id });
 }
 
+export async function setRoomType(user: LocalUser, room: RoomRef, type: 'c' | 'p'): Promise<RoomRef> {
+	await post(user.config, `${endpointPrefix[room.t]}.setType`, { roomId: room._id, type });
+	return { _id: room._id, t: type };
+}
+
 export async function listMemberUsernames(user: LocalUser, room: RoomRef): Promise<string[]> {
 	const { members } = await getRoomMembers(room._id, user.config);
 	return members.map((member) => member.username as string);

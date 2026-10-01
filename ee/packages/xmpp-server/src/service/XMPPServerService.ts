@@ -155,6 +155,18 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			}
 		});
 
+		// Keeps what the MUC service advertises for a hosted room in step with its Rocket.Chat settings
+		this.onEvent('watch.rooms', async ({ clientAction, room }): Promise<void> => {
+			if (!this.server || clientAction !== 'updated' || !isRoomXMPPHostedMuc(room)) {
+				return;
+			}
+			// The payload may be partial; a missing `t` must not read as a private group
+			const current = await Rooms.findOneById(room._id, { projection: HOSTED_ROOM_PROJECTION });
+			if (current) {
+				this.registerHostedRoomWithCore(current);
+			}
+		});
+
 		this.onEvent('license.module', async ({ module }): Promise<void> => {
 			if (module === 'federation') {
 				await this.reconfigure();

@@ -38,7 +38,10 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   No other room is reachable on the MUC domain ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)).
 - **R2** The room is registered with the protocol core when it is created and again on every
   service start, with its topic as subject and each Rocket.Chat member as a virtual occupant
-  (role `moderator` for the owner, `participant` otherwise).
+  (role `moderator` for the owner, `participant` otherwise). It is registered again whenever
+  its Rocket.Chat settings change, so a switch between public channel and private group
+  changes R3's listing and features at once, and a new topic is the subject the next
+  newcomer receives.
 - **R3** Public channels are listed by `disco#items` on the MUC domain and describe themselves
   as `muc_public`/`muc_open`; private groups are unlisted and `muc_hidden`/`muc_membersonly`
   ([service-discovery R4, R5](service-discovery.md)).

@@ -15,11 +15,12 @@ import {
 	leaveRoom,
 	listMemberUsernames,
 	sendMessage,
+	setRoomType,
 	teardown,
 	updateMessage,
 	waitForMessage,
 } from './helper/rocketchat';
-import type { LocalUser, RocketChat } from './helper/rocketchat';
+import type { LocalUser, RocketChat, RoomRef } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import { NS, StanzaError, isGroupchat, isOccupantPresence, isRoomInvite, replacedId, statusCodes } from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
@@ -279,6 +280,53 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await updateMessage(owner, room._id, original._id, edited);
 			await waitForMessage(owner, room, edited);
 			await alice.expectNone(isGroupchat({ roomJid: muc, body: edited }), "the owner's edit", { after });
+		});
+	});
+
+	describe('when its type changes', () => {
+		let room: RoomRef;
+		let muc: string;
+
+		const isListed = async (): Promise<boolean> => {
+			const items = (await alice.discoItems(rc.mucDomain)).getChild('query', NS.discoItems)?.getChildren('item') ?? [];
+			return items.some((item) => item.attrs.jid === muc);
+		};
+
+		const features = async (): Promise<string[]> =>
+			((await alice.discoInfo(muc)).getChild('query', NS.discoInfo)?.getChildren('feature') ?? []).map((feature) => feature.attrs.var);
+
+		before(async () => {
+			const created = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-type-${uniqueSuffix()}` });
+			muc = mucJidOf(created);
+			room = created;
+		});
+
+		it('stops listing a public channel made private and describes it as members-only (R2, R3)', async () => {
+			assert.ok(await isListed());
+			room = await setRoomType(owner, room, 'p');
+			await retry(
+				`${muc} to be advertised as private`,
+				async () => {
+					assert.equal(await isListed(), false);
+					assert.deepEqual(
+						(await features()).filter((feature) => /^muc_(public|hidden|open|membersonly)$/.test(feature)),
+						['muc_hidden', 'muc_membersonly'],
+					);
+				},
+				polling,
+			);
+		});
+
+		it('lists it again once it is made public (R2, R3)', async () => {
+			room = await setRoomType(owner, room, 'c');
+			await retry(
+				`${muc} to be advertised as public`,
+				async () => {
+					assert.equal(await isListed(), true);
+					assert.ok((await features()).includes('muc_open'));
+				},
+				polling,
+			);
 		});
 	});
 });
