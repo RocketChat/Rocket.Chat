@@ -1,4 +1,5 @@
-import { hiddenIds } from '@rocket.chat/streamer';
+import { hiddenIds, isHiddenFor } from '@rocket.chat/streamer';
+import EJSON from 'ejson';
 
 import { StatusVisibilityService } from './service';
 
@@ -202,6 +203,18 @@ describe('status visibility service', () => {
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana', 'carla', 'diego']);
+	});
+
+	it('returns a scope that survives the broker transport to a remote streamer', async () => {
+		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('carla', ['bruno'])]));
+		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		await service.refresh();
+
+		for (const viewer of ['bruno', 'dora']) {
+			const transported = EJSON.parse(EJSON.stringify(await service.getHiddenFrom(viewer)));
+
+			expect(isHiddenFor(transported, 'ana')).toBe(true);
+		}
 	});
 
 	it('flags an admin-disabled user as restricted for the sync broadcast gate', async () => {

@@ -1,6 +1,6 @@
 import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 
-export type PresenceScope = { hideAll: true } | { hideAll: false; hidden?: ReadonlySet<IUser['_id']> };
+export type PresenceScope = { hideAll: true } | { hideAll: false; hidden?: IUser['_id'][] };
 
 export interface IStatusVisibilityService {
 	getHiddenFrom(viewerId: IUser['_id'] | null | undefined): Promise<PresenceScope>;

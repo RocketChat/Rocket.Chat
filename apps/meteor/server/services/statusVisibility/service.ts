@@ -75,7 +75,7 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 		const selfDisabled = Boolean(viewerId && this.adminDisabledUsers.has(viewerId));
 
 		if (!perViewer.length && !selfDisabled) {
-			return { hideAll: false, ...(this.adminDisabledUsers.size && { hidden: this.adminDisabledUsers }) };
+			return { hideAll: false, ...(this.adminDisabledUsers.size && { hidden: [...this.adminDisabledUsers] }) };
 		}
 
 		const hidden = new Set([...this.adminDisabledUsers, ...perViewer]);
@@ -84,7 +84,7 @@ export class StatusVisibilityService extends ServiceClassInternal implements ISt
 			hidden.delete(viewerId);
 		}
 
-		return { hideAll: false, ...(hidden.size && { hidden }) };
+		return { hideAll: false, ...(hidden.size && { hidden: [...hidden] }) };
 	}
 
 	async isPresenceDisabledFor(targetId: IUser['_id']): Promise<boolean> {

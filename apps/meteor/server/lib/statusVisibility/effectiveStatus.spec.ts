@@ -5,13 +5,13 @@ import { expect } from 'chai';
 import { effectiveStatusExpression, effectiveStatusFilter, excludingHiddenFilter, excludingOfflineFilter } from './effectiveStatus';
 
 const nobody: PresenceScope = { hideAll: false };
-const hiding = (...ids: string[]): PresenceScope => ({ hideAll: false, hidden: new Set(ids) });
+const hiding = (...ids: string[]): PresenceScope => ({ hideAll: false, hidden: ids });
 const everyone: PresenceScope = { hideAll: true };
 
 describe('effectiveStatusFilter', () => {
 	it('should filter by the stored status when nobody is hidden', () => {
 		expect(effectiveStatusFilter([UserStatus.ONLINE], nobody)).to.be.deep.equal({ status: { $in: [UserStatus.ONLINE] } });
-		expect(effectiveStatusFilter([UserStatus.ONLINE], { hideAll: false, hidden: new Set() })).to.be.deep.equal({
+		expect(effectiveStatusFilter([UserStatus.ONLINE], { hideAll: false, hidden: [] })).to.be.deep.equal({
 			status: { $in: [UserStatus.ONLINE] },
 		});
 	});
@@ -76,7 +76,7 @@ describe('excludingOfflineFilter', () => {
 describe('excludingHiddenFilter', () => {
 	it('should leave hidden users out and match everyone else', () => {
 		expect(excludingHiddenFilter(nobody)).to.be.deep.equal({});
-		expect(excludingHiddenFilter({ hideAll: false, hidden: new Set() })).to.be.deep.equal({});
+		expect(excludingHiddenFilter({ hideAll: false, hidden: [] })).to.be.deep.equal({});
 		expect(excludingHiddenFilter(hiding('alice', 'bob'))).to.be.deep.equal({ _id: { $nin: ['alice', 'bob'] } });
 	});
 
