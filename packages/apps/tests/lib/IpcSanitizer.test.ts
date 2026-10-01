@@ -84,6 +84,30 @@ describe('sanitizeForIpc', () => {
 		assert.strictEqual(result.error, error);
 	});
 
+	it('sanitizes the cause of an Error', () => {
+		const error = new TypeError('boom', { cause: { keep: 'me', drop: () => 1 } });
+
+		const result = sanitizeForIpc(error);
+
+		assert.notStrictEqual(result, error);
+		assert.strictEqual(result.name, 'TypeError');
+		assert.strictEqual(result.message, 'boom');
+		assert.strictEqual(result.stack, error.stack);
+		assert.deepStrictEqual(result.cause, { keep: 'me', drop: undefined });
+		assert.throws(() => v8.serialize(error));
+		assert.doesNotThrow(() => v8.serialize(result));
+	});
+
+	it('keeps an own __proto__ key as a field', () => {
+		const value = JSON.parse('{"__proto__":{"polluted":true},"a":1}');
+
+		const result = sanitizeForIpc(value);
+
+		assert.strictEqual(Object.getPrototypeOf(result), Object.prototype);
+		assert.deepStrictEqual(Object.keys(result), ['__proto__', 'a']);
+		assert.deepStrictEqual(Object.getOwnPropertyDescriptor(result, '__proto__')?.value, { polluted: true });
+	});
+
 	it('sanitizes Map and Set contents', () => {
 		const result = sanitizeForIpc({
 			map: new Map<string, unknown>([

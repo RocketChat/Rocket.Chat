@@ -21,12 +21,24 @@ function sanitize(value: unknown, seen: WeakMap<object, unknown>): unknown {
 		return undefined;
 	}
 
-	if (isNativelyCloneable(value)) {
-		return value;
-	}
-
 	if (seen.has(value)) {
 		return seen.get(value);
+	}
+
+	// V8 clones an error's `cause` too, so a cause can hold non-cloneable values
+	if (value instanceof Error && 'cause' in value) {
+		const result = new Error(value.message);
+		seen.set(value, result);
+
+		result.name = value.name;
+		result.stack = value.stack;
+		result.cause = sanitize(value.cause, seen);
+
+		return result;
+	}
+
+	if (isNativelyCloneable(value)) {
+		return value;
 	}
 
 	if (Array.isArray(value)) {
@@ -61,8 +73,9 @@ function sanitize(value: unknown, seen: WeakMap<object, unknown>): unknown {
 	const result: Record<string, unknown> = {};
 	seen.set(value, result);
 
+	// A plain assignment to an own `__proto__` key would change the prototype of the result instead of copying the field
 	for (const [key, item] of Object.entries(value)) {
-		result[key] = sanitize(item, seen);
+		Object.defineProperty(result, key, { value: sanitize(item, seen), enumerable: true, writable: true, configurable: true });
 	}
 
 	return result;
