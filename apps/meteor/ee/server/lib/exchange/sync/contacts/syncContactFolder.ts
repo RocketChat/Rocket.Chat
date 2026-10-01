@@ -1,8 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IContact, IUser } from '@rocket.chat/core-typings';
 import type { ImportedContact } from '@rocket.chat/model-typings';
 import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
 
-import { deleteContactAvatars, saveContactAvatar } from './contactAvatars';
+import { deleteContactAvatars, deleteFolderContactAvatars, saveContactAvatar } from './contactAvatars';
 import { normalizeE164 } from './normalizeE164';
 import { settings } from '../../../../../../server/settings';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
@@ -121,19 +121,32 @@ const syncAvatars = async (
 	folderId: string,
 	externalIds: string[],
 ): Promise<void> => {
+	const contactIds = new Map<string, string>();
+	for await (const { _id, externalId } of Contacts.findImportedByFolder<Pick<IContact, '_id' | 'externalId'>>(
+		uid,
+		folderId,
+		{ in: externalIds },
+		{ projection: { _id: 1, externalId: 1 } },
+	)) {
+		if (externalId) {
+			contactIds.set(externalId, _id);
+		}
+	}
+
 	const withPhoto = new Set<string>();
 
-	// Written as they arrive rather than collected first, so only the provider's current batch is in memory.
 	for await (const photo of provider.getContactPhotos(mailbox, externalIds)) {
-		await saveContactAvatar(uid, folderId, photo);
-		withPhoto.add(photo.externalId);
+		const contactId = contactIds.get(photo.externalId);
+
+		if (contactId) {
+			await saveContactAvatar(uid, contactId, photo);
+			withPhoto.add(photo.externalId);
+		}
 	}
 
-	const withoutPhoto = externalIds.filter((externalId) => !withPhoto.has(externalId));
+	const withoutPhoto = [...contactIds].filter(([externalId]) => !withPhoto.has(externalId)).map(([, contactId]) => contactId);
 
-	if (withoutPhoto.length) {
-		await deleteContactAvatars(uid, folderId, { in: withoutPhoto });
-	}
+	await deleteContactAvatars(withoutPhoto);
 };
 
 export const syncContactFolder = async (
@@ -167,12 +180,13 @@ export const syncContactFolder = async (
 			await syncAvatars(provider, uid, mailbox, folderId, [...upserts.keys()]);
 		}
 
+		// Both run while the contacts are still there, which is what the photos are reached through.
 		if (removals.size) {
-			await deleteContactAvatars(uid, folderId, { in: [...removals] });
+			await deleteFolderContactAvatars(uid, folderId, { in: [...removals] });
 		}
 
 		if (keepExternalIds) {
-			await deleteContactAvatars(uid, folderId, { notIn: keepExternalIds });
+			await deleteFolderContactAvatars(uid, folderId, { notIn: keepExternalIds });
 		}
 
 		const deleted = removals.size ? await Contacts.deleteImportedByExternalIds(uid, folderId, [...removals]) : undefined;

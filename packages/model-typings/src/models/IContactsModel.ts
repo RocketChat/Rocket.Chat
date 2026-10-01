@@ -1,5 +1,5 @@
 import type { IContact, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -30,6 +30,12 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult>;
 	deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult>;
 	bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult>;
+	findImportedByFolder<P extends Document = IContact>(
+		uid: IUser['_id'],
+		folderId: string,
+		externalIds?: { in: string[] } | { notIn: string[] },
+		options?: FindOptions<P extends IContact ? IContact : P>,
+	): FindCursor<P>;
 	deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], folderId: string, keepExternalIds: string[]): Promise<DeleteResult>;
 	deleteImportedByFolder(uid: IUser['_id'], folderId: string): Promise<DeleteResult>;

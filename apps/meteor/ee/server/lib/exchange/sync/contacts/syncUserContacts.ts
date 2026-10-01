@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
 
-import { deleteContactAvatars } from './contactAvatars';
+import { deleteFolderContactAvatars } from './contactAvatars';
 import { syncContactFolder } from './syncContactFolder';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import { logger } from '../../logger';
@@ -31,7 +31,7 @@ const dropVanishedFolders = async (uid: IUser['_id'], liveFolderIds: string[]): 
 
 	for (const folderId of vanished) {
 		await Contacts.deleteImportedByFolder(uid, folderId);
-		await deleteContactAvatars(uid, folderId);
+		await deleteFolderContactAvatars(uid, folderId);
 	}
 
 	await ExchangeContactSyncState.deleteByUserIdAndFolders(uid, vanished);
