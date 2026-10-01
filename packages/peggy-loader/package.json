@@ -31,7 +31,7 @@
 		"lint": "eslint ."
 	},
 	"devDependencies": {
-		"@types/node": "~24.13.6",
+		"@types/node": "~26.6.3",
 		"eslint": "~10.7.0",
 		"peggy": "4.1.1",
 		"typescript": "~5.9.3",
