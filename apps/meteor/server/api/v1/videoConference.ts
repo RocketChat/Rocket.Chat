@@ -20,7 +20,7 @@ import {
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { settings } from '../../settings';
 import { API } from '../api';
@@ -262,7 +262,7 @@ API.v1.post(
 		// If anonymous users have access we don't need to check permissions for logged in users.
 		const hasPermission = settings.get<boolean>('Accounts_AllowAnonymousRead')
 			? true
-			: userId && !(await hasAtLeastOnePermissionAsync(userId, ['call-management', 'videoconf-join-call'], call.rid));
+			: userId && (await hasPermissionAsync(userId, 'videoconf-access'));
 
 		if (!hasPermission) {
 			return API.v1.unauthorized('Not allowed');

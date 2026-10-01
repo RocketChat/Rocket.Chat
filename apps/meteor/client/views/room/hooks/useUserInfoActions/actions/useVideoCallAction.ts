@@ -6,9 +6,9 @@ import {
 	useUserId,
 	useUserSubscriptionByName,
 	useSetting,
-	usePermission,
 	useUserCard,
 	useEndpoint,
+	useVideoconfPermissions,
 } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
@@ -39,7 +39,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	const conferenceWindowEnabled = useVideoConfWindowEnabled();
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
-	const permittedToCallManagement = usePermission('call-management', room?._id);
+	const { canManageConference: permittedToCallManagement } = useVideoconfPermissions(room?._id);
 
 	const createDirectMessage = useEndpoint('POST', '/v1/im.create');
 
