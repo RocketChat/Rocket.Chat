@@ -4,7 +4,7 @@ import { Settings, Users } from '@rocket.chat/models';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 350,
+	version: 349,
 	name: 'Remove the stale Drafts sidebar group from the default sections order and from user sidebar categories',
 	async up() {
 		const setting = await Settings.findOneById<Pick<ISetting, 'value'>>('Accounts_Default_User_Preferences_sidebarSectionsOrder', {
