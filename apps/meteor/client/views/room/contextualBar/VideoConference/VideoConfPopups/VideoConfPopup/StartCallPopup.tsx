@@ -1,19 +1,20 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
+	VideoConfButton,
+	VideoConfController,
 	VideoConfPopup,
-	VideoConfPopupHeader,
 	VideoConfPopupContent,
 	VideoConfPopupControllers,
-	VideoConfController,
-	useVideoConfControllers,
-	VideoConfButton,
 	VideoConfPopupFooter,
-	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
-	useVideoConfSetPreferences,
+	VideoConfPopupHeader,
+	VideoConfPopupTitle,
 	useVideoConfCapabilities,
+	useVideoConfControllers,
 	useVideoConfPreferences,
+	useVideoConfSetPreferences,
+	useVideoConfWindowEnabled,
 } from '@rocket.chat/ui-video-conf';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,8 +44,12 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	const dialogLabel =
 		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
-	const showCam = !!capabilities.cam;
-	const showMic = !!capabilities.mic;
+	// The call window asks how to arrive, on a preflight screen where the user can see themselves — so this
+	// popup doesn't, and a choice made here seconds earlier isn't quietly overruled there. Without that window
+	// this popup is still where mic and camera are chosen.
+	const preflight = useVideoConfWindowEnabled();
+	const showCam = !preflight && !!capabilities.cam;
+	const showMic = !preflight && !!capabilities.mic;
 
 	const handleStartCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
@@ -52,17 +57,20 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	});
 
 	const callbackRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			ref.current = node;
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
+		(node: HTMLDivElement) => {
+			const onKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
 					onClose();
 				}
-			});
+			};
+
+			ref.current = node;
+			node.addEventListener('keydown', onKeyDown);
+
+			return () => {
+				node.removeEventListener('keydown', onKeyDown);
+				ref.current = null;
+			};
 		},
 		[onClose],
 	);

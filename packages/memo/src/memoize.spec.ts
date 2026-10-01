@@ -33,6 +33,16 @@ it('should memoize a function that takes one parameter', () => {
 	expect(memoized).toHaveNthReturnedWith(3, 3);
 });
 
+it('should memoize a function that returns NaN', () => {
+	const fn = jest.fn(() => NaN);
+	const memoized = memoize(fn);
+
+	memoized(undefined);
+	memoized(undefined);
+
+	expect(fn).toHaveBeenCalledTimes(1);
+});
+
 describe('clear', () => {
 	it('should discard cached values of a memoized function', () => {
 		const fn = jest.fn(() => 'foo');
@@ -59,9 +69,29 @@ describe('clear', () => {
 });
 
 describe('timeout', () => {
-	it('should memoize a function that takes one parameter and clear after x ms', () => {
+	beforeEach(() => {
 		jest.useFakeTimers();
+	});
 
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('should not let a timer from before a clear expire values cached after it', () => {
+		const fn = jest.fn((i: number) => i + 1);
+		const memoized = memoize(fn, { maxAge: 3000 });
+
+		memoized(5);
+		jest.advanceTimersByTime(2000);
+		clear(memoized);
+		memoized(5);
+		jest.advanceTimersByTime(2000);
+		memoized(5);
+
+		expect(fn).toHaveBeenCalledTimes(2);
+	});
+
+	it('should memoize a function that takes one parameter and clear after x ms', () => {
 		const fn = jest.fn((i: number) => i + 1);
 		const memoized = jest.fn(memoize(fn, { maxAge: 3000 }));
 
@@ -82,8 +112,6 @@ describe('timeout', () => {
 	});
 
 	it('should memoize a function caching for two parameters and clearing both after x ms each one', () => {
-		jest.useFakeTimers();
-
 		const fn = jest.fn((i: number) => i + 1);
 		const memoized = jest.fn(memoize(fn, { maxAge: 3000 }));
 

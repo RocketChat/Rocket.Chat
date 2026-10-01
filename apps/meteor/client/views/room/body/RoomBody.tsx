@@ -52,6 +52,18 @@ const RoomBody = () => {
 	const isAtBottom = useIsAtBottomRef(room._id);
 	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
 
+	// RoomBody persists across room switches, so this state must be reset per room rather than carried over.
+	const [previousRoomId, setPreviousRoomId] = useState(room._id);
+	if (previousRoomId !== room._id) {
+		setPreviousRoomId(room._id);
+		if (shouldJumpToBottom) {
+			setShouldJumpToBottom(false);
+		}
+		if (isJumpingToMessage) {
+			setIsJumpingToMessage(false);
+		}
+	}
+
 	const retentionPolicy = useRetentionPolicy(room);
 
 	useTryToJumpToThreadMessage();

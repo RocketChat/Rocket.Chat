@@ -20,7 +20,14 @@ export async function insertDefaultTestApp(): Promise<void> {
 	await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
 }
 
-export async function installLocalTestPackage(packagePath: string): Promise<{ app: { id: string } }> {
+/**
+ * Installs a packaged app.
+ *
+ * `permissions` grants exactly what it names, the way the admin who installs an app grants what
+ * its `app.json` asks for. An app installed without it gets the default permissions instead, and
+ * those cover none of the permissions added after the permission system shipped.
+ */
+export async function installLocalTestPackage(packagePath: string, permissions?: { name: string }[]): Promise<{ app: { id: string } }> {
 	const api = await request.newContext();
 
 	const headers = {
@@ -28,7 +35,13 @@ export async function installLocalTestPackage(packagePath: string): Promise<{ ap
 		'X-User-Id': Users.admin.data._id,
 	};
 
-	const response = await api.post(`${BASE_URL}/api/apps`, { multipart: { app: fs.createReadStream(packagePath) }, headers });
+	const response = await api.post(`${BASE_URL}/api/apps`, {
+		multipart: {
+			app: fs.createReadStream(packagePath),
+			...(permissions && { permissions: JSON.stringify(permissions) }),
+		},
+		headers,
+	});
 
 	await expect(response).toBeOK();
 

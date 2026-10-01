@@ -14,10 +14,6 @@ export const Meteor = {
 		on: () => {},
 		removeListener: () => {},
 	}),
-	StreamerCentral: {
-		on: () => {},
-		removeListener: () => {},
-	},
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
@@ -27,6 +23,11 @@ export const Meteor = {
 		},
 	},
 	users: {},
+};
+
+export const DDPCommon = {
+	parseDDP: () => undefined,
+	stringifyDDP: () => '',
 };
 
 export const Tracker = {
@@ -94,5 +95,3 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
-
-export const DDPCommon = {};

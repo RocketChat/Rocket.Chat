@@ -1,0 +1,40 @@
+{
+	"name": "@rocket.chat/gazzodown-alt",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/message-parser": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.7",
+		"eslint": "~10.7.0",
+		"fast-check": "~4.6.0",
+		"jest": "~30.2.0",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/message-parser": "workspace:^",
+		"react": "*",
+		"react-dom": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

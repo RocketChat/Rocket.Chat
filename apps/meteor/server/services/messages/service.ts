@@ -23,7 +23,7 @@ import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
-import { updateAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
+import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
 import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
@@ -196,7 +196,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, msgs: 1, lm: 1, sysMes: 1 } }),
+			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, lm: 1, sysMes: 1 } }),
 		]);
 
 		if (!insertedId) {
@@ -217,7 +217,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		if (room?.prid) {
 			try {
-				await updateAndNotifyParentRoomWithParentMessage(room);
+				await incrementAndNotifyParentRoomWithParentMessage(room, type, 1);
 			} catch (err) {
 				SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
 			}

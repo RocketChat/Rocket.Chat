@@ -41,7 +41,7 @@ services:
 
   # HomeServer 1 (synapse)
   hs1:
-    image: matrixdotorg/synapse:v1.157.2
+    image: matrixdotorg/synapse:v1.160.0
     profiles:
       - test
       - element
@@ -103,6 +103,9 @@ services:
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@admin.com
       TEST_MODE: api
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      HTTP_SOCKET_TIMEOUT_MS: 120000
     volumes:
       - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
     networks:

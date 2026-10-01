@@ -1,7 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns/format';
+import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';

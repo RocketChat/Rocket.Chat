@@ -32,6 +32,11 @@ import { updatePRDescription } from './updatePRDescription';
 
 	const action = core.getInput('action');
 	const baseRef = core.getInput('base-ref');
+	const ltsVersions = core
+		.getInput('lts-versions')
+		.split(',')
+		.map((version) => version.trim())
+		.filter(Boolean);
 
 	const cwd = process.cwd();
 
@@ -39,9 +44,9 @@ import { updatePRDescription } from './updatePRDescription';
 	const mainPackagePath = path.join(cwd, 'apps', 'meteor');
 
 	if (action === 'publish-final') {
-		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath });
+		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath, ltsVersions });
 	} else if (action === 'cut') {
-		await publishRelease({ githubToken, baseRef, mainPackagePath });
+		await publishRelease({ githubToken, baseRef, mainPackagePath, ltsVersions });
 	} else if (action === 'next') {
 		await bumpNextVersion({ githubToken, mainPackagePath });
 	} else if (action === 'patch') {

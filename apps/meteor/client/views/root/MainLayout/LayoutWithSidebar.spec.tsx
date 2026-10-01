@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
-import { render } from '@testing-library/react';
-import type { ReactNode } from 'react';
+import { render, screen } from '@testing-library/react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 
@@ -12,20 +11,12 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 }));
 
 jest.mock('../../../navbar', () => () => <div>NavBar</div>);
-jest.mock('../../../sidebar', () => () => <div>Sidebar</div>);
-jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
+jest.mock('../../../sidebar/SidebarRail', () => () => <div>SidebarRail</div>);
+jest.mock('../../../sidebar/SidebarRail/SidebarRailHeader', () => () => <div>SidebarRailHeader</div>);
 jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
-jest.mock('../../navigation/providers/RoomsNavigationProvider', () => ({
-	__esModule: true,
-	default: ({ children }: { children: ReactNode }) => <>{children}</>,
-}));
-
-jest.mock('@rocket.chat/ui-client', () => ({
-	...jest.requireActual('@rocket.chat/ui-client'),
-	FeaturePreview: ({ children }: { children: ReactNode }) => <>{children}</>,
-	FeaturePreviewOn: ({ children }: { children: ReactNode }) => <>{children}</>,
-	FeaturePreviewOff: ({ children }: { children: ReactNode }) => <>{children}</>,
-}));
+jest.mock('../../navigation/providers/RoomsNavigationProvider', () => () => <div>Navigationprovider</div>);
+jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
+jest.mock('../../../sidebar', () => () => <div>Sidebar</div>);
 
 const mockedUseCurrentRoutePath = useCurrentRoutePath as jest.MockedFunction<typeof useCurrentRoutePath>;
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
@@ -130,5 +121,36 @@ describe('LayoutWithSidebar - First_Channel_After_Login navigation', () => {
 
 		expect(navigate).toHaveBeenCalledTimes(1);
 		expect(navigate).toHaveBeenCalledWith({ name: '/channel/general' });
+	});
+});
+
+describe('LayoutWithSidebar - sidebarRail feature preview', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		mockedUseCurrentRoutePath.mockReturnValue('/channel/general' as any);
+		mockedUseRouter.mockReturnValue({ navigate: jest.fn() } as any);
+	});
+
+	it('renders the legacy NavBar and hides SidebarRail when the sidebarRail feature preview is off', () => {
+		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.getByText('NavBar')).toBeInTheDocument();
+		expect(screen.queryByText('SidebarRailHeader')).not.toBeInTheDocument();
+		expect(screen.queryByText('SidebarRail')).not.toBeInTheDocument();
+	});
+
+	it('renders SidebarRailHeader and SidebarRail when the sidebarRail feature preview is on', () => {
+		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
+			wrapper: mockAppRoot()
+				.withSetting('Accounts_AllowFeaturePreview', true)
+				.withUserPreference('featuresPreview', [{ name: 'sidebarRail', value: true }])
+				.build(),
+		});
+
+		expect(screen.getByText('SidebarRailHeader')).toBeInTheDocument();
+		expect(screen.getByText('SidebarRail')).toBeInTheDocument();
+		expect(screen.queryByText('NavBar')).not.toBeInTheDocument();
 	});
 });

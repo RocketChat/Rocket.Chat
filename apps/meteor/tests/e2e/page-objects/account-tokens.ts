@@ -5,7 +5,7 @@ import { Account, AccountSectionsHref } from './account';
 export class AccountTokens extends Account {
 	protected readonly route = AccountSectionsHref.tokens;
 
-	protected readonly title = 'Personal Access Tokens';
+	protected readonly title = 'Personal access tokens';
 
 	get inputToken(): Locator {
 		return this.page.locator('[data-qa="PersonalTokenField"]');
@@ -20,7 +20,7 @@ export class AccountTokens extends Account {
 	}
 
 	get tokenAddedModal(): Locator {
-		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
+		return this.page.locator('role=dialog[name="Personal access token successfully generated"]');
 	}
 
 	get btnTokenAddedOk(): Locator {

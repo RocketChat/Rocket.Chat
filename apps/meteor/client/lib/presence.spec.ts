@@ -12,6 +12,10 @@ jest.mock('meteor/meteor', () => ({
 	},
 }));
 
+jest.mock('../meteor/connection', () => ({
+	subscribeRaw: jest.fn(),
+}));
+
 const mockGet = jest.fn();
 
 jest.mock('../../client/lib/SDKClient', () => ({

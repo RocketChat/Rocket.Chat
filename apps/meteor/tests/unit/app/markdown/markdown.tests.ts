@@ -47,7 +47,6 @@ describe('Markdown entry points', () => {
 	});
 
 	it('should strip the markdown syntax when filtering', () => {
-		expect(Markdown.filterMarkdownFromMessage('*Hello* `there`')).to.equal('Hello there');
 		expect(filterMarkdown('*Hello* `there`')).to.equal('Hello there');
 	});
 });

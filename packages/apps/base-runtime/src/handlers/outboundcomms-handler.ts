@@ -1,9 +1,8 @@
 import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
-import type { Defined } from 'jsonrpc-lite';
-import { JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
 import { AppAccessorsInstance } from '../lib/accessors/mod';
+import { JsonRpcError, SERVER_ERROR, type Defined } from '../lib/jsonrpc';
 import type { RequestContext } from '../lib/requestContext';
 import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
@@ -14,7 +13,7 @@ export default async function outboundMessageHandler(request: RequestContext): P
 	const provider = AppObjectRegistry.get<IOutboundMessageProviders>(`outboundCommunication:${providerName}`);
 
 	if (!provider) {
-		return new JsonRpcError('error-invalid-provider', -32000);
+		return new JsonRpcError('error-invalid-provider', SERVER_ERROR);
 	}
 
 	const method = provider[methodName as keyof IOutboundMessageProviders];
@@ -24,7 +23,7 @@ export default async function outboundMessageHandler(request: RequestContext): P
 	try {
 		logger.debug(`Executing ${methodName} on outbound communication provider...`);
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-function-type
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 		return await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),
@@ -33,6 +32,6 @@ export default async function outboundMessageHandler(request: RequestContext): P
 			AppAccessorsInstance.getPersistence(),
 		]);
 	} catch (e) {
-		return new JsonRpcError(e.message, -32000);
+		return new JsonRpcError(e.message, SERVER_ERROR);
 	}
 }

@@ -24,6 +24,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
 - [docs/anchor-navigation.md](docs/anchor-navigation.md) — deep-linking to a field via URL hash fragments
@@ -35,6 +36,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/api-endpoint-migration.md](docs/api-endpoint-migration.md) — migrating `API.v1.addRoute()` to the validated `API.v1.get()`/`.post()`/… pattern
 - [docs/ajv-instances.md](docs/ajv-instances.md) — when to use `ajv` vs `ajvQuery` in `@rocket.chat/rest-typings`
 - [docs/apps-engine-migration.md](docs/apps-engine-migration.md) — phased extraction of apps execution into a microservice
+- [docs/service-brokers.md](docs/service-brokers.md) — how services reach each other: the local and Moleculer brokers, how events and stream relays reach other instances in each deployment, and the calls that only work because both ends share a process
 
 ### Build and tooling
 

@@ -4,9 +4,9 @@ import { beforeEach, describe, it, mock } from 'node:test';
 import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpointInfo, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint';
-import { JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { JsonRpcError } from '../../lib/jsonrpc';
 import apiHandler from '../api-handler';
 import { createMockRequest } from './helpers/mod';
 

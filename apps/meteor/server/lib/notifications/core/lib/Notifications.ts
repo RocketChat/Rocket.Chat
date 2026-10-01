@@ -1,12 +1,8 @@
-import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { InstanceStatus } from '@rocket.chat/instance-status';
+import { NotificationsModule, Streamer } from '@rocket.chat/streamer';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-
-import { NotificationsModule } from '../../../../modules/notifications/notifications.module';
-import { Streamer } from '../../../../modules/streamer/streamer.module';
-
-import './Presence';
 
 class Stream extends Streamer<'local'> {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
@@ -29,12 +25,8 @@ class Stream extends Streamer<'local'> {
 	}
 }
 
-const notifications = new NotificationsModule(Stream);
+const notifications = new NotificationsModule(Stream, InstanceStatus.id());
 
 notifications.configure();
-
-notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
-	void api.broadcastLocal(eventName, ...args);
-});
 
 export default notifications;

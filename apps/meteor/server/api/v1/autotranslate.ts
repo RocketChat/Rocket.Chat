@@ -10,6 +10,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
+import { TranslationProviderRegistry } from '../../lib/autotranslate/autotranslate';
 import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
 import { saveAutoTranslateSettings } from '../../lib/autotranslate/functions/saveSettings';
 import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
@@ -41,7 +42,50 @@ const isAutotranslateTranslateMessageParamsPOST = ajv.compile<AutotranslateTrans
 	AutotranslateTranslateMessageParamsPostSchema,
 );
 
+type AutotranslateProviderUiMetadata = { name: string; displayName: string };
+
+const autotranslateGetProviderUiMetadataResponseSchema = ajv.compile<{ providers: Record<string, AutotranslateProviderUiMetadata> }>({
+	type: 'object',
+	properties: {
+		providers: {
+			type: 'object',
+			additionalProperties: {
+				type: 'object',
+				properties: {
+					name: { type: 'string' },
+					displayName: { type: 'string' },
+				},
+				required: ['name', 'displayName'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['providers', 'success'],
+	additionalProperties: false,
+});
+
 const autotranslateEndpoints = API.v1
+	.get(
+		'autotranslate.getProviderUiMetadata',
+		{
+			authRequired: true,
+			response: {
+				200: autotranslateGetProviderUiMetadataResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const providers = Object.fromEntries(
+				TranslationProviderRegistry.getProviders().map((provider) => {
+					const { name, displayName } = provider._getProviderMetadata();
+					return [name, { name, displayName }];
+				}),
+			);
+
+			return API.v1.success({ providers });
+		},
+	)
 	.get(
 		'autotranslate.getSupportedLanguages',
 		{

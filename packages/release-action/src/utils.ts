@@ -5,6 +5,7 @@ import path from 'node:path';
 import mdastToString from 'mdast-util-to-string';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
+import semver from 'semver';
 import unified from 'unified';
 
 import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
@@ -144,4 +145,11 @@ _You can see below a preview of the release change log:_
 
 ${releaseBody}
 <!-- release-notes-end -->`;
+}
+
+export function getReleaseName(version: string, ltsVersions: string[]) {
+	const parsed = semver.parse(version);
+	const isLts = !!parsed && !parsed.prerelease.length && ltsVersions.includes(`${parsed.major}.${parsed.minor}`);
+
+	return isLts ? `${version} LTS` : version;
 }

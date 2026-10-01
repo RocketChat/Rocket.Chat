@@ -3,6 +3,7 @@ export type * from './IAppAccessors';
 export type * from './IAppInstallationContext';
 export type * from './IAppUpdateContext';
 export type * from './IAppUninstallationContext';
+export type * from './ICallHistoryRead';
 export type * from './ICloudWorkspaceRead';
 export type * from './IConfigurationExtend';
 export type * from './IConfigurationModify';

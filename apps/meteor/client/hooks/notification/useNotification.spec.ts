@@ -181,4 +181,36 @@ describe('useNotification', () => {
 			expect(instance.close).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('quick reply', () => {
+		it('includes tmid in the sendMessage payload when the notification is for a thread message', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload('threadId'));
+
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'reply text' });
+
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: { _id: expect.any(String), rid: 'roomId', msg: 'reply text', tmid: 'threadId' },
+			});
+		});
+
+		it('does not include tmid in the sendMessage payload when the notification is for a room message', async () => {
+			const { result } = renderHook(() => useNotification(), {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await result.current(buildPayload());
+
+			const [replyListener] = MockNotification.listenersByInstance;
+			replyListener({ response: 'reply text' });
+
+			expect(jest.mocked(sdk.rest.post)).toHaveBeenCalledWith('/v1/chat.sendMessage', {
+				message: { _id: expect.any(String), rid: 'roomId', msg: 'reply text' },
+			});
+		});
+	});
 });

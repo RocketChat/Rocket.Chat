@@ -577,7 +577,7 @@
   "API_EmbedIgnoredHosts_Description": "以逗号分隔的主机或 CIDR 地址，例如：localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedSafePorts": "安全端口",
   "API_EmbedSafePorts_Description": "逗号分隔允许预览的端口列表。",
-  "API_EmbedTimeout": "Embed Request default timeout (in seconds)",
+  "API_EmbedTimeout": "Embed request default timeout (in seconds)",
   "API_Enable_CORS": "启用 CORS",
   "API_Enable_Direct_Message_History_EndPoint": "启用私聊消息历史端点",
   "API_Enable_Direct_Message_History_EndPoint_Description": "这会启用 `/api/v1/im.messages.others` ，它允许查看调用者未参与的其他用户私聊消息。",

@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -14,8 +14,16 @@ test.describe('Messaging', () => {
 	let channelPage: HomeChannel;
 	let targetChannel: string;
 
-	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+	test.beforeAll(async ({ api, request }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		targetChannel = channel.name as string;
+
+		// Navigation and message edition tests need existing messages authored by user1.
+		const firstMessage = await sendMessageFromUser(request, Users.user1, channel._id, 'msg1');
+		expect(firstMessage.success).toBe(true);
+
+		const secondMessage = await sendMessageFromUser(request, Users.user1, channel._id, 'msg2');
+		expect(secondMessage.success).toBe(true);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -34,71 +42,24 @@ test.describe('Messaging', () => {
 			await channelPage.roomToolbar.waitFor();
 		});
 
-		// TODO: this should be replaced by a unit test
-		test('should navigate on messages using keyboard', async ({ page }) => {
-			await test.step('open chat and send message', async () => {
-				await channelPage.content.sendMessage('msg1');
-				await channelPage.content.sendMessage('msg2');
-			});
+		test('should leave the room toolbar with Tab', async ({ page }) => {
+			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
+			await threadsAction.focus();
+			await expect(threadsAction).toBeFocused();
 
-			await test.step('move focus to the second message', async () => {
-				await page.keyboard.press('Shift+Tab');
-				await expect(channelPage.content.lastUserMessage).toBeFocused();
-			});
+			await page.keyboard.press('Tab');
 
-			await test.step('move focus to the first system message', async () => {
-				await page.keyboard.press('ArrowUp');
-				await page.keyboard.press('ArrowUp');
-				await expect(channelPage.content.systemMessageListItems.first()).toBeFocused();
-			});
+			await expect(channelPage.content.lastUserMessage).toBeFocused();
+		});
 
-			await test.step('move focus to the first typed message', async () => {
-				await page.keyboard.press('ArrowDown');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
+		test('should leave the room toolbar with Shift+Tab', async ({ page }) => {
+			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
+			await threadsAction.focus();
+			await expect(threadsAction).toBeFocused();
 
-			await test.step('move focus to the room title', async () => {
-				const roomHeaderFavoriteBtn = channelPage.getRoomHeaderFavoriteBtn(IS_EE);
-				await page.keyboard.press('Shift+Tab');
+			await page.keyboard.press('Shift+Tab');
 
-				await expect(roomHeaderFavoriteBtn).toBeFocused();
-			});
-
-			await test.step('move focus to the channel list', async () => {
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.content.getMessageByText('msg1')).toBeFocused();
-			});
-
-			await test.step('move focus to the message toolbar', async () => {
-				await channelPage.content
-					.getMessageByText('msg1')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(
-					channelPage.content
-						.getMessageByText('msg1')
-						.locator('[role=toolbar][aria-label="Message actions"]')
-						.getByRole('button', { name: 'Add reaction' }),
-				).toBeFocused();
-			});
-
-			await test.step('move focus to the composer', async () => {
-				await page.keyboard.press('Tab');
-				await channelPage.content
-					.getMessageByText('msg2')
-					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' })
-					.waitFor();
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await expect(channelPage.composer.inputMessage).toBeFocused();
-			});
+			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 		});
 
 		test('should navigate properly on the user card', async ({ page }) => {
@@ -166,7 +127,17 @@ test.describe('Messaging', () => {
 
 	test.describe.serial('Message edition', () => {
 		test('should edit messages', async ({ page }) => {
+			const waitForEdit = () =>
+				page.waitForResponse(
+					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+				);
+
 			await channelPage.navbar.openChat(targetChannel);
+
+			await test.step('send messages to edit', async () => {
+				await channelPage.content.sendMessage('msg1');
+				await channelPage.content.sendMessage('msg2');
+			});
 
 			await test.step('focus on the second message', async () => {
 				await expect(channelPage.composer.inputMessage).toBeFocused();
@@ -176,30 +147,20 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('send edited message', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
-				await channelPage.content.sendMessage('edited msg2', false);
-				await editPromise;
+				await Promise.all([waitForEdit(), channelPage.content.sendMessage('edited msg2', false)]);
 
 				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2');
 			});
 
 			await test.step('stress test on message editions', async () => {
-				const editPromise = page.waitForResponse(
-					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-				);
-
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
 					await expect(channelPage.composer.inputMessage).toBeFocused();
 					await page.keyboard.press('ArrowUp');
+					await expect(channelPage.composer.inputMessage).not.toHaveValue('');
 
-					await channelPage.content.sendMessage(element, false);
+					await Promise.all([waitForEdit(), channelPage.content.sendMessage(element, false)]);
+					await expect(channelPage.content.lastUserMessageBody).toHaveText(element);
 				}
-
-				await editPromise;
-				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
 	});

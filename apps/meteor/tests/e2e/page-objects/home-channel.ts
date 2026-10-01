@@ -13,6 +13,7 @@ import {
 	NotificationPreferencesFlexTab,
 	AutoTranslateFlexTab,
 	ExportMessagesFlexTab,
+	OngoingCalls,
 	PruneMessagesFlexTab,
 	SearchMessagesFlexTab,
 	RoomInfoFlexTab,
@@ -21,6 +22,7 @@ import {
 	UserInfoFlexTab,
 	FilesFlexTab,
 } from './fragments';
+import { SidebarRail } from './fragments/siderail';
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
@@ -38,6 +40,8 @@ export class HomeChannel extends RoutedPage {
 	readonly navbar: Navbar;
 
 	readonly userCard: UserCard;
+
+	readonly ongoingCalls: OngoingCalls;
 
 	private _tabs: {
 		members: MembersFlexTab;
@@ -64,13 +68,17 @@ export class HomeChannel extends RoutedPage {
 
 	readonly threadComposer: ThreadComposer;
 
+	readonly sidebarRail: SidebarRail;
+
 	constructor(page: Page) {
 		super(page);
 		this.content = new HomeContent(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
+		this.sidebarRail = new SidebarRail(page);
 		this.navbar = new Navbar(page);
 		this.userCard = new UserCard(page);
+		this.ongoingCalls = new OngoingCalls(page);
 		this._tabs = {
 			members: new MembersFlexTab(page),
 			userInfo: new UserInfoFlexTab(page),
@@ -158,11 +166,11 @@ export class HomeChannel extends RoutedPage {
 	}
 
 	get roomHeaderToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]');
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.locator('role=menuitem[name="Mark unread"]');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {
