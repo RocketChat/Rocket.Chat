@@ -5,7 +5,13 @@ import { render, screen } from '@testing-library/react';
 import ConferencePreflight from './ConferencePreflight';
 import type { PreviewVideoProviderProps } from '../call/previewVideo';
 import type { PreflightMedia } from '../context/definitions';
-import { storeCallPreferences } from '../fixtures/storyFixtures';
+import { callPreferencesStorageKey } from '../hooks/useCallDevicesInitialState';
+
+const preferencesKey = callPreferencesStorageKey('john.doe');
+
+afterEach(() => {
+	localStorage.removeItem(preferencesKey);
+});
 
 const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 	const opened = jest.fn();
@@ -39,9 +45,8 @@ const renderPreflight = (capabilities: VideoConferenceCapabilities) => {
 // Only a provider that runs the call in here can be told which devices to use, so only there does the preflight
 // open the reader's camera and microphone — and around the preview, so both halves share the one pair.
 it("opens the application's camera around the preview and the device choices for a provider that runs the call in here", () => {
-	const restore = storeCallPreferences({ cam: true })();
+	localStorage.setItem(preferencesKey, JSON.stringify({ mic: true, cam: true, ring: true }));
 	const { opened } = renderPreflight({ mic: true, cam: true, embedded: true });
-	restore();
 
 	expect(opened).toHaveBeenCalledWith({ enabled: true });
 	expect(screen.getByRole('region', { name: 'camera provider' })).toContainElement(screen.getByRole('button', { name: /^Speaker/ }));
