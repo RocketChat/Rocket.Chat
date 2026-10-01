@@ -53,7 +53,7 @@ const { MediaCallService } = proxyquire.noCallThru().load('../../../../../server
 	},
 	'./logger': { logger: loggerMock },
 	'./push/sendVoipPushNotification': { sendVoipPushNotification: sandbox.stub() },
-	'../../../ee/server/lib/contacts/resolveCallerName': { resolveCallerName: sandbox.stub().resolves(undefined) },
+	'../../../ee/server/lib/contacts/resolveCallerContact': { resolveCallerContact: sandbox.stub().resolves(undefined) },
 	'../../lib/i18n': { i18n: { t: sandbox.stub().returns('text') } },
 	'../../lib/messages/sendMessage': { sendMessage },
 	'../../meteor-methods/messages/createDirectMessage': { createDirectMessage: sandbox.stub() },
