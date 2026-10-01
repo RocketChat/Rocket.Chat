@@ -1,4 +1,4 @@
-# ADR 0005 — Node's IPC channel carries the host↔subprocess protocol
+# ADR 0006 — Node's IPC channel carries the host↔subprocess protocol
 
 ## TL;DR
 
@@ -120,7 +120,7 @@ replaces — a sanitizer that misses a path fails the whole send rather than los
   a parse attempt on each chunk. With the metrics gone, the host forwards every stderr chunk as an
   error log.
 - **No throughput measurement was taken.** The feasibility study that preceded the change
-  (`50a6078dbf`, since deleted) asked for a `Buffer`-heavy benchmark, and it was not run. ADR 0004's
+  (`e1d0a53c9c`, since deleted) asked for a `Buffer`-heavy benchmark, and it was not run. ADR 0004's
   numbers measure the envelope, not the transport, and they still stand. See the follow-ups.
 
 ## Alternatives considered
@@ -173,9 +173,9 @@ decision 4.
 
 ### Commits
 
-- Sanitizer: `5ba38505e6`
-- Secure fields at any depth: `7443e77b79`
-- The transport switch: `233c3149df`
-- Metrics removal: `8c4cdc07df`
-- The sandbox console: `910cf80477`
-- Codec and dependency removal: `104a1860a5`
+- Sanitizer: `34c41ddd5f`
+- Secure fields at any depth: `b8cd4fd0ac`
+- The transport switch: `c0a80122d9`
+- Metrics removal: `98be14d077`
+- The sandbox console: `d8a49eef70`
+- Codec and dependency removal: `5aad32a416`
