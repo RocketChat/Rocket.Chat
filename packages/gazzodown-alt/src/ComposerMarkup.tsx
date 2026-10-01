@@ -75,13 +75,17 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 
 					case 'SPOILER_BLOCK':
 						return (
-							<span key={index} style={spoilerBlockStyle}>
-								{block.value.map((paragraph, pidx) => (
-									<span key={pidx}>
-										<ComposerInlineElements>{paragraph.value}</ComposerInlineElements>
-										{'\n'}
-									</span>
-								))}
+							<span key={index}>
+								{'||\n'}
+								<span style={spoilerBlockStyle}>
+									{block.value.map((paragraph, pidx) => (
+										<span key={pidx}>
+											<ComposerInlineElements>{paragraph.value}</ComposerInlineElements>
+											{'\n'}
+										</span>
+									))}
+								</span>
+								||
 							</span>
 						);
 
