@@ -62,3 +62,12 @@ it('shows no stream once the microphone is off, nor the stopped one when it come
 	rerender({ mic: true });
 	expect(result.current.stream).toBeNull();
 });
+
+it('shows no stream when the browser refuses the microphone', async () => {
+	getUserMedia.mockRejectedValue(new DOMException('Permission denied', 'NotAllowedError'));
+
+	const { result } = renderHook(() => useCallDevicePreview({ mic: true, cam: false }, { micId: 'yeti' }));
+
+	await waitFor(() => expect(getUserMedia).toHaveBeenCalled());
+	await waitFor(() => expect(result.current.stream).toBeNull());
+});

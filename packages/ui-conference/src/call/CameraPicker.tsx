@@ -21,7 +21,7 @@ const CameraPicker = () => {
 			return;
 		}
 		// A refused or absent camera still opens the menu, with whatever the browser lists.
-		stopTracks(await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => new MediaStream()));
+		await navigator.mediaDevices.getUserMedia({ video: true }).then(stopTracks, () => undefined);
 		refreshMediaDevices();
 	}, [devices]);
 

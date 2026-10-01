@@ -1179,7 +1179,7 @@ as the last read. A member removed from the room *during* a call still has the r
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`) |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx` |
-| Preflight | `packages/ui-conference/src/views/ConferencePreflight.tsx`, `src/hooks/useCallDevicesInitialState.ts`; `apps/meteor/client/views/conference/ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `components/ConferencePreflightMedia/` |
+| Preflight | `packages/ui-conference/src/views/ConferencePreflight.tsx`, `src/hooks/useCallDevicesInitialState.ts`; `apps/meteor/client/views/conference/ConferenceStartPage.tsx`, `hooks/useStartConference.ts`, `lib/conferencePreflightMedia.ts` |
 | Members panel | `apps/meteor/client/views/conference/CallMembersPanel.tsx`, `CallMemberItem.tsx`, `client/hooks/useRingingExpiry.ts` |
 | Membership rules (shared) | `apps/meteor/lib/videoConference/memberStatus.ts`, `callHistory.ts`, `chatAccess.ts`, `constants.ts` |
 | Reaching a call | `apps/meteor/client/components/OngoingCalls/` (`CallListItem` over the sidebar's own room item, its two rows, `OngoingCallsList` and `useOngoingCalls`), `client/sidebar/hooks/useRoomList.ts` and `RoomList/RoomList.tsx` (where the group is), `client/navbar/NavBarItemOngoingCalls.tsx` (the stand-in), `client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |

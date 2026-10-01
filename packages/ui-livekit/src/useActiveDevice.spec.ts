@@ -30,6 +30,17 @@ it('follows the device the room reports as active', () => {
 	expect(result.current).toBe('yeti');
 });
 
+// Switching the camera announces a change too; the microphone it does not touch stays where it was.
+it('keeps its own device when another kind changes', () => {
+	const room = new FakeRoom();
+	room.active.audioinput = 'default';
+
+	const { result } = renderHook(() => useActiveDevice(room as unknown as Room, 'audioinput'));
+
+	act(() => room.change('videoinput', 'brio'));
+	expect(result.current).toBe('default');
+});
+
 it('stops listening when it unmounts', () => {
 	const room = new FakeRoom();
 

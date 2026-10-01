@@ -23,7 +23,7 @@ const CallHeader = ({ name }: CallHeaderProps) => {
 	return (
 		<Box className={callHeaderStyles}>
 			<CallTimer startAt={startedAt} />
-			{/* Drawn rather than typed, as in CallTopBar: a typed rule is read out as "vertical line". */}
+			{/* Drawn rather than typed: a typed rule is read out as "vertical line". */}
 			{name && (
 				<Box
 					is='span'

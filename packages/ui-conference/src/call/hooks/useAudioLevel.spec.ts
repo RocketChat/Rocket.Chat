@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
 import { useAudioLevel } from './useAudioLevel';
-import { subscribeToAudioLevel } from '../lib/audioLevelStore';
+import { getAudioLevel, subscribeToAudioLevel } from '../lib/audioLevelStore';
 
 const close = jest.fn(() => Promise.resolve());
 const AudioContextMock = jest.fn(() => ({
@@ -16,6 +16,10 @@ beforeAll(() => {
 
 beforeEach(() => {
 	jest.clearAllMocks();
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
 });
 
 const microphone = () => ({ getAudioTracks: () => [{ kind: 'audio' }] }) as unknown as MediaStream;
@@ -86,12 +90,19 @@ it('stops sampling when the last reader leaves while being told of a reading', (
 		close,
 	}));
 
-	const unsubscribe = subscribeToAudioLevel(microphone(), () => unsubscribe());
+	const stream = microphone();
+	let heard: number | undefined;
+	const unsubscribe = subscribeToAudioLevel(stream, () => {
+		heard = getAudioLevel(stream);
+		unsubscribe();
+	});
 	frames.shift()?.(1000);
 
+	// A buffer at full scale is as loud as a reading gets.
+	expect(heard).toBe(1);
 	expect(close).toHaveBeenCalledTimes(1);
 	expect(frames).toHaveLength(0);
-	raf.mockRestore();
+	expect(raf).toHaveBeenCalled();
 });
 
 it('reads 0 and measures nothing for a stream without audio', () => {
