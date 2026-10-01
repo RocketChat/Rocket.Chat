@@ -7558,6 +7558,7 @@
   "You_have_reached_the_limit_active_costumers_this_month": "You have reached the limit of active customers this month",
   "You_have_successfully_unsubscribed": "You have successfully unsubscribed from our mailling list.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "You have to set an API token first in order to use the integration.",
+  "You_joined_the_discussion__name__": "You joined the discussion \"{{name}}\"",
   "You_mentioned___mentions__but_theyre_not_in_this_room": "You mentioned {{mentions}}, but they're not in this room.",
   "You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them": "You mentioned {{mentions}}, but they're not in this room. You can ask a room admin to add them.",
   "You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm": "You mentioned {{mentions}}, but they're not in this room. You let them know via DM.",

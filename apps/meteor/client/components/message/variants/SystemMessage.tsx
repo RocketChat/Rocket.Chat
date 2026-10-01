@@ -16,11 +16,12 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPresence, useUserCard, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import LeftRoomMessageText from './LeftRoomMessageText';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
@@ -43,8 +44,6 @@ export type SystemMessageProps = {
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
 
-const roomFields = { prid: 1 } as const;
-
 const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
@@ -59,7 +58,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const displayName = useUserDisplayName(user);
 
 	const messageType = MessageTypes.getType(message);
-	const isDiscussion = Boolean(useUserRoom(message.rid, roomFields)?.prid);
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -106,7 +104,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
-							{messageType.text(t, message, { isDiscussion })}
+							{message.t === 'ul' ? <LeftRoomMessageText message={message} messageType={messageType} /> : messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>

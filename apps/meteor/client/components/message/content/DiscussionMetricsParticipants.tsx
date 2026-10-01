@@ -30,10 +30,10 @@ const DiscussionMetricsParticipants = ({ drid }: DiscussionMetricsParticipantsPr
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const { data } = useQuery({
 		queryKey: [...roomsQueryKeys.discussionParticipants(drid), isMember],
-		queryFn: () => getMembers({ roomId: drid, count: VISIBLE_AVATARS }),
-		staleTime: 60_000,
 		// Users who can't see the discussion's members (e.g. private discussions) simply get no avatar stack.
-		retry: false,
+		// Resolving instead of failing keeps that result cached, so it isn't requested again on every remount.
+		queryFn: () => getMembers({ roomId: drid, count: VISIBLE_AVATARS }).catch(() => null),
+		staleTime: 60_000,
 	});
 
 	if (!data?.total) {

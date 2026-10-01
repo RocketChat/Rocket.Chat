@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import DiscussionMetrics from './DiscussionMetrics';
@@ -29,6 +29,7 @@ const mockedTranslations = [
 		Leave: 'Leave',
 		Join_discussion: 'Join discussion',
 		Leave_discussion: 'Leave discussion',
+		You_joined_the_discussion__name__: 'You joined the discussion "{{name}}"',
 		Leave_Discussion_Warning: 'Are you sure you want to leave the discussion "{{roomName}}"?',
 		__count__members_one: '{{count}} member',
 		__count__members_other: '{{count}} members',
@@ -72,6 +73,43 @@ describe('DiscussionMetrics', () => {
 
 		await userEvent.click(screen.getByRole('button', { name: 'Join discussion' }));
 		expect(joinSpy).toHaveBeenCalledWith({ roomId: 'drid' });
+	});
+
+	it('should confirm joining the discussion', async () => {
+		const toastSpy = jest.fn();
+
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', () => members)
+				.withEndpoint('POST', '/v1/rooms.join', () => ({ room: { _id: 'drid', fname: 'Release planning' } as any }))
+				.withToastMessageDispatch(toastSpy)
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Join discussion' }));
+
+		await waitFor(() =>
+			expect(toastSpy).toHaveBeenCalledWith({ type: 'success', message: 'You joined the discussion "Release planning"' }),
+		);
+	});
+
+	it('should render no avatars when the members of the discussion are not accessible', async () => {
+		const getMembers = jest.fn(() => {
+			throw new Error('error-not-allowed');
+		});
+
+		const { unmount } = render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', getMembers)
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		await waitFor(() => expect(getMembers).toHaveBeenCalledTimes(1));
+		expect(screen.queryByTitle(/members/)).not.toBeInTheDocument();
+		expect(screen.getByText('No_replies')).toBeVisible();
+		unmount();
 	});
 
 	it('should keep keyboard focus on the join button while joining', async () => {

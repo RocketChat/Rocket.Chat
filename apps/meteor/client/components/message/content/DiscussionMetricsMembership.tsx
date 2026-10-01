@@ -21,6 +21,8 @@ const DiscussionMetricsMembership = ({ drid }: DiscussionMetricsMembershipProps)
 	const joinRoom = useEndpoint('POST', '/v1/rooms.join');
 	const join = useMutation({
 		mutationFn: () => joinRoom({ roomId: drid }),
+		onSuccess: ({ room }) =>
+			dispatchToastMessage({ type: 'success', message: t('You_joined_the_discussion__name__', { name: room.fname ?? room.name }) }),
 		onError: (error: unknown) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
