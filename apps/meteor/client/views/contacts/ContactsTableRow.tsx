@@ -1,5 +1,5 @@
 import type { IContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, Chip, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import type { KeyboardEvent } from 'react';
@@ -43,17 +43,21 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit }: ContactsTableRo
 			{columns.isVisible('phones.raw') && <GenericTableCell withTruncatedText>{phones[0]?.raw}</GenericTableCell>}
 			{columns.isVisible('categories') && (
 				<GenericTableCell>
-					<Box display='flex' flexWrap='wrap' gap={4}>
-						{source === 'local' ? (
-							<Chip>
-								<Box display='flex' flexDirection='row' gap={4} margin={0}>
-									<Icon name='address-book' size='x20' /> Rocket.Chat{' '}
-								</Box>
-							</Chip>
-						) : (
-							categories?.map((category) => <Chip key={category}>{category}</Chip>)
-						)}
-					</Box>
+					{source === 'local' ? (
+						<Box display='flex'>
+							<Tag variant='secondary' fontScale='c1' fontWeight='bold' icon={<Icon marginInlineEnd={2} name='address-book' size='x18' />}>
+								Rocket.Chat
+							</Tag>
+						</Box>
+					) : (
+						<Box display='flex' flexWrap='wrap' gap={4} maxHeight='x20' overflow='hidden'>
+							{categories?.map((category) => (
+								<Tag fontScale='c1' fontWeight='bold' key={category} variant='secondary'>
+									{category}
+								</Tag>
+							))}
+						</Box>
+					)}
 				</GenericTableCell>
 			)}
 			{columns.isVisible('companyName') && <GenericTableCell withTruncatedText>{companyName}</GenericTableCell>}
