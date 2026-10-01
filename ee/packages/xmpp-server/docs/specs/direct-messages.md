@@ -81,7 +81,6 @@ from the UI goes through `federation.beforeCreateDirectMessage` (stamps the room
 
 None of its own. Defects that show in DMs are owned by the cross-cutting specs:
 
-- a redelivered stanza stored twice: [message-deduplication D1](message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored)
 - a correction stored as a new message: [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages)
 
 ## Open questions

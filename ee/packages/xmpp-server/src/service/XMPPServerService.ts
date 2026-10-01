@@ -102,6 +102,9 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private readonly inboundEventCounts = new Map<string, number>(INBOUND_EVENTS.map((type) => [type, 0]));
 
+	/** Event ids of inbound messages whose storage is under way. */
+	private readonly eventIdsBeingSaved = new Set<string>();
+
 	private server: XMPPServer | undefined;
 
 	private fingerprint: ListenerFingerprint | undefined;
@@ -472,18 +475,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			);
 		}
 
-		const eventId = `xmpp:${domainOfJid(remoteJid)}:${event.id ?? Random.id()}`;
-		if (await Messages.findOneByFederationId(eventId)) {
-			return;
-		}
-
-		await Message.saveMessageFromFederation({
-			fromId: remoteUser._id,
-			rid,
-			federation_event_id: eventId,
-			msg: event.body,
-			ts: new Date(),
-		});
+		await this.saveFederatedMessage(rid, remoteUser._id, domainOfJid(remoteJid), event.body, event.id);
 	}
 
 	private toCoreConfig(config: XMPPServerConfiguration): XMPPServerConfig {
@@ -672,12 +664,21 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		await this.saveFederatedMessage(room._id, author._id, domainOfJid(roomJid), body, stanzaId);
 	}
 
+	/** Stores an inbound message once, however many copies of it arrive and however close together. */
 	private async saveFederatedMessage(rid: string, fromId: string, originDomain: string, body: string, stanzaId?: string): Promise<void> {
 		const eventId = `xmpp:${originDomain}:${stanzaId ?? Random.id()}`;
-		if (await Messages.findOneByFederationId(eventId)) {
+		if (this.eventIdsBeingSaved.has(eventId)) {
 			return;
 		}
-		await Message.saveMessageFromFederation({ fromId, rid, federation_event_id: eventId, msg: body, ts: new Date() });
+		this.eventIdsBeingSaved.add(eventId);
+		try {
+			if (await Messages.findOneByFederationId(eventId)) {
+				return;
+			}
+			await Message.saveMessageFromFederation({ fromId, rid, federation_event_id: eventId, msg: body, ts: new Date() });
+		} finally {
+			this.eventIdsBeingSaved.delete(eventId);
+		}
 	}
 
 	/** Makes the invited local user a member of the remote MUC's shadow room, creating it on first invite, and joins them into the MUC. */

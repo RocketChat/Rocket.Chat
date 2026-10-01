@@ -51,8 +51,7 @@ describe('XMPP federation: direct messages', () => {
 		assert.equal(remoteUser?.federated, true);
 	});
 
-	// Known defect: ../../docs/specs/message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored
-	it.skip('stores a redelivered stanza id once', async () => {
+	it('stores a redelivered stanza id once', async () => {
 		const text = `redelivered ${uniqueSuffix()}`;
 		const id = `e2e-${uniqueSuffix()}`;
 		await alice.sendChat(local.jid, text, { id });

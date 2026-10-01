@@ -175,8 +175,7 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 			assert.equal((await messagesWithText(members[0], shadow, early)).length, 1);
 		});
 
-		// Known defect: ../../docs/specs/message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored
-		it.skip('stores a message from the room once, whatever the number of member sessions', async () => {
+		it('stores a message from the room once, whatever the number of member sessions', async () => {
 			const text = `fan-out ${uniqueSuffix()}`;
 			await alice.sendGroupchat(roomJid, text);
 			await expectStoredOnce(members[0], shadow, text);

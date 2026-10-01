@@ -94,7 +94,6 @@ on start, and persists `muc.remoteMessage`.
 
 Defects that show in remote rooms but are owned elsewhere:
 
-- one copy stored per member session: [message-deduplication D1](message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored)
 - own message stored again under a room-assigned id: [message-deduplication D2](message-deduplication.md#d2-a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids)
 - messages without any id: [message-deduplication D3](message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated)
 - corrections stored as new messages: [message-corrections D1](message-corrections.md#d1-corrections-from-xmpp-users-arrive-as-new-messages)
