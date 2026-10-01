@@ -408,24 +408,19 @@ exports[`renders WithText without crashing 1`] = `
             
 
           </span>
-          <span>
-            ||
+          <span
+            style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
+          >
+            <span>
+              Spoiler block line one
+              
 
-            <span
-              style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
-            >
-              <span>
-                Spoiler block line one
-                
-
-              </span>
-              <span>
-                Spoiler block line two
-                
-
-              </span>
             </span>
-            ||
+            <span>
+              Spoiler block line two
+              
+
+            </span>
           </span>
           <span>
             
