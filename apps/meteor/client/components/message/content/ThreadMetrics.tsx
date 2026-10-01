@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
+import ThreadMetricsUnreadBadge from './ThreadMetricsUnreadBadge';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
@@ -46,7 +47,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 				>
 					{t('Thread')}
 				</MessageMetricsReply>
-				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />
+				<ThreadMetricsFollow mid={mid} rid={rid} following={following} />
 				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
 				<MessageMetricsItem title={t('Last_message__date__', { date: formatDateAndTime(lm) })}>
 					{isSmall ? (
@@ -55,6 +56,11 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 						<MessageMetricsItemLabel>{t('__count__replies__date__', { count: counter, date: format(lm) })}</MessageMetricsItemLabel>
 					)}
 				</MessageMetricsItem>
+				{unread && (
+					<MessageMetricsItem>
+						<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
+					</MessageMetricsItem>
+				)}
 			</MessageMetrics>
 		</MessageBlock>
 	);

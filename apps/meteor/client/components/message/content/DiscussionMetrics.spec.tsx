@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import DiscussionMetrics from './DiscussionMetrics';
@@ -31,6 +32,8 @@ const mockedTranslations = [
 		Leave_discussion: 'Leave discussion',
 		You_joined_the_discussion__name__: 'You joined the discussion "{{name}}"',
 		Leave_Discussion_Warning: 'Are you sure you want to leave the discussion "{{roomName}}"?',
+		Last_message__date__: 'Last message: {{date}}',
+		Could_not_join_the_discussion: "Couldn't join the discussion",
 		__count__members_one: '{{count}} member',
 		__count__members_other: '{{count}} members',
 		__count__replies_one: '{{count}} reply',
@@ -94,22 +97,84 @@ describe('DiscussionMetrics', () => {
 		);
 	});
 
-	it('should render no avatars when the members of the discussion are not accessible', async () => {
+	it('should cache "no access" so remounting does not request the members again', async () => {
+		const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 		const getMembers = jest.fn(() => {
-			throw new Error('error-not-allowed');
+			throw Object.assign(new Error('Not Found'), { status: 404 });
 		});
+		const wrapper = mockAppRoot()
+			.withQueryClient(queryClient)
+			.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', getMembers)
+			.withTranslations(...mockedTranslations)
+			.build();
 
-		const { unmount } = render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
+		const { unmount } = render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, { wrapper });
+		await waitFor(() => expect(queryClient.getQueryState(['rooms', 'drid', 'discussion-participants', false])?.status).toBe('success'));
+		expect(screen.queryByRole('img', { name: /members/ })).not.toBeInTheDocument();
+		unmount();
+
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, { wrapper });
+		expect(screen.getByText('No_replies')).toBeVisible();
+		expect(getMembers).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not cache other failures', async () => {
+		const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+		const getMembers = jest.fn(() => {
+			throw Object.assign(new Error('Internal Server Error'), { status: 500 });
+		});
+		const wrapper = mockAppRoot()
+			.withQueryClient(queryClient)
+			.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', getMembers)
+			.withTranslations(...mockedTranslations)
+			.build();
+
+		const { unmount } = render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, { wrapper });
+		// One retry is allowed for transient failures before the query errors
+		await waitFor(() => expect(queryClient.getQueryState(['rooms', 'drid', 'discussion-participants', false])?.status).toBe('error'), {
+			timeout: 5000,
+		});
+		unmount();
+		const callsBeforeRemount = getMembers.mock.calls.length;
+
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, { wrapper });
+		await waitFor(() => expect(getMembers.mock.calls.length).toBeGreaterThan(callsBeforeRemount));
+	});
+
+	it('should count hidden members from the avatars actually returned', async () => {
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
 			wrapper: mockAppRoot()
-				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', getMembers)
+				.withEndpoint(
+					'GET',
+					'/v1/rooms.membersOrderedByRole',
+					() => ({ members: [{ _id: 'user1' }], count: 1, offset: 0, total: 5 }) as any,
+				)
+				.withUserPreference('displayAvatars', true)
 				.withTranslations(...mockedTranslations)
 				.build(),
 		});
 
-		await waitFor(() => expect(getMembers).toHaveBeenCalledTimes(1));
-		expect(screen.queryByTitle(/members/)).not.toBeInTheDocument();
-		expect(screen.getByText('No_replies')).toBeVisible();
-		unmount();
+		expect(await screen.findByRole('img', { name: '5 members' })).toBeVisible();
+		expect(screen.getByText('+4')).toBeVisible();
+	});
+
+	it('should show a plain message when joining fails', async () => {
+		const toastSpy = jest.fn();
+
+		render(<DiscussionMetrics rid='rid' drid='drid' count={0} />, {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', () => members)
+				.withEndpoint('POST', '/v1/rooms.join', () => {
+					throw new Error('The required "roomId" or "roomName" param provided does not match any room');
+				})
+				.withToastMessageDispatch(toastSpy)
+				.withTranslations(...mockedTranslations)
+				.build(),
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Join discussion' }));
+
+		await waitFor(() => expect(toastSpy).toHaveBeenCalledWith({ type: 'error', message: "Couldn't join the discussion" }));
 	});
 
 	it('should keep keyboard focus on the join button while joining', async () => {
@@ -123,7 +188,7 @@ describe('DiscussionMetrics', () => {
 					'/v1/rooms.join',
 					() =>
 						new Promise((resolve) => {
-							resolveJoin = () => resolve({ room: {} as any });
+							resolveJoin = () => resolve({ room: { _id: 'drid', fname: 'Release planning' } as any });
 						}),
 				)
 				.withTranslations(...mockedTranslations)
@@ -138,7 +203,8 @@ describe('DiscussionMetrics', () => {
 		expect(join).toBeEnabled();
 		expect(join).toHaveFocus();
 
-		resolveJoin();
+		await act(async () => resolveJoin());
+		await waitFor(() => expect(join).toHaveAttribute('aria-busy', 'false'));
 	});
 
 	it('should render a primary button and a leave action when the user is a member with unread messages', async () => {
@@ -154,7 +220,8 @@ describe('DiscussionMetrics', () => {
 
 		expect(screen.getByRole('button', { name: 'Discussion Unread' })).toHaveClass('rcx-button--primary');
 		expect(screen.getByRole('button', { name: 'Leave discussion' })).toBeVisible();
-		expect(screen.getByTitle('Last_message__date__')).toHaveTextContent('2 replies, July 1st, 2024');
+		const lastMessage = screen.getByTitle('Last message: July 1, 2024 12:00 AM');
+		expect(lastMessage).toHaveTextContent('2 replies, July 1st, 2024');
 	});
 
 	it('should not announce unread when the user is a member and has read everything', () => {

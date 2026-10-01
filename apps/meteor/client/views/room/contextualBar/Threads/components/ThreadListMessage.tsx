@@ -78,7 +78,7 @@ const ThreadListMessage = ({
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
 				</MessageContainer>
 				<MessageContainerFixed>
-					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
+					<ThreadMetricsFollow following={following} mid={_id} rid={rid} />
 					{unread && (
 						<Box marginBlockStart={24}>
 							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />

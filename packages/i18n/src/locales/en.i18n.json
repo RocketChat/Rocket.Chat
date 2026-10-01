@@ -16,6 +16,10 @@
     "one": "+{{count}} follower",
     "other": "+{{count}} followers"
   },
+  "__count__followers": {
+    "one": "{{count}} follower",
+    "other": "{{count}} followers"
+  },
   "__count__members": {
     "one": "{{count}} member",
     "other": "{{count}} members"
@@ -1620,6 +1624,7 @@
   "COPY_TO_CLIPBOARD": "COPY TO CLIPBOARD",
   "Copy_to_clipboard": "Copy to clipboard",
   "Could_not_access_your_camera": "Could not access your camera",
+  "Could_not_join_the_discussion": "Couldn't join the discussion",
   "Could_not_leave_the_call_you_are_in": "Could not leave the call you are in. Please try again.",
   "could-not-access-webdav": "Could not access WebDAV",
   "Count": "Count",

@@ -15,6 +15,11 @@ import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 const VISIBLE_AVATARS = 2;
 
+// The members list answers 404 when the user can't access the discussion. 401 isn't treated as "no access" because it
+// also means an expired session.
+const isNoAccessError = (error: unknown) =>
+	typeof error === 'object' && error !== null && 'status' in error && (error.status === 403 || error.status === 404);
+
 export type DiscussionMetricsParticipantsProps = {
 	drid: IRoom['_id'];
 };
@@ -30,17 +35,27 @@ const DiscussionMetricsParticipants = ({ drid }: DiscussionMetricsParticipantsPr
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const { data } = useQuery({
 		queryKey: [...roomsQueryKeys.discussionParticipants(drid), isMember],
-		// Users who can't see the discussion's members (e.g. private discussions) simply get no avatar stack.
-		// Resolving instead of failing keeps that result cached, so it isn't requested again on every remount.
-		queryFn: () => getMembers({ roomId: drid, count: VISIBLE_AVATARS }).catch(() => null),
+		// Users who can't see the discussion's members simply get no avatar stack. Resolving instead of failing keeps that
+		// result cached, so it isn't requested again on every remount; any other failure still errors and can be retried.
+		queryFn: async () => {
+			try {
+				return await getMembers({ roomId: drid, count: VISIBLE_AVATARS });
+			} catch (error) {
+				if (isNoAccessError(error)) {
+					return null;
+				}
+				throw error;
+			}
+		},
 		staleTime: 60_000,
+		retry: 1,
 	});
 
 	if (!data?.total) {
 		return null;
 	}
 
-	const hiddenCount = data.total - VISIBLE_AVATARS;
+	const hiddenCount = data.total - data.members.length;
 
 	return (
 		<MessageMetricsItem title={t('__count__members', { count: data.total })}>
@@ -52,7 +67,7 @@ const DiscussionMetricsParticipants = ({ drid }: DiscussionMetricsParticipantsPr
 			)}
 			{!hideAvatar && (
 				<>
-					<MessageMetricsItemAvatarRow>
+					<MessageMetricsItemAvatarRow role='img' aria-label={t('__count__members', { count: data.total })}>
 						{data.members.map(({ _id }) => (
 							<MessageMetricsItemAvatarRowContent key={_id}>
 								<UserAvatar size='x16' userId={_id} />

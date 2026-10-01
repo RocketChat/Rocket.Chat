@@ -23,7 +23,8 @@ const DiscussionMetricsMembership = ({ drid }: DiscussionMetricsMembershipProps)
 		mutationFn: () => joinRoom({ roomId: drid }),
 		onSuccess: ({ room }) =>
 			dispatchToastMessage({ type: 'success', message: t('You_joined_the_discussion__name__', { name: room.fname ?? room.name }) }),
-		onError: (error: unknown) => dispatchToastMessage({ type: 'error', message: error }),
+		// The server's error (e.g. "The required roomId param provided does not match any room") isn't meant for users
+		onError: () => dispatchToastMessage({ type: 'error', message: t('Could_not_join_the_discussion') }),
 	});
 
 	const leave = useLeaveRoomAction({
