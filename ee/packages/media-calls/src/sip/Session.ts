@@ -45,6 +45,7 @@ export class SipServerSession {
 		const sipCall = this.knownCalls.get(callId);
 		if (!sipCall) {
 			// If we don't know this call, then it's probably being handled by a session in some other server instance
+			logger.debug({ msg: 'callId not tracked by this session', method: 'SipServerSession.reactToCallUpdate', callId });
 			return;
 		}
 
@@ -112,18 +113,19 @@ export class SipServerSession {
 
 	public async sendReferRequest(
 		sipDialog: Srf.Dialog,
-		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact },
-	): Promise<void> {
-		const { transferredBy, transferredTo } = params;
-		if (!transferredTo) {
+		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact; conferenceAlias?: string },
+	): Promise<number> {
+		const { transferredBy, transferredTo, conferenceAlias } = params;
+		if (!transferredTo && !conferenceAlias) {
 			throw new Error('Missing refer destination');
 		}
 
 		// Sip targets can only be referred to other sip users
-		const referToActor = await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' });
+		const referToActor = transferredTo && (await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' }));
 		const referredBy = transferredBy && this.geContactUri(transferredBy);
+		const referToConference = conferenceAlias && this.getPexipUri(conferenceAlias);
 
-		const referTo = referToActor && this.geContactUri(referToActor);
+		const referTo = referToConference || (referToActor && this.geContactUri(referToActor));
 		if (!referTo) {
 			throw new Error('invalid-transfer');
 		}
@@ -139,6 +141,31 @@ export class SipServerSession {
 		if (res.status === 202) {
 			logger.debug({ msg: 'REFER was accepted', method: 'SipServerSession.sendReferRequest', ...params });
 		}
+
+		return res.status;
+	}
+
+	public getPexipUri(alias: string): string {
+		const { host, port } = this.settings.sip.pexipServer;
+		if (!host) {
+			throw new Error('Pexip Server Host is not configured');
+		}
+
+		const portStr = port ? `:${port}` : '';
+		return `sip:${alias}@${host}${portStr}`;
+	}
+
+	public isPexipIdentity(identity: string): boolean {
+		if (!identity) {
+			return false;
+		}
+
+		const { host } = this.settings.sip.pexipServer;
+		if (!host) {
+			return false;
+		}
+
+		return identity.includes(host);
 	}
 
 	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {
@@ -197,7 +224,9 @@ export class SipServerSession {
 
 	private async processInvite(req: SrfRequest, res: SrfResponse): Promise<void> {
 		if (!this.isEnabledOnSettings(this.settings)) {
-			res.send(SipErrorCodes.SERVICE_NOT_AVAILABLE);
+			if (!res.finalResponseSent) {
+				res.send(SipErrorCodes.SERVICE_NOT_AVAILABLE);
+			}
 			return;
 		}
 
@@ -210,6 +239,8 @@ export class SipServerSession {
 	}
 
 	private forwardSipExceptionToResponse(exception: unknown, res: SrfResponse): void {
+		logger.debug({ msg: 'forwardSipExceptionToResponse', err: exception });
+
 		if (!exception || typeof exception !== 'object') {
 			return;
 		}
@@ -218,7 +249,9 @@ export class SipServerSession {
 			return;
 		}
 
-		res.send(exception.sipErrorCode);
+		if (!res.finalResponseSent) {
+			res.send(exception.sipErrorCode);
+		}
 	}
 
 	private onDrachtioError(err: unknown, socket?: Socket): void {

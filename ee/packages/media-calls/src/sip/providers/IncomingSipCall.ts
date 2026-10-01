@@ -11,11 +11,14 @@ import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
+import { getSelectedDevice } from '../../server/selectedDevice';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 export class IncomingSipCall extends BaseSipCall {
+	protected createdDialog: boolean;
+
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
@@ -25,6 +28,9 @@ export class IncomingSipCall extends BaseSipCall {
 		private readonly res: SrfResponse,
 	) {
 		super(session, call, agent);
+		this.createdDialog = false;
+
+		this.checkIfCallComesFromEscalatedPexipConference();
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -55,6 +61,12 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!(await getMediaCallServer().permissionCheck(callee.id, 'external'))) {
 			logger.debug({ msg: 'User with no permission received a sip call.', uid: callee.id });
+			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		}
+
+		// A user who takes calls on an external device is not listening to their Rocket.Chat client
+		if (await getSelectedDevice(callee.id)) {
+			logger.debug({ msg: 'User takes calls on an external device; refusing the sip call to their client.', uid: callee.id });
 			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 		}
 
@@ -126,6 +138,23 @@ export class IncomingSipCall extends BaseSipCall {
 	public async createDialog(localSdp: string): Promise<void> {
 		logger.debug({ msg: 'IncomingSipCall.createDialog' });
 
+		if (this.createdDialog) {
+			logger.warn({
+				msg: 'Multiple calls to createDialog',
+				method: 'IncomingSipCall.createDialog',
+				callId: this.callId,
+				hasDialog: Boolean(this.sipDialog),
+			});
+			return;
+		}
+
+		if (this.res.finalResponseSent) {
+			logger.error({ msg: 'Final response has already been sent', method: 'IncomingSipCall.createDialog', callId: this.callId });
+			return;
+		}
+
+		this.createdDialog = true;
+
 		const uas = await this.srf.createUAS(this.req, this.res, {
 			localSdp,
 		});
@@ -159,6 +188,10 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (call.transferredTo && call.transferredBy) {
 			return this.processTransferredCall(call);
+		}
+
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
 		}
 
 		if (call.ended) {
@@ -218,13 +251,19 @@ export class IncomingSipCall extends BaseSipCall {
 
 		// If we don't have an sdp, we can't respond to it yet
 		if (!localNegotiation?.answer?.sdp) {
+			logger.debug({ msg: 'Skipping negotiations due to missing answer sdp', method: 'IncomingSipCall.processNegotiations' });
 			return;
 		}
 
-		logger.debug('IncomingSipCall.processNegotiations');
+		if (localNegotiation.res.finalResponseSent) {
+			logger.debug({ msg: 'Skipping negotiations due to response already being sent', method: 'IncomingSipCall.processNegotiations' });
+			return;
+		}
+
+		logger.debug({ msg: 'IncomingSipCall.processNegotiations', callId: call._id, negotiationId: localNegotiation.id });
 		if (localNegotiation.isFirst) {
-			return this.createDialog(localNegotiation.answer.sdp).catch(() => {
-				logger.error('Failed to create incoming call dialog.');
+			return this.createDialog(localNegotiation.answer.sdp).catch((err) => {
+				logger.error({ msg: 'Failed to create incoming call dialog.', err });
 				this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
 			});
 		}
@@ -282,6 +321,13 @@ export class IncomingSipCall extends BaseSipCall {
 			}
 
 			try {
+				logger.debug({
+					msg: 'Sending error code to pending invite',
+					method: 'IncomingSipCall.cancelPendingInvites',
+					errorCode,
+					negotiationId: localNegotiation.id,
+					isFirst: localNegotiation.isFirst,
+				});
 				localNegotiation.res.send(errorCode);
 			} catch {
 				//
@@ -295,6 +341,24 @@ export class IncomingSipCall extends BaseSipCall {
 
 		this.cancelPendingInvites(errorCode);
 		this.hangupCall('signaling-error');
+	}
+
+	private checkIfCallComesFromEscalatedPexipConference(): void {
+		const { callingNumber } = this.req;
+		if (!callingNumber) {
+			return;
+		}
+		const header = this.req.has('p-asserted-identity') ? this.req.get('p-asserted-identity') : this.req.get('from');
+		if (!header || !this.session.isPexipIdentity(header)) {
+			return;
+		}
+
+		void this.processEscalatedRemotely(callingNumber).catch((err) => {
+			logger.error({
+				msg: 'Unexpected error checking if new incoming call originates from an escalated conference',
+				err,
+			});
+		});
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {

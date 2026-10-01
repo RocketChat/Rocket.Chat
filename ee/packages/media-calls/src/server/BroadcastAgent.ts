@@ -15,14 +15,17 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public provider: BaseCallProvider | null = null;
 
 	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallAccepted', callId: call._id, role: this.role });
 		this.reportCallUpdated({ callId: call._id });
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallEnded', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallActive', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
@@ -32,15 +35,32 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, _negotiationId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallTransferred', callId, role: this.role });
 		this.reportCallUpdated({ callId });
 	}
 
+	public async onCallUpdated(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallUpdated', callId, role: this.role });
+	}
+
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onDTMF', callId, role: this.role });
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
+	}
+
+	public async onMute(callId: string, muted: boolean): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onMute', callId, muted, role: this.role });
+		// SIP calls apply mute on the client's own webrtc leg; nothing to broadcast to the SIP side.
+	}
+
+	public async onHold(callId: string, held: boolean): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onHold', callId, held, role: this.role });
+		// SIP calls apply hold on the client's own webrtc leg; nothing to broadcast to the SIP side.
 	}
 
 	protected reportCallUpdated(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {

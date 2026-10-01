@@ -12,6 +12,9 @@ export default [
 			'apps/meteor/**/imports',
 			'apps/meteor/**/packages',
 			'apps/meteor/.meteor/**',
+			// Standalone Rocket.Chat Apps kept as documentation. They are built by `rc-apps package`
+			// against the published engine, not by this repo's tsconfig projects.
+			'docs/**/sample-app/**',
 		],
 	},
 	{

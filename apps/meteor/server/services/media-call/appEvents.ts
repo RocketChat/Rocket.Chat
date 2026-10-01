@@ -1,77 +1,26 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type { EventResultMeta, MediaCallEvent, PreMediaCallCreatedOutcome } from '@rocket.chat/apps';
+import type {
+	EventResultMeta,
+	MediaCallControlEvent,
+	MediaCallDeviceWithApp,
+	MediaCallEvent,
+	PreMediaCallCreatedOutcome,
+} from '@rocket.chat/apps';
 import type {
 	IAcceptedMediaCall as IAppsAcceptedMediaCall,
 	IActiveMediaCall as IAppsActiveMediaCall,
 	IEndedMediaCall as IAppsEndedMediaCall,
-	IMediaCall as IAppsMediaCall,
-	IMediaCallActor as IAppsMediaCallActor,
-	IMediaCallContact as IAppsMediaCallContact,
 	IPreMediaCallCreatedContext,
-	MediaCallOrigin,
 } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
-import type { CallPreventionRecord, IMediaCall, MediaCallActor, MediaCallContact, ServerActor } from '@rocket.chat/core-typings';
+import type { CallPreventionRecord, IMediaCall } from '@rocket.chat/core-typings';
 import type { PreCallCreatedHookParams, PreCallCreatedHookResult } from '@rocket.chat/media-calls';
 import { callFeatureList, type CallFeature } from '@rocket.chat/media-signaling';
 
 import { logger } from './logger';
 import { i18n } from '../../lib/i18n';
+import { getCallOrigin, toAppContact, toAppMediaCall } from '../../modules/apps/converters/mediaCalls';
 import { settings } from '../../settings';
-
-// Contacts carry a per-session signing token, which is a credential and shouldn't go to apps
-function toAppContact(contact: MediaCallContact): IAppsMediaCallContact {
-	return {
-		type: contact.type,
-		id: contact.id,
-		...(contact.username && { username: contact.username }),
-		...(contact.displayName && { displayName: contact.displayName }),
-		...(contact.sipExtension && { sipExtension: contact.sipExtension }),
-	};
-}
-
-function getCallOrigin(caller: MediaCallContact, callee: MediaCallContact): MediaCallOrigin {
-	if (caller.type === 'sip') {
-		return 'sip-inbound';
-	}
-
-	if (callee.type === 'sip') {
-		return 'sip-outbound';
-	}
-
-	return 'internal';
-}
-
-function toAppActor(actor: MediaCallActor | ServerActor): IAppsMediaCallActor {
-	return {
-		type: actor.type,
-		id: actor.id,
-	};
-}
-
-function toAppMediaCall(call: IMediaCall): IAppsMediaCall {
-	return {
-		id: call._id,
-		service: call.service,
-		kind: call.kind,
-		state: call.state,
-		origin: getCallOrigin(call.caller, call.callee),
-		createdBy: toAppContact(call.createdBy),
-		createdAt: call.createdAt,
-		caller: toAppContact(call.caller),
-		callee: toAppContact(call.callee),
-		features: call.features,
-		uids: call.uids,
-		ended: call.ended,
-		...(call.endedAt && { endedAt: call.endedAt }),
-		...(call.endedBy && { endedBy: toAppActor(call.endedBy) }),
-		...(call.hangupReason && { hangupReason: call.hangupReason }),
-		...(call.acceptedAt && { acceptedAt: call.acceptedAt }),
-		...(call.activatedAt && { activatedAt: call.activatedAt }),
-		...(call.parentCallId && { parentCallId: call.parentCallId }),
-		...(call.divertedBy && { divertedBy: toAppContact(call.divertedBy) }),
-	};
-}
 
 function getEventTimestamp(call: IMediaCall, field: 'activatedAt' | 'acceptedAt' | 'endedAt'): Date | undefined {
 	if (!call[field]) {
@@ -113,6 +62,28 @@ function isCallFeature(feature: string): feature is CallFeature {
 
 async function triggerMediaCallEvent(event: MediaCallEvent): Promise<unknown> {
 	return Apps.self?.triggerEvent(AppEvents.IMediaCallHandler, event);
+}
+
+/**
+ * Dispatches a `cti` call control command to the installed apps. The app that owns the call acts on
+ * it and reports progress back through the write accessor; other apps ignore calls they do not own.
+ */
+export async function dispatchMediaCallControl(event: MediaCallControlEvent): Promise<void> {
+	if (!Apps.self) {
+		return;
+	}
+
+	await triggerMediaCallEvent(event);
+}
+
+/** Lists the cti devices a user may place/receive calls on, aggregated across the installed apps. */
+export async function getMediaCallDevices(userId: string): Promise<MediaCallDeviceWithApp[]> {
+	if (!Apps.self) {
+		return [];
+	}
+
+	const result = await triggerMediaCallEvent({ method: AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES, context: { userId } });
+	return Array.isArray(result) ? (result as MediaCallDeviceWithApp[]) : [];
 }
 
 export async function notifyAppsOfMediaCallStarted(call: IMediaCall): Promise<void> {

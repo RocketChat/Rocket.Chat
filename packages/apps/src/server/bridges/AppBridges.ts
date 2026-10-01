@@ -13,6 +13,7 @@ import type { IInternalBridge } from './IInternalBridge';
 import type { IInternalFederationBridge } from './IInternalFederationBridge';
 import type { IListenerBridge } from './IListenerBridge';
 import type { LivechatBridge } from './LivechatBridge';
+import type { MediaCallBridge } from './MediaCallBridge';
 import type { MessageBridge } from './MessageBridge';
 import type { ModerationBridge } from './ModerationBridge';
 import type { OAuthAppsBridge } from './OAuthAppsBridge';
@@ -54,7 +55,8 @@ export type Bridge =
 	| ModerationBridge
 	| RoleBridge
 	| OutboundMessageBridge
-	| CallHistoryBridge;
+	| CallHistoryBridge
+	| MediaCallBridge;
 
 export abstract class AppBridges {
 	public abstract getCommandBridge(): CommandBridge;
@@ -114,4 +116,6 @@ export abstract class AppBridges {
 	public abstract getExperimentalBridge(): ExperimentalBridge;
 
 	public abstract getCallHistoryBridge(): CallHistoryBridge;
+
+	public abstract getMediaCallBridge(): MediaCallBridge;
 }
