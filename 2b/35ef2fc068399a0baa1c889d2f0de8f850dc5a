@@ -1,0 +1,15 @@
+apps/meteor/server/lib/oauth/addCustomOAuthPremiumAlert.ts
+  h_4c386397e672f4 5-7
+  h_4c386397e672f4 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2b35ef2fc068399a0baa1c889d2f0de8f850dc5a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
