@@ -47,5 +47,8 @@ Rocket.Chat models). Meteor only holds the outgoing hooks and the settings. Map:
   room. See ADR 0006.
 - Remote-MUC sessions are per local member and do not survive a restart; a member without
   a session cannot speak.
+- A remote-room author is the record of the real JID the room disclosed (`fromJid` on
+  `muc.remoteMessage`); `<nick>#<room JID>` is only the fallback when it disclosed none.
+  Rocket.Chat has no per-room nick, so the user's `name` is the latest nick. See ADR 0015.
 - A known defect is not fixed until its `it.skip` is a plain `it` and passes against ejabberd.
 - `yarn typecheck` in `apps/meteor` fails for unrelated reasons; typecheck this package only.

@@ -81,7 +81,7 @@ cannot be expressed over a fire-and-forget emitter.
 | `src/iq/disco.ts`, `src/iq/ping.ts` | XEP-0030 on the server domain, the MUC domain and individual room JIDs (clients disco a room before joining and refuse it unless it is `conference/text`); XEP-0199 |
 | `src/muc/MucService.ts` | Registry of hosted rooms plus which are public; routes room-addressed stanzas; detects invites addressed to local users |
 | `src/muc/MucRoom.ts` | Hosted-room state machine: occupants keyed by nick, nick conflicts, join authorization, presence fan-out with status 110 and 307 (never 201, the room always pre-exists in Rocket.Chat), the subject that closes a join, groupchat reflection, mediated invitations. Rocket.Chat members are **virtual occupants**: in the roster, delivered via events rather than sockets |
-| `src/muc/RemoteMucSession.ts` | A local user joined into a remote MUC as a client over S2S, fixed resource `rocketchat`. Tracks join state and the remote roster; prefers the XEP-0359 stanza id for dedup; skips its own reflections. One session per local member ([ADR 0009](adr/0009-one-remote-muc-session-per-local-member.md)); a member without one cannot speak, so `mucSendToRemoteRoom` throws instead of dropping |
+| `src/muc/RemoteMucSession.ts` | A local user joined into a remote MUC as a client over S2S, fixed resource `rocketchat`. Tracks join state and the remote roster, with the real JIDs the room discloses; prefers the XEP-0359 stanza id for dedup; skips its own reflections. One session per local member ([ADR 0009](adr/0009-one-remote-muc-session-per-local-member.md)); a member without one cannot speak, so `mucSendToRemoteRoom` throws instead of dropping |
 | `src/muc/stanzas.ts` | Pure builders and parsers for `muc#user` presence, groupchat (with replace), subject, join presence, mediated invites (XEP-0045 §7.8.2) and invite parsing (mediated and XEP-0249 direct) |
 | `src/types/ltx.d.ts` | Types for the CommonJS parts of `ltx` and `@xmpp/jid` the package uses |
 
@@ -132,7 +132,10 @@ This is guaranteed structurally ([ADR 0006](adr/0006-remote-users-are-local-user
   (so the client's remote-user treatment applies) plus `xmppFederation: { version, jid, origin }`,
   and never `user.federation`. Matrix's remote-user heuristics (`startsWith('@')`,
   `includes(':')`) never match a bare JID; local username validation (no `@`) prevents JID
-  squatting.
+  squatting. One account is one record across DMs and rooms; a remote room that hides an
+  occupant's real JID gets a `<nick>#<room JID>` record of its own for them, and the display
+  name follows the latest nick
+  ([ADR 0015](adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)).
 - **Message dedup and loop-breaking** reuse the federation stamp: inbound messages are saved via
   `Message.saveMessageFromFederation` with `federation.eventId = 'xmpp:<origin-domain>:<stanza-id>'`;
   the outgoing hook skips any message that already carries one
