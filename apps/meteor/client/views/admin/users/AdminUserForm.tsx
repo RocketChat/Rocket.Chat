@@ -125,7 +125,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		control,
 		watch,
 		handleSubmit,
-		formState: { errors, isDirty },
+		formState: { errors, isDirty, dirtyFields },
 		setValue,
 	} = useForm({
 		values: getInitialValue({
@@ -189,13 +189,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, ...userFormData } =
+			userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
 				userId: userData?._id,
 				data: {
 					...userFormData,
+					...(dirtyFields.statusText && { statusText }),
 					...(showUserStatusSection && {
 						presenceDisabledByAdmin,
 						...(statusVisibilityDeniedByAdmin && { statusVisibilityDeniedByAdmin }),
@@ -204,7 +206,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			});
 		}
 
-		return handleCreateUser.mutateAsync({ ...userFormData, ...(showUserStatusSection && { presenceDisabledByAdmin }), fields: '' });
+		return handleCreateUser.mutateAsync({
+			...userFormData,
+			statusText,
+			...(showUserStatusSection && { presenceDisabledByAdmin }),
+			fields: '',
+		});
 	});
 
 	const nameId = useId();
