@@ -33,16 +33,16 @@ const isTraversable = (value: object): boolean =>
 	!(value instanceof ArrayBuffer) &&
 	!ArrayBuffer.isView(value);
 
-function walk(value: unknown, seen: WeakSet<object>): unknown {
+function walk(value: unknown, seen: WeakMap<object, unknown>): unknown {
 	if (value === null || typeof value !== 'object') {
 		return value;
 	}
 
 	if (seen.has(value)) {
-		return value;
+		return seen.get(value);
 	}
 
-	seen.add(value);
+	seen.set(value, value);
 
 	if (!isTraversable(value)) {
 		return value;
@@ -79,7 +79,8 @@ function walk(value: unknown, seen: WeakSet<object>): unknown {
 
 	if (hasSecureFields(target)) {
 		target = applySecureFields(target as WithSecureFields<Record<string, unknown>>);
-		seen.add(target);
+		seen.set(value, target);
+		seen.set(target, target);
 	}
 
 	for (const key of Object.keys(target)) {
@@ -101,5 +102,5 @@ function walk(value: unknown, seen: WeakSet<object>): unknown {
  * structure is updated in place.
  */
 export function applySecureFieldsDeep<T>(value: T): T {
-	return walk(value, new WeakSet()) as T;
+	return walk(value, new WeakMap()) as T;
 }

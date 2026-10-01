@@ -134,6 +134,33 @@ describe('applySecureFieldsDeep', () => {
 		assert.deepStrictEqual(result.room.abacAttributes, { department: 'support' });
 	});
 
+	it('sanitizes every reference to a repeated marked object', () => {
+		const room = {
+			id: 'general',
+			[SECURE_FIELDS_KEY]: [{ permission: 'api.read', name: 'apiToken', value: 'secret' }],
+		};
+
+		const result = applySecureFieldsDeep({ room, rooms: [room], byId: new Map([['general', room]]) } as any);
+
+		assert.deepStrictEqual(result.room, { id: 'general' });
+		assert.strictEqual(result.rooms[0], result.room);
+		assert.strictEqual(result.byId.get('general'), result.room);
+	});
+
+	it('sanitizes a marked object referenced from inside its own subtree', () => {
+		const room: Record<string, any> = {
+			id: 'general',
+			[SECURE_FIELDS_KEY]: [{ permission: 'api.read', name: 'apiToken', value: 'secret' }],
+		};
+		room.owner = { room };
+
+		const result = applySecureFieldsDeep({ room } as any);
+
+		assert.strictEqual(result.room.owner.room, result.room);
+		assert.ok(!(SECURE_FIELDS_KEY in result.room));
+		assert.ok(!('apiToken' in result.room));
+	});
+
 	it('throws when a marked object arrives while the app is unavailable', () => {
 		AppObjectRegistry.clear();
 
