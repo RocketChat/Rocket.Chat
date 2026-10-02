@@ -123,7 +123,7 @@
 		"@rocket.chat/gazzodown-alt": "workspace:^",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/i18n": "workspace:^",
-		"@rocket.chat/icons": "^0.50.0",
+		"@rocket.chat/icons": "^0.51.0",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/layout": "workspace:~",
