@@ -38,3 +38,19 @@ it('splits the user roles into workspace and room roles, labelled by description
 
 	await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator'], roomRoles: ['Owner'] }));
 });
+
+it('leaves out roles without a description', async () => {
+	Roles.state.store(role('no-description', 'Users'));
+
+	const { result } = renderHook(() => useUserRolesByScope(uid, rid), {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			.withEndpoint('GET', '/v1/roles.getUsersInPublicRoles', () => ({
+				users: [{ _id: uid, username: 'member', roles: ['admin', 'no-description'] }],
+			}))
+			.withEndpoint('GET', '/v1/rooms.roles', () => ({ roles: [] }))
+			.build(),
+	});
+
+	await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator'], roomRoles: [] }));
+});
