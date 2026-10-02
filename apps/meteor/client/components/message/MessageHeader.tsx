@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageRoles } from './header/hooks/useMessageRoles';
 import {
 	useMessageListShowUsername,
 	useMessageListShowRealName,
@@ -24,6 +23,7 @@ import {
 	useMessageListFormatTime,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -45,7 +45,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
+	const roles = [...workspaceRoles, ...roomRoles];
 	const shouldShowRolesList = showRoles && roles.length > 0;
 
 	return (
