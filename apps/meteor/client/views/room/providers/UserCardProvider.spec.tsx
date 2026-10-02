@@ -347,3 +347,24 @@ it('opens a hover card as a pointer-only preview that neither takes focus nor ma
 		jest.useRealTimers();
 	}
 });
+
+it('stays open while the pointer is on the trigger and the card renders its collapsed menu trigger', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+
+		// the loaded card brings its kebab, collapsed
+		await act(async () => screen.getByTestId('user-card').setAttribute('aria-expanded', 'false'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});

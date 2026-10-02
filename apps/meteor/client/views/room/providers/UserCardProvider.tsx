@@ -74,6 +74,16 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		const trigger = (e.currentTarget ?? e.target) as Element | null;
 		const viaClick = e.type === 'click';
 
+		if (!viaClick) {
+			trigger?.addEventListener('mouseleave', closeUserCard, { once: true });
+		}
+
+		// Another trigger for the user already shown (their avatar next to the name): keep the card where it is.
+		if (state.isOpen && userCardData?.username === username) {
+			keepUserCardOpen();
+			return;
+		}
+
 		triggerRef.current = trigger;
 		setUserCardData({
 			username,
@@ -81,10 +91,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			onOpenUserInfo: () => openUserInfo(username),
 			onClose: dismissUserCard,
 		});
-
-		if (!viaClick) {
-			trigger?.addEventListener('mouseleave', closeUserCard, { once: true });
-		}
 
 		// A click, or a card already showing for another author, switches right away; otherwise hover waits.
 		state.open(viaClick || state.isOpen);

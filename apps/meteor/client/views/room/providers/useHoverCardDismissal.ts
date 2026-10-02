@@ -54,9 +54,13 @@ export const useHoverCardDismissal = ({
 				onDismiss();
 			};
 
-			// Once the card's menu closes with the pointer elsewhere, the card follows.
+			// Once the card's menu closes with the pointer elsewhere, the card follows. Only that transition counts: the
+			// menu trigger rendering as collapsed when the card loads is not a close.
+			let menuOpen = false;
 			const observer = new MutationObserver(() => {
-				if (!isHovered && !hasOpenMenu(card)) {
+				const wasOpen = menuOpen;
+				menuOpen = hasOpenMenu(card);
+				if (wasOpen && !menuOpen && !isHovered) {
 					onPointerLeave();
 				}
 			});
