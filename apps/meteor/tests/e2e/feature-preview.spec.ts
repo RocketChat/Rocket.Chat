@@ -142,7 +142,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.sendMessage(message);
 
 			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).not.toHaveText(parsedWrong);
+			await expect(poHomeChannel.sidepanel.getItemRowByName(sidepanelTeam)).not.toHaveText(parsedWrong);
 		});
 
 		test('should show channel in sidepanel after adding existing one', async () => {
@@ -330,7 +330,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
-				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
+				poHomeChannel.sidepanel.getItemRowByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
 			).toBeVisible();
 
 			await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
@@ -338,7 +338,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
-				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
+				poHomeChannel.sidepanel.getItemRowByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
 			).toBeVisible();
 
 			await poHomeChannel.content.openReplyInThread();
@@ -389,12 +389,12 @@ test.describe.serial('feature preview', () => {
 				await poHomeChannel.sidebar.allTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getItemRowByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(poHomeChannel.sidebar.allTeamCollabFilter.getByRole('status', { name: '1 mention from All' })).toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getItemRowByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(
 					poHomeChannel.sidebar.favoritesTeamCollabFilter.getByRole('status', { name: '1 mention from Favorites' }),
 				).toBeVisible();
@@ -607,7 +607,7 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+				await expect(poHomeChannel.sidepanel.getItemRowByName(discussionName)).toContainText('hello');
 
 				await poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username).click();
 				await poHomeChannel.content.waitForChannel();
@@ -616,18 +616,18 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 				await expect(page).toHaveURL(/direct/);
 				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-current', 'page');
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemRowByName(Users.user1.data.username)).toContainText('hello DM');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toHaveAttribute('aria-current');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+				await expect(poHomeChannel.sidepanel.getItemRowByName(discussionName)).toContainText('hello');
 
 				await poHomeChannel.sidepanel.getItemByName(discussionName).click();
 				await poHomeChannel.content.waitForChannel();
 
 				await expect(page).toHaveURL(/group/);
 				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).not.toHaveAttribute('aria-current');
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemRowByName(Users.user1.data.username)).toContainText('hello DM');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-current', 'page');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+				await expect(poHomeChannel.sidepanel.getItemRowByName(discussionName)).toContainText('hello');
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
 			});
 		});
