@@ -86,6 +86,22 @@ export function findUnownedValues(attributes: IAbacAttributeDefinition[], owned:
 	return unowned;
 }
 
+export function findOwnedValues(attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>): IAbacAttributeDefinition[] {
+	const kept: IAbacAttributeDefinition[] = [];
+	for (const { key, values } of attributes) {
+		const allowed = owned.get(key);
+		const held = allowed ? values.filter((value) => allowed.has(value)) : [];
+		if (held.length) {
+			kept.push({ key, values: held });
+		}
+	}
+
+	return kept;
+}
+
+export const sortByKey = (attributes: IAbacAttributeDefinition[]): IAbacAttributeDefinition[] =>
+	[...attributes].sort((a, b) => a.key.localeCompare(b.key));
+
 export const extractAttribute = (ldapUser: ILDAPEntry, ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
 	if (!ldapKey || !abacKey) {
 		return;
