@@ -1,25 +1,25 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Icon,
 	IconButton,
-	Option,
-	OptionAvatar,
-	OptionColumn,
-	OptionContent,
-	OptionMenu,
-	OptionSkeleton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemIcon,
+	ItemLink,
+	ItemMedia,
+	ItemRow,
+	ItemSkeleton,
+	ItemTitle,
 	Tag,
 } from '@rocket.chat/fuselage';
-import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TeamsChannelItemMenu from './TeamsChannelItemMenu';
-import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
 export type TeamsChannelItemProps = {
 	room: IRoom;
@@ -33,7 +33,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 	const rid = room._id;
 	const type = room.t;
 
-	const [showButton, setShowButton] = useState();
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	const canRemoveTeamChannel = usePermission('remove-team-channel', mainRoom._id);
 	const canEditTeamChannel = usePermission('edit-team-channel', mainRoom._id);
@@ -41,41 +41,38 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 	const canDeleteTeamChannel = usePermission(`delete-team-${type === 'c' ? 'channel' : 'group'}`, mainRoom._id);
 	const canDelete = canDeleteChannel && canDeleteTeamChannel;
 
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
-	};
-
-	const onClick = usePreventPropagation();
-
 	if (!room) {
-		return <OptionSkeleton />;
+		return <ItemSkeleton size='medium' inset='lg' />;
 	}
 
 	return (
-		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={() => onClickView(room)}>
-			<OptionAvatar>
+		<Item role='listitem' size='medium' inset='lg' id={room._id} data-rid={room._id} onFocus={mountNow} onPointerEnter={requestMount}>
+			<ItemMedia>
 				<RoomAvatar room={room} size='x28' />
-			</OptionAvatar>
-			<OptionColumn>{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}</OptionColumn>
-			<OptionContent>
-				<Box display='inline-flex' alignItems='center'>
-					{roomCoordinator.getRoomName(room.t, room)}{' '}
-					{room.teamDefault ? (
-						<Box marginInline={4}>
-							<Tag>{t('Team_Auto-join')}</Tag>
-						</Box>
-					) : (
-						''
-					)}
-				</Box>
-			</OptionContent>
+			</ItemMedia>
+			<ItemIcon label={room.t === 'c' ? t('Public_Channel') : t('Private_Channel')}>
+				<Icon name={room.t === 'c' ? 'hash' : 'hashtag-lock'} size='x16' />
+			</ItemIcon>
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						<ItemLink is='button' onClick={() => onClickView(room)}>
+							{roomCoordinator.getRoomName(room.t, room)}
+						</ItemLink>
+					</ItemTitle>
+					{room.teamDefault && <Tag>{t('Team_Auto-join')}</Tag>}
+				</ItemRow>
+			</ItemContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDelete) && (
-				<OptionMenu onClick={onClick}>
-					{showButton ? <TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} /> : <IconButton tiny icon='kebab' />}
-				</OptionMenu>
+				<ItemActions reveal='hover'>
+					{menuVisibility ? (
+						<TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} />
+					) : (
+						<IconButton small icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
+					)}
+				</ItemActions>
 			)}
-		</Option>
+		</Item>
 	);
 };
 
