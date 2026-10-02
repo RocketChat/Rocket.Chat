@@ -26,7 +26,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
-	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
 	const {
 		data: isMemberData,
 		refetch,
@@ -49,6 +50,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			nickname,
 			avatarETag,
 			freeSwitchExtension,
+			federated,
 		} = data?.user || {};
 
 		return {
@@ -63,6 +65,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
@@ -73,7 +76,13 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
+		user: {
+			_id: user._id ?? '',
+			username: user.username,
+			name: user.name,
+			freeSwitchExtension: user.freeSwitchExtension,
+			federated: user.federated,
+		},
 		size: 3,
 		isMember,
 		reload: refetch,

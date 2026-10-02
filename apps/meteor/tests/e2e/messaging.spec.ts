@@ -62,31 +62,25 @@ test.describe('Messaging', () => {
 			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 		});
 
-		test('should navigate properly on the user card', async ({ page }) => {
-			await test.step('open UserCard', async () => {
+		test('should open the user card from the message author name with the keyboard', async ({ page }) => {
+			await test.step('open the user card with Space', async () => {
 				await page.keyboard.press('Shift+Tab');
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).toBeVisible();
+				await channelPage.userCard.waitForDisplay();
 			});
 
-			await test.step('close UserCard with Esc', async () => {
+			await test.step('close the user card with Esc', async () => {
 				await page.keyboard.press('Escape');
-				await expect(channelPage.userCardToolbar).not.toBeVisible();
+				await channelPage.userCard.waitForDismissal();
 			});
 
-			await test.step('with focus restored reopen toolbar', async () => {
+			await test.step('with focus restored, reopen the user card', async () => {
 				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).toBeVisible();
-			});
-
-			await test.step('close UserCard with button', async () => {
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).not.toBeVisible();
+				await channelPage.userCard.waitForDisplay();
+				await page.keyboard.press('Escape');
+				await channelPage.userCard.waitForDismissal();
 			});
 		});
 

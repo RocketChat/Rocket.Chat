@@ -45,7 +45,6 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.userCard.openUserInfo();
 
 			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});

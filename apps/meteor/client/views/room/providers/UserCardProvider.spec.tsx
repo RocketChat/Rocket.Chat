@@ -1,7 +1,7 @@
 import type { UserCardContextValue } from '@rocket.chat/ui-contexts';
 import { useUserCard } from '@rocket.chat/ui-contexts';
-import { render, screen, fireEvent } from '@testing-library/react';
-import type { UIEvent } from 'react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { useEffect, useRef, type ReactNode, type UIEvent } from 'react';
 
 import UserCardProvider from './UserCardProvider';
 
@@ -16,13 +16,149 @@ jest.mock('@rocket.chat/ui-contexts', () => {
 
 jest.mock('../UserCard', () => ({
 	__esModule: true,
-	default: () => <div data-testid='user-card'>card</div>,
+	default: ({ username }: { username: string }) => <div data-testid='user-card'>{username}</div>,
 }));
+
+const Trigger = () => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onClick={(e: UIEvent) => openUserCard(e, 'john')}>
+			open
+		</button>
+	);
+};
+
+// Stands in for a contextual bar / search panel that closes on a bubbling Escape.
+const EscapeListener = ({ onEscape, children }: { onEscape: () => void; children: ReactNode }) => {
+	const ref = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const node = ref.current;
+		const handler = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				onEscape();
+			}
+		};
+		node?.addEventListener('keydown', handler);
+		return () => node?.removeEventListener('keydown', handler);
+	}, [onEscape]);
+	return <div ref={ref}>{children}</div>;
+};
+
+it('consumes Escape while the card is open so an underlying handler does not also fire', async () => {
+	const underlyingEscape = jest.fn();
+
+	render(
+		<EscapeListener onEscape={underlyingEscape}>
+			<UserCardProvider>
+				<Trigger />
+			</UserCardProvider>
+		</EscapeListener>,
+	);
+
+	fireEvent.click(screen.getByText('open'));
+	await screen.findByTestId('user-card');
+
+	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+
+	await waitFor(() => expect(screen.queryByTestId('user-card')).not.toBeInTheDocument());
+	expect(underlyingEscape).not.toHaveBeenCalled();
+});
+
+it('does not consume Escape while a menu is open, leaving the card as it is', async () => {
+	const underlyingEscape = jest.fn();
+
+	render(
+		<EscapeListener onEscape={underlyingEscape}>
+			<UserCardProvider>
+				<Trigger />
+			</UserCardProvider>
+			{/* Inert stand-in for the kebab actions menu (portaled outside the card in production,
+			    where it handles and stops the Escape itself). Here it only signals "a menu is open". */}
+			<div role='menu' />
+		</EscapeListener>,
+	);
+
+	fireEvent.click(screen.getByText('open'));
+	await screen.findByTestId('user-card');
+
+	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+
+	// The provider neither stops the event nor closes the card: the stand-in is inert,
+	// so the event reaching the underlying listener proves it went through untouched.
+	expect(underlyingEscape).toHaveBeenCalledTimes(1);
+	expect(screen.getByTestId('user-card')).toBeInTheDocument();
+});
+
+const HoverTrigger = () => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onMouseEnter={(e: UIEvent) => openUserCard(e, 'jane')}>
+			hover
+		</button>
+	);
+};
+
+it('cancels a pending hover open when Escape dismisses the card', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<Trigger />
+				<HoverTrigger />
+			</UserCardProvider>,
+		);
+
+		fireEvent.click(screen.getByText('open'));
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(0);
+		});
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		// pointer reaches another author: an open is now pending behind the hover delay
+		fireEvent.mouseEnter(screen.getByText('hover'));
+		fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(1000);
+		});
+
+		// the explicit dismissal wins: no card comes back once the hover delay elapses
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('opens on hover after the intent delay, and not if the pointer leaves first', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<HoverTrigger />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('hover'));
+		fireEvent.mouseLeave(screen.getByText('hover'));
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(1000);
+		});
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		fireEvent.mouseEnter(screen.getByText('hover'));
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(1000);
+		});
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
 
 it('keeps the context value stable when a card opens and closes', async () => {
 	const values: UserCardContextValue[] = [];
 
-	const Trigger = () => {
+	const RecordingTrigger = () => {
 		const value = useUserCard();
 		values.push(value);
 		return (
@@ -39,46 +175,231 @@ it('keeps the context value stable when a card opens and closes', async () => {
 
 	render(
 		<UserCardProvider>
-			<Trigger />
+			<RecordingTrigger />
 		</UserCardProvider>,
 	);
 
-	fireEvent.click(screen.getByRole('button', { name: 'open' }));
+	fireEvent.click(screen.getByText('open'));
 	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.click(screen.getByText('close'));
-	expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	await waitFor(() => expect(screen.queryByTestId('user-card')).not.toBeInTheDocument());
 
 	expect(new Set(values).size).toBe(1);
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
 });
 
+const AuthorTrigger = ({ username }: { username: string }) => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onMouseEnter={(e: UIEvent) => openUserCard(e, username)}>
+			{`author ${username}`}
+		</button>
+	);
+};
+
+const advance = (ms: number) =>
+	act(async () => {
+		await jest.advanceTimersByTimeAsync(ms);
+	});
+
+it('closes shortly after the pointer leaves the card and its trigger', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		// far from the card and the trigger
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('hands the card over to the next author the pointer moves to', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		fireEvent.mouseLeave(screen.getByText('author jane'));
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('does not bring the card back after scrolling dismisses it', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		// an open for john is pending when scrolling the list (which holds the trigger) dismisses the card
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.scroll(document.body);
+		await advance(0);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		await advance(1000);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
 it('marks only the trigger that opened the card as expanded', async () => {
-	const AuthorTrigger = ({ username }: { username: string }) => {
+	const ClickTrigger = ({ username }: { username: string }) => {
 		const { openUserCard, triggerProps } = useUserCard();
 		return (
 			<button type='button' {...triggerProps} onClick={(e: UIEvent) => openUserCard(e, username)}>
-				<span>{`author ${username}`}</span>
+				<span>{`click ${username}`}</span>
 			</button>
 		);
 	};
 
 	render(
 		<UserCardProvider>
-			<AuthorTrigger username='jane' />
-			<AuthorTrigger username='john' />
+			<ClickTrigger username='jane' />
+			<ClickTrigger username='john' />
 		</UserCardProvider>,
 	);
 
-	const jane = screen.getByText('author jane').closest('button');
-	const john = screen.getByText('author john').closest('button');
+	const jane = screen.getByText('click jane').closest('button');
+	const john = screen.getByText('click john').closest('button');
 
 	// clicking the inner text still marks the button, not the span
-	fireEvent.click(screen.getByText('author jane'));
+	fireEvent.click(screen.getByText('click jane'));
 	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	expect(jane).toHaveAttribute('aria-expanded', 'true');
 	expect(john).not.toHaveAttribute('aria-expanded');
-	expect(jane).toHaveAttribute('aria-haspopup', 'dialog');
-	expect(john).toHaveAttribute('aria-haspopup', 'dialog');
+});
+
+const KeyboardTrigger = ({ username }: { username: string }) => {
+	const { openUserCard, triggerProps } = useUserCard();
+	return (
+		<button
+			type='button'
+			{...triggerProps}
+			onKeyDown={(e) => {
+				if (e.key === 'Enter') {
+					openUserCard(e, username);
+				}
+			}}
+		>
+			{`keyboard ${username}`}
+		</button>
+	);
+};
+
+it('opens from the keyboard with focus in the card, ignores the pointer, and returns focus on Escape', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<KeyboardTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		const trigger = screen.getByText('keyboard jane');
+		trigger.focus();
+		fireEvent.keyDown(trigger, { key: 'Enter' });
+		await advance(0);
+
+		const card = screen.getByTestId('user-card');
+		expect(card).toHaveTextContent('jane');
+		expect(card.parentElement).toHaveFocus();
+		expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+		// the pointer resting elsewhere doesn't close a card opened from the keyboard
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		fireEvent.keyDown(card, { key: 'Escape' });
+		await advance(0);
+
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+		expect(trigger).toHaveFocus();
+		expect(trigger).not.toHaveAttribute('aria-expanded');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('switches a card opened by hover to keyboard mode when the same trigger is activated from the keyboard', async () => {
+	const HoverAndKeyboardTrigger = ({ username }: { username: string }) => {
+		const { openUserCard, triggerProps } = useUserCard();
+		return (
+			<button
+				type='button'
+				{...triggerProps}
+				onMouseEnter={(e: UIEvent) => openUserCard(e, username)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter') {
+						openUserCard(e, username);
+					}
+				}}
+			>
+				{`author ${username}`}
+			</button>
+		);
+	};
+
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<HoverAndKeyboardTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		const trigger = screen.getByText('author jane');
+		fireEvent.mouseEnter(trigger);
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		trigger.focus();
+		fireEvent.keyDown(trigger, { key: 'Enter' });
+		await advance(0);
+
+		expect(screen.getByTestId('user-card').parentElement).toHaveFocus();
+
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
 });

@@ -14,11 +14,12 @@ const handleUserMention = (mention: string | undefined, withSymbol: boolean | un
 
 const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 	const { t } = useTranslation();
-	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol, triggerProps } =
+	const { resolveUserMention, onUserMentionClick, onUserMentionHover, ownUserId, useRealName, showMentionSymbol, triggerProps } =
 		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
+	const handleMouseEnter = useMemo(() => (resolved ? onUserMentionHover?.(resolved) : undefined), [resolved, onUserMentionHover]);
 	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (mention === 'all') {
@@ -46,8 +47,10 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
-			{...buttonProps}
-			{...triggerProps}
+			{...(handleClick && buttonProps)}
+			{...(handleClick && { 'aria-haspopup': 'dialog' })}
+			onMouseEnter={handleMouseEnter}
+			{...(handleMouseEnter && triggerProps)}
 			data-uid={resolved._id}
 		>
 			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}

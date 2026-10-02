@@ -10,7 +10,7 @@ import {
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
@@ -21,9 +21,11 @@ import {
 	useMessageListShowRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListHoverUserCardEnabled,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
+import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -34,8 +36,12 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, message.u.username));
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
+	// Enter/Space opens the card (focused, so its actions are reachable); a click opens the full profile.
+	const buttonProps = useButtonPattern((e) =>
+		e.type === 'keydown' ? openUserCard(e, message.u.username) : openUserInfo(message.u.username),
+	);
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -49,17 +55,22 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const roles = [...workspaceRoles, ...roomRoles];
 	const shouldShowRolesList = showRoles && roles.length > 0;
 
+	// While selecting, the whole row toggles the selection, so the name stops being a button.
+	const isSelecting = useIsSelecting();
+	const authorTriggerProps = isSelecting
+		? {}
+		: {
+				...buttonProps,
+				style: { cursor: 'pointer' },
+				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username) }),
+				...triggerProps,
+			};
+
 	return (
 		<FuselageMessageHeader>
-			<MessageNameContainer
-				id={`${message._id}-displayName`}
-				aria-label={displayName}
-				style={{ cursor: 'pointer' }}
-				{...buttonProps}
-				{...triggerProps}
-			>
+			<MessageNameContainer id={`${message._id}-displayName`} aria-label={displayName} {...authorTriggerProps}>
 				<MessageName
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+					title={!hoverUserCardEnabled && !showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
 					data-username={normalizedUsername}
 				>
 					{message.alias || displayName}

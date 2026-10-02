@@ -17,7 +17,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
+import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +36,7 @@ import {
 	useMessageListShowUsername,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListHoverUserCardEnabled,
 } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
@@ -47,7 +48,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -62,7 +64,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
+	const buttonProps = useButtonPattern((e) => (e.type === 'keydown' ? openUserCard(e, user.username) : openUserInfo(user.username)));
+	const openUserCardOnHover = hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined;
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;
@@ -87,12 +90,30 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && (
+					<UserAvatar
+						username={message.u.username}
+						size='x18'
+						title=''
+						style={{ cursor: 'pointer' }}
+						onMouseEnter={openUserCardOnHover}
+						onClick={() => openUserInfo(user.username)}
+						// a pointer-only shortcut for the name button next to it
+						aria-hidden='true'
+					/>
+				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+					<MessageNameContainer
+						{...(!isSelecting && {
+							...buttonProps,
+							style: { cursor: 'pointer' },
+							onMouseEnter: openUserCardOnHover,
+							...triggerProps,
+						})}
+					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
