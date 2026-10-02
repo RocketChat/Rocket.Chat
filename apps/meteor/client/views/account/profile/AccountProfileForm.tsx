@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
+import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
@@ -130,6 +131,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
+	// Refresh the user card, full profile and admin panel views of this user.
+	const refreshUserViews = async () => {
+		await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+		await queryClient.invalidateQueries({ queryKey: ['users'] });
+	};
+
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
 			email,
@@ -177,6 +184,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					data: basicInfoData,
 					...(customFieldsDirty && { customFields }),
 				});
+				await refreshUserViews();
 			}
 
 			if (dirtyFields.statusVisibilityDenied) {
@@ -193,16 +201,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 			if (dirtyFields.avatar) {
 				await updateAvatar();
-			}
-
-			// Refresh the user card, full profile and admin panel views of this user once every change has landed.
-			if (basicInfoDirty || dirtyFields.avatar) {
-				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
-				await queryClient.invalidateQueries({ queryKey: ['users'] });
+				await refreshUserViews();
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(values);
+			// A submitted avatar must not become the default, or picking another one would not dirty the form.
+			reset({ ...values, avatar: '' as AvatarObject });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
