@@ -4,8 +4,9 @@
 
 Custom categories let each user group their sidebar rooms into personal, named collections that appear
 alongside the system groups (Favorites, Teams, Channels, Direct messages, …). A user can create, rename,
-delete and reorder categories; move rooms in and out of them via context menus; and toggle whether each
-category keeps showing unread rooms while collapsed.
+delete and reorder categories; move rooms in and out of them via context menus; toggle whether each
+category keeps showing unread rooms while collapsed; and filter an expanded category down to its recently
+active rooms.
 
 Categories are **per-user** and **client-only in meaning** — they are a presentation grouping of the user's
 own subscriptions. They carry **no access, security or membership semantics**: moving a room into a category
@@ -26,7 +27,10 @@ export interface ISidebarCategory {
     default?: boolean;         // true for system-group entries managed by the platform
     showUnreads?: boolean;     // when collapsed, keep listing unread rooms (default: false)
     keepUnreadsOnTop?: boolean; // when expanded, sort unread rooms to the top (default: false)
+    activityFilter?: SidebarCategoryActivityFilter; // when expanded, hide read rooms quiet for longer (default: none)
 }
+
+// One of SIDEBAR_CATEGORY_ACTIVITY_FILTERS: '1d' | '7d' | '30d'. Absent means "All".
 ```
 
 ### Room assignment
@@ -47,7 +51,7 @@ category a room belongs to; the category record only carries display metadata an
 The preference `sidebarCategories: ISidebarCategory[]` is the **single source of truth** for both the
 ordered list of all visible groups and the metadata of custom categories. It contains entries for custom
 categories *and* for any system group whose metadata has been touched (show-unreads, keep-unreads-on-top,
-or position).
+activity filter, or position).
 
 **Invariant enforced on every write:** all five dynamic groups (`Incoming_Calls`, `Incoming_Livechats`,
 `Open_Livechats`, `On_Hold_Chats`, `Unread`) are always stored first, in the order prescribed by
@@ -132,8 +136,55 @@ persisting — so dynamic groups are always re-sorted to the front regardless of
 
 ### Toggle show-unreads / keep-unreads-on-top — `useToggleUnreads`
 
-`upsertGroupEntry(id, patch)` — updates the matching `ISidebarCategory` entry in `sidebarCategories`
-(or creates a new one if the entry doesn't exist yet). Always calls `withDynamicFirst` before persisting.
+Both toggles go through `useUpsertGroupEntry` — `upsertGroupEntry(id, patch)` updates the matching
+`ISidebarCategory` entry in `sidebarCategories` (or creates a new one if the entry doesn't exist yet), and
+calls `withDynamicFirst` before persisting when it creates one.
+
+### Activity filter — `useActivityFilter`
+
+A per-group setting, for custom categories and static system groups alike, stored as `activityFilter` on
+the group's `sidebarCategories` entry through the same `upsertGroupEntry`. Choosing "All" writes
+`activityFilter: undefined`, which the JSON payload drops, so the field disappears from the entry.
+
+What it does, in `makeGroup` (`useRoomList.ts`):
+
+- Applies **only while the group is expanded**. A collapsed group keeps its own rules (open room, plus
+  unreads with "Always display") and reports `inactiveCount: 0`.
+- A room is **inactive** when it is read, is not the room currently open, and its `lm` is older than
+  `now - ACTIVITY_FILTER_WINDOW[filter]` (24 h / 7 d / 30 d). Unread rooms are never hidden — the filter only
+  thins out read ones. A room without `lm` is kept.
+- `lm` is the sidebar's activity timestamp (`SubscriptionsCachedStore`): the later of the room's last
+  message and the user's last read (`lr`), falling back to the subscription's / room's creation. So opening a
+  room counts as activity, just as it does for the "Activity" sort.
+- Inactive rooms are left out of `group.rooms` unless the group is in `groupsShowingInactive`;
+  `group.inactiveCount` counts them either way, so the chip can stay while they are revealed.
+- **Dynamic groups are never filtered** (`isActivityFilterable`): calls, queued / open / on-hold chats and
+  the Unread group list rooms that need attention now. The menu offers no filter for them.
+- EE only: without `experimental-enterprise-features` the stored filter is ignored.
+- `useActivityFilterClock` re-evaluates the cutoff every 5 minutes while any group has a filter, so a room
+  drops out once it ages past the window even when no subscription changes. The cutoff can therefore lag
+  by up to 5 minutes.
+
+#### Filter chip — `RoomListActivityFilterChip`
+
+When an expanded group's filter hides at least one room, a chip right after the group name shows the
+window ("24 hours", "7 days", "30 days" — `Hours_count` / `Days_count`) with a clock. Clicking it lifts the
+filter for this session and clicking again puts it back: it toggles the group's key in
+`groupsShowingInactive`, kept in `RoomList` component state, so it resets on reload and never touches the
+saved preference. Revealed rooms render inline in the group's normal sort order.
+
+- A toggle button (`aria-pressed`): pressed (Fuselage `Tag` `secondary-info`, blue) while the filter is
+  applied, released (`secondary`, gray) while it is lifted. Accessible name "Filter: Last 7 days"; the
+  tooltip says what a click does — "Show N inactive" / "Hide inactive" — and is the only place the count
+  appears. The pill shape comes from Tag's `--rcx-tag-border-radius`.
+- Shown only while the filter hides something (`inactiveCount > 0`, which keeps counting while the rooms
+  are revealed, so the chip stays to put the filter back). Never on a collapsed group.
+- Changing the window itself is done from the kebab's Filter submenu (`useActivityFilterItems`).
+- It sits in the `menu` slot but outside `SidebarCollapseGroupMenu` (hover-only), and a wrapping `Box`
+  stops the header's toggle area from stretching (`flex: 0 1 auto`) so the chip sits against the name and
+  the kebab keeps to the far end (`margin-inline-start: auto`). Clicking the empty part of the header still
+  collapses the group, since the section handles the click. The chip stops click and keydown propagation
+  for the same reason.
 
 ### Delete — `useDeleteCategory`
 
@@ -168,15 +219,22 @@ in `sidebarCategories` can be silently dropped during a move.
 ### Category collapser kebab — `CategoryMenu.tsx`
 
 **Custom category:**
-- Order: Move up / Move down / New channel
-- Manage: Rename / Delete / New category
-- When collapsed: Show unreads toggle
-- When expanded: Keep unreads on top toggle
+- Main: Move up / Move down / Create new › / Manage / Delete / Filter ›
+- Unreads: Always display / Keep on top toggles
 
 **System group:**
-- Order: Move up / Move down (dynamic groups have both disabled)
-- When collapsed: Show unreads toggle
-- When expanded: Keep unreads on top toggle
+- Main: Move up / Move down (dynamic groups have both disabled) / Filter › (not on dynamic groups)
+- Unreads: Always display / Keep on top toggles
+
+**Filter ›** shows the current choice as a subtitle under its label (a trailing value wraps in the narrow menu) and opens a submenu — All / Last 24 hours /
+Last 7 days / Last 30 days — with a checkmark on the current one. Picking one closes the menu and persists
+it via `useActivityFilter`.
+
+### Header hover — `RoomListCollapser.tsx`
+
+Fuselage highlights a group header only while the pointer is over its collapse toggle (chevron + name). The
+header is styled to highlight on hover anywhere in the bar, so pointing at the filter chip, the kebab or the
+empty space between them highlights it too.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
@@ -224,6 +282,11 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Move room | `apps/meteor/client/sidebar/categories/hooks/useMoveRoomCategory.ts` |
 | Move category position | `apps/meteor/client/sidebar/categories/hooks/useMoveCategoryPosition.ts` |
 | Toggle unreads | `apps/meteor/client/sidebar/categories/hooks/useToggleUnreads.ts` |
+| Group metadata upsert | `apps/meteor/client/sidebar/categories/hooks/useUpsertGroupEntry.ts` |
+| Activity filter (setting, windows, clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.ts` |
+| Filter chip | `apps/meteor/client/sidebar/RoomList/RoomListActivityFilterChip.tsx` |
+| Filter menu items + labels | `apps/meteor/client/sidebar/categories/hooks/useActivityFilterItems.tsx` |
+| Preference validation (server) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.ts`, `packages/rest-typings/src/v1/users/UsersSetPreferenceParamsPOST.ts` |
 | Name validation | `apps/meteor/client/sidebar/categories/hooks/useValidateCategoryName.ts` |
 | Custom categories list | `apps/meteor/client/sidebar/categories/hooks/useCustomCategories.ts` |
 | Set category (client) | `apps/meteor/client/sidebar/categories/hooks/useSetCategory.ts` |
@@ -239,5 +302,9 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Kind | File |
 |------|------|
 | API (preference persistence + validation) | `apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts` |
+| Unit (grouping, activity filter) | `apps/meteor/client/sidebar/hooks/useRoomList.spec.tsx` |
+| Unit (activity filter setting + clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.spec.ts` |
+| Unit (session toggle wiring) | `apps/meteor/client/sidebar/RoomList/RoomList.spec.tsx` |
+| Unit (filter chip) | `apps/meteor/client/sidebar/RoomList/RoomListCollapser.spec.tsx` |
 | E2E (Playwright) | `apps/meteor/tests/e2e/sidebar-custom-categories.spec.ts` |
 | E2E page object | `apps/meteor/tests/e2e/page-objects/fragments/sidebar.ts` (custom-category helpers) |
