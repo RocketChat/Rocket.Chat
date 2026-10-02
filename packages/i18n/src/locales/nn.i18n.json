@@ -1205,7 +1205,6 @@
   "Connected": "Tilkoblet",
   "Connection_Closed": "Tilkoblingen er stengt",
   "Connection_error": "Tilkoblingsfeil",
-  "Connection_failed": "LDAP-tilkobling feilet",
   "Connection_Reset": "Tilbakestilling av tilkobling",
   "Connectivity_Services": "Tilkoblingstjenester",
   "ConnectWorkspace_Button": "Koble til arbeidsområdet",

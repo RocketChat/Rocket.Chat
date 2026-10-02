@@ -911,7 +911,6 @@
   "Connected": "تم الاتصال",
   "Connection_Closed": "تم إغلاق الاتصال",
   "Connection_error": "خطأ في الاتصال",
-  "Connection_failed": "فشل اتصال LDAP",
   "Connection_Reset": "إعادة تعيين الاتصال",
   "Connectivity_Services": "خدمات الاتصال",
   "Consulting": "الاستشارات",
