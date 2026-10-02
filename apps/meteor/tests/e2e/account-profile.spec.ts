@@ -44,8 +44,8 @@ test.describe.serial('settings-account-profile', () => {
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
+			// Clicking the author avatar opens the full profile directly.
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.userCard.openUserInfo();
 
 			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});

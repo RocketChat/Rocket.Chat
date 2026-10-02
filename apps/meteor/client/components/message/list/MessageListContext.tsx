@@ -21,6 +21,12 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
+	/**
+	 * Whether hovering an author opens the user card. Lists rendered inside the
+	 * contextual bar turn it off: the card is about as wide as the bar itself,
+	 * so it covers the row it was opened from, including its actions.
+	 */
+	hoverUserCardEnabled: boolean;
 	highlights?: {
 		highlight: string;
 		regex: RegExp;
@@ -61,6 +67,7 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
+	hoverUserCardEnabled: true,
 	showColors: false,
 	username: undefined,
 	apiEmbedEnabled: false,
@@ -87,6 +94,8 @@ export const useMessageDateFormatter: MessageListContextValue['useMessageDateFor
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+export const useMessageListHoverUserCardEnabled = (): MessageListContextValue['hoverUserCardEnabled'] =>
+	useContext(MessageListContext).hoverUserCardEnabled;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;

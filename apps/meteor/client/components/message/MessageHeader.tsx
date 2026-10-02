@@ -3,27 +3,25 @@ import {
 	MessageHeader as FuselageMessageHeader,
 	MessageName,
 	MessageTimestamp,
-	MessageUsername,
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, type KeyboardEvent, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageRoles } from './header/hooks/useMessageRoles';
 import {
-	useMessageListShowUsername,
-	useMessageListShowRealName,
 	useMessageListShowRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
+	useMessageListHoverUserCardEnabled,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
+import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -34,43 +32,51 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, message.u.username));
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
-	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
-	const shouldShowRolesList = showRoles && roles.length > 0;
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
+	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
+
+	// While messages are being selected the whole row is the click target
+	// (toggling the selection), so the author affordances step aside the same
+	// way the avatar does: the name stops being a button and the role tag stops
+	// opening the card, otherwise a click would do both.
+	const isSelecting = useIsSelecting();
+	const authorTriggerProps = isSelecting
+		? {}
+		: {
+				role: 'button' as const,
+				tabIndex: 0,
+				onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, message.u.username) : undefined,
+				onClick: () => openUserInfo(message.u.username),
+				onKeyDown: (e: KeyboardEvent) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						openUserInfo(message.u.username);
+					}
+				},
+				...triggerProps,
+			};
 
 	return (
 		<FuselageMessageHeader>
-			<MessageNameContainer
-				id={`${message._id}-displayName`}
-				aria-label={displayName}
-				style={{ cursor: 'pointer' }}
-				{...buttonProps}
-				{...triggerProps}
-			>
-				<MessageName
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
-					data-username={normalizedUsername}
-				>
-					{message.alias || displayName}
-				</MessageName>
-				{showUsername && (
-					<>
-						{' '}
-						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-					</>
-				)}
+			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
+				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 			</MessageNameContainer>
-			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
+			{shouldShowRolesList && (
+				<MessageRoles
+					workspaceRoles={workspaceRoles}
+					roomRoles={roomRoles}
+					isBot={!!message.bot}
+					onClick={isSelecting ? undefined : (e) => openUserCard(e, message.u.username)}
+				/>
+			)}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>
