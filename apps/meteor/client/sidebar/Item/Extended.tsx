@@ -1,83 +1,89 @@
 import {
-	SidebarItem,
-	SidebarItemAvatarWrapper,
-	SidebarItemCol,
-	SidebarItemRow,
-	SidebarItemTitle,
-	SidebarItemTimestamp,
-	SidebarItemContent,
-	SidebarItemMenu,
 	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { useShortTimeAgo } from '@rocket.chat/ui-client';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 
 export type ExtendedProps = {
-	icon?: ReactNode;
-	title: ReactNode;
-	avatar?: ReactNode;
-	actions?: ReactNode;
-	href?: string;
-	time?: any;
-	menu?: () => ReactNode;
-	subtitle?: ReactNode;
-	badges?: ReactNode;
-	unread?: boolean;
-	selected?: boolean;
-	menuOptions?: any;
-	titleIcon?: ReactNode;
-	threadUnread?: boolean;
-} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
+	'icon'?: ReactNode;
+	'title': ReactNode;
+	'avatar'?: ReactNode;
+	'actions'?: ReactNode;
+	'href'?: string;
+	'time'?: any;
+	'menu'?: () => ReactNode;
+	'subtitle'?: ReactNode;
+	'badges'?: ReactNode;
+	'unread'?: boolean;
+	'selected'?: boolean;
+	'menuOptions'?: any;
+	'titleIcon'?: ReactNode;
+	'threadUnread'?: boolean;
+	'onClick'?: MouseEventHandler<HTMLAnchorElement>;
+	'aria-current'?: AriaAttributes['aria-current'];
+} & Omit<HTMLAttributes<HTMLElement>, 'is' | 'title' | 'onClick'>;
 
 const Extended = ({
 	icon,
 	title,
 	avatar,
 	actions,
-	href,
+	href = '',
 	time,
 	menu,
-	menuOptions: _menuOptions,
+	'menuOptions': _menuOptions,
 	subtitle = '',
 	titleIcon,
 	badges,
-	threadUnread: _threadUnread,
+	'threadUnread': _threadUnread,
 	unread,
 	selected,
+	onClick,
+	'aria-label': ariaLabel,
+	'aria-current': ariaCurrent,
 	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarItem href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
-			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
-			<SidebarItemCol>
-				<SidebarItemRow>
+		<Item {...props} size='extended' selected={selected} highlighted={unread} onFocus={mountNow} onPointerEnter={requestMount}>
+			{avatar && <ItemMedia>{avatar}</ItemMedia>}
+			<ItemContent>
+				<ItemRow>
 					{icon}
-					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
-				</SidebarItemRow>
-				<SidebarItemRow>
-					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>
+					<ItemTitle>
+						<ItemLink href={href} onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
+							{title}
+						</ItemLink>
+					</ItemTitle>
+					{time && <ItemMeta>{formatDate(time)}</ItemMeta>}
+				</ItemRow>
+				<ItemRow>
+					<ItemDescription>{subtitle}</ItemDescription>
 					{titleIcon}
 					{badges}
-					{actions}
-					{menu && (
-						<SidebarItemMenu>
-							{menuVisibility ? (
-								menu()
-							) : (
-								<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' onPointerDown={mountNow} />
-							)}
-						</SidebarItemMenu>
-					)}
-				</SidebarItemRow>
-			</SidebarItemCol>
-		</SidebarItem>
+				</ItemRow>
+			</ItemContent>
+			{actions}
+			{menu && (
+				<ItemActions reveal='hover'>
+					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
+				</ItemActions>
+			)}
+		</Item>
 	);
 };
 
