@@ -188,6 +188,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					data: basicInfoData,
 					...(customFieldsDirty && { customFields }),
 				});
+				await refreshUserViews();
 			}
 
 		try {
@@ -213,12 +214,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 			if (dirtyFields.avatar) {
 				await updateAvatar();
-			}
-
-			// Refresh the user card, full profile and admin panel views of this user once every change has landed.
-			if (basicInfoDirty || dirtyFields.avatar) {
-				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
-				await queryClient.invalidateQueries({ queryKey: ['users'] });
+				await refreshUserViews();
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });

@@ -37,6 +37,10 @@ const renderPage = ({ withUser = true } = {}) => {
 	return { updateOwnBasicInfo, setStatus, resetAvatar };
 };
 
+afterEach(() => {
+	jest.restoreAllMocks();
+});
+
 it('should not send identity fields when only the status changes', async () => {
 	const { updateOwnBasicInfo, setStatus } = renderPage();
 
@@ -77,7 +81,18 @@ it('refreshes the user views after an avatar-only save, once the avatar is updat
 	await waitFor(() => expect(invalidateQueries).toHaveBeenCalled());
 	expect(calls[0]).toBe('resetAvatar');
 	expect(updateOwnBasicInfo).not.toHaveBeenCalled();
-	invalidateQueries.mockRestore();
+});
+
+it('saves the avatar again when it is changed after a previous save', async () => {
+	const { resetAvatar } = renderPage();
+
+	await userEvent.click(screen.getByTitle('Accounts_SetDefaultAvatar'));
+	await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+	await waitFor(() => expect(resetAvatar).toHaveBeenCalledTimes(1));
+
+	await userEvent.click(screen.getByTitle('Accounts_SetDefaultAvatar'));
+	await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+	await waitFor(() => expect(resetAvatar).toHaveBeenCalledTimes(2));
 });
 
 it('sends a typed email even before the user record resolves', async () => {
