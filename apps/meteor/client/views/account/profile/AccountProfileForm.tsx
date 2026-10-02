@@ -170,9 +170,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomDate ||
 			dirtyFields.statusCustomTime;
 
-		// Only dirty fields are sent: untouched fields can't be affected by the
-		// save (empty values clear them server-side), and a status-only save
-		// doesn't rewrite identity fields.
+		// Untouched fields are left out so a save never rewrites what the user did not change.
 		const emailChanged = user ? getUserEmailAddress(user) !== email : false;
 		const basicInfoData = {
 			...(dirtyFields.name && { name }),
@@ -180,16 +178,20 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
-			...(dirtyFields.title && { title }),
-			...(dirtyFields.nationality && { nationality }),
-			...(dirtyFields.languages && {
-				languages: languages
-					.split(',')
-					.map((language) => language.trim())
-					.filter(Boolean),
-			}),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
+
+		try {
+			if (Object.keys(basicInfoData).length || customFieldsDirty) {
+				await updateOwnBasicInfo({
+					data: basicInfoData,
+					...(customFieldsDirty && { customFields }),
+				});
+
+				// Refresh the user card, full profile and admin panel views of this user.
+				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+				await queryClient.invalidateQueries({ queryKey: ['users'] });
+			}
 
 		try {
 			if (Object.keys(basicInfoData).length || customFieldsDirty) {
