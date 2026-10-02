@@ -1,4 +1,4 @@
-import { AutoComplete, Option, Chip, Box, Skeleton } from '@rocket.chat/fuselage';
+import { AutoComplete, Chip, Box, Skeleton, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -58,13 +58,15 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }) => (
-				<Option
-					key={value}
-					{...props}
-					label={label.name}
-					avatar={<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />}
-				/>
+			renderItem={({ value, label, selected, focus, ...props }) => (
+				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<ItemMedia>
+						<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ ...label, type: label?.type || 'c', _id: value }} />
+					</ItemMedia>
+					<ItemContent>
+						<ItemTitle>{label.name}</ItemTitle>
+					</ItemContent>
+				</Item>
 			)}
 			options={options}
 		/>
