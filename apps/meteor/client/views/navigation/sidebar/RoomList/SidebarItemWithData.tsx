@@ -1,19 +1,19 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { IconButton, ItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import SidebarItem from './SidebarItem';
+import RoomListItem from './RoomListItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
 import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
+import { useRoomIconLabel } from '../hooks/useRoomIconLabel';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -33,29 +33,24 @@ type RoomListRowProps = {
 
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
 	const dmUserId = getUidDirectMessage(room, useUserId());
 	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const icon = (
-		<SidebarItemIcon
-			highlighted={highlighted}
-			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
-		/>
-	);
+	const isIncomingCall = Boolean(videoConfActions);
+	const iconLabel = useRoomIconLabel(room, isIncomingCall);
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarActions>
-					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarActions>
+				<ItemActions>
+					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
+					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+				</ItemActions>
 			),
-		[videoConfActions],
+		[videoConfActions, t],
 	);
 
 	const { parentRid } = useRoomsListContext();
@@ -65,23 +60,24 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const selected = isRoomFilter && room.rid === parentRid;
 
 	const redirectToFilter = useRedirectToFilter();
-	const buttonProps = useButtonPattern(() => redirectToFilter(room));
 
 	return (
-		<SidebarItem
+		<RoomListItem
 			id={id}
+			size='condensed'
 			data-unread={highlighted}
-			unread={highlighted}
-			href={href}
+			highlighted={highlighted}
 			selected={selected}
+			aria-current={selected || undefined}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			onClick={() => redirectToFilter(room)}
 			title={title}
-			icon={icon}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
+			iconLabel={iconLabel}
 			style={style}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			room={room}
 			actions={actions}
-			{...buttonProps}
 			{...dmStatusTooltipHandlers}
 		/>
 	);
