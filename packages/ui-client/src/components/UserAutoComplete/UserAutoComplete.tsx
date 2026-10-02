@@ -1,4 +1,4 @@
-import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -45,8 +45,15 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }) => (
-				<Option key={value} label={label} avatar={<UserAvatar size='x20' username={value} />} {...props} />
+			renderItem={({ value, label, selected, focus, ...props }) => (
+				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<ItemMedia>
+						<UserAvatar size={ITEM_MEDIA_SIZE.condensed} username={value} />
+					</ItemMedia>
+					<ItemContent>
+						<ItemTitle>{label}</ItemTitle>
+					</ItemContent>
+				</Item>
 			)}
 			options={options}
 		/>
