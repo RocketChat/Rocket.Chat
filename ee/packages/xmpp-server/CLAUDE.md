@@ -22,6 +22,8 @@ yarn workspace @rocket.chat/xmpp-server-service ms   # the only process that hos
   the anchor. A fix un-skips the test and deletes the entry.
 - Work on a `planned` spec starts in plan mode with the spec attached and produces
   `docs/plans/<slug>.md` before any code.
+- The `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` skills run the authoring stages; worked
+  prompts and the model to use for each stage are in `docs/examples.md`.
 - Decisions that constrain later work go to `docs/adr/`. Check the existing ones before
   proposing a change to the data model, the auth flow or the room model.
 - `docs/compliance.md` is derived from spec frontmatter. Never edit it without the spec.
@@ -50,5 +52,6 @@ Rocket.Chat models). Meteor only holds the outgoing hooks and the settings. Map:
 - A remote-room author is the record of the real JID the room disclosed (`fromJid` on
   `muc.remoteMessage`); `<nick>#<room JID>` is only the fallback when it disclosed none.
   Rocket.Chat has no per-room nick, so the user's `name` is the latest nick. See ADR 0015.
-- A known defect is not fixed until its `it.skip` is a plain `it` and passes against ejabberd.
+- A known defect is not fixed until its `it.skip` is a plain `it` and passes, against ejabberd
+  for an end-to-end test.
 - `yarn typecheck` in `apps/meteor` fails for unrelated reasons; typecheck this package only.
