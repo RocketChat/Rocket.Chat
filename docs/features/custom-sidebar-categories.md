@@ -27,10 +27,12 @@ export interface ISidebarCategory {
     default?: boolean;         // true for system-group entries managed by the platform
     showUnreads?: boolean;     // when collapsed, keep listing unread rooms (default: false)
     keepUnreadsOnTop?: boolean; // when expanded, sort unread rooms to the top (default: false)
-    activityFilter?: SidebarCategoryActivityFilter; // when expanded, hide read rooms quiet for longer (default: none)
+    activityFilterHours?: number; // when expanded, hide read rooms with no activity in this many hours (default: none)
 }
 
-// One of SIDEBAR_CATEGORY_ACTIVITY_FILTERS: '1d' | '7d' | '30d'. Absent means "All".
+// A whole number of hours, 1 to SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS (24 × 365). Absent means "All".
+// The UI offers presets — 24, 168 (7 days), 720 (30 days) — but any value in range is valid, so a custom
+// window needs no data or validation change.
 ```
 
 ### Room assignment
@@ -142,16 +144,18 @@ calls `withDynamicFirst` before persisting when it creates one.
 
 ### Activity filter — `useActivityFilter`
 
-A per-group setting, for custom categories and static system groups alike, stored as `activityFilter` on
+A per-group setting, for custom categories and static system groups alike, stored as `activityFilterHours` on
 the group's `sidebarCategories` entry through the same `upsertGroupEntry`. Choosing "All" writes
-`activityFilter: undefined`, which the JSON payload drops, so the field disappears from the entry.
+`activityFilterHours: undefined`, which the JSON payload drops, so the field disappears from the entry. The
+`users.setPreferences` schema accepts an integer from 1 to `SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS`, and
+`validateSidebarCategories` enforces the same range on the server.
 
 What it does, in `makeGroup` (`useRoomList.ts`):
 
 - Applies **only while the group is expanded**. A collapsed group keeps its own rules (open room, plus
   unreads with "Always display") and reports `inactiveCount: 0`.
 - A room is **inactive** when it is read, is not the room currently open, and its `lm` is older than
-  `now - ACTIVITY_FILTER_WINDOW[filter]` (24 h / 7 d / 30 d). Unread rooms are never hidden — the filter only
+  `now - activityFilterHours` hours. Unread rooms are never hidden — the filter only
   thins out read ones. A room without `lm` is kept.
 - `lm` is the sidebar's activity timestamp (`SubscriptionsCachedStore`): the later of the room's last
   message and the user's last read (`lr`), falling back to the subscription's / room's creation. So opening a
@@ -168,7 +172,8 @@ What it does, in `makeGroup` (`useRoomList.ts`):
 #### Filter chip — `RoomListActivityFilterChip`
 
 When an expanded group's filter hides at least one room, a chip right after the group name shows the
-window ("24 hours", "7 days", "30 days" — `Hours_count` / `Days_count`) with a clock. Clicking it lifts the
+window ("24 hours", "7 days", "30 days" — `Hours_count` / `Days_count`; a whole number of days of 48 hours or
+more reads in days, anything else in hours) with a clock. Clicking it lifts the
 filter for this session and clicking again puts it back: it toggles the group's key in
 `groupsShowingInactive`, kept in `RoomList` component state, so it resets on reload and never touches the
 saved preference. Revealed rooms render inline in the group's normal sort order.
@@ -226,7 +231,7 @@ in `sidebarCategories` can be silently dropped during a move.
 - Main: Move up / Move down (dynamic groups have both disabled) / Filter › (not on dynamic groups)
 - Unreads: Always display / Keep on top toggles
 
-**Filter ›** shows the current choice as a subtitle under its label (a trailing value wraps in the narrow menu) and opens a submenu — All / Last 24 hours /
+**Filter ›** shows the current choice — the preset's name, or the bare window ("36 hours") for a value no preset matches — as a subtitle under its label (a trailing value wraps in the narrow menu) and opens a submenu — All / Last 24 hours /
 Last 7 days / Last 30 days — with a checkmark on the current one. Picking one closes the menu and persists
 it via `useActivityFilter`.
 

@@ -39,12 +39,12 @@ beforeEach(() => {
 });
 
 it('reads the filter stored on the group entry', () => {
-	withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilter: '7d' }]);
+	withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 }]);
 
 	const { result } = renderHook(() => useActivityFilter());
 
-	expect(result.current.getActivityFilter('Channels')).toBe('7d');
-	expect(result.current.getActivityFilter('Direct_Messages')).toBeUndefined();
+	expect(result.current.getActivityFilterHours('Channels')).toBe(168);
+	expect(result.current.getActivityFilterHours('Direct_Messages')).toBeUndefined();
 	expect(result.current.hasActivityFilters).toBe(true);
 });
 
@@ -54,32 +54,32 @@ it('stores a filter on a custom category', async () => {
 	const { result } = renderHook(() => useActivityFilter());
 
 	await act(async () => {
-		await result.current.setActivityFilter('custom', '1d');
+		await result.current.setActivityFilterHours('custom', 24);
 	});
 
-	expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilter: '1d' });
+	expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: 24 });
 });
 
 it('creates the entry of a system group that has none yet', async () => {
 	const { result } = renderHook(() => useActivityFilter());
 
 	await act(async () => {
-		await result.current.setActivityFilter('Channels', '30d');
+		await result.current.setActivityFilterHours('Channels', 720);
 	});
 
-	expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilter: '30d' });
+	expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 });
 });
 
 it('clears the filter', async () => {
-	withCategories([{ _id: 'custom', name: 'Work', activityFilter: '7d' }]);
+	withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
 
 	const { result } = renderHook(() => useActivityFilter());
 
 	await act(async () => {
-		await result.current.setActivityFilter('custom', undefined);
+		await result.current.setActivityFilterHours('custom', undefined);
 	});
 
-	expect(persistedEntry('custom')?.activityFilter).toBeUndefined();
+	expect(persistedEntry('custom')?.activityFilterHours).toBeUndefined();
 });
 
 it('never filters dynamic groups', () => {

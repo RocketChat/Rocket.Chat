@@ -1,52 +1,53 @@
-import type { SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ACTIVITY_FILTER_WINDOW, useActivityFilter } from './useActivityFilter';
+import { useActivityFilter } from './useActivityFilter';
 
-const ACTIVITY_FILTER_OPTIONS: { value: SidebarCategoryActivityFilter | undefined; label: TranslationKey }[] = [
-	{ value: undefined, label: 'All' },
-	{ value: '1d', label: 'Last_24_hours' },
-	{ value: '7d', label: 'Last_7_days' },
-	{ value: '30d', label: 'Last_30_days' },
+// The windows the menus offer. Any whole number of hours is a valid filter; these are just the choices.
+const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKey }[] = [
+	{ hours: undefined, label: 'All' },
+	{ hours: 24, label: 'Last_24_hours' },
+	{ hours: 24 * 7, label: 'Last_7_days' },
+	{ hours: 24 * 30, label: 'Last_30_days' },
 ];
 
-const HOUR = 60 * 60 * 1000;
-
-/** The filter's name as the menus list it: "All", "Last 7 days", … */
-export const getActivityFilterLabel = (activityFilter: SidebarCategoryActivityFilter | undefined): TranslationKey =>
-	ACTIVITY_FILTER_OPTIONS.find(({ value }) => value === activityFilter)?.label ?? 'All';
-
-/** The filter's window on its own, short enough for a chip: "24 hours", "7 days", … */
-export const useActivityFilterWindowLabel = (activityFilter: SidebarCategoryActivityFilter): string => {
+/** The window on its own, short enough for a chip: "24 hours", "7 days", "36 hours", … */
+export const useActivityFilterWindowLabel = (hours: number): string => {
 	const { t } = useTranslation();
-	const hours = ACTIVITY_FILTER_WINDOW[activityFilter] / HOUR;
-	return hours < 48 ? t('Hours_count', { count: hours }) : t('Days_count', { count: hours / 24 });
+	return hours >= 48 && hours % 24 === 0 ? t('Days_count', { count: hours / 24 }) : t('Hours_count', { count: hours });
 };
 
-/** One menu item per filter choice for a group, the current one checked. */
+/** The filter as the menus name it: "All", "Last 7 days", … — or the bare window for a value no preset matches. */
+export const useActivityFilterLabel = (hours: number | undefined): string => {
+	const { t } = useTranslation();
+	const windowLabel = useActivityFilterWindowLabel(hours ?? 0);
+	const preset = ACTIVITY_FILTER_PRESETS.find((option) => option.hours === hours);
+	return preset ? t(preset.label) : windowLabel;
+};
+
+/** One menu item per preset for a group, the current one checked. */
 export const useActivityFilterItems = (
 	groupId: string,
-	activityFilter: SidebarCategoryActivityFilter | undefined,
+	activityFilterHours: number | undefined,
 	onSelect?: () => void,
 ): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
-	const { setActivityFilter } = useActivityFilter();
+	const { setActivityFilterHours } = useActivityFilter();
 
 	return useMemo(
 		() =>
-			ACTIVITY_FILTER_OPTIONS.map(({ value, label }) => ({
-				id: `activity-filter-${value ?? 'all'}`,
+			ACTIVITY_FILTER_PRESETS.map(({ hours, label }) => ({
+				id: `activity-filter-${hours ?? 'all'}`,
 				content: t(label),
 				onClick: () => {
 					onSelect?.();
-					void setActivityFilter(groupId, value);
+					void setActivityFilterHours(groupId, hours);
 				},
-				addon: value === activityFilter ? <Icon name='check' size='x16' /> : undefined,
+				addon: hours === activityFilterHours ? <Icon name='check' size='x16' /> : undefined,
 			})),
-		[t, groupId, activityFilter, onSelect, setActivityFilter],
+		[t, groupId, activityFilterHours, onSelect, setActivityFilterHours],
 	);
 };

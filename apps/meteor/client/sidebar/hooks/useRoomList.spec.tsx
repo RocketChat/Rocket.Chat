@@ -1,4 +1,3 @@
-import type { SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -101,7 +100,7 @@ const getWrapperSettings = ({
 		default?: boolean;
 		showUnreads?: boolean;
 		keepUnreadsOnTop?: boolean;
-		activityFilter?: SidebarCategoryActivityFilter;
+		activityFilterHours?: number;
 	}[];
 }) => {
 	const root = mockAppRoot()
@@ -467,12 +466,12 @@ describe('the activity filter', () => {
 	const channels = [recentRead, quietRead, quietUnread, dormantRead];
 
 	const renderChannels = ({
-		activityFilter,
+		activityFilterHours,
 		collapsedGroups = [],
 		groupsShowingInactive,
 		isEnterprise = true,
 	}: {
-		activityFilter: SidebarCategoryActivityFilter;
+		activityFilterHours: number;
 		collapsedGroups?: string[];
 		groupsShowingInactive?: string[];
 		isEnterprise?: boolean;
@@ -482,7 +481,7 @@ describe('the activity filter', () => {
 				rooms: channels,
 				sidebarGroupByType: true,
 				isEnterprise,
-				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilter }],
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours }],
 			}).build(),
 		});
 
@@ -491,27 +490,27 @@ describe('the activity filter', () => {
 	const namesOf = (group?: SidebarRoomListGroup) => group?.rooms.map((room) => room.name).sort();
 
 	it('hides read rooms with no activity inside the window, keeping unread ones', async () => {
-		const { result } = renderChannels({ activityFilter: '1d' });
+		const { result } = renderChannels({ activityFilterHours: 24 });
 
-		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['quiet-unread', 'recent-read']);
 		expect(group?.inactiveCount).toBe(2);
 	});
 
 	it('widens with the window', async () => {
-		const { result } = renderChannels({ activityFilter: '7d' });
+		const { result } = renderChannels({ activityFilterHours: 24 * 7 });
 
-		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('7d'));
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24 * 7));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
 		expect(group?.inactiveCount).toBe(1);
 	});
 
 	it('lists every room while the group is showing its inactive ones, still counting them', async () => {
-		const { result } = renderChannels({ activityFilter: '1d', groupsShowingInactive: ['Channels'] });
+		const { result } = renderChannels({ activityFilterHours: 24, groupsShowingInactive: ['Channels'] });
 
-		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toHaveLength(channels.length);
 		expect(group?.inactiveCount).toBe(2);
@@ -520,9 +519,9 @@ describe('the activity filter', () => {
 
 	it('keeps the open room listed even when it is inactive', async () => {
 		mockOpenedRoom = quietRead.rid;
-		const { result } = renderChannels({ activityFilter: '1d' });
+		const { result } = renderChannels({ activityFilterHours: 24 });
 
-		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
 		expect(group?.inactiveCount).toBe(1);
@@ -530,19 +529,19 @@ describe('the activity filter', () => {
 
 	it('leaves a collapsed group to its own rules', async () => {
 		mockOpenedRoom = dormantRead.rid;
-		const { result } = renderChannels({ activityFilter: '1d', collapsedGroups: ['Channels'] });
+		const { result } = renderChannels({ activityFilterHours: 24, collapsedGroups: ['Channels'] });
 
-		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['dormant-read']);
 		expect(group?.inactiveCount).toBe(0);
 	});
 
 	it('does nothing without the license module', () => {
-		const { result } = renderChannels({ activityFilter: '1d', isEnterprise: false });
+		const { result } = renderChannels({ activityFilterHours: 24, isEnterprise: false });
 
 		const group = channelsGroupOf(result.current.groups);
-		expect(group?.activityFilter).toBeUndefined();
+		expect(group?.activityFilterHours).toBeUndefined();
 		expect(namesOf(group)).toHaveLength(channels.length);
 		expect(group?.inactiveCount).toBe(0);
 	});

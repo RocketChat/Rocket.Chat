@@ -1,10 +1,9 @@
-import type { SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
-import { getActivityFilterLabel, useActivityFilterWindowLabel } from '../categories/hooks/useActivityFilterItems';
+import { useActivityFilterLabel, useActivityFilterWindowLabel } from '../categories/hooks/useActivityFilterItems';
 
 const chipStyle = css`
 	--rcx-tag-border-radius: 9999px;
@@ -23,7 +22,7 @@ const chipStyle = css`
 `;
 
 type RoomListActivityFilterChipProps = {
-	activityFilter: SidebarCategoryActivityFilter;
+	activityFilterHours: number;
 	inactiveCount: number;
 	/** False while the user has lifted the filter for this session to see every room. */
 	applied: boolean;
@@ -31,9 +30,10 @@ type RoomListActivityFilterChipProps = {
 };
 
 /** Says why an expanded group lists fewer rooms, and lifts the filter for the session, or puts it back. */
-const RoomListActivityFilterChip = ({ activityFilter, inactiveCount, applied, onToggle }: RoomListActivityFilterChipProps) => {
+const RoomListActivityFilterChip = ({ activityFilterHours, inactiveCount, applied, onToggle }: RoomListActivityFilterChipProps) => {
 	const { t } = useTranslation();
-	const windowLabel = useActivityFilterWindowLabel(activityFilter);
+	const windowLabel = useActivityFilterWindowLabel(activityFilterHours);
+	const filterLabel = useActivityFilterLabel(activityFilterHours);
 	// Pressing the chip must not also collapse or expand the group.
 	const handleClick = usePreventPropagation(onToggle);
 	const preventPropagation = usePreventPropagation();
@@ -43,7 +43,7 @@ const RoomListActivityFilterChip = ({ activityFilter, inactiveCount, applied, on
 			is='button'
 			type='button'
 			className={chipStyle}
-			aria-label={`${t('Filter')}: ${t(getActivityFilterLabel(activityFilter))}`}
+			aria-label={`${t('Filter')}: ${filterLabel}`}
 			aria-pressed={applied}
 			title={applied ? t('Show_inactive', { count: inactiveCount }) : t('Hide_inactive')}
 			onClick={handleClick}
