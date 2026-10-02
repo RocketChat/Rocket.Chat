@@ -30,7 +30,7 @@ import {
 	updateSetting,
 } from '../../data/permissions.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -1667,7 +1667,8 @@ describe('[Rooms]', () => {
 			after(async () => {
 				await restorePermissionToRoles('view-room-administration');
 				await Promise.all([
-					deleteRoom({ type: 'p', roomId: ownerGroup._id }),
+					// groups.delete only reaches groups the caller can access, which the admin cannot here.
+					actionRoom({ action: 'delete', type: 'p', roomId: ownerGroup._id, overrideCredentials: ownerCredentials }),
 					deleteRoom({ type: 'd', roomId: ownerDM._id }),
 					deleteRoom({ type: 'c', roomId: ownerTeamChannel._id }),
 				]);
