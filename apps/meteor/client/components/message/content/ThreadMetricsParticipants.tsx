@@ -30,7 +30,7 @@ const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsPr
 			)}
 			{!hideAvatar && (
 				<>
-					<MessageMetricsItemAvatarRow>
+					<MessageMetricsItemAvatarRow role='img' aria-label={t('__count__followers', { count: participants.length })}>
 						{participants.slice(0, 2).map((uid) => (
 							<MessageMetricsItemAvatarRowContent key={uid}>
 								<UserAvatar size='x16' userId={uid} />

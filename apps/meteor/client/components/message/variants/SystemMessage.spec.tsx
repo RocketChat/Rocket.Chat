@@ -5,6 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { render, screen } from '@testing-library/react';
 
 import SystemMessage from './SystemMessage';
+import { createFakeRoom } from '../../../../tests/mocks/data';
 
 jest.mock('../content/Attachments', () => ({
 	default: () => <div>attachments</div>,
@@ -69,5 +70,38 @@ describe('SystemMessage', () => {
 
 		expect(screen.queryByTitle('test-title')).not.toBeInTheDocument();
 		expect(screen.getByText('changed room description to: <button title="test-title">OK</button>')).toBeInTheDocument();
+	});
+
+	describe('left room messages', () => {
+		const leftTranslations = {
+			User_left_this_channel: 'left the channel',
+			User_left_this_discussion: 'left the discussion',
+		};
+
+		it('should say the user left the discussion inside a discussion', () => {
+			const message = { ...createBaseMessage(''), t: 'ul' } as IMessage;
+
+			render(<SystemMessage message={message} showUserAvatar />, {
+				wrapper: mockAppRoot()
+					.withTranslations('en', 'core', leftTranslations)
+					.withRoom(createFakeRoom({ _id: message.rid, prid: Random.id() }))
+					.build(),
+			});
+
+			expect(screen.getByText('left the discussion')).toBeInTheDocument();
+		});
+
+		it('should say the user left the channel outside a discussion', () => {
+			const message = { ...createBaseMessage(''), t: 'ul' } as IMessage;
+
+			render(<SystemMessage message={message} showUserAvatar />, {
+				wrapper: mockAppRoot()
+					.withTranslations('en', 'core', leftTranslations)
+					.withRoom(createFakeRoom({ _id: message.rid }))
+					.build(),
+			});
+
+			expect(screen.getByText('left the channel')).toBeInTheDocument();
+		});
 	});
 });

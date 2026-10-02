@@ -10,7 +10,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'ul',
 		system: true,
-		text: (t) => t('User_left_this_channel'),
+		text: (t, _, options) => (options?.isDiscussion ? t('User_left_this_discussion') : t('User_left_this_channel')),
 	});
 
 	instance.registerType({

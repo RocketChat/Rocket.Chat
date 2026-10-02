@@ -4,19 +4,15 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { MouseEvent } from 'react';
 import { useCallback } from 'react';
 
-import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
 export type ThreadMetricsFollowProps = {
 	following: boolean;
 	mid: IMessage['_id'];
 	rid: IMessage['rid'];
-	unread: boolean;
-	mention: boolean;
-	all: boolean;
 };
 
-const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: ThreadMetricsFollowProps) => {
+const ThreadMetricsFollow = ({ following, mid, rid }: ThreadMetricsFollowProps) => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -41,7 +37,6 @@ const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: Thre
 				title={t(following ? 'Following' : 'Not_following')}
 				name={following ? 'bell' : 'bell-off'}
 				onClick={handleFollow}
-				badge={<ThreadMetricsBadge unread={unread} mention={mention} all={all} />}
 			/>
 		</MessageMetricsItem>
 	);

@@ -3,6 +3,7 @@ import type { TFunction } from 'i18next';
 
 type MessageTypeTextOptions = {
 	capitalize?: boolean;
+	isDiscussion?: boolean;
 };
 
 type MessageType = {

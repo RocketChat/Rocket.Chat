@@ -21,6 +21,7 @@ import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import LeftRoomMessageText from './LeftRoomMessageText';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
@@ -103,7 +104,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
-							{messageType.text(t, message)}
+							{message.t === 'ul' ? <LeftRoomMessageText message={message} messageType={messageType} /> : messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>

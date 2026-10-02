@@ -156,7 +156,7 @@ const MessageBoxBase = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<MessageComposerButton primary onClick={onJoin} loading={joinPending}>
+							<MessageComposerButton primary icon='login' onClick={onJoin} loading={joinPending}>
 								{t('Join')}
 							</MessageComposerButton>
 						)}

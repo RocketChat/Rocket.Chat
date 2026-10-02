@@ -1,7 +1,7 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
@@ -30,6 +30,7 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
+	const isDiscussion = !!useUserSubscription(rid)?.prid;
 
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
 
@@ -48,7 +49,9 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 			}
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = isDiscussion
+			? 'Leave_Discussion_Warning'
+			: roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal

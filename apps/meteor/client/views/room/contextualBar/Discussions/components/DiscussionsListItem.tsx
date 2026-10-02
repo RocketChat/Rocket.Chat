@@ -25,7 +25,8 @@ import { clickableItem } from '../../../../../lib/clickableItem';
 export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
-	dcount: number;
+	// Absent until the discussion receives its first message
+	dcount: number | undefined;
 	dlm: Date | undefined;
 	formatDate: (date: Date) => string;
 	username: IDiscussionMessage['u']['username'];
@@ -48,6 +49,19 @@ const DiscussionListItem = ({
 	...props
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
+
+	const getRepliesLabel = () => {
+		if (!dcount) {
+			return t('No_replies');
+		}
+
+		if (!dlm) {
+			return t('__count__replies', { count: dcount });
+		}
+
+		return t('__count__replies__date__', { count: dcount, date: formatDate(dlm) });
+	};
+
 	return (
 		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
 			<MessageLeftContainer>
@@ -61,23 +75,10 @@ const DiscussionListItem = ({
 				<MessageBody clamp={2}>{msg}</MessageBody>
 				<MessageBlock>
 					<MessageMetrics>
-						{!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='discussion' />
-								<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='clock' />
-								<MessageMetricsItemLabel>{dlm ? formatDate(dlm) : undefined}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
+						<MessageMetricsItem>
+							<MessageMetricsItemIcon name='discussion' />
+							<MessageMetricsItemLabel>{getRepliesLabel()}</MessageMetricsItemLabel>
+						</MessageMetricsItem>
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>

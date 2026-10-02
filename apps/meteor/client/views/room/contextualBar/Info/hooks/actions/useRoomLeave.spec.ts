@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook, screen } from '@testing-library/react';
 
 import { useRoomLeave } from './useRoomLeave';
 import { createFakeRoom, createFakeSubscription } from '../../../../../../../tests/mocks/data';
@@ -36,4 +36,18 @@ it('should return null if user does not have subscription', () => {
 
 	const { result } = renderHook(() => useRoomLeave(mockRoom), { wrapper });
 	expect(result.current).toBeNull();
+});
+
+it('should warn about leaving the discussion when the room is a discussion', async () => {
+	const discussion = createFakeRoom({ _id: 'discussion1', t: 'c', prid: 'room1', name: 'discussion1', fname: 'Release planning' });
+	const wrapper = mockAppRoot()
+		.withPermission('leave-c')
+		.withSubscription({ ...mockSubscription, rid: 'discussion1', prid: 'room1' })
+		.withTranslations('en', 'core', { Leave_Discussion_Warning: 'Leave the discussion "{{roomName}}"?' })
+		.build();
+
+	const { result } = renderHook(() => useRoomLeave(discussion), { wrapper });
+	act(() => result.current?.());
+
+	expect(await screen.findByText('Leave the discussion "Release planning"?')).toBeInTheDocument();
 });

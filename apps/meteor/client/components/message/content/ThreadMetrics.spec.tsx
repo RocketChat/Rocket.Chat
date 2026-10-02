@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import ThreadMetrics from './ThreadMetrics';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
+import ThreadMetricsUnreadBadge from './ThreadMetricsUnreadBadge';
 
 const toggleFollowMock =
 	(done: jest.DoneCallback | (() => undefined)) =>
@@ -41,6 +42,8 @@ const mockedTranslations = [
 	'en',
 	'core',
 	{
+		__count__followers_one: '{{count}} follower',
+		__count__followers_other: '{{count}} followers',
 		Follower_one: 'follower',
 		Follower_other: 'followers',
 		__count__replies__date__: '{{count}} replies {{date}}',
@@ -101,11 +104,15 @@ describe('Thread Metrics', () => {
 
 			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
+			expect(screen.getByTitle('Following')).not.toContainElement(badge);
+			// The badge comes after the reply count, at the end of the row
+			const replyCount = screen.getByTitle('Last_message__date__');
+			expect(replyCount.compareDocumentPosition(badge) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
 			expect(screen.getByTitle('followers')).toBeVisible();
 			expect(screen.getByText('3')).toBeVisible();
 
-			const replyButton = screen.getByText('View_thread');
+			const replyButton = screen.getByText('Thread');
 			expect(replyButton).toBeVisible();
 			await userEvent.click(replyButton);
 
@@ -161,7 +168,7 @@ describe('Thread Metrics', () => {
 			expect(screen.getByTitle('followers')).toBeVisible();
 			expect(screen.getByText('3')).toBeVisible();
 
-			const replyButton = screen.getByText('View_thread');
+			const replyButton = screen.getByText('Thread');
 			expect(replyButton).toBeVisible();
 			await userEvent.click(replyButton);
 
@@ -174,7 +181,7 @@ describe('Thread Metrics', () => {
 
 	describe('ThreadMetricsFollow', () => {
 		it('should render not followed', async () => {
-			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
+			render(<ThreadMetricsFollow mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot()
 					.withEndpoint(
 						'POST',
@@ -188,7 +195,7 @@ describe('Thread Metrics', () => {
 			await userEvent.click(followButton);
 		});
 		it('should render followed', async () => {
-			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={true} />, {
+			render(<ThreadMetricsFollow mid='mid' rid='rid' following={true} />, {
 				wrapper: mockAppRoot()
 					.withEndpoint(
 						'POST',
@@ -201,26 +208,37 @@ describe('Thread Metrics', () => {
 			expect(followButton).toBeVisible();
 			await userEvent.click(followButton);
 		});
-		it('should render unread badge', () => {
-			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
+		it('should not render a badge on the follow button', () => {
+			render(<ThreadMetricsFollow mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
 			});
-			const badge = screen.getByTitle('Unread');
-			expect(badge).toBeVisible();
+			expect(screen.queryByRole('status')).not.toBeInTheDocument();
+		});
+	});
+	describe('ThreadMetricsUnreadBadge', () => {
+		it('should render unread badge', () => {
+			render(<ThreadMetricsUnreadBadge unread={true} mention={false} all={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.getByTitle('Unread')).toBeVisible();
 		});
 		it('should render mention-all badge', () => {
-			render(<ThreadMetricsFollow unread={true} mention={false} all={true} mid='mid' rid='rid' following={false} />, {
+			render(<ThreadMetricsUnreadBadge unread={true} mention={false} all={true} />, {
 				wrapper: mockAppRoot().build(),
 			});
-			const badge = screen.getByTitle('mention-all');
-			expect(badge).toBeVisible();
+			expect(screen.getByTitle('mention-all')).toBeVisible();
 		});
 		it('should render Mentions_you badge', () => {
-			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={false} />, {
+			render(<ThreadMetricsUnreadBadge unread={true} mention={true} all={false} />, {
 				wrapper: mockAppRoot().build(),
 			});
-			const badge = screen.getByTitle('Mentions_you');
-			expect(badge).toBeVisible();
+			expect(screen.getByTitle('Mentions_you')).toBeVisible();
+		});
+		it('should render nothing when read', () => {
+			render(<ThreadMetricsUnreadBadge unread={false} mention={false} all={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.queryByRole('status')).not.toBeInTheDocument();
 		});
 	});
 	describe('ThreadMetricsParticipants', () => {
@@ -260,6 +278,7 @@ describe('Thread Metrics', () => {
 			expect(avatars.length).toBe(2);
 			avatars.forEach((avatar) => expect(avatar).toBeVisible());
 			expect(screen.getByText('+1')).toBeVisible();
+			expect(screen.getByRole('img', { name: '3 followers' })).toBeVisible();
 		});
 		it('should render 2 avatars and "+5" text', () => {
 			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7']} />, {

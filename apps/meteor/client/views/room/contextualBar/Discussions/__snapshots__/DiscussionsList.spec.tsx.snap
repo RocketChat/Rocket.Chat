@@ -174,22 +174,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -272,22 +257,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -370,22 +340,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -468,22 +423,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -566,22 +506,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -664,22 +589,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -762,22 +672,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -860,22 +755,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -958,22 +838,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
@@ -1056,22 +921,7 @@ exports[`renders Default with stable structure 1`] = `
                                     <div
                                       class="rcx-message-metrics__item-label"
                                     >
-                                      5
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
+                                      __count__replies__date__
                                     </div>
                                   </div>
                                 </div>
