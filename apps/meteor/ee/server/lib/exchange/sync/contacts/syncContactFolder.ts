@@ -207,7 +207,7 @@ export const syncContactFolder = async (
 		// Only from a complete read, and only after the upserts landed.
 		const pruned = keepExternalIds ? await Contacts.deleteImportedOutsideSet(uid, folderId, keepExternalIds) : undefined;
 
-		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, now, fetchAvatars ? now : undefined);
+		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, now, syncAvatarsEnabled ? now : undefined);
 
 		return {
 			upserted: imported.upsertedCount,
