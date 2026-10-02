@@ -58,7 +58,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			etag: avatarETag,
-			localTime: typeof utcOffset === 'number' && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,

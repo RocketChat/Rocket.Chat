@@ -36,7 +36,7 @@ const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
 			status: <UserStatus.Online />,
 			customStatus: statusText ?? <></>,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			localTime: typeof utcOffset === 'number' && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			bio: bio ? (
 				<UserCardInfo withTruncatedText={false} className={clampStyle} height='x60'>
 					{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
