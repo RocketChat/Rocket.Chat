@@ -33,12 +33,18 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 		identity: ExchangeContactSyncIdentity,
 		cursor: string | undefined,
 		lastSyncAt: Date,
+		avatarsSyncedAt: Date | undefined,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ uid, folderId },
 			{
-				$set: { ...identity, lastSyncAt, ...(cursor ? { cursor } : {}) },
-				$unset: { lastError: 1, lastErrorAt: 1, ...(cursor ? {} : { cursor: 1 }) },
+				$set: { ...identity, lastSyncAt, ...(cursor ? { cursor } : {}), ...(avatarsSyncedAt ? { avatarsSyncedAt } : {}) },
+				$unset: {
+					lastError: 1,
+					lastErrorAt: 1,
+					...(cursor ? {} : { cursor: 1 }),
+					...(avatarsSyncedAt ? {} : { avatarsSyncedAt: 1 }),
+				},
 			},
 			{ upsert: true },
 		);

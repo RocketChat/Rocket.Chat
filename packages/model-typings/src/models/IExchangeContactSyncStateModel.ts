@@ -16,6 +16,7 @@ export interface IExchangeContactSyncStateModel extends IBaseModel<IExchangeCont
 		identity: ExchangeContactSyncIdentity,
 		cursor: string | undefined,
 		lastSyncAt: Date,
+		avatarsSyncedAt: Date | undefined,
 	): Promise<UpdateResult>;
 	setLastError(uid: IUser['_id'], folderId: string, identity: ExchangeContactSyncIdentity, lastError: string): Promise<UpdateResult>;
 	clearCursor(uid: IUser['_id'], folderId: string): Promise<UpdateResult>;
