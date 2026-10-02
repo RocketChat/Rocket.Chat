@@ -1,6 +1,7 @@
 import { ExchangeEwsProvider } from './ExchangeEwsProvider';
 import type { IEwsTransport } from './IEwsTransport';
 import { parseEwsDateTime } from './parseResponse';
+import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
 const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';
@@ -33,6 +34,8 @@ class FakeTransport implements IEwsTransport {
 }
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
+
+const MAILBOX = 'user@corp.example';
 
 describe('parseEwsDateTime', () => {
 	it('parses the EWS UTC format', () => {
@@ -322,6 +325,234 @@ describe('ExchangeEwsProvider', () => {
 			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
 				code: 'unexpected-response',
 			});
+		});
+	});
+
+	describe('listContacts', () => {
+		const DEFAULT_CONTACTS_FOLDER_ID = 'contacts';
+		const GIVEN_NAME = 'John';
+		const SURNAME = 'Doe';
+		const CONTACT_NAME = `${GIVEN_NAME} ${SURNAME}`;
+		const CONTACT_ID = 'c1';
+		const OTHER_CONTACT_ID = 'c2';
+
+		const changes = (inner: string, over: { syncState?: string; last?: boolean } = {}) =>
+			okResponse(
+				`<m:SyncState>${over.syncState ?? 'state-1'}</m:SyncState><m:IncludesLastItemInRange>${
+					over.last === false ? 'false' : 'true'
+				}</m:IncludesLastItemInRange><m:Changes>${inner}</m:Changes>`,
+			);
+
+		const created = (...ids: string[]) => ids.map((id) => `<t:Create><t:Contact><t:ItemId Id="${id}"/></t:Contact></t:Create>`).join('');
+
+		const removed = (...ids: string[]) => ids.map((id) => `<t:Delete><t:ItemId Id="${id}"/></t:Delete>`).join('');
+
+		const contactItems = (...contacts: string[]) => okResponse(`<m:Items>${contacts.join('')}</m:Items>`);
+
+		const contact = (id: string, inner = `<t:DisplayName>${CONTACT_NAME}</t:DisplayName>`) =>
+			`<t:Contact><t:ItemId Id="${id}"/>${inner}</t:Contact>`;
+
+		const listContactsAnswering = async (responses: string[]) => {
+			const transport = new FakeTransport(responses);
+			const page = await new ExchangeEwsProvider(transport).listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			return { page, transport };
+		};
+
+		it('loads the fields in a second call, because the delta only carries ids', async () => {
+			const { page, transport } = await listContactsAnswering([changes(created(CONTACT_ID)), contactItems(contact(CONTACT_ID))]);
+
+			expect(transport.sent[0]).toContain('<m:SyncFolderItems');
+			expect(transport.sent[1]).toContain('<m:GetItem');
+			expect(page.items).toMatchObject([
+				{ kind: 'upsert', externalId: CONTACT_ID, folderId: DEFAULT_CONTACTS_FOLDER_ID, displayName: CONTACT_NAME },
+			]);
+		});
+
+		it('avoids the second call when nothing changed', async () => {
+			const { page, transport } = await listContactsAnswering([changes('')]);
+
+			expect(transport.sent).toHaveLength(1);
+			expect(page.items).toEqual([]);
+		});
+
+		it('reports a deleted contact without having to load it', async () => {
+			const { page, transport } = await listContactsAnswering([changes(removed(CONTACT_ID))]);
+
+			expect(transport.sent).toHaveLength(1);
+			expect(page.items).toEqual([{ kind: 'deleted', externalId: CONTACT_ID, folderId: DEFAULT_CONTACTS_FOLDER_ID }]);
+		});
+
+		it('reads the keyed dictionaries EWS stores addresses and numbers in', async () => {
+			const WORK_EMAIL = 'john@corp.example';
+			const HOME_EMAIL = 'john@home.example';
+			const MOBILE_PHONE = '+5491123456789';
+			const BUSINESS_PHONE = '+541143211000';
+
+			const { page } = await listContactsAnswering([
+				changes(created(CONTACT_ID)),
+				contactItems(
+					contact(
+						CONTACT_ID,
+						`<t:DisplayName>${CONTACT_NAME}</t:DisplayName>
+						<t:EmailAddresses><t:Entry Key="EmailAddress1">${WORK_EMAIL}</t:Entry><t:Entry Key="EmailAddress2">${HOME_EMAIL}</t:Entry></t:EmailAddresses>
+						<t:PhoneNumbers><t:Entry Key="MobilePhone">${MOBILE_PHONE}</t:Entry><t:Entry Key="BusinessPhone2">${BUSINESS_PHONE}</t:Entry></t:PhoneNumbers>`,
+					),
+				),
+			]);
+
+			expect(page.items[0]).toMatchObject({
+				emails: [{ address: WORK_EMAIL }, { address: HOME_EMAIL }],
+				phones: [
+					{ raw: MOBILE_PHONE, label: 'mobile' },
+					{ raw: BUSINESS_PHONE, label: 'business' },
+				],
+			});
+		});
+
+		it('reads the categories, which arrive as a list of strings rather than a dictionary', async () => {
+			const CATEGORIES = ['Suppliers', 'VIP'];
+			const { page } = await listContactsAnswering([
+				changes(created(CONTACT_ID)),
+				contactItems(
+					contact(
+						CONTACT_ID,
+						`<t:DisplayName>${CONTACT_NAME}</t:DisplayName><t:Categories>${CATEGORIES.map(
+							(category) => `<t:String>${category}</t:String>`,
+						).join('')}</t:Categories>`,
+					),
+				),
+			]);
+
+			expect(page.items[0]).toMatchObject({ categories: CATEGORIES });
+		});
+
+		it('names a contact by its parts, then by an address, when EWS sends no display name', async () => {
+			const ONLY_EMAIL = 'only@corp.example';
+			const { page } = await listContactsAnswering([
+				changes(created(CONTACT_ID, OTHER_CONTACT_ID)),
+				contactItems(
+					contact(CONTACT_ID, `<t:GivenName>${GIVEN_NAME}</t:GivenName><t:Surname>${SURNAME}</t:Surname>`),
+					contact(OTHER_CONTACT_ID, `<t:EmailAddresses><t:Entry Key="EmailAddress1">${ONLY_EMAIL}</t:Entry></t:EmailAddresses>`),
+				),
+			]);
+
+			const displayNames = page.items.map((item) => (item.kind === 'upsert' ? item.displayName : undefined));
+			expect(displayNames).toEqual([CONTACT_NAME, ONLY_EMAIL]);
+		});
+
+		it('skips a contact with nothing to resolve it by rather than storing it nameless', async () => {
+			const { page } = await listContactsAnswering([
+				changes(created(CONTACT_ID, OTHER_CONTACT_ID)),
+				contactItems(contact(CONTACT_ID, ''), contact(OTHER_CONTACT_ID)),
+			]);
+
+			expect(page.items.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('never claims to have read the folder whole', async () => {
+			const { page } = await listContactsAnswering([changes(created(CONTACT_ID)), contactItems(contact(CONTACT_ID))]);
+
+			expect(page.coverage).toBe('delta');
+		});
+	});
+
+	describe('getContactPhotos', () => {
+		const CONTACT_ID = 'c1';
+		const PHOTO_ID = 'att-1';
+
+		const JPEG = Buffer.from([0xff, 0xd8, 0xff]).toString('base64');
+
+		const attachmentsOf = (...contacts: { id: string; attachments: string[] }[]) =>
+			okResponse(
+				`<m:Items>${contacts
+					.map(
+						({ id, attachments }) => `<t:Contact><t:ItemId Id="${id}"/><t:Attachments>${attachments.join('')}</t:Attachments></t:Contact>`,
+					)
+					.join('')}</m:Items>`,
+			);
+
+		const fileAttachment = (id: string, isPhoto: boolean) =>
+			`<t:FileAttachment><t:AttachmentId Id="${id}"/><t:IsContactPhoto>${isPhoto}</t:IsContactPhoto></t:FileAttachment>`;
+
+		const attachmentContent = (id: string, content = JPEG) =>
+			`<t:FileAttachment><t:AttachmentId Id="${id}"/><t:Content>${content}</t:Content></t:FileAttachment>`;
+
+		const photoContent = (id: string, over: { content?: string; contentType?: string } = {}) =>
+			okResponse(
+				`<m:Attachments><t:FileAttachment><t:AttachmentId Id="${id}"/>${
+					over.contentType === undefined ? '' : `<t:ContentType>${over.contentType}</t:ContentType>`
+				}<t:Content>${over.content ?? JPEG}</t:Content></t:FileAttachment></m:Attachments>`,
+			);
+
+		const getContactPhotosAnswering = async (responses: string[], ids = [CONTACT_ID]) => {
+			const transport = new FakeTransport(responses);
+			const photos = [];
+			for await (const photo of new ExchangeEwsProvider(transport).getContactPhotos(MAILBOX, ids)) {
+				photos.push(photo);
+			}
+
+			return { photos, transport };
+		};
+
+		it('finds the picture attachment first, then reads its bytes', async () => {
+			const DEFAULT_CONTENT_TYPE = 'image/jpeg';
+
+			const { photos, transport } = await getContactPhotosAnswering([
+				attachmentsOf({ id: CONTACT_ID, attachments: [fileAttachment(PHOTO_ID, true)] }),
+				photoContent(PHOTO_ID),
+			]);
+
+			expect(transport.sent[0]).toContain('<m:GetItem');
+			expect(transport.sent[1]).toContain('<m:GetAttachment');
+			expect(photos).toMatchObject([{ externalId: CONTACT_ID, contentType: DEFAULT_CONTENT_TYPE }]);
+		});
+
+		it('ignores the ordinary attachments a contact may also carry', async () => {
+			const DOCUMENT_ID = 'cv.pdf';
+
+			const { photos, transport } = await getContactPhotosAnswering([
+				attachmentsOf({ id: CONTACT_ID, attachments: [fileAttachment(DOCUMENT_ID, false)] }),
+			]);
+
+			expect(transport.sent).toHaveLength(1);
+			expect(photos).toEqual([]);
+		});
+
+		it('ties each photo back to the contact it was found on', async () => {
+			const OTHER_CONTACT_ID = 'c2';
+			const OTHER_PHOTO_ID = 'att-2';
+
+			const { photos } = await getContactPhotosAnswering(
+				[
+					attachmentsOf(
+						{ id: CONTACT_ID, attachments: [fileAttachment(PHOTO_ID, true)] },
+						{ id: OTHER_CONTACT_ID, attachments: [fileAttachment(OTHER_PHOTO_ID, true)] },
+					),
+					okResponse(`<m:Attachments>${attachmentContent(OTHER_PHOTO_ID)}${attachmentContent(PHOTO_ID)}</m:Attachments>`),
+				],
+				[CONTACT_ID, OTHER_CONTACT_ID],
+			);
+
+			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID, CONTACT_ID]);
+		});
+
+		it('skips a photo above the size cap rather than storing it', async () => {
+			const { photos } = await getContactPhotosAnswering([
+				attachmentsOf({ id: CONTACT_ID, attachments: [fileAttachment(PHOTO_ID, true)] }),
+				photoContent(PHOTO_ID, { content: Buffer.alloc(MAX_CONTACT_PHOTO_BYTES + 1).toString('base64') }),
+			]);
+
+			expect(photos).toEqual([]);
+		});
+
+		it('skips an attachment that came back without content', async () => {
+			const { photos } = await getContactPhotosAnswering([
+				attachmentsOf({ id: CONTACT_ID, attachments: [fileAttachment(PHOTO_ID, true)] }),
+				photoContent(PHOTO_ID, { content: '' }),
+			]);
+
+			expect(photos).toEqual([]);
 		});
 	});
 });
