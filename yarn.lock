@@ -9954,7 +9954,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
     "@rocket.chat/styled": "npm:~0.34.1"
@@ -10014,7 +10014,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/gazzodown": "workspace:^"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
@@ -10100,17 +10100,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/logo@npm:^0.33.2":
-  version: 0.33.2
-  resolution: "@rocket.chat/logo@npm:0.33.2"
+"@rocket.chat/logo@workspace:packages/logo, @rocket.chat/logo@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/logo@workspace:packages/logo"
   dependencies:
-    "@rocket.chat/styled": "npm:^0.34.1"
+    "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@testing-library/dom": "npm:~10.4.2"
+    "@testing-library/react": "npm:~16.3.3"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    eslint: "npm:~10.7.0"
+    jest: "npm:~30.2.0"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    sharp: "npm:~0.35.5"
+    typescript: "npm:~5.9.3"
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 10/e2f5d4f78af0ba87b70aeda47b17390bf707bd8d211e2dda8b64dfb7caa0cd516a11c060411495c8c4ca0716c81bdb7f2f24d37e179f32abc9741b050dc9a4fe
-  languageName: node
-  linkType: hard
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/media-calls@workspace:^, @rocket.chat/media-calls@workspace:ee/packages/media-calls":
   version: 0.0.0-use.local
@@ -10271,7 +10283,7 @@ __metadata:
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/media-calls": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/memo": "workspace:~"
@@ -10858,7 +10870,7 @@ __metadata:
     "@rocket.chat/icons": "npm:^0.50.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/layout": "workspace:~"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:^"
     "@rocket.chat/styled": "npm:~0.34.1"
@@ -11274,7 +11286,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/styled@npm:^0.34.1, @rocket.chat/styled@npm:~0.34.1":
+"@rocket.chat/styled@npm:~0.34.1":
   version: 0.34.1
   resolution: "@rocket.chat/styled@npm:0.34.1"
   dependencies:
@@ -11372,7 +11384,7 @@ __metadata:
     "@rocket.chat/icons": "npm:^0.50.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/layout": "workspace:~"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
     "@rocket.chat/onboarding-ui": "workspace:^"
@@ -11704,7 +11716,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": "npm:^0.50.0"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
@@ -11742,7 +11754,7 @@ __metadata:
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/icons": "npm:^0.50.0"
     "@rocket.chat/layout": "workspace:~"
-    "@rocket.chat/logo": "npm:^0.33.2"
+    "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
@@ -34684,7 +34696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:^0.35.5":
+"sharp@npm:^0.35.5, sharp@npm:~0.35.5":
   version: 0.35.5
   resolution: "sharp@npm:0.35.5"
   dependencies:
