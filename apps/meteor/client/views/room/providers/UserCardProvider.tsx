@@ -158,11 +158,13 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
 			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
-			// trigger, or a menu spawned from it (portaled outside the card's rect).
+			// trigger, or a menu spawned from it (portaled outside the card's rect). Other menus on the page, such as the
+			// composer's, only count while the card's own menu is the one open.
 			const isPointerOverCard = (x: number, y: number) =>
 				isPointInside(card, x, y) ||
 				isPointInside(triggerRef.current, x, y) ||
-				Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y));
+				(!!card.querySelector('[aria-expanded="true"]') &&
+					Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y)));
 
 			const handleMouseMove = (e: MouseEvent) => {
 				if (isPointerOverCard(e.clientX, e.clientY)) {

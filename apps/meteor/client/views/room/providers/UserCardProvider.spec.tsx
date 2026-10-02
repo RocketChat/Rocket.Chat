@@ -147,7 +147,12 @@ it('opens on hover after the intent delay, and not if the pointer leaves first',
 
 		fireEvent.mouseEnter(screen.getByText('hover'));
 		await act(async () => {
-			await jest.advanceTimersByTimeAsync(1000);
+			await jest.advanceTimersByTimeAsync(499);
+		});
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(1);
 		});
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 	} finally {
@@ -323,6 +328,30 @@ it('opens a hover card as a pointer-only preview that neither takes focus nor ma
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 		expect(trigger).toHaveFocus();
 		expect(trigger).not.toHaveAttribute('aria-expanded');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('closes when the pointer moves onto a menu that the card did not open', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<div role='menu' data-testid='composer-menu' />
+			</UserCardProvider>,
+		);
+
+		jest.spyOn(screen.getByTestId('composer-menu'), 'getBoundingClientRect').mockReturnValue(new DOMRect(400, 400, 200, 200));
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
 	} finally {
 		jest.useRealTimers();
 	}
