@@ -113,10 +113,7 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 				)}
 			</CallPanelHeader>
 
-			{/* Said out loud, because the rows are Fuselage `Option`s — `li` elements in a plain box, which made
-			    them neither countable nor individually referrable.
-
-			    A list per group rather than one list around everything: the dividers between the groups are not
+			{/* A list per group rather than one list around everything: the dividers between the groups are not
 			    list items, and a `list` whose children are not `listitem`s is a list a screen reader may skip or
 			    miscount. Each group is its own list, named by the divider that heads it, and the box around them
 			    is a `group` so the panel still has one handle. */}
