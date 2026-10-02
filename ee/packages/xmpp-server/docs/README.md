@@ -250,6 +250,11 @@ requirement keeps its number with the text struck through and a note. Defects ar
 `D1`, `D2`, … the same way and are removed when fixed. Tests, plans, commits and PRs cite
 them as `specs/hosted-muc.md R4` or `hosted-muc D1`.
 
+Open questions, in intents and specs alike, are numbered `Q1`, `Q2`, … and never renumbered,
+so a tracker issue or a review comment can cite `federation-authorization Q2`. An answered
+question keeps its number with the text struck through and a pointer to where the answer
+went: a requirement, a constraint, or an ADR.
+
 Every `D` heading is an anchor. The skipped test that pins the defect, end-to-end or
 integration, carries a comment with the relative path and the anchor, for example
 `// Known defect: ../../docs/specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed`.

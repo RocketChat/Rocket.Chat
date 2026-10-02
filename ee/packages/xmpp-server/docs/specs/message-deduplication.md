@@ -72,10 +72,10 @@ an id once".
 
 ## Open questions
 
-- Should Rocket.Chat stamp its outbound room messages with `<origin-id/>` (R7), so that R3
-  also holds in a room that rewrites the `id` attribute? Inbound corrections did not need it:
-  they find the message they replace by its derived `_id`
-  ([ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
+- **Q1** Should Rocket.Chat stamp its outbound room messages with `<origin-id/>` (R7), so
+  that R3 also holds in a room that rewrites the `id` attribute? Inbound corrections did not
+  need it: they find the message they replace by its derived `_id` ([ADR
+  0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
 
 ## References
 

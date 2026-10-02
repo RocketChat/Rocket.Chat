@@ -153,10 +153,10 @@ is deleted in Rocket.Chat".
 
 ## Open questions
 
-- Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and
+- **Q1** Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and
   ignores it.
-- Should the room send history on join from Rocket.Chat's message history, or is that a job
-  for MAM (pending triage)?
+- **Q2** Should the room send history on join from Rocket.Chat's message history, or is that
+  a job for MAM (pending triage)?
 
 ## References
 

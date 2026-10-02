@@ -84,9 +84,9 @@ None.
 
 ## Open questions
 
-- Should an error stanza (`<message type='error'/>`) from the peer be surfaced to the
+- **Q1** Should an error stanza (`<message type='error'/>`) from the peer be surfaced to the
   sender? See [s2s-connectivity](s2s-connectivity.md) open questions.
-- Should a message to an unknown local user be answered `item-not-found` or
+- **Q2** Should a message to an unknown local user be answered `item-not-found` or
   `service-unavailable`, as RFC 6121 §8.5 suggests for a non-existent account?
 
 ## References

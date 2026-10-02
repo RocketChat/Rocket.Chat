@@ -141,13 +141,13 @@ Defects that show in remote rooms but are owned elsewhere:
 
 ## Open questions
 
-- Should a remote room that is public and open (disco#info `muc_public` and `muc_open`) be
-  mirrored as a public channel, the way Matrix maps join rules, following later
-  configuration changes (status 104)?
-- Should remote occupants become members of the mirrored channel, so the member list is
-  truthful, or stay as authors only?
-- When the remote room drops a session (room destroyed, kick, server restart), should the
-  service rejoin, and after how long?
+- **Q1** Should a remote room that is public and open (disco#info `muc_public` and
+  `muc_open`) be mirrored as a public channel, the way Matrix maps join rules, following
+  later configuration changes (status 104)?
+- **Q2** Should remote occupants become members of the mirrored channel, so the member list
+  is truthful, or stay as authors only?
+- **Q3** When the remote room drops a session (room destroyed, kick, server restart), should
+  the service rejoin, and after how long?
 
 ## References
 

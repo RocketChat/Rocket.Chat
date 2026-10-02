@@ -62,13 +62,14 @@ None; not implemented.
 
 ## Open questions
 
-- Rooms: should a local member's typing be sent to hosted-room occupants and the remote
-  room, and remote occupants' typing shown in the mirrored channel? Clients send chat states
-  to rooms; rooms reflect them to every occupant, which in a large room is a lot of traffic.
-- Should `user-recording` and `user-uploading` be sent as `composing`?
-- Rocket.Chat's typing event fires repeatedly while the user types; R1 needs the service to
-  collapse that into one `<composing/>` until the state changes. Is the broker event
-  already debounced enough?
+- **Q1** Rooms: should a local member's typing be sent to hosted-room occupants and the
+  remote room, and remote occupants' typing shown in the mirrored channel? Clients send chat
+  states to rooms; rooms reflect them to every occupant, which in a large room is a lot of
+  traffic.
+- **Q2** Should `user-recording` and `user-uploading` be sent as `composing`?
+- **Q3** Rocket.Chat's typing event fires repeatedly while the user types; R1 needs the
+  service to collapse that into one `<composing/>` until the state changes. Is the broker
+  event already debounced enough?
 
 ## References
 

@@ -56,15 +56,16 @@ None; not implemented.
 
 ## Open questions
 
-- What does "delivered" map to on the Rocket.Chat side? Options: a new per-message field
-  read by the client, reuse of the read-receipt feature as "delivered" when
+- **Q1** What does "delivered" map to on the Rocket.Chat side? Options: a new per-message
+  field read by the client, reuse of the read-receipt feature as "delivered" when
   `Message_Read_Receipt_Enabled` is on, or nothing visible and only the XMPP side benefits.
-- R2 answers on behalf of the user as soon as the message is stored. Should the receipt wait
-  for a user session, which XEP-0184 intends, or is storage the right moment for a server
-  that is the endpoint?
-- Should hosted rooms relay receipt requests and receipts between occupants, as some rooms do?
-- Does the receipt need `<origin-id/>` ([message-deduplication R7](message-deduplication.md))
-  so a remote room's rewritten ids do not break R3?
+- **Q2** R2 answers on behalf of the user as soon as the message is stored. Should the
+  receipt wait for a user session, which XEP-0184 intends, or is storage the right moment
+  for a server that is the endpoint?
+- **Q3** Should hosted rooms relay receipt requests and receipts between occupants, as some
+  rooms do?
+- **Q4** Does the receipt need `<origin-id/>` ([message-deduplication
+  R7](message-deduplication.md)) so a remote room's rewritten ids do not break R3?
 
 ## References
 

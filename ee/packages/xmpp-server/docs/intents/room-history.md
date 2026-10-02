@@ -44,10 +44,10 @@ question below:
 
 ## Open questions
 
-- Discussion history on join only, MAM only, or both? Clients that support MAM skip the
-  join history when the room advertises `urn:xmpp:mam:2`.
-- How much history on join: a fixed count, the client's `<history/>` request, or the
+- **Q1** Discussion history on join only, MAM only, or both? Clients that support MAM skip
+  the join history when the room advertises `urn:xmpp:mam:2`.
+- **Q2** How much history on join: a fixed count, the client's `<history/>` request, or the
   room's retention?
-- Does MAM on user JIDs (a remote user querying their DM archive with a Rocket.Chat user)
-  belong to this intent or is it never wanted?
-- Where do stanza ids come from for messages stored before this ships?
+- **Q3** Does MAM on user JIDs (a remote user querying their DM archive with a Rocket.Chat
+  user) belong to this intent or is it never wanted?
+- **Q4** Where do stanza ids come from for messages stored before this ships?

@@ -124,10 +124,11 @@ None pinned by a test.
 
 ## Open questions
 
-- `message.error` is declared in the event map but never emitted: an error stanza from a
-  peer (for example `remote-server-not-found` for a message we sent) is dropped by the chat
-  parser. Should the sender be told?
-- Should the server send XEP-0199 pings on idle outbound routes instead of closing them?
+- **Q1** `message.error` is declared in the event map but never emitted: an error stanza
+  from a peer (for example `remote-server-not-found` for a message we sent) is dropped by
+  the chat parser. Should the sender be told?
+- **Q2** Should the server send XEP-0199 pings on idle outbound routes instead of closing
+  them?
 
 ## References
 

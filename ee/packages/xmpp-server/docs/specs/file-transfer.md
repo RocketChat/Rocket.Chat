@@ -72,19 +72,19 @@ None; not implemented.
 
 ## Open questions
 
-- R1 needs a URL that works without authentication. A signed link with an expiry, a public
-  file setting, or a dedicated federation download endpoint? Who may fetch it and for how
-  long?
-- R2: fetch and store, or render as a link and let the client fetch? Fetching means
+- **Q1** R1 needs a URL that works without authentication. A signed link with an expiry, a
+  public file setting, or a dedicated federation download endpoint? Who may fetch it and for
+  how long?
+- **Q2** R2: fetch and store, or render as a link and let the client fetch? Fetching means
   Rocket.Chat makes outbound HTTPS requests to arbitrary hosts named by remote users.
-- XEP-0234 sessions run between full JIDs and need a transport: in-band bytestreams
+- **Q3** XEP-0234 sessions run between full JIDs and need a transport: in-band bytestreams
   (XEP-0261) work over S2S alone but are slow; SOCKS5 bytestreams (XEP-0260) need a proxy
-  (XEP-0065) reachable by both ends. Which does the end product accept, and does
-  Rocket.Chat have to run a proxy?
-- Local users have no resource on the wire outside remote rooms
-  ([addressing R7](addressing.md)). Jingle needs one; does the DM path start advertising a
-  resource, and what does that mean for presence?
-- When both paths apply to one attachment (R1 and R4), is the file sent twice?
+  (XEP-0065) reachable by both ends. Which does the end product accept, and does Rocket.Chat
+  have to run a proxy?
+- **Q4** Local users have no resource on the wire outside remote rooms ([addressing
+  R7](addressing.md)). Jingle needs one; does the DM path start advertising a resource, and
+  what does that mean for presence?
+- **Q5** When both paths apply to one attachment (R1 and R4), is the file sent twice?
 
 ## References
 

@@ -106,13 +106,13 @@ a correction".
 
 ## Open questions
 
-- When a correction arrives for a message Rocket.Chat does not have (sent before the room
-  was mirrored), should it be stored as a new message, as today, or dropped?
-- Should the edit history Rocket.Chat keeps record the correction's stanza id?
-- Do `Message_AllowEditing` and `Message_AllowEditing_BlockEditInMinutes` apply to inbound
-  corrections, or does the sender's server decide?
-- Under XEP-0258 security labels, may a correction carry a different label than the message
-  it replaces, or a lower one? The edit history copy must keep the original's label.
+- **Q1** When a correction arrives for a message Rocket.Chat does not have (sent before the
+  room was mirrored), should it be stored as a new message, as today, or dropped?
+- **Q2** Should the edit history Rocket.Chat keeps record the correction's stanza id?
+- **Q3** Do `Message_AllowEditing` and `Message_AllowEditing_BlockEditInMinutes` apply to
+  inbound corrections, or does the sender's server decide?
+- **Q4** Under XEP-0258 security labels, may a correction carry a different label than the
+  message it replaces, or a lower one? The edit history copy must keep the original's label.
 
 ## References
 

@@ -96,9 +96,9 @@ the presence flag, so the running server keeps enforcing the old list. Where:
 
 ## Open questions
 
-- Should a missing certificate refuse to start instead of degrading to cleartext? See
+- **Q1** Should a missing certificate refuse to start instead of degrading to cleartext? See
   [ADR 0004](../adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md).
-- Should the dialback secret be a setting, so verifications survive a restart?
+- **Q2** Should the dialback secret be a setting, so verifications survive a restart?
 
 ## References
 

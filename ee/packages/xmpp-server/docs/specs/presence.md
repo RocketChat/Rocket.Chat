@@ -88,9 +88,9 @@ is fixed. Where: `src/service/helpers/xmppUser.ts`.
 
 ## Open questions
 
-- Should the service send the current presence of every user with XMPP DMs when a peer
-  domain connects, so contacts learn the status without waiting for a change?
-- Should `unavailable` be sent for every user when the service stops?
+- **Q1** Should the service send the current presence of every user with XMPP DMs when a
+  peer domain connects, so contacts learn the status without waiting for a change?
+- **Q2** Should `unavailable` be sent for every user when the service stops?
 
 ## References
 

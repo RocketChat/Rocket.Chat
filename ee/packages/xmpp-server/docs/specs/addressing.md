@@ -77,7 +77,7 @@ None.
 
 ## Open questions
 
-- Occupants of a remote room that discloses no real JID are stored under a synthetic
+- **Q1** Occupants of a remote room that discloses no real JID are stored under a synthetic
   `<nick>#<room JID>` address (R9). It is a syntactically valid JID but routes nowhere.
   Should such users be marked so the client never offers to DM them?
 

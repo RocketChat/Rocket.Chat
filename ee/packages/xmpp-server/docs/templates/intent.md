@@ -23,4 +23,5 @@ model that must not change, deadlines or product requirements.
 
 ## Open questions
 
-Everything that has to be answered before this becomes a spec, one per bullet.
+Everything that has to be answered before this becomes a spec, one per bullet, numbered
+`**Q1**`, `**Q2**`, … and never renumbered.

@@ -49,7 +49,8 @@ be linked. Say what happens, what causes it when known, and which skipped test p
 
 ## Open questions
 
-Decisions nobody has made yet, one per bullet.
+Decisions nobody has made yet, one per bullet, numbered `**Q1**`, `**Q2**`, … and never
+renumbered.
 
 ## References
 
