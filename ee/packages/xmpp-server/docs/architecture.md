@@ -299,7 +299,7 @@ Shared setup:
 yarn workspace @rocket.chat/xmpp-server build
 # the service must know how to dial back to the peers
 XMPP_DNS_OVERRIDES=$(yarn workspace @rocket.chat/xmpp-server-service loadtest overrides --domains 4) \
-  yarn workspace @rocket.chat/xmpp-server-service ms2
+  yarn workspace @rocket.chat/xmpp-server-service ms
 RC_USER=admin RC_PASSWORD=… yarn workspace @rocket.chat/xmpp-server-service loadtest run --scenario dm --mode max
 ```
 
