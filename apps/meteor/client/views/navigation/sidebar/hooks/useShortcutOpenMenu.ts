@@ -8,11 +8,11 @@ export const useShortcutOpenMenu = (): RefCallback<HTMLElement> =>
 		(node: HTMLElement) =>
 			tinykeys(node, {
 				Alt: (event) => {
-					if (!(event.target as HTMLElement).className.includes('rcx-sidebar-item')) {
+					if (!(event.target instanceof HTMLElement) || !event.target.classList.contains('rcx-item__link')) {
 						return;
 					}
 					event.preventDefault();
-					(event.target as HTMLElement).querySelector('button')?.click();
+					event.target.closest('.rcx-item')?.querySelector<HTMLButtonElement>('.rcx-item__actions--reveal-hover button')?.click();
 				},
 			}),
 		[],
