@@ -1,14 +1,15 @@
-import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useMemo, useRef, useState } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 
 const UserCard = lazy(() => import('../UserCard'));
+
+const cardTriggerProps = { 'aria-haspopup': 'dialog' } as const;
 
 export type UserCardProviderProps = { children: ReactNode };
 
@@ -18,8 +19,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 	const triggerRef = useRef<Element | null>(null);
 	const state = useOverlayTriggerState({});
-	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
-	delete triggerProps.onPress;
 
 	const { openTab } = useRoomToolbox();
 
@@ -39,29 +38,28 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
-	const handleSetUserCard = useCallback(
-		(e: UIEvent, username: string) => {
-			triggerRef.current = e.target as Element | null;
-			state.open();
-			setUserCardData({
-				username,
-				rid: room._id,
-				onOpenUserInfo: () => openUserInfo(username),
-				onClose: () => setUserCardData(null),
-			});
-		},
-		[openUserInfo, room._id, state],
-	);
+	const closeUserCard = useStableCallback(() => setUserCardData(null));
 
+	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
+		triggerRef.current = e.target as Element | null;
+		state.open();
+		setUserCardData({
+			username,
+			rid: room._id,
+			onOpenUserInfo: () => openUserInfo(username),
+			onClose: closeUserCard,
+		});
+	});
+
+	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
 		() => ({
 			openUserCard: handleSetUserCard,
-			closeUserCard: () => setUserCardData(null),
-			triggerProps,
-			triggerRef,
-			state,
+			openUserInfo,
+			closeUserCard,
+			triggerProps: cardTriggerProps,
 		}),
-		[handleSetUserCard, state, triggerProps],
+		[handleSetUserCard, openUserInfo, closeUserCard],
 	);
 
 	return (
@@ -70,7 +68,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			{state.isOpen && userCardData && (
 				<Suspense fallback={null}>
 					<Popover placement='top left' triggerRef={triggerRef} state={state}>
-						<UserCard {...userCardData} {...overlayProps} />
+						<UserCard {...userCardData} />
 					</Popover>
 				</Suspense>
 			)}
