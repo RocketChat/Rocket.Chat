@@ -98,11 +98,7 @@ export const useUserInfoActions = ({
 			...(editProfile && { editProfile }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
-			// Closes the 'communication' block. Kept adjacent to its peers so the
-			// group survives the actionSpread slice below: the first `size` entries
-			// leave the menu to become standalone buttons, and a straggler declared
-			// after the other groups would have its section rebuilt at the bottom,
-			// below the danger items.
+			// Menu sections follow the order in which each type first appears here.
 			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && muteUser && { muteUser }),
 			...(!isMember && addUser && { addUser }),
@@ -158,7 +154,6 @@ export const useUserInfoActions = ({
 				return acc;
 			}
 
-			// GenericMenu translates section titles that are i18n keys
 			const newSection = { id: group, title: group === 'privileges' ? 'Manage_room_roles' : '', items: [newItem] };
 			acc.push(newSection);
 
