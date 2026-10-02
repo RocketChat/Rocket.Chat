@@ -1,6 +1,16 @@
-import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { getUserDisplayNames } from '@rocket.chat/core-typings';
-import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import {
+	Icon,
+	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemIcon,
+	ItemMedia,
+	ItemRow,
+	ItemTitle,
+} from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
@@ -45,54 +55,43 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 	const canRing = status !== 'joined' && !ringing;
 
 	return (
-		<Option>
-			<OptionAvatar>
+		<Item role='listitem' size='medium' inset='lg'>
+			<ItemMedia>
 				<UserAvatar username={member.username} size='x28' />
-			</OptionAvatar>
-			{renderMemberStatus && <OptionColumn>{renderMemberStatus(member._id)}</OptionColumn>}
-			<OptionContent>
-				<Box display='flex' alignItems='center'>
-					<Box withTruncatedText>{nameOrUsername}</Box>
-					{displayUsername && (
-						<Box marginInlineStart={4} color='hint' withTruncatedText>
-							{displayUsername}
-						</Box>
-					)}
+			</ItemMedia>
+			{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
+					</ItemTitle>
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
-						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.
-						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
-							<Icon name='balloon-off' size='x16' />
-							<VisuallyHidden>{t('No_chat_access')}</VisuallyHidden>
-						</Box>
+						<ItemIcon label={t('No_chat_access')} title={t('No_chat_access')}>
+							<Icon name='balloon-off' size='x16' color='hint' />
+						</ItemIcon>
 					)}
-				</Box>
-				{status !== 'joined' && (
-					<Box fontScale='c1' color='hint'>
-						{t(ringing ? 'Ringing' : statusLabel[status])}
-					</Box>
-				)}
-			</OptionContent>
-			{canRingUsers && canRing && (
-				<OptionColumn>
-					{/* The button stays until the server says the phone is ringing, which is a round trip away — so
-					    while the request is out it refuses a second one. Clicking three times rang three times. */}
-					<IconButton
-						small
-						icon='phone'
-						title={t('Ring__name__', { name: nameOrUsername })}
-						aria-label={t('Ring__name__', { name: nameOrUsername })}
-						disabled={ringRequested}
-						onClick={() => onRing(member._id)}
-					/>
-				</OptionColumn>
+				</ItemRow>
+				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
+			</ItemContent>
+			{((canRingUsers && canRing) || controls) && (
+				<ItemActions>
+					{canRingUsers && canRing && (
+						// The button stays until the server says the phone is ringing, which is a round trip away — so
+						// while the request is out it refuses a second one. Clicking three times rang three times.
+						<IconButton
+							small
+							icon='phone'
+							title={t('Ring__name__', { name: nameOrUsername })}
+							aria-label={t('Ring__name__', { name: nameOrUsername })}
+							disabled={ringRequested}
+							onClick={() => onRing(member._id)}
+						/>
+					)}
+					{controls && <CallParticipantControls name={nameOrUsername} {...controls} />}
+				</ItemActions>
 			)}
-			{controls && (
-				<OptionColumn>
-					<CallParticipantControls name={nameOrUsername} {...controls} />
-				</OptionColumn>
-			)}
-		</Option>
+		</Item>
 	);
 };
 
