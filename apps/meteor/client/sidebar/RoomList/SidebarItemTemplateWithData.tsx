@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, IconButton, ItemActions, ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -38,7 +38,6 @@ type RoomListRowProps = {
 			threadUnread?: boolean;
 			unread?: boolean;
 			selected?: boolean;
-			is?: string;
 		} & AllHTMLAttributes<HTMLElement>
 	>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
@@ -86,10 +85,9 @@ const SidebarItemTemplateWithData = ({
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
 	const icon = (
-		<SidebarItemIcon
-			highlighted={highlighted}
-			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
-		/>
+		<ItemIcon>
+			<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />
+		</ItemIcon>
 	);
 
 	const titleIcon = getSubscriptionDraft(room) ? (
@@ -99,12 +97,12 @@ const SidebarItemTemplateWithData = ({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarActions>
-					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarActions>
+				<ItemActions>
+					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
+					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+				</ItemActions>
 			),
-		[videoConfActions],
+		[t, videoConfActions],
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
@@ -115,7 +113,6 @@ const SidebarItemTemplateWithData = ({
 
 	return (
 		<SidebarItemTemplate
-			is='a'
 			id={id}
 			data-unread={highlighted}
 			unread={highlighted}
