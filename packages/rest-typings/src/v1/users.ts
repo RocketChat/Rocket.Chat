@@ -156,7 +156,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: UsersListParamsGET) => PaginatedResult<{
-			users: DefaultUserInfo[];
+			users: (DefaultUserInfo & Pick<Partial<IUser>, 'customFields'>)[];
 		}>;
 	};
 

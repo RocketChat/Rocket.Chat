@@ -675,6 +675,11 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 			const canViewFullOtherUserInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
+			const { customFields, includeCustomFields } = this.queryParams;
+
+			if ((customFields || includeCustomFields) && !canViewFullOtherUserInfo) {
+				return API.v1.forbidden();
+			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -719,6 +724,12 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
+			if (customFields) {
+				for (const [key, value] of Object.entries(customFields)) {
+					nonEmptyQuery[`customFields.${key}`] = value;
+				}
+			}
+
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			if (hidden && queryFiltersStatus(query)) {
@@ -750,7 +761,10 @@ API.v1.addRoute(
 						$match: nonEmptyQuery,
 					},
 					{
-						$project: inclusiveFields,
+						$project: {
+							...inclusiveFields,
+							...(includeCustomFields && { customFields: 1 }),
+						},
 					},
 					{
 						$addFields: {
