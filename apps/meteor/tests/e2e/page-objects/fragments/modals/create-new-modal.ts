@@ -61,6 +61,32 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
+	get checkboxAbacManaged(): Locator {
+		return this.root.locator('label', { hasText: 'ABAC Managed' });
+	}
+
+	get btnNext(): Locator {
+		return this.root.getByRole('button', { name: 'Next', exact: true });
+	}
+
+	getStepIndicator(step: number, total: number): Locator {
+		return this.root.getByText(`Step ${step} of ${total}`);
+	}
+
+	async selectAttribute(key: string, values: string[]) {
+		await this.root.getByPlaceholder('Search attribute').last().click();
+		await this.listbox.selectOption(key, true);
+		await this.root.getByPlaceholder('Select attribute values').last().click();
+		for (const value of values) {
+			await this.listbox.selectOption(value, true);
+		}
+		await this.page?.keyboard.press('Escape');
+	}
+
+	getPreviewGroup(name: 'Compliant' | 'Non-compliant'): Locator {
+		return this.root.getByRole('region', { name, exact: true });
+	}
+
 	async inviteUserToChannel(username: string) {
 		await this.inputAddMembers.click();
 		await this.inputAddMembers.fill(username);
