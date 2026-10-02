@@ -1,0 +1,28 @@
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_e3be77173bfc57::t_9679774e72d788 126-134
+ee/packages/xmpp-server/tests/integration/muc.spec.ts
+  s_e3be77173bfc57::t_9679774e72d788 187-206
+ee/packages/xmpp-server/CLAUDE.md
+  s_e3be77173bfc57::t_88c679cf105efa 21-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4a6164da20c6febc0aebf6d3b77f129eda4ebff7",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e3be77173bfc57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "260790bd-e0fd-4a75-a152-6a1ada9fde97",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

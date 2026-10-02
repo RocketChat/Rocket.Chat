@@ -1,0 +1,66 @@
+packages/ui-contexts/src/types/SubscriptionWithRoom.ts
+  s_35ff60f1f47ba0::t_6ec4feadab798d 17
+ee/packages/xmpp-server/docs/architecture.md
+  s_35ff60f1f47ba0::t_881e5547ce8f60 231-237
+apps/meteor/client/lib/rooms/roomTypes/public.ts
+  s_35ff60f1f47ba0::t_c0ffc549b346f7 88
+  s_35ff60f1f47ba0::t_6699b55c9a5b2e 53
+  s_35ff60f1f47ba0::t_353d6dc6bc7f2d 2
+apps/meteor/server/lib/rooms/roomTypes/public.ts
+  s_35ff60f1f47ba0::t_6d2ae3aa54d960 53
+  s_35ff60f1f47ba0::t_88cdd010c1ebd7 3
+apps/meteor/client/lib/rooms/roomTypes/private.ts
+  s_35ff60f1f47ba0::t_3983e116a0b691 99
+  s_35ff60f1f47ba0::t_354e0cd2b64fbd 2
+  s_35ff60f1f47ba0::t_83f7ef7ca68d13 55
+apps/meteor/server/lib/rooms/roomTypes/private.ts
+  s_35ff60f1f47ba0::t_231eaf7a017e99 53
+  s_35ff60f1f47ba0::t_b8bef9197d298f 2
+apps/meteor/client/lib/rooms/roomTypes/direct.ts
+  s_35ff60f1f47ba0::t_b078dca1f6cc5a 125
+  s_35ff60f1f47ba0::t_bc06e685e07b30 2
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussionRoute.tsx
+  s_35ff60f1f47ba0::t_c65463bdf21446 30
+apps/meteor/client/cachedStores/SubscriptionsCachedStore.ts
+  s_35ff60f1f47ba0::t_c3d52c76394ca3 68
+apps/meteor/lib/publishFields.ts
+  s_35ff60f1f47ba0::t_dada72ff110252 122
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussion.tsx
+  s_35ff60f1f47ba0::t_e32197ce754e2f 11,15
+  s_35ff60f1f47ba0::t_3357ac8d2aa493 2
+apps/meteor/client/cachedStores/RoomsCachedStore.ts
+  s_35ff60f1f47ba0::t_7a7c41253f4fbd 56
+apps/meteor/client/hooks/useRoomIcon.spec.ts
+  s_35ff60f1f47ba0::t_09a05889aa1793 62
+  s_35ff60f1f47ba0::t_55f9e03e8ec234 37-42
+apps/meteor/lib/rooms/adminFields.ts
+  s_35ff60f1f47ba0::t_751abc3b86b475 33
+apps/meteor/client/hooks/useRoomIcon.tsx
+  s_35ff60f1f47ba0::t_47edaed47dab77 2
+  s_35ff60f1f47ba0::t_12d5eb9fa8054c 18
+ee/packages/xmpp-server/docs/operations.md
+  s_35ff60f1f47ba0::t_3200a5892050f4 144
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_35ff60f1f47ba0::t_09f25b0f5a5566 53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2317f06d6ad3eae61a43b8e7a3f5c95ca324ec08",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_35ff60f1f47ba0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbf28915-4ee9-4f6e-9a30-affdb5395610",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

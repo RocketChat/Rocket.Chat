@@ -1,0 +1,29 @@
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_d2f05a72dbdc71::t_9c78cc87e965d1 131
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_d2f05a72dbdc71::t_8eac8db1573ca6 683
+  s_d2f05a72dbdc71::t_1f7109bb3b3140 694,697-699
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_d2f05a72dbdc71::t_a5fa2ea65de2b4 38-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9f01ec4b3d14f84e1abe47bd4e038618bbcc7103",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_d2f05a72dbdc71": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "688959aa-6c5e-4df9-91bb-8ab8585a4682",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

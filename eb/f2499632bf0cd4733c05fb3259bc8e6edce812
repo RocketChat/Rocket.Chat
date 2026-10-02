@@ -1,0 +1,37 @@
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_35ff60f1f47ba0::t_86da0253dfd161 52
+  s_35ff60f1f47ba0::t_34d56952c9f0a0 48
+  s_35ff60f1f47ba0::t_a9a3afd7715153 49-50
+  s_35ff60f1f47ba0::t_0a239c537797fd 144-146
+ee/packages/xmpp-server/docs/adr/0008-only-dedicated-xmpp-rooms-are-exposed.md
+  s_35ff60f1f47ba0::t_d34a0e50dccfaf 43-47
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_35ff60f1f47ba0::t_1e3186728428aa 794
+ee/packages/xmpp-server/docs/architecture.md
+  s_35ff60f1f47ba0::t_86da0253dfd161 186-187
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_35ff60f1f47ba0::t_d2fb65bd5823b4 73,78,110,175,208,267
+  s_35ff60f1f47ba0::t_bb822421fe91f0 85
+  s_35ff60f1f47ba0::t_ff17ad275468eb 115-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ebf2499632bf0cd4733c05fb3259bc8e6edce812",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_35ff60f1f47ba0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbf28915-4ee9-4f6e-9a30-affdb5395610",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

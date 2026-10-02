@@ -1,0 +1,48 @@
+ee/packages/xmpp-server/docs/adr/0008-only-dedicated-xmpp-rooms-are-exposed.md
+  s_676495b213565f::t_58f0f52e9f8250 1-44
+ee/packages/xmpp-server/docs/adr/0012-core-state-is-ephemeral-and-rebuilt-from-the-database.md
+  s_676495b213565f::t_b7ee4214bfd350 1-42
+ee/packages/xmpp-server/docs/adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md
+  s_676495b213565f::t_1e3809f8d69640 1-48
+ee/packages/xmpp-server/docs/adr/0001-protocol-core-has-no-rocketchat-dependency.md
+  s_676495b213565f::t_f2505c89b3d95d 1-49
+ee/packages/xmpp-server/docs/adr/0002-integration-service-runs-only-as-a-microservice.md
+  s_676495b213565f::t_7e40f27561184f 1-38
+ee/packages/xmpp-server/docs/adr/0003-xml-via-ltx-and-xmpp-jid.md
+  s_676495b213565f::t_f4546e22df1492 1-34
+ee/packages/xmpp-server/docs/adr/0009-one-remote-muc-session-per-local-member.md
+  s_676495b213565f::t_406e3c52eea3ea 1-48
+ee/packages/xmpp-server/docs/adr/0013-reconfigure-restarts-the-listener-only-for-listener-settings.md
+  s_676495b213565f::t_e517c65ab69b30 1-38
+ee/packages/xmpp-server/docs/adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md
+  s_676495b213565f::t_aa6bb1e1b06868 1-48
+ee/packages/xmpp-server/docs/adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md
+  s_676495b213565f::t_66c84144f8bc11 1-42
+ee/packages/xmpp-server/docs/adr/0010-presence-subscriptions-auto-accepted-only-from-dm-partners.md
+  s_676495b213565f::t_c5e4da1532311f 1-35
+ee/packages/xmpp-server/docs/adr/0005-peer-certificates-are-matched-on-dnsname-only.md
+  s_676495b213565f::t_8017241dfaf64e 1-31
+ee/packages/xmpp-server/docs/adr/0011-domain-normalization-is-idna-and-lowercase.md
+  s_676495b213565f::t_e4c2b9b1dd3d9a 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "495ca25d0d9eae72883fa9dd6e0d1febc5bdc8d3",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
