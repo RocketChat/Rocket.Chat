@@ -40,8 +40,8 @@
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~24.13.2",
-		"eslint": "~9.39.5",
+		"@types/node": "~24.13.6",
+		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
 		"mongodb-memory-server": "^10.2.3",
 		"typescript": "~5.9.3"

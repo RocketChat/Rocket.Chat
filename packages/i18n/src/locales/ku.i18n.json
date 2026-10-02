@@ -314,7 +314,6 @@
   "archive-room": "Room Rooms",
   "archive-room_description": "Destûrkirina arşîvê kanalek",
   "Archived": "arşîvkirin",
-  "are_typing": "ئەنوسن",
   "Are_you_sure": "Piştrastin?",
   "Are_you_sure_you_want_to_delete_your_account": "Ma tu dizanî, tu dixwazî ​​hesabê te jê bibî?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Ma hûn bawer dikin ku hûn dixwazin întegrasyonê ya Facebookê ne?",
@@ -1339,7 +1338,6 @@
   "IRC_Port": "Porta ku girêdayî servera IRC ya girêdayî ye.",
   "IRC_Private_Message": "Hilberîna fermandariya PRIVMSG.",
   "IRC_Quit": "Output li ser rûniştina IRC vekin.",
-  "is_typing": "ئەنوسێ",
   "Issue_Links": "Nîqaşên tracker",
   "IssueLinks_Incompatible": "Baweriyê: ev yek û 'Hemx Pêşdîtina Pêşniyar' vê yekê nekin.",
   "IssueLinks_LinkTemplate": "Şablon for links",
@@ -2483,6 +2481,10 @@
   "User__username__removed_from__room_name__leaders": "Bikarhêner {{username}} ji rêberên {{room_name}} jêbirin",
   "User__username__removed_from__room_name__moderators": "{{username}} User ji moderator {{room_name}} rakirin",
   "User__username__removed_from__room_name__owners": "{{username}} User ji xwediyên {{room_name}} rakirin",
+  "User_activity_typing": {
+    "one": "{{users, list}} ئەنوسێ",
+    "other": "{{users, list}} ئەنوسن"
+  },
   "User_added": "بەکارهێنەر زیادکرا",
   "User_added_by": "بەکارهێنەر {{user_added}} زیادکرا لەلایەن {{user_by}}.",
   "User_added_successfully": "Bikarhêner added bi serkeftî",

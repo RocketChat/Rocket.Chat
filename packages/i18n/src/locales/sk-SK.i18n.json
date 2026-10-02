@@ -317,7 +317,6 @@
   "archive-room": "Archivovať miestnosť",
   "archive-room_description": "Povolenie archivovať kanál",
   "Archived": "archivované",
-  "are_typing": "píšu",
   "Are_you_sure": "Určite?",
   "Are_you_sure_you_want_to_delete_your_account": "Určite chcete vymazať svoj účet?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Naozaj chcete zakázať integráciu služby Facebook?",
@@ -1354,7 +1353,6 @@
   "IRC_Port": "Port, ktorý sa má viazať na hostiteľský server IRC.",
   "IRC_Private_Message": "Výstup príkazu PRIVMSG.",
   "IRC_Quit": "Výstup pri ukončení IRC relácie.",
-  "is_typing": "píše",
   "Issue_Links": "Vytvorte odkazy na sledovanie",
   "IssueLinks_Incompatible": "Upozornenie: Neumožňujte toto a \"Hex Color Preview\" súčasne.",
   "IssueLinks_LinkTemplate": "Šablóna pre odkazy na vydanie",
@@ -2500,6 +2498,12 @@
   "User__username__removed_from__room_name__leaders": "Používateľ {{username}} bol odstránený z vodičov {{room_name}}",
   "User__username__removed_from__room_name__moderators": "Používateľ {{username}} bol odstránený z moderátorov {{room_name}}",
   "User__username__removed_from__room_name__owners": "Používateľ {{username}} bol odstránený z vlastníkov {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} píše",
+    "few": "{{users, list}} píšu",
+    "many": "{{users, list}} píšu",
+    "other": "{{users, list}} píšu"
+  },
   "User_added": "Používateľ bol pridaný",
   "User_added_by": "Používateľ {{user_added}}pridaný {{user_by}}.",
   "User_added_successfully": "Používateľ sa úspešne pridal",

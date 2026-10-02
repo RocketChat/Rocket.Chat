@@ -51,7 +51,6 @@
 		"vite/postcss": "8.5.26",
 		"external-editor/tmp": "0.2.7",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
-		"adm-zip": "0.6.1",
 		"axios@npm:^1.6.1": "1.18.0",
 		"axios@npm:^1.7.4": "1.18.0",
 		"axios@npm:^1.7.8": "1.18.0",
@@ -216,20 +215,21 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
-		"@types/node": "~24.13.2",
+		"@types/node": "~24.13.6",
+		"eslint": "~10.7.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
-		"turbo": "2.9.14",
+		"turbo": "2.11.5",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.18.0",
+	"packageManager": "yarn@4.18.1",
 	"engines": {
 		"node": ">=22.22.3 <23 || >=24.15.0 <25",
-		"yarn": "4.18.0"
+		"yarn": "4.18.1"
 	},
 	"volta": {
 		"node": "24.15.0",
-		"yarn": "4.18.0"
+		"yarn": "4.18.1"
 	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",

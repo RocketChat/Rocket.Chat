@@ -7,7 +7,8 @@ import ComposerInlineElements from './ComposerInlineElements';
 import ComposerList from './ComposerList';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerPlainSpan from './ComposerPlainSpan';
-import { sourceOf } from './sourceOf';
+import { sourceLinesOf } from './sourceLines';
+import { blockSourceOf, sourceOf } from './sourceOf';
 
 type ComposerMarkupProps = {
 	tokens: MessageParser.Root;
@@ -32,12 +33,7 @@ type ComposerMarkupProps = {
 const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 	const { source = '' } = useContext(ComposerMarkupContext);
 
-	// Blocks consume their own line ending, but a node rebuilt from the source may or may not carry it.
-	const blockSource = (block: MessageParser.HorizontalRule | MessageParser.Table): string => {
-		const text = sourceOf(block, source);
-
-		return text.endsWith('\n') ? text : `${text}\n`;
-	};
+	const sourceLines = sourceLinesOf(tokens, source);
 
 	return (
 		<>
@@ -62,10 +58,10 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 
 					case 'QUOTE':
 						return (
-							<span key={index} style={quoteStyle}>
+							<span key={index}>
 								{block.value.map((paragraph, pidx) => (
-									<span key={pidx}>
-										{'> '}
+									<span key={pidx} style={quoteStyle}>
+										{quoteMarkerOf(sourceLines[index]?.[pidx])}
 										<ComposerInlineElements>{paragraph.value}</ComposerInlineElements>
 										{'\n'}
 									</span>
@@ -109,13 +105,13 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 
 					case 'HORIZONTAL_RULE':
 					case 'TABLE':
-						return <ComposerPlainSpan key={index} text={blockSource(block)} />;
+						return <ComposerPlainSpan key={index} text={blockSourceOf(block, source)} />;
 
 					case 'BIG_EMOJI':
 						return <ComposerPlainSpan key={index} text={sourceOf(block, source)} />;
 
 					case 'LINE_BREAK':
-						return <span key={index}>{'\n'}</span>;
+						return <span key={index}>{lineBreakOf(sourceLines[index]?.[0])}</span>;
 
 					default:
 						return null;
@@ -124,6 +120,13 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 		</>
 	);
 };
+
+// A quote marker and a blank line's spaces are reprinted from the source, but only when the line the
+// cursor landed on still looks like one: a bad line falls back to the canonical form rather than
+// pasting unrelated text into the composer.
+const quoteMarkerOf = (line: string | undefined): string => /^>[ \t]*/.exec(line ?? '')?.[0] ?? '> ';
+
+const lineBreakOf = (line: string | undefined): string => (line !== undefined && /^[ \t]*$/.test(line) ? `${line}\n` : '\n');
 
 const unorderedMarker = (): string => '- ';
 

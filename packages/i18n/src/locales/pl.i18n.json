@@ -603,8 +603,6 @@
   "archive-room": "Archiwizuj pokój Room",
   "archive-room_description": "Uprawnienie do archiwizowania kanału",
   "Archived": "Zarchiwizowane",
-  "are_typing": "piszą",
-  "are_uploading": "przesyłają",
   "Are_you_sure": "Na pewno?",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Czy na pewno chcesz wyczyścić wszystkie nieprzeczytane wiadomości?",
   "Are_you_sure_you_want_to_close_this_chat": "Czy na pewno chcesz zamknąć ten czat?",
@@ -2470,8 +2468,6 @@
   "IRC_Port": "Port do połączenia z serwerem hosta IRC.",
   "IRC_Private_Message": "Wynik polecenia PRIVMSG.",
   "IRC_Quit": "Wynik po opuszczeniu sesji IRC.",
-  "is_typing": "pisze",
-  "is_uploading": "przesyła",
   "Issue_Links": "Linki do tropów problemów",
   "IssueLinks_Incompatible": "Ostrzeżenie: nie włączaj jednocześnie tego i \"Podglądu koloru szesnastkowego\".",
   "IssueLinks_LinkTemplate": "Szablon linków do odsyłaczy",
@@ -4871,6 +4867,18 @@
   "User__username__removed_from__room_name__moderators": "Użytkownik {{username}} usunięty z moderatorów pokoju {{room_name}}",
   "User__username__removed_from__room_name__owners": "Użytkownik {{username}} został usunięty z pokoju {{room_name}} przez właściciela",
   "User__username__unmuted_in_room__roomName__": "Użytkownik {{username}} wyłączył wyciszenie w pokoju {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} pisze",
+    "few": "{{users, list}} piszą",
+    "many": "{{users, list}} piszą",
+    "other": "{{users, list}} piszą"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} przesyła",
+    "few": "{{users, list}} przesyłają",
+    "many": "{{users, list}} przesyłają",
+    "other": "{{users, list}} przesyłają"
+  },
   "User_added": "Użytkownik został dodany",
   "User_added_by": "Użytkownik {{user_added}} dodany przez {{user_by}}.",
   "User_added_successfully": "Użytkownik został dodany",

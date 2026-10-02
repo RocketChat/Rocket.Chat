@@ -1194,7 +1194,7 @@ describe('[Channels]', () => {
 
 				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room info by user not part of room', async () => {
@@ -1526,10 +1526,10 @@ describe('[Channels]', () => {
 			await Promise.all([
 				deleteRoom({ type: 'c', roomId: testChannelNoCode._id }),
 				deleteRoom({ type: 'c', roomId: testChannelWithCode._id }),
-				deleteUser(testUser),
 				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
 				updatePermission('join-without-join-code', ['admin', 'bot', 'app']),
 			]);
+			await deleteUser(testUser);
 		});
 
 		before('Set code for channel', (done) => {
@@ -2108,7 +2108,7 @@ describe('[Channels]', () => {
 
 				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room members by user not part of room', async () => {
@@ -2316,36 +2316,25 @@ describe('[Channels]', () => {
 		let createdChannel: IRoom;
 		let user: TestUser<IUser>;
 
-		before((done) => {
-			void createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).end((_err, res) => {
-				createdChannel = res.body.channel;
-				void createUser().then((createdUser) => {
-					user = createdUser;
-					void login(user.username, password).then((credentials) => {
-						userCredentials = credentials;
-						void updatePermission('manage-incoming-integrations', ['user']).then(() => {
-							void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-								void createIntegration(
-									{
-										type: 'webhook-incoming',
-										name: 'Incoming test',
-										enabled: true,
-										alias: 'test',
-										username: 'rocket.cat',
-										scriptEnabled: false,
-										overrideDestinationChannelEnabled: true,
-										channel: `#${createdChannel.name}`,
-									},
-									userCredentials,
-								).then((integration) => {
-									integrationCreatedByAnUser = integration;
-									done();
-								});
-							});
-						});
-					});
-				});
-			});
+		before(async () => {
+			createdChannel = (await createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' })).body.channel;
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			await updatePermission('manage-incoming-integrations', ['user']);
+			await updatePermission('manage-own-incoming-integrations', ['user']);
+			integrationCreatedByAnUser = await createIntegration(
+				{
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: true,
+					channel: `#${createdChannel.name}`,
+				},
+				userCredentials,
+			);
 		});
 
 		after(async () => {
@@ -2537,7 +2526,7 @@ describe('[Channels]', () => {
 
 				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 
 				await updatePermission('manage-incoming-integrations', ['admin']);
 			});
@@ -3619,7 +3608,7 @@ describe('[Channels]', () => {
 
 				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room moderators by user not part of room', async () => {
@@ -4572,7 +4561,7 @@ describe('[Channels]', () => {
 
 				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room messages by user not part of room', async () => {

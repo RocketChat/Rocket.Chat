@@ -597,7 +597,6 @@
   "archive-room": "Архивировать комнату",
   "archive-room_description": "Разрешение на архивирование канала",
   "Archived": "Архивировать",
-  "are_typing": "печатают...",
   "Are_you_sure": "Вы уверены?",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Вы уверены, что хотите очистить все непрочитанные сообщения?",
   "Are_you_sure_you_want_to_close_this_chat": "Вы уверены, что хотите закрыть этот чат?",
@@ -2371,7 +2370,6 @@
   "IRC_Port": "Порт для привязки к серверу IRC.",
   "IRC_Private_Message": "Вывод команды PRIVMSG",
   "IRC_Quit": "Вывод после закрытия сеанса IRC.",
-  "is_typing": "печатает",
   "Issue_Links": "Ссылки трекера задач",
   "IssueLinks_Incompatible": "Внимание: не включайте это и \"Предварительный просмотр Hex цвета\" одновременно",
   "IssueLinks_LinkTemplate": "Шаблон ссылок на задачи",
@@ -4617,6 +4615,12 @@
   "User__username__removed_from__room_name__moderators": "Пользователь {{username}} удален из модераторов {{room_name}}",
   "User__username__removed_from__room_name__owners": "Пользователь {{username}} удален из владельцев {{room_name}}",
   "User__username__unmuted_in_room__roomName__": "Пользователь {{username}} перестал быть заглушенным в чате {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} печатает",
+    "few": "{{users, list}} печатают...",
+    "many": "{{users, list}} печатают...",
+    "other": "{{users, list}} печатают..."
+  },
   "User_added_by": "Пользователь {{user_added}} добавлен {{user_by}}.",
   "User_added_successfully": "Пользователь успешно добавлен",
   "User_and_group_mentions_only": "Только упоминания пользователей и групп",

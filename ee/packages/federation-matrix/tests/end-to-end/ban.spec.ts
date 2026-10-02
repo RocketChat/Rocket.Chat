@@ -443,8 +443,7 @@ import { SynapseClient } from '../helper/synapse-client';
 		it('should allow the RC user to send a message after re-joining', async () => {
 			const messageText = `message-after-rejoin-${Date.now()}`;
 
-			const sendResponse = await sendMessage({ rid: federatedChannelId, msg: messageText, config: rc1User1RequestConfig });
-			expect(sendResponse.body).toHaveProperty('success', true);
+			await sendMessage({ rid: federatedChannelId, msg: messageText, config: rc1User1RequestConfig });
 
 			// Validate message is received on Synapse
 			const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);

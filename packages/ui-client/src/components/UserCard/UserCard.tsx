@@ -1,11 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactNode, ComponentProps } from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../MarkdownText';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
 import UserCardActions from './UserCardActions';
 import UserCardDialog from './UserCardDialog';
@@ -47,6 +48,7 @@ const UserCard = ({
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
+	const MarkdownText = useContext(MarkdownTextContext);
 
 	return (
 		<UserCardDialog aria-label={t('User_card')} {...props}>

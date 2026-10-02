@@ -3,7 +3,7 @@ import { useClipboard, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-export default function useClipboardWithToast(text: string): UseClipboardReturn {
+export function useClipboardWithToast(text: string): UseClipboardReturn {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

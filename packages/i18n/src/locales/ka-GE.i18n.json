@@ -412,7 +412,6 @@
   "archive-room": "არქივი Room",
   "archive-room_description": "არხის არქივირების ნებართვა",
   "Archived": "დაარქივებულია",
-  "are_typing": "ბეჭდავენ",
   "Are_you_sure": "დარწმუნებული ხარ?",
   "Are_you_sure_you_want_to_delete_this_record": "დარწმუნებული ხართ, რომ გსურთ ამ ჩანაწერის წაშლა?",
   "Are_you_sure_you_want_to_delete_your_account": "დარწმუნებული ხართ, რომ გსურთ თქვენი ანგარიშის წაშლა?",
@@ -1820,7 +1819,6 @@
   "IRC_Port": "პორტი, რომელიც დაკავშირებულია IRC ჰოსტ სერვერზე.",
   "IRC_Private_Message": "PRIVMSG ბრძანების შედეგი",
   "IRC_Quit": "IRC სესიის დატოვების შეტყობინება",
-  "is_typing": "ბეჭდავს",
   "IssueLinks_Incompatible": "გაფრთხილება: არ ჩართოთ ეს და \"Hex Color Preview\" ერთდროულად.",
   "It_works": "მუშაობს",
   "Italic": "იტალიკი",
@@ -3372,6 +3370,10 @@
   "User__username__removed_from__room_name__leaders": "მომხმარებელი {{username}} ამოღებულია{{room_name}}ლიდერებიდან",
   "User__username__removed_from__room_name__moderators": "მომხმარებელი {{username}}  ამოღებულია {{room_name}} მოდერატორებიდან",
   "User__username__removed_from__room_name__owners": "მომხმარებელი {{username}} ამოღებულია {{room_name}}  მფლობელებიდან",
+  "User_activity_typing": {
+    "one": "{{users, list}} ბეჭდავს",
+    "other": "{{users, list}} ბეჭდავენ"
+  },
   "User_added": "მომხმარებელი დაემატა",
   "User_added_by": "მომხმარებელი {{user_added}} დაემატა {{user_by}}</em>.",
   "User_added_successfully": "მომხმარებელი წარმატებით დაემატა",
