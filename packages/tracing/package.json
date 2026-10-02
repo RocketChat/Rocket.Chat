@@ -21,7 +21,7 @@
 		"@opentelemetry/sdk-trace-base": "^2.7.1"
 	},
 	"devDependencies": {
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

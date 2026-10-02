@@ -16,7 +16,7 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"date-fns": "~4.1.0",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"moment": "^2.31.0",

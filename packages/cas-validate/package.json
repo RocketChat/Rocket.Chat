@@ -19,7 +19,7 @@
 		"cheerio": "1.0.0"
 	},
 	"devDependencies": {
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"jest": "~30.5.2",
 		"typescript": "~5.9.3"
 	},

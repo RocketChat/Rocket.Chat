@@ -40,7 +40,7 @@
 		"@types/react-dom": "~19.2.7",
 		"buffer": "~6.0.3",
 		"emojibase": "^17.0.0",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"path-browserify": "^1.0.1",

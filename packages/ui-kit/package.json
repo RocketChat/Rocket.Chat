@@ -35,7 +35,7 @@
 		"@rocket.chat/icons": "^0.50.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"jest": "~30.5.2",
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"

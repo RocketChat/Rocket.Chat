@@ -53,7 +53,7 @@
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/react": "~19.2.18",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"react": "~19.2.8",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
