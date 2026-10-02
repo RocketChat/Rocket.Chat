@@ -47,7 +47,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/peggy-loader": "workspace:~",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~24.13.6",
+		"@types/node": "~26.6.3",
 		"eslint": "~10.7.0",
 		"fast-check": "^4.6.0",
 		"jest": "~30.2.0",
