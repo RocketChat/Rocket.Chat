@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord, ISidebarCategory, SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
@@ -12,12 +12,7 @@ import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
-import {
-	ACTIVITY_FILTER_WINDOW,
-	isActivityFilterable,
-	useActivityFilter,
-	useActivityFilterClock,
-} from '../categories/hooks/useActivityFilter';
+import { HOUR, isActivityFilterable, useActivityFilter, useActivityFilterClock } from '../categories/hooks/useActivityFilter';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
@@ -40,7 +35,7 @@ export type SidebarRoomListGroup = {
 	category?: ISidebarCategory;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
-	activityFilter?: SidebarCategoryActivityFilter;
+	activityFilterHours?: number;
 	/** Rooms the activity filter leaves out of the expanded group, counted whether or not they are being shown. */
 	inactiveCount: number;
 	showingInactive: boolean;
@@ -72,7 +67,7 @@ export const useRoomList = ({
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
-	const { getActivityFilter, hasActivityFilters } = useActivityFilter();
+	const { getActivityFilterHours, hasActivityFilters } = useActivityFilter();
 	const now = useActivityFilterClock(hasLicenseModule && hasActivityFilters);
 
 	const options = useSortQueryOptions();
@@ -159,7 +154,7 @@ export const useRoomList = ({
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
 				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
-				const activityFilter = hasLicenseModule && isActivityFilterable(key) ? getActivityFilter(key) : undefined;
+				const activityFilterHours = hasLicenseModule && isActivityFilterable(key) ? getActivityFilterHours(key) : undefined;
 				const showingInactive = groupsShowingInactive?.includes(key) ?? false;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
@@ -167,7 +162,7 @@ export const useRoomList = ({
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
 				// The activity filter only thins out read rooms: unread ones and the one currently open always stay
 				// listed. A room with no activity date is kept rather than guessed at.
-				const activeSince = activityFilter ? now - ACTIVITY_FILTER_WINDOW[activityFilter] : undefined;
+				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
 					activeSince !== undefined &&
 					room.rid !== openedRoom &&
@@ -197,7 +192,7 @@ export const useRoomList = ({
 					category,
 					showUnreads,
 					keepUnreadsOnTop,
-					activityFilter,
+					activityFilterHours,
 					inactiveCount,
 					showingInactive,
 					collapsed,
@@ -224,7 +219,7 @@ export const useRoomList = ({
 			customCategories,
 			isShowUnreads,
 			isKeepUnreadsOnTop,
-			getActivityFilter,
+			getActivityFilterHours,
 			groupsShowingInactive,
 			now,
 			openedRoom,

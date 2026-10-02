@@ -1,4 +1,4 @@
-import type { ISidebarCategory, SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
+import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Box, Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
@@ -8,7 +8,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isActivityFilterable } from './hooks/useActivityFilter';
-import { getActivityFilterLabel, useActivityFilterItems } from './hooks/useActivityFilterItems';
+import { useActivityFilterItems, useActivityFilterLabel } from './hooks/useActivityFilterItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
@@ -19,7 +19,7 @@ type CategoryMenuProps = {
 	groupKey: string;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
-	activityFilter?: SidebarCategoryActivityFilter;
+	activityFilterHours?: number;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
@@ -31,7 +31,7 @@ const CategoryMenu = ({
 	groupKey,
 	showUnreads,
 	keepUnreadsOnTop,
-	activityFilter,
+	activityFilterHours,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
@@ -128,8 +128,8 @@ const CategoryMenu = ({
 		},
 	];
 
-	const activityFilterLabel = getActivityFilterLabel(activityFilter);
-	const filterItems = useActivityFilterItems(category?._id ?? groupKey, activityFilter, close);
+	const activityFilterLabel = useActivityFilterLabel(activityFilterHours);
+	const filterItems = useActivityFilterItems(category?._id ?? groupKey, activityFilterHours, close);
 	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
 
 	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];
@@ -179,12 +179,12 @@ const CategoryMenu = ({
 							))}
 						{activityFilterItems.length > 0 && (
 							<MenuSubmenuTrigger key='activity-filter' textValue={t('Filter')}>
-								<MenuItem aria-label={`${t('Filter')}: ${t(activityFilterLabel)}`}>
+								<MenuItem aria-label={`${t('Filter')}: ${activityFilterLabel}`}>
 									<MenuItemIcon name='clock' />
 									<MenuItemContent>
 										{t('Filter')}
 										<Box fontScale='c1' color='hint'>
-											{t(activityFilterLabel)}
+											{activityFilterLabel}
 										</Box>
 									</MenuItemContent>
 								</MenuItem>

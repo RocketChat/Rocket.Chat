@@ -52,9 +52,9 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
 
 	const filterChip =
-		!group.collapsed && group.activityFilter && group.inactiveCount > 0 ? (
+		!group.collapsed && group.activityFilterHours && group.inactiveCount > 0 ? (
 			<RoomListActivityFilterChip
-				activityFilter={group.activityFilter}
+				activityFilterHours={group.activityFilterHours}
 				inactiveCount={group.inactiveCount}
 				applied={!group.showingInactive}
 				onToggle={onToggleInactive}
@@ -86,7 +86,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 										groupKey={group.key}
 										showUnreads={group.showUnreads}
 										keepUnreadsOnTop={group.keepUnreadsOnTop}
-										activityFilter={group.activityFilter}
+										activityFilterHours={group.activityFilterHours}
 										canMoveUp={canMoveUp}
 										canMoveDown={canMoveDown}
 										onMoveUp={onMoveUp}

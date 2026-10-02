@@ -1,5 +1,5 @@
 import { StatusVisibility } from '@rocket.chat/core-services';
-import { SIDEBAR_CATEGORY_ACTIVITY_FILTERS } from '@rocket.chat/core-typings';
+import { SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS } from '@rocket.chat/core-typings';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -97,6 +97,17 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
+		const { activityFilterHours } = category;
+		if (
+			activityFilterHours !== undefined &&
+			(activityFilterHours < 1 || activityFilterHours > SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS)
+		) {
+			throw new Meteor.Error(
+				'error-invalid-param',
+				`sidebarCategories activityFilterHours must be between 1 and ${SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS}`,
+			);
+		}
+
 		if (category.default) {
 			continue;
 		}
@@ -154,7 +165,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 				default: Match.Optional(Boolean),
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
-				activityFilter: Match.Optional(Match.OneOf(...SIDEBAR_CATEGORY_ACTIVITY_FILTERS)),
+				activityFilterHours: Match.Optional(Match.Integer),
 			},
 		]),
 		muteFocusedConversations: Match.Optional(Boolean),

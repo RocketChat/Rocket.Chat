@@ -20,7 +20,7 @@ const makeGroup = (overrides: Partial<SidebarRoomListGroup> = {}): SidebarRoomLi
 	translateTitle: false,
 	showUnreads: false,
 	keepUnreadsOnTop: false,
-	activityFilter: '7d',
+	activityFilterHours: 24 * 7,
 	inactiveCount: 4,
 	showingInactive: false,
 	collapsed: false,
@@ -68,9 +68,19 @@ describe('the activity filter chip', () => {
 	});
 
 	it('shortens a one-day window to hours', () => {
-		renderCollapser({ activityFilter: '1d' });
+		renderCollapser({ activityFilterHours: 24 });
 
 		expect(screen.getByRole('button', { name: 'Filter: Last 24 hours' })).toHaveTextContent('24 hours');
+	});
+
+	it('names a window no preset matches by its length', () => {
+		renderCollapser({ activityFilterHours: 36 });
+		expect(screen.getByRole('button', { name: 'Filter: 36 hours' })).toHaveTextContent('36 hours');
+	});
+
+	it('counts a whole number of days in days', () => {
+		renderCollapser({ activityFilterHours: 72 });
+		expect(screen.getByRole('button', { name: 'Filter: 3 days' })).toHaveTextContent('3 days');
 	});
 
 	it('is pressed while the filter is applied, and tells how many rooms it hides', () => {
@@ -120,7 +130,7 @@ describe('the activity filter chip', () => {
 	});
 
 	it('is absent when the group has no filter', () => {
-		renderCollapser({ activityFilter: undefined });
+		renderCollapser({ activityFilterHours: undefined });
 
 		expect(screen.queryByRole('button', { name: /Filter/ })).not.toBeInTheDocument();
 	});
