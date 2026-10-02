@@ -29,7 +29,7 @@
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/icons": "^0.50.0",
 		"@rocket.chat/layout": "workspace:~",
-		"@rocket.chat/logo": "^0.33.2",
+		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",

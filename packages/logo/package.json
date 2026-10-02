@@ -1,13 +1,10 @@
 {
-	"name": "@rocket.chat/fuselage-toastbar",
-	"version": "0.36.1",
-	"description": "Fuselage ToastBar component",
+	"name": "@rocket.chat/logo",
+	"version": "0.33.2",
+	"description": "Rocket.Chat logo package",
 	"keywords": [
 		"rocketchat",
-		"rocketchat-fuselage",
-		"fuselage",
-		"toastbar",
-		"fuselage-toastbar"
+		"rocketchat logo"
 	],
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
@@ -16,7 +13,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
-		"directory": "packages/fuselage-toastbar"
+		"directory": "packages/logo"
 	},
 	"license": "MIT",
 	"author": {
@@ -30,48 +27,40 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
-		"build-storybook": "storybook build",
+		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/buildAssets.mjs",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"react-timing-hooks": "~5.2.0"
+		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/styled": "~0.34.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.92.0",
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/storybook-config": "workspace:~",
-		"@rocket.chat/styled": "~0.34.1",
 		"@rocket.chat/tsconfig": "workspace:~",
-		"@testing-library/dom": "~10.4.1",
+		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
-		"@testing-library/user-event": "~14.6.6",
 		"@types/react": "~19.2.18",
-		"@types/react-dom": "~19.2.5",
-		"eslint": "~9.39.5",
+		"@types/react-dom": "~19.2.7",
+		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
+		"prettier": "~3.9.9",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
-		"storybook": "~9.1.20",
-		"ts-jest": "~29.4.12",
+		"sharp": "~0.35.5",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/styled": "*",
 		"react": "*",
 		"react-dom": "*"
 	},
-	"volta": {
-		"extends": "../../package.json"
-	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }
