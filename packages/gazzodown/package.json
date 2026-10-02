@@ -46,7 +46,6 @@
 		"@storybook/react-webpack5": "^9.1.20",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
-		"@types/jest": "~30.0.0",
 		"@types/katex": "~0.16.8",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",

@@ -31,7 +31,6 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tools": "workspace:~",
-		"@types/jest": "~30.0.0",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"eslint": "~10.7.0",

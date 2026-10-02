@@ -27,7 +27,7 @@
 		"proxy-from-env": "^1.1.0"
 	},
 	"devDependencies": {
-		"@types/jest": "~30.0.0",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/node-fetch": "~2.6.13",
 		"eslint": "~10.7.0",
 		"jest": "~30.5.2",
