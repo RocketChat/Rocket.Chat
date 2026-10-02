@@ -21,7 +21,7 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
+import { createUser, login, deleteUser, deleteUserIfExists, findUserByUsername, getUserByUsername } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
@@ -690,13 +690,18 @@ describe('[Users]', () => {
 		});
 
 		describe('default email2fa auto opt in configuration', () => {
-			let user: IUser;
+			let user: IUser | undefined;
 
 			afterEach(async () => {
-				await deleteUser(user);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+
+				const createdUser = user;
+				user = undefined;
+				if (createdUser) {
+					await deleteUser(createdUser);
+				}
 			});
 
 			const dummyUser = {
@@ -970,7 +975,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-disabled');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 		});
@@ -1017,7 +1022,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1041,7 +1046,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1141,7 +1146,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-invalid-domain');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1205,7 +1210,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -4109,7 +4114,7 @@ describe('[Users]', () => {
 			userCredentials = await login(targetUser.username, password);
 		});
 
-		after(async () => deleteUser(targetUser));
+		after(async () => deleteUserIfExists(targetUser));
 
 		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
 			void request
@@ -4151,8 +4156,6 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
-
-			await deleteUser(user);
 		});
 
 		describe('last owner cases', () => {
@@ -4177,7 +4180,7 @@ describe('[Users]', () => {
 
 			afterEach(async () => {
 				await deleteRoom({ type: 'c', roomId: room._id });
-				await deleteUser(user);
+				await deleteUserIfExists(user);
 			});
 
 			it('should return an error when trying to delete user own account if user is the last room owner', async () => {
@@ -4264,8 +4267,8 @@ describe('[Users]', () => {
 		});
 
 		after(async () => {
-			await deleteUser(newUser);
 			await updatePermission('delete-user', ['admin']);
+			await deleteUserIfExists(newUser);
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
@@ -4315,7 +4318,10 @@ describe('[Users]', () => {
 				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
 			});
 
-			afterEach(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(targetUser, { confirmRelinquish: true })]));
+			afterEach(async () => {
+				await deleteRoom({ type: 'c', roomId: room._id });
+				await deleteUserIfExists(targetUser, { confirmRelinquish: true });
+			});
 
 			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
 				await updatePermission('delete-user', ['admin']);
@@ -5335,7 +5341,8 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
+				await deleteRoom({ type: 'c', roomId });
+				await Promise.all([deleteUser(user), deleteUser(user2)]);
 			});
 
 			it('should return an empty list when the user does not have any subscription', async () => {

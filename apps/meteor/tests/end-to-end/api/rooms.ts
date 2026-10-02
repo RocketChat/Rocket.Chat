@@ -30,7 +30,7 @@ import {
 	updateSetting,
 } from '../../data/permissions.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -1667,7 +1667,8 @@ describe('[Rooms]', () => {
 			after(async () => {
 				await restorePermissionToRoles('view-room-administration');
 				await Promise.all([
-					deleteRoom({ type: 'p', roomId: ownerGroup._id }),
+					// groups.delete only reaches groups the caller can access, which the admin cannot here.
+					actionRoom({ action: 'delete', type: 'p', roomId: ownerGroup._id, overrideCredentials: ownerCredentials }),
 					deleteRoom({ type: 'd', roomId: ownerDM._id }),
 					deleteRoom({ type: 'c', roomId: ownerTeamChannel._id }),
 				]);
@@ -1783,17 +1784,17 @@ describe('[Rooms]', () => {
 			await updateSetting('API_User_Limit', 1000000);
 		});
 
-		after(() =>
-			Promise.all([
+		after(async () => {
+			await Promise.all([
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
-				deleteUser(user2),
 				updateSetting('API_User_Limit', 10000),
-			]),
-		);
+			]);
+			await deleteUser(user2);
+		});
 
 		it('should return an Error when trying leave a DM room', async () => {
 			const res = await request
@@ -2973,13 +2974,10 @@ describe('[Rooms]', () => {
 			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: privateRoom._id, roomCustomFields }).expect(200);
 		});
 
-		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'p', roomId: privateRoom._id }),
-				deleteUser(roomOwner),
-				updatePermission('view-room-administration', ['admin']),
-			]),
-		);
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: privateRoom._id }), updatePermission('view-room-administration', ['admin'])]);
+			await deleteUser(roomOwner, { confirmRelinquish: true });
+		});
 
 		it('should not expose the private room through groups.info to an admin that is not a member', async () => {
 			const res = await request.get(api('groups.info')).set(credentials).query({ roomId: privateRoom._id });
@@ -4630,7 +4628,7 @@ describe('[Rooms]', () => {
 					restorePermissionToRoles('view-c-room'),
 				]);
 
-				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
+				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser, { confirmRelinquish: true }), deleteUser(nonTeamUser)]);
 			});
 
 			it('should not fetch private room members by user not part of room', async () => {
