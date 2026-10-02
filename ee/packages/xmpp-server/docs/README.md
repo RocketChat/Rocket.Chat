@@ -42,7 +42,7 @@ flowchart LR
 | Spec | `specs/<slug>.md` | what the package must do, and where it falls short | capability slug | yes, it is a living document |
 | Plan | `plans/<slug>.md` | how one round of work will be done and proven | the spec it implements, suffixed `-2`, `-3` for later rounds | status only |
 | ADR | `adr/NNNN-<slug>.md` | why a design choice was made over its alternatives | sequence number | never; a new ADR supersedes it |
-| Compliance matrix | `compliance.md` | which standard is covered by which spec | | whenever a spec's `standards` or `status` changes |
+| Compliance matrix | `compliance.md` | which standard is covered by which spec | | whenever a spec's `standards` or `status` changes, or an intent names a standard |
 | Architecture | `architecture.md` | where the code for each part lives | | whenever module boundaries move |
 | Operations | `operations.md` | how to run it | | whenever a setting, port or environment variable changes |
 | Templates | `templates/` | | | rarely |
@@ -54,14 +54,18 @@ compliance matrix is the index from standard to spec.
 
 ## The loop
 
-| Stage | Input | Output | Who |
-| --- | --- | --- | --- |
-| Plan | an idea, a ticket, a defect found in production | `intents/<slug>.md` | whoever wants the change, approved by the package owner |
-| Design | an accepted intent | `specs/<slug>.md`, status `planned` | author plus Claude, reviewed by the package owner |
-| Build | a planned spec | `plans/<slug>.md`, then code and tests | the engineer, with Claude in plan mode |
-| Test | the diff | proof for every requirement the plan lists | the engineer |
-| Deploy | the PR | merged, spec status moved to `implemented` or `partial` | reviewers |
-| Maintain | a defect report, a metric, a peer that misbehaves | a `D` entry in the spec, or a new intent | whoever finds it |
+| Stage | Input | Output |
+| --- | --- | --- |
+| Plan | an idea, a ticket, a defect found in production | `intents/<slug>.md`, accepted |
+| Design | an accepted intent | `specs/<slug>.md`, reviewed and moved to `planned` |
+| Build | a planned spec | `plans/<slug>.md`, then code and tests |
+| Test | the diff | proof for every requirement the plan lists |
+| Merge | the PR, with spec status, plan status and compliance row already updated | merged into `develop` |
+| Maintain | a defect report, a metric, a peer that misbehaves | a `D` entry in the spec, or a new intent |
+
+There is no deploy stage. Merging is the last step; whatever is learned after that, from a
+report, a metric or a peer, re-enters through Maintain. Unit and integration tests run in
+CI. The end-to-end suite runs only on the engineer's machine, so the PR says it was run.
 
 A defect is a gap between a spec and the code. It is written into the spec it violates as a
 `D<n>` entry together with a skipped test that pins it. A fix un-skips the test and removes
@@ -80,7 +84,7 @@ deleting the `D` entry.
 ```mermaid
 flowchart TD
     start([I want to change something]) --> q1{Does the change alter<br/>what a peer or user<br/>can observe?}
-    q1 -->|no: refactor, perf,<br/>logging, tests| none[Code only.<br/>Spec untouched.<br/>Update architecture.md<br/>if modules move]
+    q1 -->|no: refactor, perf,<br/>logging, tests| none[Code only.<br/>Spec text untouched.<br/>Update its code list and<br/>architecture.md if modules move]
     q1 -->|yes| q2{Is there a spec<br/>for this capability?}
     q2 -->|no| intent[Write an intent<br/>→ get it accepted<br/>→ write the spec]
     q2 -->|yes| q3{Does the spec already<br/>require the new behaviour?}
@@ -100,12 +104,14 @@ flowchart TD
    the problem: who is missing what, and how it shows. List the open questions; the intent is
    not accepted until they have answers.
 2. Once accepted, write `specs/<slug>.md` from [templates/spec.md](templates/spec.md) with
-   status `planned`. Fill in Summary, Motivation and Behaviour. Leave Design as "decided in
+   status `draft`. Fill in Summary, Motivation and Behaviour. Leave Design as "decided in
    the plan". Add the standards to the frontmatter and the matching rows to
    [compliance.md](compliance.md) in the same commit.
 3. Get the spec reviewed. This is where the requirements are argued over, before code exists.
+   When the review agrees, the status moves to `planned`.
 4. Open Claude Code in plan mode with the spec attached and produce `plans/<slug>.md` from
-   [templates/plan.md](templates/plan.md). Commit the plan by itself.
+   [templates/plan.md](templates/plan.md). Commit the plan by itself; that commit is the
+   approval, there is no separate sign-off.
 5. Implement in the order the plan gives, one commit per step. Each test names the
    requirement it proves.
 6. In the PR, mark the plan `done`, fill in the spec's Design, `code` and `tests`, move its
@@ -114,7 +120,8 @@ flowchart TD
 ### Fixing a known defect
 
 1. Find the `D` entry and its `it.skip` test (the test's comment links the anchor).
-2. Change `it.skip` to `it`. Run it against ejabberd and watch it fail.
+2. Change `it.skip` to `it`. Run it, against ejabberd for an end-to-end test, and watch it
+   fail.
 3. Fix the code until it passes.
 4. Delete the `D` entry and the `// Known defect:` comment in the same commit as the fix.
    The `D` number is not reused.
@@ -128,8 +135,9 @@ changes the data model or crosses into Meteor, gets a plan round like any other 
    is a missing requirement: add the `R` first.
 2. Add a `### D<n> <heading>` entry under Known defects. Say what happens, the cause if
    known, and the test that pins it.
-3. Write the end-to-end test that shows the right behaviour, mark it `it.skip`, and put the
-   link to the anchor in a comment above it.
+3. Write the test that shows the right behaviour: end-to-end against ejabberd, or in the
+   integration suite when ejabberd cannot produce the trigger (a dropped S2S connection,
+   for example). Mark it `it.skip` and put the link to the anchor in a comment above it.
 4. Commit the entry and the test together, then fix as above, in the same PR or a later one.
 
 ### Changing the behaviour of an implemented capability
@@ -148,7 +156,7 @@ stateDiagram-v2
     [*] --> draft: spec written
     draft --> planned: agreed
     draft --> not_planned: decided against
-    planned --> implemented: every R holds
+    planned --> implemented: every R implemented
     planned --> partial: some R left out
     partial --> implemented: remaining R done
     implemented --> planned: change needs design
@@ -166,7 +174,7 @@ stateDiagram-v2
     direction LR
     [*] --> Recorded: D entry and it.skip test
     Recorded --> Fixing: it.skip becomes it
-    Fixing --> Fixed: passes against ejabberd
+    Fixing --> Fixed: passes
     Fixed --> [*]: D entry deleted
 ```
 
@@ -179,8 +187,8 @@ Spec `status` in the frontmatter:
 
 | Status | Meaning |
 | --- | --- |
-| `implemented` | every requirement holds; `D` entries may exist |
-| `partial` | some requirements are knowingly unmet; each is listed under Out of scope or Known defects |
+| `implemented` | every requirement is implemented; a `D` entry records where the implementation is wrong |
+| `partial` | some requirements are deliberately left out; each is listed under Out of scope |
 | `planned` | the spec is agreed and waits for a plan |
 | `draft` | being written; not yet agreed |
 | `not-planned` | the capability is deliberately absent; the reason is in Motivation |
@@ -188,6 +196,9 @@ Spec `status` in the frontmatter:
 
 Intent `Status`: `draft`, `accepted`, `rejected`. Plan `Status`: `approved`, `done`,
 `abandoned`. ADR `Status`: `accepted`, or `superseded by NNNN`.
+
+The compliance matrix has two statuses of its own: `intent`, for a standard an intent names
+before any spec exists, and `draft`, mirroring a spec that is not yet agreed.
 
 ## Writing a spec
 
@@ -239,8 +250,8 @@ requirement keeps its number with the text struck through and a note. Defects ar
 `D1`, `D2`, … the same way and are removed when fixed. Tests, plans, commits and PRs cite
 them as `specs/hosted-muc.md R4` or `hosted-muc D1`.
 
-Every `D` heading is an anchor. The skipped end-to-end test that pins the defect carries a
-comment with the relative path and the anchor, for example
+Every `D` heading is an anchor. The skipped test that pins the defect, end-to-end or
+integration, carries a comment with the relative path and the anchor, for example
 `// Known defect: ../../docs/specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed`.
 
 Where each id shows up:
@@ -262,11 +273,23 @@ Where each id shows up:
   that is just the obvious way to do it does not.
 - A plan is committed before the code it describes, and marked `done` in the PR that ships it.
 - A `D` entry is deleted in the same commit that un-skips its test.
+- A user-visible change also adds a `.changeset` entry, as anywhere in the repo. Refactors
+  and spec-only edits do not.
 
 ## Working with Claude
 
 The package-level [CLAUDE.md](../CLAUDE.md) tells Claude the same rules in the form it reads
 at the start of a session, so a session opened in this package already knows them.
+
+Three skills, listed when Claude Code runs inside this package, drive the authoring stages:
+
+- `/xmpp-intent <problem>` interviews you and writes `intents/<slug>.md`.
+- `/xmpp-spec <intent or draft spec>` writes a spec from an accepted intent, or reviews a
+  draft against the rules in "Writing a spec".
+- `/xmpp-plan <planned spec>` produces `plans/<slug>.md` in plan mode.
+
+[examples.md](examples.md) shows each one with the prompt to type, what comes back, what to
+check, and which model to run it with.
 
 ```mermaid
 sequenceDiagram

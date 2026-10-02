@@ -37,6 +37,7 @@ Notes).
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | planned | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | planned | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
 | [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | planned | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent weighs MAM against XEP-0045 history on join |
 
 ## Not planned
 
@@ -47,5 +48,4 @@ why the reason no longer holds.
 | --- | --- | --- | --- | --- |
 | [XEP-0368](https://xmpp.org/extensions/xep-0368.html) | SRV records for XMPP over TLS | not-planned | | STARTTLS on 5269 is enough for the end product; direct TLS would add a second listener and SRV name for a transport peers treat as optional ([ADR 0004](adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md)) |
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | not-planned | | optional on S2S and peers interoperate without it; only guards stanzas lost on a socket that dies mid-write, documented in [s2s-connectivity](specs/s2s-connectivity.md) R10. Revisit if operations show losses |
-| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent weighs MAM against XEP-0045 history on join |
 | [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | not-planned | | the native server is a server, not a component attached to another one; administrators who want a component have the Matrix-bridge XMPP integration ([ADR 0002](adr/0002-integration-service-runs-only-as-a-microservice.md)) |
