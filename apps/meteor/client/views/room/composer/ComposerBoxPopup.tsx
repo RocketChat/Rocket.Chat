@@ -1,4 +1,4 @@
-import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Item, ItemContent, ItemGroup, ItemGroupHeader, ItemGroupTitle, ItemSkeleton, ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
@@ -80,40 +80,44 @@ function ComposerBoxPopup<
 
 	return (
 		<Box position='relative'>
-			<Tile
-				ref={composerBoxPopupRef}
-				padding={0}
-				role='menu'
-				marginBlockEnd={8}
-				overflow='hidden'
-				aria-labelledby={id}
-				name='ComposerBoxPopup'
-			>
+			<Tile ref={composerBoxPopupRef} padding={0} marginBlockEnd={8} overflow='hidden'>
 				{title && (
-					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
-						{title}
+					<Box backgroundColor='tint'>
+						<ItemGroupHeader inset='md'>
+							<ItemGroupTitle id={id}>{title}</ItemGroupTitle>
+						</ItemGroupHeader>
 					</Box>
 				)}
 				<CustomScrollbars>
 					<Box paddingBlock={8} maxHeight='x320'>
-						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
-						{isLoading && <OptionSkeleton />}
-						{itemsFlat.map((item, index) => {
-							return (
-								<Option
-									title={getOptionTitle(item)}
-									onClick={() => select(item)}
-									selected={item === focused}
+						{!isLoading && itemsFlat.length === 0 && (
+							<Item size='medium' inset='md' role='status'>
+								<ItemContent>
+									<ItemTitle>{t('No_results_found')}</ItemTitle>
+								</ItemContent>
+							</Item>
+						)}
+						{isLoading && <ItemSkeleton size='medium' inset='md' />}
+						<ItemGroup role='listbox' aria-labelledby={title ? id : undefined} aria-busy={isLoading}>
+							{itemsFlat.map((item, index) => (
+								<Item
 									key={index}
 									id={`popup-item-${item._id}`}
-									tabIndex={item === focused ? 0 : -1}
+									role='option'
+									size='medium'
+									inset='md'
+									title={getOptionTitle(item)}
+									focused={item === focused}
 									aria-selected={item === focused}
 									disabled={item.disabled}
+									aria-disabled={item.disabled || undefined}
+									tabIndex={-1}
+									onClick={() => select(item)}
 								>
 									{renderItem({ item: { ...item, variant } })}
-								</Option>
-							);
-						})}
+								</Item>
+							))}
+						</ItemGroup>
 					</Box>
 				</CustomScrollbars>
 			</Tile>
