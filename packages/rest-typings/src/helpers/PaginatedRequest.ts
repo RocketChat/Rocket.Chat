@@ -2,6 +2,4 @@ export type PaginatedRequest<T = Record<string, boolean | number | string | obje
 	count?: number;
 	offset?: number;
 	sort?: `{ "${S}": ${1 | -1} }` | string;
-	/* deprecated */
-	query?: string;
 } & T;
