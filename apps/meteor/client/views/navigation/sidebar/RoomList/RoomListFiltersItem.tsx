@@ -1,4 +1,4 @@
-import { Icon, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
+import { Icon, Item, ItemContent, ItemIcon, ItemTitle } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
@@ -14,12 +14,12 @@ import {
 import { useUnreadGroupData } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarFiltersItemProps = {
+export type RoomListFiltersItemProps = {
 	group: SidePanelFiltersKeys;
 	icon: IconName;
 };
 
-const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
+const RoomListFiltersItem = ({ group, icon }: RoomListFiltersItemProps) => {
 	const { t } = useTranslation();
 	const switchSidePanelTab = useSwitchSidePanelTab();
 
@@ -29,21 +29,28 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 		switchSidePanelTab(group);
 	});
 	const [currentTab] = useSidePanelFilter();
-	const roomTitle = sidePanelFiltersConfig[group].title;
+	const roomTitle = t(sidePanelFiltersConfig[group].title);
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
+	const selected = group === currentTab;
 
 	return (
-		<SidebarItem
-			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle }) : roomTitle}
-			selected={group === currentTab}
-			aria-selected={group === currentTab}
+		<Item
 			{...buttonProps}
+			is='div'
 			role='tab'
+			selected={selected}
+			highlighted={highlighted}
+			aria-selected={selected}
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle }) : roomTitle}
 		>
-			<SidebarItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
-			<SidebarItemTitle unread={highlighted}>{t(roomTitle)}</SidebarItemTitle>
+			<ItemIcon label={roomTitle}>
+				<Icon size='x20' name={icon} />
+			</ItemIcon>
+			<ItemContent>
+				<ItemTitle>{roomTitle}</ItemTitle>
+			</ItemContent>
 			{showUnread && <RoomListFiltersItemBadge roomTitle={roomTitle} unreadGroupCount={unreadGroupCount} />}
-		</SidebarItem>
+		</Item>
 	);
 };
 
