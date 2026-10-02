@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, ITEM_MEDIA_SIZE } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -15,6 +15,7 @@ import { getSubscriptionDraft } from '../../../../lib/utils/getSubscriptionDraft
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
+import { useRoomIconLabel } from '../../sidebar/hooks/useRoomIconLabel';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
 export type RoomSidePanelItemProps = {
@@ -28,6 +29,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const isAnonymous = !useUserId();
 
 	const { highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
+	const iconLabel = useRoomIconLabel(room);
 	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
@@ -66,9 +68,10 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			selected={rid === openedRoom}
 			title={title}
 			titleIcon={titleIcon}
-			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
-			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
-			unread={highlighted}
+			avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.extended} room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' />}
+			iconLabel={iconLabel}
+			highlighted={highlighted}
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
 			parentRoom={!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}

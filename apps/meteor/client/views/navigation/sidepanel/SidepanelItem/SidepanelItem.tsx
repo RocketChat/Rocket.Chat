@@ -1,18 +1,31 @@
 import {
 	IconButton,
-	SidebarItem,
-	SidebarItemAvatarWrapper,
-	SidebarItemCol,
-	SidebarItemContent,
-	SidebarItemMenu,
-	SidebarItemRow,
-	SidebarItemTimestamp,
-	SidebarItemTitle,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemIcon,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
+
+import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
+
+type SidePanelItemIconProps =
+	| {
+			/** Room type icon or user status, shown before the title. */
+			icon: ReactNode;
+			/** What the icon conveys, such as "Private channel" or "Away". */
+			iconLabel: string;
+	  }
+	| { icon?: undefined; iconLabel?: undefined };
 
 export type SidePanelItemProps = {
 	href: string;
@@ -20,14 +33,13 @@ export type SidePanelItemProps = {
 	title: string;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
-	icon: ReactNode;
-	unread: boolean;
+	highlighted: boolean;
 	time?: Date;
 	subtitle: ReactNode;
 	parentRoom?: ReactNode;
 	badges?: ReactNode;
 	menu?: ReactNode;
-};
+} & SidePanelItemIconProps;
 
 const SidePanelItem = ({
 	href,
@@ -36,7 +48,8 @@ const SidePanelItem = ({
 	titleIcon,
 	avatar,
 	icon,
-	unread,
+	iconLabel,
+	highlighted,
 	time,
 	subtitle,
 	parentRoom,
@@ -46,43 +59,34 @@ const SidePanelItem = ({
 }: SidePanelItemProps) => {
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const handleFocus = () => setMenuVisibility(true);
-	const handlePointerEnter = () => setMenuVisibility(true);
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarItem
-			{...props}
-			href={href}
-			onClick={() => !selected && sidebar.toggle()}
-			selected={selected}
-			onFocus={handleFocus}
-			onPointerEnter={handlePointerEnter}
-			aria-label={title}
-			aria-current={selected ? 'page' : undefined}
-			level={2}
-		>
-			<SidebarItemCol>
-				<SidebarItemRow>
-					{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
-					{icon}
-					<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
-					{time && <SidebarItemTimestamp unread={unread}>{formatDate(time)}</SidebarItemTimestamp>}
-				</SidebarItemRow>
-				<SidebarItemRow>
-					<SidebarItemContent unread={unread}>{subtitle}</SidebarItemContent>
+		<Item {...props} size='extended' selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+			<ItemMedia>{avatar}</ItemMedia>
+			<ItemContent>
+				<ItemRow>
+					{icon && <ItemIcon label={iconLabel}>{icon}</ItemIcon>}
+					<ItemTitle>
+						<ItemLink href={href} onClick={() => !selected && sidebar.toggle()} aria-current={selected ? 'page' : undefined}>
+							{title}
+						</ItemLink>
+					</ItemTitle>
+					{time && <ItemMeta>{formatDate(time)}</ItemMeta>}
+				</ItemRow>
+				<ItemRow>
+					<ItemDescription>{subtitle}</ItemDescription>
 					{parentRoom}
 					{titleIcon}
 					{badges}
-					{menu && (
-						<SidebarItemMenu>
-							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
-						</SidebarItemMenu>
-					)}
-				</SidebarItemRow>
-			</SidebarItemCol>
-		</SidebarItem>
+				</ItemRow>
+			</ItemContent>
+			{menu && (
+				<ItemActions reveal='hover'>
+					{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
+				</ItemActions>
+			)}
+		</Item>
 	);
 };
 

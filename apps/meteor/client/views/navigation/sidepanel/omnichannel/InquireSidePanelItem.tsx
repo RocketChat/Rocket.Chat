@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarItemIcon } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/fuselage';
 import { escapeHTML } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -58,16 +58,10 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 			href={href}
 			selected={rid === openedRoom}
 			title={title}
-			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
-			icon={
-				room.source && (
-					<SidebarItemIcon
-						highlighted={highlighted}
-						icon={<OmnichannelRoomIcon placement='sidebar' source={room.source} status={room.v.status} size='x20' />}
-					/>
-				)
-			}
-			unread={highlighted}
+			avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.extended} room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
+			icon={room.source && <OmnichannelRoomIcon placement='sidebar' source={room.source} status={room.v.status} size='x20' />}
+			iconLabel={t('Omnichannel')}
+			highlighted={highlighted}
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
 			badges={badges}
