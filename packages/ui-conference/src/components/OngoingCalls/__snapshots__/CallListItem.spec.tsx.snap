@@ -7,36 +7,38 @@ exports[`CallListItem renders Declined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/refused"
-          >
-            Design review
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/refused"
+              >
+                Design review
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -44,17 +46,16 @@ exports[`CallListItem renders Declined without crashing 1`] = `
               3 people joined
             </div>
           </div>
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+            class="rcx-box rcx-box--full rcx-css-1p4sjp4"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-            >
-              (
-              Declined
-              )
-            </div>
+            (
+            Declined
+            )
           </div>
         </div>
       </div>
@@ -70,36 +71,38 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/standup"
-          >
-            Daily standup
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/standup"
+              >
+                Daily standup
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -107,24 +110,23 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
               4 people joined
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
+          <button
+            aria-label="Decline"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Decline"
+            type="button"
           >
-            <button
-              aria-label="Decline"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Decline"
-              type="button"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-          </div>
+              
+            </i>
+          </button>
         </div>
       </div>
     </div>
@@ -139,36 +141,38 @@ exports[`CallListItem renders Joined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/joined"
-          >
-            Pairing session
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/joined"
+              >
+                Pairing session
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -190,41 +194,43 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/ringing"
-          >
-            Ada Lovelace
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            <span
-              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
             >
-              Ringing
-              …
-            </span>
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/ringing"
+              >
+                Ada Lovelace
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-18wfy10"
+              >
+                Ringing
+                …
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -232,37 +238,36 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
               1 person joined
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
+          <button
+            aria-label="Silence"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Silence"
+            type="button"
           >
-            <button
-              aria-label="Silence"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Silence"
-              type="button"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-            <button
-              aria-label="Decline"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Decline"
-              type="button"
+              
+            </i>
+          </button>
+          <button
+            aria-label="Decline"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Decline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-          </div>
+              
+            </i>
+          </button>
         </div>
       </div>
     </div>
@@ -277,36 +282,38 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/refused"
-          >
-            Design review
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/refused"
+              >
+                Design review
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -314,17 +321,16 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
               2 people joined
             </div>
           </div>
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+            class="rcx-box rcx-box--full rcx-css-1p4sjp4"
           >
-            <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-            >
-              (
-              Declined
-              )
-            </div>
+            (
+            Declined
+            )
           </div>
         </div>
       </div>
@@ -340,36 +346,38 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/answered"
-          >
-            Standup
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/answered"
+              >
+                Standup
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -391,41 +399,43 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/ringing"
-          >
-            Ada Lovelace
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            <span
-              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
             >
-              Ringing
-              …
-            </span>
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/ringing"
+              >
+                Ada Lovelace
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-18wfy10"
+              >
+                Ringing
+                …
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -433,24 +443,23 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
               1 person joined
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
+          <button
+            aria-label="Decline"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Decline"
+            type="button"
           >
-            <button
-              aria-label="Decline"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Decline"
-              type="button"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-          </div>
+              
+            </i>
+          </button>
         </div>
       </div>
     </div>
@@ -465,41 +474,43 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/ringing"
-          >
-            Ada Lovelace
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            <span
-              class="rcx-box rcx-box--full rcx-css-18wfy10"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
             >
-              Ringing
-              …
-            </span>
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/ringing"
+              >
+                Ada Lovelace
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-18wfy10"
+              >
+                Ringing
+                …
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -507,31 +518,30 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
               1 person joined
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-z80ug6"
+            title="Incoming call, silenced"
+          >
+            
+          </i>
+          <button
+            aria-label="Decline"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Decline"
+            type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-z80ug6"
-              title="Incoming call, silenced"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
-              
+              
             </i>
-            <button
-              aria-label="Decline"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Decline"
-              type="button"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -546,36 +556,38 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1hid35h rcx-css-fh6trj"
+        class="rcx-item rcx-item--extended rcx-item--inset-md"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
+          class="rcx-item__content"
         >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
-          >
-            ❲
-          </i>
-          <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
-            href="/conference/alone"
-          >
-            Ada Lovelace
-          </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-item__row"
           >
-            10:00 AM
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1g87xs3"
+            >
+              ❲
+            </i>
+            <div
+              class="rcx-item__title"
+            >
+              <a
+                class="rcx-item__link"
+                href="/conference/alone"
+              >
+                Ada Lovelace
+              </a>
+            </div>
+            <div
+              class="rcx-item__meta"
+            >
+              10:00 AM
+            </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-127j9mz"
-          style="gap: 4px;"
-        >
           <div
-            class="rcx-box rcx-box--full rcx-css-1319w2q"
+            class="rcx-item__description"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1p4sjp4"
@@ -583,24 +595,23 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
               1 person joined
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-1f9gxzh rcx-css-1h0rn6m"
-            style="gap: 4px;"
+        </div>
+        <div
+          class="rcx-item__actions"
+        >
+          <button
+            aria-label="Decline"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            title="Decline"
+            type="button"
           >
-            <button
-              aria-label="Decline"
-              class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              title="Decline"
-              type="button"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-              >
-                
-              </i>
-            </button>
-          </div>
+              
+            </i>
+          </button>
         </div>
       </div>
     </div>
