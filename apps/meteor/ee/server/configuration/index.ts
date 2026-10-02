@@ -1,3 +1,4 @@
+import './calendarSync';
 import './contact-verification';
 import './ldap';
 import './oauth';
