@@ -218,3 +218,49 @@ it('marks only the trigger that opened the card as expanded', async () => {
 	expect(jane).toHaveAttribute('aria-haspopup', 'dialog');
 	expect(john).toHaveAttribute('aria-haspopup', 'dialog');
 });
+
+it('switches a card opened by hover to keyboard mode when the same trigger is activated from the keyboard', async () => {
+	const HoverAndKeyboardTrigger = ({ username }: { username: string }) => {
+		const { openUserCard, triggerProps } = useUserCard();
+		return (
+			<button
+				type='button'
+				{...triggerProps}
+				onMouseEnter={(e: UIEvent) => openUserCard(e, username)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter') {
+						openUserCard(e, username);
+					}
+				}}
+			>
+				{`author ${username}`}
+			</button>
+		);
+	};
+
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<HoverAndKeyboardTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		const trigger = screen.getByText('author jane');
+		fireEvent.mouseEnter(trigger);
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		trigger.focus();
+		fireEvent.keyDown(trigger, { key: 'Enter' });
+		await advance(0);
+
+		expect(screen.getByTestId('user-card').parentElement).toHaveFocus();
+
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});

@@ -146,11 +146,23 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		<UserCardContext.Provider value={contextValue}>
 			{children}
 			{isOpen && userCardData && (
-				<Suspense fallback={null}>
-					<Popover placement='top left' triggerRef={triggerRef} state={state}>
-						<UserCard {...userCardData} />
-					</Popover>
-				</Suspense>
+				// Non-modal on hover: a modal popover would aria-hide the page and lock scroll for a card the pointer just
+				// passed over. Keyed by user so handing the card to another author repositions it over the new trigger,
+				// and by input mode so reopening the same author's card from the keyboard switches it to keyboard mode.
+				<Popover
+					key={`${userCardData.username}-${openedByKeyboard ? 'keyboard' : 'pointer'}`}
+					isNonModal={!openedByKeyboard}
+					placement='top left'
+					offset={getPopoverOffset()}
+					triggerRef={triggerRef}
+					state={state}
+				>
+					<Box ref={handleCardRef} tabIndex={-1}>
+						<Suspense fallback={null}>
+							<UserCard {...userCardData} />
+						</Suspense>
+					</Box>
+				</Popover>
 			)}
 		</UserCardContext.Provider>
 	);
