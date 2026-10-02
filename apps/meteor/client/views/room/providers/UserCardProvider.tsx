@@ -4,8 +4,9 @@ import { Box, Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useMemo, useRef, useState } from 'react';
 
+import { useHoverCardDismissal } from './useHoverCardDismissal';
 import { useRoom } from '../contexts/RoomContext';
 
 const UserCard = lazy(() => import('../UserCard'));
@@ -18,23 +19,12 @@ const getPopoverOffset = () => 0.25 * parseFloat(window.getComputedStyle(documen
 
 const cardTriggerProps = { 'aria-haspopup': 'dialog' } as const;
 
-const isPointInside = (el: Element | null, x: number, y: number): boolean => {
-	if (!el) {
-		return false;
-	}
-	const rect = el.getBoundingClientRect();
-	return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-};
-
 export type UserCardProviderProps = { children: ReactNode };
 
 const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
-
 	const triggerRef = useRef<Element | null>(null);
-	// Only a click-opened card is announced on its trigger; a hover card is a pointer-only preview.
-	const [openedByClick, setOpenedByClick] = useState(false);
 
 	// Hover intent: opens after a delay and lingers briefly after the pointer leaves. Once a card has been shown, the
 	// next one opens right away, so moving from one author to another hands the card over.
@@ -85,7 +75,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		const viaClick = e.type === 'click';
 
 		triggerRef.current = trigger;
-		setOpenedByClick(viaClick);
 		setUserCardData({
 			username,
 			rid: room._id,
@@ -101,64 +90,11 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		state.open(viaClick || state.isOpen);
 	});
 
-	// Wires the document listeners for as long as the card is mounted.
-	const handleCardRef = useCallback(
-		(card: HTMLElement | null) => {
-			if (!card) {
-				return;
-			}
-
-			// A card opened by hover never holds focus, so react-aria's focus-scoped Escape never fires (WCAG 1.4.13).
-			// Captured and stopped here so it doesn't also close an underlying contextual bar; an open menu owns Escape instead.
-			const handleKeyDown = (e: KeyboardEvent) => {
-				if (e.key !== 'Escape' || document.querySelector('[role="menu"]')) {
-					return;
-				}
-				e.stopImmediatePropagation();
-				dismissUserCard();
-			};
-
-			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
-			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
-			// trigger, or a menu spawned from it (portaled outside the card's rect). Other menus on the page, such as the
-			// composer's, only count while the card's own menu is the one open.
-			const isPointerOverCard = (x: number, y: number) =>
-				isPointInside(card, x, y) ||
-				isPointInside(triggerRef.current, x, y) ||
-				(!!card.querySelector('[aria-expanded="true"]') &&
-					Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y)));
-
-			const handleMouseMove = (e: MouseEvent) => {
-				if (isPointerOverCard(e.clientX, e.clientY)) {
-					keepUserCardOpen();
-					return;
-				}
-				closeUserCard();
-			};
-
-			document.addEventListener('keydown', handleKeyDown, { capture: true });
-			document.addEventListener('mousemove', handleMouseMove);
-			document.documentElement.addEventListener('mouseleave', closeUserCard);
-			return () => {
-				document.removeEventListener('keydown', handleKeyDown, { capture: true });
-				document.removeEventListener('mousemove', handleMouseMove);
-				document.documentElement.removeEventListener('mouseleave', closeUserCard);
-			};
-		},
-		[keepUserCardOpen, closeUserCard, dismissUserCard],
-	);
-
-	const isOpen = state.isOpen && !!userCardData;
-
-	// Only the trigger that opened the card is expanded; the shared triggerProps can't carry this state.
-	useEffect(() => {
-		const trigger = triggerRef.current;
-		if (!isOpen || !openedByClick || !trigger) {
-			return;
-		}
-		trigger.setAttribute('aria-expanded', 'true');
-		return () => trigger.removeAttribute('aria-expanded');
-	}, [isOpen, openedByClick, userCardData]);
+	const card = useHoverCardDismissal({
+		onPointerEnter: keepUserCardOpen,
+		onPointerLeave: closeUserCard,
+		onDismiss: dismissUserCard,
+	});
 
 	// The popover's own dismissals (a scroll of the list holding the trigger) are explicit, so they close right away.
 	const popoverState: OverlayTriggerState = {
@@ -183,7 +119,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{isOpen && userCardData && (
+			{state.isOpen && userCardData && (
 				// Non-modal: a modal popover would aria-hide the page and lock scroll for a card the pointer just passed
 				// over. Keyed by user so handing the card to another author repositions it over the new trigger.
 				<Popover
@@ -194,7 +130,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 					triggerRef={triggerRef}
 					state={popoverState}
 				>
-					<Box ref={handleCardRef} tabIndex={-1}>
+					<Box ref={card.ref} tabIndex={-1} {...card.hoverProps}>
 						<Suspense fallback={null}>
 							<UserCard {...userCardData} />
 						</Suspense>
