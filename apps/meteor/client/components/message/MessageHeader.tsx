@@ -18,7 +18,6 @@ import {
 	useMessageListShowRoles,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
-	useMessageListHoverUserCardEnabled,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
@@ -34,7 +33,6 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { openUserCard, openUserInfo } = useUserCard();
-	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -52,16 +50,13 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		: {
 				...buttonProps,
 				style: { cursor: 'pointer' },
-				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username) }),
+				onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username),
 			};
 
 	return (
 		<FuselageMessageHeader>
 			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
-				<MessageName
-					title={!hoverUserCardEnabled && displayName !== normalizedUsername ? `@${normalizedUsername}` : undefined}
-					data-username={normalizedUsername}
-				>
+				<MessageName data-username={normalizedUsername}>
 					{message.alias || displayName}
 				</MessageName>
 			</MessageNameContainer>
