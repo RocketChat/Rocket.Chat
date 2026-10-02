@@ -20,22 +20,21 @@ const role = (_id: string, scope: IRole['scope'], description = ''): IRole => ({
 beforeEach(() => {
 	Roles.state.replaceAll([
 		role('admin', 'Users', 'Administrator'),
-		role('custom-role', 'Users'),
 		role('owner', 'Subscriptions', 'Owner'),
 		role('guest', 'Users', 'Guest'),
 	]);
 });
 
-it('splits the user roles into workspace and room roles, labelled by description or name', async () => {
+it('splits the user roles into workspace and room roles, labelled by description', async () => {
 	const { result } = renderHook(() => useUserRolesByScope(uid, rid), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withEndpoint('GET', '/v1/roles.getUsersInPublicRoles', () => ({
-				users: [{ _id: uid, username: 'member', roles: ['admin', 'custom-role'] }],
+				users: [{ _id: uid, username: 'member', roles: ['admin'] }],
 			}))
 			.withEndpoint('GET', '/v1/rooms.roles', () => ({ roles: [{ rid, u: { _id: uid, username: 'member' }, roles: ['owner'] }] }))
 			.build(),
 	});
 
-	await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator', 'custom-role'], roomRoles: ['Owner'] }));
+	await waitFor(() => expect(result.current).toEqual({ workspaceRoles: ['Administrator'], roomRoles: ['Owner'] }));
 });

@@ -24,8 +24,8 @@ export const useUserRolesByScope = (
 	});
 
 	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!roleIds?.includes(record._id);
-	// Custom roles are often created without a description; fall back to the name so they don't vanish.
-	const label = ({ description, name }: IRole) => description || name;
+	// the role endpoints only return roles that have a description
+	const label = ({ description }: IRole) => description;
 
 	const workspaceRoles = Roles.use(useShallow((state) => state.filter(belongsTo(userRoleIds)).map(label)));
 	const roomRoles = Roles.use(useShallow((state) => state.filter(belongsTo(roomRoleIds)).map(label)));
