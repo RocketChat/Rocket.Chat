@@ -538,6 +538,30 @@ describe('the activity filter', () => {
 		expect(group?.inactiveCount).toBe(0);
 	});
 
+	it('judges a room with no activity date by when the user last read, saw or joined it', async () => {
+		const undated = (name: string, dates: { lr?: Date; ls?: Date; ts?: Date }) =>
+			({
+				...createFakeSubscription({ t: 'd', name, ...emptyUnread, lm: undefined, lr: undefined, ls: undefined, ts: undefined, ...dates }),
+				...createFakeRoom({ t: 'd' }),
+			}) as unknown as SubscriptionWithRoom;
+
+		const rooms = [
+			undated('seen-long-ago', { ls: new Date(Date.now() - 400 * DAY) }),
+			undated('read-recently', { ls: new Date(Date.now() - 400 * DAY), lr: new Date(Date.now() - HOUR) }),
+			undated('no-dates-at-all', {}),
+		];
+
+		localStorage.setItem('fuselage-localStorage-sidebarActivityFilters', JSON.stringify({ Direct_Messages: 24 * 30 }));
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({ rooms, sidebarGroupByType: true, isEnterprise: true }).build(),
+		});
+
+		const directGroupOf = () => result.current.groups.find((group) => group.key === 'Direct_Messages');
+		await waitFor(() => expect(directGroupOf()?.activityFilterHours).toBe(24 * 30));
+		expect(namesOf(directGroupOf())).toEqual(['no-dates-at-all', 'read-recently']);
+		expect(directGroupOf()?.inactiveCount).toBe(1);
+	});
+
 	it('does nothing without the license module', () => {
 		const { result } = renderChannels({ activityFilterHours: 24, isEnterprise: false });
 

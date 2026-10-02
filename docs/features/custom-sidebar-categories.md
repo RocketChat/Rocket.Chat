@@ -162,12 +162,15 @@ What it does, in `makeGroup` (`useRoomList.ts`):
 
 - Applies **only while the group is expanded**. A collapsed group keeps its own rules (open room, plus
   unreads with "Always display") and reports `inactiveCount: 0`.
-- A room is **inactive** when it is read, is not the room currently open, and its `lm` is older than
-  `now - activityFilterHours` hours. Unread rooms are never hidden — the filter only
-  thins out read ones. A room without `lm` is kept.
-- `lm` is the sidebar's activity timestamp (`SubscriptionsCachedStore`): the later of the room's last
-  message and the user's last read (`lr`), falling back to the subscription's / room's creation. So opening a
-  room counts as activity, just as it does for the "Activity" sort.
+- A room is **inactive** when it is read, is not the room currently open, and its last activity
+  (`getLastActivity`) is older than `now - activityFilterHours` hours. Unread rooms are never hidden — the
+  filter only thins out read ones.
+- Last activity is the sidebar's `lm` (`SubscriptionsCachedStore`): the later of the room's last message and
+  the user's last read (`lr`), falling back to the subscription's / room's creation. So opening a room counts as
+  activity, just as it does for the "Activity" sort. Some rooms have no `lm` at all — common on old direct
+  messages in long-lived workspaces, which also lack `ts` and `lr` — so then the latest of `lr`, `ls` (last
+  seen) and `ts` is used. Only a room with none of these dates is kept, rather than guessed at. Without this
+  fallback a 1,900-room "Conversations" group kept ~400 DMs untouched for years on a 24-hour filter.
 - Inactive rooms are left out of `group.rooms` unless the group is in `groupsShowingInactive`;
   `group.inactiveCount` counts them either way, so the chip can stay while they are revealed.
 - **Dynamic groups are never filtered** (`isActivityFilterable`): calls, queued / open / on-hold chats and

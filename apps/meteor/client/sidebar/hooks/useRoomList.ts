@@ -54,6 +54,16 @@ type useRoomListReturnType = {
 export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
+/**
+ * When the room was last active, as the activity filter judges it: the sidebar's activity date, or for a room
+ * that has none (common on old direct messages), the last time the user read, saw or joined it.
+ */
+export const getLastActivity = (room: SubscriptionWithRoom): number | undefined => {
+	const dates = room.lm ? [room.lm] : [room.lr, room.ls, room.ts];
+	const times = dates.map((date) => (date ? new Date(date).getTime() : NaN)).filter((time) => Number.isFinite(time));
+	return times.length ? Math.max(...times) : undefined;
+};
+
 export const useRoomList = ({
 	collapsedGroups,
 	groupsShowingInactive,
@@ -161,14 +171,10 @@ export const useRoomList = ({
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
 				// The activity filter only thins out read rooms: unread ones and the one currently open always stay
-				// listed. A room with no activity date is kept rather than guessed at.
+				// listed. A room with no date at all is kept rather than guessed at.
 				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
-					activeSince !== undefined &&
-					room.rid !== openedRoom &&
-					!isUnreadRoom(room) &&
-					room.lm !== undefined &&
-					room.lm.getTime() < activeSince;
+					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
 				const inactiveCount = collapsed ? 0 : allRooms.filter(isInactive).length;
 				const hideInactive = inactiveCount > 0 && !showingInactive;
 
