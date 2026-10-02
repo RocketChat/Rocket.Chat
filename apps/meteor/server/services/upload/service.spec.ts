@@ -16,6 +16,8 @@ import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage'
 import { FileUpload } from '../../lib/media/file-upload';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { fileUploadIsValidContentType } from '../../lib/utils/restrictions';
+import { settings } from '../../settings';
 import { UploadFS } from '../../ufs';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -23,7 +25,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClassInternal: class {},
 }));
 jest.mock('@rocket.chat/models', () => ({
-	Uploads: { findAllByOriginalFileId: jest.fn() },
+	Uploads: { findAllByOriginalFileId: jest.fn(), findOneById: jest.fn(), updateOne: jest.fn() },
 	Users: { unsetAvatarData: jest.fn() },
 }));
 jest.mock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ error: jest.fn() })) }));
@@ -33,12 +35,15 @@ jest.mock('../../lib/authorization/canDeleteMessage', () => ({ canDeleteMessageA
 jest.mock('../../lib/messages/updateMessage', () => ({ updateMessage: jest.fn() }));
 jest.mock('../../lib/users/setUserAvatar', () => ({ setUserAvatar: jest.fn() }));
 jest.mock('../../lib/i18n', () => ({ i18n: { t: (key: string) => key } }));
+jest.mock('../../lib/utils/restrictions', () => ({ fileUploadIsValidContentType: jest.fn() }));
+jest.mock('../../settings', () => ({ settings: { get: jest.fn() } }));
 jest.mock('../../meteor-methods/messages/sendFileMessage', () => ({
 	sendFileMessage: jest.fn(),
 	parseFileIntoMessageAttachments: jest.fn(),
 }));
 jest.mock('../../meteor-methods/omnichannel/sendFileLivechatMessage', () => ({ sendFileLivechatMessage: jest.fn() }));
 jest.mock('../../ufs', () => ({ UploadFS: { getTempFilePath: jest.fn() } }));
+jest.mock('../../ufs/ufs-methods', () => ({ ufsComplete: jest.fn() }));
 
 const { error: logError } = jest.mocked(Logger).mock.results[0].value;
 
@@ -381,6 +386,50 @@ describe('UploadService', () => {
 			expect(avatarsStore.deleteByName).toHaveBeenCalledWith('jane');
 			expect(Users.unsetAvatarData).toHaveBeenCalledWith('u1');
 			expect(api.broadcast).toHaveBeenCalledWith('user.avatarUpdate', { username: 'jane', avatarETag: undefined });
+		});
+	});
+
+	describe('pending federated files', () => {
+		const pending = { _id: 'f1', complete: false, size: 2048, type: 'image/png' } as IUpload;
+
+		beforeEach(() => {
+			jest.mocked(Uploads.findOneById).mockResolvedValue(pending);
+			jest.mocked(settings.get).mockReturnValue(1024 * 1024);
+			jest.mocked(fileUploadIsValidContentType).mockReturnValue(true);
+		});
+
+		it('accepts a file whose declared size and type are allowed', async () => {
+			await expect(service.checkPendingFile({ fileId: 'f1' })).resolves.toBeUndefined();
+		});
+
+		it('refuses a file declared larger than the size limit before it is downloaded', async () => {
+			jest.mocked(settings.get).mockReturnValue(1024);
+
+			await expect(service.checkPendingFile({ fileId: 'f1' })).rejects.toThrow('exceeds the allowed size');
+		});
+
+		it('applies no size limit when the limit is -1', async () => {
+			jest.mocked(settings.get).mockReturnValue(-1);
+
+			await expect(service.checkPendingFile({ fileId: 'f1' })).resolves.toBeUndefined();
+		});
+
+		it('refuses a file whose declared type is not accepted', async () => {
+			jest.mocked(fileUploadIsValidContentType).mockReturnValue(false);
+
+			await expect(service.checkPendingFile({ fileId: 'f1' })).rejects.toThrow('File type image/png is not accepted');
+		});
+
+		it('records the downloaded size even when the upload filter rejects the file', async () => {
+			const rejection = new Error('error-file-too-large');
+			const check = jest.fn().mockRejectedValue(rejection);
+			jest.mocked(FileUpload.getStore).mockReturnValue({ store: { getFilter: () => ({ check }) } } as any);
+			const bytes = Buffer.alloc(4096);
+
+			await expect(service.completePendingFile({ fileId: 'f1', buffer: bytes })).rejects.toBe(rejection);
+
+			expect(Uploads.updateOne).toHaveBeenCalledWith({ _id: 'f1' }, { $set: { size: 4096 } });
+			expect(jest.mocked(Uploads.updateOne).mock.invocationCallOrder[0]).toBeLessThan(check.mock.invocationCallOrder[0]);
 		});
 	});
 });
