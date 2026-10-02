@@ -100,7 +100,6 @@ const getWrapperSettings = ({
 		default?: boolean;
 		showUnreads?: boolean;
 		keepUnreadsOnTop?: boolean;
-		activityFilterHours?: number;
 	}[];
 }) => {
 	const root = mockAppRoot()
@@ -475,15 +474,17 @@ describe('the activity filter', () => {
 		collapsedGroups?: string[];
 		groupsShowingInactive?: string[];
 		isEnterprise?: boolean;
-	}) =>
-		renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
-			wrapper: getWrapperSettings({
-				rooms: channels,
-				sidebarGroupByType: true,
-				isEnterprise,
-				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours }],
-			}).build(),
+	}) => {
+		localStorage.setItem('fuselage-localStorage-sidebarActivityFilters', JSON.stringify({ Channels: activityFilterHours }));
+
+		return renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
+			wrapper: getWrapperSettings({ rooms: channels, sidebarGroupByType: true, isEnterprise }).build(),
 		});
+	};
+
+	afterEach(() => {
+		localStorage.clear();
+	});
 
 	const channelsGroupOf = (groups: SidebarRoomListGroup[]) => groups.find((group) => group.key === 'Channels');
 	// Sorted, so the assertions do not depend on the sidebar sort preference.
