@@ -14,8 +14,7 @@ export type TlsConfig = {
 };
 
 export type MucJoinDecision =
-	| { allow: true; role?: 'moderator' | 'participant' }
-	| { allow: false; reason: 'forbidden' | 'members-only' | 'banned' };
+	{ allow: true; role?: 'moderator' | 'participant' } | { allow: false; reason: 'forbidden' | 'members-only' | 'banned' };
 
 export type MucDelegates = {
 	/** Decides whether a remote occupant may join a hosted room. Default: allow as participant. */
