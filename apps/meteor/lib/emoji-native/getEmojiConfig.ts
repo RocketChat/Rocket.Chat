@@ -1,8 +1,9 @@
 import { asciiList } from '@rocket.chat/message-parser';
 import { escapeHTML, escapeRegExp, unescapeHTML } from '@rocket.chat/tools';
 
-import type { EmojiEntry } from './generateEmojiData';
+import { countryFlagSpriteCodes } from './countryFlagSprites';
 import { getEmojiData } from './generateEmojiData';
+import type { EmojiEntry } from './generateEmojiData';
 import { legacyEmojioneMap } from './legacyEmojioneMap';
 import { shortnameToUnicode } from './shortnameToUnicode';
 import type { EmojiPackages } from '../emoji';
@@ -55,6 +56,29 @@ function getEmojiRegex(): RegExp {
 	return emojiRegex;
 }
 
+function getCountryFlagClass(unicode: string): string | undefined {
+	const codepoints = [...unicode].flatMap((character) => {
+		const codepoint = character.codePointAt(0);
+		return codepoint === undefined ? [] : [codepoint];
+	});
+	if (codepoints.length !== 2 || codepoints.some((codepoint) => codepoint < 0x1f1e6 || codepoint > 0x1f1ff)) {
+		return undefined;
+	}
+
+	const code = codepoints.map((codepoint) => codepoint.toString(16)).join('-');
+	if (!countryFlagSpriteCodes.has(code)) {
+		return undefined;
+	}
+
+	return `emoji--flag _${code}`;
+}
+
+function renderNativeEmoji(emoji: EmojiEntry, title: string): string {
+	const flagClass = getCountryFlagClass(emoji.unicode);
+	const className = flagClass ? `emoji ${flagClass}` : 'emoji';
+	return `<span class="${className}" title="${title}">${emoji.unicode}</span>`;
+}
+
 // HTML-escaped variants are needed because the renderer receives escaped HTML (e.g. `>:(` arrives as `&gt;:(`)
 const asciiPattern = [...new Set(Object.keys(asciiList).flatMap((ascii) => [escapeHTML(ascii), ascii]))]
 	.sort((a, b) => b.length - a.length)
@@ -97,7 +121,7 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 			const key = `:${shortcodeName}:`;
 			const emoji = emojiList[key] as EmojiEntry | undefined;
 			if (emoji?.unicode) {
-				return `<span class="emoji" title="${shortcodeGroup}">${emoji.unicode}</span>`;
+				return renderNativeEmoji(emoji, shortcodeGroup);
 			}
 
 			// Fallback to legacy emojione shortcodes for backward compatibility
@@ -113,7 +137,10 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 		if (unicodeGroup) {
 			const shortcode = unicodeMap.get(unicodeGroup);
 			if (shortcode) {
-				return `<span class="emoji" title="${shortcode}">${unicodeGroup}</span>`;
+				const emoji = emojiList[shortcode] as EmojiEntry | undefined;
+				if (emoji?.unicode) {
+					return renderNativeEmoji({ ...emoji, unicode: unicodeGroup }, shortcode);
+				}
 			}
 		}
 
@@ -128,7 +155,7 @@ function renderPicker(emojiToRender: string): string | undefined {
 	const emoji = emojiList[emojiToRender] as EmojiEntry | undefined;
 	if (!emoji?.unicode) return undefined;
 
-	return `<span class="emoji" title="${emojiToRender}">${emoji.unicode}</span>`;
+	return renderNativeEmoji(emoji, emojiToRender);
 }
 
 export const getEmojiConfig = (emojiPackages: EmojiPackages) => {

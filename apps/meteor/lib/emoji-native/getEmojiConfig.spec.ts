@@ -53,6 +53,18 @@ describe('native emoji render', () => {
 		expect(render(':smiley:')).toContain('<span class="emoji" title=":smiley:">');
 	});
 
+	it('renders country flag shortcodes with the platform-independent flag sprite class', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render(':us:')).toBe('<span class="emoji emoji--flag _1f1fa-1f1f8" title=":us:">🇺🇸</span>');
+	});
+
+	it('renders Unicode country flags with the platform-independent flag sprite class', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('🇨🇦')).toBe('<span class="emoji emoji--flag _1f1e8-1f1e6" title=":flag_ca:">🇨🇦</span>');
+	});
+
 	it('renders bare (non-VS16) emoji-default characters', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(false));
 
@@ -91,5 +103,11 @@ describe('native emoji render', () => {
 
 		expect(renderPicker(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
 		expect(renderPicker(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
+
+	it('renders country flags in the picker with the platform-independent flag sprite class', () => {
+		const { renderPicker } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(renderPicker(':flag_us:')).toBe('<span class="emoji emoji--flag _1f1fa-1f1f8" title=":flag_us:">🇺🇸</span>');
 	});
 });
