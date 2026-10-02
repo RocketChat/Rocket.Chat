@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import TriggersPage from './TriggersPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const TriggersRoute = () => {
 	const canViewTriggers = usePermission('view-livechat-triggers');

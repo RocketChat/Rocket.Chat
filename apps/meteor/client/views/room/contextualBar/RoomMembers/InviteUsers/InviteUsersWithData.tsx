@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 
@@ -29,7 +29,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => 
 		daysAndMaxUses: { days: '1', maxUses: '0' },
 	});
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const format = useFormatDateAndTime();
 	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 

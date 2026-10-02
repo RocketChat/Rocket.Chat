@@ -9,7 +9,8 @@ import {
 	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddCustomSound from './AddCustomSound';
@@ -22,7 +23,7 @@ const CustomSoundsPage = () => {
 	const route = useRoute('custom-sounds');
 	const context = useRouteParameter('context');
 
-	const reload = useRef(() => null);
+	const queryClient = useQueryClient();
 
 	const handleItemClick = useCallback(
 		(_id: string) => (): void => {
@@ -43,8 +44,8 @@ const CustomSoundsPage = () => {
 	}, [route]);
 
 	const handleReload = useCallback(() => {
-		reload.current();
-	}, []);
+		queryClient.invalidateQueries({ queryKey: ['custom-sounds'] });
+	}, [queryClient]);
 
 	return (
 		<Page flexDirection='row'>
@@ -55,7 +56,7 @@ const CustomSoundsPage = () => {
 					</Button>
 				</PageHeader>
 				<PageContent>
-					<CustomSoundsTable reload={reload} onClick={handleItemClick} />
+					<CustomSoundsTable onClick={handleItemClick} />
 				</PageContent>
 			</Page>
 			{context && (

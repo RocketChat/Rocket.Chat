@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
+import { ContextualbarDialog, Page, PageContent, PageHeader, links } from '@rocket.chat/ui-client';
 import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -17,7 +17,6 @@ import { useABACTabPermissions } from './hooks/useABACTabPermissions';
 import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useLdapSync } from '../../../hooks/useLdapSync';
-import { links } from '../../../lib/links';
 
 export type AdminABACPageProps = {
 	shouldShowWarning: boolean;

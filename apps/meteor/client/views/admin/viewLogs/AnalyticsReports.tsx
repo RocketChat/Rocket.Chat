@@ -1,8 +1,8 @@
 import { Box, Icon, Skeleton, Scrollable, Callout } from '@rocket.chat/fuselage';
+import { links } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { links } from '../../../lib/links';
 import { useStatistics } from '../../hooks/useStatistics';
 
 const AnalyticsReports = () => {

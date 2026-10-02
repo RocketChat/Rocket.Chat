@@ -1,4 +1,4 @@
-import { useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
@@ -7,7 +7,7 @@ export const useAppsContextualBar = () => {
 	const context = useRouteParameter('context');
 	const actionManager = useUiKitActionManager();
 	const tab = useRouteParameter('tab');
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const getSnapshot = useCallback(() => {
 		if (tab !== 'app' || !context) {

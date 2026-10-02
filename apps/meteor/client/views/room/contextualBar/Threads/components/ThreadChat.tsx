@@ -2,7 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useUserPreference, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
 
@@ -51,7 +51,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 		}
 	}, [sendToChannelPreference]);
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const handleComposerEscape = onEscape ?? closeTab;
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
@@ -89,8 +89,6 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 	const sendToChannelID = useId();
 	const t = useTranslation();
 
-	const [shouldJumpToBottom, setShouldJumpToBottom] = useState(true);
-
 	return (
 		// The caller's own props before the drop target's, so no caller can take `onDragEnter` off it by accident.
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...boxProps} {...fileUploadTriggerProps}>
@@ -107,11 +105,7 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 					height='full'
 				>
 					<MessageListErrorBoundary>
-						<ThreadMessageList
-							mainMessage={mainMessage}
-							shouldJumpToBottom={shouldJumpToBottom}
-							setShouldJumpToBottom={setShouldJumpToBottom}
-						/>
+						<ThreadMessageList key={mainMessage._id} mainMessage={mainMessage} />
 					</MessageListErrorBoundary>
 
 					<RoomComposer aria-label={t('Thread_composer')}>

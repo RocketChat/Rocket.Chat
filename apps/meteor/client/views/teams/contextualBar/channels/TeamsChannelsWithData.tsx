@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage, useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission, useAtLeastOnePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useAtLeastOnePermission, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 
@@ -14,7 +14,7 @@ import { useRoom } from '../../../room/contexts/RoomContext';
 const TeamsChannelsWithData = () => {
 	const room = useRoom();
 	const setModal = useSetModal();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const canAddExistingRoomToTeam = usePermission('move-room-to-team', room._id);
 	const canCreateRoomInTeam = useAtLeastOnePermission(['create-team-channel', 'create-team-group'], room._id);
 

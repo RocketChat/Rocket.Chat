@@ -2,10 +2,9 @@ import type { DistributiveOmit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { t } from 'i18next';
-import type { ContextType } from 'react';
 import { lazy } from 'react';
 
 import { sdk } from './SDKClient';
@@ -23,6 +22,8 @@ export class ActionManager implements IActionManager {
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
 
+	protected busy = false;
+
 	protected appIdByTriggerId = new Map<string, string | undefined>();
 
 	protected viewInstances = new Map<
@@ -35,7 +36,7 @@ export class ActionManager implements IActionManager {
 		}
 	>();
 
-	public constructor(protected router: ContextType<typeof RouterContext>) {}
+	public constructor(protected router: RouterContextValue) {}
 
 	protected invalidateTriggerId(id: string) {
 		const appId = this.appIdByTriggerId.get(id);
@@ -59,11 +60,17 @@ export class ActionManager implements IActionManager {
 		return this.events.off(eventName, listener);
 	}
 
+	public isBusy() {
+		return this.busy;
+	}
+
 	public notifyBusy() {
+		this.busy = true;
 		this.events.emit('busy', { busy: true });
 	}
 
 	public notifyIdle() {
+		this.busy = false;
 		this.events.emit('busy', { busy: false });
 	}
 

@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import AccountIntegrationsPage from './AccountIntegrationsPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountIntegrationsRoute = () => {
 	const webdavEnabled = useSetting('Webdav_Integration_Enabled', false);

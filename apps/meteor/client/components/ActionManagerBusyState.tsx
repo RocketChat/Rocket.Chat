@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useEffect, useState } from 'react';
+import { useEmitterValue } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
@@ -8,21 +8,7 @@ import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 const ActionManagerBusyState = () => {
 	const { t } = useTranslation();
 	const actionManager = useUiKitActionManager();
-	const [busy, setBusy] = useState(false);
-
-	useEffect(() => {
-		if (!actionManager) {
-			return;
-		}
-
-		const handleBusyStateChange = ({ busy }: { busy: boolean }) => setBusy(busy);
-
-		actionManager.on('busy', handleBusyStateChange);
-
-		return () => {
-			actionManager.off('busy', handleBusyStateChange);
-		};
-	}, [actionManager]);
+	const busy = useEmitterValue(actionManager, 'busy', () => actionManager.isBusy());
 
 	if (busy) {
 		return (

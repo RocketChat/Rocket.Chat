@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { AuthenticationContextValue, SessionContextValue } from '@rocket.chat/ui-contexts';
-import { AuthenticationContext, SessionContext, UserContext } from '@rocket.chat/ui-contexts';
+import { AuthenticationContextProvider, SessionContext, UserContext } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { useContext } from 'react';
@@ -70,7 +70,7 @@ describe('while the session is being resumed', () => {
 	it.each(['waiting', 'failed'] as const)('shows the login page when the connection has given up (%s)', (status) => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status }));
 
 		expect(screen.getByText('login-page')).toBeInTheDocument();
 		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
@@ -81,7 +81,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is merely idle', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'offline' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'offline' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is still being made', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'connecting' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'connecting' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
@@ -128,7 +128,7 @@ it('keeps the login page up while someone is logging in at it', () => {
 	renderGate(
 		mockAppRoot()
 			.withAnonymous()
-			.wrap((children) => <AuthenticationContext.Provider value={loggingIn}>{children}</AuthenticationContext.Provider>),
+			.wrap((children) => <AuthenticationContextProvider value={loggingIn}>{children}</AuthenticationContextProvider>),
 	);
 
 	expect(screen.getByText('login-page')).toBeInTheDocument();
@@ -140,7 +140,11 @@ it('keeps the login page up while someone is logging in at it', () => {
 const MaybeSessionEnded = ({ ended, children }: { ended: boolean; children: ReactNode }) => {
 	const value = useContext(UserContext);
 
-	return <UserContext.Provider value={ended ? { ...value, userId: undefined, user: null } : value}>{children}</UserContext.Provider>;
+	return (
+		<UserContext.Provider value={ended ? { ...value, userId: undefined, queryUser: () => [() => () => undefined, () => null] } : value}>
+			{children}
+		</UserContext.Provider>
+	);
 };
 
 // Deleting your own account ends the session server-side but clears nothing locally: the stored token stays put,

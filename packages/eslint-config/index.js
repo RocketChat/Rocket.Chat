@@ -55,6 +55,7 @@ export default defineConfig(
 			'react/jsx-curly-brace-presence': 'error',
 			'react/jsx-fragments': ['error', 'syntax'],
 			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
+			'react/jsx-no-constructed-context-values': 'warn',
 			'react/jsx-no-target-blank': 'warn',
 			'react/no-multi-comp': 'error',
 			'react/no-unescaped-entities': 'warn',
@@ -68,18 +69,18 @@ export default defineConfig(
 			// Core hooks rules
 			'react-hooks/exhaustive-deps': 'error',
 
-			// React Compiler rules (currently not in use)
+			// React Compiler rules: the compiler is not in use; the warned ones flag render-time bugs worth fixing anyway
 			'react-hooks/component-hook-factories': 'off',
 			'react-hooks/config': 'off',
 			'react-hooks/error-boundaries': 'off',
 			'react-hooks/gating': 'off',
 			'react-hooks/globals': 'off',
-			'react-hooks/immutability': 'off',
+			'react-hooks/immutability': 'warn',
 			'react-hooks/incompatible-library': 'off',
 			'react-hooks/preserve-manual-memoization': 'off',
 			'react-hooks/purity': 'off',
-			'react-hooks/refs': 'off',
-			'react-hooks/set-state-in-effect': 'off',
+			'react-hooks/refs': 'warn',
+			'react-hooks/set-state-in-effect': 'warn',
 			'react-hooks/set-state-in-render': 'off',
 			'react-hooks/static-components': 'off',
 			'react-hooks/unsupported-syntax': 'off',

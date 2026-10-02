@@ -1,13 +1,12 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, GenericError } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import GenericError from '../../../../../components/GenericError';
 import CannedResponseForm from '../../components/CannedResponseForm';
 import type { CannedResponseEditFormData } from '../CannedResponseEdit';
 

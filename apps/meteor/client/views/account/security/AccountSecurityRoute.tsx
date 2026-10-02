@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import AccountSecurityPage from './AccountSecurityPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountSecurityRoute = () => {
 	const isTwoFactorEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');

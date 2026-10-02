@@ -7,7 +7,7 @@ import {
 	useUser,
 	usePermission,
 	useUserSubscription,
-	useRoomToolbox,
+	useRoomToolboxActions,
 } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -33,7 +33,7 @@ export type RoomMembersWithDataProps = { rid: IRoom['_id'] };
 const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const user = useUser();
 	const room = useUserRoom(rid);
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const [type, setType] = useLocalStorage<'online' | 'all'>('members-list-type', 'online');
 	const [text, setText] = useState('');
 	const subscription = useUserSubscription(rid);

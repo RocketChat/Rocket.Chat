@@ -1,4 +1,4 @@
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useAppsContextualBar } from './useAppsContextualBar';
@@ -10,7 +10,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 		if (param === 'tab') return 'app';
 		return undefined;
 	}),
-	useRoomToolbox: jest.fn(),
+	useRoomToolboxActions: jest.fn(),
 }));
 
 jest.mock('../../../uikit/hooks/useUiKitActionManager', () => ({
@@ -28,7 +28,7 @@ beforeEach(() => {
 		on: mockOn,
 		off: mockOff,
 	});
-	(useRoomToolbox as jest.Mock).mockReturnValue({ closeTab: mockCloseTab });
+	(useRoomToolboxActions as jest.Mock).mockReturnValue({ closeTab: mockCloseTab });
 });
 
 afterEach(() => {

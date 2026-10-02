@@ -1,15 +1,17 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { TwoFactorTotpModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
-import { useState, useCallback, useEffect, useId } from 'react';
+import { useState, useCallback, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
 
 import BackupCodesModal from './BackupCodesModal';
 import TextCopy from '../../../components/TextCopy';
-import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
+import { usersQueryKeys } from '../../../lib/queryKeys';
 
 type TwoFactorTOTPFormData = {
 	authCode: string;
@@ -37,7 +39,6 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
 	const [qrCode, setQrCode] = useSafely(useState<string>());
 	const [totpSecret, setTotpSecret] = useSafely(useState<string>());
-	const [codesRemaining, setCodesRemaining] = useSafely(useState(0));
 
 	const { register, handleSubmit } = useForm<TwoFactorTOTPFormData>({ defaultValues: { authCode: '' } });
 
@@ -45,16 +46,14 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	useEffect(() => {
-		const updateCodesRemaining = async (): Promise<void | boolean> => {
-			if (!totpEnabled) {
-				return false;
-			}
-			const result = await checkCodesRemainingFn();
-			setCodesRemaining(result.remaining);
-		};
-		updateCodesRemaining();
-	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
+	const queryClient = useQueryClient();
+	const codesRemainingQueryKey = [...usersQueryKeys.all, user?._id, 'totp-codes-remaining'] as const;
+	const { data: codesRemaining = 0 } = useQuery({
+		queryKey: codesRemainingQueryKey,
+		queryFn: () => checkCodesRemainingFn(),
+		select: ({ remaining }) => remaining,
+		enabled: !!totpEnabled,
+	});
 
 	const enableTotp = useStableCallback(async () => {
 		try {
@@ -127,11 +126,12 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn, setRegisteringTotp],
 	);
 
-	const handleRegenerateCodes = useCallback(() => {
+	const handleRegenerateCodes = useStableCallback(() => {
 		const onRegenerate = async (authCode: string): Promise<void> => {
 			try {
 				const { codes } = await regenerateCodesFn({ code: authCode });
 
+				void queryClient.invalidateQueries({ queryKey: codesRemainingQueryKey });
 				setModal(<BackupCodesModal codes={codes} onClose={closeModal} />);
 			} catch (error) {
 				if (isInvalidTotpError(error)) {
@@ -142,7 +142,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 		};
 
 		setModal(<TwoFactorTotpModal onDismiss={() => undefined} onConfirm={onRegenerate} onClose={closeModal} />);
-	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
+	});
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>

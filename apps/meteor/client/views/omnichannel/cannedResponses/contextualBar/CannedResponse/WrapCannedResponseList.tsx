@@ -1,6 +1,6 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useLocalStorage, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRouter, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { memo, useCallback, useState } from 'react';
 
@@ -14,7 +14,7 @@ import CreateCannedResponse from '../../modals/CreateCannedResponse';
 
 export const WrapCannedResponseList = () => {
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const router = useRouter();
 	const setModal = useSetModal();
 

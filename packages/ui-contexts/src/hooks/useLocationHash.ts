@@ -1,8 +1,8 @@
-import { useContext, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 export const useLocationHash = () => {
-	const { getLocationHash, subscribeToRouteChange } = useContext(RouterContext);
+	const { getLocationHash, subscribeToRouteChange } = useRouter();
 	return useSyncExternalStore(subscribeToRouteChange, getLocationHash);
 };

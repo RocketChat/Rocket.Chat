@@ -1,6 +1,6 @@
 import { FocusScope } from '@react-aria/focus';
 import { isInviteSubscription } from '@rocket.chat/core-typings';
-import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
+import { ContextualbarSkeleton, GenericError } from '@rocket.chat/ui-client';
 import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
 import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import { createElement, lazy, memo, Suspense } from 'react';
@@ -20,7 +20,6 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
-import GenericError from '../../components/GenericError';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 

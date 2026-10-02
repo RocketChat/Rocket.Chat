@@ -61,8 +61,12 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	);
 
 	useEffect(() => {
-		VideoConfManager.on('direct/stopped', () => setOutgoing(undefined));
-		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
+		const offCbs = [
+			VideoConfManager.on('direct/stopped', () => setOutgoing(undefined)),
+			VideoConfManager.on('calling/ended', () => setOutgoing(undefined)),
+		];
+
+		return () => offCbs.forEach((offCb) => offCb());
 	}, []);
 
 	// The conference window is its own window, running its own copy of the app — so "am I the call window" is a

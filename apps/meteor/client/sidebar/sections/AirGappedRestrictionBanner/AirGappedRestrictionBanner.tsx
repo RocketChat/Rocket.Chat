@@ -1,8 +1,8 @@
 import { SidebarBanner } from '@rocket.chat/fuselage';
+import { links } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AirGappedRestrictionWarning from './AirGappedRestrictionWarning';
-import { links } from '../../../lib/links';
 
 export type AirGappedRestrictionSectionProps = { isRestricted: boolean; remainingDays: number };
 

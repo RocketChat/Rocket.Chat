@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useLanguage, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useLanguage, useToastMessageDispatch, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useEffect, useState, memo } from 'react';
@@ -13,7 +13,7 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 const AutoTranslateWithData = () => {
 	const room = useRoom();
 	const subscription = useRoomSubscription();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const userLanguage = useLanguage();
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
 	const dispatchToastMessage = useToastMessageDispatch();

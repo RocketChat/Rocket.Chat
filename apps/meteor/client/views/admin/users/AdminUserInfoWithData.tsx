@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarContent } from '@rocket.chat/ui-client';
+import { ContextualbarContent, FormSkeleton, UserCardRole, UserInfo } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -9,12 +9,15 @@ import { useMemo } from 'react';
 import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../components/Skeleton';
-import { UserCardRole } from '../../../components/UserCard';
-import { UserInfo } from '../../../components/UserInfo';
+import MarkdownText from '../../../components/MarkdownText';
+import UTCClock from '../../../components/UTCClock';
 import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
+
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
+const renderLocalTime = (utcOffset: number) => <UTCClock utcOffset={utcOffset} />;
 
 export type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
@@ -25,6 +28,7 @@ export type AdminUserInfoWithDataProps = {
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
+	const timeAgo = useTimeAgo();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const getUsersInfo = useEndpoint('GET', '/v1/users.info');
@@ -117,6 +121,9 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 	return (
 		<UserInfo
 			{...user}
+			timeAgo={timeAgo}
+			renderMarkdown={renderMarkdown}
+			renderLocalTime={renderLocalTime}
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}

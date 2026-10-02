@@ -1,7 +1,7 @@
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRoute, useRouteParameter, useEndpoint, UserContext } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useRouteParameter, useEndpoint, useLogout } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { deviceManagementQueryKeys } from '../lib/queryKeys';
@@ -16,7 +16,7 @@ export const useDeviceLogout = (
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deviceManagementRouter = useRoute('device-management');
 	const routeId = useRouteParameter('id');
-	const { logout } = useContext(UserContext);
+	const logout = useLogout();
 
 	const queryClient = useQueryClient();
 	const logoutEndpoint = useEndpoint('POST', endpoint);

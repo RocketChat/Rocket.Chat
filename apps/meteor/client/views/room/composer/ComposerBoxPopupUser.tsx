@@ -4,7 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayNames } from '../../../../lib/getUserDisplayNames';
-import ReactiveUserStatus from '../../../components/UserStatus/ReactiveUserStatus';
+import { ReactiveUserStatus } from '../../../components/UserStatus';
 
 export type ComposerBoxPopupUserProps = {
 	_id: string;

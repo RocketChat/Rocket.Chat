@@ -254,6 +254,26 @@ it('renders a code block with language', async () => {
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
+	await waitFor(() => expect(screen.getByRole('region').querySelector('.hljs-keyword')).toHaveTextContent('const'));
+});
+
+it('highlights a code block whose language is given by an alias', async () => {
+	render(
+		<Suspense fallback={null}>
+			<Markup
+				tokens={[
+					{
+						type: 'CODE',
+						value: [{ type: 'CODE_LINE', value: { type: 'PLAIN_TEXT', value: 'def foo(): pass' } }],
+						language: 'py',
+					},
+				]}
+			/>
+		</Suspense>,
+	);
+
+	expect(await screen.findByRole('region')).toBeInTheDocument();
+	await waitFor(() => expect(screen.getByRole('region').querySelector('.hljs-keyword')).toHaveTextContent('def'));
 });
 
 it('renders a Katex block', async () => {

@@ -1,6 +1,7 @@
 import type { RoomType, RoomRouteData, DirectRoomRouteData, OmnichannelRoomRouteData, ChannelRouteData } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
-import { createContext } from 'react';
+
+import { createRequiredContext } from './createRequiredContext';
 
 export interface IRouterPaths {
 	index: {
@@ -78,35 +79,4 @@ export type RouterContextValue = {
 	};
 };
 
-export const RouterContext = createContext<RouterContextValue>({
-	subscribeToRouteChange: () => () => undefined,
-	getLocationPathname: () => {
-		throw new Error('not implemented');
-	},
-	getRouteParameters: () => {
-		throw new Error('not implemented');
-	},
-	getLocationSearch: () => {
-		throw new Error('not implemented');
-	},
-	getLocationHash: () => {
-		throw new Error('not implemented');
-	},
-	getSearchParameters: () => {
-		throw new Error('not implemented');
-	},
-	getRouteName: () => {
-		throw new Error('not implemented');
-	},
-	getPreviousRouteName: () => {
-		throw new Error('not implemented');
-	},
-	buildRoutePath: () => {
-		throw new Error('not implemented');
-	},
-	navigate: () => undefined,
-	defineRoutes: () => () => undefined,
-	getRoomRoute: () => {
-		throw new Error('not implemented');
-	},
-});
+export const [RouterContextProvider, useRouter] = createRequiredContext<RouterContextValue>('RouterContext');

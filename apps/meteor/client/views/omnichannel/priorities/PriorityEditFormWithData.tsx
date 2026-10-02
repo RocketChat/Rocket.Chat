@@ -1,9 +1,9 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import type { PriorityEditFormProps } from './PriorityEditForm';
 import PriorityEditForm from './PriorityEditForm';
-import { FormSkeleton } from '../../../components/Skeleton';
 import { usePriorityInfo } from '../directory/hooks/usePriorityInfo';
 
 export type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {

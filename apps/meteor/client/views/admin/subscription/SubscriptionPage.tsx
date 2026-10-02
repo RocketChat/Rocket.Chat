@@ -1,5 +1,5 @@
 import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid, GridItem } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	Page,
 	PageScrollableContentWithShadow,
@@ -11,7 +11,6 @@ import {
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import { memo, useCallback, useEffect } from 'react';
-import tinykeys from 'tinykeys';
 
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
@@ -27,27 +26,11 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
+import { useShowLicense } from './hooks/useShowLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
-
-function useShowLicense() {
-	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
-
-	useEffect(() => {
-		const unsubscribe = tinykeys(window, {
-			'ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight b a': () => {
-				setShowLicenseTab((showLicenseTab) => !showLicenseTab);
-			},
-		});
-		return () => {
-			unsubscribe();
-		};
-	});
-
-	return showLicenseTab;
-}
 
 const SubscriptionPage = () => {
 	const showLicense = useShowLicense();

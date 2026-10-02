@@ -14,6 +14,7 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { TextInput, Field, ToggleSwitch, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -30,7 +31,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 

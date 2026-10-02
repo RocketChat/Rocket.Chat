@@ -5,7 +5,7 @@ import { useUser } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupInfo } from '@rocket.chat/ui-video-conf';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
-import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
+import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 export type VideoConfPopupRoomInfoProps = { room: IRoom };

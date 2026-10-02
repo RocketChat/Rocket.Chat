@@ -12,7 +12,7 @@ import type { Method, PathFor, OperationParams, OperationResult, UrlParams, Path
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
-import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { Info as info } from '../../app/utils/rocketchat.info';
 import { sdk } from '../lib/SDKClient';
@@ -169,15 +169,16 @@ const subscribeStatus = (cb: () => void): (() => void) => {
 	ensureStatusBridge();
 	// Close the race between the cachedStatus computed at module load and the
 	// first event delivered through the bridge: status may have changed in
-	// between (e.g. the socket connected before <ServerProvider> mounted), and
+	// between (e.g. the socket connected before anything subscribed), and
 	// useSyncExternalStore would otherwise surface the stale snapshot until
-	// the next external transition.
+	// the next external transition. Every listener hears about it, since the
+	// ones already subscribed hold the same stale snapshot.
+	statusListeners.add(cb);
 	const next = computeStatus();
 	if (!isStatusEqual(cachedStatus, next)) {
 		cachedStatus = next;
-		cb();
+		statusListeners.forEach((listener) => listener());
 	}
-	statusListeners.add(cb);
 	return () => {
 		statusListeners.delete(cb);
 	};
@@ -187,30 +188,21 @@ const getStatusSnapshot = (): CombinedStatus => cachedStatus;
 
 export type ServerProviderProps = { children?: ReactNode };
 
-const ServerProvider = ({ children }: ServerProviderProps) => {
-	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
-
-	const value = useMemo(
-		(): ServerContextValue => ({
-			connected,
-			status,
-			retryCount,
-			retryTime,
-			info,
-			absoluteUrl,
-			callMethod,
-			callEndpoint,
-			uploadToEndpoint,
-			getStream,
-			getStreamAll,
-			writeStream,
-			disconnect,
-			reconnect,
-		}),
-		[connected, retryCount, retryTime, status],
-	);
-
-	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
+const value: ServerContextValue = {
+	subscribeToConnectionStatus: subscribeStatus,
+	getConnectionStatus: getStatusSnapshot,
+	info,
+	absoluteUrl,
+	callMethod,
+	callEndpoint,
+	uploadToEndpoint,
+	getStream,
+	getStreamAll,
+	writeStream,
+	disconnect,
+	reconnect,
 };
+
+const ServerProvider = ({ children }: ServerProviderProps) => <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 
 export default ServerProvider;

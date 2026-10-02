@@ -11,15 +11,15 @@ import {
 	GenericTableCell,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { links } from '../../../../lib/links';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
 
 type Scope = 'global' | 'department' | 'user';

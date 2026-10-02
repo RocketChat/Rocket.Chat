@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 
 import EditRoomInfoWithData from './EditRoomInfo';
@@ -17,7 +17,7 @@ export type RoomInfoRouterProps = {
 const RoomInfoRouter = ({ onClickBack, onEnterRoom, resetState }: RoomInfoRouterProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const room = useRoom();
 
 	const canEdit = useCanEditRoom(room);

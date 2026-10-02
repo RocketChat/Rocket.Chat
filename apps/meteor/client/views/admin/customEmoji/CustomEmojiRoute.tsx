@@ -7,15 +7,16 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	NotAuthorizedPage,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomEmojiRoute = () => {
 	const { t } = useTranslation();
@@ -39,11 +40,11 @@ const CustomEmojiRoute = () => {
 		route.push({});
 	};
 
-	const reload = useRef(() => null);
+	const queryClient = useQueryClient();
 
 	const handleChange = useCallback(() => {
-		reload.current();
-	}, [reload]);
+		queryClient.invalidateQueries({ queryKey: ['getEmojiList'] });
+	}, [queryClient]);
 
 	if (!canManageEmoji) {
 		return <NotAuthorizedPage />;
@@ -58,7 +59,7 @@ const CustomEmojiRoute = () => {
 					</Button>
 				</PageHeader>
 				<PageContent>
-					<CustomEmoji reload={reload} onClick={handleItemClick} />
+					<CustomEmoji onClick={handleItemClick} />
 				</PageContent>
 			</Page>
 			{context && (

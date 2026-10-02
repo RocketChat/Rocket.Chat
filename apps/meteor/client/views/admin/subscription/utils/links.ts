@@ -1,4 +1,4 @@
-import { links } from '../../../../lib/links';
+import { links } from '@rocket.chat/ui-client';
 
 export const CONTACT_SALES_LINK = links.go.contactSalesProduct;
 export const PRICING_LINK = links.go.pricingProduct;

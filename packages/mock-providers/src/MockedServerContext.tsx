@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
+const connectionStatus = { connected: true, status: 'connected', retryCount: 0 } as const;
+
 export const MockedServerContext = ({
 	handleRequest,
 	handleMethod,
@@ -30,6 +32,8 @@ export const MockedServerContext = ({
 		<ServerContext.Provider
 			value={
 				{
+					subscribeToConnectionStatus: () => () => undefined,
+					getConnectionStatus: () => connectionStatus,
 					absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 					callMethod: <MethodName extends ServerMethodName>(methodName: MethodName, ...args: ServerMethodParameters<MethodName>) => {
 						return handleMethod?.(methodName, ...args);

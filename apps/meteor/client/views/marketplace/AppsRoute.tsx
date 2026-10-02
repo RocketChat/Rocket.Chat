@@ -1,3 +1,4 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import { useState, useEffect } from 'react';
 
@@ -7,7 +8,6 @@ import AppsPage from './AppsPage';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 import PageSkeleton from '../../components/PageSkeleton';
 import AppsProvider from '../../providers/AppsProvider';
-import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 
 const AppsRoute = () => {
 	const [isLoading, setLoading] = useState(true);

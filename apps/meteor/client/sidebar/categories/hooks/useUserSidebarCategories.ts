@@ -1,9 +1,8 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { isStaleSidebarCategory } from '@rocket.chat/core-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
-
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; categoryId?: string };
 

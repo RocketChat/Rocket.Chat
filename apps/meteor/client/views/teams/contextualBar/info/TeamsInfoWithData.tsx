@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 import TeamsInfo from './TeamsInfo';
@@ -9,7 +9,7 @@ import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
 const TeamsInfoWithData = () => {
 	const room = useRoom();
 	const [editing, setEditing] = useState(false);
-	const { openTab, closeTab } = useRoomToolbox();
+	const { openTab, closeTab } = useRoomToolboxActions();
 
 	const canEdit = usePermission('edit-team-channel', room._id);
 	const onClickBack = useStableCallback(() => setEditing(false));

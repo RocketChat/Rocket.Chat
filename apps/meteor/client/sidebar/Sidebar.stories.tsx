@@ -1,4 +1,4 @@
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting, IUser } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import type { StoryObj, Meta } from '@storybook/react';
@@ -151,18 +151,20 @@ const subscriptions: SubscriptionWithRoom[] = [
 	),
 ];
 
+const johnDoe: IUser = {
+	_id: 'john.doe',
+	username: 'john.doe',
+	name: 'John Doe',
+	createdAt: new Date(),
+	active: true,
+	_updatedAt: new Date(),
+	roles: ['admin'],
+	type: 'user',
+};
+
 const userContextValue: ContextType<typeof UserContext> = {
 	userId: 'john.doe',
-	user: {
-		_id: 'john.doe',
-		username: 'john.doe',
-		name: 'John Doe',
-		createdAt: new Date(),
-		active: true,
-		_updatedAt: new Date(),
-		roles: ['admin'],
-		type: 'user',
-	},
+	queryUser: () => [() => () => undefined, () => johnDoe],
 	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => [
 		() => () => undefined,
 		() => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),

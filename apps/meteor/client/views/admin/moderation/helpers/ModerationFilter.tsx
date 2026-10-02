@@ -1,5 +1,6 @@
+import { FilterByText } from '@rocket.chat/ui-client';
+
 import DateRangePicker from './DateRangePicker';
-import FilterByText from '../../../../components/FilterByText';
 
 export type ModerationFilterProps = {
 	text: string;

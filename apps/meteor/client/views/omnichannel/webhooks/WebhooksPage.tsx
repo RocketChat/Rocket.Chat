@@ -13,13 +13,11 @@ import {
 	FieldLabel,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, links } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-
-import { links } from '../../../lib/links';
 
 export type WebhooksPageProps = {
 	settings: Record<string, SettingValue>;

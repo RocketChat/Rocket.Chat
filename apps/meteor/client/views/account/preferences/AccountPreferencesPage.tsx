@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter, getDirtyFields } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -15,7 +15,6 @@ import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccountPreferencesPage = () => {
 	const t = useTranslation();

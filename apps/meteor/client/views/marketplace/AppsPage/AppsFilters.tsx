@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { FilterByText } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../components/FilterByText';
 import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
 import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';

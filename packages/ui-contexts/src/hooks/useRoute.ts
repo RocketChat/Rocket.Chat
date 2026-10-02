@@ -1,7 +1,7 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { RouteName, RouteParameters } from '../RouterContext';
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 type Route = {
 	push: (
@@ -16,7 +16,7 @@ type Route = {
 
 /** @deprecated prefer `useRouter` */
 export const useRoute = (name: RouteName): Route => {
-	const router = useContext(RouterContext);
+	const router = useRouter();
 
 	return useMemo<Route>(
 		() => ({

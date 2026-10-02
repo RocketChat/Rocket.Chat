@@ -1,8 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMemo, useEffect, useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const style = { width: '100%' };
 
@@ -28,23 +31,14 @@ const AgentOverview = ({
 		[departmentId, end, start, type],
 	);
 
-	const [displayData, setDisplayData] = useState<{ head: { name: string }[]; data: { name: string; value: number | string }[] }>({
-		head: [],
-		data: [],
-	});
-
 	const loadData = useEndpoint('GET', '/v1/livechat/analytics/agent-overview');
 
-	useEffect(() => {
-		async function fetchData() {
-			if (!start || !end) {
-				return;
-			}
-			const value = await loadData(params);
-			setDisplayData(value);
-		}
-		fetchData();
-	}, [start, end, loadData, params]);
+	const { data: displayData = { head: [], data: [] } } = useQuery({
+		queryKey: [...omnichannelQueryKeys.analytics.all(departmentId), 'agent-overview', params],
+		queryFn: () => loadData(params),
+		enabled: !!start && !!end,
+		placeholderData: keepPreviousData,
+	});
 
 	return (
 		<Table style={style} fixed>

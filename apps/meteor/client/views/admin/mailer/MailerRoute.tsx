@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import MailerPage from './MailerPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const MailerRoute = () => {
 	const canAccessMailer = usePermission('access-mailer');

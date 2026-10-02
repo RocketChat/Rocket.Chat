@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
@@ -85,7 +86,7 @@ const testCases = Object.values(composed).map((Story) => [Story.storyName || 'St
 describe('DiscussionsList', () => {
 	it('renders Default with virtual list and discussion rows', () => {
 		const { Default } = composed;
-		render(<Default />);
+		render(<Default />, { wrapper: mockAppRoot().build() });
 
 		const list = screen.getByTestId('discussions-virtual-list');
 		expect(list).toBeInTheDocument();
@@ -96,7 +97,7 @@ describe('DiscussionsList', () => {
 
 	it('renders Empty without virtual list', () => {
 		const { Empty } = composed;
-		render(<Empty />);
+		render(<Empty />, { wrapper: mockAppRoot().build() });
 
 		expect(screen.queryByTestId('discussions-virtual-list')).not.toBeInTheDocument();
 		expect(screen.getByText('No_Discussions_found')).toBeInTheDocument();
@@ -104,19 +105,19 @@ describe('DiscussionsList', () => {
 
 	it('renders Loading without virtual list', () => {
 		const { Loading } = composed;
-		render(<Loading />);
+		render(<Loading />, { wrapper: mockAppRoot().build() });
 
 		expect(screen.queryByTestId('discussions-virtual-list')).not.toBeInTheDocument();
 	});
 });
 
 test.each(testCases)('renders %s with stable structure', (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
+	const { baseElement } = render(<Story />, { wrapper: mockAppRoot().build() });
 	expect(baseElement).toMatchSnapshot();
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />);
+	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();

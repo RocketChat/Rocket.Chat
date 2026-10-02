@@ -1,9 +1,9 @@
-import { useCallback, useContext, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
-import { RouterContext } from '../RouterContext';
+import { useRouter } from '../RouterContext';
 
 export const useCurrentRoutePath = () => {
-	const router = useContext(RouterContext);
+	const router = useRouter();
 
 	const getSnapshot = useCallback(() => {
 		const name = router.getRouteName();

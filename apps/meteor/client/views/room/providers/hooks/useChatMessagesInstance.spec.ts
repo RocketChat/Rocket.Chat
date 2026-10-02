@@ -216,4 +216,42 @@ describe('useChatMessagesInstance', () => {
 		expect(updateSubscriptionMock).toHaveBeenCalledTimes(2);
 		expect(ChatMessages).toHaveBeenCalledTimes(2);
 	});
+
+	it('should hand a new emoji picker to the same ChatMessages instance', () => {
+		const { result, rerender } = renderHook(() =>
+			useChatMessagesInstance({
+				rid: mockSubscription.rid,
+				tmid: 'threadId',
+				encrypted: false,
+			}),
+		);
+		const instance = result.current;
+
+		const newEmojiPicker = { ...mockEmojiPicker, isOpen: true };
+		(useEmojiPicker as jest.Mock).mockReturnValue(newEmojiPicker);
+		rerender();
+
+		expect(result.current).toBe(instance);
+		expect(result.current.emojiPicker).toBe(newEmojiPicker);
+		expect(ChatMessages).toHaveBeenCalledTimes(1);
+	});
+
+	it('should release the previous ChatMessages instance when the E2EE room state changes', () => {
+		const { result, rerender } = renderHook(() =>
+			useChatMessagesInstance({
+				rid: mockSubscription.rid,
+				tmid: 'threadId',
+				encrypted: true,
+			}),
+		);
+		const instance = result.current;
+
+		(useE2EERoomState as jest.Mock).mockReturnValue('WAITING_KEYS');
+		rerender();
+
+		expect(result.current).not.toBe(instance);
+		const [previous, current] = (ChatMessages as jest.Mock).mock.results.map(({ value }) => value);
+		expect(previous.release).toHaveBeenCalledTimes(1);
+		expect(current.release).not.toHaveBeenCalled();
+	});
 });

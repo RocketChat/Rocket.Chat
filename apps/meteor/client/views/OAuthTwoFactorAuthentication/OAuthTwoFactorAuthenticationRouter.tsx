@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { Page } from '@rocket.chat/ui-client';
+import { Page, TwoFactorModal } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	useLoginWithToken,
@@ -10,8 +10,6 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import TwoFactorModal from '../../components/TwoFactorModal/TwoFactorModal';
 
 const throwErrorOnInvalidMethod = (method: never): never => {
 	throw new Error(`Invalid Two Factor method: ${method}`);

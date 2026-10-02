@@ -1,18 +1,20 @@
 export { AttachmentContext, type AttachmentContextValue } from './AttachmentContext';
-export { type AuthenticationContextValue, AuthenticationContext, type LoginService } from './AuthenticationContext';
+export { type AuthenticationContextValue, AuthenticationContextProvider, type LoginService } from './AuthenticationContext';
 export { AuthorizationContext, type AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
-export { ModalContext, type ModalContextValue } from './ModalContext';
+export { CurrentModalContext, type CurrentModalContextValue, ModalContext, type ModalContextValue } from './ModalContext';
 export * from './RouterContext';
 export {
 	RoomToolboxContext,
 	type RoomToolboxContextValue,
+	RoomToolboxActionsContext,
+	type RoomToolboxActionsContextValue,
 	type RoomToolboxActionConfig,
 	type RenderToolboxItemParams,
 } from './RoomToolboxContext';
-export { ServerContext, type ServerContextValue, type UploadResult } from './ServerContext';
+export { ServerContext, type ServerConnectionStatus, type ServerContextValue, type UploadResult } from './ServerContext';
 export { SessionContext, type SessionContextValue } from './SessionContext';
 export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, type ToastMessagesContextValue } from './ToastMessagesContext';
@@ -23,6 +25,7 @@ export { UserCardContext, type UserCardContextValue } from './UserCardContext';
 export { UserPresenceContext, type UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, type Device, type DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, type IActionManager } from './ActionManagerContext';
+export { createRequiredContext } from './createRequiredContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -67,7 +70,7 @@ export { useRoleIdResolver } from './hooks/useRoleIdResolver';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoomToolbox } from './hooks/useRoomToolbox';
-export { useRouter } from './hooks/useRouter';
+export { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useSearchParameter } from './hooks/useSearchParameter';

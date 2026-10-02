@@ -1,10 +1,10 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { MovableRoom } from './useUserSidebarCategories';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import CreateCategoryModal from '../CreateCategoryModal';
 import CustomCategoryUpsellModal from '../CustomCategoryUpsellModal';
 import DeleteCategoryModal from '../DeleteCategoryModal';

@@ -1,9 +1,9 @@
 import { isOmnichannelRoom, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 
 import Favorite from './Favorite';
 import RoomHeaderCategoryMenu from './RoomHeaderCategoryMenu';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
 const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f']; category?: ISubscription['category'] } }) => {

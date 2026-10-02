@@ -9,15 +9,37 @@ import type {
 } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
-import type { ServerContextValue, UploadResult } from '@rocket.chat/ui-contexts';
+import type { ServerConnectionStatus, ServerContextValue, UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
-import { useSyncExternalStore } from 'react';
 
 import { useStore } from '../store';
 import { useSDK } from './SDKProvider';
+
+const connectionStatuses = {
+	connected: { status: 'connected', connected: true, retryCount: 0 },
+	connecting: { status: 'connecting', connected: false, retryCount: 0 },
+	failed: { status: 'failed', connected: false, retryCount: 0 },
+	waiting: { status: 'waiting', connected: false, retryCount: 0 },
+	offline: { status: 'offline', connected: false, retryCount: 0 },
+} as const satisfies Record<ServerConnectionStatus['status'], ServerConnectionStatus>;
+
+const getConnectionStatus = (sdkStatus: string): ServerConnectionStatus => {
+	switch (sdkStatus) {
+		case 'connecting':
+			return connectionStatuses.connecting;
+		case 'connected':
+			return connectionStatuses.connected;
+		case 'failed':
+			return connectionStatuses.failed;
+		case 'idle':
+			return connectionStatuses.waiting;
+		default:
+			return connectionStatuses.offline;
+	}
+};
 
 export type ServerProviderProps = { children: ComponentChildren; serverURL: string };
 
@@ -25,24 +47,6 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 	const sdk = useSDK();
 
 	const { token } = useStore();
-
-	const status = useSyncExternalStore(
-		(cb) => sdk.connection.on('connection', cb),
-		() => {
-			switch (sdk.connection.status) {
-				case 'connecting':
-					return 'connecting' as const;
-				case 'connected':
-					return 'connected' as const;
-				case 'failed':
-					return 'failed' as const;
-				case 'idle':
-					return 'waiting' as const;
-				default:
-					return 'offline' as const;
-			}
-		},
-	);
 
 	const contextValue = useMemo(() => {
 		const absoluteUrl = (path: string): string => {
@@ -145,8 +149,8 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 		};
 
 		const contextValue = {
-			status,
-			connected: status === 'connected',
+			subscribeToConnectionStatus: (onStoreChange: () => void) => sdk.connection.on('connection', onStoreChange),
+			getConnectionStatus: () => getConnectionStatus(sdk.connection.status),
 			// info,
 			absoluteUrl,
 			callMethod,
@@ -158,7 +162,7 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 		} as unknown as ServerContextValue; // FIXME
 
 		return contextValue;
-	}, [host, sdk, status, token]);
+	}, [host, sdk, token]);
 
 	return <ServerContext.Provider value={contextValue}>{children}</ServerContext.Provider>;
 };

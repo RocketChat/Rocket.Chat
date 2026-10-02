@@ -1,7 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
-import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import {
+	usePermission,
+	useRole,
+	useSetting,
+	useTranslation,
+	useUser,
+	useUserPreference,
+	useRoomToolboxActions,
+} from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
@@ -44,7 +52,7 @@ const RoomBody = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
-	const toolbox = useRoomToolbox();
+	const toolbox = useRoomToolboxActions();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 

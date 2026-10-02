@@ -14,7 +14,7 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '@rocket.chat/ui-client';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
@@ -38,7 +38,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const room = useRoom();
 	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
 
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);

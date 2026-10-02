@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import EmailInboxPage from './EmailInboxPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const EmailInboxRoute = () => {
 	const canViewEmailInbox = usePermission('manage-email-inbox');

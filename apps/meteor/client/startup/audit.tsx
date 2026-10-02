@@ -1,3 +1,4 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
@@ -6,7 +7,6 @@ import { hasAllPermission } from '../lib/authorization';
 import { onToggledFeature } from '../lib/onToggledFeature';
 import { router } from '../providers/RouterProvider';
 import SettingsProvider from '../providers/SettingsProvider';
-import NotAuthorizedPage from '../views/notAuthorized/NotAuthorizedPage';
 import MainLayout from '../views/root/MainLayout';
 
 const AuditPage = lazy(() => import('../views/audit/AuditPage'));

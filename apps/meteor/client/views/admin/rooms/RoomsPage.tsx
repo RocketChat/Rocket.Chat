@@ -1,7 +1,7 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import { useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditRoomWithData from './EditRoomWithData';
@@ -13,7 +13,10 @@ const RoomsPage = () => {
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 
-	const reloadRef = useRef(() => null);
+	const queryClient = useQueryClient();
+	const handleReload = useStableCallback(() =>
+		queryClient.invalidateQueries({ queryKey: ['rooms'], predicate: ({ queryKey }) => queryKey.at(-1) === 'admin' }),
+	);
 	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/rooms'));
 
 	return (
@@ -21,12 +24,12 @@ const RoomsPage = () => {
 			<Page>
 				<PageHeader title={t('Rooms')} />
 				<PageContent>
-					<RoomsTable reload={reloadRef} />
+					<RoomsTable />
 				</PageContent>
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					<EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />
+					<EditRoomWithData rid={id} onReload={handleReload} onClose={handleCloseContextualbar} />
 				</ContextualbarDialog>
 			)}
 		</Page>

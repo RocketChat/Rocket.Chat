@@ -1,7 +1,7 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useButtonPattern, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useDocumentTitle, HeaderTitle, HeaderTitleButton } from '@rocket.chat/ui-client';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
@@ -12,7 +12,7 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 	const { t } = useTranslation();
 
 	useDocumentTitle(room.name, false);
-	const { openTab } = useRoomToolbox();
+	const { openTab } = useRoomToolboxActions();
 
 	const handleOpenRoomInfo = useStableCallback(() => {
 		if (isTeamRoom(room)) {

@@ -1,7 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
-import { useContext, useEffect } from 'react';
+import { type LocationPathname, useLoginWithCustomOauth, useLoginWithToken, useLogout, useSetting } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
 import { AccountBox } from '../../../lib/AccountBox';
@@ -16,7 +16,7 @@ export const useIframeCommands = () => {
 	const iframeReceiveOrigin = useSetting('Iframe_Integration_receive_origin', '*');
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
-	const { logout } = useContext(UserContext);
+	const logout = useLogout();
 	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
@@ -100,7 +100,7 @@ export const useIframeCommands = () => {
 			},
 
 			'logout'() {
-				void logout();
+				logout();
 				router.navigate('/home');
 			},
 		} as const;

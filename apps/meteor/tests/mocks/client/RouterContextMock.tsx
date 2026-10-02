@@ -1,5 +1,5 @@
 import type { To, SearchParameters, LocationPathname, LocationSearch } from '@rocket.chat/ui-contexts';
-import { RouterContext } from '@rocket.chat/ui-contexts';
+import { RouterContextProvider } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import { useRef, useMemo } from 'react';
 import type { MutableRefObject, ReactNode } from 'react';
@@ -69,7 +69,7 @@ const RouterContextMock = ({ children, navigate, currentPath, searchParameters =
 	}
 
 	return (
-		<RouterContext.Provider
+		<RouterContextProvider
 			value={useMemo(() => {
 				return {
 					subscribeToRouteChange: () => () => undefined,
@@ -112,7 +112,7 @@ const RouterContextMock = ({ children, navigate, currentPath, searchParameters =
 			}, [currentPath, navigate, routeParameters, searchParameters])}
 		>
 			{children}
-		</RouterContext.Provider>
+		</RouterContextProvider>
 	);
 };
 

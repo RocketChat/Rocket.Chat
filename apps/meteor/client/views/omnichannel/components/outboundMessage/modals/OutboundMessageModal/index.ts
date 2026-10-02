@@ -1,3 +1,2 @@
-export { default } from './OutboundMessageModal';
-export * from './OutboundMessageModal';
+export type { OutboundMessageModalProps } from './OutboundMessageModal';
 export * from './useOutboundMessageModal';

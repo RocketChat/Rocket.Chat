@@ -9,7 +9,10 @@ import { useUserSidebarCategories } from './useUserSidebarCategories';
 jest.mock('./useUserSidebarCategories', () => ({ useUserSidebarCategories: jest.fn(), FAVORITES_TARGET: 'favorites' }));
 jest.mock('./useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
 jest.mock('./useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
-jest.mock('../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: () => ({ data: true }) }));
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	useHasLicenseModule: () => ({ data: true }),
+}));
 
 const mockedUseCustomCategories = jest.mocked(useUserSidebarCategories);
 const mockedUseMoveRoomCategory = jest.mocked(useMoveRoomCategory);

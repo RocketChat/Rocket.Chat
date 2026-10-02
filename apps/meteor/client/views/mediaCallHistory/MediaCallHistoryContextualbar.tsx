@@ -8,11 +8,15 @@ import {
 	ContextualbarSkeleton,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import {
+	MediaCallHistoryExternal,
+	isExternalCallHistoryItem,
+	MediaCallHistoryInternal,
+	isInternalCallHistoryItem,
+} from '@rocket.chat/ui-voip';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import MediaCallHistoryExternal, { isExternalCallHistoryItem } from './MediaCallHistoryExternal';
-import MediaCallHistoryInternal, { isInternalCallHistoryItem } from './MediaCallHistoryInternal';
 import { callHistoryQueryKeys } from '../../lib/queryKeys';
 
 export type MediaCallHistoryContextualbarProps = {

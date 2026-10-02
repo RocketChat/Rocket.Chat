@@ -1,5 +1,5 @@
 import { useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 
@@ -10,7 +10,7 @@ import { useRoom } from '../../contexts/RoomContext';
 
 const RoomFilesWithData = () => {
 	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 

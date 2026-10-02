@@ -98,6 +98,35 @@ describe('via useSetModal', () => {
 	});
 });
 
+describe('context split', () => {
+	// Opening a modal must only re-render what shows it, not every component that can open one.
+	it('does not re-render modal openers when the current modal changes', async () => {
+		const modalOpenerRef = createRef<{ open: () => void }>();
+		let openerRenders = 0;
+
+		const ModalOpener = forwardRef((_: unknown, ref: ForwardedRef<{ open: () => void }>) => {
+			openerRenders++;
+			const setModal = useSetModal();
+			useImperativeHandle(ref, () => ({ open: () => setModal(<GenericModal open title='opened' />) }), [setModal]);
+			return null;
+		});
+
+		renderWithSuspense(
+			<ModalProviderWithRegion>
+				<ModalOpener ref={modalOpenerRef} />
+			</ModalProviderWithRegion>,
+		);
+		const rendersBefore = openerRenders;
+
+		act(() => {
+			modalOpenerRef.current?.open();
+		});
+
+		expect(await screen.findByRole('dialog', { name: 'opened' })).toBeInTheDocument();
+		expect(openerRenders).toBe(rendersBefore);
+	});
+});
+
 describe('via imperativeModal', () => {
 	it('should render a modal through imperative modal', async () => {
 		renderWithSuspense(

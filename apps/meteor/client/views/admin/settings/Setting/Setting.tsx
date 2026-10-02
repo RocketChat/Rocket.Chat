@@ -1,17 +1,15 @@
-import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
+import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { links } from '@rocket.chat/ui-client';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { links } from '../../../../lib/links';
-import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
-import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
+import { useSettingDraft } from '../hooks/useSettingDraft';
 
 const PRICING_URL = links.go.pricing;
 
@@ -35,74 +33,9 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		throw new Error(`Setting ${settingId} is not valid`);
 	}
 
-	const dispatch = useEditableSettingsDispatch();
-
-	const settingCode = isSettingCode(persistedSetting) ? persistedSetting.code : undefined;
-
-	const update = useDebouncedCallback(
-		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
-			if (!persistedSetting) {
-				return;
-			}
-
-			dispatch([
-				{
-					_id: persistedSetting._id,
-					...(value !== undefined && { value }),
-					...(editor !== undefined && { editor }),
-					changed:
-						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
-						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
-					...(value !== undefined && { invalid: getCodeSettingError(settingCode, value) !== undefined }),
-				},
-			]);
-		},
-		230,
-		[persistedSetting, dispatch, settingCode],
-	);
-
 	const { t, i18n } = useTranslation();
 
-	const [value, setValue] = useState(setting.value);
-	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
-
-	useEffect(() => {
-		setValue(setting.value);
-	}, [setting.value]);
-
-	useEffect(() => {
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [(setting as ISettingColor).editor]);
-
-	const onChangeValue = useCallback(
-		(value: SettingValue) => {
-			setValue(value);
-			if (settingCode !== undefined) {
-				dispatch([{ _id: persistedSetting._id, invalid: getCodeSettingError(settingCode, value) !== undefined }]);
-			}
-			update({ value });
-		},
-		[update, dispatch, settingCode, persistedSetting._id],
-	);
-
-	const onChangeEditor = useCallback(
-		(editor: SettingEditor) => {
-			setEditor(editor);
-			update({ editor });
-		},
-		[update],
-	);
-
-	const onResetButtonClick = useCallback(() => {
-		setValue(setting.value);
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		update({
-			value: persistedSetting.packageValue,
-			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
-		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
+	const { value, editor, setValue: onChangeValue, setEditor: onChangeEditor, reset: onResetButtonClick } = useSettingDraft(settingId);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 

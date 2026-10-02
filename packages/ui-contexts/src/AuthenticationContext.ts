@@ -1,5 +1,6 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import { createContext } from 'react';
+
+import { createRequiredContext } from './createRequiredContext';
 
 export type LoginService = LoginServiceConfiguration & {
 	icon?: string;
@@ -23,29 +24,5 @@ export type AuthenticationContextValue = {
 	};
 };
 
-export const AuthenticationContext = createContext<AuthenticationContextValue>({
-	isLoggingIn: false,
-	loginWithService: () => () => Promise.reject(new Error('loginWithService not implemented')),
-	loginWithCustomOauth: () => {
-		throw new Error('loginWithCustomOauth not implemented');
-	},
-	loginWithPassword: async () => Promise.reject(new Error('loginWithPassword not implemented')),
-	loginWithToken: async () => Promise.reject(new Error('loginWithToken not implemented')),
-	loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
-	loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
-	getLoginToken: () => {
-		throw new Error('getLoginToken not implemented');
-	},
-	unstoreLoginToken: () => {
-		throw new Error('unstoreLoginToken not implemented');
-	},
-	wipeLocalAuth: () => {
-		throw new Error('wipeLocalAuth not implemented');
-	},
-	queryLoginServices: {
-		getCurrentValue: () => [],
-		subscribe: (_: () => void) => {
-			throw new Error('queryLoginServices not implemented');
-		},
-	},
-});
+export const [AuthenticationContextProvider, useAuthenticationContext] =
+	createRequiredContext<AuthenticationContextValue>('AuthenticationContext');

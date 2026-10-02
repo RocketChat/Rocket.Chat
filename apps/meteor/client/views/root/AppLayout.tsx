@@ -1,3 +1,4 @@
+import { useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
@@ -14,11 +15,13 @@ import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
+import { useClearQueriesOnUserChange } from './hooks/useClearQueriesOnUserChange';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
+import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
@@ -35,12 +38,18 @@ import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useOAuthPopupCommands } from './hooks/useOAuthPopupCommands';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
+import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
+import { useResetSamlInviteToken } from './hooks/useResetSamlInviteToken';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
+import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { appLayout } from '../../lib/appLayout';
 
 const AppLayout = () => {
+	const userId = useUserId();
+	const user = useUser();
+
 	useEffect(() => {
 		document.body.classList.add('color-primary-font-color', 'rcx-content--main');
 
@@ -85,6 +94,11 @@ const AppLayout = () => {
 	useDesktopUserRoles();
 	useStartupEvent();
 	useIframeCommands();
+	useEmailVerificationWarning(user ?? undefined);
+	useIdleConnection(userId);
+	useReloadAfterLogin(user);
+	useResetSamlInviteToken();
+	useClearQueriesOnUserChange(userId);
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

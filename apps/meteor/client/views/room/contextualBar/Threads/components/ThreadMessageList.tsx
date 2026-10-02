@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
@@ -8,7 +8,6 @@ import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@r
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
@@ -18,6 +17,7 @@ import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/set
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
 import { useKeepMountedMessages } from '../../../MessageList/hooks/useKeepMountedMessages';
+import { useVirtualListScroll } from '../../../MessageList/hooks/useVirtualListScroll';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
@@ -54,11 +54,10 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 
 export type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
-	shouldJumpToBottom: boolean;
-	setShouldJumpToBottom: (shouldJumpToBottom: boolean) => void;
 };
 
-const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBottom }: ThreadMessageListProps) => {
+/** Mount one per thread (`key` by the main message id): its scroll bookkeeping belongs to a single thread. */
+const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps) => {
 	const { t } = useTranslation();
 	const msgJumpParam = useSearchParameter('msg');
 	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
@@ -121,8 +120,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const { messageListRef } = useMessageListNavigation();
 
-	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isAtBottom = useRef<boolean | null>(null);
+	const { virtualizerRef, trackScroll } = useVirtualListScroll({ isAtBottom, hasMoreNext: hasNextPage, bottomThreshold: 20 });
 	const prevItemsLengthRef = useRef(0);
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
@@ -200,9 +199,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			isPrependRef.current = false;
 		}
 		prevItemsCountRef.current = items.length;
-		if (hasNextPage) {
-			isAtBottom.current = false;
-		}
 	});
 
 	const threadMsgTargetIndex = useMemo(() => {
@@ -224,16 +220,6 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const lastThreadJumpKeyRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
-		lastThreadJumpKeyRef.current = undefined;
-		loadingWindowKeyRef.current = undefined;
-		prevItemsLengthRef.current = 0;
-		initialScrollDoneRef.current = false;
-		userInteractedRef.current = false;
-		isJumpingToMessageRef.current = false;
-		isPrependRef.current = false;
-	}, [mainMessage._id]);
-
-	useEffect(() => {
 		if (!msgJumpParam) {
 			isJumpingToMessageRef.current = false;
 			return;
@@ -242,52 +228,59 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		isAtBottom.current = false;
 	}, [msgJumpParam]);
 
-	useEffect(() => {
+	const isJumpToBottomPendingRef = useRef(true);
+
+	const followBottom = useStableCallback(() => {
 		const handle = virtualizerRef.current;
-		if (!handle) return;
-		if (loading) return;
+		if (!handle || loading) return;
 		// `msg` deep link: jump effect runs below; do not force scroll to bottom
 		if (msgJumpParam) {
-			setShouldJumpToBottom(false);
+			isJumpToBottomPendingRef.current = false;
 			return;
 		}
 
+		if (isAtBottom.current === true && !isFetchingPreviousPage && !isFetchingNextPage && lastScrollSizeRef.current !== handle.scrollSize) {
+			lastScrollSizeRef.current = handle.scrollSize;
+			isJumpToBottomPendingRef.current = true;
+		}
+
+		if (!isJumpToBottomPendingRef.current) return;
+
+		// Optimistically mark as at-bottom before the scroll executes (rAF).
+		// This ensures the ResizeObserver in useKeepAtBottom re-scrolls if
+		// quote/attachment content grows between now and when Virtua fires the scroll.
+		isAtBottom.current = true;
+		handle.scrollToIndex(items.length, { align: 'end' });
+		isJumpToBottomPendingRef.current = false;
+		initialScrollDoneRef.current = true;
+	});
+
+	// A jump marks the list as at the bottom, which can itself call for following the list's new size once more.
+	const settleAtBottom = useStableCallback(() => {
+		followBottom();
+		followBottom();
+	});
+
+	const requestJumpToBottom = useStableCallback(() => {
+		isJumpToBottomPendingRef.current = true;
+		settleAtBottom();
+	});
+
+	useEffect(() => {
+		const handle = virtualizerRef.current;
 		// Scroll to bottom when current user's optimistic (temp) message is appended.
 		// Fires before server confirmation, giving immediate scroll feedback.
-		const prev = prevItemsLengthRef.current;
-		prevItemsLengthRef.current = items.length;
-		if (items.length > prev && uid) {
+		if (handle && !loading && !msgJumpParam) {
+			const prev = prevItemsLengthRef.current;
+			prevItemsLengthRef.current = items.length;
 			const lastItem = items.at(-1);
-			if (lastItem?.temp && lastItem.u._id === uid && !hasNextPage) {
-				setShouldJumpToBottom(true);
+			if (items.length > prev && uid && lastItem?.temp && lastItem.u._id === uid && !hasNextPage) {
+				isJumpToBottomPendingRef.current = true;
 			}
 		}
 
-		if (isAtBottom.current === true && !isFetchingPreviousPage && !isFetchingNextPage && lastScrollSizeRef.current !== handle?.scrollSize) {
-			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
-			setShouldJumpToBottom(true);
-		}
-		if (shouldJumpToBottom) {
-			// Optimistically mark as at-bottom before the scroll executes (rAF).
-			// This ensures the ResizeObserver in useKeepAtBottom re-scrolls if
-			// quote/attachment content grows between now and when Virtua fires the scroll.
-			isAtBottom.current = true;
-			handle.scrollToIndex(items.length, { align: 'end' });
-			setShouldJumpToBottom(false);
-			initialScrollDoneRef.current = true;
-		}
-	}, [
-		items,
-		loading,
-		msgJumpParam,
-		threadMsgTargetIndex,
-		shouldJumpToBottom,
-		setShouldJumpToBottom,
-		uid,
-		isFetchingPreviousPage,
-		isFetchingNextPage,
-		hasNextPage,
-	]);
+		settleAtBottom();
+	}, [items, loading, msgJumpParam, threadMsgTargetIndex, uid, isFetchingPreviousPage, isFetchingNextPage, hasNextPage, settleAtBottom]);
 
 	useEffect(() => {
 		if (threadMsgTargetIndex < 0 || !msgJumpParam) {
@@ -302,7 +295,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			return;
 		}
 		lastThreadJumpKeyRef.current = jumpKey;
-		setShouldJumpToBottom(false);
+		isJumpToBottomPendingRef.current = false;
 		initialScrollDoneRef.current = true;
 
 		let frame = 0;
@@ -329,7 +322,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			clearTimeout(highlightTimeout);
 			clearTimeout(settleTimeout);
 		};
-	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
+	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id]);
 
 	useEffect(() => {
 		if (!msgJumpParam) {
@@ -340,9 +333,8 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				setMessageJumpQueryStringParameter(null);
 			}
 		};
-		setTimeout(() => {
-			clearMsgJumpParam();
-		}, 500);
+		const timeout = setTimeout(clearMsgJumpParam, 500);
+		return () => clearTimeout(timeout);
 	}, [msgJumpParam, messages, mainMessage._id]);
 
 	useEffect(() => {
@@ -355,10 +347,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				}
 				if (msg.u._id === uid) {
 					if (hasNextPage) {
-						void jumpToRecent().then(() => setShouldJumpToBottom(true));
+						void jumpToRecent().then(requestJumpToBottom);
 						return;
 					}
-					setShouldJumpToBottom(true);
+					requestJumpToBottom();
 				}
 			},
 			clientCallbacks.priority.MEDIUM,
@@ -368,7 +360,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		return () => {
 			clientCallbacks.remove('streamNewMessage', handlerId);
 		};
-	}, [room._id, uid, mainMessage._id, setShouldJumpToBottom, hasNextPage, jumpToRecent]);
+	}, [room._id, uid, mainMessage._id, requestJumpToBottom, hasNextPage, jumpToRecent]);
 
 	const keepMountedMessages = useKeepMountedMessages(items);
 
@@ -393,15 +385,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								loadPreviousMessages();
 							}
 
-							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
-							if (hasNextPage) {
-								isAtBottom.current = false;
-							} else {
-								if (handle.scrollSize >= handle.viewportSize) {
-									isAtBottom.current = true;
-								}
-								isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
-							}
+							trackScroll(offset);
 
 							if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {
 								loadMoreMessages();

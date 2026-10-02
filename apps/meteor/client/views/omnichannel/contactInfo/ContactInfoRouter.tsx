@@ -1,4 +1,4 @@
-import { useRoute, useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, useRoomToolboxActions } from '@rocket.chat/ui-contexts';
 
 import ContactInfo from './ContactInfo';
 import ContactInfoError from './ContactInfoError';
@@ -7,7 +7,7 @@ import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
 
 const ContactInfoRouter = () => {
 	const room = useOmnichannelRoom();
-	const { closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolboxActions();
 
 	const liveRoute = useRoute('live');
 	const context = useRouteParameter('context');

@@ -1,7 +1,7 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 
 import CustomSoundsPage from './CustomSoundsPage';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomSoundsRoute = () => {
 	const canManageCustomSounds = usePermission('manage-sounds');

@@ -1,5 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ModalContext } from '@rocket.chat/ui-contexts';
+import { CurrentModalContext, ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo, useSyncExternalStore } from 'react';
 
@@ -21,21 +21,18 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 		modalStore.open(modal, region);
 	});
 
-	const contextValue = useMemo(
-		() => ({
-			modal: {
-				setModal,
-			},
-			currentModal: {
-				component: currentModal?.node,
-				region: currentModal?.region,
-			},
-			region,
-		}),
-		[currentModal?.node, currentModal?.region, region, setModal],
+	const actionsValue = useMemo(() => ({ modal: { setModal }, region }), [region, setModal]);
+
+	const currentModalValue = useMemo(
+		() => ({ component: currentModal?.node, region: currentModal?.region }),
+		[currentModal?.node, currentModal?.region],
 	);
 
-	return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;
+	return (
+		<ModalContext.Provider value={actionsValue}>
+			<CurrentModalContext.Provider value={currentModalValue}>{children}</CurrentModalContext.Provider>
+		</ModalContext.Provider>
+	);
 };
 
 export default memo<typeof ModalProvider>(ModalProvider);

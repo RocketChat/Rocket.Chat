@@ -1,5 +1,6 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
-import { FormSkeleton } from '../../../../components/Skeleton';
 
 export type CannedResponseEditWithDataProps = { cannedResponseId: IOmnichannelCannedResponse['_id'] };
 

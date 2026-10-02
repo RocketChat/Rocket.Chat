@@ -1,9 +1,9 @@
+import { NotAuthorizedPage } from '@rocket.chat/ui-client';
 import { useIsPrivilegedSettingsContext, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import AICenterOverview from './AICenterOverview';
 import AISettingsSection from './AISettingsSection';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AICenterRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();

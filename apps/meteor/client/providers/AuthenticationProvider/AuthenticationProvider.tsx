@@ -1,8 +1,9 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/tools';
-import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
+import type { AuthenticationContextValue } from '@rocket.chat/ui-contexts';
+import { AuthenticationContextProvider, useSetting } from '@rocket.chat/ui-contexts';
 import type { Meteor } from 'meteor/meteor';
-import type { ContextType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
@@ -36,7 +37,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 	const isLoggingIn = useSyncExternalStore(subscribeLoggingIn, getLoggingInSnapshot);
 
 	const contextValue = useMemo(
-		(): ContextType<typeof AuthenticationContext> => ({
+		(): AuthenticationContextValue => ({
 			isLoggingIn,
 			loginWithToken: (token: string, callback): Promise<void> =>
 				loginWithToken(token).catch((err) => {
@@ -122,7 +123,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 		[isLoggingIn, loginMethod],
 	);
 
-	return <AuthenticationContext.Provider value={contextValue}>{children}</AuthenticationContext.Provider>;
+	return <AuthenticationContextProvider value={contextValue}>{children}</AuthenticationContextProvider>;
 };
 
 export default AuthenticationProvider;

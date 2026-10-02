@@ -24,10 +24,14 @@ import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
+	AuthenticationContextValue,
+	CurrentModalContextValue,
 	Device,
 	DeviceContext,
 	LoginService,
 	ModalContextValue,
+	RouterContextValue,
+	ServerConnectionStatus,
 	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
@@ -36,15 +40,16 @@ import type {
 } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
-	RouterContext,
+	RouterContextProvider,
 	ServerContext,
 	SettingsContext,
 	TranslationContext,
 	UserContext,
 	ActionManagerContext,
 	ModalContext,
+	CurrentModalContext,
 	UserPresenceContext,
-	AuthenticationContext,
+	AuthenticationContextProvider,
 	ToastMessagesContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
@@ -103,10 +108,11 @@ export class MockedAppRootBuilder {
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
+	private connectionStatus: ServerConnectionStatus = { connected: true, status: 'connected', retryCount: 0 };
+
 	private server: ContextType<typeof ServerContext> = {
-		connected: true,
-		status: 'connected',
-		retryCount: 0,
+		subscribeToConnectionStatus: () => () => undefined,
+		getConnectionStatus: () => this.connectionStatus,
 		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
@@ -135,7 +141,7 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private router: ContextType<typeof RouterContext> = {
+	private router: RouterContextValue = {
 		buildRoutePath: () => '/',
 		defineRoutes: () => () => undefined,
 		getLocationPathname: () => '/',
@@ -157,6 +163,8 @@ export class MockedAppRootBuilder {
 		dispatch: async () => undefined,
 	};
 
+	private userDocument: IUser | null = null;
+
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
 		onLogout: () => () => undefined,
@@ -167,7 +175,7 @@ export class MockedAppRootBuilder {
 			() => () => undefined,
 			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
 		], // apply query and option
-		user: null,
+		queryUser: () => [() => () => undefined, () => this.userDocument],
 		userId: undefined,
 	};
 
@@ -239,14 +247,12 @@ export class MockedAppRootBuilder {
 
 	private subscription: SubscriptionWithRoom | undefined = undefined;
 
+	private currentModal: CurrentModalContextValue = { component: null };
+
 	private modal: ModalContextValue = {
-		currentModal: { component: null },
 		modal: {
 			setModal: (modal) => {
-				this.modal = {
-					...this.modal,
-					currentModal: { component: modal },
-				};
+				this.currentModal = { component: modal };
 				this.events.emit('update-modal');
 			},
 		},
@@ -267,7 +273,7 @@ export class MockedAppRootBuilder {
 
 	private authServices: LoginService[] = [];
 
-	private authentication: ContextType<typeof AuthenticationContext> = {
+	private authentication: AuthenticationContextValue = {
 		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
@@ -445,7 +451,7 @@ export class MockedAppRootBuilder {
 	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
-		this.user.user = {
+		this.userDocument = {
 			_id: 'john.doe',
 			username: 'john.doe',
 			name: 'John Doe',
@@ -462,14 +468,14 @@ export class MockedAppRootBuilder {
 
 	withAnonymous(): this {
 		this.user.userId = undefined;
-		this.user.user = null;
+		this.userDocument = null;
 
 		return this;
 	}
 
 	withUser(user: IUser): this {
 		this.user.userId = user._id;
-		this.user.user = user;
+		this.userDocument = user;
 
 		return this;
 	}
@@ -512,7 +518,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+	withRouter(overrides: Partial<RouterContextValue>): this {
 		this.router = { ...this.router, ...overrides };
 		return this;
 	}
@@ -524,11 +530,11 @@ export class MockedAppRootBuilder {
 	}
 
 	withRole(role: string): this {
-		if (!this.user.user) {
+		if (!this.userDocument) {
 			throw new Error('user is not defined');
 		}
 
-		this.user.user.roles.push(role);
+		this.userDocument.roles.push(role);
 
 		const innerFn = this.authorization.queryRole;
 
@@ -673,7 +679,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withOpenModal(modal: ReactNode) {
-		this.modal.currentModal = { component: modal };
+		this.currentModal = { component: modal };
 
 		return this;
 	}
@@ -756,6 +762,11 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withConnectionStatus(partial: Partial<ServerConnectionStatus>): this {
+		this.connectionStatus = { ...this.connectionStatus, ...partial };
+		return this;
+	}
+
 	withQueryClient(client: QueryClient): this {
 		this._providedQueryClient = client;
 		return this;
@@ -824,7 +835,9 @@ export class MockedAppRootBuilder {
 
 		const subscribeToModal = (onStoreChange: () => void) => this.events.on('update-modal', onStoreChange);
 
-		const getModalSnapshot = () => this.modal;
+		const getModalSnapshot = () => this.currentModal;
+
+		const { modal } = this;
 
 		void i18n.init();
 
@@ -841,12 +854,12 @@ export class MockedAppRootBuilder {
 				};
 			}, []);
 
-			const modal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
+			const currentModal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
 
 			return (
 				<QueryClientProvider client={queryClient}>
 					<ServerContext.Provider value={server}>
-						<RouterContext.Provider value={router}>
+						<RouterContextProvider value={router}>
 							<SettingsContext.Provider value={settings}>
 								<I18nextProvider i18n={i18n}>
 									<TranslationContext.Provider value={translation}>
@@ -857,50 +870,53 @@ export class MockedAppRootBuilder {
 																	<AvatarUrlProvider>
 																			<CustomSoundProvider> */}
 											<UserContext.Provider value={user}>
-												<AuthenticationContext.Provider value={authentication}>
+												<AuthenticationContextProvider value={authentication}>
 													<MockedDeviceContext {...deviceContext}>
 														<ModalContext.Provider value={modal}>
-															<AuthorizationContext.Provider value={authorization}>
-																{/* <EmojiPickerProvider>
+															<CurrentModalContext.Provider value={currentModal}>
+																<AuthorizationContext.Provider value={authorization}>
+																	{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-																<UserPresenceContext.Provider value={userPresence}>
-																	<ActionManagerContext.Provider
-																		value={{
-																			generateTriggerId: () => '',
-																			emitInteraction: () => Promise.reject(new Error('not implemented')),
-																			getInteractionPayloadByViewId: () => undefined,
-																			handleServerInteraction: () => undefined,
-																			off: () => undefined,
-																			on: () => undefined,
-																			openView: () => undefined,
-																			disposeView: () => undefined,
-																			notifyBusy: () => undefined,
-																			notifyIdle: () => undefined,
-																		}}
-																	>
-																		<VideoConfContext.Provider value={videoConf}>
-																			{/* <CallProvider>
+																	<UserPresenceContext.Provider value={userPresence}>
+																		<ActionManagerContext.Provider
+																			value={{
+																				generateTriggerId: () => '',
+																				emitInteraction: () => Promise.reject(new Error('not implemented')),
+																				getInteractionPayloadByViewId: () => undefined,
+																				handleServerInteraction: () => undefined,
+																				off: () => undefined,
+																				on: () => undefined,
+																				openView: () => undefined,
+																				disposeView: () => undefined,
+																				isBusy: () => false,
+																				notifyBusy: () => undefined,
+																				notifyIdle: () => undefined,
+																			}}
+																		>
+																			<VideoConfContext.Provider value={videoConf}>
+																				{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																			{wrappers.reduce<ReactNode>(
-																				(children, wrapper) => wrapper(children),
-																				<>
-																					{children}
-																					{modal.currentModal.component}
-																				</>,
-																			)}
-																			{/* </OmnichannelProvider>
+																				{wrappers.reduce<ReactNode>(
+																					(children, wrapper) => wrapper(children),
+																					<>
+																						{children}
+																						{currentModal.component}
+																					</>,
+																				)}
+																				{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																		</VideoConfContext.Provider>
-																	</ActionManagerContext.Provider>
-																</UserPresenceContext.Provider>
-																{/*
+																			</VideoConfContext.Provider>
+																		</ActionManagerContext.Provider>
+																	</UserPresenceContext.Provider>
+																	{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-															</AuthorizationContext.Provider>
+																</AuthorizationContext.Provider>
+															</CurrentModalContext.Provider>
 														</ModalContext.Provider>
 													</MockedDeviceContext>
-												</AuthenticationContext.Provider>
+												</AuthenticationContextProvider>
 											</UserContext.Provider>
 											{/* 					</CustomSoundProvider>
 																	</AvatarUrlProvider>
@@ -911,7 +927,7 @@ export class MockedAppRootBuilder {
 									</TranslationContext.Provider>
 								</I18nextProvider>
 							</SettingsContext.Provider>
-						</RouterContext.Provider>
+						</RouterContextProvider>
 					</ServerContext.Provider>
 				</QueryClientProvider>
 			);

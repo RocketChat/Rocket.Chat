@@ -5,6 +5,7 @@ import { e2e } from './rocketchat.e2e';
 import { dispatchToastMessage } from '../toast';
 
 jest.mock('@rocket.chat/ui-client', () => ({
+	links: jest.requireActual('@rocket.chat/ui-client').links,
 	imperativeModal: {
 		open: jest.fn(),
 		close: jest.fn(),

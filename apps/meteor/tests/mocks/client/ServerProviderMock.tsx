@@ -62,10 +62,11 @@ const callEndpoint = () => {
 }; // to be implemented
 const writeStream = () => undefined; // to be implemented
 
+const connectionStatus = { connected: true, status: 'connected', retryCount: 0 } as const;
+
 const contextValue: ServerContextValue = {
-	connected: true,
-	status: 'connected',
-	retryCount: 0,
+	subscribeToConnectionStatus: () => () => undefined,
+	getConnectionStatus: () => connectionStatus,
 	info: undefined,
 	absoluteUrl,
 	// callMethod,
