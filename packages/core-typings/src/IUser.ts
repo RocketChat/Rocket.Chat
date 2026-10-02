@@ -189,12 +189,18 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Conversations',
 ] as const;
 
+/** How recent a read room's last activity must be for an expanded group to keep listing it. */
+export const SIDEBAR_CATEGORY_ACTIVITY_FILTERS = ['1d', '7d', '30d'] as const;
+
+export type SidebarCategoryActivityFilter = (typeof SIDEBAR_CATEGORY_ACTIVITY_FILTERS)[number];
+
 export interface ISidebarCategory {
 	_id: string;
 	name: string;
 	default?: boolean;
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
+	activityFilter?: SidebarCategoryActivityFilter;
 }
 
 export interface IUser extends IRocketChatRecord {

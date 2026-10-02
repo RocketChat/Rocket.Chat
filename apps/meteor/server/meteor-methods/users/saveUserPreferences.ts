@@ -1,4 +1,5 @@
 import { StatusVisibility, ClientSafeError } from '@rocket.chat/core-services';
+import { SIDEBAR_CATEGORY_ACTIVITY_FILTERS } from '@rocket.chat/core-typings';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
@@ -144,6 +145,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 				default: Match.Optional(Boolean),
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
+				activityFilter: Match.Optional(Match.OneOf(...SIDEBAR_CATEGORY_ACTIVITY_FILTERS)),
 			},
 		]),
 		muteFocusedConversations: Match.Optional(Boolean),
