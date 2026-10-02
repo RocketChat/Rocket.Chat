@@ -68,7 +68,12 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
+	/** The whole row, so tests reach the badges, avatar, preview and menu that sit beside the room link. */
 	getSidebarItemByName(name: string) {
+		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemLinkByName(name) });
+	}
+
+	getSidebarItemLinkByName(name: string) {
 		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
@@ -108,7 +113,8 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		return this.root.getByRole('region', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -128,7 +134,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getSidebarListItemByName(name: string): Locator {
-		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+		return this.getSidebarItemByName(name);
 	}
 
 	getCategoryCollapser(name: string): Locator {
