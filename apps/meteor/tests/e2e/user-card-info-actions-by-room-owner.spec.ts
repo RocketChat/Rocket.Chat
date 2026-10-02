@@ -54,8 +54,8 @@ test.describe.parallel('Mention User Card [To Room Owner]', () => {
 
 	test('should show correct userinfo actions for a member of the room to the room owner', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		// Hovering a mention opens the user card; clicking now opens the full profile.
-		await page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`).hover();
+		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`);
+		await mentionSpan.hover();
 
 		const actions = await getAvailableUserCardActions(page);
 
@@ -67,8 +67,8 @@ test.describe.parallel('Mention User Card [To Room Owner]', () => {
 
 	test('should show correct userinfo actions for a non-member of the room to the room owner', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		// Hovering a mention opens the user card; clicking now opens the full profile.
-		await page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`).hover();
+		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`);
+		await mentionSpan.hover();
 
 		const actions = await getAvailableUserCardActions(page);
 

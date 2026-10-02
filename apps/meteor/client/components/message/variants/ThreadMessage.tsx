@@ -26,7 +26,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 

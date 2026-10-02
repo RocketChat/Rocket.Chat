@@ -55,15 +55,26 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
 				await loadCapabilities();
 				closeUserCard();
+
+				// A call placed from a card is about the person, not the room, so a missing DM is created on the way
+				// (im.create also returns the existing room when the subscription simply hasn't resolved yet).
+				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
+
+				if (conferenceWindowEnabled) {
+					startCall(rid);
+					return;
+				}
+
 				dispatchPopup({ rid });
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
 		};
 
-		// Without a DM yet, the call creates one on click (im.create returns the
-		// existing room if the subscription simply hasn't resolved). Federated
-		// users are excluded either way: calls are not supported over federation.
+		// Without a DM, the entry is only offered to someone a DM can be created with: im.create needs a username,
+		// and calls are not supported over federation.
+		const hasCallableRoom = room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated && !!user.username;
+
 		const shouldShowStartCall =
 			(room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated) &&
 			user._id !== ownUserId &&
@@ -86,7 +97,6 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		user.username,
 		user.federated,
 		canCreateDirectMessage,
-		createDirectMessage,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,

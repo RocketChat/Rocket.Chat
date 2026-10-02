@@ -55,17 +55,25 @@ test.describe('Messaging', () => {
 		test('should open the full profile from the message author name', async ({ page }) => {
 			const fullProfile = page.getByRole('dialog', { name: 'Full profile' });
 
-			await test.step('open the full profile with Space', async () => {
+			await page.keyboard.press('Shift+Tab');
+
+			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
+		});
+
+		test('should open the user info from the message author name', async ({ page }) => {
+			const userInfo = page.getByRole('dialog', { name: 'User info' });
+
+			await test.step('open the user info with Space', async () => {
 				await page.keyboard.press('Shift+Tab');
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Space');
-				await expect(fullProfile).toBeVisible();
+				await expect(userInfo).toBeVisible();
 			});
 
-			await test.step('close the full profile with Esc', async () => {
+			await test.step('close the user info with Esc', async () => {
 				await page.keyboard.press('Escape');
-				await expect(fullProfile).not.toBeVisible();
+				await expect(userInfo).not.toBeVisible();
 			});
 		});
 

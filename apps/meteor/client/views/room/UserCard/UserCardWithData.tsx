@@ -27,11 +27,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { t } = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
-	// No placeholder from the previous username: when the card hands off from
-	// one author to another it must show a skeleton, not the previous user's
-	// data (roles, actions) under the new trigger.
+	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
-	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 	const {
 		data: isMemberData,
 		refetch,
@@ -45,7 +42,17 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension, federated } = data?.user || {};
+		const {
+			_id,
+			name,
+			roles = defaultValue,
+			bio = defaultValue,
+			utcOffset = defaultValue,
+			nickname,
+			avatarETag,
+			freeSwitchExtension,
+			federated,
+		} = data?.user || {};
 
 		return {
 			_id,
@@ -77,7 +84,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			freeSwitchExtension: user.freeSwitchExtension,
 			federated: user.federated,
 		},
-		size: 2,
+		size: 3,
 		isMember,
 		reload: refetch,
 	});

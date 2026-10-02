@@ -111,6 +111,20 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
+				openUserInfo(username);
+			};
+		},
+		[openUserInfo],
+	);
+
+	const onUserMentionHover = useCallback(
+		({ username }: UserMention) => {
+			if (!username || !hoverUserCardEnabled) {
+				return;
+			}
+
+			return (event: UIEvent): void => {
+				event.stopPropagation();
 				openUserCard(event, username);
 			};
 		},

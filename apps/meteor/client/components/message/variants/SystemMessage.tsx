@@ -28,7 +28,13 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import { useMessageListFormatDateAndTime, useMessageListFormatTime, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
+import {
+	useMessageListShowRealName,
+	useMessageListShowUsername,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+	useMessageListHoverUserCardEnabled,
+} from '../list/MessageListContext';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -51,6 +57,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
+	const buttonProps = useButtonPattern(() => openUserInfo(user.username));
+	const openUserCardOnHover = hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined;
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;
@@ -81,9 +89,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						size='x18'
 						title=''
 						style={{ cursor: 'pointer' }}
-						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
-						onClick={() => openUserInfo(message.u.username)}
-						// Redundant pointer-only shortcut for the accessible name button next to it
+						onMouseEnter={openUserCardOnHover}
+						onClick={() => openUserInfo(user.username)}
+						// a pointer-only shortcut for the name button next to it
 						aria-hidden='true'
 					/>
 				)}
@@ -91,21 +99,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					{/* Same as the avatar above: while selecting, the row is the click target, so the name stops being a button. */}
 					<MessageNameContainer
-						{...(!isSelecting && {
-							role: 'button' as const,
-							tabIndex: 0,
-							onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined,
-							onClick: () => openUserInfo(user.username),
-							onKeyDown: (e: KeyboardEvent) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									e.preventDefault();
-									openUserInfo(user.username);
-								}
-							},
-							...triggerProps,
-						})}
+						{...(!isSelecting && { ...buttonProps, style: { cursor: 'pointer' }, onMouseEnter: openUserCardOnHover, ...triggerProps })}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>
