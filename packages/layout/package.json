@@ -29,7 +29,8 @@
 		"lint:fix": "eslint --fix .",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"test": "jest",
-		"testunit": "jest"
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
