@@ -408,7 +408,6 @@
   "archive-room": "Phòng lưu trữ",
   "archive-room_description": "Cho phép lưu trữ một kênh",
   "Archived": "Đã lưu trữ",
-  "are_typing": "đang gõ",
   "Are_you_sure": "Bạn có chắc không?",
   "Are_you_sure_you_want_to_delete_your_account": "Bạn có chắc rằng bạn muốn xóa tài khoản của bạn?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Bạn có chắc chắn muốn vô hiệu hoá tích hợp Facebook?",
@@ -1437,7 +1436,6 @@
   "IRC_Port": "Cổng kết nối với máy chủ lưu trữ IRC.",
   "IRC_Private_Message": "Kết quả của lệnh PRIVMSG.",
   "IRC_Quit": "Kết quả khi bỏ một phiên IRC.",
-  "is_typing": "đang đánh máy",
   "Issue_Links": "Liên kết theo dõi sự cố",
   "IssueLinks_Incompatible": "Cảnh báo: không kích hoạt tính năng này và 'Hex Color Preview' cùng một lúc.",
   "IssueLinks_LinkTemplate": "Mẫu cho liên kết sự cố",
@@ -2597,6 +2595,9 @@
   "User__username__removed_from__room_name__leaders": "Người dùng {{username}} đã xóa khỏi {{room_name}} lãnh đạo",
   "User__username__removed_from__room_name__moderators": "Người dùng {{username}} đã bị xóa khỏi {{room_name}} người kiểm duyệt",
   "User__username__removed_from__room_name__owners": "Người dùng {{username}} đã xóa khỏi {{room_name}} chủ sở hữu",
+  "User_activity_typing": {
+    "other": "{{users, list}} đang gõ"
+  },
   "User_added": "Người dùng đã thêm",
   "User_added_by": "Người dùng {{user_added}}được thêm bởi {{user_by}}.",
   "User_added_successfully": "Người dùng thành công",

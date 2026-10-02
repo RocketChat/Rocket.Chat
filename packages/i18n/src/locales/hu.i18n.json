@@ -578,9 +578,6 @@
   "archive-room": "Szoba archiválása",
   "archive-room_description": "Jogosultság egy csatorna archiválásához",
   "Archived": "Archiválva",
-  "are_recording": "rögzítenek",
-  "are_typing": "gépelnek",
-  "are_uploading": "feltöltenek",
   "Are_you_sure": "Biztos benne?",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Biztosan törölni szeretné az összes olvasatlan üzenetet?",
   "Are_you_sure_you_want_to_close_this_chat": "Biztosan be szeretné zárni ezt a csevegést?",
@@ -2438,9 +2435,6 @@
   "IRC_Port": "A port, amelyhez az IRC-kiszolgálógépen kell kötni.",
   "IRC_Private_Message": "A PRIVMSG parancs kimenete.",
   "IRC_Quit": "Kimenet az IRC-munkamenetből történő kilépéskor.",
-  "is_recording": "rögzít",
-  "is_typing": "gépel",
-  "is_uploading": "feltölt",
   "Issue_Links": "Hibakövető hivatkozások",
   "IssueLinks_Incompatible": "Figyelmeztetés: ne engedélyezze egyszerre ezt és a „Hexadecimális szín előnézete” funkciót.",
   "IssueLinks_LinkTemplate": "Sablon a hibák hivatkozásához",
@@ -4863,6 +4857,18 @@
   "User__username__removed_from__room_name__moderators": "{{username}} felhasználó eltávolítva a(z) {{room_name}} moderátorai közül",
   "User__username__removed_from__room_name__owners": "{{username}} felhasználó eltávolítva a(z) {{room_name}} tulajdonosai közül",
   "User__username__unmuted_in_room__roomName__": "{{username}} felhasználó némítása megszüntetve a(z) {{roomName}} szobában",
+  "User_activity_recording": {
+    "one": "{{users, list}} rögzít",
+    "other": "{{users, list}} rögzítenek"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} gépel",
+    "other": "{{users, list}} gépelnek"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} feltölt",
+    "other": "{{users, list}} feltöltenek"
+  },
   "User_added": "Felhasználó hozzáadva",
   "User_added_by": "{{user_by}} hozzáadta {{user_added}} felhasználót.",
   "User_added_successfully": "A felhasználó sikeresen hozzáadva",

@@ -315,7 +315,6 @@
   "archive-room": "Arkivoĉambro",
   "archive-room_description": "Permeso por enarkivigi kanalon",
   "Archived": "Arkivita",
-  "are_typing": "tajpas",
   "Are_you_sure": "Ĉu vi certas?",
   "Are_you_sure_you_want_to_delete_your_account": "Ĉu vi certas, ke vi volas forigi vian konton?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Ĉu vi certas, ke vi volas malŝalti Facebook-integriĝon?",
@@ -1344,7 +1343,6 @@
   "IRC_Port": "La haveno por ligi al la IRC-servilo.",
   "IRC_Private_Message": "Eligo de la komando de PRIVMSG.",
   "IRC_Quit": "Eligo post ĉesigo de IRC-sesio.",
-  "is_typing": "tajpas",
   "Issue_Links": "Ilin traktaj ligoj",
   "IssueLinks_Incompatible": "Averto: ne ebligu ĉi tion kaj la 'Hexan Kolorrigardon' samtempe.",
   "IssueLinks_LinkTemplate": "Ŝablona por temo ligiloj",
@@ -2494,6 +2492,10 @@
   "User__username__removed_from__room_name__leaders": "Uzanto {{username}} forigita de {{room_name}} gvidantoj",
   "User__username__removed_from__room_name__moderators": "Uzanto {{username}} forigita de {{room_name}}-moderantoj",
   "User__username__removed_from__room_name__owners": "Uzanto {{username}} forigita de {{room_name}}-posedantoj",
+  "User_activity_typing": {
+    "one": "{{users, list}} tajpas",
+    "other": "{{users, list}} tajpas"
+  },
   "User_added": "Uzanto aldonita",
   "User_added_by": "Uzanto {{user_added}}Aldonita de {{user_by}}.",
   "User_added_successfully": "Uzanto aldonis sukcese",

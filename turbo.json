@@ -1,6 +1,7 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
 	"globalPassThroughEnv": ["MONGOMS_DOWNLOAD_DIR", "MONGOMS_PREFER_GLOBAL_PATH"],
+	"agentGuidance": false,
 	"tasks": {
 		"build-preview": {
 			"dependsOn": ["^build"],

@@ -501,7 +501,6 @@
   "archive-room": "대화방 보관",
   "archive-room_description": "채널을 보관할 수 있는 권한",
   "Archived": "보관됨",
-  "are_typing": "입력 중",
   "Are_you_sure": "확실 합니까?",
   "Are_you_sure_you_want_to_delete_this_record": "이 레코드를 삭제 하시겠습니까?",
   "Are_you_sure_you_want_to_delete_your_account": "계정을 삭제 하시겠습니까?",
@@ -1993,7 +1992,6 @@
   "IRC_Port": "IRC 호스트 서버에서 바인드 할 포트입니다.",
   "IRC_Private_Message": "PRIVMSG 명령의 출력.",
   "IRC_Quit": "IRC 세션 종료시 출력.",
-  "is_typing": "입력중",
   "Issue_Links": "이슈 트래커 링크",
   "IssueLinks_Incompatible": "경고 : 이 기능과 'Hex Color Preview'기능을 동시에 사용하지 마시오.",
   "IssueLinks_LinkTemplate": "이슈 링크 용 템플릿",
@@ -3714,6 +3712,9 @@
   "User__username__removed_from__room_name__moderators": "{{username}}님은 {{room_name}} 의 운영자가 아닙니다.",
   "User__username__removed_from__room_name__owners": "{{username}}님은 {{room_name}} 의 소유자가 아닙니다.",
   "User__username__unmuted_in_room__roomName__": "{{roomName}} 대화방에서 사용자 {{username}} 음소거 해제",
+  "User_activity_typing": {
+    "other": "{{users, list}} 입력 중"
+  },
   "User_added": "사용자를 추가했습니다.",
   "User_added_by": "{{user_by}}님이 {{user_added}}님을 추가했습니다.",
   "User_added_successfully": "사용자를 추가했습니다.",

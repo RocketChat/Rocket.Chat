@@ -1,8 +1,15 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
+import { memo, useContext, useId } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useTimeAgo } from '../../hooks/useTimeAgo';
+import { useUserCustomFields } from '../../hooks/useUserCustomFields';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import {
-	useUserDisplayName,
-	ContextualbarScrollableContent,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -11,15 +18,8 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import { memo, useId } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import MarkdownText from '../MarkdownText';
+} from '../InfoPanel';
+import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
@@ -83,6 +83,7 @@ const UserInfo = ({
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
+	const MarkdownText = useContext(MarkdownTextContext);
 
 	const usernameId = useId();
 
@@ -136,7 +137,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{utcOffset && Number.isInteger(utcOffset) && (
+					{typeof utcOffset === 'number' && Number.isFinite(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
 							<InfoPanelText>
@@ -154,7 +155,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && canViewAllInfo && (
+					{Number.isFinite(utcOffset) && canViewAllInfo && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Last_login')}</InfoPanelLabel>
 							<InfoPanelText>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanelText>

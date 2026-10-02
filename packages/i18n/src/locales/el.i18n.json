@@ -321,7 +321,6 @@
   "archive-room": "Αρχειοθέτησε το Δωμάτιο",
   "archive-room_description": "Άδεια για αρχειοθέτηση καναλιού",
   "Archived": "Αρχειοθετημένα",
-  "are_typing": "πληκτρολογούν",
   "Are_you_sure": "Είστε σίγουρος?",
   "Are_you_sure_you_want_to_delete_your_account": "Είστε σίγουροι ότι θέλετε να διαγράψετε τον λογαριασμό σας;",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Είστε σίγουροι ότι θέλετε να απενεργοποιήσετε την ενσωμάτωση του Facebook;",
@@ -1351,7 +1350,6 @@
   "IRC_Port": "Η θύρα που δεσμεύεται στο διακομιστή υποδοχής IRC.",
   "IRC_Private_Message": "Έξοδος της εντολής PRIVMSG.",
   "IRC_Quit": "Αποτέλεσμα κατά την έξοδο από μια συνεδρία IRC.",
-  "is_typing": "πληκτρολογεί",
   "Issue_Links": "Έκδοση συνδέσμων παρακολούθησης",
   "IssueLinks_Incompatible": "Προειδοποίηση: Μην ενεργοποιήσετε ταυτόχρονα αυτό το στοιχείο και το \"Hex Color Preview\".",
   "IssueLinks_LinkTemplate": "Πρότυπο για συνδέσμους έκδοσης",
@@ -2500,6 +2498,10 @@
   "User__username__removed_from__room_name__leaders": "Ο χρήστης {{username}} αφαιρέθηκε από τους αρχηγούς {{room_name}}",
   "User__username__removed_from__room_name__moderators": "χρήστη {{username}} χρήστης απομακρύνεται από τους συντονιστές {{room_name}}",
   "User__username__removed_from__room_name__owners": "χρήστη {{username}} χρήστης απομακρύνεται από {{room_name}} ιδιοκτήτες",
+  "User_activity_typing": {
+    "one": "{{users, list}} πληκτρολογεί",
+    "other": "{{users, list}} πληκτρολογούν"
+  },
   "User_added": "Ο χρήστης προστέθηκε.",
   "User_added_by": "Ο χρήστης {{user_added}} πρστέθηκε από τον {{user_by}}.",
   "User_added_successfully": "ο χρήστης πρόσθεσε επιτυχώς",

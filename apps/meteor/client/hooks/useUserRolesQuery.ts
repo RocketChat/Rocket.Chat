@@ -16,6 +16,7 @@ type UseUserRolesQueryOptions<TData = UserRoles[]> = Omit<
 	'queryKey' | 'queryFn'
 >;
 
+// Cached records are replaced, never mutated: react-query keeps the old reference for deep-equal data, so observers would not be notified.
 export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQueryOptions<TData>) => {
 	const queryClient = useQueryClient();
 
@@ -41,11 +42,7 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 							return [...data, { uid: u._id, roles: [roleId] }];
 						}
 
-						const roles = new Set(data[index].roles);
-						roles.add(roleId);
-						data[index] = { ...data[index], roles: [...roles] };
-
-						return [...data];
+						return data.map((record, i) => (i === index ? { ...record, roles: [...new Set([...record.roles, roleId])] } : record));
 					});
 					break;
 				}
@@ -59,11 +56,7 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 
 						if (index < 0) return data;
 
-						const roles = new Set(data[index].roles);
-						roles.delete(roleId);
-						data[index] = { ...data[index], roles: [...roles] };
-
-						return [...data];
+						return data.map((record, i) => (i === index ? { ...record, roles: record.roles.filter((r) => r !== roleId) } : record));
 					});
 					break;
 				}
