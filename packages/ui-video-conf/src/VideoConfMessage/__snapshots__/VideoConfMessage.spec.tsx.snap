@@ -147,12 +147,52 @@ exports[`renders CallEnded without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-1eogw2f"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-sta2rp"
                     >
-                      
-                    </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user0"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user0"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user1"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user1"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user2"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user2"
+                          />
+                        </figure>
+                      </div>
+                    </div>
                   </div>
                   <p
                     class="rcx-box rcx-box--full rcx-css-weo5d9"
@@ -497,12 +537,52 @@ exports[`renders CallOngoing without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-1eogw2f"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-sta2rp"
                     >
-                      
-                    </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user0"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user0"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user1"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user1"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user2"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user2"
+                          />
+                        </figure>
+                      </div>
+                    </div>
                   </div>
                   <p
                     class="rcx-box rcx-box--full rcx-css-weo5d9"
@@ -968,12 +1048,52 @@ exports[`renders NoAvatars without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-1eogw2f"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-sta2rp"
                     >
-                      
-                    </i>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user0"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user0"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user1"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user1"
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt="user2"
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                            title="user2"
+                          />
+                        </figure>
+                      </div>
+                    </div>
                   </div>
                   <p
                     class="rcx-box rcx-box--full rcx-css-weo5d9"

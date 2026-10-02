@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
-import type { UnreadData } from '../../../../../lib/getSubscriptionUnreadData';
-import { getSubscriptionUnreadData } from '../../../../../lib/getSubscriptionUnreadData';
+import type { UnreadData } from '../../../../sidebar/lib/unreadDisplay';
+import { getUnreadDisplay } from '../../../../sidebar/lib/unreadDisplay';
 
 export const useUnreadDisplay = (unreadData: UnreadData) => {
 	const { t } = useTranslation();
 
-	return getSubscriptionUnreadData(unreadData, t);
+	return getUnreadDisplay(unreadData, t);
 };

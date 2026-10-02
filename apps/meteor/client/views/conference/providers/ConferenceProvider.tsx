@@ -4,11 +4,12 @@ import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, u
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
-import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
+import { getUnreadDisplay } from '../../../sidebar/lib/unreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
 import ConferencePageError from '../ConferencePageError';
@@ -62,6 +63,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// than by each row that needs one: the logged-in user, a setting, a preference and a permission are all the
 	// application's to answer, and the window is meant to render without one.
 	// `null` rather than `undefined` where nobody is logged in: the window has one way of saying that.
+	const { t } = useTranslation();
 	const uid = useUserId() ?? null;
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const displayAvatars = useUserPreference<boolean>('displayAvatars', true) ?? true;
@@ -72,7 +74,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// What the chat button's mark says, worked out here because which unread rules a room honours — and whether
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
 	const subscription = useUserSubscription(room.rid ?? '');
-	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
+	const { showUnread, unreadCount, unreadVariant, unreadTitle } = getUnreadDisplay(subscription ?? emptyUnreadData, t);
 
 	/**
 	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry

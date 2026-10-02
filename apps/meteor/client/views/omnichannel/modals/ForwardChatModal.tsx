@@ -1,14 +1,14 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextAreaInput, Box, Divider, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useId } from 'react';
+import { useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
+import type { ForwardChatInput } from '../lib/forwardChat';
+import { getForwardChatFieldStates } from '../lib/forwardChat';
 
 type ForwardChatModalFormData = {
 	comment: string;
@@ -18,15 +18,13 @@ type ForwardChatModalFormData = {
 
 export type ForwardChatModalProps = {
 	room: IOmnichannelRoom;
+	showIdleAgents: boolean;
+	onForward: (input: ForwardChatInput) => Promise<void> | void;
 	onCancel: () => void;
 };
 
-const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
+const ForwardChatModal = ({ room, showIdleAgents, onForward, onCancel }: ForwardChatModalProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const getUserData = useEndpoint('GET', '/v1/users.info');
-	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
 	const departmentFieldId = useId();
 	const userFieldId = useId();
@@ -47,54 +45,12 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 	const department = watch('department');
 	const username = watch('username');
 
-	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
+	const { canPickDepartment, canPickAgent, canForward } = getForwardChatFieldStates({ department, username });
 
-	const handleForwardChat = useCallback(
-		async ({ department: departmentId, username, comment }: ForwardChatModalFormData) => {
-			try {
-				let userId;
-
-				if (username) {
-					const { user } = await getUserData({ username });
-					userId = user?._id;
-				}
-
-				if (departmentId && userId) {
-					return;
-				}
-
-				const payload: {
-					roomId: string;
-					departmentId?: string;
-					userId?: string;
-					comment?: string;
-					clientAction: boolean;
-				} = {
-					roomId: room._id,
-					comment,
-					clientAction: true,
-				};
-
-				if (departmentId) {
-					payload.departmentId = departmentId;
-				}
-
-				if (userId) {
-					payload.userId = userId;
-				}
-
-				await forwardChat(payload);
-				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				router.navigate('/home');
-				LegacyRoomManager.close(room.t + room._id);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				onCancel();
-			}
-		},
-		[room._id, room.t, getUserData, forwardChat, dispatchToastMessage, t, router, onCancel],
-	);
+	const handleForwardChat = async (input: ForwardChatModalFormData) => {
+		await onForward(input);
+		onCancel();
+	};
 
 	return (
 		<GenericModal
@@ -104,7 +60,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 			onCancel={onCancel}
 			onConfirm={handleSubmit(handleForwardChat)}
 			confirmText={t('Forward')}
-			confirmDisabled={!username && !department}
+			confirmDisabled={!canForward}
 			confirmLoading={isSubmitting}
 		>
 			<FieldGroup>
@@ -122,7 +78,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 									withTitle={false}
 									maxWidth='100%'
 									flexGrow={1}
-									disabled={!!username}
+									disabled={!canPickDepartment}
 								/>
 							)}
 						/>
@@ -143,9 +99,9 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 									withTitle
 									onlyAvailable
 									excludeId={room.servedBy?._id}
-									showIdleAgents={idleAgentsAllowedForForwarding}
+									showIdleAgents={showIdleAgents}
 									placeholder={t('Username_name_email')}
-									disabled={!!department}
+									disabled={!canPickAgent}
 								/>
 							)}
 						/>

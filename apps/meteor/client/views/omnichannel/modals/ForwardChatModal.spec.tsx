@@ -7,12 +7,6 @@ import * as stories from './ForwardChatModal.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-jest.mock('../../../../client/lib/LegacyRoomManager', () => ({
-	LegacyRoomManager: {
-		close: jest.fn(),
-	},
-}));
-
 const appRoot = mockAppRoot().build();
 
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {

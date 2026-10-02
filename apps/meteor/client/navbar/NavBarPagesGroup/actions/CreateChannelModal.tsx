@@ -32,6 +32,7 @@ import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultip
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
+import { resolveRoomCreation } from '../../../lib/rooms/roomCreationRules';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 export type CreateChannelModalProps = {
@@ -117,32 +118,26 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
+	const roomCreationPolicy = {
+		e2eEnabled: Boolean(e2eEnabled),
+		e2eEnforcedForPrivate,
+		canSetReadOnly,
+		canUseFederation,
+	};
 
-	useEffect(() => {
-		if (federated) {
-			// if room is federated, it cannot be encrypted or broadcast or readOnly
-			setValue('encrypted', false);
-			setValue('broadcast', false);
-			setValue('readOnly', false);
-		}
-	}, [federated, setValue]);
+	const { room, editable } = resolveRoomCreation(watch(), roomCreationPolicy);
+	const { isPrivate, broadcast, readOnly, federated, encrypted } = room;
 
+	// Encryption only means something for a private, unfederated room; once the room is not one, the choice is dropped.
 	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-	}, [isPrivate, setValue]);
+		setValue('encrypted', room.encrypted);
+	}, [room.encrypted, setValue]);
 
+	// Broadcast carries read only with it, and federation clears both.
 	useEffect(() => {
-		if (isPrivate && e2eEnforcedForPrivate && !federated) {
-			setValue('encrypted', true);
-		}
-	}, [isPrivate, e2eEnforcedForPrivate, federated, setValue]);
-
-	useEffect(() => {
-		setValue('readOnly', broadcast);
-	}, [broadcast, setValue]);
+		setValue('broadcast', room.broadcast);
+		setValue('readOnly', room.federated ? false : room.broadcast);
+	}, [room.broadcast, room.federated, setValue]);
 
 	const validateChannelName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -161,7 +156,12 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
+	const handleCreateChannel = async (draft: CreateChannelModalPayload) => {
+		const { name, members, topic } = draft;
+		const {
+			room: { isPrivate, readOnly, broadcast, encrypted, federated },
+		} = resolveRoomCreation(draft, roomCreationPolicy);
+
 		let roomData;
 		const params = {
 			name,
@@ -196,11 +196,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
-
-	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
-		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
-	);
 
 	const createChannelFormId = useId();
 
@@ -290,7 +285,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 									<Controller
 										control={control}
 										name='federated'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!editable.federated} />}
 									/>
 								</FieldRow>
 								<FieldHint>{t(federationFieldHint)}</FieldHint>
@@ -301,7 +296,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 									<Controller
 										control={control}
 										name='encrypted'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={e2eDisabled} />}
+										render={({ field: { value: _, ...field } }) => (
+											<ToggleSwitch {...field} checked={encrypted} disabled={!editable.encrypted} />
+										)}
 									/>
 								</FieldRow>
 								<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
@@ -312,8 +309,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 									<Controller
 										control={control}
 										name='readOnly'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
+										render={({ field: { value: _, ...field } }) => (
+											<ToggleSwitch {...field} checked={readOnly} disabled={!editable.readOnly} />
 										)}
 									/>
 								</FieldRow>
@@ -327,7 +324,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 									<Controller
 										control={control}
 										name='broadcast'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
+										render={({ field: { value: _, ...field } }) => (
+											<ToggleSwitch {...field} checked={broadcast} disabled={!editable.broadcast} />
+										)}
 									/>
 								</FieldRow>
 								{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}

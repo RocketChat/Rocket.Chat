@@ -1,7 +1,8 @@
-import type { ISetting } from '@rocket.chat/core-typings';
 import type { AdminInfoPage, OrganizationInfoPage, RegisterServerPage } from '@rocket.chat/onboarding-ui';
 import type { ComponentProps, Dispatch, SetStateAction } from 'react';
 import { createContext, useContext } from 'react';
+
+import type { OrganizationOptions } from '../hooks/useOrganizationOptions';
 
 type SetupWizardData = {
 	organizationData: Parameters<ComponentProps<typeof OrganizationInfoPage>['onSubmit']>[0];
@@ -20,9 +21,13 @@ type SetupWizarContextValue = {
 	setupWizardData: SetupWizardData;
 	setSetupWizardData: Dispatch<SetStateAction<SetupWizardData>>;
 	loaded: boolean;
-	settings: Array<ISetting>;
+	organizationOptions: OrganizationOptions;
 	currentStep: number;
 	validateEmail: (email: string) => string | true;
+	validateUsername: (username: string) => string | true;
+	validatePassword: (password: string) => string | true;
+	passwordRulesHint: string;
+	canGoToPreviousStep: boolean;
 	skipCloudRegistration: boolean;
 	goToPreviousStep: () => void;
 	goToNextStep: () => void;
@@ -53,7 +58,8 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	},
 	setSetupWizardData: (data) => data,
 	loaded: false,
-	settings: [],
+	organizationOptions: { country: [], industry: [], size: [] },
+	canGoToPreviousStep: true,
 	skipCloudRegistration: false,
 	goToPreviousStep: () => undefined,
 	goToNextStep: () => undefined,
@@ -64,6 +70,9 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	saveWorkspaceData: async () => undefined,
 	saveOrganizationData: async () => undefined,
 	validateEmail: () => true,
+	validateUsername: () => true,
+	validatePassword: () => true,
+	passwordRulesHint: '',
 	currentStep: 1,
 	completeSetupWizard: async () => undefined,
 	maxSteps: 4,

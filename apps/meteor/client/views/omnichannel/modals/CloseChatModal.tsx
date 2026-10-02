@@ -21,13 +21,13 @@ import {
 	ModalContent,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import Tags from '../components/Tags';
+import { useCloseChatEntitlements } from '../hooks/useCloseChatEntitlements';
 
 type CloseChatModalFormData = {
 	comment: string;
@@ -66,7 +66,9 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
 	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
 	const customSubject = useSetting('Livechat_transcript_email_subject', '');
-	const [tagRequired, setTagRequired] = useState(false);
+
+	// The department decides it, so there is nothing to keep in state.
+	const tagRequired = Boolean(department?.requestTagBeforeClosingChat);
 
 	const tags = watch('tags');
 	const comment = watch('comment');
@@ -75,13 +77,8 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const userTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
-	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
-	const transcriptPDFPermission = usePermission('request-pdf-transcript');
-	const transcriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 
-	const canSendTranscriptEmail = transcriptEmailPermission && visitorEmail && !alwaysSendTranscript;
-	const canSendTranscriptPDF = transcriptPDFPermission && hasLicense;
-	const canSendTranscript = canSendTranscriptEmail || canSendTranscriptPDF;
+	const { canSendTranscriptEmail, canSendTranscriptPDF, canSendTranscript } = useCloseChatEntitlements(visitorEmail);
 
 	const handleTags = (value: string[]): void => {
 		setValue('tags', value);
@@ -121,12 +118,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 		return Boolean(cannotSendTag || cannotSendComment || cannotSendTranscriptEmail);
 	}, [comment, commentRequired, errors, tagRequired, tags, transcriptEmail, visitorEmail, subject]);
-
-	useEffect(() => {
-		if (department?.requestTagBeforeClosingChat) {
-			setTagRequired(true);
-		}
-	}, [department]);
 
 	useEffect(() => {
 		if (commentRequired) {

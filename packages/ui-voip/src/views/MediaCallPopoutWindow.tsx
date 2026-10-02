@@ -1,12 +1,12 @@
 import { Box, OwnerDocument as FuselageOwnerDocument } from '@rocket.chat/fuselage';
 import { OwnerDocument as StyledOwnerDocument } from '@rocket.chat/styled';
-import { ModalProvider, ModalRegion, TooltipProvider, useUserDisplayName } from '@rocket.chat/ui-client';
-import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { ModalProvider, ModalRegion, TooltipProvider } from '@rocket.chat/ui-client';
 import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import MediaCallPopoutView from './MediaCallPopoutView';
 import type { PopoutContainer } from './usePopoutWindow';
+import { useMediaCallViewer } from '../hooks/useMediaCallViewer';
 import MediaCallViewProvider from '../providers/MediaCallViewProvider';
 
 export type MediaCallPopoutWindowProps = {
@@ -16,15 +16,7 @@ export type MediaCallPopoutWindowProps = {
 const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWindowProps) => {
 	const [region] = useState(() => Symbol());
 
-	const user = useUser();
-	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
-	const getUserAvatarPath = useUserAvatarPath();
-	const ownUser = useMemo(() => {
-		return {
-			displayName: displayName || '',
-			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
-		};
-	}, [displayName, getUserAvatarPath, user?._id]);
+	const ownUser = useMediaCallViewer();
 
 	const { root, ownerDocument } = container;
 
