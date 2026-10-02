@@ -33,10 +33,8 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 	const triggerRef = useRef<Element | null>(null);
-
-	// A card opened from the keyboard takes focus and stays until dismissed; one opened by hover follows the pointer.
-	const [openedByKeyboard, setOpenedByKeyboard] = useState(false);
-	const openedByKeyboardRef = useRef(false);
+	// Only a click-opened card is announced on its trigger; a hover card is a pointer-only preview.
+	const [openedByClick, setOpenedByClick] = useState(false);
 
 	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -63,9 +61,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			clearCloseTimer();
 		} else {
 			clearTimers();
-		}
-		if (openedByKeyboardRef.current) {
-			(triggerRef.current as HTMLElement | null)?.focus();
 		}
 		setUserCardData(null);
 	});
@@ -120,10 +115,9 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 		clearTimers();
 
-		const open = (viaKeyboard = false) => {
+		const open = (viaClick = false) => {
 			triggerRef.current = trigger;
-			openedByKeyboardRef.current = viaKeyboard;
-			setOpenedByKeyboard(viaKeyboard);
+			setOpenedByClick(viaClick);
 			state.open();
 			setUserCardData({
 				username,
@@ -133,14 +127,9 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			});
 		};
 
-		// The keyboard and a click open right away; hover waits out the intent delay.
-		if (e.type === 'keydown') {
-			open(true);
-			return;
-		}
-
+		// A click opens right away; hover waits out the intent delay.
 		if (e.type === 'click') {
-			open();
+			open(true);
 			return;
 		}
 
@@ -166,11 +155,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			};
 
 			document.addEventListener('keydown', handleKeyDown, { capture: true });
-
-			if (openedByKeyboardRef.current) {
-				card.focus();
-				return () => document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			}
 
 			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
 			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
@@ -212,12 +196,12 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	// Only the trigger that opened the card is expanded; the shared triggerProps can't carry this state.
 	useEffect(() => {
 		const trigger = triggerRef.current;
-		if (!isOpen || !trigger) {
+		if (!isOpen || !openedByClick || !trigger) {
 			return;
 		}
 		trigger.setAttribute('aria-expanded', 'true');
 		return () => trigger.removeAttribute('aria-expanded');
-	}, [isOpen, userCardData]);
+	}, [isOpen, openedByClick, userCardData]);
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
@@ -234,12 +218,11 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		<UserCardContext.Provider value={contextValue}>
 			{children}
 			{isOpen && userCardData && (
-				// Non-modal on hover: a modal popover would aria-hide the page and lock scroll for a card the pointer just
-				// passed over. Keyed by user so handing the card to another author repositions it over the new trigger,
-				// and by input mode so reopening the same author's card from the keyboard switches it to keyboard mode.
+				// Non-modal: a modal popover would aria-hide the page and lock scroll for a card the pointer just passed
+				// over. Keyed by user so handing the card to another author repositions it over the new trigger.
 				<Popover
-					key={`${userCardData.username}-${openedByKeyboard ? 'keyboard' : 'pointer'}`}
-					isNonModal={!openedByKeyboard}
+					key={userCardData.username}
+					isNonModal
 					placement='top left'
 					offset={getPopoverOffset()}
 					triggerRef={triggerRef}

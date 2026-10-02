@@ -48,9 +48,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
 			{...(handleClick && buttonProps)}
-			{...(handleClick && { 'aria-haspopup': 'dialog' })}
 			onMouseEnter={handleMouseEnter}
-			{...(handleMouseEnter && triggerProps)}
 			data-uid={resolved._id}
 		>
 			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
