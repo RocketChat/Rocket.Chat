@@ -1,6 +1,6 @@
 ---
 status: draft
-standards: [XEP-0234, XEP-0066, XEP-0363]
+standards: [XEP-0234, XEP-0066, XEP-0363, XEP-0047, XEP-0065]
 adrs: [0001, 0006]
 code: []
 tests: []

@@ -1,6 +1,6 @@
 ---
 status: implemented
-standards: [RFC 6120, RFC 2782, XEP-0220, XEP-0185]
+standards: [RFC 6120, RFC 2782, XEP-0220, XEP-0185, XEP-0178]
 adrs: [0003, 0004, 0005, 0011, 0012]
 code: [src/stream/, src/s2s/, src/xml/, src/router/StanzaRouter.ts, src/config.ts]
 tests:

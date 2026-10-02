@@ -1,6 +1,6 @@
 ---
 status: partial
-standards: [RFC 6121]
+standards: [RFC 6121, XEP-0160]
 adrs: [0006, 0007, 0015]
 code:
   [
