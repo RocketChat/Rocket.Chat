@@ -1,5 +1,5 @@
 import { emptySearchFilters, serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Box, Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemGroupHeader, ItemGroupTitle, ItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -33,9 +33,9 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 
 	return (
 		<Box display='flex' flexDirection='column' paddingBlockStart={8} paddingBlockEnd={12}>
-			<Box color='titles-labels' fontScale='c2' paddingInline={16} marginBlockEnd={4} role='presentation' aria-hidden>
-				{t('Intelligent_Search')}
-			</Box>
+			<ItemGroupHeader inset='md' aria-hidden>
+				<ItemGroupTitle>{t('Intelligent_Search')}</ItemGroupTitle>
+			</ItemGroupHeader>
 			<Box color='hint' fontScale='c1' paddingInline={12} marginBlockEnd={4}>
 				{t('AI_Search_related_messages', { count: items.length })}
 			</Box>
@@ -45,7 +45,11 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 			<NavBarSearchItem
 				title={t('View_all_results')}
 				avatar={null}
-				icon={<SidebarItemIcon icon={<Icon name='arrow-forward' size='x16' />} />}
+				icon={
+					<ItemIcon>
+						<Icon name='arrow-forward' size='x16' />
+					</ItemIcon>
+				}
 				href={searchHref}
 				onClick={onClose}
 			/>

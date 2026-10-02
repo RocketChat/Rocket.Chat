@@ -1,12 +1,14 @@
-import { Box, Icon, Option, OptionAvatar, OptionColumn, OptionContent, OptionDescription, OptionMenu } from '@rocket.chat/fuselage';
+import { Box, Icon, Item, ItemActions, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
+import { useUserPresence } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { STATUS_LABEL_KEYS } from '../../../../components/UserStatusText';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 export type BannedUsersItemProps = {
@@ -20,6 +22,8 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(user.name, user.username, useRealName);
 	const federated = user.username.startsWith('@') && user.username.includes(':');
+	const status = useUserPresence(user._id)?.status;
+	const iconLabel = federated ? t('Federated') : status && t(STATUS_LABEL_KEYS[status]);
 
 	const options = useMemo(
 		() => [
@@ -35,18 +39,20 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 	);
 
 	return (
-		<Option style={{ paddingInline: 24, cursor: 'default' }}>
-			<OptionAvatar>
+		<Item role='listitem' size='medium' inset='lg'>
+			<ItemMedia>
 				<UserAvatar username={normalizeUsername(user.username)} size='x28' />
-			</OptionAvatar>
-			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={user._id} />}</OptionColumn>
-			<OptionContent>
-				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
-			</OptionContent>
-			<OptionMenu>
+			</ItemMedia>
+			<ItemIcon label={iconLabel}>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={user._id} />}</ItemIcon>
+			<ItemContent>
+				<ItemTitle>
+					{nameOrUsername} {displayUsername && <ItemDescription inline>@{displayUsername}</ItemDescription>}
+				</ItemTitle>
+			</ItemContent>
+			<ItemActions reveal='hover'>
 				<GenericMenu detached title={t('More')} items={options} placement='bottom-end' />
-			</OptionMenu>
-		</Option>
+			</ItemActions>
+		</Item>
 	);
 };
 

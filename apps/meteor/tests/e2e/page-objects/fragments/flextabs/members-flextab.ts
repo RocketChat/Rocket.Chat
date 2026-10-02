@@ -100,7 +100,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	memberOption(username: string) {
-		return this.root.locator('li', { hasText: username });
+		return this.root.getByRole('listitem').filter({ hasText: username });
 	}
 
 	getMenuItemAction(action: string) {

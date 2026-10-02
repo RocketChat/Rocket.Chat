@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { ItemSkeleton } from '@rocket.chat/fuselage';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 
@@ -18,7 +19,7 @@ export type RoomMembersRowProps = {
 
 const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps) => {
 	if (!user?._id) {
-		return <RoomMembersItem.Skeleton />;
+		return <ItemSkeleton size='medium' inset='lg' />;
 	}
 
 	return (

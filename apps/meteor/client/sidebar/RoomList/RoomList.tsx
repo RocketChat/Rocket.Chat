@@ -40,7 +40,7 @@ const RoomList = () => {
 	const userId = useUserId();
 	const isAnonymous = !userId;
 
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
+	const { collapsedGroups, handleClick } = useCollapsedGroups();
 	const { groups } = useRoomList({ collapsedGroups });
 	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
@@ -95,7 +95,6 @@ const RoomList = () => {
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
 						onClick={() => handleClick(group.key)}
-						onKeyDown={(e) => handleKeyDown(e, group.key)}
 					/>
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (

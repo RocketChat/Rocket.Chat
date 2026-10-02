@@ -1,33 +1,19 @@
 import type { ICalendarEvent, Serialized } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Palette } from '@rocket.chat/fuselage';
+import { Button, Item, ItemActions, ItemContent, ItemDescription, ItemLink, ItemTitle } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import { usePreventPropagation } from '../../../hooks/usePreventPropagation';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
 export type OutlookEventItemProps = Serialized<ICalendarEvent>;
-
-const hovered = css`
-	&:hover {
-		cursor: pointer;
-	}
-
-	&:hover,
-	&:focus {
-		background: ${Palette.surface['surface-hover']};
-	}
-`;
 
 const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
-	const handleMeetingClick = usePreventPropagation(openCall);
 
 	const handleOpenEvent = () => {
 		setModal(
@@ -42,29 +28,23 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 	};
 
 	return (
-		<Box
-			className={hovered}
-			borderBlockEndWidth='default'
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			paddingInline={24}
-			paddingBlock={16}
-			display='flex'
-			justifyContent='space-between'
-			onClick={handleOpenEvent}
-		>
-			<Box>
-				<Box fontScale='h4'>{subject}</Box>
-				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
-			</Box>
-			<Box>
-				{meetingUrl && (
-					<Button onClick={handleMeetingClick} small>
+		<Item size='extended' inset='lg'>
+			<ItemContent>
+				<ItemTitle>
+					<ItemLink is='button' onClick={handleOpenEvent}>
+						{subject}
+					</ItemLink>
+				</ItemTitle>
+				<ItemDescription>{formatDateAndTime(startTime)}</ItemDescription>
+			</ItemContent>
+			{meetingUrl && (
+				<ItemActions>
+					<Button onClick={openCall} small>
 						{t('Join')}
 					</Button>
-				)}
-			</Box>
-		</Box>
+				</ItemActions>
+			)}
+		</Item>
 	);
 };
 

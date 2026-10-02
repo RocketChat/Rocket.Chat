@@ -58,7 +58,7 @@ export class ChannelsFlexTab extends FlexTab {
 	}
 
 	channelOption(name: string) {
-		return this.root.locator('li', { hasText: name });
+		return this.channelsList.getByRole('listitem').filter({ hasText: name });
 	}
 
 	async openChannelOptionMoreActions(name: string) {

@@ -1,6 +1,16 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import { FilePreviewIcon } from '@rocket.chat/ui-client';
+import {
+	Icon,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
+} from '@rocket.chat/fuselage';
 
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
@@ -20,50 +30,48 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user, description } = fileData;
 
-	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
+	const { onClick, onContextMenu } = useDownloadFromServiceWorker(path || '', name);
 	const normalizedUsername = user?.username ? normalizeUsername(user.username) : undefined;
 	const shouldDisplayPreview = typeGroup === 'image' && !!type && isPreviewableImage(type);
+	const isEncrypted = !!path?.includes('/file-decrypt/');
+	const extension = getFileExtension(name);
 
 	return (
-		<>
+		<Item size='extended' inset='lg'>
 			{shouldDisplayPreview ? (
 				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (
-				<Box
-					is='a'
-					minWidth={0}
-					aria-label={name}
-					download
-					rel='noopener noreferrer'
-					target='_blank'
-					title={name}
-					display='flex'
-					alignItems='center'
-					flexGrow={1}
-					flexShrink={1}
-					href={path}
-					tabIndex={-1}
-					textDecorationLine='none'
-					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
-				>
-					<FilePreviewIcon format={getFileExtension(name)} />
-					<Box marginInlineStart={8} flexShrink={1} overflow='hidden'>
-						<Box withTruncatedText color='default' fontScale='p2m'>
-							{name}
-						</Box>
-						{user?.username && (
-							<Box withTruncatedText color='hint' fontScale='p2'>
-								@{normalizedUsername}
-							</Box>
-						)}
-						<Box color='hint' fontScale='micro'>
-							{format(uploadedAt)}
-						</Box>
-					</Box>
-				</Box>
+				<>
+					<ItemMedia>
+						<Icon name='attachment-file' size='x32' />
+					</ItemMedia>
+					<ItemContent>
+						<ItemRow>
+							<ItemTitle>
+								<ItemLink
+									href={path ?? ''}
+									download
+									rel='noopener noreferrer'
+									target='_blank'
+									title={name}
+									{...(isEncrypted && { onClick, onContextMenu })}
+								>
+									{name}
+								</ItemLink>
+							</ItemTitle>
+							<ItemMeta>{format(uploadedAt)}</ItemMeta>
+						</ItemRow>
+						<ItemRow>
+							{normalizedUsername && <ItemDescription>@{normalizedUsername}</ItemDescription>}
+							{extension && <ItemMeta>{extension.toUpperCase()}</ItemMeta>}
+						</ItemRow>
+					</ItemContent>
+				</>
 			)}
-			<FileItemMenu rid={rid} fileData={fileData} onClickDelete={onClickDelete} />
-		</>
+			<ItemActions reveal='hover'>
+				<FileItemMenu rid={rid} fileData={fileData} onClickDelete={onClickDelete} />
+			</ItemActions>
+		</Item>
 	);
 };
 
