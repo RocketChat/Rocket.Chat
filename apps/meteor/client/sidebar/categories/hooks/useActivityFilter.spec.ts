@@ -1,45 +1,23 @@
-import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { act, renderHook } from '@testing-library/react';
 
 import { isActivityFilterable, useActivityFilter, useActivityFilterClock } from './useActivityFilter';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
-import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
-
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useUserPreference: jest.fn(),
-}));
 
 jest.mock('./usePersistCategoriesMutation', () => ({
 	usePersistCategoriesMutation: jest.fn(),
 }));
 
-jest.mock('./useUserSidebarCategories', () => ({
-	useUserSidebarCategories: jest.fn(),
-}));
+const STORAGE_KEY = 'fuselage-localStorage-sidebarActivityFilters';
 
-const mockedUseUserPreference = jest.mocked(useUserPreference);
-const mockedUsePersistCategoriesMutation = jest.mocked(usePersistCategoriesMutation);
-const mockedUseUserSidebarCategories = jest.mocked(useUserSidebarCategories);
-
-const mutateAsync = jest.fn().mockResolvedValue(undefined);
-
-const persistedEntry = (id: string): ISidebarCategory | undefined =>
-	mutateAsync.mock.calls[0][0].find((entry: ISidebarCategory) => entry._id === id);
-
-const withCategories = (rawCategories: ISidebarCategory[]) =>
-	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories, customCategories: rawCategories.filter((entry) => !entry.default) });
+const stored = () => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
 
 beforeEach(() => {
-	mutateAsync.mockClear();
-	mockedUseUserPreference.mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
-	mockedUsePersistCategoriesMutation.mockReturnValue({ mutateAsync } as any);
-	withCategories([]);
+	localStorage.clear();
 });
 
-it('reads the filter stored on the group entry', () => {
-	withCategories([{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 168 }]);
+it('reads the filter stored for a group', () => {
+	localStorage.setItem(STORAGE_KEY, JSON.stringify({ Channels: 168 }));
 
 	const { result } = renderHook(() => useActivityFilter());
 
@@ -48,38 +26,53 @@ it('reads the filter stored on the group entry', () => {
 	expect(result.current.hasActivityFilters).toBe(true);
 });
 
-it('stores a filter on a custom category', async () => {
-	withCategories([{ _id: 'custom', name: 'Work' }]);
+it('ignores a stored value that is not a whole number of hours', () => {
+	localStorage.setItem(STORAGE_KEY, JSON.stringify({ Channels: 'soon', Teams: 0 }));
 
 	const { result } = renderHook(() => useActivityFilter());
 
-	await act(async () => {
-		await result.current.setActivityFilterHours('custom', 24);
-	});
-
-	expect(persistedEntry('custom')).toEqual({ _id: 'custom', name: 'Work', activityFilterHours: 24 });
+	expect(result.current.getActivityFilterHours('Channels')).toBeUndefined();
+	expect(result.current.getActivityFilterHours('Teams')).toBeUndefined();
+	expect(result.current.hasActivityFilters).toBe(false);
 });
 
-it('creates the entry of a system group that has none yet', async () => {
+it('stores a filter in the browser, not on the user preferences', () => {
 	const { result } = renderHook(() => useActivityFilter());
 
-	await act(async () => {
-		await result.current.setActivityFilterHours('Channels', 720);
+	act(() => {
+		result.current.setActivityFilterHours('custom', 24);
 	});
 
-	expect(persistedEntry('Channels')).toEqual({ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 });
+	expect(stored()).toEqual({ custom: 24 });
+	expect(result.current.getActivityFilterHours('custom')).toBe(24);
+	expect(usePersistCategoriesMutation).not.toHaveBeenCalled();
 });
 
-it('clears the filter', async () => {
-	withCategories([{ _id: 'custom', name: 'Work', activityFilterHours: 168 }]);
+it('keeps the other groups when one changes, and drops a cleared one', () => {
+	localStorage.setItem(STORAGE_KEY, JSON.stringify({ Channels: 168, custom: 24 }));
 
 	const { result } = renderHook(() => useActivityFilter());
 
-	await act(async () => {
-		await result.current.setActivityFilterHours('custom', undefined);
+	act(() => {
+		result.current.setActivityFilterHours('Channels', 720);
+	});
+	expect(stored()).toEqual({ Channels: 720, custom: 24 });
+
+	act(() => {
+		result.current.setActivityFilterHours('custom', undefined);
+	});
+	expect(stored()).toEqual({ Channels: 720 });
+});
+
+it('shows a change to every component reading the filters', () => {
+	const { result: writer } = renderHook(() => useActivityFilter());
+	const { result: reader } = renderHook(() => useActivityFilter());
+
+	act(() => {
+		writer.current.setActivityFilterHours('Channels', 168);
 	});
 
-	expect(persistedEntry('custom')?.activityFilterHours).toBeUndefined();
+	expect(reader.current.getActivityFilterHours('Channels')).toBe(168);
 });
 
 it('never filters dynamic groups', () => {
