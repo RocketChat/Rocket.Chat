@@ -21,8 +21,8 @@ export class FederationHomeFlextabMembers {
 
 	get btnMenuUserInfo(): Locator {
 		// The room contextual bar is titled "Full profile" since the user
-		// information redesign; older admin views still say "User Info".
-		return this.page.getByRole('dialog', { name: /^(Full profile|User Info)$/ }).getByRole('button', { name: 'More', exact: true });
+		// information redesign; older admin views still say "User info".
+		return this.page.getByRole('dialog', { name: /^(Full profile|User info)$/ }).getByRole('button', { name: 'More', exact: true });
 	}
 
 	getKebabMenuForUser(username: string): Locator {

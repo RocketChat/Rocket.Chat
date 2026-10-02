@@ -52,7 +52,6 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 			}
 
 			try {
-				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
 				await loadCapabilities();
 				closeUserCard();
 
@@ -76,12 +75,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		const hasCallableRoom = room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated && !!user.username;
 
 		const shouldShowStartCall =
-			(room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated) &&
-			user._id !== ownUserId &&
-			enabledForDMs &&
-			permittedToCallManagement &&
-			!isCalling &&
-			!isRinging;
+			hasCallableRoom && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
 
 		return shouldShowStartCall
 			? {

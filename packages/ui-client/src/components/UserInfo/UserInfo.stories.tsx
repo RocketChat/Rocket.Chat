@@ -45,14 +45,6 @@ export const WithVoiceCallExtension = {
 	},
 };
 
-export const WithUtcOffsetZero = {
-	render: Template,
-
-	args: {
-		utcOffset: 0,
-	},
-};
-
 export const WithABACAttributes = {
 	render: Template,
 

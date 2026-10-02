@@ -35,9 +35,6 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 					const { _id: roleId, scope, u } = role;
 					if (!!scope || !u) return;
 
-					// Updates must not mutate the cached records in place: react-query's
-					// structural sharing would see the (mutated) old data as deep-equal
-					// to the new one, keep the old reference and never notify observers.
 					queryClient.setQueryData(rolesQueryKeys.userRoles(), (data: UserRoles[] | undefined = []): UserRoles[] => {
 						const index = data?.findIndex((record) => record.uid === u._id) ?? -1;
 

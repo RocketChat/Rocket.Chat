@@ -3,7 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '@rocket.chat/ui-client';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +29,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 	const {
 		data: isMemberData,
 		refetch,
@@ -42,17 +43,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const {
-			_id,
-			name,
-			roles = defaultValue,
-			bio = defaultValue,
-			utcOffset = defaultValue,
-			nickname,
-			avatarETag,
-			freeSwitchExtension,
-			federated,
-		} = data?.user || {};
+		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension, federated } = data?.user || {};
 
 		return {
 			_id,
@@ -84,7 +75,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			freeSwitchExtension: user.freeSwitchExtension,
 			federated: user.federated,
 		},
-		size: 3,
+		size: 2,
 		isMember,
 		reload: refetch,
 	});

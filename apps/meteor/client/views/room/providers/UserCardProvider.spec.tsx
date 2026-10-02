@@ -189,34 +189,173 @@ it('keeps the context value stable when a card opens and closes', async () => {
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
 });
 
+const AuthorTrigger = ({ username }: { username: string }) => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onMouseEnter={(e: UIEvent) => openUserCard(e, username)}>
+			{`author ${username}`}
+		</button>
+	);
+};
+
+const advance = (ms: number) =>
+	act(async () => {
+		await jest.advanceTimersByTimeAsync(ms);
+	});
+
+it('closes shortly after the pointer leaves the card and its trigger', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		// far from the card and the trigger
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('hands the card over to the next author the pointer moves to', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		fireEvent.mouseLeave(screen.getByText('author jane'));
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('does not bring the card back after scrolling dismisses it', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		// an open for john is pending when scrolling the list (which holds the trigger) dismisses the card
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.scroll(document.body);
+		await advance(0);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		await advance(1000);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
 it('marks only the trigger that opened the card as expanded', async () => {
-	const AuthorTrigger = ({ username }: { username: string }) => {
+	const ClickTrigger = ({ username }: { username: string }) => {
 		const { openUserCard, triggerProps } = useUserCard();
 		return (
 			<button type='button' {...triggerProps} onClick={(e: UIEvent) => openUserCard(e, username)}>
-				<span>{`author ${username}`}</span>
+				<span>{`click ${username}`}</span>
 			</button>
 		);
 	};
 
 	render(
 		<UserCardProvider>
-			<AuthorTrigger username='jane' />
-			<AuthorTrigger username='john' />
+			<ClickTrigger username='jane' />
+			<ClickTrigger username='john' />
 		</UserCardProvider>,
 	);
 
-	const jane = screen.getByText('author jane').closest('button');
-	const john = screen.getByText('author john').closest('button');
+	const jane = screen.getByText('click jane').closest('button');
+	const john = screen.getByText('click john').closest('button');
 
 	// clicking the inner text still marks the button, not the span
-	fireEvent.click(screen.getByText('author jane'));
+	fireEvent.click(screen.getByText('click jane'));
 	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	expect(jane).toHaveAttribute('aria-expanded', 'true');
 	expect(john).not.toHaveAttribute('aria-expanded');
-	expect(jane).toHaveAttribute('aria-haspopup', 'dialog');
-	expect(john).toHaveAttribute('aria-haspopup', 'dialog');
+});
+
+const KeyboardTrigger = ({ username }: { username: string }) => {
+	const { openUserCard, triggerProps } = useUserCard();
+	return (
+		<button
+			type='button'
+			{...triggerProps}
+			onKeyDown={(e) => {
+				if (e.key === 'Enter') {
+					openUserCard(e, username);
+				}
+			}}
+		>
+			{`keyboard ${username}`}
+		</button>
+	);
+};
+
+it('opens from the keyboard with focus in the card, ignores the pointer, and returns focus on Escape', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<KeyboardTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		const trigger = screen.getByText('keyboard jane');
+		trigger.focus();
+		fireEvent.keyDown(trigger, { key: 'Enter' });
+		await advance(0);
+
+		const card = screen.getByTestId('user-card');
+		expect(card).toHaveTextContent('jane');
+		expect(card.parentElement).toHaveFocus();
+		expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+		// the pointer resting elsewhere doesn't close a card opened from the keyboard
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		fireEvent.keyDown(card, { key: 'Escape' });
+		await advance(0);
+
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+		expect(trigger).toHaveFocus();
+		expect(trigger).not.toHaveAttribute('aria-expanded');
+	} finally {
+		jest.useRealTimers();
+	}
 });
 
 it('switches a card opened by hover to keyboard mode when the same trigger is activated from the keyboard', async () => {

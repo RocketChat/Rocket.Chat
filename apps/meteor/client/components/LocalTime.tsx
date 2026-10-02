@@ -1,4 +1,4 @@
-import { useUTCClock } from '@rocket.chat/ui-client';
+import { useTimezoneTime } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

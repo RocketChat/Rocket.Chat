@@ -46,25 +46,18 @@ exports[`renders Default without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <button
-                      aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
-                      title="View_avatar"
-                      type="button"
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
-                      >
-                        <img
-                          alt="Avatar"
-                          aria-hidden="true"
-                          class="rcx-avatar__element rcx-avatar__element--x48"
-                          data-username="guilherme.gazzo"
-                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          title="guilherme.gazzo"
-                        />
-                      </figure>
-                    </button>
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
@@ -72,13 +65,34 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                        >
+                          guilherme.gazzo
+                        </div>
+                      </h2>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                      >
+                        🛴 currently working on User Card
                       </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                    >
-                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -199,10 +213,10 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                            class="rcx-box rcx-box--full"
                           >
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                           </div>
@@ -383,25 +397,18 @@ exports[`renders InvitedUser without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <button
-                      aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
-                      title="View_avatar"
-                      type="button"
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
-                      >
-                        <img
-                          alt="Avatar"
-                          aria-hidden="true"
-                          class="rcx-avatar__element rcx-avatar__element--x48"
-                          data-username="guilherme.gazzo"
-                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          title="guilherme.gazzo"
-                        />
-                      </figure>
-                    </button>
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
@@ -409,13 +416,34 @@ exports[`renders InvitedUser without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                        >
+                          guilherme.gazzo
+                        </div>
+                      </h2>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                      >
+                        🛴 currently working on User Card
                       </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                    >
-                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -536,10 +564,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                            class="rcx-box rcx-box--full"
                           >
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                           </div>
@@ -734,25 +762,18 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <button
-                      aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
-                      title="View_avatar"
-                      type="button"
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
-                      >
-                        <img
-                          alt="Avatar"
-                          aria-hidden="true"
-                          class="rcx-avatar__element rcx-avatar__element--x48"
-                          data-username="guilherme.gazzo"
-                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          title="guilherme.gazzo"
-                        />
-                      </figure>
-                    </button>
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
@@ -760,13 +781,34 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                        >
+                          guilherme.gazzo
+                        </div>
+                      </h2>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                      >
+                        🛴 currently working on User Card
                       </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                    >
-                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -887,10 +929,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                            class="rcx-box rcx-box--full"
                           >
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                           </div>
@@ -1131,25 +1173,18 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
-                    <button
-                      aria-label="View_avatar"
-                      class="rcx-box rcx-box--full rcx-css-1bsfqc"
-                      title="View_avatar"
-                      type="button"
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
-                      >
-                        <img
-                          alt="Avatar"
-                          aria-hidden="true"
-                          class="rcx-avatar__element rcx-avatar__element--x48"
-                          data-username="guilherme.gazzo"
-                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          title="guilherme.gazzo"
-                        />
-                      </figure>
-                    </button>
+                      <img
+                        alt="Avatar"
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1m8fkkm"
                     >
@@ -1157,13 +1192,34 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-15fvg6f"
                         title="guilherme.gazzo"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                        >
+                          guilherme.gazzo
+                        </div>
+                      </h2>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                      >
+                        🛴 currently working on User Card
                       </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                    >
-                      🛴 currently working on User Card
                     </div>
                   </div>
                   <div
@@ -1284,10 +1340,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                            class="rcx-box rcx-box--full"
                           >
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                           </div>

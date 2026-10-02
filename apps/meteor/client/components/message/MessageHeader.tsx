@@ -6,6 +6,7 @@ import {
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo, type MouseEvent } from 'react';
@@ -34,7 +35,10 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
-	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
+	// Enter/Space opens the card (focused, so its actions are reachable); a click opens the full profile.
+	const buttonProps = useButtonPattern((e) =>
+		e.type === 'keydown' ? openUserCard(e, message.u.username) : openUserInfo(message.u.username),
+	);
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -42,34 +46,28 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
-	const roles = [...workspaceRoles, ...roomRoles];
-	const shouldShowRolesList = showRoles && roles.length > 0;
+	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
 
-	// While selecting, the whole row toggles the selection, so the name stops being a button.
+	// While selecting, the whole row toggles the selection, so the name and the role tag stop being triggers.
 	const isSelecting = useIsSelecting();
 	const authorTriggerProps = isSelecting
 		? {}
 		: {
 				...buttonProps,
 				style: { cursor: 'pointer' },
-				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username), ...triggerProps }),
+				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username) }),
+				...triggerProps,
 			};
 
 	return (
 		<FuselageMessageHeader>
-			<MessageNameContainer id={`${message._id}-displayName`} aria-label={displayName} {...authorTriggerProps}>
+			<MessageNameContainer id={`${message._id}-displayName`} {...authorTriggerProps}>
 				<MessageName
-					title={!hoverUserCardEnabled && !showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+					title={!hoverUserCardEnabled && displayName !== normalizedUsername ? `@${normalizedUsername}` : undefined}
 					data-username={normalizedUsername}
 				>
 					{message.alias || displayName}
 				</MessageName>
-				{showUsername && (
-					<>
-						{' '}
-						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-					</>
-				)}
 			</MessageNameContainer>
 			{shouldShowRolesList && (
 				<MessageRoles

@@ -2,7 +2,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

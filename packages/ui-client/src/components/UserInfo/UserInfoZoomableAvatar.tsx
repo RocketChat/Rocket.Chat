@@ -2,14 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { Suspense, lazy, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoAvatar from './UserInfoAvatar';
-
-// Loaded on demand: the gallery drags the swiper dependency along, which is
-// only needed once the avatar is actually zoomed.
-const ImageGallery = lazy(() => import('../ImageGallery').then((module) => ({ default: module.ImageGallery })));
+import { ImageGalleryContext } from '../ImageGalleryContext';
 
 const avatarButtonStyle = css`
 	padding: 0;
@@ -33,8 +30,13 @@ const UserInfoZoomableAvatar = ({ username, etag }: UserInfoZoomableAvatarProps)
 	const { t } = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const [isZoomed, setIsZoomed] = useState(false);
+	const ImageGallery = useContext(ImageGalleryContext);
 
 	const avatarUrl = getUserAvatarPath({ username, etag });
+
+	if (!ImageGallery) {
+		return <UserInfoAvatar username={username} etag={etag} size='x48' />;
+	}
 
 	return (
 		<>
@@ -49,13 +51,11 @@ const UserInfoZoomableAvatar = ({ username, etag }: UserInfoZoomableAvatarProps)
 				<UserInfoAvatar username={username} etag={etag} size='x48' />
 			</Box>
 			{isZoomed && (
-				<Suspense fallback={null}>
-					{/* the gallery uses `description` as the image's alt text */}
-					<ImageGallery
-						images={[{ _id: avatarUrl, url: avatarUrl, description: t('Avatar_of', { username }) }]}
-						onClose={() => setIsZoomed(false)}
-					/>
-				</Suspense>
+				// the gallery uses `description` as the image's alt text
+				<ImageGallery
+					images={[{ _id: avatarUrl, url: avatarUrl, description: t('Avatar_of', { username }) }]}
+					onClose={() => setIsZoomed(false)}
+				/>
 			)}
 		</>
 	);

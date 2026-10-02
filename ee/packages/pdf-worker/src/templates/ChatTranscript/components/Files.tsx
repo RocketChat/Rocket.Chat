@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 
 import type { PDFFile } from '../../../types/ChatTranscriptData';
 

@@ -35,9 +35,6 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 					const { _id: roleId, scope, u } = role;
 					if (!scope || !u || scope !== rid) return;
 
-					// Updates must not mutate the cached records in place: react-query's
-					// structural sharing would see the (mutated) old data as deep-equal
-					// to the new one, keep the old reference and never notify observers.
 					queryClient.setQueryData(roomsQueryKeys.roles(rid), (data: RoomRoles[] | undefined = []): RoomRoles[] => {
 						const index = data?.findIndex((record) => record.rid === rid && record.u._id === u._id) ?? -1;
 

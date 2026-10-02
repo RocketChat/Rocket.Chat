@@ -2678,8 +2678,8 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
-			void request
+		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({

@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { InfoPanelText } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useClipboardWithToast from '../../hooks/useClipboardWithToast';
+import { useClipboardWithToast } from '../../hooks/useClipboardWithToast';
+import { InfoPanelText } from '../InfoPanel';
 
 const revealOnHoverStyle = css`
 	/* InfoPanelText's own class is replaced by this one, so carry its word-break over */

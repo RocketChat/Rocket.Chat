@@ -32,7 +32,7 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
             </button>
             <div
               aria-label="rocket.cat"
-              class="rcx-box rcx-box--full rcx-css-1lb6izd rcx-css-f2vsf1"
+              class="rcx-box rcx-box--full rcx-css-1lb6izd rcx-css-1ik1zcp"
               role="button"
               tabindex="0"
             >

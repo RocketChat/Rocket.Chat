@@ -10,6 +10,7 @@ import {
 	CheckBox,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
@@ -28,13 +29,7 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import {
-	useMessageListShowRealName,
-	useMessageListShowUsername,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-	useMessageListHoverUserCardEnabled,
-} from '../list/MessageListContext';
+import { useMessageListFormatDateAndTime, useMessageListFormatTime, useMessageListHoverUserCardEnabled } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -57,7 +52,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern(() => openUserInfo(user.username));
+	const buttonProps = useButtonPattern((e) => (e.type === 'keydown' ? openUserCard(e, user.username) : openUserInfo(user.username)));
 	const openUserCardOnHover = hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined;
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -104,7 +99,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							...buttonProps,
 							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
-							...(hoverUserCardEnabled && triggerProps),
+							...triggerProps,
 						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>

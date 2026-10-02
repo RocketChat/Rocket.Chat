@@ -178,6 +178,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.title && { title }),
+			...(dirtyFields.nationality && { nationality }),
+			...(dirtyFields.languages && {
+				languages: languages
+					.split(',')
+					.map((language) => language.trim())
+					.filter(Boolean),
+			}),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -191,26 +199,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				await refreshUserViews();
 			}
 
-		try {
-			if (basicInfoDirty) {
-				await updateOwnBasicInfo({
-					data: basicInfoData,
-					...(customFieldsDirty && { customFields }),
-				});
-				await refreshUserViews();
-			}
-
-		try {
-			if (Object.keys(basicInfoData).length || customFieldsDirty) {
-				await updateOwnBasicInfo({
-					data: basicInfoData,
-					...(customFieldsDirty && { customFields }),
-				});
-
-				// users.info answers the user card, the full profile and the admin
-				// info panel — refresh them all so an open panel reflects the save.
-				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
-				await queryClient.invalidateQueries({ queryKey: ['users'] });
+			if (dirtyFields.statusVisibilityDenied) {
+				await setPreferences({ data: { statusVisibilityDenied } });
 			}
 
 			if (statusDirty) {

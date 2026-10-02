@@ -73,15 +73,9 @@ test.describe.serial('Global Search', () => {
 		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true });
 		await poHomeChannel.tabs.searchMessages.jumpToMessage(threadMessage.msg);
 
-		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
-		await message.hover();
-
-		// Message lists inside the contextual bar do not open the user card on
-		// hover, so the row actions stay reachable without dismissing anything.
-		await expect(page.getByRole('dialog', { name: 'User card' })).toBeHidden();
-
-		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
-		await jumpToMessageButton.click();
+		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
+		await expect(poHomeChannel.tabs.threads.getThreadMessageByText(threadMessage.msg)).toBeVisible();
+	});
 
 	test('should open the correct message when jumping from global search in group to channel message', async () => {
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();

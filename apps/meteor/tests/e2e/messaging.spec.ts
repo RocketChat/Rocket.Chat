@@ -52,28 +52,35 @@ test.describe('Messaging', () => {
 			await expect(channelPage.content.lastUserMessage).toBeFocused();
 		});
 
-		test('should open the full profile from the message author name', async ({ page }) => {
-			const fullProfile = page.getByRole('dialog', { name: 'Full profile' });
+		test('should leave the room toolbar with Shift+Tab', async ({ page }) => {
+			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
+			await threadsAction.focus();
+			await expect(threadsAction).toBeFocused();
 
 			await page.keyboard.press('Shift+Tab');
 
 			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 		});
 
-		test('should open the user info from the message author name', async ({ page }) => {
-			const userInfo = channelPage.tabs.userInfo.root;
-
-			await test.step('open the user info with Space', async () => {
+		test('should open the user card from the message author name with the keyboard', async ({ page }) => {
+			await test.step('open the user card with Space', async () => {
 				await page.keyboard.press('Shift+Tab');
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Space');
-				await expect(userInfo).toBeVisible();
+				await channelPage.userCard.waitForDisplay();
 			});
 
-			await test.step('close the user info with Esc', async () => {
+			await test.step('close the user card with Esc', async () => {
 				await page.keyboard.press('Escape');
-				await expect(userInfo).not.toBeVisible();
+				await channelPage.userCard.waitForDismissal();
+			});
+
+			await test.step('with focus restored, reopen the user card', async () => {
+				await page.keyboard.press('Space');
+				await channelPage.userCard.waitForDisplay();
+				await page.keyboard.press('Escape');
+				await channelPage.userCard.waitForDismissal();
 			});
 		});
 

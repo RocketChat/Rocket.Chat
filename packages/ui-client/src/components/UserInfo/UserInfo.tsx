@@ -9,15 +9,7 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
-import {
-	InfoPanel,
-	InfoPanelActionGroup,
-	InfoPanelField,
-	InfoPanelLabel,
-	InfoPanelSection,
-	InfoPanelText,
-	InfoPanelTitle,
-} from '../InfoPanel';
+import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
 import { UserCardRoles, UserCardUsername } from '../UserCard';
@@ -92,7 +84,6 @@ const UserInfo = ({
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 	const MarkdownText = useContext(MarkdownTextContext);
-
 	const usernameId = useId();
 
 	const profileDetails = [

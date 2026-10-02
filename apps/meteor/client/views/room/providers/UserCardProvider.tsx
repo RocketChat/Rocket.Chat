@@ -4,7 +4,7 @@ import { Box, Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useHoverCardDismissal } from './useHoverCardDismissal';
 import { useRoom } from '../contexts/RoomContext';
@@ -34,6 +34,10 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 	const triggerRef = useRef<Element | null>(null);
 
+	// A card opened from the keyboard takes focus and stays until dismissed; one opened by hover follows the pointer.
+	const [openedByKeyboard, setOpenedByKeyboard] = useState(false);
+	const openedByKeyboardRef = useRef(false);
+
 	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -59,6 +63,9 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			clearCloseTimer();
 		} else {
 			clearTimers();
+		}
+		if (openedByKeyboardRef.current) {
+			(triggerRef.current as HTMLElement | null)?.focus();
 		}
 		setUserCardData(null);
 	});
@@ -109,15 +116,96 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	});
 
 	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
-		triggerRef.current = e.currentTarget ?? e.target;
-		state.open();
-		setUserCardData({
-			username,
-			rid: room._id,
-			onOpenUserInfo: () => openUserInfo(username),
-			onClose: closeUserCard,
-		});
+		const trigger = (e.currentTarget ?? e.target) as Element | null;
+
+		clearTimers();
+
+		const open = (viaKeyboard = false) => {
+			triggerRef.current = trigger;
+			openedByKeyboardRef.current = viaKeyboard;
+			setOpenedByKeyboard(viaKeyboard);
+			state.open();
+			setUserCardData({
+				username,
+				rid: room._id,
+				onOpenUserInfo: () => openUserInfo(username),
+				onClose: dismissUserCard,
+			});
+		};
+
+		// The keyboard and a click open right away; hover waits out the intent delay.
+		if (e.type === 'keydown') {
+			open(true);
+			return;
+		}
+
+		if (e.type === 'click') {
+			open();
+			return;
+		}
+
+		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
+		openTimerRef.current = setTimeout(() => open(), HOVER_OPEN_DELAY);
 	});
+
+	// Wires the document listeners for as long as the card is mounted.
+	const handleCardRef = useCallback(
+		(card: HTMLElement | null) => {
+			if (!card) {
+				return;
+			}
+
+			// A card opened by hover never holds focus, so react-aria's focus-scoped Escape never fires (WCAG 1.4.13).
+			// Captured and stopped here so it doesn't also close an underlying contextual bar; an open menu owns Escape instead.
+			const handleKeyDown = (e: KeyboardEvent) => {
+				if (e.key !== 'Escape' || document.querySelector('[role="menu"]')) {
+					return;
+				}
+				e.stopImmediatePropagation();
+				dismissUserCard();
+			};
+
+			document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+			if (openedByKeyboardRef.current) {
+				card.focus();
+				return () => document.removeEventListener('keydown', handleKeyDown, { capture: true });
+			}
+
+			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
+			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
+			// trigger, or a menu spawned from it (portaled outside the card's rect).
+			const isPointerOverCard = (x: number, y: number) =>
+				isPointInside(card, x, y) ||
+				isPointInside(triggerRef.current, x, y) ||
+				Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y));
+
+			const handleMouseMove = (e: MouseEvent) => {
+				if (isPointerOverCard(e.clientX, e.clientY)) {
+					clearCloseTimer();
+					return;
+				}
+
+				if (closeTimerRef.current === undefined) {
+					closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
+				}
+			};
+
+			const handleDocumentLeave = () => {
+				clearCloseTimer();
+				closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
+			return () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('keydown', handleKeyDown, { capture: true });
+				document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
+			};
+		},
+		[clearCloseTimer, closeUserCard, dismissUserCard],
+	);
 
 	const isOpen = state.isOpen && !!userCardData;
 
