@@ -1,0 +1,27 @@
+ee/packages/xmpp-server/docs/README.md
+  s_e3be77173bfc57::t_b60f1c15abef1f 45,57-68,87,107,111,113-114,123-124,138-140,159,177,190-191,200-202,253-254,276-277,284-292
+  s_e3be77173bfc57::t_71519c4d72dddf 293
+ee/packages/xmpp-server/docs/compliance.md
+  s_e3be77173bfc57::t_b60f1c15abef1f 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fed1e92c965bf7e609d333519cd74ad011cc1735",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e3be77173bfc57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "260790bd-e0fd-4a75-a152-6a1ada9fde97",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
