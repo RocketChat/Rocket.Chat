@@ -1,8 +1,9 @@
 import { LDAP } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { isAbsoluteURL } from '@rocket.chat/tools';
+import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { DoneCallback } from 'passport';
@@ -371,6 +372,11 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args) {
+	// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
+	if (settings.get(`Accounts_OAuth_Custom-${capitalize(args[0])}`) !== undefined && !License.hasModule('oauth-enterprise')) {
+		return undefined;
+	}
+
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
 		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}

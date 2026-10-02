@@ -2,7 +2,7 @@
 /* eslint comma-spacing: 0 */
 import { capitalize } from '@rocket.chat/tools';
 
-import { settingsRegistry } from '../../settings';
+import { settingsRegistry } from '../../../../server/settings';
 
 export async function addOAuthService(name: string, values: { [k: string]: string | boolean | undefined } = {}): Promise<void> {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -13,6 +13,9 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Enable',
 		persistent: true,
+		enterprise: true,
+		modules: ['oauth-enterprise'],
+		invalidValue: false,
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-url`, values.serverURL || '', {
 		type: 'string',

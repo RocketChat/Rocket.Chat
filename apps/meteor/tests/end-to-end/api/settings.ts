@@ -773,7 +773,19 @@ describe('[Settings]', () => {
 					});
 			});
 
-			it('should add a custom oauth service', async () => {
+			(IS_EE ? it.skip : it)('should fail without the oauth-enterprise module', () =>
+				request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					}),
+			);
+
+			(IS_EE ? it : it.skip)('should add a custom oauth service', async () => {
 				await request
 					.post(api('settings.addCustomOAuth'))
 					.set(credentials)

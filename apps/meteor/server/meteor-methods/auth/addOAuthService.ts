@@ -1,10 +1,11 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { License } from '@rocket.chat/license';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { addOAuthService } from '../../../ee/server/lib/oauth/addOAuthService';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
-import { addOAuthService } from '../../lib/oauth/addOAuthService';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,6 +17,13 @@ declare module '@rocket.chat/ddp-client' {
 export const addOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
 	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
+			method: 'addOAuthService',
+			action: 'Adding_OAuth_Services',
+		});
+	}
+
+	if (!License.hasModule('oauth-enterprise')) {
+		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', {
 			method: 'addOAuthService',
 			action: 'Adding_OAuth_Services',
 		});

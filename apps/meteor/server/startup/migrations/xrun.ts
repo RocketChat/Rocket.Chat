@@ -1,6 +1,7 @@
 import { Permissions, Roles, Settings, Users } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
+import { gateCustomOAuthSettings } from '../../../ee/server/lib/oauth/gateCustomOAuthSettings';
 import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 import { settings } from '../../settings';
@@ -98,5 +99,6 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
+		await gateCustomOAuthSettings();
 	});
 };
