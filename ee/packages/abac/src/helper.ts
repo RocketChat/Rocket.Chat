@@ -1,5 +1,5 @@
 import type { AbacCreationAttributesResult } from '@rocket.chat/core-services';
-import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { AbacMembershipVerdict, ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -13,6 +13,7 @@ import {
 	AbacRoomNotFoundError,
 	PdpUnavailableError,
 } from './errors';
+import type { SubjectEvaluation } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
@@ -49,6 +50,16 @@ export function toCreationDenial(
 		};
 	}
 	throw err;
+}
+
+export function verdictOf({ compliant, nonCompliant }: SubjectEvaluation, id: string): AbacMembershipVerdict {
+	if (compliant.includes(id)) {
+		return 'compliant';
+	}
+	if (nonCompliant.includes(id)) {
+		return 'nonCompliant';
+	}
+	return 'inconclusive';
 }
 
 export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {

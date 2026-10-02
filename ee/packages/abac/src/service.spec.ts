@@ -1399,6 +1399,124 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('previewCreationMembers', () => {
+		const attributes = [{ key: 'dept', values: ['eng'] }];
+		const creator = { _id: fakeActor._id, username: fakeActor.username, name: 'Creator', emails: [] };
+		const alice = { _id: 'alice', username: 'alice', name: 'Alice', emails: [] };
+		const bob = { _id: 'bob', username: 'bob', name: 'Bob', emails: [] };
+
+		const usePdp = (evaluateSubjectsAgainstAttributes: jest.Mock) => {
+			(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(true), evaluateSubjectsAgainstAttributes };
+			return evaluateSubjectsAgainstAttributes;
+		};
+
+		const holding = (held: string[]) => {
+			const store = { entitlementsOf: jest.fn().mockResolvedValue(new Map([['dept', new Set(held)]])) };
+			(service as any).attributeStores.local.store = store;
+			return store;
+		};
+
+		beforeEach(() => {
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockUsersFind.mockReset().mockReturnValue({ toArray: async () => [creator, alice, bob] });
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? true : undefined));
+			holding(['eng']);
+		});
+
+		it('evaluates the creator together with the members', async () => {
+			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['test-user', 'alice'], nonCompliant: ['bob'], inconclusive: [] }));
+
+			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor);
+
+			expect(mockUsersFind.mock.calls[0][0]).toEqual({ $or: [{ _id: 'test-user' }, { username: { $in: ['alice', 'bob'] } }] });
+			expect(evaluate).toHaveBeenCalledWith([creator, alice, bob], attributes, expect.anything());
+			expect(result).toEqual({
+				allowed: true,
+				preview: {
+					compliant: [
+						{ _id: 'test-user', username: 'testuser', name: 'Creator' },
+						{ _id: 'alice', username: 'alice', name: 'Alice' },
+					],
+					nonCompliant: [{ _id: 'bob', username: 'bob', name: 'Bob' }],
+					inconclusive: [],
+					creator: 'compliant',
+				},
+			});
+		});
+
+		it('reports the creator who would not be added', async () => {
+			usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: [], inconclusive: ['test-user', 'bob'] }));
+
+			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor);
+
+			expect(result).toMatchObject({ allowed: true, preview: { creator: 'inconclusive' } });
+		});
+
+		it('refuses when no PDP is configured, rather than reporting everyone as compliant', async () => {
+			(service as any).pdp = null;
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+			expect(mockUsersFind).not.toHaveBeenCalled();
+		});
+
+		it('refuses when the PDP is unavailable', async () => {
+			(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(false), evaluateSubjectsAgainstAttributes: jest.fn() };
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor)).resolves.toMatchObject({
+				allowed: false,
+				reason: 'unavailable',
+			});
+		});
+
+		it('reports decisions as unavailable when the evaluation fails', async () => {
+			usePdp(jest.fn().mockRejectedValue(new Error('virtru down')));
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+		});
+
+		it('refuses values the creator may not assign, before evaluating anyone', async () => {
+			const evaluate = usePdp(jest.fn());
+
+			await expect(service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor)).resolves.toEqual({
+				allowed: false,
+				reason: 'not-entitled',
+				code: 'error-invalid-attribute-values',
+				attributes: [{ key: 'dept', values: ['sales'] }],
+			});
+			expect(evaluate).not.toHaveBeenCalled();
+			expect(mockUsersFind).not.toHaveBeenCalled();
+		});
+
+		it('previews values the creator does not hold when restricting to owned attributes is off', async () => {
+			mockSettingsGet.mockImplementation(async () => false);
+			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: ['test-user'], inconclusive: [] }));
+
+			const result = await service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor);
+
+			expect(evaluate).toHaveBeenCalled();
+			expect(result).toMatchObject({ allowed: true, preview: { creator: 'nonCompliant' } });
+		});
+
+		it('refuses attributes that do not exist', async () => {
+			const evaluate = usePdp(jest.fn());
+
+			await expect(service.previewCreationMembers(['alice'], [{ key: 'region', values: ['emea'] }], fakeActor)).resolves.toMatchObject({
+				allowed: false,
+				reason: 'invalid',
+			});
+			expect(evaluate).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('checkUsernamesMatchAttributes', () => {
 		beforeEach(() => {
 			mockUsersFind.mockReset();

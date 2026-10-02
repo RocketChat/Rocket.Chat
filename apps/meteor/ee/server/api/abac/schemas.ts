@@ -1,6 +1,7 @@
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
+	IAbacMembershipPreview,
 	IAuditServerActor,
 	IRoom,
 	IRoomAbacRedaction,
@@ -313,6 +314,53 @@ const PostAbacAttributeAssignabilityBody = {
 export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(
 	PostAbacAttributeAssignabilityBody,
 );
+
+const PostAbacMembershipPreviewBody = {
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			uniqueItems: true,
+		},
+		attributes: {
+			...PostAbacAttributeAssignabilityBody.properties.attributes,
+			minProperties: 1,
+		},
+	},
+	required: ['members', 'attributes'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{ members: string[]; attributes: Record<string, string[]> }>(
+	PostAbacMembershipPreviewBody,
+);
+
+const PreviewMember = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		username: { type: 'string' },
+		name: { type: 'string' },
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+const PostAbacMembershipPreviewResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		compliant: { type: 'array', items: PreviewMember },
+		nonCompliant: { type: 'array', items: PreviewMember },
+		inconclusive: { type: 'array', items: PreviewMember },
+		creator: { type: 'string', enum: ['compliant', 'nonCompliant', 'inconclusive'] },
+	},
+	required: ['success', 'compliant', 'nonCompliant', 'inconclusive', 'creator'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewResponseSchema = ajv.compile<IAbacMembershipPreview>(PostAbacMembershipPreviewResponse);
 
 const PostSingleRoomAbacAttributeBody = {
 	type: 'object',
