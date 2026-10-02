@@ -306,99 +306,23 @@ it('marks only the trigger that opened the card as expanded', async () => {
 	expect(john).not.toHaveAttribute('aria-expanded');
 });
 
-const KeyboardTrigger = ({ username }: { username: string }) => {
-	const { openUserCard, triggerProps } = useUserCard();
-	return (
-		<button
-			type='button'
-			{...triggerProps}
-			onKeyDown={(e) => {
-				if (e.key === 'Enter') {
-					openUserCard(e, username);
-				}
-			}}
-		>
-			{`keyboard ${username}`}
-		</button>
-	);
-};
-
-it('opens from the keyboard with focus in the card, ignores the pointer, and returns focus on Escape', async () => {
+it('opens a hover card as a pointer-only preview that neither takes focus nor marks its trigger', async () => {
 	jest.useFakeTimers();
 	try {
 		render(
 			<UserCardProvider>
-				<KeyboardTrigger username='jane' />
-			</UserCardProvider>,
-		);
-
-		const trigger = screen.getByText('keyboard jane');
-		trigger.focus();
-		fireEvent.keyDown(trigger, { key: 'Enter' });
-		await advance(0);
-
-		const card = screen.getByTestId('user-card');
-		expect(card).toHaveTextContent('jane');
-		expect(card.parentElement).toHaveFocus();
-		expect(trigger).toHaveAttribute('aria-expanded', 'true');
-
-		// the pointer resting elsewhere doesn't close a card opened from the keyboard
-		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
-		await advance(1000);
-		expect(screen.getByTestId('user-card')).toBeInTheDocument();
-
-		fireEvent.keyDown(card, { key: 'Escape' });
-		await advance(0);
-
-		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
-		expect(trigger).toHaveFocus();
-		expect(trigger).not.toHaveAttribute('aria-expanded');
-	} finally {
-		jest.useRealTimers();
-	}
-});
-
-it('switches a card opened by hover to keyboard mode when the same trigger is activated from the keyboard', async () => {
-	const HoverAndKeyboardTrigger = ({ username }: { username: string }) => {
-		const { openUserCard, triggerProps } = useUserCard();
-		return (
-			<button
-				type='button'
-				{...triggerProps}
-				onMouseEnter={(e: UIEvent) => openUserCard(e, username)}
-				onKeyDown={(e) => {
-					if (e.key === 'Enter') {
-						openUserCard(e, username);
-					}
-				}}
-			>
-				{`author ${username}`}
-			</button>
-		);
-	};
-
-	jest.useFakeTimers();
-	try {
-		render(
-			<UserCardProvider>
-				<HoverAndKeyboardTrigger username='jane' />
+				<AuthorTrigger username='jane' />
 			</UserCardProvider>,
 		);
 
 		const trigger = screen.getByText('author jane');
+		trigger.focus();
 		fireEvent.mouseEnter(trigger);
 		await advance(1000);
+
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
-
-		trigger.focus();
-		fireEvent.keyDown(trigger, { key: 'Enter' });
-		await advance(0);
-
-		expect(screen.getByTestId('user-card').parentElement).toHaveFocus();
-
-		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
-		await advance(1000);
-		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+		expect(trigger).toHaveFocus();
+		expect(trigger).not.toHaveAttribute('aria-expanded');
 	} finally {
 		jest.useRealTimers();
 	}

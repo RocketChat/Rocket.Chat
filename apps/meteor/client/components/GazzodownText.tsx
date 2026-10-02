@@ -33,7 +33,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const [userLanguage] = useLocalStorage('userLanguage', 'en');
 
 	const highlights = useMessageListHighlights();
-	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const highlightRegex = useMemo(() => {
@@ -86,17 +86,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				return;
 			}
 
-			// Enter/Space opens the card (focused, so its actions are reachable); a click opens the full profile.
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				if (event.type === 'keydown') {
-					openUserCard(event, username);
-					return;
-				}
 				openUserInfo(username);
 			};
 		},
-		[openUserCard, openUserInfo],
+		[openUserInfo],
 	);
 
 	const onUserMentionHover = useCallback(
@@ -157,7 +152,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				isMobile,
 				ownUserId,
 				showMentionSymbol,
-				triggerProps,
 				language: userLanguage,
 			}}
 		>
