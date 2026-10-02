@@ -1,4 +1,4 @@
-import { SidebarItemIcon } from '@rocket.chat/fuselage';
+import { ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,11 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const icon = <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
+	const icon = (
+		<ItemIcon>
+			<RoomIcon room={room} placement='sidebar' size='x20' />
+		</ItemIcon>
+	);
 
 	return (
 		<NavBarSearchItem
