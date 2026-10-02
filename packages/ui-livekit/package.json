@@ -1,0 +1,59 @@
+{
+	"name": "@rocket.chat/ui-livekit",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@livekit/components-react": "2.9.23",
+		"livekit-client": "^2.20.1"
+	},
+	"devDependencies": {
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-conference": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@tanstack/react-query": "~5.65.1",
+		"@testing-library/dom": "~10.4.1",
+		"@testing-library/react": "~16.3.3",
+		"@types/jest": "~30.0.0",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.5",
+		"eslint": "~9.39.5",
+		"i18next": "~26.4.2",
+		"jest": "~30.2.0",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
+		"react-i18next": "~17.0.14",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-conference": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/ui-video-conf": "workspace:^",
+		"@tanstack/react-query": "*",
+		"react": "*",
+		"react-dom": "*",
+		"react-i18next": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

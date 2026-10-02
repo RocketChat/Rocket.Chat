@@ -15,6 +15,7 @@ import CallParticipantStatus from '../CallParticipantStatus/CallParticipantStatu
 
 type CallMemberItemProps = {
 	member: ConferenceMember;
+	/** Membership grants no room access, so a member can be in the call and unable to read its chat. */
 	hasChatAccess: boolean;
 	/** Whether this member's ring has been asked for and not yet answered. */
 	ringing?: boolean;
@@ -26,6 +27,7 @@ type CallMemberItemProps = {
 	onRing: (memberId: string) => void;
 };
 
+/** Only shown for members who aren't in the call — for those, presence in the call is the whole story. */
 const statusLabel: Record<Exclude<ConferenceMemberStatus, 'joined'>, string> = {
 	left: 'Left',
 	declined: 'Declined',
@@ -58,6 +60,7 @@ const CallMemberItem = ({ member, hasChatAccess, ringing: ringRequested = false,
 							{displayUsername}
 						</Box>
 					)}
+					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
 						// `Icon` renders `aria-hidden`, so the fact has to go in as text to be announced at all.

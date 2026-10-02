@@ -1,0 +1,16 @@
+import { memo } from 'react';
+
+import TileFrame from './TileFrame';
+import TilePicture from './TilePicture';
+import type { TileParticipant } from '../lib/stageTiles';
+
+export type SelfTileProps = TileParticipant;
+
+/** The reader's own view, at the size of a grid cell or the stage: mirrored. */
+const SelfTile = ({ displayName, avatarUrl, muted, held, cameraStream }: SelfTileProps) => (
+	<TileFrame displayName={displayName} muted={muted} held={held}>
+		<TilePicture displayName={displayName} avatarUrl={avatarUrl} cameraStream={cameraStream} avatarSize='x48' mirrored />
+	</TileFrame>
+);
+
+export default memo(SelfTile);
