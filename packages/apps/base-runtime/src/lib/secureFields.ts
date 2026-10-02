@@ -15,7 +15,13 @@ export function applySecureFields(object: WithSecureFields<Record<string, unknow
 		throw new Error("App unavailable, can't parse object with secure fields");
 	}
 
-	secureFields.forEach(({ permission, name, value }) => {
+	secureFields.forEach((descriptor) => {
+		if (descriptor === null || typeof descriptor !== 'object') {
+			return;
+		}
+
+		const { permission, name, value } = descriptor;
+
 		if (!app.getInfo().permissions?.find((p) => p.name === permission)) {
 			return;
 		}
@@ -81,7 +87,7 @@ function walk(value: unknown, seen: WeakMap<object, unknown>): unknown {
 	let target = value as Record<string, unknown>;
 
 	if (hasSecureFields(target)) {
-		target = applySecureFields(target as WithSecureFields<Record<string, unknown>>);
+		target = applySecureFields(target);
 		seen.set(value, target);
 		seen.set(target, target);
 	}

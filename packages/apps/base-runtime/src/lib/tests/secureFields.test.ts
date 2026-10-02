@@ -178,6 +178,26 @@ describe('applySecureFieldsDeep', () => {
 		assert.strictEqual(result.rooms.size, 1);
 	});
 
+	it('leaves objects with a non-array marker untouched', () => {
+		const room = { id: 'general', [SECURE_FIELDS_KEY]: 'not-an-array' };
+
+		const result = applySecureFieldsDeep({ room } as any);
+
+		assert.strictEqual(result.room, room);
+		assert.deepStrictEqual(result.room, { id: 'general', [SECURE_FIELDS_KEY]: 'not-an-array' });
+	});
+
+	it('skips descriptors that are not objects', () => {
+		const result = applySecureFieldsDeep({
+			room: {
+				id: 'general',
+				[SECURE_FIELDS_KEY]: [null, 'x', { permission: 'abac.read', name: 'abacAttributes', value: { department: 'support' } }],
+			},
+		} as any);
+
+		assert.deepStrictEqual(result.room, { id: 'general', abacAttributes: { department: 'support' } });
+	});
+
 	it('throws when a marked object arrives while the app is unavailable', () => {
 		AppObjectRegistry.clear();
 
