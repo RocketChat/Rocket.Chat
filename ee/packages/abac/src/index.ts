@@ -42,6 +42,8 @@ import {
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	findUnownedValues,
+	findOwnedValues,
+	sortByKey,
 	toAttributeMap,
 	toCreationDenial,
 	verdictOf,
@@ -643,6 +645,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await this.pdp?.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
+	}
+
+	async listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+		const store = await this.resolveAttributeStore();
+		if (store !== this.attributeStores.local.store) {
+			return sortByKey(Array.from(await store.entitlementsOf(actor), ([key, values]) => ({ key, values: [...values] })));
+		}
+
+		const definitions = (await AbacAttributes.find({}, { projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({
+			key,
+			values,
+		}));
+		if (
+			this.pdpType !== 'local' ||
+			!(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes')) ||
+			(await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation'))
+		) {
+			return sortByKey(definitions);
+		}
+
+		return sortByKey(findOwnedValues(definitions, await store.entitlementsOf(actor)));
 	}
 
 	async auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {

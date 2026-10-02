@@ -1,13 +1,176 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateChannelModal from './CreateChannelModal';
+import CreateChannelModalWithData from './CreateChannelModalWithData';
+import { mockAbacRoomCreationRoot as abacRoot } from '../../../../tests/mocks/client/mockAbacRoomCreationRoot';
 import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
 
+const goToAttributesStep = async () => {
+	await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), 'restricted');
+	await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+	expect(await screen.findByText('ABAC_Room_Attributes')).toBeInTheDocument();
+};
+
 describe('CreateChannelModal', () => {
+	describe('ABAC', () => {
+		it('should keep the single-page modal when ABAC is disabled', () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: mockAppRoot().build() });
+
+			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
+			expect(screen.getByText('Advanced_settings')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+		});
+
+		it('should take two steps for a room that is not ABAC-managed, with Federated on the second', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			expect(await screen.findByLabelText('ABAC_Managed')).not.toBeChecked();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+			expect(screen.queryByText('Advanced_settings')).not.toBeInTheDocument();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'open');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findByText('Step 2 of 2')).toBeInTheDocument();
+			expect(screen.getByLabelText('Federation_Matrix_Federated')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+		});
+
+		it('should clear a step error as soon as the field is corrected', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			await userEvent.click(await screen.findByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Required_field')).toBeInTheDocument();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'fixed');
+
+			await waitFor(() => expect(screen.queryByText('Required_field')).not.toBeInTheDocument());
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+		});
+
+		it('should take four steps once ABAC-managed is on, forcing Private on and dropping Federated', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
+
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+			expect(screen.getByLabelText('Private')).toBeChecked();
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByLabelText('ABAC_Managed')).toHaveAccessibleDescription('ABAC_Managed_Hint');
+
+			await goToAttributesStep();
+			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+		});
+
+		it('should lock ABAC-managed on under enforcement and say why', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should disable ABAC-managed with a reason for a creator without the permission', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ permissions: ['create-c', 'create-p'] }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Not_Allowed_Hint');
+		});
+
+		it('should disable ABAC-managed with a reason for a creator who can only create public channels', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ permissions: ['create-abac-managed-room', 'create-c'] }),
+			});
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Private_Only_Hint');
+		});
+
+		it('should stop a creator who cannot create an ABAC-managed room under enforcement at the first step', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+		});
+
+		it('should pre-fill the required attributes without a Remove button, and let optional rows be added and removed', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({
+					enforced: true,
+					requiredAttributes: ['clearance', 'dept'],
+					assignable: [
+						{ key: 'clearance', values: ['secret'] },
+						{ key: 'dept', values: ['eng'] },
+					],
+				}),
+			});
+
+			await goToAttributesStep();
+
+			expect(screen.getAllByText('Attribute')).toHaveLength(2);
+			expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'ABAC_Add_Attribute' }));
+			expect(screen.getAllByText('Attribute')).toHaveLength(3);
+
+			await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+			expect(screen.getAllByText('Attribute')).toHaveLength(2);
+		});
+
+		it('should report missing values before the attributes step can be left', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, requiredAttributes: ['dept'] }) });
+
+			await goToAttributesStep();
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findAllByText('Required_field')).not.toHaveLength(0);
+			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+		});
+
+		it('should stop a creator lacking a required attribute with an alert naming it', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, requiredAttributes: ['clearance', 'dept'], assignable: [{ key: 'dept', values: ['eng'] }] }),
+			});
+
+			await goToAttributesStep();
+
+			expect(screen.getByRole('alert')).toHaveTextContent('ABAC_Required_Attributes_Not_Held');
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+		});
+
+		it('should wait for the ABAC configuration rather than render the switches before it arrives', async () => {
+			let resolveConfig: (value: unknown) => void = () => undefined;
+			const config = jest.fn(
+				() =>
+					new Promise((resolve) => {
+						resolveConfig = resolve;
+					}),
+			);
+
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, config }) });
+
+			await waitFor(() => expect(config).toHaveBeenCalled());
+			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: 'Create' })).not.toBeInTheDocument();
+
+			resolveConfig({ bannersConfig: '', requiredAttributes: [] });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+		});
+	});
+
 	describe('Encryption', () => {
 		it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {
 			render(<CreateChannelModal onClose={() => null} />, {

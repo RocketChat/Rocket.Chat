@@ -1442,6 +1442,113 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('listAssignableAttributes', () => {
+		const definitions = [
+			{ _id: 'a2', key: 'region', values: ['emea', 'apac'] },
+			{ _id: 'a1', key: 'dept', values: ['eng', 'sales'] },
+		];
+
+		const holding = (held: Record<string, string[]>) => {
+			const store = {
+				entitlementsOf: jest.fn().mockResolvedValue(new Map(Object.entries(held).map(([key, values]) => [key, new Set(values)]))),
+			};
+			(service as any).attributeStores.local.store = store;
+			return store;
+		};
+
+		const restrictToOwned = (enabled: boolean) =>
+			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? enabled : undefined));
+
+		beforeEach(() => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockAbacFind.mockReturnValue({ toArray: async () => definitions });
+			restrictToOwned(true);
+		});
+
+		describe('under the local PDP', () => {
+			it('offers only the defined values the actor holds, sorted by key', async () => {
+				holding({ region: ['emea', 'unknown'], dept: ['eng'], clearance: ['secret'] });
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng'] },
+					{ key: 'region', values: ['emea'] },
+				]);
+			});
+
+			it('leaves out a key the actor holds no value of, so a required one can be named as missing', async () => {
+				holding({ dept: ['eng'] });
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([{ key: 'dept', values: ['eng'] }]);
+			});
+
+			it('offers every definition when restricting to owned attributes is off', async () => {
+				restrictToOwned(false);
+				const store = holding({});
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+				]);
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+
+			it('offers every definition to a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				const store = holding({});
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toHaveLength(2);
+				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('under the Virtru PDP', () => {
+			beforeEach(() => {
+				mockHasModule.mockReturnValue(true);
+				Object.assign(service as any, {
+					abacEnabled: true,
+					pdpTypeSetting: 'virtru',
+					attributeStoreSetting: 'virtru',
+					pdpType: 'virtru',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true) },
+				});
+			});
+
+			it('offers exactly what Virtru entitles the actor to, without reading local definitions', async () => {
+				(service as any).attributeStores.virtru.store = {
+					entitlementsOf: jest.fn().mockResolvedValue(
+						new Map([
+							['region', new Set(['emea'])],
+							['dept', new Set(['sales'])],
+						]),
+					),
+				};
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['sales'] },
+					{ key: 'region', values: ['emea'] },
+				]);
+				expect(mockAbacFind).not.toHaveBeenCalled();
+			});
+
+			it('fails rather than offering nothing when the entitlements call fails', async () => {
+				(service as any).attributeStores.virtru.store = {
+					entitlementsOf: jest.fn().mockRejectedValue(new AbacEntityResolutionFailedError()),
+				};
+
+				await expect(service.listAssignableAttributes(fakeActor)).rejects.toThrow(AbacEntityResolutionFailedError);
+			});
+
+			it('offers every definition with the local attribute store, since the PDP decides at creation', async () => {
+				Object.assign(service as any, { attributeStoreSetting: 'local' });
+				const store = holding({});
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toHaveLength(2);
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+		});
+	});
+
 	describe('auditRoomAttributesAtCreation', () => {
 		const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
 

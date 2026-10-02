@@ -1,17 +1,15 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Modal,
-	Button,
 	Icon,
 	Accordion,
 	AccordionItem,
+	Callout,
 	ModalHeader,
 	ModalTitle,
 	ModalClose,
 	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { TextInput, Field, ToggleSwitch, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -25,9 +23,19 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useId, useEffect, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
+import AbacMembershipPreview from '../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
+import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
+import {
+	AbacAttributesStep,
+	AbacManagedField,
+	CreateRoomStepsFooter,
+	isAbacCreationBlocked,
+	useAbacCreationFlow,
+	useCreateRoomSteps,
+} from '../../../components/ABAC/AbacRoomCreation';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -40,6 +48,7 @@ export type CreateChannelModalProps = {
 	onClose: () => void;
 	reload?: () => void;
 	onSuccess?: (rid: string) => void | Promise<void>;
+	abac?: AbacRoomCreation;
 };
 
 type CreateChannelModalPayload = {
@@ -51,6 +60,8 @@ type CreateChannelModalPayload = {
 	encrypted: boolean;
 	broadcast: boolean;
 	federated: boolean;
+	isAbacManaged: boolean;
+	attributes: IAbacAttributeDefinition[];
 };
 
 const getFederationHintKey = (federationModule: boolean, featureToggle: boolean, federationAccessPermission: boolean): TranslationKey => {
@@ -69,9 +80,20 @@ const getFederationHintKey = (federationModule: boolean, featureToggle: boolean,
 	return 'Federation_Matrix_Federated_Description';
 };
 
+const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps<typeof Icon>['name'] => {
+	if (isAbacManaged) {
+		return 'hash-shield';
+	}
+
+	return isPrivate ? 'hashtag-lock' : 'hashtag';
+};
+
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
-const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess }: CreateChannelModalProps) => {
+const initialAttributes = (abac?: AbacRoomCreation): IAbacAttributeDefinition[] =>
+	abac?.requiredAttributes.length ? abac.requiredAttributes.map((key) => ({ key, values: [] })) : [{ key: '', values: [] }];
+
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess, abac }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -97,14 +119,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canOnlyCreateOneType = useCreateChannelTypePermission(mainRoom?._id);
+	const canCreatePrivate = canOnlyCreateOneType !== 'c';
+	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate);
 
-	const {
-		formState: { errors },
-		handleSubmit,
-		control,
-		setValue,
-		watch,
-	} = useForm({
+	const methods = useForm<CreateChannelModalPayload>({
 		defaultValues: {
 			members: [],
 			name: '',
@@ -114,10 +132,30 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			federated: false,
+			isAbacManaged: Boolean(abac?.enforced),
+			attributes: initialAttributes(abac),
 		},
 	});
 
-	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
+	const {
+		formState: { errors, isSubmitting },
+		handleSubmit,
+		control,
+		setValue,
+		watch,
+	} = methods;
+
+	const { isPrivate, broadcast, readOnly, federated, encrypted, isAbacManaged, members, attributes } = watch();
+
+	const { step, index, total, isLast, next, back } = useCreateRoomSteps(Boolean(abac), isAbacManaged);
+	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, step, members, attributes });
+
+	useEffect(() => {
+		if (isAbacManaged) {
+			setValue('isPrivate', true);
+			setValue('federated', false);
+		}
+	}, [isAbacManaged, setValue]);
 
 	useEffect(() => {
 		if (federated) {
@@ -179,7 +217,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		let rid: string;
 		try {
 			if (isPrivate) {
-				roomData = await createPrivateChannel(params);
+				roomData = await createPrivateChannel({ ...params, ...(abacFlow.isManaged && { abacAttributes: abacFlow.attributeMap }) });
 				rid = roomData.group._id;
 				if (!teamId) goToRoom(roomData.group._id);
 			} else {
@@ -189,6 +227,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
+			if ('skippedMembers' in roomData && roomData.skippedMembers?.length) {
+				dispatchToastMessage({ type: 'info', message: t('ABAC_Members_Not_Added', { count: roomData.skippedMembers.length }) });
+			}
 			void onSuccess?.(rid);
 			reload?.();
 			onClose();
@@ -197,6 +238,18 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 		}
 	};
 
+	const handleStepSubmit = handleSubmit(async (data) => {
+		if (isLast) {
+			return handleCreateChannel(data);
+		}
+
+		if (step === 'attributes' && !(await abacFlow.confirmAttributes())) {
+			return;
+		}
+
+		next();
+	});
+
 	const e2eDisabled = useMemo<boolean>(
 		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
 		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
@@ -204,147 +257,181 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess 
 
 	const createChannelFormId = useId();
 
-	return (
-		<Modal
-			aria-labelledby={`${createChannelFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
-			)}
-		>
-			<ModalHeader>
-				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
-				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
-			</ModalHeader>
-			<ModalContent marginBlockEnd={2}>
-				<FieldGroup marginBlockEnd={24}>
-					<Field>
-						<FieldLabel required>{t('Name')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='name'
-								rules={{
-									required: t('Required_field', { field: t('Name') }),
-									validate: (value) => validateChannelName(value),
-								}}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										error={errors.name?.message}
-										endAddon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
-										aria-required='true'
-									/>
-								)}
-							/>
-						</FieldRow>
-						{errors.name && <FieldError>{errors.name.message}</FieldError>}
-						{!allowSpecialNames && <FieldHint>{t('No_spaces_or_special_characters')}</FieldHint>}
-					</Field>
-					<Field>
-						<FieldLabel>{t('Topic')}</FieldLabel>
-						<FieldRow>
-							<Controller control={control} name='topic' render={({ field }) => <TextInput {...field} />} />
-						</FieldRow>
-						<FieldHint>{t('Displayed_next_to_name')}</FieldHint>
-					</Field>
-					<Field>
-						<FieldLabel>{t('Members')}</FieldLabel>
+	const securityFields = (
+		<FieldGroup>
+			<Box is='h5' fontScale='h5' color='titles-labels'>
+				{t('Security_and_permissions')}
+			</Box>
+			{!isAbacManaged && (
+				<Field>
+					<FieldRow>
+						<FieldLabel>{t('Federation_Matrix_Federated')}</FieldLabel>
 						<Controller
 							control={control}
-							name='members'
-							rules={{
-								validate: (members) =>
-									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
-							}}
-							render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
+							name='federated'
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
 						/>
-						{errors.members && <FieldError>{errors.members.message}</FieldError>}
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel>{t('Private')}</FieldLabel>
-							<Controller
-								control={control}
-								name='isPrivate'
-								render={({ field: { value, ...field } }) => (
-									<ToggleSwitch
-										{...field}
-										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
-										disabled={!!canOnlyCreateOneType}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
-					</Field>
-				</FieldGroup>
-				<Accordion>
-					<AccordionItem title={t('Advanced_settings')}>
-						<FieldGroup>
-							<Box is='h5' fontScale='h5' color='titles-labels'>
-								{t('Security_and_permissions')}
-							</Box>
-							<Field>
-								<FieldRow>
-									<FieldLabel>{t('Federation_Matrix_Federated')}</FieldLabel>
+					</FieldRow>
+					<FieldHint>{t(federationFieldHint)}</FieldHint>
+				</Field>
+			)}
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Encrypted')}</FieldLabel>
+					<Controller
+						control={control}
+						name='encrypted'
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={e2eDisabled} />}
+					/>
+				</FieldRow>
+				<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
+			</Field>
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Read_only')}</FieldLabel>
+					<Controller
+						control={control}
+						name='readOnly'
+						render={({ field: { value, ...field } }) => (
+							<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
+						)}
+					/>
+				</FieldRow>
+				<FieldHint>{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('Anyone_can_send_new_messages')}</FieldHint>
+			</Field>
+			<Field>
+				<FieldRow>
+					<FieldLabel>{t('Broadcast')}</FieldLabel>
+					<Controller
+						control={control}
+						name='broadcast'
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
+					/>
+				</FieldRow>
+				{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
+			</Field>
+		</FieldGroup>
+	);
+
+	return (
+		<FormProvider {...methods}>
+			<Modal
+				aria-labelledby={`${createChannelFormId}-title`}
+				wrapperFunction={(props: ComponentProps<typeof Box>) => (
+					<Box is='form' id={createChannelFormId} onSubmit={handleStepSubmit} {...props} />
+				)}
+			>
+				<ModalHeader>
+					<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
+					<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
+				</ModalHeader>
+				<ModalContent marginBlockEnd={2}>
+					{step === 'details' && (
+						<>
+							{creationBlocked && (
+								<Callout type='danger' marginBlockEnd={16}>
+									{t('ABAC_Room_Creation_Not_Allowed')}
+								</Callout>
+							)}
+							<FieldGroup marginBlockEnd={24}>
+								<Field>
+									<FieldLabel required>{t('Name')}</FieldLabel>
+									<FieldRow>
+										<Controller
+											control={control}
+											name='name'
+											rules={{
+												required: t('Required_field', { field: t('Name') }),
+												validate: (value) => validateChannelName(value),
+											}}
+											render={({ field }) => (
+												<TextInput
+													{...field}
+													error={errors.name?.message}
+													endAddon={<Icon name={getNameIcon(abacFlow.isManaged, isPrivate)} size='x20' />}
+													aria-required='true'
+												/>
+											)}
+										/>
+									</FieldRow>
+									{errors.name && <FieldError>{errors.name.message}</FieldError>}
+									{!allowSpecialNames && <FieldHint>{t('No_spaces_or_special_characters')}</FieldHint>}
+								</Field>
+								<Field>
+									<FieldLabel>{t('Topic')}</FieldLabel>
+									<FieldRow>
+										<Controller control={control} name='topic' render={({ field }) => <TextInput {...field} />} />
+									</FieldRow>
+									<FieldHint>{t('Displayed_next_to_name')}</FieldHint>
+								</Field>
+								<Field>
+									<FieldLabel>{t('Members')}</FieldLabel>
 									<Controller
 										control={control}
-										name='federated'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+										name='members'
+										rules={{
+											validate: (members) =>
+												!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
+										}}
+										render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
 									/>
-								</FieldRow>
-								<FieldHint>{t(federationFieldHint)}</FieldHint>
-							</Field>
-							<Field>
-								<FieldRow>
-									<FieldLabel>{t('Encrypted')}</FieldLabel>
-									<Controller
-										control={control}
-										name='encrypted'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={e2eDisabled} />}
-									/>
-								</FieldRow>
-								<FieldHint>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
-							</Field>
-							<Field>
-								<FieldRow>
-									<FieldLabel>{t('Read_only')}</FieldLabel>
-									<Controller
-										control={control}
-										name='readOnly'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
-										)}
-									/>
-								</FieldRow>
-								<FieldHint>
-									{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'channel' }) : t('Anyone_can_send_new_messages')}
-								</FieldHint>
-							</Field>
-							<Field>
-								<FieldRow>
-									<FieldLabel>{t('Broadcast')}</FieldLabel>
-									<Controller
-										control={control}
-										name='broadcast'
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
-									/>
-								</FieldRow>
-								{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
-							</Field>
-						</FieldGroup>
-					</AccordionItem>
-				</Accordion>
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary>
-						{t('Create')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+									{errors.members && <FieldError>{errors.members.message}</FieldError>}
+								</Field>
+								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} />}
+								<Field>
+									<FieldRow>
+										<FieldLabel>{t('Private')}</FieldLabel>
+										<Controller
+											control={control}
+											name='isPrivate'
+											render={({ field: { value, ...field } }) => (
+												<ToggleSwitch
+													{...field}
+													checked={isAbacManaged || (canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value)}
+													disabled={isAbacManaged || !!canOnlyCreateOneType}
+												/>
+											)}
+										/>
+									</FieldRow>
+									<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
+								</Field>
+							</FieldGroup>
+							{total === 1 && (
+								<Accordion>
+									<AccordionItem title={t('Advanced_settings')}>{securityFields}</AccordionItem>
+								</Accordion>
+							)}
+						</>
+					)}
+					{step === 'attributes' && (
+						<AbacAttributesStep
+							requiredKeys={abac?.requiredAttributes ?? []}
+							assignable={abacFlow.assignable.data}
+							isPending={abacFlow.assignable.isPending}
+							error={abacFlow.assignable.error}
+							assignabilityError={abacFlow.assignabilityError}
+						/>
+					)}
+					{step === 'security' && securityFields}
+					{step === 'preview' && (
+						<AbacMembershipPreview
+							data={abacFlow.preview.data}
+							isPending={abacFlow.preview.isPending}
+							isError={abacFlow.preview.isError}
+							error={abacFlow.preview.error}
+						/>
+					)}
+				</ModalContent>
+				<CreateRoomStepsFooter
+					index={index}
+					total={total}
+					onCancel={onClose}
+					onBack={back}
+					submitDisabled={creationBlocked || abacFlow.isStepBlocked}
+					isSubmitting={total > 1 && isSubmitting}
+				/>
+			</Modal>
+		</FormProvider>
 	);
 };
 
