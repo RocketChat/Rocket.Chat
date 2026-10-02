@@ -171,7 +171,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomTime;
 
 		// Untouched fields are left out so a save never rewrites what the user did not change.
-		const emailChanged = user ? getUserEmailAddress(user) !== email : false;
+		const emailChanged = Boolean(dirtyFields.email) && (!user || getUserEmailAddress(user) !== email);
 		const basicInfoData = {
 			...(dirtyFields.name && { name }),
 			...(emailChanged && { email }),
@@ -180,17 +180,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.bio && { bio }),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
+		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
 
 		try {
-			if (Object.keys(basicInfoData).length || customFieldsDirty) {
+			if (basicInfoDirty) {
 				await updateOwnBasicInfo({
 					data: basicInfoData,
 					...(customFieldsDirty && { customFields }),
 				});
-
-				// Refresh the user card, full profile and admin panel views of this user.
-				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
-				await queryClient.invalidateQueries({ queryKey: ['users'] });
 			}
 
 		try {
@@ -216,7 +213,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 			if (dirtyFields.avatar) {
 				await updateAvatar();
-				await refreshUserViews();
+			}
+
+			// Refresh the user card, full profile and admin panel views of this user once every change has landed.
+			if (basicInfoDirty || dirtyFields.avatar) {
+				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+				await queryClient.invalidateQueries({ queryKey: ['users'] });
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
