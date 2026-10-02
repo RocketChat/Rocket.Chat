@@ -1,4 +1,4 @@
-import { ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
+import { MarkdownTextContext, ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
@@ -20,6 +20,7 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import MarkdownText from '../components/MarkdownText';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
 export type MeteorProviderProps = {
@@ -27,49 +28,51 @@ export type MeteorProviderProps = {
 };
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
-	<ServerProvider>
-		<RouterProvider>
-			<ModalProvider>
-				<SettingsProvider>
-					<TranslationProvider>
-						<SessionProvider>
-							<TooltipProvider>
-								<ToastMessagesProvider>
-									<AvatarUrlProvider>
-										<UserProvider>
-											<LayoutProvider>
-												<AuthenticationProvider>
-													<CustomSoundProvider>
-														<DeviceProvider>
-															<AuthorizationProvider>
-																<EmojiPickerProvider>
-																	<OmnichannelRoomIconProvider>
-																		<UserPresenceProvider>
-																			<ActionManagerProvider>
-																				<VideoConfProvider>
-																					<MediaCallProvider>
-																						<OmnichannelProvider>{children}</OmnichannelProvider>
-																					</MediaCallProvider>
-																				</VideoConfProvider>
-																			</ActionManagerProvider>
-																		</UserPresenceProvider>
-																	</OmnichannelRoomIconProvider>
-																</EmojiPickerProvider>
-															</AuthorizationProvider>
-														</DeviceProvider>
-													</CustomSoundProvider>
-												</AuthenticationProvider>
-											</LayoutProvider>
-										</UserProvider>
-									</AvatarUrlProvider>
-								</ToastMessagesProvider>
-							</TooltipProvider>
-						</SessionProvider>
-					</TranslationProvider>
-				</SettingsProvider>
-			</ModalProvider>
-		</RouterProvider>
-	</ServerProvider>
+	<MarkdownTextContext.Provider value={MarkdownText}>
+		<ServerProvider>
+			<RouterProvider>
+				<ModalProvider>
+					<SettingsProvider>
+						<TranslationProvider>
+							<SessionProvider>
+								<TooltipProvider>
+									<ToastMessagesProvider>
+										<AvatarUrlProvider>
+											<UserProvider>
+												<LayoutProvider>
+													<AuthenticationProvider>
+														<CustomSoundProvider>
+															<DeviceProvider>
+																<AuthorizationProvider>
+																	<EmojiPickerProvider>
+																		<OmnichannelRoomIconProvider>
+																			<UserPresenceProvider>
+																				<ActionManagerProvider>
+																					<VideoConfProvider>
+																						<MediaCallProvider>
+																							<OmnichannelProvider>{children}</OmnichannelProvider>
+																						</MediaCallProvider>
+																					</VideoConfProvider>
+																				</ActionManagerProvider>
+																			</UserPresenceProvider>
+																		</OmnichannelRoomIconProvider>
+																	</EmojiPickerProvider>
+																</AuthorizationProvider>
+															</DeviceProvider>
+														</CustomSoundProvider>
+													</AuthenticationProvider>
+												</LayoutProvider>
+											</UserProvider>
+										</AvatarUrlProvider>
+									</ToastMessagesProvider>
+								</TooltipProvider>
+							</SessionProvider>
+						</TranslationProvider>
+					</SettingsProvider>
+				</ModalProvider>
+			</RouterProvider>
+		</ServerProvider>
+	</MarkdownTextContext.Provider>
 );
 
 export default MeteorProvider;
