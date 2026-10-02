@@ -11,9 +11,12 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
-	Option,
-	OptionAvatar,
-	OptionContent,
+	ITEM_MEDIA_SIZE,
+	Item,
+	ItemContent,
+	ItemGroup,
+	ItemMedia,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -41,6 +44,7 @@ type ChatAccessModalProps = {
 const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
+	const membersDescriptionId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { useRealName } = useConferenceViewer();
 	const { shareChat } = useConferenceActions();
@@ -94,16 +98,22 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
-				<Box color='default'>{t('These_participants_cannot_see_the_chat')}</Box>
-				{/* Named from the conference's own record — there may be no shared room to look them up in. */}
-				{access.members.map((member) => (
-					<Option key={member._id}>
-						<OptionAvatar>
-							<UserAvatar username={member.username} size='x24' />
-						</OptionAvatar>
-						<OptionContent>{getUserDisplayName(member.name, member.username, useRealName)}</OptionContent>
-					</Option>
-				))}
+				<Box id={membersDescriptionId} color='default'>
+					{t('These_participants_cannot_see_the_chat')}
+				</Box>
+				<ItemGroup is='ul' aria-labelledby={membersDescriptionId}>
+					{/* Named from the conference's own record — there may be no shared room to look them up in. */}
+					{access.members.map((member) => (
+						<Item key={member._id} is='li' size='medium'>
+							<ItemMedia>
+								<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>{getUserDisplayName(member.name, member.username, useRealName)}</ItemTitle>
+							</ItemContent>
+						</Item>
+					))}
+				</ItemGroup>
 
 				{access.canInvite && (
 					<Box marginBlockStart={16}>
