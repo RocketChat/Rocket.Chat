@@ -5,8 +5,8 @@ against, and the spec that owns it. The rows are derived from the `standards` an
 frontmatter of the specs in [specs/](specs/); edit the spec, then this table.
 
 Status: `implemented`, `partial` (the spec's Out of scope says what is missing), `planned`
-(a spec exists, no plan yet), `intent` (wanted, requirements open), `not-planned` (reason in
-Notes).
+(a spec is agreed, no plan yet), `draft` (a spec exists, not yet agreed), `intent` (wanted,
+requirements open), `not-planned` (reason in Notes).
 
 ## Core specifications
 
@@ -31,12 +31,12 @@ Notes).
 | [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | partial | [message-corrections](specs/message-corrections.md) | both ways; hosted rooms strip corrections they relay between XMPP users |
 | [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | partial | [message-corrections](specs/message-corrections.md) | read in remote rooms to tell apart occupants who held the same nick; hosted rooms do not stamp it |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound |
-| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | planned | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
-| [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | planned | [file-transfer](specs/file-transfer.md) | required for the end product; transport open |
-| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | planned | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path in rooms |
-| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | planned | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
-| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | planned | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
-| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | planned | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
+| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | draft | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
+| [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | draft | [file-transfer](specs/file-transfer.md) | required for the end product; transport open |
+| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | draft | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path in rooms |
+| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | draft | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
+| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | draft | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
+| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | draft | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
 | [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent weighs MAM against XEP-0045 history on join |
 
 ## Not planned

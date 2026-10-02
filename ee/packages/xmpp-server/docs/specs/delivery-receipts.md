@@ -1,5 +1,5 @@
 ---
-status: planned
+status: draft
 standards: [XEP-0184]
 adrs: [0007]
 code: []
@@ -22,8 +22,6 @@ answers receipt requests looks unreliable to the other side. The current impleme
 sends and answers nothing ([direct-messages](direct-messages.md) lists it as out of scope).
 
 ## Behaviour
-
-Drafted from the XEP; to be confirmed with the package owner before a plan is written.
 
 - **R1** Every `chat` message sent to a remote user carries
   `<request xmlns='urn:xmpp:receipts'/>`.

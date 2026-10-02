@@ -1,5 +1,5 @@
 ---
-status: planned
+status: draft
 standards: [XEP-0424]
 adrs: [0007]
 code: []
@@ -21,8 +21,6 @@ end product commits to this; it also closes the asymmetry with
 [message-corrections](message-corrections.md), which already carries edits.
 
 ## Behaviour
-
-Drafted from the XEP; to be confirmed before a plan is written.
 
 - **R1** Every outbound message carries `<origin-id xmlns='urn:xmpp:sid:0' id='<message _id>'/>`
   so that a later retraction can reference it. This changes

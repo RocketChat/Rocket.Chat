@@ -1,5 +1,5 @@
 ---
-status: planned
+status: draft
 standards: [XEP-0234, XEP-0066, XEP-0363]
 adrs: [0001, 0006]
 code: []

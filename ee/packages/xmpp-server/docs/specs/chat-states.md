@@ -1,5 +1,5 @@
 ---
-status: planned
+status: draft
 standards: [XEP-0085]
 adrs: [0006]
 code: []
@@ -22,8 +22,6 @@ broker event `room.user-activity`, which the Matrix service already consumes, an
 remote activity through the same stream clients listen to. The mapping costs little.
 
 ## Behaviour
-
-Drafted from the XEP; to be confirmed before a plan is written.
 
 **Direct messages**
 
