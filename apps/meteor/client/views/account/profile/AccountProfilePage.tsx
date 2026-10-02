@@ -1,7 +1,6 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -32,7 +31,7 @@ const AccountProfilePage = () => {
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
-	const erasureType = useSetting('Message_ErasureType');
+	const erasureType = useSetting<'Delete' | 'Keep' | 'Unlink'>('Message_ErasureType', 'Delete');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
 
@@ -80,7 +79,7 @@ const AccountProfilePage = () => {
 				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={() => setModal(null)}
-					contentTitle={t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
+					contentTitle={t('Delete_User_Warning', { context: erasureType })}
 					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}

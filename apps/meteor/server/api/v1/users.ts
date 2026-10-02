@@ -719,6 +719,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
+			if ('username' in this.queryParams && this.queryParams.username) {
+				nonEmptyQuery.username = { $regex: escapeRegExp(this.queryParams.username), $options: 'i' };
+			}
+
 			const hidden = await getUsersHiddenFrom(this.userId);
 
 			if (hidden && queryFiltersStatus(query)) {

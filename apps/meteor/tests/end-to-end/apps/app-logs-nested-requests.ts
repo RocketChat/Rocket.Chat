@@ -1,12 +1,12 @@
 import type { ILoggerStorageEntry } from '@rocket.chat/apps/dist/server/logging/ILoggerStorageEntry';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials } from '../../data/api-data';
+import { api, assertSuccess, getCredentials, request, credentials } from '../../data/api-data';
 import { appCausingNestedRequests } from '../../data/apps/app-packages';
 import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
-import { loadHistory } from '../../data/rooms.helper';
 import { executeAppSlashCommand } from '../../data/slashcommands.helpers';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -25,9 +25,10 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		expect(slashcommandRes.status, 'Slashcommand execution failed').to.equal(200);
 
-		const { messages } = await loadHistory(roomId);
+		const historyRes = assertSuccess('channels.history', await request.get(api('channels.history')).set(credentials).query({ roomId }));
+		const { messages } = historyRes.body;
 
-		const targetMessage = messages.find((msg) => msg.msg === `nested_test_message ${execId}`);
+		const targetMessage = messages.find((msg: IMessage) => msg.msg === `nested_test_message ${execId}`);
 
 		expect(targetMessage, 'Target message from nested request not found').to.exist;
 
