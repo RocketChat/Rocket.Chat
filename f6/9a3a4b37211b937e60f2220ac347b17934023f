@@ -1,0 +1,64 @@
+ee/packages/xmpp-server/docs/intents/tactical-edge.md
+  s_9a0298322eb6a8::t_c6d69e4f66500a 1-10,13-40
+  s_9a0298322eb6a8::t_6658d5ba0ade10 11-12
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_9a0298322eb6a8::t_f654ae5c6f48bc 3
+ee/packages/xmpp-server/docs/compliance.md
+  s_9a0298322eb6a8::t_ef96ce48214124 60
+  s_9a0298322eb6a8::t_5d778a37ed7888 11-15,18-24,28-59,61-63,70-79
+ee/packages/xmpp-server/docs/intents/security-labels.md
+  s_9a0298322eb6a8::t_a5d7c6881f0ff6 9-75,79
+  s_9a0298322eb6a8::t_aa110cd418631b 76-78
+  s_9a0298322eb6a8::t_ebfa545e29ed9b 6-8
+  s_9a0298322eb6a8::t_11680d94c12ecf 1-5
+ee/packages/xmpp-server/docs/intents/interop-certification.md
+  s_9a0298322eb6a8::t_a6f9251c0f091e 9-59
+  s_9a0298322eb6a8::t_da7a70295c698f 6-8
+  s_9a0298322eb6a8::t_05c6b03ddfa2b3 1-5
+ee/packages/xmpp-server/docs/intents/federation-authorization.md
+  s_9a0298322eb6a8::t_c6a5ad6e922e06 28-29
+  s_9a0298322eb6a8::t_a0dd3f9fff8686 25-27
+  s_9a0298322eb6a8::t_32e4306451cfb9 30-32
+  s_9a0298322eb6a8::t_52c0145cf41f03 1-24,33-64
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_9a0298322eb6a8::t_6d6bd183135dbd 3
+ee/packages/xmpp-server/docs/intents/joining-remote-rooms.md
+  s_9a0298322eb6a8::t_c9b86eeda0fa1d 9-43
+  s_9a0298322eb6a8::t_fce0ad4d43ff4a 6-8
+  s_9a0298322eb6a8::t_134f5e5fc3dde4 44-45
+  s_9a0298322eb6a8::t_bc6c232e926a29 1-5
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_9a0298322eb6a8::t_c684ec4ca66127 3
+ee/packages/xmpp-server/docs/intents/accreditation-readiness.md
+  s_9a0298322eb6a8::t_bc42269b972b1e 17-91
+  s_9a0298322eb6a8::t_a044ed9e2e1bcb 14-16
+  s_9a0298322eb6a8::t_25aec0eb276904 1-13
+ee/packages/xmpp-server/docs/intents/connection-recovery.md
+  s_9a0298322eb6a8::t_7851dbe7e37dec 45-47
+  s_9a0298322eb6a8::t_1e24e7293993d4 42-44
+  s_9a0298322eb6a8::t_922bd8b28e74d7 48-50
+  s_9a0298322eb6a8::t_cb38fca041846c 1-41,51-57
+ee/packages/xmpp-server/docs/intents/entity-information.md
+  s_9a0298322eb6a8::t_662ac7ada21a7a 1-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f69a3a4b37211b937e60f2220ac347b17934023f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9a0298322eb6a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d91ba7d6-5030-4b36-a21a-9b63ab174678",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
