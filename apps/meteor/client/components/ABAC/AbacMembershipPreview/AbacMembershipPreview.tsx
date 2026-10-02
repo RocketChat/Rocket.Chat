@@ -3,14 +3,16 @@ import { Box, Callout, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import AbacPreviewMemberGroup from './AbacPreviewMemberGroup';
+import AbacErrorCallout from '../AbacErrorCallout';
 
 type AbacMembershipPreviewProps = {
 	data?: IAbacMembershipPreview;
 	isPending?: boolean;
 	isError?: boolean;
+	error?: unknown;
 };
 
-const AbacMembershipPreview = ({ data, isPending, isError }: AbacMembershipPreviewProps) => {
+const AbacMembershipPreview = ({ data, isPending, isError, error }: AbacMembershipPreviewProps) => {
 	const { t } = useTranslation();
 
 	if (isPending) {
@@ -24,7 +26,7 @@ const AbacMembershipPreview = ({ data, isPending, isError }: AbacMembershipPrevi
 	}
 
 	if (isError || !data) {
-		return <Callout type='danger'>{t('ABAC_Preview_Unavailable')}</Callout>;
+		return <AbacErrorCallout error={error} fallback='ABAC_Preview_Unavailable' />;
 	}
 
 	const { compliant, nonCompliant, inconclusive, creator } = data;

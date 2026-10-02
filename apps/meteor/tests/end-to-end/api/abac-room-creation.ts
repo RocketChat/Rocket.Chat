@@ -408,6 +408,69 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('GET /abac/assignable-attributes', () => {
+		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/assignable-attributes`).set(as);
+
+		const ownKeys = (attributes: { key: string; values: string[] }[]) => attributes.filter(({ key }) => key === dept || key === clearance);
+
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('requires create-abac-managed-room', async () => {
+			await updatePermission('create-abac-managed-room', ['admin']);
+
+			try {
+				await assignable().expect(403);
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
+		});
+
+		it('offers a creator who is not an administrator only the values they hold, and no key they hold nothing of', async () => {
+			const res = await assignable().expect(200);
+
+			expect(ownKeys(res.body.attributes)).to.deep.equal([{ key: dept, values: ['eng'] }]);
+		});
+
+		it('offers only what creation then accepts', async () => {
+			const res = await assignable().expect(200);
+			const [offered] = ownKeys(res.body.attributes);
+
+			await request
+				.post(`${v1}/abac/attribute-assignability`)
+				.set(creatorCredentials)
+				.send({ attributes: { [offered.key]: offered.values } })
+				.expect(200);
+		});
+
+		it('offers every defined value once restricting to owned attributes is off', async () => {
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			try {
+				const res = await assignable().expect(200);
+
+				expect(ownKeys(res.body.attributes)).to.deep.equal([
+					{ key: clearance, values: ['secret'] },
+					{ key: dept, values: ['eng', 'sales', 'ops'] },
+				]);
+			} finally {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			}
+		});
+
+		it('is refused while ABAC is disabled', async () => {
+			await setSetting('ABAC_Enabled', false);
+
+			try {
+				await assignable().expect(400);
+			} finally {
+				await setSetting('ABAC_Enabled', true);
+			}
+		});
+	});
+
 	describe('POST /abac/membership-preview', () => {
 		const preview = (body: Record<string, unknown>, as: Credentials = creatorCredentials) =>
 			request.post(`${v1}/abac/membership-preview`).set(as).send(body);
