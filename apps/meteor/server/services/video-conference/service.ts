@@ -54,7 +54,7 @@ import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
@@ -841,6 +841,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const calleeId = uids?.filter((uid) => uid !== user._id).pop();
 		if (!calleeId) {
 			// Are you trying to call yourself?
+			throw new Error('invalid-call-target');
+		}
+
+		const userCanBeCalled = await hasPermissionAsync(calleeId, 'videoconf-access');
+
+		if (!userCanBeCalled) {
 			throw new Error('invalid-call-target');
 		}
 

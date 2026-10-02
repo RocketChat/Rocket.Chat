@@ -79,9 +79,9 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	 * the manager starts the conference here as it always has.
 	 */
 	const startCall = useCallback(
-		(rid: string, confTitle?: string) => {
+		async (rid: string, confTitle?: string) => {
 			if (!conferenceWindowEnabled) {
-				void VideoConfManager.startCall(rid, confTitle);
+				await VideoConfManager.startCall(rid, confTitle);
 				return;
 			}
 

@@ -109,6 +109,29 @@ describe('Authorization service', () => {
 		beforeEach(() => {
 			roomsModel.findOneById.mockImplementation(async (rid: IRoom['_id']) => room(rid));
 			canAccessRoomMock.mockResolvedValue(false);
+			jest.spyOn(service, 'hasPermission').mockResolvedValue(true);
+		});
+
+		// `videoconf-access` is the gate every way into a conference passes, membership included.
+		it('should refuse a member without the videoconf-access permission', async () => {
+			jest.mocked(service.hasPermission).mockResolvedValue(false);
+
+			expect(await service.canAccessConference(callWith(['member']), 'member')).toBe(false);
+		});
+
+		it('should refuse someone who can see the room but lacks the videoconf-access permission', async () => {
+			jest.mocked(service.hasPermission).mockResolvedValue(false);
+			canAccessRoomMock.mockResolvedValue(true);
+
+			expect(await service.canAccessConference(callWith(['host']), 'onlooker')).toBe(false);
+		});
+
+		// The permission is granted workspace-wide or not at all, so asking about it in a room would let a room
+		// role hand out access the setting never gave. See [video conferences](../../../docs/features/video-conference.md).
+		it('should ask for the videoconf-access permission globally, never scoped to the call’s room', async () => {
+			await service.canAccessConference(callWith(['member']), 'member');
+
+			expect(service.hasPermission).toHaveBeenCalledWith('member', 'videoconf-access');
 		});
 
 		// The regression: someone added to a DM call from outside has no subscription to the DM, so checking the room
@@ -138,6 +161,7 @@ describe('Authorization service', () => {
 
 		it('should refuse anyone not signed in', async () => {
 			expect(await service.canAccessConference(callWith(['host']), undefined)).toBe(false);
+			expect(service.hasPermission).not.toHaveBeenCalled();
 			expect(roomsModel.findOneById).not.toHaveBeenCalled();
 		});
 	});

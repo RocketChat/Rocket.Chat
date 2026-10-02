@@ -20,6 +20,8 @@ export class VideoConfModule implements IUiKitCoreApp {
 		}
 
 		if (actionId === 'join') {
+			// TODO: Verify if we need to gate this behind the `videoconf-access` permission
+			// If needed to gate behind it, find out if it should also support anonymous join (Accounts_AllowAnonymousRead)
 			await VideoConf.join(userId, callId, {});
 		}
 

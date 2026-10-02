@@ -1203,5 +1203,332 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 		});
+
+		describe('[Access Permission]', () => {
+			let joinPermissionRoomId: string;
+			let ownedRoomId: string;
+			let regularUser: Awaited<ReturnType<typeof createUser>>;
+			let regularUserCredentials: Awaited<ReturnType<typeof login>>;
+			let callId: string | undefined;
+			let ownedRoomCallId: string | undefined;
+
+			before(async () => {
+				await Promise.all([
+					updateSetting('Accounts_AllowAnonymousRead', false),
+					updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					updatePermission('videoconf-access', ['admin', 'owner', 'moderator', 'user']),
+				]);
+
+				regularUser = await createUser({ username: `join.permission.user.${Date.now()}`, roles: ['user'] });
+				regularUserCredentials = await login(regularUser.username, password);
+
+				const roomRes = await createRoom({
+					type: 'c',
+					name: `join-permission-channel-${Date.now()}`,
+					username: undefined,
+					members: [regularUser.username],
+					credentials,
+				});
+				joinPermissionRoomId = roomRes.body.channel._id;
+
+				// Created by the regular user, so they are its owner: the room role `videoconf-access` must not
+				// reach, however it is granted.
+				const ownedRoomRes = await createRoom({
+					type: 'c',
+					name: `owned-permission-channel-${Date.now()}`,
+					username: undefined,
+					members: undefined,
+					credentials: regularUserCredentials,
+				});
+				ownedRoomId = ownedRoomRes.body.channel._id;
+
+				await updateSetting('VideoConf_Default_Provider', 'test');
+
+				const startRes = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId: joinPermissionRoomId,
+				});
+				callId = startRes.body.data.callId;
+
+				const ownedStartRes = await request.post(api('video-conference.start')).set(regularUserCredentials).send({
+					roomId: ownedRoomId,
+				});
+				ownedRoomCallId = ownedStartRes.body.data.callId;
+			});
+
+			after(() =>
+				Promise.all([
+					...(joinPermissionRoomId ? [deleteRoom({ type: 'c', roomId: joinPermissionRoomId })] : []),
+					...(ownedRoomId ? [deleteRoom({ type: 'c', roomId: ownedRoomId })] : []),
+					deleteUser(regularUser),
+					updateSetting('Accounts_AllowAnonymousRead', false),
+					updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					updatePermission('videoconf-access', ['admin', 'owner', 'moderator', 'user']),
+				]),
+			);
+
+			describe('[Joining]', () => {
+				it('should fail to join a call as a regular user without videoconf-access', async () => {
+					await Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]);
+
+					await request
+						.post(api('video-conference.join'))
+						.set(regularUserCredentials)
+						.send({ callId })
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				// `videoconf-access` comes before `call-management`: managing calls in a room is no longer a way
+				// into one. See [video conferences](../../../../docs/features/video-conference.md).
+				it('should fail to join a call as a regular user with only call-management', async () => {
+					await Promise.all([
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					]);
+
+					await request
+						.post(api('video-conference.join'))
+						.set(regularUserCredentials)
+						.send({ callId })
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should join a call as a regular user with only videoconf-access, but still fail to start one', async () => {
+					await Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator', 'user']),
+					]);
+
+					await request
+						.post(api('video-conference.join'))
+						.set(regularUserCredentials)
+						.send({ callId })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+						});
+
+					await request
+						.post(api('video-conference.start'))
+						.set(regularUserCredentials)
+						.send({ roomId: joinPermissionRoomId })
+						.expect(403)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should fail to start a call as a regular user with only call-management', async () => {
+					await Promise.all([
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					]);
+
+					await request
+						.post(api('video-conference.start'))
+						.set(regularUserCredentials)
+						.send({ roomId: joinPermissionRoomId })
+						.expect(403)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should start a call as a regular user holding both permissions', async () => {
+					await Promise.all([
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator', 'user']),
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+					]);
+
+					await request
+						.post(api('video-conference.start'))
+						.set(regularUserCredentials)
+						.send({ roomId: joinPermissionRoomId })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+						});
+				});
+			});
+
+			// The permission is workspace-wide or nothing. Granting it to a room role must not let the owner of a
+			// room use conferences there, which is what a scoped check would do.
+			describe('[Global Scope]', () => {
+				it('should fail to join a call in a room the user owns when videoconf-access is granted to owners only', async () => {
+					await Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]);
+
+					await request
+						.post(api('video-conference.join'))
+						.set(regularUserCredentials)
+						.send({ callId: ownedRoomCallId })
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should fail to start a call in a room the user owns when videoconf-access is granted to owners only', async () => {
+					await Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]);
+
+					await request
+						.post(api('video-conference.start'))
+						.set(regularUserCredentials)
+						.send({ roomId: ownedRoomId })
+						.expect(403)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should hide a call in a room the user owns when videoconf-access is granted to owners only', async () => {
+					await Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator', 'user']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]);
+
+					await request
+						.get(api('video-conference.info'))
+						.set(regularUserCredentials)
+						.query({ callId: ownedRoomCallId })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+			});
+
+			describe('[Reading]', () => {
+				beforeEach(() =>
+					Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]),
+				);
+
+				it('should hide the call from a regular user without videoconf-access', async () => {
+					await request
+						.get(api('video-conference.info'))
+						.set(regularUserCredentials)
+						.query({ callId })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should refuse to list a room’s calls to a regular user without videoconf-access', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(regularUserCredentials)
+						.query({ roomId: joinPermissionRoomId })
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should refuse to list joinable calls to a regular user without videoconf-access', async () => {
+					await request
+						.get(api('video-conference.joinable'))
+						.set(regularUserCredentials)
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should list a room’s calls once videoconf-access is granted', async () => {
+					await updatePermission('videoconf-access', ['admin', 'owner', 'moderator', 'user']);
+
+					await request
+						.get(api('video-conference.list'))
+						.set(regularUserCredentials)
+						.query({ roomId: joinPermissionRoomId })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body.data).to.be.an('array');
+						});
+				});
+			});
+
+			// `Accounts_AllowAnonymousRead` is the one way into a conference that does not pass the permission: a
+			// non-embedded provider can host people who have no account here at all.
+			describe('[Anonymous Access]', () => {
+				beforeEach(() =>
+					Promise.all([
+						updatePermission('call-management', ['admin', 'owner', 'moderator']),
+						updatePermission('videoconf-access', ['admin', 'owner', 'moderator']),
+					]),
+				);
+
+				it('should fail to join a call anonymously when Accounts_AllowAnonymousRead is disabled', async () => {
+					await updateSetting('Accounts_AllowAnonymousRead', false);
+
+					await request
+						.post(api('video-conference.join'))
+						.send({ callId })
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+
+				it('should join a call anonymously when Accounts_AllowAnonymousRead is enabled', async () => {
+					await updateSetting('Accounts_AllowAnonymousRead', true);
+
+					await request
+						.post(api('video-conference.join'))
+						.send({ callId })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+						});
+				});
+
+				// The setting waives the permission check for the endpoint as a whole, so a signed-in user without
+				// the permission gets in the same way an anonymous one does.
+				it('should join a call as an authenticated user without videoconf-access when Accounts_AllowAnonymousRead is enabled', async () => {
+					await updateSetting('Accounts_AllowAnonymousRead', true);
+
+					await request
+						.post(api('video-conference.join'))
+						.set(regularUserCredentials)
+						.send({ callId })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+						});
+				});
+
+				// Only joining is waived: everything else still asks for the permission.
+				it('should still hide the call from an authenticated user without videoconf-access when Accounts_AllowAnonymousRead is enabled', async () => {
+					await updateSetting('Accounts_AllowAnonymousRead', true);
+
+					await request
+						.get(api('video-conference.info'))
+						.set(regularUserCredentials)
+						.query({ callId })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(false);
+						});
+				});
+			});
+		});
 	});
 });

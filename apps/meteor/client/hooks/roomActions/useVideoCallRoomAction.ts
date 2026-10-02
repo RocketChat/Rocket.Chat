@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting, useUser, useVideoconfPermissions } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
@@ -25,7 +25,7 @@ export const useVideoCallRoomAction = () => {
 	const ownUser = room.uids?.length === 1 || false;
 
 	const permittedToPostReadonly = usePermission('post-readonly', room._id);
-	const permittedToCallManagement = usePermission('call-management', room._id);
+	const { canManageConference } = useVideoconfPermissions(room._id);
 
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
@@ -53,7 +53,7 @@ export const useVideoCallRoomAction = () => {
 	);
 
 	const visible = groups.length > 0;
-	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
+	const allowed = visible && canManageConference && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
 	const disabled = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
 	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : undefined;
 

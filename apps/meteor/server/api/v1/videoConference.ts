@@ -22,6 +22,7 @@ import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
+import { settings } from '../../settings';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -192,6 +193,10 @@ API.v1.post(
 		const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 		const { userId } = this;
 
+		if (!(await hasPermissionAsync(this.user, 'videoconf-access'))) {
+			return API.v1.forbidden('Not allowed');
+		}
+
 		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
 			return API.v1.forbidden('Not allowed');
 		}
@@ -237,6 +242,7 @@ API.v1.post(
 			200: joinResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -251,6 +257,15 @@ API.v1.post(
 		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
+		}
+
+		// If anonymous users have access we don't need to check permissions for logged in users.
+		const hasPermission = settings.get<boolean>('Accounts_AllowAnonymousRead')
+			? true
+			: userId && (await hasPermissionAsync(userId, 'videoconf-access'));
+
+		if (!hasPermission) {
+			return API.v1.unauthorized('Not allowed');
 		}
 
 		// Non-embedded calls are joinable anonymously, as long as the room is accessible (Accounts_AllowAnonymousRead)
@@ -316,6 +331,10 @@ API.v1.post(
 		// `applyBreakingChanges`.
 		if (!call) {
 			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await hasPermissionAsync(userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
 		}
 
 		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
@@ -595,6 +614,10 @@ API.v1.get(
 		},
 	},
 	async function action() {
+		if (!(await hasPermissionAsync(this.userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
+		}
+
 		return API.v1.success({ calls: await VideoConf.listJoinableCalls(this.userId) });
 	},
 );
@@ -616,6 +639,10 @@ API.v1.get(
 		const { userId } = this;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
+
+		if (!(await hasPermissionAsync(this.userId, 'videoconf-access'))) {
+			return API.v1.unauthorized('Not allowed');
+		}
 
 		// TODO: answer 404 when a conference is missing or is not the caller's
 		// The params are valid — what failed is that the call does not exist, or does not belong to this caller —

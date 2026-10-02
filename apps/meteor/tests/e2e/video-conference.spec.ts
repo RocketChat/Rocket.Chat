@@ -4,11 +4,14 @@ import { HomeChannel } from './page-objects';
 import {
 	createArchivedChannel,
 	createTargetChannel,
+	createTargetChannelAndReturnFullRoom,
 	setUserPreferences,
 	createTargetTeam,
 	createDirectMessage,
 	deleteChannel,
 	deleteTeam,
+	setSettingValueById,
+	updatePermissions,
 } from './utils';
 import { expect, test } from './utils/test';
 
@@ -152,5 +155,182 @@ test.describe('video conference', () => {
 		await poHomeChannel.navbar.openChat(targetArchivedChannel);
 
 		await expect(poHomeChannel.content.btnVideoCall).toBeDisabled();
+	});
+});
+
+test.describe('video conference - join button visibility', () => {
+	test.skip(!IS_EE, 'Premium Only');
+
+	let poHomeChannel: HomeChannel;
+	let targetChannel: string;
+
+	test.beforeAll(async ({ api }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user2'] });
+		targetChannel = channel.name as string;
+
+		await api.post('/video-conference.start', { roomId: channel._id });
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			deleteChannel(api, targetChannel),
+			setSettingValueById(api, 'Accounts_AllowAnonymousRead', false),
+			updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator', 'user'] },
+			]),
+		]);
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		await page.goto('/home');
+	});
+
+	test.describe('user without call-management or videoconf-access permission', () => {
+		test.use({ storageState: Users.user2.state });
+
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator'] },
+			]);
+		});
+
+		test('should hide the Join button in the message block and the Calls panel when Accounts_AllowAnonymousRead is disabled', async ({
+			api,
+		}) => {
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false);
+
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toHaveText(/You're unable to join/i);
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeHidden();
+
+			await poHomeChannel.roomToolbar.openCalls();
+			await expect(poHomeChannel.tabs.videoconfCalls.content).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.content).toHaveText(/You're unable to join/i);
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeHidden();
+		});
+
+		// Anonymous access is the one way into a conference that does not pass the permission, and the client
+		// offers it to whoever is looking. See [video conferences](../../../docs/features/video-conference.md).
+		test('should show the Join button in the message block and the Calls panel when Accounts_AllowAnonymousRead is enabled', async ({
+			api,
+		}) => {
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', true);
+
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
+
+			await poHomeChannel.roomToolbar.openCalls();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeVisible();
+		});
+	});
+
+	// `videoconf-access` comes before `call-management`: managing calls in a room is not a way into one.
+	test.describe('user with the call-management permission and without videoconf-access', () => {
+		test.use({ storageState: Users.user2.state });
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false);
+			await updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator'] },
+			]);
+		});
+
+		test('should hide the Join button in the message block and the Calls panel', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeHidden();
+
+			await poHomeChannel.roomToolbar.openCalls();
+			await expect(poHomeChannel.tabs.videoconfCalls.content).toBeVisible();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeHidden();
+		});
+
+		test('should hide the Video call action from the room toolbar', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+
+			await expect(poHomeChannel.content.btnVideoCall).toBeHidden();
+		});
+	});
+
+	test.describe('user with videoconf-access and without call-management permission', () => {
+		test.use({ storageState: Users.user2.state });
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false);
+			await updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator', 'user'] },
+			]);
+		});
+
+		test('should show the Join button in the message block and the Calls panel', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
+
+			await poHomeChannel.roomToolbar.openCalls();
+			await expect(poHomeChannel.tabs.videoconfCalls.btnJoinCall).toBeVisible();
+		});
+
+		// Joining is not starting: opening a conference still asks for `call-management` as it always did.
+		test('should hide the Video call action from the room toolbar', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+
+			await expect(poHomeChannel.content.btnVideoCall).toBeHidden();
+		});
+	});
+
+	test.describe('user with both permissions', () => {
+		test.use({ storageState: Users.user2.state });
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false);
+			await updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator', 'user'] },
+			]);
+		});
+
+		test('should show the Join button and the Video call action', async () => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeVisible();
+			await expect(poHomeChannel.content.btnVideoCall).toBeVisible();
+		});
+	});
+
+	// The permission is workspace-wide or nothing: granting it to a room role must not reach the owner of a room.
+	test.describe('user who owns a room, with videoconf-access granted to owners only', () => {
+		test.use({ storageState: Users.user2.state });
+
+		let ownedChannel: string;
+
+		test.beforeAll(async ({ api }) => {
+			const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user2'] });
+			ownedChannel = channel.name as string;
+
+			await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user2.data._id });
+			await api.post('/video-conference.start', { roomId: channel._id });
+
+			await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false);
+			await updatePermissions(api, [
+				{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
+				{ _id: 'videoconf-access', roles: ['admin', 'owner', 'moderator'] },
+			]);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await deleteChannel(api, ownedChannel);
+		});
+
+		test('should still hide the Join button and the Video call action in the room they own', async () => {
+			await poHomeChannel.navbar.openChat(ownedChannel);
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+			await expect(poHomeChannel.content.btnJoinVideoConfMessageBlock).toBeHidden();
+			await expect(poHomeChannel.content.btnVideoCall).toBeHidden();
+		});
 	});
 });
