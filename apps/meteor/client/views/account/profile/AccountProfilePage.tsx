@@ -35,8 +35,10 @@ const AccountProfilePage = () => {
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
 
+	// Track the user record so data arriving after mount fills the form, without discarding unsaved edits.
 	const methods = useForm({
-		defaultValues: getProfileInitialValues(user),
+		values: getProfileInitialValues(user),
+		resetOptions: { keepDirtyValues: true },
 		reValidateMode: 'onBlur',
 	});
 

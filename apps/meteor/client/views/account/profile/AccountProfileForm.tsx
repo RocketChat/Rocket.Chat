@@ -25,7 +25,7 @@ import {
 	useLayout,
 	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -43,6 +43,7 @@ import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
 
@@ -158,17 +159,28 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomDate ||
 			dirtyFields.statusCustomTime;
 
+		// Untouched fields are left out so a save never rewrites what the user did not change.
+		const emailChanged = user ? getUserEmailAddress(user) !== email : false;
+		const basicInfoData = {
+			...(dirtyFields.name && { name }),
+			...(emailChanged && { email }),
+			...(dirtyFields.username && { username }),
+			...(dirtyFields.nickname && { nickname }),
+			...(dirtyFields.bio && { bio }),
+		};
+		const customFieldsDirty = Boolean(dirtyFields.customFields);
+
 		try {
-			await updateOwnBasicInfo({
-				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					nickname,
-					bio,
-				},
-				customFields,
-			});
+			if (Object.keys(basicInfoData).length || customFieldsDirty) {
+				await updateOwnBasicInfo({
+					data: basicInfoData,
+					...(customFieldsDirty && { customFields }),
+				});
+
+				// Refresh the user card, full profile and admin panel views of this user.
+				await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+				await queryClient.invalidateQueries({ queryKey: ['users'] });
+			}
 
 			if (dirtyFields.statusVisibilityDenied) {
 				await setPreferences({ data: { statusVisibilityDenied } });
