@@ -1,9 +1,8 @@
 import type { ILivechatContact, ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemMeta, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useBlockChannel } from './useBlockChannel';
@@ -43,16 +42,8 @@ const ContactInfoChannelsItem = ({
 		return typeof username === 'string' ? username : phone;
 	}, [visitorData?.externalIds, details, getSourceLabel]);
 
-	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
 	const outboundMessageModal = useOutboundMessageModal();
-
-	const customClass = css`
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 
 	const menuItems = useMemo(() => {
 		const items: GenericMenuItemProps[] = [
@@ -80,38 +71,25 @@ const ContactInfoChannelsItem = ({
 	}, [blocked, canSendOutboundMessage, contact?._id, contact?.unknown, details.id, handleBlockContact, outboundMessageModal, t]);
 
 	return (
-		<Box
-			tabIndex={0}
-			borderBlockEndWidth='default'
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			className={['rcx-box--animated', customClass]}
-			paddingInline={24}
-			paddingBlock={12}
-			display='flex'
-			flexDirection='column'
-			onFocus={() => setShowButton(true)}
-			onPointerEnter={() => setShowButton(true)}
-			onPointerLeave={() => setShowButton(false)}
-		>
-			<Box display='flex' alignItems='center'>
-				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
-				{details && (
-					<Box marginInline={4} fontScale='p2b'>
-						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
-					</Box>
-				)}
-				{lastChat && (
-					<Box marginInlineStart={4} fontScale='c1'>
-						{getTimeFromNow(lastChat.ts)}
-					</Box>
-				)}
-			</Box>
-			<Box minHeight='x24' alignItems='center' marginBlockStart={4} display='flex' justifyContent='space-between'>
-				<Box>{channelLabel}</Box>
-				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
-			</Box>
-		</Box>
+		<Item role='listitem' size='extended' inset='lg'>
+			{details && (
+				<ItemMedia variant='icon'>
+					<OmnichannelRoomIcon source={details} size='x18' placement='default' />
+				</ItemMedia>
+			)}
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						{details && getSourceName(details)} {blocked && `(${t('Blocked')})`}
+					</ItemTitle>
+					{lastChat && <ItemMeta>{getTimeFromNow(lastChat.ts)}</ItemMeta>}
+				</ItemRow>
+				{channelLabel && <ItemDescription>{channelLabel}</ItemDescription>}
+			</ItemContent>
+			<ItemActions reveal='hover'>
+				<GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} />
+			</ItemActions>
+		</Item>
 	);
 };
 
