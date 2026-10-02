@@ -3,7 +3,7 @@ import { Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 
@@ -41,7 +41,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const closeUserCard = useStableCallback(() => setUserCardData(null));
 
 	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
-		triggerRef.current = e.target as Element | null;
+		triggerRef.current = e.currentTarget ?? e.target;
 		state.open();
 		setUserCardData({
 			username,
@@ -50,6 +50,18 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			onClose: closeUserCard,
 		});
 	});
+
+	const isOpen = state.isOpen && !!userCardData;
+
+	// Only the trigger that opened the card is expanded; the shared triggerProps can't carry this state.
+	useEffect(() => {
+		const trigger = triggerRef.current;
+		if (!isOpen || !trigger) {
+			return;
+		}
+		trigger.setAttribute('aria-expanded', 'true');
+		return () => trigger.removeAttribute('aria-expanded');
+	}, [isOpen, userCardData]);
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
@@ -65,7 +77,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{state.isOpen && userCardData && (
+			{isOpen && userCardData && (
 				<Suspense fallback={null}>
 					<Popover placement='top left' triggerRef={triggerRef} state={state}>
 						<UserCard {...userCardData} />

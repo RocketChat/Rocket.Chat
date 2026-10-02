@@ -52,3 +52,33 @@ it('keeps the context value stable when a card opens and closes', async () => {
 	expect(new Set(values).size).toBe(1);
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
 });
+
+it('marks only the trigger that opened the card as expanded', async () => {
+	const AuthorTrigger = ({ username }: { username: string }) => {
+		const { openUserCard, triggerProps } = useUserCard();
+		return (
+			<button type='button' {...triggerProps} onClick={(e: UIEvent) => openUserCard(e, username)}>
+				<span>{`author ${username}`}</span>
+			</button>
+		);
+	};
+
+	render(
+		<UserCardProvider>
+			<AuthorTrigger username='jane' />
+			<AuthorTrigger username='john' />
+		</UserCardProvider>,
+	);
+
+	const jane = screen.getByText('author jane').closest('button');
+	const john = screen.getByText('author john').closest('button');
+
+	// clicking the inner text still marks the button, not the span
+	fireEvent.click(screen.getByText('author jane'));
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
+
+	expect(jane).toHaveAttribute('aria-expanded', 'true');
+	expect(john).not.toHaveAttribute('aria-expanded');
+	expect(jane).toHaveAttribute('aria-haspopup', 'dialog');
+	expect(john).toHaveAttribute('aria-haspopup', 'dialog');
+});
