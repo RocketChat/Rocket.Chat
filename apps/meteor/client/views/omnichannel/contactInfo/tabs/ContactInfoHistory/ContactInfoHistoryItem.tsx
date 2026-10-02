@@ -1,10 +1,16 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import {
-	Box,
-	Palette,
-	IconButton,
 	Icon,
+	IconButton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemIcon,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
 	MessageGenericPreview,
 	MessageGenericPreviewContent,
 	MessageGenericPreviewDescription,
@@ -16,7 +22,6 @@ import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
-import { usePreventPropagation } from '../../../../../hooks/usePreventPropagation';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -29,74 +34,53 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 	const { t } = useTranslation();
 	const getTimeFromNow = useTimeFromNow(true);
 	const setModal = useSetModal();
-	const preventPropagation = usePreventPropagation();
 	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const { getSourceName } = useOmnichannelSource();
 
-	const customClass = css`
-		&:hover {
-			cursor: pointer;
-		}
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
+	const isVerified = hasLicense && verified;
 
 	return (
-		<Box
-			tabIndex={0}
-			role='listitem'
-			aria-label={getSourceName(source)}
-			borderBlockEndWidth='default'
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			className={['rcx-box--animated', customClass]}
-			paddingInline={24}
-			paddingBlock={12}
-			display='flex'
-			flexDirection='column'
-			onClick={onClick}
-		>
-			<Box display='flex' justifyContent='space-between'>
-				<Box display='flex' alignItems='center'>
-					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
-					{source && (
-						<Box marginInline={4} fontScale='p2b'>
+		<Item role='listitem' size='extended' inset='lg'>
+			{source && (
+				<ItemMedia variant='icon'>
+					<OmnichannelRoomIcon source={source} size='x18' placement='default' />
+				</ItemMedia>
+			)}
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						<ItemLink is='button' onClick={onClick}>
 							{getSourceName(source)}
-						</Box>
+						</ItemLink>
+					</ItemTitle>
+					{lastMessage && <ItemMeta>{getTimeFromNow(lastMessage.ts)}</ItemMeta>}
+					{isVerified && (
+						<ItemIcon label={t('Verified')} title={t('Verified')}>
+							<Icon size='x16' name='success-circle' color='stroke-highlight' />
+						</ItemIcon>
 					)}
-					{lastMessage && (
-						<Box marginInlineStart={4} fontScale='c1'>
-							{getTimeFromNow(lastMessage.ts)}
-						</Box>
-					)}
-				</Box>
-				<Box marginInlineStart={4} is='span' onClick={preventPropagation}>
-					{hasLicense && verified ? (
-						<Icon title={t('Verified')} marginInlineStart={4} size='x16' name='success-circle' color='stroke-highlight' />
-					) : (
-						<IconButton
-							title={t('Unverified')}
-							onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
-							icon='question-mark'
-							tiny
-						/>
-					)}
-				</Box>
-			</Box>
-			{lastMessage?.msg.trim() && (
-				<Box width='full' marginBlockStart={8}>
+				</ItemRow>
+				{lastMessage?.msg.trim() && (
 					<MessageGenericPreview>
 						<MessageGenericPreviewContent>
 							<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>
 							<MessageGenericPreviewDescription clamp>{lastMessage?.msg}</MessageGenericPreviewDescription>
 						</MessageGenericPreviewContent>
 					</MessageGenericPreview>
-				</Box>
+				)}
+			</ItemContent>
+			{!isVerified && (
+				<ItemActions>
+					<IconButton
+						title={t('Unverified')}
+						aria-label={t('Unverified')}
+						onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
+						icon='question-mark'
+						small
+					/>
+				</ItemActions>
 			)}
-		</Box>
+		</Item>
 	);
 };
 
