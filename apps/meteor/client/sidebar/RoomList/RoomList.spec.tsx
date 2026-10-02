@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
@@ -38,6 +39,12 @@ const groups = [
 	makeGroup('Direct_Messages', [rooms[2]], 1),
 	makeGroup('Empty_Group', [], 0),
 ];
+
+const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => ({
+	groups,
+	groupsCount: [2, 1, 0],
+	totalCount: 3,
+}));
 
 type MockSidebarVirtualListProps = {
 	groups: {
@@ -119,11 +126,7 @@ jest.mock('../hooks/usePreventDefault', () => ({
 }));
 
 jest.mock('../hooks/useRoomList', () => ({
-	useRoomList: () => ({
-		groups,
-		groupsCount: [2, 1, 0],
-		totalCount: 3,
-	}),
+	useRoomList: (options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => mockUseRoomList(options),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
@@ -136,8 +139,11 @@ jest.mock('../hooks/useTemplateByViewMode', () => ({
 
 jest.mock('./RoomListCollapser', () => ({
 	__esModule: true,
-	default: ({ group }: { group: SidebarRoomListGroup }) => (
-		<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+	default: ({ group, onToggleInactive }: { group: SidebarRoomListGroup; onToggleInactive: () => void }) => (
+		<>
+			<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+			<button type='button' onClick={onToggleInactive}>{`toggle ${group.key}`}</button>
+		</>
 	),
 }));
 
@@ -184,5 +190,17 @@ describe('RoomList', () => {
 		expect(screen.getAllByTestId('room-row-wrapper')).toHaveLength(3);
 		expect(screen.getAllByTestId('room-row-wrapper').map((element) => element.getAttribute('data-index'))).toEqual(['1', '2', '4']);
 		expect(screen.getAllByTestId('room-row').map((element) => element.textContent)).toEqual(['general', 'support', 'alice']);
+	});
+
+	it("lifts and restores a group's activity filter for the session from its header", async () => {
+		render(<RoomList />, { wrapper: appRoot });
+
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: ['Channels'] }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
 	});
 });

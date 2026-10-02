@@ -186,12 +186,18 @@ export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
 export const isSidebarSystemGroupKey = (key: string): key is SidebarSystemGroupKey =>
 	SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as SidebarSystemGroupKey);
 
+/** How recent a read room's last activity must be for an expanded group to keep listing it. */
+export const SIDEBAR_CATEGORY_ACTIVITY_FILTERS = ['1d', '7d', '30d'] as const;
+
+export type SidebarCategoryActivityFilter = (typeof SIDEBAR_CATEGORY_ACTIVITY_FILTERS)[number];
+
 export interface ISidebarCategory {
 	_id: string;
 	name: string;
 	default?: boolean;
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
+	activityFilter?: SidebarCategoryActivityFilter;
 }
 
 /**

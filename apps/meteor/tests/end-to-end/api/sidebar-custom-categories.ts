@@ -80,6 +80,25 @@ describe('[Sidebar Custom Categories]', () => {
 				});
 		});
 
+		it('should persist the optional activityFilter field verbatim', async () => {
+			const categories = [
+				category({ name: 'Recent', activityFilter: '1d' }),
+				category({ name: 'Week', activityFilter: '7d' }),
+				category({ name: 'Month', activityFilter: '30d' }),
+				{ _id: 'Channels', name: 'Channels', default: true, activityFilter: '7d' as const },
+			];
+
+			await setCategories(categories).expect(200);
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(testUserCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences.sidebarCategories).to.deep.equal(categories);
+				});
+		});
+
 		it('should preserve the array order (order is the render order)', async () => {
 			const categories = [category({ name: 'A' }), category({ name: 'B' }), category({ name: 'C' })];
 
@@ -159,6 +178,12 @@ describe('[Sidebar Custom Categories]', () => {
 
 		it('should reject a "showUnreads" that cannot be coerced to a boolean', async () => {
 			await setCategories([{ _id: Random.id(), name: 'x', showUnreads: 'yes' }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilter" outside the supported windows', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilter: '90d' }])
 				.expect(400)
 				.expect(expectInvalid);
 		});

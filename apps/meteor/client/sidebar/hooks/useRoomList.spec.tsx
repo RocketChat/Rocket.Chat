@@ -1,3 +1,4 @@
+import type { SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -94,7 +95,14 @@ const getWrapperSettings = ({
 	isEnterprise?: boolean;
 	fakeRoom?: SubscriptionWithRoom;
 	rooms?: SubscriptionWithRoom[];
-	sidebarCategories?: { _id: string; name?: string; default?: boolean; showUnreads?: boolean; keepUnreadsOnTop?: boolean }[];
+	sidebarCategories?: {
+		_id: string;
+		name?: string;
+		default?: boolean;
+		showUnreads?: boolean;
+		keepUnreadsOnTop?: boolean;
+		activityFilter?: SidebarCategoryActivityFilter;
+	}[];
 }) => {
 	const root = mockAppRoot()
 		.wrap((children) => (
@@ -438,5 +446,104 @@ describe('the Incoming calls group', () => {
 	it('leaves the ringing room in the list either way', () => {
 		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
 		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
+	});
+});
+
+describe('the activity filter', () => {
+	const HOUR = 60 * 60 * 1000;
+	const DAY = 24 * HOUR;
+
+	const channel = (name: string, lm: Date, unread = 0) =>
+		({
+			...createFakeSubscription({ t: 'c', name, ...emptyUnread, unread, lm }),
+			...createFakeRoom({ t: 'c' }),
+		}) as unknown as SubscriptionWithRoom;
+
+	const recentRead = channel('recent-read', new Date(Date.now() - HOUR));
+	const quietRead = channel('quiet-read', new Date(Date.now() - 3 * DAY));
+	const quietUnread = channel('quiet-unread', new Date(Date.now() - 3 * DAY), 2);
+	const dormantRead = channel('dormant-read', new Date(Date.now() - 40 * DAY));
+
+	const channels = [recentRead, quietRead, quietUnread, dormantRead];
+
+	const renderChannels = ({
+		activityFilter,
+		collapsedGroups = [],
+		groupsShowingInactive,
+		isEnterprise = true,
+	}: {
+		activityFilter: SidebarCategoryActivityFilter;
+		collapsedGroups?: string[];
+		groupsShowingInactive?: string[];
+		isEnterprise?: boolean;
+	}) =>
+		renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
+			wrapper: getWrapperSettings({
+				rooms: channels,
+				sidebarGroupByType: true,
+				isEnterprise,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilter }],
+			}).build(),
+		});
+
+	const channelsGroupOf = (groups: SidebarRoomListGroup[]) => groups.find((group) => group.key === 'Channels');
+	// Sorted, so the assertions do not depend on the sidebar sort preference.
+	const namesOf = (group?: SidebarRoomListGroup) => group?.rooms.map((room) => room.name).sort();
+
+	it('hides read rooms with no activity inside the window, keeping unread ones', async () => {
+		const { result } = renderChannels({ activityFilter: '1d' });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(2);
+	});
+
+	it('widens with the window', async () => {
+		const { result } = renderChannels({ activityFilter: '7d' });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('7d'));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(1);
+	});
+
+	it('lists every room while the group is showing its inactive ones, still counting them', async () => {
+		const { result } = renderChannels({ activityFilter: '1d', groupsShowingInactive: ['Channels'] });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toHaveLength(channels.length);
+		expect(group?.inactiveCount).toBe(2);
+		expect(group?.showingInactive).toBe(true);
+	});
+
+	it('keeps the open room listed even when it is inactive', async () => {
+		mockOpenedRoom = quietRead.rid;
+		const { result } = renderChannels({ activityFilter: '1d' });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(1);
+	});
+
+	it('leaves a collapsed group to its own rules', async () => {
+		mockOpenedRoom = dormantRead.rid;
+		const { result } = renderChannels({ activityFilter: '1d', collapsedGroups: ['Channels'] });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilter).toBe('1d'));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['dormant-read']);
+		expect(group?.inactiveCount).toBe(0);
+	});
+
+	it('does nothing without the license module', () => {
+		const { result } = renderChannels({ activityFilter: '1d', isEnterprise: false });
+
+		const group = channelsGroupOf(result.current.groups);
+		expect(group?.activityFilter).toBeUndefined();
+		expect(namesOf(group)).toHaveLength(channels.length);
+		expect(group?.inactiveCount).toBe(0);
 	});
 });
