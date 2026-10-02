@@ -62,26 +62,13 @@ test.describe('Messaging', () => {
 			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
 		});
 
-		test('should open the user card from the message author name with the keyboard', async ({ page }) => {
-			await test.step('open the user card with Space', async () => {
-				await page.keyboard.press('Shift+Tab');
-				await page.keyboard.press('ArrowUp');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Space');
-				await channelPage.userCard.waitForDisplay();
-			});
+		test('should open the user info from the message author name with the keyboard', async ({ page }) => {
+			await page.keyboard.press('Shift+Tab');
+			await page.keyboard.press('ArrowUp');
+			await page.keyboard.press('Tab');
+			await page.keyboard.press('Space');
 
-			await test.step('close the user card with Esc', async () => {
-				await page.keyboard.press('Escape');
-				await channelPage.userCard.waitForDismissal();
-			});
-
-			await test.step('with focus restored, reopen the user card', async () => {
-				await page.keyboard.press('Space');
-				await channelPage.userCard.waitForDisplay();
-				await page.keyboard.press('Escape');
-				await channelPage.userCard.waitForDismissal();
-			});
+			await channelPage.tabs.userInfo.waitForDisplay();
 		});
 
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {

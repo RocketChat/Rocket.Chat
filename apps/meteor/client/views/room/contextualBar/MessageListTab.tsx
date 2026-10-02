@@ -65,7 +65,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
-								<MessageListProvider hoverUserCardEnabled={false}>
+								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 										<VirtualizedScrollbars>
 											<Virtuoso

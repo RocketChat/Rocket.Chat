@@ -36,7 +36,6 @@ import {
 	useMessageListShowUsername,
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
-	useMessageListHoverUserCardEnabled,
 } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
@@ -49,7 +48,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { openUserCard, openUserInfo } = useUserCard();
-	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -65,7 +63,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
 	const buttonProps = useButtonPattern(() => openUserInfo(user.username));
-	const openUserCardOnHover = hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined;
+	const openUserCardOnHover = (e: MouseEvent) => openUserCard(e, user.username);
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;

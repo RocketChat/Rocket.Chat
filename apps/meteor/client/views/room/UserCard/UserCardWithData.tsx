@@ -50,7 +50,6 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			nickname,
 			avatarETag,
 			freeSwitchExtension,
-			federated,
 		} = data?.user || {};
 
 		return {
@@ -65,7 +64,6 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
-			federated,
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
@@ -76,13 +74,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: {
-			_id: user._id ?? '',
-			username: user.username,
-			name: user.name,
-			freeSwitchExtension: user.freeSwitchExtension,
-			federated: user.federated,
-		},
+		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
 		size: 3,
 		isMember,
 		reload: refetch,

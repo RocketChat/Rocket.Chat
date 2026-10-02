@@ -21,7 +21,6 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
-	hoverUserCardEnabled: boolean;
 	highlights?: {
 		highlight: string;
 		regex: RegExp;
@@ -62,7 +61,6 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
-	hoverUserCardEnabled: true,
 	showColors: false,
 	username: undefined,
 	apiEmbedEnabled: false,
@@ -89,8 +87,6 @@ export const useMessageDateFormatter: MessageListContextValue['useMessageDateFor
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
-export const useMessageListHoverUserCardEnabled = (): MessageListContextValue['hoverUserCardEnabled'] =>
-	useContext(MessageListContext).hoverUserCardEnabled;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;

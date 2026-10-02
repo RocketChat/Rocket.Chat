@@ -10,11 +10,7 @@ import { useCallback, memo, useMemo } from 'react';
 import { normalizeUsername } from '../../lib/utils/normalizeUsername';
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import {
-	useMessageListHighlights,
-	useMessageListShowRealName,
-	useMessageListHoverUserCardEnabled,
-} from './message/list/MessageListContext';
+import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 export type GazzodownTextProps = {
@@ -34,7 +30,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const highlights = useMessageListHighlights();
 	const { openUserCard, openUserInfo } = useUserCard();
-	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -96,7 +91,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const onUserMentionHover = useCallback(
 		({ username }: UserMention) => {
-			if (!username || !hoverUserCardEnabled) {
+			if (!username) {
 				return;
 			}
 
@@ -105,7 +100,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				openUserCard(event, username);
 			};
 		},
-		[openUserCard, hoverUserCardEnabled],
+		[openUserCard],
 	);
 
 	const goToRoom = useGoToRoom();

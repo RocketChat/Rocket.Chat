@@ -109,7 +109,6 @@ const RoomMembersItem = ({
 						rid={rid}
 						_id={_id}
 						freeSwitchExtension={freeSwitchExtension}
-						federated={federated}
 						isInvited={isInvited}
 						reload={reload}
 					/>

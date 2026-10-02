@@ -376,7 +376,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
-				<MessageListProvider hoverUserCardEnabled={false}>
+				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
 						shift={isPrependRef.current}
