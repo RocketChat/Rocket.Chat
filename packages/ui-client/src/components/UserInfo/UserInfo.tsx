@@ -137,7 +137,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{utcOffset && Number.isInteger(utcOffset) && (
+					{typeof utcOffset === 'number' && Number.isFinite(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
 							<InfoPanelText>
@@ -155,7 +155,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && canViewAllInfo && (
+					{Number.isFinite(utcOffset) && canViewAllInfo && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Last_login')}</InfoPanelLabel>
 							<InfoPanelText>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanelText>
