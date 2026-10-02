@@ -1,4 +1,4 @@
-import { Box, Icon, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import { Icon, Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
@@ -23,26 +23,22 @@ const CallParticipantItem = (props: CallParticipantItemProps) => {
 	const name = participant.displayName || t('External_participant');
 
 	return (
-		<Option>
-			<OptionAvatar>
+		<Item role='listitem' size='medium' inset='lg'>
+			<ItemMedia>
 				{/* No avatar to show, and a blank circle would read as one still loading. */}
-				<Box display='flex' alignItems='center' justifyContent='center' size='x28' color='hint'>
-					<Icon name='user-rounded' size='x20' />
-				</Box>
-			</OptionAvatar>
-			<OptionContent>
-				<Box display='flex' alignItems='center'>
-					<Box withTruncatedText>{name}</Box>
+				<Icon name='user-rounded' size='x20' color='hint' />
+			</ItemMedia>
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>{name}</ItemTitle>
 					<CallParticipantStatus participant={participant} />
-				</Box>
-				<Box fontScale='c1' color='hint'>
-					{t('External_participant')}
-				</Box>
-			</OptionContent>
-			<OptionColumn>
+				</ItemRow>
+				<ItemDescription>{t('External_participant')}</ItemDescription>
+			</ItemContent>
+			<ItemActions>
 				<CallParticipantControls name={name} {...props} />
-			</OptionColumn>
-		</Option>
+			</ItemActions>
+		</Item>
 	);
 };
 
