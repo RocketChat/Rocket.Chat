@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix src"
+		"lint:fix": "eslint --fix src",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@actions/core": "^3.0.1",

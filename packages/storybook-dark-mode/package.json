@@ -23,7 +23,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && tsc -p tsconfig.build.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@storybook/global": "~5.0.0",

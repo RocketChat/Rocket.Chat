@@ -17,7 +17,8 @@
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"test": "echo \"no tests\" && exit 1"
+		"test": "echo \"no tests\" && exit 1",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/icons": "^0.50.0",

@@ -16,7 +16,8 @@
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",

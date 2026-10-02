@@ -28,7 +28,8 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/node": "~24.13.6",
