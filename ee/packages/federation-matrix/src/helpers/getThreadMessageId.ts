@@ -1,9 +1,6 @@
 import { type EventID } from '@rocket.chat/federation-sdk';
-import { Logger } from '@rocket.chat/logger';
+import { logger } from '../logger';
 import { Messages } from '@rocket.chat/models';
-
-// TODO replace by a reusable logger
-const logger = new Logger('federation-matrix:message');
 
 export async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
