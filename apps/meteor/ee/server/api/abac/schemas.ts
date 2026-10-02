@@ -151,6 +151,31 @@ const GetAbacConfigResponse = {
 
 export const GETAbacConfigResponseSchema = ajv.compile<{ bannersConfig: string; requiredAttributes: string[] }>(GetAbacConfigResponse);
 
+const GetAbacAssignableAttributesResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		attributes: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: { type: 'string', minLength: 1 },
+					values: { type: 'array', items: { type: 'string', minLength: 1 }, minItems: 1 },
+				},
+				required: ['key', 'values'],
+				additionalProperties: false,
+			},
+		},
+	},
+	required: ['attributes'],
+	additionalProperties: false,
+};
+
+export const GETAbacAssignableAttributesResponseSchema = ajv.compile<{ attributes: { key: string; values: string[] }[] }>(
+	GetAbacAssignableAttributesResponse,
+);
+
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {

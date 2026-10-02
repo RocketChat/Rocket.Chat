@@ -19,7 +19,7 @@ const preview = (over: Partial<IAbacMembershipPreview> = {}): IAbacMembershipPre
 	...over,
 });
 
-const renderPreview = (data?: IAbacMembershipPreview, props: { isPending?: boolean; isError?: boolean } = {}) =>
+const renderPreview = (data?: IAbacMembershipPreview, props: { isPending?: boolean; isError?: boolean; error?: unknown } = {}) =>
 	render(<AbacMembershipPreview data={data} {...props} />, { wrapper: appRoot });
 
 describe('AbacMembershipPreview', () => {
@@ -71,6 +71,15 @@ describe('AbacMembershipPreview', () => {
 
 		expect(screen.getByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
 		expect(screen.queryByRole('region')).not.toBeInTheDocument();
+	});
+
+	it('should say why the preview was refused when the server names the reason', () => {
+		render(<AbacMembershipPreview isError error={{ errorType: 'error-abac-preview-too-many-members' }} />, {
+			wrapper: mockAppRoot().withTranslations('en', 'core', { 'error-abac-preview-too-many-members': 'Too many members' }).build(),
+		});
+
+		expect(screen.getByText('Too many members')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
 	});
 
 	it('should have no accessibility violations', async () => {

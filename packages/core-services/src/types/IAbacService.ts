@@ -49,6 +49,7 @@ export interface IAbacService {
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	validateCreationAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<AbacCreationAttributesResult>;
+	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
 	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
