@@ -10112,6 +10112,7 @@ __metadata:
     "@types/react-dom": "npm:~19.2.7"
     eslint: "npm:~10.7.0"
     jest: "npm:~30.2.0"
+    prettier: "npm:~3.9.9"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     sharp: "npm:~0.35.5"

@@ -1,10 +1,12 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "outDir": "./dist/cjs"
-  },
-  "exclude": ["./**/*.spec.*", "jest.config.*"]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"outDir": "./dist/cjs",
+		"declaration": false,
+		"declarationMap": false
+	},
+	"exclude": ["./**/*.spec.*", "jest.config.*"]
 }

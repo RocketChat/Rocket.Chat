@@ -35,10 +35,10 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/styled": "~0.34.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@testing-library/dom": "~10.4.2",
@@ -47,6 +47,7 @@
 		"@types/react-dom": "~19.2.7",
 		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
+		"prettier": "~3.9.9",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"sharp": "~0.35.5",
@@ -58,5 +59,8 @@
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }
