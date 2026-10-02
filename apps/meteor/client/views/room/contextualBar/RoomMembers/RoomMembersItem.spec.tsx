@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import RoomMembersItem from './RoomMembersItem';
 
@@ -33,9 +34,13 @@ beforeEach(() => {
 });
 
 describe('keyboard navigation', () => {
-	it('should be focusable via keyboard', () => {
+	it('should be focusable via keyboard', async () => {
+		const user = userEvent.setup();
 		render(<RoomMembersItem {...defaultProps} />);
-		expect(screen.getByRole('listitem', { name: 'johndoe' })).toHaveAttribute('tabindex', '0');
+
+		await user.tab();
+
+		expect(screen.getByRole('button', { name: 'johndoe' })).toHaveFocus();
 	});
 
 	it('should call onClickView when Enter is pressed while focused', async () => {
@@ -71,13 +76,43 @@ describe('keyboard navigation', () => {
 		expect(screen.getByRole('button', { name: 'Actions' })).toBeInTheDocument();
 	});
 
-	it('should apply the focus style when focused via keyboard', async () => {
+	it('should keep the actions menu outside the member button', async () => {
 		const user = userEvent.setup();
 		render(<RoomMembersItem {...defaultProps} />);
 
 		await user.tab();
 
-		expect(screen.getByRole('listitem', { name: /johndoe/ })).toHaveClass('rcx-option--focus');
-		expect(screen.getByRole('listitem', { name: /johndoe/ })).toHaveFocus();
+		expect(screen.getByRole('button', { name: 'johndoe' })).not.toContainElement(screen.getByRole('button', { name: 'Actions' }));
+	});
+});
+
+describe('user info', () => {
+	it('should pass the member id to onClickView', async () => {
+		const user = userEvent.setup();
+		const onClickView = jest.fn((e) => e.currentTarget.dataset.userid);
+		render(<RoomMembersItem {...defaultProps} onClickView={onClickView} />);
+
+		await user.click(screen.getByRole('button', { name: 'johndoe' }));
+
+		expect(onClickView).toHaveReturnedWith('user1');
+	});
+
+	it('should render as a list item', () => {
+		render(<RoomMembersItem {...defaultProps} />);
+
+		expect(screen.getByRole('listitem')).toHaveAttribute('data-username', 'johndoe');
+	});
+});
+
+describe('accessibility', () => {
+	it('should have no a11y violations inside the members list', async () => {
+		const { container } = render(
+			<div role='list' aria-label='Members'>
+				<RoomMembersItem {...defaultProps} />
+			</div>,
+		);
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
 	});
 });
