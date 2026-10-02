@@ -4,7 +4,7 @@ import { Box, Popover } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useHoverCardDismissal } from './useHoverCardDismissal';
 import { useRoom } from '../contexts/RoomContext';
@@ -109,83 +109,27 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	});
 
 	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
-		const trigger = (e.currentTarget ?? e.target) as Element | null;
-
-		clearTimers();
-
-		const open = () => {
-			triggerRef.current = trigger;
-			state.open();
-			setUserCardData({
-				username,
-				rid: room._id,
-				onOpenUserInfo: () => openUserInfo(username),
-				onClose: dismissUserCard,
-			});
-		};
-
-		// A click opens right away; hover waits out the intent delay.
-		if (e.type === 'click') {
-			open();
-			return;
-		}
-
-		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
-		openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
+		triggerRef.current = e.currentTarget ?? e.target;
+		state.open();
+		setUserCardData({
+			username,
+			rid: room._id,
+			onOpenUserInfo: () => openUserInfo(username),
+			onClose: closeUserCard,
+		});
 	});
 
-	// Wires the document listeners for as long as the card is mounted.
-	const handleCardRef = useCallback(
-		(card: HTMLElement | null) => {
-			if (!card) {
-				return;
-			}
+	const isOpen = state.isOpen && !!userCardData;
 
-			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
-			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
-			// trigger, or a menu spawned from it (portaled outside the card's rect).
-			const isPointerOverCard = (x: number, y: number) =>
-				isPointInside(card, x, y) ||
-				isPointInside(triggerRef.current, x, y) ||
-				Array.from(document.querySelectorAll('[role="menu"]')).some((menu) => isPointInside(menu, x, y));
-
-			const handleMouseMove = (e: MouseEvent) => {
-				if (isPointerOverCard(e.clientX, e.clientY)) {
-					clearCloseTimer();
-					return;
-				}
-
-				if (closeTimerRef.current === undefined) {
-					closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
-				}
-			};
-
-			const handleDocumentLeave = () => {
-				clearCloseTimer();
-				closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
-			};
-
-			// The card never holds focus, so react-aria's focus-scoped Escape never fires (WCAG 1.4.13). Captured and
-			// stopped here so it doesn't also close an underlying contextual bar; an open menu owns Escape instead.
-			const handleKeyDown = (e: KeyboardEvent) => {
-				if (e.key !== 'Escape' || document.querySelector('[role="menu"]')) {
-					return;
-				}
-				e.stopImmediatePropagation();
-				dismissUserCard();
-			};
-
-			document.addEventListener('mousemove', handleMouseMove);
-			document.addEventListener('keydown', handleKeyDown, { capture: true });
-			document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
-			return () => {
-				document.removeEventListener('mousemove', handleMouseMove);
-				document.removeEventListener('keydown', handleKeyDown, { capture: true });
-				document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
-			};
-		},
-		[clearCloseTimer, closeUserCard, dismissUserCard],
-	);
+	// Only the trigger that opened the card is expanded; the shared triggerProps can't carry this state.
+	useEffect(() => {
+		const trigger = triggerRef.current;
+		if (!isOpen || !trigger) {
+			return;
+		}
+		trigger.setAttribute('aria-expanded', 'true');
+		return () => trigger.removeAttribute('aria-expanded');
+	}, [isOpen, userCardData]);
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
@@ -201,23 +145,12 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{state.isOpen && userCardData && (
-				// Non-modal: a modal popover would aria-hide the page and lock scroll for a card that opens on hover.
-				// keyed by user so handing the card to another author repositions it over the new trigger
-				<Popover
-					key={userCardData.username}
-					isNonModal
-					placement='top left'
-					offset={getPopoverOffset()}
-					triggerRef={triggerRef}
-					state={state}
-				>
-					<Box ref={handleCardRef} tabIndex={-1}>
-						<Suspense fallback={null}>
-							<UserCard {...userCardData} />
-						</Suspense>
-					</Box>
-				</Popover>
+			{isOpen && userCardData && (
+				<Suspense fallback={null}>
+					<Popover placement='top left' triggerRef={triggerRef} state={state}>
+						<UserCard {...userCardData} />
+					</Popover>
+				</Suspense>
 			)}
 		</UserCardContext.Provider>
 	);
