@@ -1,0 +1,30 @@
+ee/packages/xmpp-server/docs/architecture.md
+  s_b63eca7aac6d96::t_b9f2bf1052dfb9 302
+ee/packages/xmpp-server/docs/operations.md
+  s_b63eca7aac6d96::t_2178f790269eac 124
+  s_b63eca7aac6d96::t_e0444a0820ff79 184
+  s_b63eca7aac6d96::t_d078bd7789cbfa 185
+  s_b63eca7aac6d96::t_f84b7a5d6a8fb8 11,15-48,50-55,57-63,68,77-80,85-93,95-98,102-104,106-110,125-127,129-137,143-146,148-149,153,160-163,166-173,179-183,186,198-201,210-217,220-227,234-235,238-240,243-248,251-273,288-289,304
+  s_b63eca7aac6d96::t_d29471a23a3282 249-250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "afd136e0fc677a6dc961bf314ace563f12bd88e4",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_b63eca7aac6d96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "329ccefa-21e0-486e-ad7b-f9fb57bf8e11",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
