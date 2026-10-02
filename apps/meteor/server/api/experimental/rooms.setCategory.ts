@@ -53,6 +53,7 @@ API.experimental.post(
 		const { roomIds, category } = this.bodyParams;
 		const { userId } = this;
 
+		// TODO: implement api helper/api to enforce license 
 		if (!License.hasValidLicense()) {
 			return API.experimental.failure('This is an enterprise feature [error-action-not-allowed]', 'error-action-not-allowed');
 		}
