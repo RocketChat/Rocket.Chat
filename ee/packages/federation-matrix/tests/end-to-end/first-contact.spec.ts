@@ -9,7 +9,12 @@ import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/r
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
-const remoteUser = federationConfig.hs1.firstContactUser;
+const remoteUserName = `fed-first-contact-remote-${Date.now()}`;
+const remoteUser = {
+	username: remoteUserName,
+	password: 'random',
+	matrixUserId: `@${remoteUserName}:${federationConfig.hs1.domain}`,
+};
 
 const localUserName = `fed-first-contact-user-${Date.now()}`;
 const localUser = {
@@ -21,18 +26,18 @@ const localUser = {
 /**
  * Every other federation spec reuses Synapse users that earlier specs have already pulled into
  * the local database, so the membership handlers always find a complete user document and the
- * creation path is never observed. This spec reserves a Synapse user nobody else touches and lets
- * that user reach in.
+ * creation path is never observed. This spec registers a Synapse user nobody has seen yet and lets
+ * that user reach in. The user is registered fresh on every run because federated users cannot be
+ * deleted locally, so a fixed one would already be known on a rerun against warm containers.
  *
  * The user is therefore created by the inbound invite itself, which is the one code path whose
  * result is consumed rather than discarded.
  */
-// TODO: register a fresh Synapse user per run so reruns on persistent containers still test first contact
-// Federated users cannot be deleted locally, so a rerun against warm containers finds this user already known.
 (IS_EE ? describe : describe.skip)('Federation first contact', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1InviteeRequestConfig: IRequestConfig;
 	let rc1Invitee: IUser;
+	let hs1AdminApp: SynapseClient;
 	let hs1FirstContactApp: SynapseClient;
 
 	beforeAll(async () => {
@@ -54,12 +59,17 @@ const localUser = {
 
 		rc1InviteeRequestConfig = await getRequestConfig(federationConfig.rc1.url, localUser.username, localUser.password);
 
+		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
+		await hs1AdminApp.initialize();
+		await hs1AdminApp.registerUser(remoteUser.matrixUserId, remoteUser.password);
+
 		hs1FirstContactApp = new SynapseClient(federationConfig.hs1.url, remoteUser.username, remoteUser.password);
 		await hs1FirstContactApp.initialize();
 	}, 60000);
 
 	afterAll(async () => {
 		await hs1FirstContactApp?.close();
+		await hs1AdminApp?.close();
 
 		if (rc1Invitee?._id) {
 			await deleteUser(rc1Invitee, {}, rc1AdminRequestConfig);
