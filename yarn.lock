@@ -8388,20 +8388,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/test-utils@npm:1.0.0-beta.3":
-  version: 1.0.0-beta.3
-  resolution: "@react-aria/test-utils@npm:1.0.0-beta.3"
-  dependencies:
-    "@swc/helpers": "npm:^0.5.0"
-  peerDependencies:
-    "@testing-library/react": ^16.0.0
-    "@testing-library/user-event": ^14.0.0
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/1f815713c28c70db4def4d329722dd4ea533dd03d0a4e86192ccc319b2c1af7c94d897992855e9ee3f6ead301a8855aa652c819a9f2e519bb816b542f40f2065
-  languageName: node
-  linkType: hard
-
 "@react-aria/textfield@npm:^3.16.0":
   version: 3.16.0
   resolution: "@react-aria/textfield@npm:3.16.0"
@@ -8718,22 +8704,6 @@ __metadata:
     "@react-pdf/primitives": "npm:^4.3.0"
     "@react-pdf/stylesheet": "npm:^6.2.1"
   checksum: 10/06ee8962012751c0ba48d89cf5c8fba7ad55875d1b27fd098f1bed2fe0f38a77bfed2ae5f9ee9a05cecb492e6e1ce23672fde2152fe3ab023bdf42ac8773f742
-  languageName: node
-  linkType: hard
-
-"@react-spectrum/test-utils@npm:~1.0.0-alpha.8":
-  version: 1.0.0-beta.4
-  resolution: "@react-spectrum/test-utils@npm:1.0.0-beta.4"
-  dependencies:
-    "@react-aria/test-utils": "npm:1.0.0-beta.3"
-    "@swc/helpers": "npm:^0.5.0"
-  peerDependencies:
-    "@testing-library/react": ^16.0.0
-    "@testing-library/user-event": ^14.0.0
-    jest: ^29.5.0
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/fe76cc065c14b03de5d1a333cbad2cb02e3d8235d90d72b28aa960916995dd8d21bc69f0db03dace95ded6161ae006daa19d96468574f9f0d691d00c5057c75f
   languageName: node
   linkType: hard
 
@@ -12209,7 +12179,6 @@ __metadata:
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
     "@playwright/test": "npm:~1.52.0"
-    "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/desktop-api": "workspace:^"

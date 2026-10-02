@@ -28,7 +28,6 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "~1.52.0",
-		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/fuselage": "^0.93.0",
