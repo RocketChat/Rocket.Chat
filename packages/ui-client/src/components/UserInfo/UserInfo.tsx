@@ -166,7 +166,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{typeof utcOffset === 'number' && Number.isInteger(utcOffset) && (
+					{typeof utcOffset === 'number' && Number.isFinite(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
 							<InfoPanelText>
