@@ -66,6 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
+			federated,
 		} = data.user;
 
 		return {
@@ -89,6 +90,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, getRoles]);
 
