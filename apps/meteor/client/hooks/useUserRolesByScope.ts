@@ -23,8 +23,8 @@ export const useUserRolesByScope = (
 		enabled: enabled && !!userId,
 	});
 
-	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!roleIds?.includes(record._id);
-	// the role endpoints only return roles that have a description
+	// roles without a description are not shown, matching what the role endpoints return
+	const belongsTo = (roleIds: IRole['_id'][] | undefined) => (record: IRole) => !!record.description && !!roleIds?.includes(record._id);
 	const label = ({ description }: IRole) => description;
 
 	const workspaceRoles = Roles.use(useShallow((state) => state.filter(belongsTo(userRoleIds)).map(label)));
