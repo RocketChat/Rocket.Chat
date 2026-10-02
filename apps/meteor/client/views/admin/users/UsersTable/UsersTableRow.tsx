@@ -7,6 +7,7 @@ import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useStore } from 'zustand';
 
 import { UserStatus } from '../../../../components/UserStatus';
 import { Roles } from '../../../../stores';
@@ -67,7 +68,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 		}
 	}, [active, lastLogin, t, type, federated]);
 
-	const roleNames = Roles.use((state) => {
+	const roleNames = useStore(Roles.use, (state) => {
 		return roles
 			?.map((roleId) => state.get(roleId)?.name)
 			.filter((roleName): roleName is string => !!roleName)

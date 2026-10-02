@@ -1,4 +1,5 @@
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useStore } from 'zustand';
 
 import { Roles } from '../../stores';
 
@@ -9,7 +10,7 @@ export const useRequire2faSetup = () => {
 	const totp2faEnabled = useSetting('Accounts_TwoFactorAuthentication_By_TOTP_Enabled', false);
 	const is2FAEnabled = tfaEnabled && (email2faEnabled || totp2faEnabled);
 
-	return Roles.use((state) => {
+	return useStore(Roles.use, (state) => {
 		if (!user || !is2FAEnabled) {
 			return false;
 		}

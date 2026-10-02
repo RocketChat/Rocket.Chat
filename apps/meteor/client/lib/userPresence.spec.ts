@@ -27,9 +27,19 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useMethod: (method: string) => (method === 'UserPresence:online' ? goOnline : goAway),
 }));
 
-jest.mock('../stores', () => ({
-	Users: { use: (selector: (state: { store: unknown }) => unknown) => selector({ store: storeUser }) },
-}));
+jest.mock('../stores', () => {
+	const { create } = jest.requireActual('zustand');
+	return {
+		// The getter defers reading storeUser until the store is used, after the module-level mock is defined.
+		Users: {
+			use: create(() => ({
+				get store() {
+					return storeUser;
+				},
+			})),
+		},
+	};
+});
 
 describe('UserPresence', () => {
 	let userPresence: UserPresence;

@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Filter, ObjectId } from 'mongodb';
 import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
+import { useStore } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
@@ -57,9 +58,9 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps) => {
-	const userId = userIdStore();
+	const userId = useStore(userIdStore);
 
-	const user = Users.use((state) => {
+	const user = useStore(Users.use, (state) => {
 		if (!userId) return null;
 		return state.get(userId) ?? null;
 	});

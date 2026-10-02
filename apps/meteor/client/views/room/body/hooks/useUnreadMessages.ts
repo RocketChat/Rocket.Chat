@@ -2,6 +2,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useStore } from 'zustand';
 
 import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomHistoryManager, useRoomHistoryState } from '../../../../lib/RoomHistoryManager';
@@ -51,8 +52,8 @@ export const useHandleUnread = (
 
 	const chat = useChat();
 
-	const findFirstMessage = Messages.use((state) => state.findFirst);
-	const filterMessages = Messages.use((state) => state.filter);
+	const findFirstMessage = useStore(Messages.use, (state) => state.findFirst);
+	const filterMessages = useStore(Messages.use, (state) => state.filter);
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');

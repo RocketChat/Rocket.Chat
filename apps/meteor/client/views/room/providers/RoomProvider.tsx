@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { LayoutContext, useLayout, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
+import { useStore } from 'zustand';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
@@ -45,11 +46,11 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
 	// the setting on the panel would have grown the full room header.
 	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
-	const room = Rooms.use((state) => state.get(rid));
+	const room = useStore(Rooms.use, (state) => state.get(rid));
 
 	const messageJumpParam = useSearchParameter('msg');
 
-	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
+	const subscritionFromLocal = useStore(Subscriptions.use, (state) => state.find((record) => record.rid === rid));
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 
