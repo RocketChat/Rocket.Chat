@@ -40,7 +40,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -52,7 +52,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern((e) => (e.type === 'keydown' ? openUserCard(e, user.username) : openUserInfo(user.username)));
+	const buttonProps = useButtonPattern(() => openUserInfo(user.username));
 	const openUserCardOnHover = hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, user.username) : undefined;
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -99,7 +99,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							...buttonProps,
 							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
-							...triggerProps,
 						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>

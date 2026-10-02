@@ -33,12 +33,9 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
-	// Enter/Space opens the card (focused, so its actions are reachable); a click opens the full profile.
-	const buttonProps = useButtonPattern((e) =>
-		e.type === 'keydown' ? openUserCard(e, message.u.username) : openUserInfo(message.u.username),
-	);
+	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -56,7 +53,6 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				...buttonProps,
 				style: { cursor: 'pointer' },
 				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username) }),
-				...triggerProps,
 			};
 
 	return (
