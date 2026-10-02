@@ -73,8 +73,8 @@ function getCountryFlagClass(unicode: string): string | undefined {
 	return `emoji--flag _${code}`;
 }
 
-function renderNativeEmoji(emoji: EmojiEntry, title: string): string {
-	const flagClass = getCountryFlagClass(emoji.unicode);
+function renderNativeEmoji(emoji: EmojiEntry, title: string, useFlagSprites: boolean): string {
+	const flagClass = useFlagSprites ? getCountryFlagClass(emoji.unicode) : undefined;
 	const className = flagClass ? `emoji ${flagClass}` : 'emoji';
 	return `<span class="${className}" title="${title}">${emoji.unicode}</span>`;
 }
@@ -107,7 +107,7 @@ function renderAsciiEmoji(text: string): string {
 	});
 }
 
-function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
+function renderEmoji(text: string, emojiPackages: EmojiPackages, useFlagSprites: boolean): string {
 	const { emojiList } = getEmojiData();
 	const unicodeMap = getUnicodeToShortcodeMap();
 	const pattern = getEmojiRegex();
@@ -121,7 +121,7 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 			const key = `:${shortcodeName}:`;
 			const emoji = emojiList[key] as EmojiEntry | undefined;
 			if (emoji?.unicode) {
-				return renderNativeEmoji(emoji, shortcodeGroup);
+				return renderNativeEmoji(emoji, shortcodeGroup, useFlagSprites);
 			}
 
 			// Fallback to legacy emojione shortcodes for backward compatibility
@@ -139,7 +139,7 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 			if (shortcode) {
 				const emoji = emojiList[shortcode] as EmojiEntry | undefined;
 				if (emoji?.unicode) {
-					return renderNativeEmoji({ ...emoji, unicode: unicodeGroup }, shortcode);
+					return renderNativeEmoji({ ...emoji, unicode: unicodeGroup }, shortcode, useFlagSprites);
 				}
 			}
 		}
@@ -150,15 +150,15 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 	return emojiPackages.packages.native?.ascii ? renderAsciiEmoji(rendered) : rendered;
 }
 
-function renderPicker(emojiToRender: string): string | undefined {
+function renderPicker(emojiToRender: string, useFlagSprites: boolean): string | undefined {
 	const { emojiList } = getEmojiData();
 	const emoji = emojiList[emojiToRender] as EmojiEntry | undefined;
 	if (!emoji?.unicode) return undefined;
 
-	return renderNativeEmoji(emoji, emojiToRender);
+	return renderNativeEmoji(emoji, emojiToRender, useFlagSprites);
 }
 
-export const getEmojiConfig = (emojiPackages: EmojiPackages) => {
+export const getEmojiConfig = (emojiPackages: EmojiPackages, { useFlagSprites = false }: { useFlagSprites?: boolean } = {}) => {
 	const { emojiList, emojisByCategory, toneList } = getEmojiData();
 
 	return {
@@ -166,8 +166,8 @@ export const getEmojiConfig = (emojiPackages: EmojiPackages) => {
 		emojisByCategory,
 		emojiCategories,
 		toneList,
-		render: (text: string) => renderEmoji(text, emojiPackages),
-		renderPicker,
+		render: (text: string) => renderEmoji(text, emojiPackages, useFlagSprites),
+		renderPicker: (emojiToRender: string) => renderPicker(emojiToRender, useFlagSprites),
 		sprites: false,
 		shortnameToUnicode,
 	};

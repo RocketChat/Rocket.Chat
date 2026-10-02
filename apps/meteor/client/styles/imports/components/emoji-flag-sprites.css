@@ -1,7 +1,7 @@
 /* Country flag sprite positions */
 /* stylelint-disable */
 
-.emoji--flag {
+html.emoji-flag-sprites-loaded .emoji--flag {
 	background-image: url('/packages/rocketchat/emoji/flags-sprites.png');
 	background-repeat: no-repeat;
 	background-size: 1700% 1600%;

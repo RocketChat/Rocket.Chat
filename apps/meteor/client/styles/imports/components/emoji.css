@@ -27,8 +27,6 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		display: inline-block;
 		width: 1em;
 		height: 1em;
-		overflow: hidden;
-		text-indent: 100%;
 		white-space: nowrap;
 	}
 
@@ -47,6 +45,12 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		background-repeat: no-repeat;
 		background-size: contain;
 	}
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+html.emoji-flag-sprites-loaded .emoji--flag {
+	overflow: hidden;
+	text-indent: 100%;
 }
 
 /* emoji picker */
