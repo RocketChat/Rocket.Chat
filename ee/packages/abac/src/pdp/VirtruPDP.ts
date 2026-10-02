@@ -225,7 +225,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return { granted: false };
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
+	async checkUsernamesMatchAttributes(
+		usernames: string[],
+		attributes: IAbacAttributeDefinition[],
+		object: Pick<IRoom, '_id'>,
+	): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
 		}

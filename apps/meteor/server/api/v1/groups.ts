@@ -41,6 +41,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -60,6 +61,7 @@ import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
 import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
+import { settings } from '../../settings';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
@@ -157,6 +159,17 @@ const groupResponseSchema = ajv.compile<{ group: IRoom }>({
 	type: 'object',
 	properties: {
 		group: { $ref: '#/components/schemas/IRoom' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['group', 'success'],
+	additionalProperties: false,
+});
+
+const groupCreateResponseSchema = ajv.compile<{ group: IRoom; skippedMembers?: string[] }>({
+	type: 'object',
+	properties: {
+		group: { $ref: '#/components/schemas/IRoom' },
+		skippedMembers: { type: 'array', items: { type: 'string' } },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['group', 'success'],
@@ -470,7 +483,7 @@ API.v1.post(
 		authRequired: true,
 		body: isGroupsCreateProps,
 		response: {
-			200: groupResponseSchema,
+			200: groupCreateResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
@@ -483,6 +496,10 @@ API.v1.post(
 
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
+		if (this.bodyParams.abacAttributes && !settings.get('ABAC_Enabled')) {
+			return API.v1.failure('error-abac-not-enabled');
+		}
+
 		try {
 			const result = await createPrivateGroupMethod(
 				this.user,
@@ -492,6 +509,7 @@ API.v1.post(
 				this.bodyParams.customFields,
 				this.bodyParams.extraData,
 				this.bodyParams.excludeSelf ?? false,
+				toAbacAttributeDefinitions(this.bodyParams.abacAttributes),
 			);
 
 			const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
@@ -501,6 +519,7 @@ API.v1.post(
 
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
+				...(result.skippedMembers && { skippedMembers: result.skippedMembers }),
 			});
 		} catch (error: unknown) {
 			if (isMeteorError(error) && error.reason === 'error-not-allowed') {

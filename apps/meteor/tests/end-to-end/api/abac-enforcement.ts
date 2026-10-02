@@ -246,8 +246,11 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('blocks discussion creation (D7)', async () => {
+			// A private parent without attributes cannot itself be created under enforcement.
+			await setEnforcement(false);
 			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
 			const parentId = parent.body.group._id;
+			await setEnforcement(true);
 
 			await request
 				.post(api('rooms.createDiscussion'))
@@ -263,20 +266,16 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(true);
 		});
 
-		it('still allows private channel creation', async () => {
-			// Enforcement does not require attributes at creation, only afterwards, so the channel is
-			// created and then locked until they are assigned.
-			const res = await request
+		it('blocks a private channel that would be born locked', async () => {
+			await request
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `abac-private-${Date.now()}` })
-				.expect(200);
-
-			const roomId = res.body.group._id;
-
-			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId });
-			await setEnforcement(true);
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-abac-attributes-required');
+				});
 		});
 	});
 
