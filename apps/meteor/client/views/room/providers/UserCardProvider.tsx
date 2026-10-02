@@ -36,38 +36,17 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	// Only a click-opened card is announced on its trigger; a hover card is a pointer-only preview.
 	const [openedByClick, setOpenedByClick] = useState(false);
 
-	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-	const clearCloseTimer = useCallback(() => {
-		clearTimeout(closeTimerRef.current);
-		closeTimerRef.current = undefined;
-	}, []);
-
-	const clearTimers = useCallback(() => {
-		clearTimeout(openTimerRef.current);
-		openTimerRef.current = undefined;
-		clearCloseTimer();
-	}, [clearCloseTimer]);
-
-	const closingOnHoverOutRef = useRef(false);
-
-	// Every dismissal funnels through here. Closing because the pointer left keeps a pending open alive, so moving
-	// straight from an open card to another author's name still shows the next card; any other dismissal (an outside
-	// click, for instance) cancels it.
-	const handleOpenChange = useStableCallback((open: boolean) => {
-		if (open) return;
-		if (closingOnHoverOutRef.current) {
-			clearCloseTimer();
-		} else {
-			clearTimers();
-		}
-		setUserCardData(null);
+	// Hover intent: opens after a delay and lingers briefly after the pointer leaves. Once a card has been shown, the
+	// next one opens right away, so moving from one author to another hands the card over.
+	const state = useTooltipTriggerState({
+		delay: HOVER_OPEN_DELAY,
+		closeDelay: HOVER_CLOSE_DELAY,
+		onOpenChange: (open) => {
+			if (!open) {
+				setUserCardData(null);
+			}
+		},
 	});
-
-	const state = useOverlayTriggerState({ onOpenChange: handleOpenChange });
-
-	useEffect(() => clearTimers, [clearTimers]);
 
 	const { openTab } = useRoomToolbox();
 
@@ -87,54 +66,39 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
-	const closeUserCard = useStableCallback(() => {
-		closingOnHoverOutRef.current = true;
-		state.close();
-		closingOnHoverOutRef.current = false;
-	});
+	// The pointer left: close after the linger delay, or cancel an open still waiting on the hover delay.
+	const closeUserCard = useStableCallback(() => state.close());
 
-	// The user asked for no card (Escape, the card's own close, an action that closes it): a pending hover
-	// open must not bring one back a moment later.
-	const dismissUserCard = useStableCallback(() => {
-		clearTimers();
-		state.close();
-	});
+	// The pointer is back on the card or its trigger: keep it open.
+	const keepUserCardOpen = useStableCallback(() => state.open(true));
+
+	// The user asked for no card (Escape, the card's own close, an action, a scroll): close now.
+	const dismissUserCard = useStableCallback(() => state.close(true));
 
 	const handleOpenUserInfo = useStableCallback((username: string) => {
 		dismissUserCard();
 		openUserInfo(username);
 	});
 
-	const handleTriggerLeave = useStableCallback(() => {
-		clearTimeout(openTimerRef.current);
-		openTimerRef.current = undefined;
-	});
-
 	const handleSetUserCard = useStableCallback((e: UIEvent, username: string) => {
 		const trigger = (e.currentTarget ?? e.target) as Element | null;
+		const viaClick = e.type === 'click';
 
-		clearTimers();
+		triggerRef.current = trigger;
+		setOpenedByClick(viaClick);
+		setUserCardData({
+			username,
+			rid: room._id,
+			onOpenUserInfo: () => openUserInfo(username),
+			onClose: dismissUserCard,
+		});
 
-		const open = (viaClick = false) => {
-			triggerRef.current = trigger;
-			setOpenedByClick(viaClick);
-			state.open();
-			setUserCardData({
-				username,
-				rid: room._id,
-				onOpenUserInfo: () => openUserInfo(username),
-				onClose: dismissUserCard,
-			});
-		};
-
-		// A click opens right away; hover waits out the intent delay.
-		if (e.type === 'click') {
-			open(true);
-			return;
+		if (!viaClick) {
+			trigger?.addEventListener('mouseleave', closeUserCard, { once: true });
 		}
 
-		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
-		openTimerRef.current = setTimeout(() => open(), HOVER_OPEN_DELAY);
+		// A click, or a card already showing for another author, switches right away; otherwise hover waits.
+		state.open(viaClick || state.isOpen);
 	});
 
 	// Wires the document listeners for as long as the card is mounted.
@@ -154,8 +118,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				dismissUserCard();
 			};
 
-			document.addEventListener('keydown', handleKeyDown, { capture: true });
-
 			// Synthetic mouseenter/mouseleave are unreliable on a portaled popover that re-renders under a resting
 			// pointer, so hover is tracked geometrically: the card stays open while the pointer is over the card, its
 			// trigger, or a menu spawned from it (portaled outside the card's rect). Other menus on the page, such as the
@@ -168,29 +130,22 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 			const handleMouseMove = (e: MouseEvent) => {
 				if (isPointerOverCard(e.clientX, e.clientY)) {
-					clearCloseTimer();
+					keepUserCardOpen();
 					return;
 				}
-
-				if (closeTimerRef.current === undefined) {
-					closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
-				}
+				closeUserCard();
 			};
 
-			const handleDocumentLeave = () => {
-				clearCloseTimer();
-				closeTimerRef.current = setTimeout(closeUserCard, HOVER_CLOSE_DELAY);
-			};
-
+			document.addEventListener('keydown', handleKeyDown, { capture: true });
 			document.addEventListener('mousemove', handleMouseMove);
-			document.documentElement.addEventListener('mouseleave', handleDocumentLeave);
+			document.documentElement.addEventListener('mouseleave', closeUserCard);
 			return () => {
-				document.removeEventListener('mousemove', handleMouseMove);
 				document.removeEventListener('keydown', handleKeyDown, { capture: true });
-				document.documentElement.removeEventListener('mouseleave', handleDocumentLeave);
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.documentElement.removeEventListener('mouseleave', closeUserCard);
 			};
 		},
-		[clearCloseTimer, closeUserCard, dismissUserCard],
+		[keepUserCardOpen, closeUserCard, dismissUserCard],
 	);
 
 	const isOpen = state.isOpen && !!userCardData;
@@ -204,6 +159,15 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		trigger.setAttribute('aria-expanded', 'true');
 		return () => trigger.removeAttribute('aria-expanded');
 	}, [isOpen, openedByClick, userCardData]);
+
+	// The popover's own dismissals (a scroll of the list holding the trigger) are explicit, so they close right away.
+	const popoverState: OverlayTriggerState = {
+		isOpen: state.isOpen,
+		setOpen: (open) => (open ? state.open(true) : dismissUserCard()),
+		open: () => state.open(true),
+		close: dismissUserCard,
+		toggle: () => (state.isOpen ? dismissUserCard() : state.open(true)),
+	};
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
 	const contextValue = useMemo(
@@ -228,7 +192,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 					placement='top left'
 					offset={getPopoverOffset()}
 					triggerRef={triggerRef}
-					state={state}
+					state={popoverState}
 				>
 					<Box ref={handleCardRef} tabIndex={-1}>
 						<Suspense fallback={null}>

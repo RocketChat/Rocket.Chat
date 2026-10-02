@@ -245,11 +245,18 @@ it('hands the card over to the next author the pointer moves to', async () => {
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
+		const john = screen.getByText('author john');
+		jest.spyOn(john, 'getBoundingClientRect').mockReturnValue(new DOMRect(400, 400, 200, 200));
+
+		// with a card already showing, the next author's card replaces it without waiting out the hover delay
 		fireEvent.mouseLeave(screen.getByText('author jane'));
-		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.mouseEnter(john);
+		await advance(0);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
+
+		// the pointer resting on john's name keeps his card open
 		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
 		await advance(1000);
-
 		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
 	} finally {
 		jest.useRealTimers();
