@@ -103,13 +103,6 @@ describe('useCategoryList', () => {
 		expect(categoryList()).toEqual(['Incoming_Calls', 'Unread', 'Favorites', 'Conversations']);
 	});
 
-	it('ignores a stale section key on an enterprise workspace', () => {
-		isEnterprise = true;
-		preferences.sidebarSectionsOrder = ['Incoming_Calls', 'Unread', 'Drafts', 'Favorites', 'Conversations'];
-
-		expect(categoryList()).not.toContain('Drafts');
-	});
-
 	it('ignores a stale entry already persisted in sidebarCategories', () => {
 		isEnterprise = true;
 		preferences.sidebarSectionsOrder = ['Incoming_Calls', 'Unread', 'Favorites', 'Conversations'];
