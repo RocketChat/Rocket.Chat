@@ -19,7 +19,7 @@ export const withPreviewMedia =
 	({ capabilities = embeddedCapabilities, devices = fakeDevices, selectedIds = {} }: PreviewMediaFixture = {}): Decorator =>
 	// eslint-disable-next-line react/display-name
 	(Story) => (
-		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, error: false, devices } }}>
+		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, devices } }}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices, selectedIds })}>
 				<Story />
 			</DeviceSelectionProvider>
