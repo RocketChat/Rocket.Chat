@@ -22,7 +22,7 @@ const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { roomListGroups, groupCounts, collapsedGroups, handleClick, handleKeyDown, totalCount } = useSideBarRoomsList();
+	const { roomListGroups, groupCounts, collapsedGroups, handleClick, totalCount } = useSideBarRoomsList();
 	const { ref: resizeObserverRef } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
 
@@ -51,7 +51,6 @@ const RoomList = () => {
 							<RoomListCollapser
 								collapsedGroups={collapsedGroups}
 								onClick={() => handleClick(group)}
-								onKeyDown={(e) => handleKeyDown(e, group)}
 								groupTitle={sidePanelFiltersConfig[group].title}
 								group={group}
 								unreadCount={unreadInfo}
