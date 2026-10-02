@@ -1,0 +1,26 @@
+apps/meteor/client/views/room/hooks/useOpenRoom.spec.ts
+  s_88f3d5c0e36507::t_0ccc01cd3b7d17 8
+  s_88f3d5c0e36507::t_589dff17872f33 2,4,24-26,103
+  s_88f3d5c0e36507::t_2830419a4e2216 87-102,104-110
+.changeset/quiet-dm-composer-embedded.md
+  s_88f3d5c0e36507::t_2a4c04fb1c6ece 1-4
+  s_88f3d5c0e36507::t_43f167ebc62643 5
+apps/meteor/client/views/room/hooks/useOpenRoom.ts
+  s_88f3d5c0e36507::t_b1986448896174 3,10,18,27-28,129-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "adc8c2fdef40f69ef0b8a3c72acb053559fddec0",
+  "prompts": {},
+  "sessions": {
+    "s_88f3d5c0e36507": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "57f34952-97d9-4651-b488-ec7afc3b3147",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
