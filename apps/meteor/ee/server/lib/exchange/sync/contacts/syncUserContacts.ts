@@ -30,8 +30,8 @@ const dropVanishedFolders = async (uid: IUser['_id'], liveFolderIds: string[]): 
 	}
 
 	for (const folderId of vanished) {
-		await Contacts.deleteImportedByFolder(uid, folderId);
 		await deleteFolderContactAvatars(uid, folderId);
+		await Contacts.deleteImportedByFolder(uid, folderId);
 	}
 
 	await ExchangeContactSyncState.deleteByUserIdAndFolders(uid, vanished);
