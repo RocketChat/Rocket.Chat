@@ -19,6 +19,7 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { fileUploadIsValidContentType } from '../../lib/utils/restrictions';
 import { settings } from '../../settings';
 import { UploadFS } from '../../ufs';
+import { ufsComplete } from '../../ufs/ufs-methods';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	api: { broadcast: jest.fn() },
@@ -400,6 +401,9 @@ describe('UploadService', () => {
 
 		it('accepts a file whose declared size and type are allowed', async () => {
 			await expect(service.checkPendingFile({ fileId: 'f1' })).resolves.toBeUndefined();
+
+			expect(settings.get).toHaveBeenCalledWith('FileUpload_MaxFileSize');
+			expect(fileUploadIsValidContentType).toHaveBeenCalledWith('image/png');
 		});
 
 		it('refuses a file declared larger than the size limit before it is downloaded', async () => {
@@ -412,6 +416,8 @@ describe('UploadService', () => {
 			jest.mocked(settings.get).mockReturnValue(-1);
 
 			await expect(service.checkPendingFile({ fileId: 'f1' })).resolves.toBeUndefined();
+
+			expect(fileUploadIsValidContentType).toHaveBeenCalledWith('image/png');
 		});
 
 		it('refuses a file whose declared type is not accepted', async () => {
@@ -430,6 +436,59 @@ describe('UploadService', () => {
 
 			expect(Uploads.updateOne).toHaveBeenCalledWith({ _id: 'f1' }, { $set: { size: 4096 } });
 			expect(jest.mocked(Uploads.updateOne).mock.invocationCallOrder[0]).toBeLessThan(check.mock.invocationCallOrder[0]);
+		});
+
+		describe('completing a downloaded file', () => {
+			let tempDir: string;
+			let tempFilePath: string;
+
+			beforeEach(() => {
+				tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-service-spec-'));
+				tempFilePath = path.join(tempDir, 'f1');
+				jest.mocked(UploadFS.getTempFilePath).mockReturnValue(tempFilePath);
+				jest.mocked(FileUpload.getStore).mockReturnValue({
+					name: 'Uploads',
+					store: { getFilter: () => ({ check: jest.fn().mockResolvedValue(undefined) }) },
+				} as any);
+			});
+
+			afterEach(() => {
+				fs.rmSync(tempDir, { recursive: true, force: true });
+			});
+
+			it('hands the downloaded bytes to the store through the temporary file', async () => {
+				const bytes = Buffer.from('remote image bytes');
+				const completed = { _id: 'f1', complete: true } as IUpload;
+				let tempFileAtCompletion: Buffer | undefined;
+				jest.mocked(ufsComplete).mockImplementation(async () => {
+					tempFileAtCompletion = fs.readFileSync(tempFilePath);
+					return completed;
+				});
+
+				await expect(service.completePendingFile({ fileId: 'f1', buffer: bytes })).resolves.toBe(completed);
+
+				expect(ufsComplete).toHaveBeenCalledWith('f1', 'Uploads');
+				expect(tempFileAtCompletion).toEqual(bytes);
+			});
+
+			it('returns a file that is already complete without storing it again', async () => {
+				const complete = { ...pending, complete: true } as IUpload;
+				jest.mocked(Uploads.findOneById).mockResolvedValue(complete);
+
+				await expect(service.completePendingFile({ fileId: 'f1', buffer: Buffer.from('bytes') })).resolves.toBe(complete);
+
+				expect(Uploads.updateOne).not.toHaveBeenCalled();
+				expect(ufsComplete).not.toHaveBeenCalled();
+			});
+
+			it('returns null when the upload no longer exists', async () => {
+				jest.mocked(Uploads.findOneById).mockResolvedValue(null);
+
+				await expect(service.completePendingFile({ fileId: 'f1', buffer: Buffer.from('bytes') })).resolves.toBeNull();
+
+				expect(ufsComplete).not.toHaveBeenCalled();
+				expect(fs.existsSync(tempFilePath)).toBe(false);
+			});
 		});
 	});
 });
