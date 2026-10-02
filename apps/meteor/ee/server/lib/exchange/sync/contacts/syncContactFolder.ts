@@ -119,13 +119,13 @@ const syncAvatars = async (
 	uid: IUser['_id'],
 	mailbox: string,
 	folderId: string,
-	externalIds: string[],
+	externalIds?: string[],
 ): Promise<void> => {
 	const contactIds = new Map<string, string>();
 	for await (const { _id, externalId } of Contacts.findImportedByFolder<Pick<IContact, '_id' | 'externalId'>>(
 		uid,
 		folderId,
-		{ in: externalIds },
+		externalIds && { in: externalIds },
 		{ projection: { _id: 1, externalId: 1 } },
 	)) {
 		if (externalId) {
@@ -133,9 +133,13 @@ const syncAvatars = async (
 		}
 	}
 
+	if (!contactIds.size) {
+		return;
+	}
+
 	const withPhoto = new Set<string>();
 
-	for await (const photo of provider.getContactPhotos(mailbox, externalIds)) {
+	for await (const photo of provider.getContactPhotos(mailbox, [...contactIds.keys()])) {
 		const contactId = contactIds.get(photo.externalId);
 
 		if (contactId) {
@@ -163,6 +167,9 @@ export const syncContactFolder = async (
 	const sameSource = state?.mailbox === mailbox && state?.provider === provider.id;
 	const reusable = Boolean(state?.cursor) && sameSource;
 
+	const syncAvatarsEnabled = settings.get<boolean>('Exchange_Contacts_Sync_Avatars');
+	const fetchAvatars = syncAvatarsEnabled && !state?.avatarsSyncedAt;
+
 	try {
 		const { upserts, removals, keepExternalIds, cursor } = await collectPages(
 			provider,
@@ -170,14 +177,20 @@ export const syncContactFolder = async (
 			folderId,
 			reusable ? state?.cursor : undefined,
 		);
+		const now = new Date();
 
 		const imported = await Contacts.bulkUpsertImported(
 			[...upserts.values()].map((contact) => toContact(uid, contact, defaultRegion)),
-			new Date(),
+			now,
 		);
 
-		if (upserts.size && settings.get<boolean>('Exchange_Contacts_Sync_Avatars')) {
-			await syncAvatars(provider, uid, mailbox, folderId, [...upserts.keys()]);
+		if (syncAvatarsEnabled) {
+			if (fetchAvatars || upserts.size) {
+				await syncAvatars(provider, uid, mailbox, folderId, fetchAvatars ? undefined : [...upserts.keys()]);
+			}
+		} else if (state?.avatarsSyncedAt) {
+			// We delete avatars if the setting is disabled
+			await deleteFolderContactAvatars(uid, folderId);
 		}
 
 		// Both run while the contacts are still there, which is what the photos are reached through.
@@ -194,7 +207,7 @@ export const syncContactFolder = async (
 		// Only from a complete read, and only after the upserts landed.
 		const pruned = keepExternalIds ? await Contacts.deleteImportedOutsideSet(uid, folderId, keepExternalIds) : undefined;
 
-		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, new Date());
+		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, now, fetchAvatars ? now : undefined);
 
 		return {
 			upserted: imported.upsertedCount,
