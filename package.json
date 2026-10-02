@@ -34,6 +34,7 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
+		"@rocket.chat/fuselage@npm:^0.92.0": "patch:@rocket.chat/fuselage@npm%3A0.92.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.92.0-6fa39ac4c9.patch",
 		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/css-supports": "workspace:~",
 		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
