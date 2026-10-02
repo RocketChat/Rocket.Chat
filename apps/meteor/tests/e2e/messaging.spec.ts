@@ -61,7 +61,7 @@ test.describe('Messaging', () => {
 		});
 
 		test('should open the user info from the message author name', async ({ page }) => {
-			const userInfo = page.getByRole('dialog', { name: 'User info' });
+			const userInfo = channelPage.tabs.userInfo.root;
 
 			await test.step('open the user info with Space', async () => {
 				await page.keyboard.press('Shift+Tab');

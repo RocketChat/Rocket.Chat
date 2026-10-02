@@ -52,14 +52,18 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		: {
 				...buttonProps,
 				style: { cursor: 'pointer' },
-				onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, message.u.username) : undefined,
-				...triggerProps,
+				...(hoverUserCardEnabled && { onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username), ...triggerProps }),
 			};
 
 	return (
 		<FuselageMessageHeader>
 			<MessageNameContainer id={`${message._id}-displayName`} aria-label={displayName} {...authorTriggerProps}>
-				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
+				<MessageName
+					title={!hoverUserCardEnabled && !showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+					data-username={normalizedUsername}
+				>
+					{message.alias || displayName}
+				</MessageName>
 				{showUsername && (
 					<>
 						{' '}

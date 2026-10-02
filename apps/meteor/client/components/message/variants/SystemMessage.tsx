@@ -100,7 +100,12 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer
-						{...(!isSelecting && { ...buttonProps, style: { cursor: 'pointer' }, onMouseEnter: openUserCardOnHover, ...triggerProps })}
+						{...(!isSelecting && {
+							...buttonProps,
+							style: { cursor: 'pointer' },
+							onMouseEnter: openUserCardOnHover,
+							...(hoverUserCardEnabled && triggerProps),
+						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>

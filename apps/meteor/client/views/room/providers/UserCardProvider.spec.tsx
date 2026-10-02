@@ -16,7 +16,7 @@ jest.mock('@rocket.chat/ui-contexts', () => {
 
 jest.mock('../UserCard', () => ({
 	__esModule: true,
-	default: () => <div data-testid='user-card'>card</div>,
+	default: ({ username }: { username: string }) => <div data-testid='user-card'>{username}</div>,
 }));
 
 const Trigger = () => {
@@ -187,4 +187,93 @@ it('keeps the context value stable when a card opens and closes', async () => {
 
 	expect(new Set(values).size).toBe(1);
 	expect(screen.getByText('open')).not.toHaveAttribute('aria-expanded');
+});
+
+const AuthorTrigger = ({ username }: { username: string }) => {
+	const { openUserCard } = useUserCard();
+	return (
+		<button type='button' onMouseEnter={(e: UIEvent) => openUserCard(e, username)}>
+			{`author ${username}`}
+		</button>
+	);
+};
+
+const advance = (ms: number) =>
+	act(async () => {
+		await jest.advanceTimersByTimeAsync(ms);
+	});
+
+it('closes shortly after the pointer leaves the card and its trigger', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		// far from the card and the trigger
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('hands the card over to the next author the pointer moves to', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
+
+		fireEvent.mouseLeave(screen.getByText('author jane'));
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.mouseMove(document, { clientX: 500, clientY: 500 });
+		await advance(1000);
+
+		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('does not bring the card back after scrolling dismisses it', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+
+		// an open for john is pending when scrolling the list (which holds the trigger) dismisses the card
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		fireEvent.scroll(document.body);
+		await advance(0);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		await advance(1000);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
 });

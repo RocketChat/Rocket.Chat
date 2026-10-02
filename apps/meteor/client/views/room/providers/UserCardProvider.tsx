@@ -48,11 +48,18 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		clearCloseTimer();
 	}, [clearCloseTimer]);
 
-	// Every dismissal funnels through here. Only the close timer is cleared: moving straight from an open card
-	// to another author's name leaves that trigger's pending open alive, so the next card still shows up.
+	const closingOnHoverOutRef = useRef(false);
+
+	// Every dismissal funnels through here. Closing because the pointer left keeps a pending open alive, so moving
+	// straight from an open card to another author's name still shows the next card; any other dismissal (an outside
+	// click, for instance) cancels it.
 	const handleOpenChange = useStableCallback((open: boolean) => {
 		if (open) return;
-		clearCloseTimer();
+		if (closingOnHoverOutRef.current) {
+			clearCloseTimer();
+		} else {
+			clearTimers();
+		}
 		setUserCardData(null);
 	});
 
@@ -78,8 +85,11 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
-	// The pointer left: a pending open for another trigger stays alive.
-	const closeUserCard = useStableCallback(() => state.close());
+	const closeUserCard = useStableCallback(() => {
+		closingOnHoverOutRef.current = true;
+		state.close();
+		closingOnHoverOutRef.current = false;
+	});
 
 	// The user asked for no card (Escape, the card's own close, an action that closes it): a pending hover
 	// open must not bring one back a moment later.
@@ -193,7 +203,15 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			{children}
 			{state.isOpen && userCardData && (
 				// Non-modal: a modal popover would aria-hide the page and lock scroll for a card that opens on hover.
-				<Popover isNonModal placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
+				// keyed by user so handing the card to another author repositions it over the new trigger
+				<Popover
+					key={userCardData.username}
+					isNonModal
+					placement='top left'
+					offset={getPopoverOffset()}
+					triggerRef={triggerRef}
+					state={state}
+				>
 					<Box ref={handleCardRef} tabIndex={-1}>
 						<Suspense fallback={null}>
 							<UserCard {...userCardData} />
