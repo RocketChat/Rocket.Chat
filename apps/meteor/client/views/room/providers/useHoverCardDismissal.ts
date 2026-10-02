@@ -25,19 +25,15 @@ export const useHoverCardDismissal = ({
 			}
 
 			// Native listeners on purpose: React's synthetic enter/leave report a leave when the card's content is swapped
-			// under a resting pointer (the skeleton giving way to the loaded card), which would close it.
+			// under a resting pointer (the skeleton giving way to the loaded card), which would close it. Mouse events, like
+			// the trigger's: a pointer jumping straight from the trigger onto the card fires pointerenter here before the
+			// trigger's mouseleave, which would schedule a close nothing cancels.
 			let isHovered = false;
-			const handlePointerEnter = (e: PointerEvent) => {
-				if (e.pointerType === 'touch') {
-					return;
-				}
+			const handlePointerEnter = () => {
 				isHovered = true;
 				onPointerEnter();
 			};
-			const handlePointerLeave = (e: PointerEvent) => {
-				if (e.pointerType === 'touch') {
-					return;
-				}
+			const handlePointerLeave = () => {
 				isHovered = false;
 				if (!hasOpenMenu(card)) {
 					onPointerLeave();
@@ -65,13 +61,13 @@ export const useHoverCardDismissal = ({
 				}
 			});
 
-			card.addEventListener('pointerenter', handlePointerEnter);
-			card.addEventListener('pointerleave', handlePointerLeave);
+			card.addEventListener('mouseenter', handlePointerEnter);
+			card.addEventListener('mouseleave', handlePointerLeave);
 			document.addEventListener('keydown', handleKeyDown, { capture: true });
 			observer.observe(card, { subtree: true, attributeFilter: ['aria-expanded'] });
 			return () => {
-				card.removeEventListener('pointerenter', handlePointerEnter);
-				card.removeEventListener('pointerleave', handlePointerLeave);
+				card.removeEventListener('mouseenter', handlePointerEnter);
+				card.removeEventListener('mouseleave', handlePointerLeave);
 				document.removeEventListener('keydown', handleKeyDown, { capture: true });
 				observer.disconnect();
 			};

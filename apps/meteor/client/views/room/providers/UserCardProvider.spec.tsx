@@ -224,12 +224,12 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 
 		// from the trigger into the card: it stays open
 		fireEvent.mouseLeave(trigger);
-		fireEvent.pointerEnter(card);
+		fireEvent.mouseEnter(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
 		// out of the card: it lingers, then closes
-		fireEvent.pointerLeave(card);
+		fireEvent.mouseLeave(card);
 		await advance(299);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 		await advance(1);
@@ -311,9 +311,9 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 
 		// the card's kebab opens its menu, portaled outside the card, and the pointer follows it there
 		fireEvent.mouseLeave(trigger);
-		fireEvent.pointerEnter(card);
+		fireEvent.mouseEnter(card);
 		await act(async () => content.setAttribute('aria-expanded', 'true'));
-		fireEvent.pointerLeave(card);
+		fireEvent.mouseLeave(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 
@@ -363,6 +363,33 @@ it('stays open while the pointer is on the trigger and the card renders its coll
 		// the loaded card brings its kebab, collapsed
 		await act(async () => screen.getByTestId('user-card').setAttribute('aria-expanded', 'false'));
 		await advance(1000);
+		expect(screen.getByTestId('user-card')).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('stays open when the pointer jumps straight from the trigger onto the card', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+			</UserCardProvider>,
+		);
+
+		const trigger = screen.getByText('author jane');
+		fireEvent.mouseEnter(trigger);
+		await advance(1000);
+		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+
+		// a single fast move: the browser fires every pointer event before the matching mouse events
+		fireEvent.pointerLeave(trigger);
+		fireEvent.pointerEnter(card);
+		fireEvent.mouseLeave(trigger);
+		fireEvent.mouseEnter(card);
+		await advance(1000);
+
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 	} finally {
 		jest.useRealTimers();
