@@ -37,6 +37,13 @@ const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
 			customStatus: statusText ?? <></>,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			localTime: typeof utcOffset === 'number' && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			bio: bio ? (
+				<UserCardInfo withTruncatedText={false} className={clampStyle} height='x60'>
+					{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
+				</UserCardInfo>
+			) : (
+				<></>
+			),
 		}),
 		[avatarETag, getRoles, name, nickname, roles, showRealNames, statusText, username, utcOffset],
 	);
