@@ -74,7 +74,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <footer
-          aria-label="Call_controls"
+          aria-label="Call controls"
           class="rcx-box rcx-box--full rcx-css-1l20igk"
         >
           <div
