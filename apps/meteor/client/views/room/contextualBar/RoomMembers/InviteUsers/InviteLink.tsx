@@ -1,8 +1,7 @@
 import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
 export type InviteLinkProps = {
 	linkText: string;

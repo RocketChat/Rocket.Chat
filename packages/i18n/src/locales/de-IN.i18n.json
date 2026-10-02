@@ -351,7 +351,6 @@
   "Archive": "Archivieren",
   "archive-room": "Kanal archivieren",
   "archive-room_description": "Berechtigung, einen Kanal zu archivieren",
-  "are_typing": "schreiben",
   "Are_you_sure": "Bist Du sicher?",
   "Are_you_sure_you_want_to_delete_your_account": "Bist Du sicher, dass Du Dein Konto löschen möchtest?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Bist Du dir sicher das Du die Facebook Integration deaktivieren möchtest?",
@@ -1537,7 +1536,6 @@
   "IRC_Port": "Port des IRC-Host, zu dem verbunden werden soll",
   "IRC_Private_Message": "Ausgabe des PRIVMSG-Befehls",
   "IRC_Quit": "Ausgabe beim Beenden einer IRC-Session",
-  "is_typing": "schreibt",
   "Issue_Links": "Issue-Tracker Links",
   "IssueLinks_Incompatible": "Warnung: Aktiviere diese Einstellung nicht zusammen mit der Farbvorschau (Hex)",
   "IssueLinks_LinkTemplate": "Vorlage für Issue-Verknüpfungen",
@@ -2785,6 +2783,10 @@
   "User__username__removed_from__room_name__leaders": "Benutzer {{username}} wurde als Diskussionsleiter in {{room_name}} entfernt",
   "User__username__removed_from__room_name__moderators": "Der Benutzer {{username}} wurde von einem Moderator aus {{room_name}} entfernt",
   "User__username__removed_from__room_name__owners": "Benutzer {{username}} ist nicht mehr Besitzer von {{room_name}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} schreibt",
+    "other": "{{users, list}} schreiben"
+  },
   "User_added_by": "Der Benutzer {{user_added}} wurde von {{user_by}} hinzugefügt",
   "User_added_successfully": "Benutzer erfolgreich hinzugefügt",
   "User_and_group_mentions_only": "Nur Benutzer- und Gruppenerwähnungen",

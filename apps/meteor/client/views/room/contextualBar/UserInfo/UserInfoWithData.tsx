@@ -1,13 +1,15 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import {
-	ContextualbarHeader,
 	ContextualbarBack,
-	ContextualbarIcon,
-	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	UserCardRole,
+	UserInfo,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,8 +19,6 @@ import { useTranslation } from 'react-i18next';
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
-import { UserCardRole } from '../../../../components/UserCard';
-import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';

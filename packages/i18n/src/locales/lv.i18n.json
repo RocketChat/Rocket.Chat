@@ -320,7 +320,6 @@
   "archive-room": "Arhīva istaba",
   "archive-room_description": "Atļauja arhivēt kanālu",
   "Archived": "Arhivēts",
-  "are_typing": "raksta",
   "Are_you_sure": "Vai tu esi pārliecināts?",
   "Are_you_sure_you_want_to_delete_your_account": "Vai tiešām vēlaties dzēst savu kontu?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Vai tiešām vēlaties atspējot Facebook integrāciju?",
@@ -1357,7 +1356,6 @@
   "IRC_Port": "Ports savienojumam ar IRC resursdatora serveri.",
   "IRC_Private_Message": "PRIVMSG komandas izpildes rezultāts.",
   "IRC_Quit": "Rezultāts pēc iziešanas no IRC sesijas.",
-  "is_typing": "raksta",
   "Issue_Links": "Problēma izsekojošās saites",
   "IssueLinks_Incompatible": "Brīdinājums: neiespējojiet vienlaicgi šo un 'Hex Color Preview'.",
   "IssueLinks_LinkTemplate": "Problemātisko saišu šablons",
@@ -2497,6 +2495,11 @@
   "User": "Lietotājs",
   "User__username__is_now_a_leader_of__room_name_": "Lietotājs {{username}} tagad ir istabas {{room_name}} vadītājs",
   "User__username__is_now_a_moderator_of__room_name_": "Lietotājs {{username}} tagad ir istabas {{room_name}} moderators",
+  "User_activity_typing": {
+    "zero": "{{users, list}} raksta",
+    "one": "{{users, list}} raksta",
+    "other": "{{users, list}} raksta"
+  },
   "User_added": "Lietotājs pievienots",
   "User_added_by": "Lietotāju <em>{{user_added}}</em>pievienoja <em>{{user_by}}</em>.",
   "User_added_successfully": "Lietotājs pievienots veiksmīgi",

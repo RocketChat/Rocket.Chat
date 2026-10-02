@@ -444,7 +444,6 @@
   "archive-room": "Archivovat místnost",
   "archive-room_description": "Právo archivovat místnost",
   "Archived": "Archivovaná",
-  "are_typing": "píše",
   "Are_you_sure": "Jste si jisti?",
   "Are_you_sure_you_want_to_delete_this_record": "Opravdu chcete tento záznam smazat?",
   "Are_you_sure_you_want_to_delete_your_account": "Jste si jisti, že chcete smazat svůj účet?",
@@ -1906,7 +1905,6 @@
   "IRC_Port": "Port k připojení na IRC serveru",
   "IRC_Private_Message": "Výstup PRIVMSG příkazu",
   "IRC_Quit": "Výstup při rozpojení IRC session",
-  "is_typing": "píše",
   "Issue_Links": "Odkazy na Issue tracker",
   "IssueLinks_Incompatible": "Varování: nepovolujte tuto volbu současně s 'Náhled barvy podle Hex kódu'.",
   "IssueLinks_LinkTemplate": "Šablona pro odkazy na issue",
@@ -3624,6 +3622,12 @@
   "User__username__removed_from__room_name__moderators": "Uživatel {{username}} odebrán z moderátorů {{room_name}}",
   "User__username__removed_from__room_name__owners": "Uživatel {{username}} odebrán z vlastníků {{room_name}}",
   "User__username__unmuted_in_room__roomName__": "Uživatel {{username}} již není ztlumen v místnosti {{roomName}}",
+  "User_activity_typing": {
+    "one": "{{users, list}} píše",
+    "few": "{{users, list}} píše",
+    "many": "{{users, list}} píše",
+    "other": "{{users, list}} píše"
+  },
   "User_added": "Přidán uživatel",
   "User_added_by": "{{user_by}} přidal uživatele {{user_added}}.",
   "User_added_successfully": "Uživatel byl úspěšně přidán",

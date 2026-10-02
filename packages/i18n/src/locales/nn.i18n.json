@@ -705,10 +705,6 @@
   "archive-room": "Arkiv-rom",
   "archive-room_description": "Tillatelse til å arkivere en kanal",
   "Archived": "arkivert",
-  "are_playing": "spiller av",
-  "are_recording": "tar opp",
-  "are_typing": "skriver",
-  "are_uploading": "laster opp",
   "Are_you_sure": "Er du sikker?",
   "Are_you_sure_delete_department": "Er du sikker på at du vil slette denne avdelingen? Denne handlingen kan ikke reverseres. Skriv inn avdelingsnavnet for å bekrefte.",
   "Are_you_sure_you_want_to_clear_all_unread_messages": "Er du sikker på at du vil slette alle uleste meldinger?",
@@ -2987,10 +2983,6 @@
   "IRC_Port": "Porten å binde seg til på IRC-vertsserveren.",
   "IRC_Private_Message": "Utgang av PRIVMSG-kommandoen.",
   "IRC_Quit": "Output ved avslutte en IRC-økt.",
-  "is_playing": "spiller av",
-  "is_recording": "tar opp",
-  "is_typing": "skriver",
-  "is_uploading": "laster opp",
   "Issue_Links": "Utgav trackerforbindelser",
   "IssueLinks_Incompatible": "Advarsel: Ikke aktiver dette og 'Hex Color Preview' på samme tid.",
   "IssueLinks_LinkTemplate": "Mal for utgavekoblinger",
@@ -5742,6 +5734,22 @@
   "User__username__removed_from__room_name__moderators": "Bruker {{username}} fjernet fra {{room_name}} moderatorer",
   "User__username__removed_from__room_name__owners": "Bruker {{username}} fjernet fra {{room_name}} eiere",
   "User__username__unmuted_in_room__roomName__": "Bruker {{username}}, er ikke lengre dempet i rommet {{roomName}}",
+  "User_activity_playing": {
+    "one": "{{users, list}} spiller av",
+    "other": "{{users, list}} spiller av"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} tar opp",
+    "other": "{{users, list}} tar opp"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} skriver",
+    "other": "{{users, list}} skriver"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} laster opp",
+    "other": "{{users, list}} laster opp"
+  },
   "User_added": "Bruker lagt til",
   "User_added_by": "Bruker {{user_added}}lagt til av {{user_by}}.",
   "User_added_successfully": "Bruker lagt til",

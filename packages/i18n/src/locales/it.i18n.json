@@ -412,10 +412,6 @@
   "archive-room": "Sala degli archivi",
   "archive-room_description": "Autorizzazione all'archiviazione di un canale",
   "Archived": "Archiviati",
-  "are_playing": "stanno giocando",
-  "are_recording": "stanno registrando",
-  "are_typing": "sta scrivendo",
-  "are_uploading": "stanno caricando",
   "Are_you_sure": "Sei sicuro?",
   "Are_you_sure_delete_department": "Sei sicuro di voler eliminare questo reparto? Questa azione non può essere annullata. Inserisci il nome del reparto per confermare.",
   "Are_you_sure_you_want_to_delete_your_account": "Sei sicuro di voler cancellare il tuo account?",
@@ -1744,10 +1740,6 @@
   "IRC_Federation": "Federazione IRC",
   "IRC_Federation_Disabled": "La federazione IRC è disabilitata.",
   "IRC_Quit": "Output alla uscita della sessione IRC.",
-  "is_playing": "sta giocando",
-  "is_recording": "sta registrando",
-  "is_typing": "sta scrivendo",
-  "is_uploading": "sta caricando",
   "Issue_Links": "Emetti link tracker",
   "IssueLinks_Incompatible": "Attenzione: non abilitare questo e l''Anteprima colore esadecimale' allo stesso tempo.",
   "IssueLinks_LinkTemplate": "Modello per collegamenti di problemi",
@@ -3117,6 +3109,26 @@
   "User__username__removed_from__room_name__leaders": "Utente {{username}} rimosso dai leader {{room_name}}",
   "User__username__removed_from__room_name__moderators": "L'Utente {{username}}rimosso dai moderatori {{room_name}}",
   "User__username__removed_from__room_name__owners": "L'Utente {{username}}rimosso dai proprietari {{room_name}}",
+  "User_activity_playing": {
+    "one": "{{users, list}} sta giocando",
+    "many": "{{users, list}} stanno giocando",
+    "other": "{{users, list}} stanno giocando"
+  },
+  "User_activity_recording": {
+    "one": "{{users, list}} sta registrando",
+    "many": "{{users, list}} stanno registrando",
+    "other": "{{users, list}} stanno registrando"
+  },
+  "User_activity_typing": {
+    "one": "{{users, list}} sta scrivendo",
+    "many": "{{users, list}} stanno scrivendo",
+    "other": "{{users, list}} stanno scrivendo"
+  },
+  "User_activity_uploading": {
+    "one": "{{users, list}} sta caricando",
+    "many": "{{users, list}} stanno caricando",
+    "other": "{{users, list}} stanno caricando"
+  },
   "User_added": "Utente aggiunto",
   "User_added_by": "Utente {{user_added}} aggiunto da {{user_by}}.",
   "User_added_successfully": "Utente aggiunto correttamente",

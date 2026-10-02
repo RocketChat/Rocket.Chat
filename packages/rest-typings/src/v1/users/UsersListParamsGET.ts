@@ -5,6 +5,7 @@ export type UsersListParamsGET = PaginatedRequest<{
 	fields?: string;
 	query?: string;
 	email?: string;
+	username?: string;
 }>;
 
 const UsersListParamsGetSchema = {
@@ -16,6 +17,7 @@ const UsersListParamsGetSchema = {
 		offset: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
 		email: { type: 'string', minLength: 1, nullable: true },
+		username: { type: 'string', minLength: 1, nullable: true },
 	},
 	additionalProperties: false,
 };
