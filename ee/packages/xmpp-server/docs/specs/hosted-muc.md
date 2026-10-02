@@ -123,12 +123,15 @@ When Rocket.Chat removes an XMPP user from a room it hosts, the other occupants 
 showing them in the room. Where: `MucRoom.kick` deletes the occupant before building the
 recipients list. Test: `hosted-muc.spec.ts`, "tells the kicked XMPP user they were removed".
 
-### D2 Occupants are never removed when their server's connection drops (suspected)
+### D2 Occupants are never removed when their server's connection drops
 
-Not pinned by a test. Hosted-room occupants are keyed by JID and only leave on an
-`unavailable` presence or a kick. When the S2S connection to their server is lost nothing
-removes them, so later messages keep being sent to them and the room roster is stale until
-their server reconnects.
+Hosted-room occupants are keyed by JID and only leave on an `unavailable` presence or a
+kick. When the S2S connection to their server is lost nothing removes them, so later
+messages keep being sent to them and the room roster is stale until their server
+reconnects. Where: nothing acts on `connection.lost` on behalf of the rooms. Test:
+`tests/integration/muc.spec.ts`, "drops the occupants of a server whose connection is
+lost"; the end-to-end harness cannot sever the link to ejabberd, so this one is an
+integration test.
 
 ### D3 A new topic does not reach occupants already in the room
 

@@ -184,4 +184,24 @@ describe('MUC integration: hosted room joined across servers', () => {
 		const hostSaw = await waitFor(() => hostMessages.find((m) => m === 'bob:hello all'));
 		expect(hostSaw).toBe('bob:hello all');
 	});
+
+	// Known defect: ../../docs/specs/hosted-muc.md#d2-occupants-are-never-removed-when-their-servers-connection-drops
+	// Last in the file: stopping the remote server ends the S2S sessions the tests above rely on.
+	it.skip('drops the occupants of a server whose connection is lost', async () => {
+		hostServer.mucCreateRoom({ roomId: 'dropped', public: true });
+
+		const roomJid = `dropped@${hostServer.mucDomain}`;
+		const hostSideJoins: string[] = [];
+		const hostSideLeaves: string[] = [];
+		hostServer.on('muc.occupantJoined', (e) => hostSideJoins.push(e.nick));
+		hostServer.on('muc.occupantLeft', (e) => hostSideLeaves.push(e.nick));
+
+		await remoteServer.mucJoinRemoteRoom({ localJid: 'heidi@b.localhost', roomJid, nick: 'heidi' });
+		await waitFor(() => (hostSideJoins.includes('heidi') ? true : undefined));
+
+		await remoteServer.stop();
+
+		await waitFor(() => (hostSideLeaves.includes('heidi') ? true : undefined));
+		expect(hostServer.listMucOccupants('dropped')?.map((o) => o.nick)).not.toContain('heidi');
+	});
 });

@@ -18,8 +18,9 @@ yarn workspace @rocket.chat/xmpp-server-service ms   # the only process that hos
 - `src/` minus `src/service/` is the protocol core. It imports nothing from `@rocket.chat/*`
   except `emitter`. `src/service/` is the only place that knows Rocket.Chat.
 - Every capability has a spec in `docs/specs/`. A behaviour change edits the spec in the same
-  PR. A new bug becomes a `D<n>` entry plus an `it.skip` end-to-end test whose comment links
-  the anchor. A fix un-skips the test and deletes the entry.
+  PR. A new bug becomes a `D<n>` entry plus an `it.skip` test whose comment links the anchor,
+  end-to-end or integration when ejabberd cannot produce the trigger. A fix un-skips the test
+  and deletes the entry.
 - Work on a `planned` spec starts in plan mode with the spec attached and produces
   `docs/plans/<slug>.md` before any code.
 - The `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` skills run the authoring stages; worked
