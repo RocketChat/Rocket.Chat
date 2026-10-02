@@ -1,5 +1,20 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
-import { AutoComplete, Option, Avatar, Field, FieldRow, FieldDescription, FieldError, StatusBullet, Box } from '@rocket.chat/fuselage';
+import { UserStatus } from '@rocket.chat/core-typings';
+import {
+	AutoComplete,
+	Avatar,
+	Field,
+	FieldRow,
+	FieldDescription,
+	FieldError,
+	Icon,
+	ITEM_MEDIA_SIZE,
+	Item,
+	ItemContent,
+	ItemIcon,
+	ItemMedia,
+	ItemTitle,
+	StatusBullet,
+} from '@rocket.chat/fuselage';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +37,14 @@ export type PeerAutocompleteProps = {
 	error?: string;
 };
 
+const STATUS_LABEL_KEYS = {
+	[UserStatus.ONLINE]: 'Online',
+	[UserStatus.AWAY]: 'Away',
+	[UserStatus.BUSY]: 'Busy',
+	[UserStatus.OFFLINE]: 'Offline',
+	[UserStatus.DISABLED]: 'Disabled',
+} as const;
+
 const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilter, error }: PeerAutocompleteProps) => {
 	const { t } = useTranslation();
 
@@ -41,23 +64,43 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 					onChange={onChangeValue}
 					options={options}
 					value={value}
-					renderItem={({ value, label, ...props }) => {
+					renderItem={({ value, label, selected, focus, ...props }) => {
+						const itemProps = {
+							...props,
+							'is': 'li',
+							'inset': 'md',
+							selected,
+							'focused': focus,
+							'aria-selected': selected,
+						} as const;
+
 						if (isFirstPeerAutocompleteOption(value)) {
-							return <Option key={value} label={label} icon='phone-out' {...props} />;
+							return (
+								<Item {...itemProps}>
+									<ItemIcon label={t('Call')}>
+										<Icon name='phone-out' size='x16' />
+									</ItemIcon>
+									<ItemContent>
+										<ItemTitle>{label}</ItemTitle>
+									</ItemContent>
+								</Item>
+							);
 						}
+
 						const thisOption = options.find((option) => option.value === value);
+
 						return (
-							<Option
-								key={value}
-								label={
-									<Box display='flex' flexDirection='row' alignItems='center'>
-										<StatusBullet status={thisOption?.status} />
-										<Box marginInlineStart={4}>{label}</Box>
-									</Box>
-								}
-								avatar={<Avatar size='x20' url={thisOption?.avatarUrl || ''} />}
-								{...props}
-							/>
+							<Item {...itemProps}>
+								<ItemMedia>
+									<Avatar size={ITEM_MEDIA_SIZE.condensed} url={thisOption?.avatarUrl || ''} />
+								</ItemMedia>
+								<ItemIcon label={thisOption?.status && t(STATUS_LABEL_KEYS[thisOption.status])}>
+									<StatusBullet status={thisOption?.status} />
+								</ItemIcon>
+								<ItemContent>
+									<ItemTitle>{label}</ItemTitle>
+								</ItemContent>
+							</Item>
 						);
 					}}
 					renderSelected={() => null}
