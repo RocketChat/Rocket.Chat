@@ -80,12 +80,12 @@ describe('[Sidebar Custom Categories]', () => {
 				});
 		});
 
-		it('should persist the optional activityFilter field verbatim', async () => {
+		it('should persist the optional activityFilterHours field verbatim, presets or not', async () => {
 			const categories = [
-				category({ name: 'Recent', activityFilter: '1d' }),
-				category({ name: 'Week', activityFilter: '7d' }),
-				category({ name: 'Month', activityFilter: '30d' }),
-				{ _id: 'Channels', name: 'Channels', default: true, activityFilter: '7d' as const },
+				category({ name: 'Recent', activityFilterHours: 24 }),
+				category({ name: 'Week', activityFilterHours: 168 }),
+				category({ name: 'Custom', activityFilterHours: 36 }),
+				{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 720 },
 			];
 
 			await setCategories(categories).expect(200);
@@ -182,8 +182,20 @@ describe('[Sidebar Custom Categories]', () => {
 				.expect(expectInvalid);
 		});
 
-		it('should reject an "activityFilter" outside the supported windows', async () => {
-			await setCategories([{ _id: Random.id(), name: 'x', activityFilter: '90d' }])
+		it('should reject an "activityFilterHours" that is not a whole number of hours', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 1.5 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilterHours" below one hour', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 0 }])
+				.expect(400)
+				.expect(expectInvalid);
+		});
+
+		it('should reject an "activityFilterHours" longer than a year', async () => {
+			await setCategories([{ _id: Random.id(), name: 'x', activityFilterHours: 24 * 365 + 1 }])
 				.expect(400)
 				.expect(expectInvalid);
 		});

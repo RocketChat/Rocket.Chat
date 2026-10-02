@@ -1,17 +1,10 @@
-import type { SidebarCategoryActivityFilter } from '@rocket.chat/core-typings';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useUpsertGroupEntry } from './useUpsertGroupEntry';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
-const DAY = 24 * 60 * 60 * 1000;
-
-export const ACTIVITY_FILTER_WINDOW: Record<SidebarCategoryActivityFilter, number> = {
-	'1d': DAY,
-	'7d': 7 * DAY,
-	'30d': 30 * DAY,
-};
+export const HOUR = 60 * 60 * 1000;
 
 const CLOCK_INTERVAL = 5 * 60 * 1000;
 
@@ -23,19 +16,19 @@ export const useActivityFilter = () => {
 	const { rawCategories } = useUserSidebarCategories();
 	const upsertGroupEntry = useUpsertGroupEntry();
 
-	const getActivityFilter = useCallback(
-		(id: string): SidebarCategoryActivityFilter | undefined => rawCategories.find((entry) => entry._id === id)?.activityFilter,
+	const getActivityFilterHours = useCallback(
+		(id: string): number | undefined => rawCategories.find((entry) => entry._id === id)?.activityFilterHours,
 		[rawCategories],
 	);
 
-	const setActivityFilter = useCallback(
-		(id: string, activityFilter: SidebarCategoryActivityFilter | undefined) => upsertGroupEntry(id, { activityFilter }),
+	const setActivityFilterHours = useCallback(
+		(id: string, activityFilterHours: number | undefined) => upsertGroupEntry(id, { activityFilterHours }),
 		[upsertGroupEntry],
 	);
 
-	const hasActivityFilters = rawCategories.some((entry) => entry.activityFilter);
+	const hasActivityFilters = rawCategories.some((entry) => entry.activityFilterHours);
 
-	return { getActivityFilter, setActivityFilter, hasActivityFilters };
+	return { getActivityFilterHours, setActivityFilterHours, hasActivityFilters };
 };
 
 /** The current time, refreshed while `enabled` so a room leaves a filtered group once its activity ages out. */
