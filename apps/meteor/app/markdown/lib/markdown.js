@@ -68,17 +68,9 @@ class MarkdownClass {
 	code(...args) {
 		return code(...args);
 	}
-
-	/** @param {string} message */
-	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message);
-	}
 }
 
 export const Markdown = new MarkdownClass();
-
-/** @param {string} message */
-export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
 export const createMarkdownMessageRenderer = ({ ...options }) => {
 	const markedParser = parsers.marked;

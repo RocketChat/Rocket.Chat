@@ -63,7 +63,15 @@ export interface IRocketChatDesktop {
 	clearOutlookCredentials: () => void;
 	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
+	supportedDocumentViewerFormats?: () => string[];
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+}
+
+export interface IVideoCallWindow {
+	openInMainWindow: (path: string) => void;
+	close: () => void;
+	requestScreenSharing: () => Promise<string | null>;
+	getAuthCredentials: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
 }

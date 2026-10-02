@@ -1,14 +1,14 @@
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
-import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { Users, Rooms, Subscriptions } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { getAvatarURL } from '../../getAvatarURL';
+import { getUserAvatarURL } from '../../getUserAvatarURL';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -21,7 +21,7 @@ roomCoordinator.add(
 	},
 	{
 		allowRoomSettingChange(_room, setting) {
-			if (isRoomFederated(_room as IRoom)) {
+			if (isRoomFederated(_room)) {
 				return Federation.isRoomSettingAllowed(_room, setting);
 			}
 			switch (setting) {
@@ -42,7 +42,7 @@ roomCoordinator.add(
 		},
 
 		allowMemberAction(room, action, showingUserId, userSubscription) {
-			if (isRoomFederated(room as IRoom)) {
+			if (isRoomFederated(room)) {
 				return Federation.actionAllowed(room, action, showingUserId, userSubscription);
 			}
 			switch (action) {

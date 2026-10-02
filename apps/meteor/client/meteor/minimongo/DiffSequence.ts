@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import type { IdMap } from './IdMap';
 import { clone, hasOwn, equals } from './common';
 import type { Observer, OrderedObserver, UnorderedObserver } from './observers';
@@ -101,13 +99,13 @@ export class DiffSequence {
 
 		const newPresenceOfId = new Set<T['_id']>();
 		newResults.forEach((doc) => {
-			if (newPresenceOfId.has(doc._id)) Meteor._debug('Duplicate _id in new_results');
+			if (newPresenceOfId.has(doc._id)) console.warn('Duplicate _id in new_results');
 			newPresenceOfId.add(doc._id);
 		});
 
 		const oldIndexOfId = new Map<T['_id'], number>();
 		oldResults.forEach((doc, i) => {
-			if (doc._id in oldIndexOfId) Meteor._debug('Duplicate _id in old_results');
+			if (doc._id in oldIndexOfId) console.warn('Duplicate _id in old_results');
 			oldIndexOfId.set(doc._id, i);
 		});
 

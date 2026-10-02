@@ -326,7 +326,7 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-empty-function': 'off',
-			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+			'@typescript-eslint/no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
 			'new-cap': 'off',
 		},
 	},
@@ -338,7 +338,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
+		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],

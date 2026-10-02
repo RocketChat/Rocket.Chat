@@ -32,8 +32,7 @@ function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
 }): asserts props is
-	| { method: 'totp' | 'password'; invalidAttempt?: boolean }
-	| { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean } {
+	{ method: 'totp' | 'password'; invalidAttempt?: boolean } | { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean } {
 	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}

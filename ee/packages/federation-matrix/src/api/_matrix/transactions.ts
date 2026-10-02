@@ -3,6 +3,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
+import { logger } from '../logger';
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
@@ -58,88 +59,6 @@ const GetEventResponseSchema = {
 
 const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
 
-const EventHashSchema = {
-	type: 'object',
-	properties: {
-		sha256: {
-			type: 'string',
-			description: 'SHA256 hash of the event',
-		},
-	},
-	required: ['sha256'],
-};
-
-const EventSignatureSchema = {
-	type: 'object',
-	description: 'Event signatures by server and key ID',
-};
-
-const EventBaseSchema = {
-	type: 'object',
-	properties: {
-		type: {
-			type: 'string',
-			description: 'Event type',
-		},
-		content: {
-			type: 'object',
-			description: 'Event content',
-		},
-		sender: {
-			type: 'string',
-			pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
-			description: 'Matrix user ID in format @user:server.com',
-		},
-		room_id: {
-			type: 'string',
-			pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
-			description: 'Matrix room ID in format !room:server.com',
-		},
-		origin_server_ts: {
-			type: 'number',
-			minimum: 0,
-			description: 'Unix timestamp in milliseconds',
-		},
-		depth: {
-			type: 'number',
-			minimum: 0,
-			description: 'Event depth',
-		},
-		prev_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Previous events in the room',
-		},
-		auth_events: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			description: 'Authorization events',
-		},
-		origin: {
-			type: 'string',
-			description: 'Origin server',
-		},
-		hashes: {
-			...EventHashSchema,
-			nullable: true,
-		},
-		signatures: {
-			...EventSignatureSchema,
-			nullable: true,
-		},
-		unsigned: {
-			type: 'object',
-			description: 'Unsigned data',
-			nullable: true,
-		},
-	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events'],
-};
-
 const SendTransactionBodySchema = {
 	type: 'object',
 	properties: {
@@ -154,7 +73,12 @@ const SendTransactionBodySchema = {
 		},
 		pdus: {
 			type: 'array',
-			items: EventBaseSchema,
+			items: {
+				// deliberately unconstrained, matching the spec: the PDU format varies by room
+				// version, and a malformed PDU must be reported per-PDU in the 200 response's
+				// `pdus` map instead of failing the whole transaction with a 400
+				type: 'object',
+			},
 			description: 'Persistent data units (PDUs) to process',
 			default: [],
 		},
@@ -181,12 +105,8 @@ const SendTransactionResponseSchema = {
 			type: 'object',
 			description: 'Processing results for each PDU',
 		},
-		edus: {
-			type: 'object',
-			description: 'Processing results for each EDU',
-		},
 	},
-	required: ['pdus', 'edus'],
+	required: ['pdus'],
 };
 
 const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema);
@@ -194,14 +114,14 @@ const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema
 const ErrorResponseSchema = {
 	type: 'object',
 	properties: {
+		errcode: {
+			type: 'string',
+		},
 		error: {
 			type: 'string',
 		},
-		details: {
-			type: 'object',
-		},
 	},
-	required: ['error', 'details'],
+	required: ['errcode', 'error'],
 };
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
@@ -221,13 +141,22 @@ const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
 const GetStateIdsResponseSchema = {
 	type: 'object',
 	properties: {
-		stateIds: {
+		auth_chain_ids: {
 			type: 'array',
 			items: {
 				type: 'string',
 			},
+			description: 'Auth chain event IDs, recursively',
+		},
+		pdu_ids: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			description: 'Event IDs of the fully resolved room state at the given event',
 		},
 	},
+	required: ['auth_chain_ids', 'pdu_ids'],
 };
 
 const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
@@ -246,10 +175,22 @@ const isGetStateParamsProps = ajv.compile<{
 const GetStateResponseSchema = {
 	type: 'object',
 	properties: {
-		state: {
-			type: 'object',
+		auth_chain: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'Auth chain events, recursively',
+		},
+		pdus: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'The fully resolved room state at the given event',
 		},
 	},
+	required: ['auth_chain', 'pdus'],
 };
 
 const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
@@ -273,9 +214,9 @@ const BackfillQuerySchema = {
 	type: 'object',
 	properties: {
 		limit: {
-			type: 'number',
+			// unbounded above per spec; the handler caps it. Synapse rejects 0 and negatives
+			type: 'integer',
 			minimum: 1,
-			maximum: 100,
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
@@ -287,7 +228,6 @@ const BackfillQuerySchema = {
 		},
 	},
 	required: ['limit', 'v'],
-	additionalProperties: false,
 };
 
 const isBackfillQueryProps = ajvQuery.compile<{
@@ -309,7 +249,10 @@ const BackfillResponseSchema = {
 		},
 		pdus: {
 			type: 'array',
-			items: EventBaseSchema,
+			items: {
+				// spec: backfill responses "MUST NOT be validated" against PDU restrictions
+				type: 'object',
+			},
 			description: 'Events in reverse chronological order',
 		},
 	},
@@ -319,10 +262,11 @@ const BackfillResponseSchema = {
 const isBackfillResponseProps = ajv.compile(BackfillResponseSchema);
 
 export const getMatrixTransactionsRoutes = () => {
-	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware())
+			// PUT /_matrix/federation/v1/send/{txnId}
+			// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv1sendtxnid
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -331,6 +275,8 @@ export const getMatrixTransactionsRoutes = () => {
 					response: {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
+						429: isErrorResponseProps,
+						500: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -346,22 +292,40 @@ export const getMatrixTransactionsRoutes = () => {
 							return {
 								statusCode: 429,
 								body: {
-									errorcode: 'M_UNKNOWN',
+									errcode: 'M_UNKNOWN',
 									error: 'Too many concurrent transactions',
 								},
 							};
 						}
 
+						if (error.message === 'too-many-events') {
+							return {
+								statusCode: 400,
+								body: {
+									errcode: 'M_UNKNOWN',
+									error: 'Too many PDUs or EDUs',
+								},
+							};
+						}
+
+						// a 200 tells the origin the transaction was delivered and it will never resend
+						// these PDUs. Per-PDU failures are already handled by the SDK, so anything
+						// reaching here is a server-side failure and must be retryable - Synapse only
+						// backs off and redelivers on 5xx
+						logger.error({ msg: 'Error processing incoming transaction', err: error });
+
 						return {
-							statusCode: 400,
-							body: {},
+							statusCode: 500,
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to process transaction',
+							},
 						};
 					}
 
 					return {
 						body: {
 							pdus: {},
-							edus: {},
 						},
 						statusCode: 200,
 					};
@@ -369,6 +333,7 @@ export const getMatrixTransactionsRoutes = () => {
 			)
 
 			// GET /_matrix/federation/v1/state_ids/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1state_idsroomid
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -400,6 +365,8 @@ export const getMatrixTransactionsRoutes = () => {
 					};
 				},
 			)
+			// GET /_matrix/federation/v1/state/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1stateroomid
 			.get(
 				'/v1/state/:roomId',
 				{
@@ -430,6 +397,7 @@ export const getMatrixTransactionsRoutes = () => {
 				},
 			)
 			// GET /_matrix/federation/v1/event/{eventId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1eventeventid
 			.get(
 				'/v1/event/:eventId',
 				{
@@ -464,6 +432,7 @@ export const getMatrixTransactionsRoutes = () => {
 				},
 			)
 			// GET /_matrix/federation/v1/backfill/{roomId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1backfillroomid
 			.get(
 				'/v1/backfill/:roomId',
 				{
@@ -478,7 +447,20 @@ export const getMatrixTransactionsRoutes = () => {
 				canAccessResourceMiddleware('room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
-					const limit = Number(c.req.query('limit') || 100);
+					const limit = Math.min(Number(c.req.query('limit') || 100), 100);
+
+					// this will be handled by the federation-sdk on next versions so this can be removed
+					if (limit < 1) {
+						return {
+							body: {
+								origin: federationSDK.getConfig('serverName'),
+								origin_server_ts: Date.now(),
+								pdus: [],
+							},
+							statusCode: 200,
+						};
+					}
+
 					const eventIds = c.req.queries('v');
 					if (!eventIds?.length) {
 						return {

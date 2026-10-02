@@ -1,5 +1,5 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import type { ChangeEvent } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -15,6 +15,8 @@ const meta = {
 				Direct_message: 'Direct message',
 				Call: 'Call',
 				Call_ended_bold: '*Voice call ended*',
+				Voice_call_not_placed: 'Voice call not placed',
+				Prevented_by_app: 'Prevented by app: {{appName}}',
 				Incoming_voice_call: 'Incoming voice call',
 				Outgoing_voice_call: 'Outgoing voice call',
 				Duration: 'Duration',
@@ -26,6 +28,10 @@ const meta = {
 				Jump_to_message: 'Jump to message',
 				Direct_Message: 'Direct Message',
 				User_info: 'User info',
+			})
+			// The app's own namespace
+			.withTranslations('en', 'app-call-policy', {
+				call_prevented_for_callee: 'Calls to {{callee}} are not allowed by this workspace',
 			})
 			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
@@ -87,5 +93,58 @@ export const ExternalContact: Story = {
 			state: 'ended',
 		},
 		contact: externalContact,
+	},
+};
+
+const preventedCallData = {
+	callId: '1234567890',
+	direction: 'outbound',
+	duration: 0,
+	startedAt: new Date('2025-02-07T12:00:00.000Z'),
+	state: 'prevented',
+} as const;
+
+// An app that wrote its own words. The card carries them, and "Prevented by {app name}" sits below.
+export const PreventedWithReason: Story = {
+	args: {
+		onClose: noop,
+		actions: { voiceCall: noop, directMessage: noop },
+		contact: internalContact,
+		data: {
+			...preventedCallData,
+			preventedBy: { appId: 'call-policy', appName: 'Call Policy', text: 'The callee is on a Do Not Disturb list' },
+		},
+	},
+};
+
+// An app that named a translation key. The reason renders in the app namespace
+export const PreventedWithTranslatedReason: Story = {
+	args: {
+		onClose: noop,
+		actions: { voiceCall: noop, directMessage: noop },
+		contact: internalContact,
+		data: {
+			...preventedCallData,
+			preventedBy: {
+				appId: 'call-policy',
+				appName: 'Call Policy',
+				text: 'Calls to user2 are not allowed by this workspace',
+				i18n: { key: 'call_prevented_for_callee', ns: 'app-call-policy', args: { callee: 'user2' } },
+			},
+		},
+	},
+};
+
+// A malformed record that named neither a reason nor a key. The card's own second line reads
+// "Prevented by {app name}", so it is not repeated below
+export const PreventedWithoutReason: Story = {
+	args: {
+		onClose: noop,
+		actions: { voiceCall: noop, directMessage: noop },
+		contact: internalContact,
+		data: {
+			...preventedCallData,
+			preventedBy: { appId: 'call-policy', appName: 'Call Policy', text: '' },
+		},
 	},
 };

@@ -1227,7 +1227,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 		const sort = { $sort: options.sort || { ts: -1 } };
 
-		params.push(project, unwindClosingMsg, sort);
+		const unsetVisitorToken = { $unset: ['v.token', 'closingMessage.token'] };
+
+		params.push(project, unsetVisitorToken, unwindClosingMsg, sort);
 
 		if (onlyCount) {
 			params.push({ $count: 'count' });

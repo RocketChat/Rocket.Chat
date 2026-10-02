@@ -4,43 +4,43 @@ import { expect } from '../../utils/test';
 import { OmnichannelSidebar, ToastMessages } from '../fragments';
 import { ConfirmDeleteModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
+import { RoutedPage } from '../routed-page';
 
-type OmnichannelAdminRoutes =
-	| 'monitors'
-	| 'agents'
-	| 'departments'
-	| 'managers'
-	| 'customfields'
-	| 'current/chats'
-	| 'current/contacts'
-	| 'sla-policies'
-	| 'priorities'
-	| 'triggers'
-	| 'tags'
-	| 'analytics'
-	| 'reports'
-	| 'canned-responses'
-	| 'units'
-	| 'appearance'
-	| 'businessHours'
-	| 'livechat-appearance'
-	| 'realtime-monitoring'
-	| 'security-privacy';
+export enum OmnichannelSectionsHref {
+	currentChats = '/omnichannel/current/chats',
+	currentContacts = '/omnichannel/current/contacts',
+	agents = '/omnichannel/agents',
+	managers = '/omnichannel/managers',
+	monitors = '/omnichannel/monitors',
+	departments = '/omnichannel/departments',
+	units = '/omnichannel/units',
+	customFields = '/omnichannel/customfields',
+	cannedResponses = '/omnichannel/canned-responses',
+	triggers = '/omnichannel/triggers',
+	tags = '/omnichannel/tags',
+	priorities = '/omnichannel/priorities',
+	slaPolicies = '/omnichannel/sla-policies',
+	businessHours = '/omnichannel/businessHours',
+	appearance = '/omnichannel/appearance',
+	livechatAppearance = '/omnichannel/livechat-appearance',
+	analytics = '/omnichannel/analytics',
+	reports = '/omnichannel/reports',
+	realtimeMonitoring = '/omnichannel/realtime-monitoring',
+	securityPrivacy = '/omnichannel/security-privacy',
+}
 
 /**
  * A page under `/omnichannel/*`. Subclasses declare `route` and `title` and get
- * `goTo()`, `pageHeader` and `table` for free.
+ * `goto()`, `pageHeader` and `table` for free.
  */
-export abstract class OmnichannelAdmin {
-	protected abstract readonly route: OmnichannelAdminRoutes;
+export abstract class OmnichannelAdmin extends RoutedPage {
+	protected abstract override readonly route: OmnichannelSectionsHref;
 
 	/** Text of the page's main heading. */
 	protected abstract readonly title: string;
 
 	/** Accessible name of the page's main table, when it differs from `title`. */
 	protected readonly tableName?: string;
-
-	protected readonly page: Page;
 
 	protected readonly toastMessage: ToastMessages;
 
@@ -49,7 +49,7 @@ export abstract class OmnichannelAdmin {
 	readonly deleteModal: ConfirmDeleteModal;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.sidebar = new OmnichannelSidebar(page);
 		this.toastMessage = new ToastMessages(page);
 		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog', { name: 'Are you sure?' }));
@@ -91,12 +91,7 @@ export abstract class OmnichannelAdmin {
 		return new Table(this.page.getByRole('table', { name: this.tableName ?? this.title }));
 	}
 
-	async goTo() {
-		await this.page.goto(`/omnichannel/${this.route}`);
-		await this.waitForPage();
-	}
-
-	protected async waitForPage() {
+	async waitForReady(): Promise<void> {
 		await this.pageHeader.waitFor({ state: 'visible' });
 		await this.table.waitForDisplay(this.emptyState);
 	}

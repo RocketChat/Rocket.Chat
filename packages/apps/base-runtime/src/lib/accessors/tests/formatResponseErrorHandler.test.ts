@@ -1,8 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import * as jsonrpc from 'jsonrpc-lite';
-
+import * as jsonrpc from '../../jsonrpc';
 import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 describe('formatErrorResponse', () => {

@@ -1,7 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 
 import 'highlight.js/styles/github.css';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from '../lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
 import { clearStoredCredentials, ensureConnectedAndAuthenticated, getDdpSdk, isAuthError } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';

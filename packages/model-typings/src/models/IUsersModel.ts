@@ -93,7 +93,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findPaginatedByActiveExternalUsersExcept<
@@ -104,7 +103,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findActive<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -492,9 +490,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	countActiveLocalGuests(idsExceptions: string[]): Promise<number>;
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		options?: O,
-	): FindCursor<DocumentWithProjection<T, O>>;
 	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
 	findUsersByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		usernames: string[],

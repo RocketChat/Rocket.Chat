@@ -33,6 +33,8 @@ export type GenericModalProps = RequiredModalProps & {
 	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
 	confirmLoading?: boolean;
+	/** Symmetric with `confirmDisabled`: for a modal whose action, once started, cannot be called back. */
+	cancelDisabled?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
@@ -91,6 +93,7 @@ const GenericModal = ({
 	dontAskAgain,
 	confirmDisabled,
 	confirmLoading,
+	cancelDisabled,
 	tagline,
 	wrapperFunction,
 	annotation,
@@ -149,7 +152,7 @@ const GenericModal = ({
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{onCancel && (
-						<Button secondary onClick={handleCancel}>
+						<Button secondary disabled={cancelDisabled} onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}

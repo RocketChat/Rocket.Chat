@@ -5,8 +5,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomFields } from '../../../../lib/publishFields';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';

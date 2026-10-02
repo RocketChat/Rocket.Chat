@@ -1,0 +1,150 @@
+import type { VideoConferenceChatAccessMode } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
+import {
+	Box,
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+	Option,
+	OptionAvatar,
+	OptionContent,
+} from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
+import { useConferenceActions, useConferenceViewer } from '../../context/ConferenceContext';
+import type { ConferenceChatAccess } from '../../context/definitions';
+import { chatAccessLeadsWithDiscussion } from '../../lib/chatAccess';
+
+type ChatAccessModalProps = {
+	access: ConferenceChatAccess;
+	onClose: () => void;
+};
+
+/**
+ * Both ways out of "some members can't see the chat" give something away — the room's history, or the
+ * conversation's place in it — so neither can be applied on the user's behalf. The consequences are spelled
+ * out next to each action and the modal is dismissable, which is the whole point of asking here.
+ *
+ * Which one leads is a privacy call, shared with the server so the two can't drift — see
+ * `chatAccessLeadsWithDiscussion`. A DM can't take new members at all, so there the discussion is the only
+ * option offered.
+ */
+const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
+	const { t } = useTranslation();
+	const titleId = useId();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { useRealName } = useConferenceViewer();
+	const { shareChat } = useConferenceActions();
+
+	const [applying, setApplying] = useState<VideoConferenceChatAccessMode>();
+	const isPending = applying !== undefined;
+
+	const apply = (mode: VideoConferenceChatAccessMode) => {
+		setApplying(mode);
+
+		void shareChat(mode)
+			.then(onClose)
+			.catch((error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+				setApplying(undefined);
+			});
+	};
+
+	const roomName = access.name;
+	const discussionLeads = chatAccessLeadsWithDiscussion(access);
+
+	// Both disabled while either is in flight: they are alternatives, and a second click applied both.
+	const inviteButton = access.canInvite && (
+		<Button
+			variant={discussionLeads ? undefined : 'primary'}
+			disabled={isPending}
+			loading={applying === 'invite'}
+			onClick={() => apply('invite')}
+		>
+			{t('Add_to_room')}
+		</Button>
+	);
+
+	const discussionButton = (
+		<Button
+			variant={discussionLeads ? 'primary' : undefined}
+			disabled={isPending}
+			loading={applying === 'discussion'}
+			onClick={() => apply('discussion')}
+		>
+			{t('Create_discussion')}
+		</Button>
+	);
+
+	return (
+		<Modal aria-labelledby={titleId}>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle id={titleId}>{t('Chat_access')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
+				<Box color='default'>{t('These_participants_cannot_see_the_chat')}</Box>
+				{/* Named from the conference's own record — there may be no shared room to look them up in. */}
+				{access.members.map((member) => (
+					<Option key={member._id}>
+						<OptionAvatar>
+							<UserAvatar username={member.username} size='x24' />
+						</OptionAvatar>
+						<OptionContent>{getUserDisplayName(member.name, member.username, useRealName)}</OptionContent>
+					</Option>
+				))}
+
+				{access.canInvite && (
+					<Box marginBlockStart={16}>
+						<Box fontScale='p2m' color='default'>
+							{t('Add_to_room')}
+						</Box>
+						<Box fontScale='p2' color='hint'>
+							<Trans
+								i18nKey='Chat_access_add_to_room_description'
+								values={{ roomName }}
+								components={{ b: <Box is='span' fontWeight={600} color='default' /> }}
+							/>
+						</Box>
+					</Box>
+				)}
+
+				<Box marginBlockStart={16}>
+					<Box fontScale='p2m' color='default'>
+						{t('Create_discussion')}
+					</Box>
+					<Box fontScale='p2' color='hint'>
+						<Trans
+							i18nKey='Chat_access_create_discussion_description'
+							values={{ roomName }}
+							components={{ b: <Box is='span' fontWeight={600} color='default' /> }}
+						/>
+					</Box>
+				</Box>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
+					<Button secondary onClick={onClose}>
+						{t('Cancel')}
+					</Button>
+					{/* The leading action sits last, where the primary action is expected. */}
+					{discussionLeads ? inviteButton : discussionButton}
+					{discussionLeads ? discussionButton : inviteButton}
+				</ModalFooterControllers>
+			</ModalFooter>
+		</Modal>
+	);
+};
+
+export default ChatAccessModal;

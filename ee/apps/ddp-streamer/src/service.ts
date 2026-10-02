@@ -4,7 +4,19 @@ import { api, getConnection, getTrashCollection } from '@rocket.chat/core-servic
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
+import { NotificationsModule, StreamerCentral } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
+
+import { DDPStreamer } from './DDPStreamer';
+import { ConnectionRegistry } from './ddp/ConnectionRegistry';
+import { Server } from './ddp/Server';
+import { ConnectionLifecycle } from './ddp/lifecycle';
+import { registerAccountMethods } from './methods/accounts';
+import { callMeteorMethod } from './methods/meteorFallback';
+import { registerPresenceMethods } from './methods/presence';
+import { registerAutoupdatePublication } from './publications/autoupdate';
+import { registerLoginServiceConfigurationPublication } from './publications/loginServiceConfiguration';
+import { createStreamAdapter } from './streams/StreamAdapter';
 
 void (async () => {
 	const { db, client } = await getConnection();
@@ -19,16 +31,26 @@ void (async () => {
 		}),
 	);
 
-	// need to import service after models are registered
-	const { NotificationsModule } = await import('../../../../apps/meteor/server/modules/notifications/notifications.module');
-	const { DDPStreamer } = await import('./DDPStreamer');
-	const { Stream } = await import('./Streamer');
+	const server = new Server(callMeteorMethod);
+	const lifecycle = new ConnectionLifecycle();
+	const registry = new ConnectionRegistry(lifecycle);
 
-	const notifications = new NotificationsModule(Stream);
+	const collections = {
+		loginServices: registerLoginServiceConfigurationPublication(server),
+		clientVersions: registerAutoupdatePublication(server),
+	};
+	registerAccountMethods(server, lifecycle);
+	registerPresenceMethods(server);
+
+	StreamerCentral.on('broadcast', (name, eventName, args) => {
+		void api.broadcast('stream', [name, eventName, args]);
+	});
+
+	const notifications = new NotificationsModule(createStreamAdapter(server));
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(notifications));
+	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications));
 
 	await api.start();
 })();

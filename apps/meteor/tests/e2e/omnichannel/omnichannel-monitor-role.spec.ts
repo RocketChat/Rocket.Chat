@@ -132,19 +132,19 @@ test.describe('OC - Monitor Role', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await poOmnichannel.chats.goTo();
+		await poOmnichannel.chats.goto();
 	});
 
 	test('OC - Monitor Role - Basic permissions', async () => {
 		await test.step('expect agent to not have access to omnichannel administration', async () => {
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact Center')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact center')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Analytics')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time Monitoring')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time monitoring')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Agents')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Departments')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business Hours')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business hours')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Reports')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned Responses')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Canned responses')).toBeVisible();
 		});
 
 		// await test.step('expect to be able to see contact center', async () => {});
@@ -157,7 +157,7 @@ test.describe('OC - Monitor Role', () => {
 	test('OC - Monitor Role - Canned responses', async () => {
 		// TODO: move to unit test
 		await test.step('expect not to be able to create public canned responses (administration)', async () => {
-			await poOmnichannel.cannedResponses.goTo();
+			await poOmnichannel.cannedResponses.goto();
 			await poOmnichannel.cannedResponses.btnNew.click();
 			await expect(poOmnichannel.cannedResponses.radioPublic).toBeDisabled();
 		});
@@ -185,7 +185,7 @@ test.describe('OC - Monitor Role', () => {
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
-				`Chat On Hold: The chat was manually placed On Hold by ${MONITOR}`,
+				`Chat on hold: The chat was manually placed on hold by ${MONITOR}`,
 			);
 			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnResume).toBeVisible();
@@ -200,7 +200,7 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
-			await poOmnichannel.chats.goTo();
+			await poOmnichannel.chats.goto();
 		});
 
 		await test.step('expect not to be able to remove closed room', async () => {
@@ -214,7 +214,7 @@ test.describe('OC - Monitor Role', () => {
 		const [monitor] = monitors;
 
 		const poContactCenterChats = poOmnichannel.chats;
-		await poContactCenterChats.goTo();
+		await poContactCenterChats.goto();
 
 		await test.step('expect not to be able to see chats from removed department', async () => {
 			await test.step('expect rooms from both departments to be visible', async () => {

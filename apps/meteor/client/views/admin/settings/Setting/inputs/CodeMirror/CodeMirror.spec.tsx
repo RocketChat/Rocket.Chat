@@ -26,7 +26,7 @@ jest.mock('codemirror/addon/edit/matchtags', () => ({}));
 jest.mock('codemirror/addon/edit/trailingspace', () => ({}));
 jest.mock('codemirror/addon/search/match-highlighter', () => ({}));
 jest.mock('codemirror/lib/codemirror.css', () => ({}));
-jest.mock('../../../../../../../app/ui/client/lib/codeMirror/codeMirror', () => ({}));
+jest.mock('../../../../../../lib/codeMirror', () => ({}));
 
 const flushAsync = () => act(() => Promise.resolve());
 

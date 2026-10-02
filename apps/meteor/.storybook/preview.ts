@@ -3,7 +3,7 @@ import type { Preview } from '@storybook/react';
 
 import { RocketChatDecorator } from './decorators';
 
-import '../app/theme/client/main.css';
+import '../client/styles/main.css';
 import 'highlight.js/styles/github.css';
 
 const preview: Preview = {

@@ -9,6 +9,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
+		"allowArbitraryExtensions": true,
 
 		"strict": true,
 		"allowUnreachableCode": false,

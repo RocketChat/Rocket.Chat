@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -12,9 +13,11 @@ declare module '@rocket.chat/ddp-client' {
 		getRoomJoinCode(rid: string): string | false;
 	}
 }
-/* @deprecated */
+
 Meteor.methods<ServerMethods>({
 	async getRoomJoinCode(rid) {
+		methodDeprecationLogger.method('getRoomJoinCode', '9.0.0', []);
+
 		check(rid, String);
 
 		const userId = Meteor.userId();

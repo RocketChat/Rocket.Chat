@@ -81,7 +81,7 @@ test.describe.serial('OC - Monitor Role', () => {
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
 
-		await page.goto('/omnichannel/departments');
+		await poOmnichannelDepartments.goto();
 	});
 
 	test('OC - Monitor Role - Create department with business unit', async () => {

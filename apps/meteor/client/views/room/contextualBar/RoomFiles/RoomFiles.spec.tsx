@@ -4,7 +4,7 @@ import { axe } from 'jest-axe';
 
 import * as stories from './RoomFiles.stories';
 
-jest.mock('../../../../../app/utils/client', () => ({
+jest.mock('../../../../../client/lib/getURL', () => ({
 	getURL: jest.fn((url: string) => url),
 }));
 

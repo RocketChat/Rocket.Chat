@@ -11,7 +11,7 @@ describe('handlers > scheduler', () => {
 		Promise.resolve({
 			id: 'mockId',
 			result: {},
-			jsonrpc: '2.0',
+			jsonrpc: '2.0' as const,
 			serialize: () => '',
 		}),
 	);

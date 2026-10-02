@@ -1,0 +1,113 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import ConferenceStartPage from './ConferenceStartPage';
+
+const start = jest.fn(() => ({ data: { type: 'videoconference', callId: 'new-call' }, success: true }) as any);
+const join = jest.fn(() => ({ url: 'https://call.example', providerName: 'test' }) as any);
+const navigate = jest.fn();
+
+/**
+ * One router, not one per call.
+ *
+ * The page reads it from two hooks, and `useConfinedNavigation` patches `router.navigate` on the object it was
+ * handed — so a fresh object per consumer left the patch on one and the start's navigation going through the
+ * other, which is not the path the product takes. Rebuilt per test so a patch cannot outlive its render.
+ */
+let router: { navigate: typeof navigate; buildRoutePath: () => string };
+
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	...jest.requireActual('@rocket.chat/ui-contexts'),
+	useRouter: () => router,
+}));
+
+// A direct subscription is named after the other person, which is the whole reason this screen reads the
+// subscription rather than the room — so the fixture says a person's name there and a room's name otherwise.
+const subscription = (t: 'c' | 'd') => ({
+	subscription: {
+		_id: 'sub',
+		rid: 'room-id',
+		t,
+		fname: t === 'd' ? 'Ada Lovelace' : 'general',
+		name: t === 'd' ? 'ada' : 'general',
+	},
+	success: true,
+});
+
+const renderStart = (t: 'c' | 'd' = 'c') =>
+	render(<ConferenceStartPage rid='room-id' />, {
+		wrapper: mockAppRoot()
+			.withJohnDoe()
+			// The two strings the name is *put into*. Everything else here is asserted by key, which says what was
+			// rendered; these two have to say what was rendered into them, since carrying the name is their job and
+			// an untranslated key carries nothing.
+			.withTranslations('en', 'core', {
+				Meeting_in__roomName__: 'Meeting in "{{roomName}}"',
+				Call__name__: 'Call {{name}}',
+			})
+			.withEndpoint('GET', '/v1/subscriptions.getOne', () => subscription(t) as any)
+			.withEndpoint(
+				'GET',
+				'/v1/video-conference.capabilities',
+				() => ({ providerName: 'test', capabilities: { mic: true, cam: true } }) as any,
+			)
+			.withEndpoint('POST', '/v1/video-conference.start', start)
+			.withEndpoint('POST', '/v1/video-conference.join', join)
+			.build(),
+	});
+
+beforeEach(() => {
+	router = { navigate, buildRoutePath: () => '/conference/new-call' };
+	start.mockClear();
+	join.mockClear();
+	navigate.mockClear();
+	localStorage.clear();
+});
+
+// The reported problem: clicking *call* in a room posted a message there and rang people for a call that hadn't
+// happened yet. Opening this window must create nothing at all.
+it('creates no conference until it is asked to', async () => {
+	renderStart();
+
+	expect(await screen.findByRole('button', { name: 'Start_call' })).toBeInTheDocument();
+	expect(start).not.toHaveBeenCalled();
+	expect(join).not.toHaveBeenCalled();
+});
+
+// Offered as the meeting it is, rather than as the room's bare name.
+it('names the call after the room it is being started in', async () => {
+	renderStart();
+
+	expect(await screen.findByLabelText('Call_name')).toHaveValue('Meeting in "general"');
+});
+
+it('starts the conference with the name and devices it was given', async () => {
+	renderStart();
+
+	await userEvent.clear(await screen.findByLabelText('Call_name'));
+	await userEvent.type(screen.getByLabelText('Call_name'), 'Release planning');
+	await userEvent.click(screen.getByRole('button', { name: 'Mic_on' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Start_call' }));
+
+	await waitFor(() => expect(start).toHaveBeenCalledWith({ roomId: 'room-id', title: 'Release planning', allowRinging: true }));
+	await waitFor(() => expect(join).toHaveBeenCalledWith({ callId: 'new-call', state: { mic: false, cam: false } }));
+});
+
+// Replacing this screen is what stops a reload starting a second conference, and what lets the window be reached
+// again as the call it now holds.
+it('becomes the conference it started', async () => {
+	renderStart();
+
+	await userEvent.click(await screen.findByRole('button', { name: 'Start_call' }));
+
+	await waitFor(() => expect(navigate).toHaveBeenCalledWith({ name: 'conference', params: { id: 'new-call' } }, { replace: true }));
+});
+
+// A direct call is placed to someone: it is their name on the button, and it has no name of its own to set.
+it('offers to call the person in a direct message', async () => {
+	renderStart('d');
+
+	expect(await screen.findByRole('button', { name: 'Call Ada Lovelace' })).toBeInTheDocument();
+	expect(screen.queryByLabelText('Call_name')).not.toBeInTheDocument();
+});

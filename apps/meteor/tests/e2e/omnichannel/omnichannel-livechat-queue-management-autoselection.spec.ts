@@ -44,7 +44,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 		const page2 = await liveChatContext.newPage();
 
 		poLiveChat = new OmnichannelLiveChat(page2, api);
-		await poLiveChat.page.goto('/livechat');
+		await poLiveChat.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -65,7 +65,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			liveChat2Context = await browser.newContext();
 			const page = await liveChat2Context.newPage();
 			poLiveChat2 = new OmnichannelLiveChat(page, api);
-			await poLiveChat2.page.goto('/livechat');
+			await poLiveChat2.goto();
 		});
 
 		test.afterEach(async () => {

@@ -1,12 +1,68 @@
-import { Decoder as _Decoder, Encoder as _Encoder, encode, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder as _Decoder, Encoder as _Encoder, ExtensionCodec } from '@msgpack/msgpack';
 
 import { hasSecureFields } from '../../../lib/SecureFields';
 
-const extensionCodec = new ExtensionCodec();
+const extensionCodec = new ExtensionCodec<SecureFieldsContext>();
 
 const FUNCTION_DISABLER_EXT = 0;
 const BUFFER_HANDLER_EXT = 1;
 const SECURE_FIELDS_HANDLER_EXT = 2;
+
+/**
+ * The secure fields extension marks the root object as an extension type and then
+ * runs a nested pass over its properties. `ignoreRoot` is how it tells that nested
+ * pass apart from the outer one.
+ */
+type SecureFieldsContext = { ignoreRoot?: boolean; pool: NestedEncoderPool };
+
+/**
+ * The Secure Fields extension needs to use a different instance of the encoder to
+ * handle its own fields, so we keep supporting instances around to avoid paying the
+ * cost of instantiating them during the encoding process itself: `new Encoder()`
+ * allocates a 2 KiB buffer and measures ~1.5 us, enough to dominate a small call.
+ *
+ * The pool has to be reentrant. A nested pass walks the object's own properties, and
+ * one of those can carry secure fields in turn, which reaches this extension again.
+ * Handing an inner call the instance an outer call is still writing into would corrupt
+ * both, so a busy instance is never lent twice: the pool grows one slot per level of
+ * nesting and settles there.
+ *
+ * An `Encoder` never shrinks its buffer, so a pool holds its high-water mark for as
+ * long as it lives. That is why a pool belongs to one subprocess rather than to this
+ * module: one large message must not leave every other app paying for its buffer.
+ * `newEncoder` hands each subprocess a pool of its own, and the msgpack context is
+ * what carries that pool to the extension below.
+ */
+type NestedEncoder = { encoder: _Encoder<SecureFieldsContext>; context: SecureFieldsContext };
+
+type NestedEncoderPool = { encoders: NestedEncoder[]; depth: number };
+
+/** Only the encode side fills a pool, but both sides need a context to carry one. */
+function newContext(): SecureFieldsContext {
+	return { pool: { encoders: [], depth: 0 } };
+}
+
+function createNestedEncoder(pool: NestedEncoderPool): NestedEncoder {
+	const context: SecureFieldsContext = { pool };
+
+	return { encoder: new _Encoder<SecureFieldsContext>({ extensionCodec, context }), context };
+}
+
+function encodeNested(value: unknown, pool: NestedEncoderPool): Uint8Array {
+	pool.encoders[pool.depth] ??= createNestedEncoder(pool);
+
+	const nested = pool.encoders[pool.depth];
+
+	nested.context.ignoreRoot = true;
+
+	pool.depth += 1;
+
+	try {
+		return nested.encoder.encode(value);
+	} finally {
+		pool.depth -= 1;
+	}
+}
 
 extensionCodec.register({
 	type: FUNCTION_DISABLER_EXT,
@@ -42,17 +98,17 @@ extensionCodec.register({
 	 * subprocess side, without having to iterate through all objects in search
 	 * of the field.
 	 */
-	encode: (object: unknown, context: { ignoreRoot?: boolean } = {}) => {
+	encode: (object: unknown, context: SecureFieldsContext) => {
 		// Ignoring the root object allows msgpack to take care of encoding the object's properties,
 		// while we mark the root object itself as an extension type.
-		if (context?.ignoreRoot) {
+		if (context.ignoreRoot) {
 			context.ignoreRoot = false;
 
 			return null;
 		}
 
 		if (hasSecureFields(object)) {
-			return encode(object, { extensionCodec, context: { ignoreRoot: true } });
+			return encodeNested(object, context.pool);
 		}
 	},
 
@@ -71,8 +127,8 @@ extensionCodec.register({
  * For that reason, we can't have a singleton instance of Encoder and Decoder, but rather one
  * instance for each time we create a new subprocess
  */
-export const newEncoder = () => new _Encoder({ extensionCodec });
-export const newDecoder = () => new _Decoder({ extensionCodec });
+export const newEncoder = () => new _Encoder<SecureFieldsContext>({ extensionCodec, context: newContext() });
+export const newDecoder = () => new _Decoder<SecureFieldsContext>({ extensionCodec, context: newContext() });
 
-export type Encoder = _Encoder;
-export type Decoder = _Decoder;
+export type Encoder = _Encoder<SecureFieldsContext>;
+export type Decoder = _Decoder<SecureFieldsContext>;

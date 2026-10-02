@@ -31,12 +31,12 @@ import './v1/push';
 import './v1/roles';
 import './v1/rooms';
 import './v1/settings';
+import './v1/setupWizard';
 import './v1/stats';
 import './v1/subscriptions';
 import './v1/users';
 import './v1/videoConference';
 import './v1/autotranslate';
-import './v1/webdav';
 import './v1/oauthapps';
 import './v1/custom-sounds';
 import './v1/custom-user-status';
@@ -49,6 +49,7 @@ import './v1/moderation';
 import './v1/uploads';
 import './v1/twoFactorChallenges';
 import './v1/loginCode';
+import './experimental/rooms.setCategory';
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';
 

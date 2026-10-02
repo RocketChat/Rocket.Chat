@@ -21,32 +21,28 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 		create<IEditableSettingsState>()((set) => ({
 			state: persistedSettings
 				.filter((x) => !defaultOmit.includes(x._id))
-				.map(
-					(persisted): EditableSetting => ({
-						...persisted,
-						changed: false,
-						// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
-						// This was left here to avoid unexpected breaking changes
-						disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, persistedSettings),
-						invisible: !performSettingQuery(persisted.displayQuery, persistedSettings),
-					}),
-				),
+				.map((persisted): EditableSetting => ({
+					...persisted,
+					changed: false,
+					// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
+					// This was left here to avoid unexpected breaking changes
+					disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, persistedSettings),
+					invisible: !performSettingQuery(persisted.displayQuery, persistedSettings),
+				})),
 			initialState: persistedSettings,
 			sync: (newInitialState) => {
 				set(({ state }) => ({
 					state: newInitialState
 						.filter((x) => !defaultOmit.includes(x._id))
-						.map(
-							(persisted): EditableSetting => ({
-								...state.find(({ _id }) => _id === persisted._id),
-								...persisted,
-								changed: false,
-								// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
-								// This was left here to avoid unexpected breaking changes
-								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
-								invisible: !performSettingQuery(persisted.displayQuery, state),
-							}),
-						),
+						.map((persisted): EditableSetting => ({
+							...state.find(({ _id }) => _id === persisted._id),
+							...persisted,
+							changed: false,
+							// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
+							// This was left here to avoid unexpected breaking changes
+							disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
+							invisible: !performSettingQuery(persisted.displayQuery, state),
+						})),
 				}));
 			},
 			mutate: (changes) => {

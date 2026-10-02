@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
+import proxyquire from 'proxyquire';
 
 import { AppContactsConverter } from '../../../../../app/apps/server/converters/contacts';
 import { AppDepartmentsConverter } from '../../../../../app/apps/server/converters/departments';
@@ -8,7 +9,6 @@ import { AppRolesConverter } from '../../../../../app/apps/server/converters/rol
 import { AppRoomsConverter } from '../../../../../app/apps/server/converters/rooms';
 import { AppSettingsConverter } from '../../../../../app/apps/server/converters/settings';
 import { AppThreadsConverter } from '../../../../../app/apps/server/converters/threads';
-import { AppUploadsConverter } from '../../../../../app/apps/server/converters/uploads';
 import { AppUsersConverter } from '../../../../../app/apps/server/converters/users';
 import { AppVideoConferencesConverter } from '../../../../../app/apps/server/converters/videoConferences';
 import { AppVisitorsConverter } from '../../../../../app/apps/server/converters/visitors';
@@ -478,6 +478,14 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 	});
 
 	describe('AppUploadsConverter', () => {
+		// The uploads codec derives `url` via the server-side `getURL`, which transitively imports
+		// `server/settings` — a module with a top-level await that esbuild cannot emit as CJS. `@global`
+		// reaches it through the codec; its key resolves from the converter's directory, hence one level
+		// less than the codec's own import path.
+		const { AppUploadsConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/uploads', {
+			'../../../../server/lib/utils/getURL': { 'getURL': (path: string) => `http://siteurl.test${path}`, '@global': true },
+		});
+
 		const converter = new AppUploadsConverter(stubOrch);
 
 		it('convertToApp maps an upload and resolves room/user/visitor via converters', async () => {
@@ -515,9 +523,9 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				extension: 'png',
 				progress: 1,
 				etag: 'etag-1',
-				path: '/path',
+				path: '/file-upload/up-1/file.png',
 				token: 'up-tok',
-				url: 'http://example/file.png',
+				url: 'http://siteurl.test/file-upload/up-1/file.png',
 				updatedAt: '2024-02-02T00:00:00.000Z',
 				uploadedAt: '2024-01-01T00:00:00.000Z',
 				room: { __converted: 'rooms', id: 'room-1' },

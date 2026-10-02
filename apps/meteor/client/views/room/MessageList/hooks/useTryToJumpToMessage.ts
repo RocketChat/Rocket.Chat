@@ -5,7 +5,7 @@ import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import type { WindowVirtualizerHandle } from 'virtua';
 
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { messagesQueryKeys } from '../../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';

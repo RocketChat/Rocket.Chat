@@ -1,6 +1,6 @@
-import { useRouter, useToastMessageDispatch, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
@@ -10,13 +10,20 @@ const SAMLLoginRoute = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [inviteToken] = useSamlInviteToken();
 	const loginClient = useSearchParameter('loginClient');
-	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
+
+	// The credential token is single-use, so the login handoff must fire only once
+	const sentLoginRequest = useRef(false);
 
 	useEffect(() => {
+		if (sentLoginRequest.current) {
+			return;
+		}
+		sentLoginRequest.current = true;
+
 		const { token } = router.getRouteParameters();
 
 		//SAML token handoff to the native client (mobile/desktop)
-		if (enableModernOAuthFlow && (loginClient === 'desktop' || loginClient === 'mobile')) {
+		if (loginClient === 'desktop' || loginClient === 'mobile') {
 			window.location.href = buildSamlDeepLinkURL(token);
 			const timeout = setTimeout(() => {
 				router.navigate('/home', { replace: true });
@@ -45,7 +52,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, enableModernOAuthFlow, inviteToken, loginClient, router]);
+	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
 };

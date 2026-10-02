@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 
-import { decode, Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
+import { Decoder, Encoder, ExtensionCodec } from '@msgpack/msgpack';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 import { applySecureFields, type WithSecureFields } from './secureFields';
@@ -43,7 +43,15 @@ extensionCodec.register({
 extensionCodec.register({
 	type: SECURE_FIELDS_HANDLER_EXT,
 	encode: (_object: unknown) => null,
-	decode: (data: Uint8Array) => applySecureFields(decode(data, { extensionCodec }) as WithSecureFields<Record<string, unknown>>),
+
+	/**
+	 * The nested pass needs a decoder of its own, because the outer one sits mid-message.
+	 * It gets a fresh instance rather than a pooled one: `new Decoder()` allocates no
+	 * buffer, so it costs ~7 ns, while a pooled instance would keep `data` — a view into
+	 * the whole outer frame — reachable until its next nested decode.
+	 */
+	decode: (data: Uint8Array) =>
+		applySecureFields(new Decoder({ extensionCodec }).decode(data) as WithSecureFields<Record<string, unknown>>),
 });
 
 export const encoder = new Encoder({ extensionCodec });
