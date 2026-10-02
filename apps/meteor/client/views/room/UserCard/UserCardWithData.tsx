@@ -58,6 +58,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, username, showRealNames, isLoading, workspaceRoles, roomRoles]);
 

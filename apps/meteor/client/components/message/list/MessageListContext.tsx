@@ -21,7 +21,6 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
-	hoverUserCardEnabled: boolean;
 	highlights?: {
 		highlight: string;
 		regex: RegExp;

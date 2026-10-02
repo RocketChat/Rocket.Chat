@@ -29,7 +29,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
-	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -57,7 +56,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 						username={message.u.username}
 						title=''
 						size='x36'
-						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it

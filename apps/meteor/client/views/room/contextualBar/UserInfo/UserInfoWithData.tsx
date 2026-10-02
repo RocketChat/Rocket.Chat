@@ -70,6 +70,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
+			federated,
 		} = data.user;
 
 		return {

@@ -78,7 +78,6 @@ const RoomMessage = ({
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
-	const hoverUserCardEnabled = useMessageListHoverUserCardEnabled();
 
 	const selecting = useIsSelecting();
 
@@ -129,7 +128,7 @@ const RoomMessage = ({
 						username={message.u.username}
 						title=''
 						size='x36'
-						onMouseEnter={hoverUserCardEnabled ? (e) => openUserCard(e, message.u.username) : undefined}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						// Redundant pointer-only shortcut for the accessible name button next to it

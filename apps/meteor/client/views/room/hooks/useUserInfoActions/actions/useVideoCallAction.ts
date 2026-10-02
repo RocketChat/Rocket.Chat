@@ -55,24 +55,34 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 				await loadCapabilities();
 				closeUserCard();
 
-				// A call placed from a card is about the person, not the room, so a missing DM is created on the way
-				// (im.create also returns the existing room when the subscription simply hasn't resolved yet).
-				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
-
-				if (conferenceWindowEnabled) {
-					startCall(rid);
+				// The popup, as before. `room` is always present here — the guard above returned otherwise — and is
+				// re-tested only so its type says so.
+				if (!conferenceWindowEnabled) {
+					if (room) {
+						dispatchPopup({ rid: room._id });
+					}
 					return;
 				}
 
-				dispatchPopup({ rid });
+				// The call window asks for itself, and a call placed from a card is about the person, not the room —
+				// so a direct room is created for one that doesn't exist yet, rather than hiding the entry.
+				let rid = room?._id;
+				if (!rid) {
+					const { room: newRoom } = await createDirectMessage({ usernames: user.username ?? '' });
+					rid = newRoom._id;
+				}
+
+				startCall(rid);
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
 		};
 
-		// Without a DM, the entry is only offered to someone a DM can be created with: im.create needs a username,
-		// and calls are not supported over federation.
-		const hasCallableRoom = room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated && !!user.username;
+		// The entry appears where it always did — in a room, and never a federated one. With the call window it
+		// also appears with no room at all, since one can be created on the way to the call — but only for someone
+		// a room can be created *with*: `im.create` speaks usernames, and offering the call to a user without one
+		// would end in a warning toast instead of a call.
+		const hasCallableRoom = room ? !isRoomFederated(room) : conferenceWindowEnabled && !!user.username;
 
 		const shouldShowStartCall =
 			hasCallableRoom && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
@@ -89,8 +99,6 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		room,
 		user._id,
 		user.username,
-		user.federated,
-		canCreateDirectMessage,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,
