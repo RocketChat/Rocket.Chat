@@ -21,7 +21,6 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
-import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -41,28 +40,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
-	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
-
-	// While messages are being selected the whole row is the click target
-	// (toggling the selection), so the author affordances step aside the same
-	// way the avatar does: the name stops being a button and the role tag stops
-	// opening the card, otherwise a click would do both.
-	const isSelecting = useIsSelecting();
-	const authorTriggerProps = isSelecting
-		? {}
-		: {
-				role: 'button' as const,
-				tabIndex: 0,
-				onMouseEnter: hoverUserCardEnabled ? (e: MouseEvent) => openUserCard(e, message.u.username) : undefined,
-				onClick: () => openUserInfo(message.u.username),
-				onKeyDown: (e: KeyboardEvent) => {
-					if (e.key === 'Enter' || e.key === ' ') {
-						e.preventDefault();
-						openUserInfo(message.u.username);
-					}
-				},
-				...triggerProps,
-			};
+	const roles = [...workspaceRoles, ...roomRoles];
+	const shouldShowRolesList = showRoles && roles.length > 0;
 
 	return (
 		<FuselageMessageHeader>
