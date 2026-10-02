@@ -1410,7 +1410,6 @@
   "Connected": "Ansluten",
   "Connection_Closed": "Anslutningen är stängd",
   "Connection_error": "Anslutningsfel",
-  "Connection_failed": "LDAP-anslutningen kunde inte upprättas",
   "Connection_Reset": "Anslutning återställd",
   "Connectivity_Services": "Anslutningstjänster",
   "ConnectWorkspace_Button": "Anslut arbetsytan",

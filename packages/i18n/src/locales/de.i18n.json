@@ -1421,7 +1421,6 @@
   "Connected": "Verbunden",
   "Connection_Closed": "Verbindung geschlossen",
   "Connection_error": "Verbindungsfehler",
-  "Connection_failed": "LDAP-Verbindung fehlgeschlagen",
   "Connection_Reset": "Verbindung zurücksetzen",
   "Connectivity_Services": "Verbindungsdienste",
   "ConnectWorkspace_Button": "Arbeitsbereich verbinden",

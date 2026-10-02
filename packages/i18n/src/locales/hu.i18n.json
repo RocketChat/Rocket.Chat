@@ -1002,7 +1002,6 @@
   "Connected": "Kapcsolódva",
   "Connection_Closed": "Kapcsolat lezárva",
   "Connection_error": "Kapcsolódási hiba",
-  "Connection_failed": "Az LDAP-kapcsolat sikertelen",
   "Connection_Reset": "Kapcsolat visszaállítva",
   "Connectivity_Services": "Kapcsolódási szolgáltatások",
   "Consulting": "Tanácsadás",

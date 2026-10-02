@@ -1,6 +1,13 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isLdapTestSearch,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
+import { getLdapErrorReason } from '../../lib/ldap/getLdapErrorReason';
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
 import { API } from '../api';
@@ -25,6 +32,7 @@ API.v1.post(
 		permissionsRequired: ['test-admin-options'],
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -42,7 +50,9 @@ API.v1.post(
 			await LDAP.testConnection();
 		} catch (err) {
 			SystemLogger.error({ err });
-			throw new Error('Connection_failed');
+			return API.v1.failure('LDAP_Connection_failed_reason', 'error-ldap-connection-failed', undefined, {
+				details: { reason: getLdapErrorReason(err) },
+			});
 		}
 
 		return API.v1.success({

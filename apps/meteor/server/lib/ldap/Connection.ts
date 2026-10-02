@@ -132,7 +132,14 @@ export class LDAPConnection {
 	public async testConnection(): Promise<void> {
 		try {
 			await this.connect();
-			await this.maybeBindDN();
+
+			if (this.options.authentication) {
+				if (!this.options.authenticationUserDN) {
+					throw new Error('LDAP_Authentication_UserDN_empty');
+				}
+
+				await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
+			}
 		} finally {
 			this.disconnect();
 		}

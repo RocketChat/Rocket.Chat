@@ -1345,7 +1345,6 @@
   "Connected": "已连接",
   "Connection_Closed": "连接关闭",
   "Connection_error": "连接错误",
-  "Connection_failed": "LDAP 连接失败",
   "Connection_Reset": "连接重置",
   "Connectivity_Services": "连接性服务",
   "ConnectWorkspace_Button": "连接工作区",

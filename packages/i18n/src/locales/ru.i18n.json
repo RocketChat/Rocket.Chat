@@ -1010,7 +1010,6 @@
   "Connected": "Подключено",
   "Connection_Closed": "Соединение закрыто",
   "Connection_error": "Ошибка подключения",
-  "Connection_failed": "Сбой подключения LDAP",
   "Connection_Reset": "Сброс соединения",
   "Connectivity_Services": "Connectivity services",
   "Consulting": "Консалтинг",
