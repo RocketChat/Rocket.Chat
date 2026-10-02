@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile } from '@rocket.chat/fuselage';
+import { ItemGroupHeader, ItemGroupTitle, Tile } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
@@ -55,17 +55,9 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
-						<Box
-							color='titles-labels'
-							fontScale='c1'
-							fontWeight='bold'
-							paddingInline={12}
-							marginBlockEnd={4}
-							role='presentation'
-							aria-hidden
-						>
-							{filterText ? t('Results') : t('Recent')}
-						</Box>
+						<ItemGroupHeader inset='md' aria-hidden>
+							<ItemGroupTitle>{filterText ? t('Results') : t('Recent')}</ItemGroupTitle>
+						</ItemGroupHeader>
 					)}
 					{items.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
