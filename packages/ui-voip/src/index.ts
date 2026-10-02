@@ -21,7 +21,6 @@ export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 
 export * from './views/MediaCallHistoryTable';
 
-// Building blocks the conference window's own call UI is drawn with, so the two calls look and behave alike.
 export { ActionButton, ToggleButton } from './components';
 export { useDevicePermissionPrompt2, stopTracks } from './hooks';
 export { usePlayMediaStream } from './providers/usePlayMediaStream';
