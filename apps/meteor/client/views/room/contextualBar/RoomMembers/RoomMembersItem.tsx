@@ -1,27 +1,25 @@
-import { useFocusRing } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
 import {
-	Option,
-	OptionAvatar,
-	OptionColumn,
-	OptionDescription,
-	OptionMenu,
-	OptionContent,
 	Icon,
 	IconButton,
-	OptionSkeleton,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemIcon,
+	ItemLink,
+	ItemMedia,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { KeyboardEvent, MouseEvent } from 'react';
-import { useState } from 'react';
+import type { MouseEvent } from 'react';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
+import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
 export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
@@ -43,66 +41,38 @@ const RoomMembersItem = ({
 	reload,
 	useRealName,
 }: RoomMembersItemProps) => {
-	const [showButton, setShowButton] = useState(false);
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-	const { focusProps, isFocusVisible } = useFocusRing();
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
-	const preventPropagation = usePreventPropagation();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	const statusTooltipHandlers = useUserStatusTooltip(_id);
 
-	const handleMenuEvent = isReduceMotionEnabled
-		? {
-				...statusTooltipHandlers,
-				onMouseEnter: (e: MouseEvent<HTMLElement>) => {
-					setShowButton(true);
-					statusTooltipHandlers.onMouseEnter(e);
-				},
-			}
-		: {
-				...statusTooltipHandlers,
-				onTransitionEnd: () => setShowButton(true),
-			};
-
 	return (
-		<Option
-			{...focusProps}
-			aria-label={nameOrUsername}
-			onFocus={(e) => {
-				focusProps.onFocus?.(e);
-				setShowButton(true);
-			}}
-			focus={isFocusVisible}
+		<Item
+			role='listitem'
+			size='medium'
+			inset='lg'
 			data-username={username}
 			data-userid={_id}
-			data-invitationdate={invitationDate}
-			onClick={onClickView}
-			onKeyDown={(e: KeyboardEvent<HTMLElement>) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					e.currentTarget.click();
-				}
-			}}
-			tabIndex={0}
-			style={{ paddingInline: 24 }}
-			{...handleMenuEvent}
+			onFocus={mountNow}
+			onPointerEnter={requestMount}
+			{...statusTooltipHandlers}
 		>
-			<OptionAvatar>
+			<ItemMedia>
 				<UserAvatar username={username || ''} size='x28' />
-			</OptionAvatar>
-			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
-			<OptionContent data-qa={`MemberItem-${username}`}>
-				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
-			</OptionContent>
-			{subscription?.status === 'INVITED' && (
-				<OptionColumn>
-					<InvitationBadge marginBlockStart={2} size='x20' invitationDate={subscription.ts} />
-				</OptionColumn>
-			)}
-			<OptionMenu onClick={preventPropagation}>
-				{showButton ? (
+			</ItemMedia>
+			<ItemIcon>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</ItemIcon>
+			<ItemContent data-qa={`MemberItem-${username}`}>
+				<ItemTitle>
+					<ItemLink is='button' data-userid={_id} data-invitationdate={invitationDate} onClick={onClickView}>
+						{nameOrUsername} {displayUsername && <ItemDescription inline>@{displayUsername}</ItemDescription>}
+					</ItemLink>
+				</ItemTitle>
+			</ItemContent>
+			{isInvited && <InvitationBadge size='x20' invitationDate={subscription.ts} />}
+			<ItemActions reveal='hover'>
+				{menuVisibility ? (
 					<UserActions
 						username={username}
 						name={name}
@@ -114,13 +84,11 @@ const RoomMembersItem = ({
 						reload={reload}
 					/>
 				) : (
-					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} />
+					<IconButton small icon='kebab' aria-hidden tabIndex={-1} onPointerDown={mountNow} />
 				)}
-			</OptionMenu>
-		</Option>
+			</ItemActions>
+		</Item>
 	);
 };
 
-export default Object.assign(RoomMembersItem, {
-	Skeleton: OptionSkeleton,
-});
+export default RoomMembersItem;
