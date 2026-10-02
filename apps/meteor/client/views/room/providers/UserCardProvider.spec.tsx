@@ -224,12 +224,12 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 
 		// from the trigger into the card: it stays open
 		fireEvent.mouseLeave(trigger);
-		fireEvent.mouseEnter(card);
+		fireEvent.pointerEnter(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
 		// out of the card: it lingers, then closes
-		fireEvent.mouseLeave(card);
+		fireEvent.pointerLeave(card);
 		await advance(299);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 		await advance(1);
@@ -311,9 +311,9 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 
 		// the card's kebab opens its menu, portaled outside the card, and the pointer follows it there
 		fireEvent.mouseLeave(trigger);
-		fireEvent.mouseEnter(card);
+		fireEvent.pointerEnter(card);
 		await act(async () => content.setAttribute('aria-expanded', 'true'));
-		fireEvent.mouseLeave(card);
+		fireEvent.pointerLeave(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 

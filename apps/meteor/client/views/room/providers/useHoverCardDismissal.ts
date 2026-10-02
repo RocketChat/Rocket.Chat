@@ -1,6 +1,4 @@
-import { useHover } from '@react-aria/interactions';
-import type { DOMAttributes } from 'react';
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 type HoverCardDismissalOptions = {
 	onPointerEnter: () => void;
@@ -13,33 +11,38 @@ const hasOpenMenu = (card: Element) => !!card.querySelector('[aria-expanded="tru
 
 /**
  * Keeps a hover card open while the pointer is on it or on a menu it opened, reports when the pointer leaves, and
- * dismisses it on Escape. Returns a callback ref and the hover props to put on the card.
+ * dismisses it on Escape. Returns a callback ref for the card.
  */
 export const useHoverCardDismissal = ({
 	onPointerEnter,
 	onPointerLeave,
 	onDismiss,
-}: HoverCardDismissalOptions): { ref: (card: HTMLElement | null) => (() => void) | undefined; hoverProps: DOMAttributes<HTMLElement> } => {
-	const isHoveredRef = useRef(false);
-
-	const { hoverProps } = useHover({
-		onHoverStart: () => {
-			isHoveredRef.current = true;
-			onPointerEnter();
-		},
-		onHoverEnd: (e) => {
-			isHoveredRef.current = false;
-			if (!hasOpenMenu(e.target)) {
-				onPointerLeave();
-			}
-		},
-	});
-
-	const ref = useCallback(
+}: HoverCardDismissalOptions): ((card: HTMLElement | null) => (() => void) | undefined) =>
+	useCallback(
 		(card: HTMLElement | null) => {
 			if (!card) {
 				return;
 			}
+
+			// Native listeners on purpose: React's synthetic enter/leave report a leave when the card's content is swapped
+			// under a resting pointer (the skeleton giving way to the loaded card), which would close it.
+			let isHovered = false;
+			const handlePointerEnter = (e: PointerEvent) => {
+				if (e.pointerType === 'touch') {
+					return;
+				}
+				isHovered = true;
+				onPointerEnter();
+			};
+			const handlePointerLeave = (e: PointerEvent) => {
+				if (e.pointerType === 'touch') {
+					return;
+				}
+				isHovered = false;
+				if (!hasOpenMenu(card)) {
+					onPointerLeave();
+				}
+			};
 
 			// A hover card never holds focus, so react-aria's focus-scoped Escape never fires (WCAG 1.4.13). Captured and
 			// stopped here so it doesn't also close an underlying contextual bar; an open menu owns Escape instead.
@@ -53,20 +56,21 @@ export const useHoverCardDismissal = ({
 
 			// Once the card's menu closes with the pointer elsewhere, the card follows.
 			const observer = new MutationObserver(() => {
-				if (!isHoveredRef.current && !hasOpenMenu(card)) {
+				if (!isHovered && !hasOpenMenu(card)) {
 					onPointerLeave();
 				}
 			});
 
+			card.addEventListener('pointerenter', handlePointerEnter);
+			card.addEventListener('pointerleave', handlePointerLeave);
 			document.addEventListener('keydown', handleKeyDown, { capture: true });
 			observer.observe(card, { subtree: true, attributeFilter: ['aria-expanded'] });
 			return () => {
+				card.removeEventListener('pointerenter', handlePointerEnter);
+				card.removeEventListener('pointerleave', handlePointerLeave);
 				document.removeEventListener('keydown', handleKeyDown, { capture: true });
 				observer.disconnect();
 			};
 		},
-		[onPointerLeave, onDismiss],
+		[onPointerEnter, onPointerLeave, onDismiss],
 	);
-
-	return { ref, hoverProps };
-};

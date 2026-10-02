@@ -90,7 +90,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		state.open(viaClick || state.isOpen);
 	});
 
-	const card = useHoverCardDismissal({
+	const cardRef = useHoverCardDismissal({
 		onPointerEnter: keepUserCardOpen,
 		onPointerLeave: closeUserCard,
 		onDismiss: dismissUserCard,
@@ -130,7 +130,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 					triggerRef={triggerRef}
 					state={popoverState}
 				>
-					<Box ref={card.ref} tabIndex={-1} {...card.hoverProps}>
+					<Box ref={cardRef} tabIndex={-1}>
 						<Suspense fallback={null}>
 							<UserCard {...userCardData} />
 						</Suspense>
