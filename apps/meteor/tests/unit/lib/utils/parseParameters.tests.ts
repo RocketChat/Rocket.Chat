@@ -182,4 +182,43 @@ ${value3}`;
 		expect(result[1]).to.be.equal(value2);
 		expect(result[2]).to.be.equal(value3);
 	});
+
+	it('should split on CRLF line breaks without quotes', () => {
+		const value1 = 'value1';
+		const value2 = 'value2';
+		const value3 = 'value3';
+
+		const parameters = `${value1}\r\n${value2}\r\n${value3}`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(3).and.eql([value1, value2, value3]);
+	});
+
+	it('should ignore intentional blank lines between unquoted arguments by default', () => {
+		const parameters = 'param1\n\nparam2\r\n\r\nparam3';
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(3).and.eql(['param1', 'param2', 'param3']);
+	});
+
+	it('should preserve intentional blank lines inside quoted arguments', () => {
+		const parameters = '"line1\n\nline2" "line3\r\n\r\nline4"';
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(2).and.eql(['line1\n\nline2', 'line3\r\n\r\nline4']);
+	});
+
+	it('should parse quoted multi-line argument followed by unquoted trailing argument (LF)', () => {
+		const parameters = '"line one\nline two" trailing';
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(2).and.eql(['line one\nline two', 'trailing']);
+	});
+
+	it('should parse quoted multi-line argument followed by unquoted trailing argument (CRLF)', () => {
+		const parameters = '"line one\r\nline two" trailing';
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(2).and.eql(['line one\r\nline two', 'trailing']);
+	});
 });
