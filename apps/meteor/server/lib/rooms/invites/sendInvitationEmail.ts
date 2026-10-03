@@ -14,7 +14,7 @@ Meteor.startup(() => {
 	});
 });
 
-export const sendInvitationEmail = async (userId: string, emails: string[]) => {
+export const sendInvitationEmail = async (userId: string, emails: string[]): Promise<boolean> => {
 	check(emails, [String]);
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -67,4 +67,6 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 			});
 		}
 	}
+
+	return true;
 };
