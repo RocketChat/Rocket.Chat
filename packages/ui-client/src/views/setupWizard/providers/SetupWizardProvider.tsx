@@ -124,23 +124,19 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 		[dispatchSettings],
 	);
 
-	const saveWorkspaceData = useCallback(async (): Promise<void> => {
+	const completeCloudRegistration = useCallback(async (): Promise<void> => {
 		const {
 			serverData: { updates, agreement },
 		} = setupWizardData;
 
 		await dispatchSettings([
-			{
-				_id: 'Register_Server',
-				value: true,
-			},
-			{
-				_id: 'Allow_Marketing_Emails',
-				value: updates,
-			},
+			{ _id: 'Register_Server', value: true },
+			{ _id: 'Allow_Marketing_Emails', value: updates },
+			{ _id: 'Cloud_Service_Agree_PrivacyTerms', value: agreement },
+			{ _id: 'Show_Setup_Wizard', value: 'completed' },
 		]);
-		await saveAgreementData(agreement);
-	}, [dispatchSettings, saveAgreementData, setupWizardData]);
+		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
+	}, [dispatchSettings, dispatchToastMessage, setupWizardData, t]);
 
 	const saveOrganizationData = useCallback(
 		async (organizationData: ContextType<typeof SetupWizardContext>['setupWizardData']['organizationData']): Promise<void> => {
@@ -191,8 +187,14 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 	);
 
 	const completeSetupWizard = useStableCallback(async (): Promise<void> => {
+		try {
+			await setShowSetupWizard('completed');
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+			return;
+		}
+
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
-		return setShowSetupWizard('completed');
 	});
 
 	const value = useMemo(
@@ -210,7 +212,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			validateEmail: _validateEmail,
 			registerServer,
 			saveAgreementData,
-			saveWorkspaceData,
+			completeCloudRegistration,
 			saveOrganizationData,
 			completeSetupWizard,
 			maxSteps: data.serverAlreadyRegistered ? 2 : 4,
@@ -228,7 +230,7 @@ const SetupWizardProvider = ({ children }: SetupWizardProviderProps) => {
 			_validateEmail,
 			registerServer,
 			saveAgreementData,
-			saveWorkspaceData,
+			completeCloudRegistration,
 			saveOrganizationData,
 			completeSetupWizard,
 		],
