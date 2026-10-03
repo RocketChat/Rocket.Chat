@@ -9,7 +9,16 @@ import { getSettingSchemaValidator } from '../settings/functions/settingSchemas'
 
 const logger = new Logger('SettingValidation');
 
-export class SettingValidationError extends Error {}
+export class SettingValidationError extends Error {
+	constructor(
+		message: string,
+		public readonly settingId?: string,
+		public readonly reason?: 'bounds' | 'schema' | 'rule',
+	) {
+		super(message);
+		this.name = 'SettingValidationError';
+	}
+}
 
 const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']; value: unknown } =>
 	isRecord(value) && typeof value._id === 'string' && 'value' in value;
@@ -138,7 +147,7 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 		}
 
 		if (!validatesSchema(setting, value)) {
-			throw new SettingValidationError(`${setting._id}_Invalid`);
+			throw new SettingValidationError(`${setting._id}_Invalid`, setting._id, 'schema');
 		}
 
 		if (!setting.validation) {
@@ -150,7 +159,7 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 				continue;
 			}
 
-			throw new SettingValidationError(`${setting._id}_Invalid`);
+			throw new SettingValidationError(`${setting._id}_Invalid`, setting._id, 'rule');
 		}
 	}
 };
