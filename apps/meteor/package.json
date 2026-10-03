@@ -262,7 +262,7 @@
 		"mime-type": "^4.0.0",
 		"mkdirp": "^1.0.4",
 		"moleculer": "^0.14.36",
-		"moment": "^2.30.1",
+		"moment": "^2.31.0",
 		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
 		"mongodb": "6.16.0",
