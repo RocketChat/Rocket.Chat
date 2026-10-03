@@ -94,14 +94,21 @@ function ImportOperationSummary({
 			}
 		: {};
 
+	const truncateCellStyle = {
+		whiteSpace: 'nowrap',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		maxWidth: '180px',
+	};
+	
 	return (
 		<TableRow {...props}>
-			<TableCell>{type}</TableCell>
-			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
+			<TableCell style={truncateCellStyle}>{type}</TableCell>
+			<TableCell style={truncateCellStyle}>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
-					<TableCell>{fileName}</TableCell>
+					<TableCell style={truncateCellStyle}>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
+					<TableCell style={truncateCellStyle}>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
 					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
