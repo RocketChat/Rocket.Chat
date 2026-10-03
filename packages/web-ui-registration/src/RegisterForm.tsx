@@ -155,7 +155,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								})}
 								error={errors?.name?.message}
 								aria-required={requireNameForRegister}
-								aria-invalid={errors.name ? 'true' : 'false'}
+								aria-invalid={errors.name ? 'true' : undefined}
 								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								aria-describedby={`${nameId}-error`}
 								id={nameId}
@@ -183,7 +183,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={errors?.email?.message}
 								aria-required='true'
-								aria-invalid={errors.email ? 'true' : 'false'}
+								aria-invalid={errors.email ? 'true' : undefined}
 								aria-describedby={`${emailId}-error`}
 								id={emailId}
 							/>
@@ -205,7 +205,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 								})}
 								error={errors?.username?.message}
 								aria-required='true'
-								aria-invalid={errors.username ? 'true' : 'false'}
+								aria-invalid={errors.username ? 'true' : undefined}
 								aria-describedby={`${usernameId}-error`}
 								id={usernameId}
 								placeholder='jon.doe'
@@ -256,7 +256,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 									})}
 									error={errors.passwordConfirmation?.message}
 									aria-required='true'
-									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+									aria-invalid={errors.passwordConfirmation ? 'true' : undefined}
 									id={passwordConfirmationId}
 									aria-describedby={`${passwordConfirmationId}-error`}
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
@@ -282,7 +282,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 									})}
 									error={errors?.reason?.message}
 									aria-required='true'
-									aria-invalid={errors.reason ? 'true' : 'false'}
+									aria-invalid={errors.reason ? 'true' : undefined}
 									aria-describedby={`${reasonId}-error`}
 									id={reasonId}
 								/>

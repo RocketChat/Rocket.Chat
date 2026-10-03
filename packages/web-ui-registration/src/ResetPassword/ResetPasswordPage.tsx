@@ -103,7 +103,7 @@ const ResetPasswordPage = () => {
 										validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 									})}
 									error={errors?.password?.message}
-									aria-invalid={errors.password ? 'true' : 'false'}
+									aria-invalid={errors.password ? 'true' : undefined}
 									aria-required='true'
 									id={passwordId}
 									placeholder={passwordPlaceholder || t('Create_a_password')}
@@ -131,7 +131,7 @@ const ResetPasswordPage = () => {
 										})}
 										error={errors?.passwordConfirmation?.message}
 										aria-required='true'
-										aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+										aria-invalid={errors.passwordConfirmation ? 'true' : undefined}
 										aria-describedby={`${passwordConfirmationId}-error`}
 										id={passwordConfirmationId}
 										placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
