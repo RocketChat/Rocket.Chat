@@ -89,21 +89,17 @@ cases.forEach(({ command, path, dependency, method, permission, sanitizes }) => 
 			sinon.assert.notCalled(slashCommand.broadcast);
 		});
 
-		// TODO: Fix /mute to return after unknown-user feedback, then enable these tests.
 		['pt', undefined].forEach((language) => {
-			(command === 'mute' ? it.skip : it)(
-				`reports an unknown target with ${language || 'English fallback'} and performs no mutation`,
-				async () => {
-					findTarget.resolves(null);
-					findActor.resolves(null);
-					slashCommand.settings.get.withArgs('Language').returns(language);
-					await slashCommand.runCommand(command, { params: '@Bob' });
-					sinon.assert.calledOnceWithExactly(findTarget, 'Bob');
-					slashCommand.expectTranslatedFeedback('Username_doesnt_exist');
-					expect(slashCommand.translate.firstCall.args[1]).to.include({ username: 'Bob', lng: language || 'en' });
-					sinon.assert.notCalled(action);
-				},
-			);
+			it(`reports an unknown target with ${language || 'English fallback'} and performs no mutation`, async () => {
+				findTarget.resolves(null);
+				findActor.resolves(null);
+				slashCommand.settings.get.withArgs('Language').returns(language);
+				await slashCommand.runCommand(command, { params: '@Bob' });
+				sinon.assert.calledOnceWithExactly(findTarget, 'Bob');
+				slashCommand.expectTranslatedFeedback('Username_doesnt_exist');
+				expect(slashCommand.translate.firstCall.args[1]).to.include({ username: 'Bob', lng: language || 'en' });
+				sinon.assert.notCalled(action);
+			});
 		});
 
 		it('propagates authorization failures from the authoritative method', async () => {
