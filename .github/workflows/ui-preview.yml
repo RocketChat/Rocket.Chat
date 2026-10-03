@@ -87,6 +87,7 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04-arm
     permissions:
+      packages: write
       pull-requests: write
 
     steps:
@@ -118,7 +119,7 @@ jobs:
       - name: Delete superseded develop builds
         if: github.event_name == 'push'
         env:
-          GH_TOKEN: ${{ secrets.CR_PAT }}
+          GH_TOKEN: ${{ github.token }}
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
         run: |
           # List every page before deleting, or deletions shift the pages still to be read.
@@ -165,12 +166,13 @@ jobs:
       )
     runs-on: ubuntu-24.04-arm
     permissions:
+      packages: write
       pull-requests: write
 
     steps:
       - name: Delete from ghcr.io
         env:
-          GH_TOKEN: ${{ secrets.CR_PAT }}
+          GH_TOKEN: ${{ github.token }}
           PACKAGE: /orgs/${{ github.repository_owner }}/packages/container/rocket.chat-web/versions
           NUMBER: ${{ github.event.pull_request.number }}
         run: |
