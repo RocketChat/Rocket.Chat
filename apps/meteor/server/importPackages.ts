@@ -41,7 +41,7 @@ import './lib/integrations/lib/triggerHandler';
 import './lib/integrations/triggers';
 import './lib/integrations/startup';
 import './bridges/irc';
-import '../app/lib/lib/MessageTypes';
+import '../lib/MessageTypes';
 import './lib/bugsnag';
 import './lib/debug';
 import './lib/auth/loginErrorMessageOverride';

@@ -1,7 +1,7 @@
 import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
 Meteor.startup(async () => {
 	const lastOperation = await Imports.findLastImport();

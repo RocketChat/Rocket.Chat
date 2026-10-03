@@ -2,7 +2,7 @@ import { LivechatContacts, Statistics, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { LICENSE_VERSION } from './license';
-import { Info } from '../../../app/utils/rocketchat.info';
+import { Info } from '../../../rocketchat.info';
 import { settings } from '../../settings';
 import { statistics } from '../statistics';
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { fileUploadIsValidContentTypeFromSettings } from '../../../../../app/utils/lib/restrictions';
+import { fileUploadIsValidContentTypeFromSettings } from '../../../../../lib/restrictions';
 
 describe('fileUploadIsValidContentTypeFromSettings', () => {
 	it('should return true if type is not defined and whiteList is not defined', () => {

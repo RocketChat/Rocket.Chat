@@ -82,7 +82,7 @@ jest.mock(
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
 jest.mock('meteor/ddp-common', () => ({ DDPCommon: {} }), { virtual: true });
 
-jest.mock('../../app/utils/rocketchat.info', () => ({ Info: { version: '0.0.0' } }));
+jest.mock('../../rocketchat.info', () => ({ Info: { version: '0.0.0' } }));
 
 jest.mock('../settings', () => ({
 	settings: {

@@ -1,5 +1,5 @@
 import { settingsRegistry } from '.';
-import { MessageTypesValues } from '../../app/lib/lib/MessageTypes';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 export const createMessageSettings = () =>
 	settingsRegistry.addGroup('Message', async function () {
