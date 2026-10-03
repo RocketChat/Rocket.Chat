@@ -100,6 +100,8 @@ export class DDPStreamer extends ServiceClass {
 			return;
 		}
 
+		this.server.setBroker(broker);
+
 		const { metrics } = broker;
 		if (!metrics) {
 			return;
