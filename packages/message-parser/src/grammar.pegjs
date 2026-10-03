@@ -648,13 +648,13 @@ TildeWithWhitespace = a:$"~"+ w:$Space+ b:$"~"+ { return plain(a + w + b); }
 */
 // Direct form: starts with @, used by dispatch
 UserMentionDirect
-  = "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
+  = "@" user:$(UTF8NamesValidation ([:@.] UTF8NamesValidation)*) & { return !user.endsWith('__'); } {
       return mentionUser(user);
     }
 
 // Full form: includes text@user fallback, used by SlowPath
 UserMention
-  = t:Text "@"+ user:AlphaNumericChar {
+  = !"@" t:Text "@" user:AlphaNumericChar {
       return reducePlainTexts([t, plain('@' + user)])[0];
     }
   / UserMentionDirect
