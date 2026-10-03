@@ -5,11 +5,17 @@ import { text } from 'node:stream/consumers';
 import { expect } from 'chai';
 import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
+import realSharp from 'sharp';
 import sinon from 'sinon';
 
 import { createFakeMessageWithAttachment } from '../../../../../tests/mocks/data';
 
 const fakeStorageModel = { findOneById: sinon.stub(), deleteFile: sinon.stub() };
+const fakeStore = { getReadStream: sinon.stub() };
+const sharpStub = sinon.stub();
+const uploadsModelStub = {
+	findOneById: sinon.stub(),
+};
 const settingsStub = { watch: sinon.stub(), get: sinon.stub() };
 const settingsGetMap = new Map();
 const messagesModelStub = {
@@ -32,13 +38,14 @@ const roomCoordinatorStub = {
 const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
 	'@rocket.chat/models': {
 		Messages: messagesModelStub,
+		Uploads: uploadsModelStub,
 		Users: usersModelStub,
 		Subscriptions: subscriptionsModelStub,
 	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'meteor/ostrio:cookies': { Cookies: sinon.stub() },
-	'sharp': sinon.stub(),
+	'sharp': sharpStub,
 	'stream-buffers': sinon.stub(),
 	'@rocket.chat/tools': sinon.stub(),
 	'../../../i18n': sinon.stub(),
@@ -47,7 +54,10 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../../ufs': sinon.stub(),
 	'../../../../ufs/ufs-methods': sinon.stub(),
 	'../../../../settings': { settings: settingsStub },
-	'../../../../../app/utils/lib/mimeTypes': sinon.stub(),
+	'../../../../../app/utils/lib/mimeTypes': {
+		// just enough for the jpeg tests: lookup() gets file names and sharp's output format
+		mime: { lookup: (name: string) => (name === 'jpeg' || name.endsWith('.jpg') ? 'image/jpeg' : false), extension: () => 'jpg' },
+	},
 	'../../../utils/lib/JWTHelper': {
 		validateAndDecodeJWT: validateAndDecodeJWTStub,
 		generateJWT: sinon.stub(),
@@ -59,7 +69,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 
 describe('FileUpload', () => {
 	before(() => {
-		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} });
+		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: fakeStore });
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
 		settingsStub.get.callsFake((settingName) => settingsGetMap.get(settingName));
 	});
@@ -572,6 +582,71 @@ describe('FileUpload', () => {
 			await once(res, 'close');
 
 			expect(fileRes.destroyed).to.be.true;
+		});
+	});
+
+	describe('image previews and thumbnails', () => {
+		let jpeg: Buffer;
+
+		// Emits the first half of the image, then fails like a storage read that breaks off midway
+		// (e.g. a connection reset or the AWS SDK rejecting a checksum at the end of the body).
+		const failingReadStream = () => {
+			let sent = false;
+			return new Readable({
+				read() {
+					if (sent) {
+						this.destroy(new Error('storage read failed'));
+						return;
+					}
+					sent = true;
+					this.push(jpeg.subarray(0, jpeg.length / 2));
+				},
+			});
+		};
+
+		before(async () => {
+			jpeg = await realSharp({ create: { width: 800, height: 600, channels: 3, background: '#336699' } })
+				.jpeg()
+				.toBuffer();
+		});
+
+		beforeEach(() => {
+			sharpStub.reset();
+			sharpStub.callsFake((...args: Parameters<typeof realSharp>) => realSharp(...args));
+			fakeStore.getReadStream.reset();
+			uploadsModelStub.findOneById.reset();
+			uploadsModelStub.findOneById.resolves({ _id: 'file-id', name: 'image.jpg', type: 'image/jpeg' });
+			settingsGetMap.set('Message_Attachments_Thumbnails_Enabled', true);
+			settingsGetMap.set('Message_Attachments_Thumbnails_Width', 480);
+			settingsGetMap.set('Message_Attachments_Thumbnails_Height', 360);
+		});
+
+		it('resizeImagePreview should return a base64 preview', async () => {
+			fakeStore.getReadStream.resolves(Readable.from([jpeg]));
+
+			const preview = await FileUpload.resizeImagePreview({ _id: 'file-id' });
+
+			expect(preview).to.be.a('string').that.is.not.empty;
+		});
+
+		it('resizeImagePreview should reject when reading the file from storage fails', async () => {
+			fakeStore.getReadStream.resolves(failingReadStream());
+
+			await expect(FileUpload.resizeImagePreview({ _id: 'file-id' })).to.be.rejectedWith('storage read failed');
+		});
+
+		it('createImageThumbnail should return the thumbnail', async () => {
+			fakeStore.getReadStream.resolves(Readable.from([jpeg]));
+
+			const thumbnail = await FileUpload.createImageThumbnail({ _id: 'file-id' });
+
+			expect(thumbnail).to.include({ width: 480, height: 360, thumbFileType: 'image/jpeg', originalFileId: 'file-id' });
+		});
+
+		it('createImageThumbnail should reject when reading the file from storage fails', async () => {
+			fakeStore.getReadStream.resolves(failingReadStream());
+
+			await expect(FileUpload.createImageThumbnail({ _id: 'file-id' })).to.be.rejectedWith('storage read failed');
 		});
 	});
 });
