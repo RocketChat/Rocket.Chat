@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type UsersListParamsGET = PaginatedRequest<{
 	fields?: string;
@@ -13,8 +14,7 @@ const UsersListParamsGetSchema = {
 	properties: {
 		fields: { type: 'string', nullable: true },
 		query: { type: 'string', nullable: true },
-		count: { type: 'number', nullable: true },
-		offset: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
 		email: { type: 'string', minLength: 1, nullable: true },
 		username: { type: 'string', minLength: 1, nullable: true },

@@ -1,6 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type VideoConfListProps = {
 	roomId: string;
@@ -15,8 +16,7 @@ const videoConfListPropsSchema: JSONSchemaType<VideoConfListProps> = {
 			type: 'string',
 			nullable: false,
 		},
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
