@@ -51,11 +51,11 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 				? roleData.roles.map((role) => ({
 						id: role._id,
 						text: role.description || role.name || role._id,
-						checked: false,
+						checked: selectedRoles.some((selectedRole) => selectedRole.id === role._id),
 					}))
 				: []),
 		],
-		[roleData],
+		[roleData, selectedRoles],
 	);
 
 	const breakpoints = useBreakpoints();
