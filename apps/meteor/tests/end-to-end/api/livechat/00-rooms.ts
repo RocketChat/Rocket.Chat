@@ -2246,6 +2246,27 @@ describe('LIVECHAT - rooms', () => {
 			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
 		});
 
+		it('should rate-limit requests exceeding 5 calls in 10 seconds', async () => {
+			visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			for (let i = 0; i < 5; i++) {
+				await request
+					.post(api(`livechat/upload/${room._id}`))
+					.set('x-visitor-token', visitor.token)
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.expect(200);
+			}
+
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect(429);
+
+			await closeOmnichannelRoom(room._id);
+		});
+
 		describe('uploading', () => {
 			let room: IOmnichannelRoom;
 

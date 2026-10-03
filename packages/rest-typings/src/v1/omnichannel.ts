@@ -233,6 +233,81 @@ export const isLivechatDepartmentDepartmentIdAgentsPOSTProps = ajv.compile<Livec
 	LivechatDepartmentDepartmentIdAgentsPOSTSchema,
 );
 
+export type LivechatVisitorRegisterProps = {
+	visitor: {
+		token: string;
+		id?: string;
+		name?: string;
+		email?: string;
+		department?: string;
+		phone?: string;
+		username?: string;
+		connectionData?: {
+			httpHeaders: Record<string, string | string[] | undefined>;
+		};
+		customFields?: {
+			key: string;
+			value: string;
+			overwrite?: boolean;
+		}[];
+	};
+};
+
+const LivechatVisitorRegisterSchema = {
+	type: 'object',
+	properties: {
+		visitor: {
+			type: 'object',
+			properties: {
+				token: { type: 'string' },
+				id: { type: 'string' },
+				name: { type: 'string' },
+				email: { type: 'string' },
+				department: { type: 'string' },
+				phone: { type: 'string' },
+				username: { type: 'string' },
+				connectionData: {
+					type: 'object',
+					properties: {
+						httpHeaders: {
+							type: 'object',
+							additionalProperties: {
+								oneOf: [
+									{ type: 'string' },
+									{
+										type: 'array',
+										items: { type: 'string' },
+									},
+								],
+							},
+						},
+					},
+					additionalProperties: false,
+				},
+				customFields: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							key: { type: 'string' },
+							value: { type: 'string' },
+							overwrite: { type: 'boolean' },
+						},
+						required: ['key', 'value'],
+						additionalProperties: false,
+					},
+				},
+			},
+			required: ['token'],
+			additionalProperties: false,
+		},
+	},
+	required: ['visitor'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorRegisterProps = ajv.compile<LivechatVisitorRegisterProps>(LivechatVisitorRegisterSchema);
+
 type LivechatVisitorTokenGet = {
 	token: string;
 };
