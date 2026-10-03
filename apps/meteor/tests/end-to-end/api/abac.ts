@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
-import { api, getCredentials, request, credentials, methodCall } from '../../data/api-data';
+import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
 	mockServerHealthy,
@@ -501,30 +501,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should throw an error when trying to audit the messages of an abac managed room', async () => {
 			await request
-				.post(methodCall('auditGetMessages'))
+				.post(api('audit.messages'))
 				.set(credentials)
 				.send({
-					message: JSON.stringify({
-						method: 'auditGetMessages',
-						params: [
-							{
-								type: '',
-								msg: 'test1234',
-								startDate: { $date: new Date() },
-								endDate: { $date: new Date() },
-								rid: testRoom._id,
-								users: [],
-							},
-						],
-						id: '14',
-						msg: 'method',
-					}),
+					type: '',
+					msg: 'test1234',
+					startDate: new Date().toISOString(),
+					endDate: new Date().toISOString(),
+					rid: testRoom._id,
+					users: [],
 				})
 				.expect(400)
 				.expect((res) => {
-					const result = JSON.parse(res.body.message);
-					expect(result).to.have.property('error');
-					expect(result.error).to.have.property('error', `Room doesn't exist`);
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', `Room doesn't exist`);
 				});
 		});
 
@@ -575,32 +565,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message in abac room',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-1',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message in abac room',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').that.is.empty;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').that.is.empty;
 					});
 			});
 
@@ -614,32 +594,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request.post(`${v1}/groups.kick`).set(credentials).send({ roomId: auditRoom._id, username: auditUser.username }).expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message before removal',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-2',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message before removal',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').that.is.empty;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').that.is.empty;
 					});
 			});
 
@@ -659,32 +629,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message after room no longer abac',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-3',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message after room no longer abac',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').with.lengthOf.greaterThan(0);
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').with.lengthOf.greaterThan(0);
 					});
 			});
 		});
