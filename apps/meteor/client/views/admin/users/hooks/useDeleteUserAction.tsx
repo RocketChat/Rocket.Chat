@@ -9,6 +9,7 @@ import {
 	usePermission,
 	useEndpoint,
 	useTranslation,
+	useUserId,
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -23,6 +24,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 	const erasureType = useSetting<'Delete' | 'Keep' | 'Unlink'>('Message_ErasureType', 'Delete');
 	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const currentUserId = useUserId();
 
 	const handleDeletedUser = (): void => {
 		setModal();
@@ -63,7 +65,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 		);
 	});
 
-	return canDeleteUser
+	return canDeleteUser && userId !== currentUserId
 		? {
 				icon: 'trash',
 				content: t('Delete'),
