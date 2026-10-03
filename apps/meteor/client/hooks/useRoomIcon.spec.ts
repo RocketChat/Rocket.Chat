@@ -34,6 +34,12 @@ const mockRooms = {
 		teamMain: false,
 		federated: true,
 	}),
+	xmppFederated: createFakeRoom({
+		t: 'c',
+		name: 'team_conference.remote.tld',
+		teamMain: false,
+		xmppFederation: { version: 1, role: 'remote-muc', muc: 'team@conference.remote.tld', origin: 'conference.remote.tld' },
+	}),
 	abacRoom: createFakeRoom({
 		t: 'c',
 		name: 'abac-room',
@@ -53,6 +59,7 @@ const expectedResults = {
 	private: { name: 'hashtag-lock' },
 	team: { name: 'team' },
 	federated: { name: 'globe' },
+	xmppFederated: { name: 'globe' },
 	abacRoom: { name: 'hash-shield' },
 	abacTeamRoom: { name: 'team-shield' },
 	direct: { name: 'at' },

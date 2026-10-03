@@ -14,6 +14,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'usersCount'
 		| 'muted'
 		| 'federated'
+		| 'xmppFederation'
 		| 'lm'
 		| 'abacAttributes'
 	> &

@@ -1,0 +1,9 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"outDir": "./dist/ee/apps/xmpp-server-service/src",
+	},
+	"files": ["./src/service.ts", "./src/fips.ts"],
+	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"exclude": ["./dist"]
+}

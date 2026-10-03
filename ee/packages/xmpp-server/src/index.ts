@@ -1,0 +1,14 @@
+export { XMPPServer } from './XMPPServer';
+export type { XMPPServerOptions, SendChatMessageParams, SendPresenceParams, SubscriptionType } from './XMPPServer';
+export type { XMPPServerConfig, TlsConfig, MucDelegates, MucJoinDecision } from './config';
+export type { ConnectionStatus, IncomingChatMessage, IncomingPresence, MucRemoteOccupant, XMPPServerEventMap } from './events';
+export { escapeLocalpart, unescapeLocalpart } from './jid/escaping';
+export { normalizeDomain } from './jid/normalize';
+export { XmppError, InvalidJidError, DomainNotAllowedError, NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
+export type { Logger } from './logger';
+export { resolveXmppServer } from './s2s/dnsResolver';
+export type { XmppDnsResolver, XmppServerAddress } from './s2s/dnsResolver';
+
+// Rocket.Chat integration service (imports @rocket.chat/core-services & models).
+export { XMPPServerService } from './service/XMPPServerService';
+export type { InboundHandlerObserver, XMPPServerServiceOptions } from './service/XMPPServerService';
