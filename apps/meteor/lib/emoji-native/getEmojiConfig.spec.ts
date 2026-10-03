@@ -1,4 +1,6 @@
 import type { EmojiPackages } from '../emoji';
+import { countryFlagSpriteCodes } from './countryFlagSprites';
+import { getEmojiData } from './generateEmojiData';
 import { getEmojiConfig } from './getEmojiConfig';
 
 const buildEmojiPackages = (ascii: boolean): EmojiPackages =>
@@ -53,6 +55,50 @@ describe('native emoji render', () => {
 		expect(render(':smiley:')).toContain('<span class="emoji" title=":smiley:">');
 	});
 
+	it('renders country flag shortcodes with the flag sprite class when enabled', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false), { useFlagSprites: true });
+
+		expect(render(':us:')).toBe('<span class="emoji emoji--flag _1f1fa-1f1f8" title=":us:">🇺🇸</span>');
+	});
+
+	it('renders Unicode country flags with the flag sprite class when enabled', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false), { useFlagSprites: true });
+
+		expect(render('🇨🇦')).toBe('<span class="emoji emoji--flag _1f1e8-1f1e6" title=":flag_ca:">🇨🇦</span>');
+	});
+
+	it('keeps country flags native when sprite rendering is disabled', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render(':us:')).toBe('<span class="emoji" title=":us:">🇺🇸</span>');
+	});
+
+	it('keeps every country flag missing from the sprite atlas on native rendering', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false), { useFlagSprites: true });
+		const flagsWithoutSprites = new Map<string, string>();
+
+		for (const [shortcode, emoji] of Object.entries(getEmojiData().emojiList)) {
+			const codepoints = [...emoji.unicode].map((character) => character.codePointAt(0)!);
+			if (
+				codepoints.length !== 2 ||
+				codepoints.some((codepoint) => codepoint < 0x1f1e6 || codepoint > 0x1f1ff)
+			) {
+				continue;
+			}
+
+			const spriteCode = codepoints.map((codepoint) => codepoint.toString(16)).join('-');
+			if (!countryFlagSpriteCodes.has(spriteCode)) {
+				flagsWithoutSprites.set(emoji.unicode, shortcode);
+			}
+		}
+
+		expect(flagsWithoutSprites.size).toBeGreaterThan(0);
+
+		for (const [unicode, shortcode] of flagsWithoutSprites) {
+			expect(render(shortcode)).toBe(`<span class="emoji" title="${shortcode}">${unicode}</span>`);
+		}
+	});
+
 	it('renders bare (non-VS16) emoji-default characters', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(false));
 
@@ -91,5 +137,11 @@ describe('native emoji render', () => {
 
 		expect(renderPicker(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
 		expect(renderPicker(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
+
+	it('renders country flags in the picker with the flag sprite class when enabled', () => {
+		const { renderPicker } = getEmojiConfig(buildEmojiPackages(false), { useFlagSprites: true });
+
+		expect(renderPicker(':flag_us:')).toBe('<span class="emoji emoji--flag _1f1fa-1f1f8" title=":flag_us:">🇺🇸</span>');
 	});
 });

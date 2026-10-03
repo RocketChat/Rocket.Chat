@@ -8,6 +8,7 @@
 /* Main */
 @import url('./imports/components/flex-nav.css');
 @import url('./imports/components/emoji.css');
+@import url('./imports/components/emoji-flag-sprites.css');
 @import url('./imports/components/loading.css');
 
 /* Legacy theming */
