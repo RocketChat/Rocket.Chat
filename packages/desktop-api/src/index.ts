@@ -23,6 +23,7 @@ export type CustomNotificationOptions = {
 		avatar?: string;
 		silent?: boolean;
 		requireInteraction?: boolean;
+		restoreWindow?: boolean;
 	};
 };
 
