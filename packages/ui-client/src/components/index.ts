@@ -25,7 +25,6 @@ export * from './Page';
 export * from './InfoPanel';
 export * from './GenericTable';
 export * from './SidebarToggler';
-export * from './MarkdownTextContext';
 export * from './UserCard';
 export * from './UserInfo';
 export { default as UTCClock } from './UTCClock';

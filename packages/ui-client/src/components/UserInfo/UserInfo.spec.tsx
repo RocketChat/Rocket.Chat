@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
@@ -36,4 +37,32 @@ test('shows the local time of a user in a fractional offset time zone', () => {
 
 	expect(screen.getByText('Local_Time')).toBeInTheDocument();
 	expect(screen.getByText(/\(UTC 5\.5\)/)).toBeInTheDocument();
+});
+
+test('renders the bio it is given', () => {
+	const { Default } = composeStories(stories);
+	render(<Default bio={<strong>Rendered bio</strong>} />);
+
+	expect(screen.getByText('Rendered bio').tagName).toBe('STRONG');
+});
+
+describe('custom fields', () => {
+	const wrapper = mockAppRoot()
+		.withSetting('Accounts_CustomFieldsToShowInUserInfo', JSON.stringify([{ Department: 'department' }]))
+		.build();
+
+	test('renders a custom field value through renderCustomFieldValue', () => {
+		const { Default } = composeStories(stories);
+		render(<Default customFields={{ department: 'Engineering' }} renderCustomFieldValue={(value) => <em>{value}</em>} />, { wrapper });
+
+		expect(screen.getByText('Department')).toBeInTheDocument();
+		expect(screen.getByText('Engineering').tagName).toBe('EM');
+	});
+
+	test('renders a custom field value as plain text by default', () => {
+		const { Default } = composeStories(stories);
+		render(<Default customFields={{ department: 'Engineering' }} />, { wrapper });
+
+		expect(screen.getByText('Engineering')).toBeInTheDocument();
+	});
 });
