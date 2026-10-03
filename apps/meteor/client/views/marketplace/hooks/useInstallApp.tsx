@@ -40,7 +40,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 				return uploadUpdateEndpoint(fileData);
 			}
 
-			return uploadAppEndpoint(fileData) as any;
+			return uploadAppEndpoint(fileData) as unknown as Promise<{ app: App }>;
 		},
 
 		onSuccess: (data: { app: App }) => {
