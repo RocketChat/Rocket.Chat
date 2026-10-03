@@ -2,13 +2,22 @@ import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 
+/**
+ * Adds members and custom fields to a room, leaving everything already on it
+ * alone.
+ *
+ * Get one from `IModifyExtender.extendRoom` and hand it back to
+ * `IModifyExtender.finish` to apply the additions.
+ */
 export interface IRoomExtender {
 	kind: RocketChatAssociationModel.ROOM;
 
 	/**
 	 * Adds a custom field to the room.
-	 * Note: This key can not already exist or it will throw an error.
-	 * Note: The key must not contain a period in it, an error will be thrown.
+	 *
+	 * > [!WARNING]
+	 * > The key has to be new, and it must not contain a period. Either one
+	 * > throws an error.
 	 *
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field
@@ -34,7 +43,9 @@ export interface IRoomExtender {
 
 	/**
 	 * Gets the resulting room that has been extended at the point of calling this.
-	 * Note: modifying the returned value will have no effect.
+	 *
+	 * > [!NOTE]
+	 * > Modifying the returned value will have no effect.
 	 */
 	getRoom(): IRoom;
 }

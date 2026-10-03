@@ -16,7 +16,9 @@ export interface IMessageBuilder {
 
 	/**
 	 * Provides a convenient way to set the data for the message.
-	 * Note: Providing an "id" field here will be ignored.
+	 *
+	 * > [!NOTE]
+	 * > Providing an `id` field here will be ignored.
 	 *
 	 * @param message the message data to set
 	 */
@@ -226,8 +228,10 @@ export interface IMessageBuilder {
 
 	/**
 	 * Adds a custom field to the message.
-	 * Note: This key can not already exist or it will throw an error.
-	 * Note: The key must not contain a period in it, an error will be thrown.
+	 *
+	 * > [!WARNING]
+	 * > The key has to be new, and it must not contain a period. Either one
+	 * > throws an error.
 	 *
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field

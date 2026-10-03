@@ -1,5 +1,12 @@
 import type { IProcessor } from '../scheduler';
 
+/**
+ * Registers the job processors an App can schedule work against.
+ *
+ * Every processor the App will ever schedule has to be registered here, from
+ * `extendConfiguration`; `ISchedulerModify` then schedules jobs against them.
+ * It needs the `scheduler` permission.
+ */
 export interface ISchedulerExtend {
 	/**
 	 * Register processors that can be scheduled to run

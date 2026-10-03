@@ -19,14 +19,27 @@ import type { IAppInfo } from './metadata/IAppInfo';
 import type { ISetting } from './settings';
 import type { ISettingUpdateContext } from './settings/ISettingUpdateContext';
 
+/**
+ * The base class every Rocket.Chat App extends.
+ *
+ * Override the lifecycle hooks you care about — they all no-op by default —
+ * and declare settings, slash commands and listeners from
+ * {@link App.extendConfiguration}. The host owns the instance: it constructs
+ * the App, drives it through the {@link AppStatus} values and passes the
+ * accessors into each hook.
+ */
 export abstract class App implements IApp {
 	private status: AppStatus = AppStatus.UNKNOWN;
 
 	/**
 	 * Create a new App, this is called whenever the server starts up and initiates the Apps.
-	 * Note, your implementation of this class should call `super(name, id, version)` so we have it.
-	 * Also, please use the `initialize()` method to do items instead of the constructor as the constructor
-	 * *might* be called more than once but the `initialize()` will only be called once.
+	 *
+	 * > [!IMPORTANT]
+	 * > Your subclass has to call `super(info, logger, accessors)`.
+	 *
+	 * > [!WARNING]
+	 * > The constructor may run more than once, so set the App up from
+	 * > {@link App.initialize} instead, which runs exactly once.
 	 */
 	public constructor(
 		private readonly info: IAppInfo,
@@ -215,7 +228,7 @@ export abstract class App implements IApp {
 	 *
 	 * @param setting the setting which was updated
 	 * @param configurationModify the accessor to modifiy the system
-	 * @param reader the reader accessor
+	 * @param read the reader accessor
 	 * @param http an accessor to the outside world
 	 */
 	public async onSettingUpdated(setting: ISetting, configurationModify: IConfigurationModify, read: IRead, http: IHttp): Promise<void> {}
@@ -224,9 +237,9 @@ export abstract class App implements IApp {
 	 * Method which is called before a setting which belongs to this App is going to be updated
 	 * by an external system and not this App itself. The setting passed is the newly updated one.
 	 *
-	 * @param setting the setting which is going to be updated
+	 * @param context the setting as it stands and as it is going to become
 	 * @param configurationModify the accessor to modifiy the system
-	 * @param reader the reader accessor
+	 * @param read the reader accessor
 	 * @param http an accessor to the outside world
 	 */
 	public async onPreSettingUpdate(
@@ -239,8 +252,9 @@ export abstract class App implements IApp {
 	}
 
 	/**
-	 * Method will be called during initialization. It allows for adding custom configuration options and defaults
-	 * @param configuration
+	 * Method will be called during initialization. It allows for adding custom configuration options and defaults.
+	 *
+	 * This is where an App registers its settings, slash commands, API endpoints and UI actions.
 	 */
 	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {}
 
@@ -254,7 +268,10 @@ export abstract class App implements IApp {
 		this.status = status;
 	}
 
-	// Avoid leaking references if object is serialized (e.g. to be sent over IPC)
+	/**
+	 * Serializes the App as its {@link IAppInfo}, so that no reference to the
+	 * host system leaks when the object crosses a process boundary.
+	 */
 	public toJSON(): Record<string, any> {
 		return this.info;
 	}

@@ -1,3 +1,15 @@
+/**
+ * The name of every method the host may invoke on an App.
+ *
+ * The framework uses these names to find a handler on the App instance, so they
+ * mirror the method names of the {@link metadata/AppInterface!AppInterface | AppInterface} handlers. Members
+ * prefixed with an underscore belong to a registered artifact — a slash
+ * command, an API endpoint, a job processor — rather than to the App class
+ * itself.
+ *
+ * This enum is internal to the framework: an App implements the interfaces, it
+ * does not reference these values.
+ */
 export enum AppMethod {
 	_API_EXECUTOR = 'apiExecutor',
 	_CONSTRUCTOR = 'constructor',

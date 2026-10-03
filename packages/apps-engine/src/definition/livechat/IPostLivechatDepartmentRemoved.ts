@@ -9,7 +9,7 @@ export interface IPostLivechatDepartmentRemoved {
 	/**
 	 * Handler called *after* the removal of a livechat department.
 	 *
-	 * @param data the livechat context data which contains the department removed
+	 * @param context the livechat context data which contains the department removed
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 * @param persis An accessor to the App's persistence

@@ -15,7 +15,9 @@ export interface ILivechatMessageBuilder {
 
 	/**
 	 * Provides a convient way to set the data for the message.
-	 * Note: Providing an "id" field here will be ignored.
+	 *
+	 * > [!NOTE]
+	 * > Providing an `id` field here will be ignored.
 	 *
 	 * @param message the message data to set
 	 */

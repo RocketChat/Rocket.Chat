@@ -32,19 +32,42 @@ export interface IBlockElement {
  */
 export type AccessoryElements = IButtonElement | IImageElement | IOverflowMenuElement;
 
+/**
+ * An element the user can act on, which sends the App an interaction.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export interface IInteractiveElement extends IBlockElement {
+	/** Identifies the element in the App's interaction handler. */
 	actionId: string;
 }
 
+/**
+ * An element the user enters a value into, which is read back from the
+ * surface's state on submit.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export interface IInputElement extends IBlockElement {
+	/** Identifies the value in the surface's state and in the App's handler. */
 	actionId: string;
+	/** What to show while the element is empty. */
 	placeholder: ITextObject;
+	/** The value the element starts with. */
 	initialValue?: string | Array<string>;
+	/** What should send the App an interaction before the surface is submitted. */
 	dispatchActionConfig?: Array<InputElementDispatchAction>;
 }
 
+/**
+ * How prominent a button is.
+ *
+ * @deprecated please prefer the rocket.chat/ui-kit components
+ */
 export enum ButtonStyle {
+	/** The main action of the surface. */
 	PRIMARY = 'primary',
+	/** An action the user cannot undo. */
 	DANGER = 'danger',
 }
 

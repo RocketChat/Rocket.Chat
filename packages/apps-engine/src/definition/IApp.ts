@@ -4,6 +4,12 @@ import type { ILogger } from './accessors/ILogger';
 import type { IAppAuthorInfo } from './metadata/IAppAuthorInfo';
 import type { IAppInfo } from './metadata/IAppInfo';
 
+/**
+ * The read-only view of an App that the host and other Apps see.
+ *
+ * Everything here answers a question about the App's own manifest or state.
+ * Extend {@link App} to write one; this interface is what you get back.
+ */
 export interface IApp {
 	/**
 	 * Gets the status of this App.
@@ -86,5 +92,10 @@ export interface IApp {
 	 */
 	getLogger(): ILogger;
 
+	/**
+	 * Gets the accessors this App was constructed with.
+	 *
+	 * @return the accessors to the host system
+	 */
 	getAccessors(): IAppAccessors;
 }
