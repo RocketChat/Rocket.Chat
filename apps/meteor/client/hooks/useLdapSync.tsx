@@ -26,8 +26,8 @@ export const useLdapSync = () => {
 	return async (): Promise<void> => {
 		try {
 			await testConnection();
-		} catch {
-			dispatchToastMessage({ type: 'error', message: t('Connection_failed') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 			return;
 		}
 

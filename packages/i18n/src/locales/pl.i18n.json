@@ -1028,7 +1028,6 @@
   "Connected": "Połączony",
   "Connection_Closed": "Połączenie zamknięte",
   "Connection_error": "Błąd połączenia",
-  "Connection_failed": "Nie można nawiązać połączenia z LDAP",
   "Connection_Reset": "Reset połączenia",
   "Connectivity_Services": "Usługi łączności",
   "Consulting": "Doradztwo",

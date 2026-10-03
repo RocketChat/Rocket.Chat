@@ -898,7 +898,6 @@
   "Connected": "已連線",
   "Connection_Closed": "連接關閉",
   "Connection_error": "連線錯誤",
-  "Connection_failed": "LDAP 連線失敗",
   "Connection_Reset": "連線重置",
   "Connectivity_Services": "連線的服務",
   "Consulting": "諮詢",

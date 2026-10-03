@@ -237,6 +237,37 @@ const waitForLdapConnection = () =>
 					expect(res.body).to.have.property('message', 'LDAP_Connection_successful');
 				});
 		});
+
+		describe('with an invalid authentication password', () => {
+			before(async () => {
+				await updateSetting('LDAP_Authentication_Password', 'wrongpassword');
+			});
+
+			after(async () => {
+				await updateSetting('LDAP_Authentication_Password', 'adminpassword');
+				await waitForLdapConnection();
+			});
+
+			it('should fail and return the bind error as the reason', async () => {
+				await retry(
+					'LDAP settings propagation',
+					async () => {
+						await request
+							.post(api('ldap.testConnection'))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res: Response) => {
+								expect(res.body).to.have.property('success', false);
+								expect(res.body).to.have.property('error', 'LDAP_Connection_failed_reason');
+								expect(res.body).to.have.property('errorType', 'error-ldap-connection-failed');
+								expect(res.body).to.have.nested.property('details.reason').that.is.a('string').and.is.not.empty;
+							});
+					},
+					{ delayMs: 1_000 },
+				);
+			});
+		});
 	});
 
 	describe('[/login]', () => {

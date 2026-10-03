@@ -106,4 +106,58 @@ describe('LDAPConnection', () => {
 			expect(connection.client.search.called).to.be.false;
 		});
 	});
+
+	describe('testConnection', () => {
+		const bindError = new Error('Invalid Credentials');
+		let connection: any;
+
+		beforeEach(() => {
+			connection = new LDAPConnection();
+			connection.connect = sinon.stub().resolves();
+			connection.client = { bind: sinon.stub().yields(null), unbind: sinon.stub() };
+			connection.options.authentication = true;
+			connection.options.authenticationUserDN = 'cn=admin,dc=example,dc=com';
+			connection.options.authenticationPassword = 'secret';
+		});
+
+		it('should bind with the authentication user when authentication is enabled', async () => {
+			await connection.testConnection();
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(connection.client.bind.calledOnceWith('cn=admin,dc=example,dc=com', 'secret')).to.be.true;
+		});
+
+		it('should reject with the bind error when the bind fails', async () => {
+			connection.client.bind.yields(bindError);
+			const error = await connection.testConnection().then(
+				() => undefined,
+				(e: unknown) => e,
+			);
+			expect(error).to.equal(bindError);
+		});
+
+		it('should reject without binding when authentication is enabled and the user DN is empty', async () => {
+			connection.options.authenticationUserDN = '';
+			const error = await connection.testConnection().then(
+				() => undefined,
+				(e: unknown) => e,
+			);
+			expect(error).to.be.an('error').with.property('message', 'LDAP_Authentication_UserDN_empty');
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(connection.client.bind.called).to.be.false;
+		});
+
+		it('should not bind when authentication is disabled', async () => {
+			connection.options.authentication = false;
+			await connection.testConnection();
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(connection.client.bind.called).to.be.false;
+		});
+
+		it('should disconnect even when the bind fails', async () => {
+			connection.client.bind.yields(bindError);
+			await connection.testConnection().catch(() => undefined);
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(connection.client.unbind.calledOnce).to.be.true;
+		});
+	});
 });
