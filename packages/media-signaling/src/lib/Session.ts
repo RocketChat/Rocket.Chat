@@ -680,6 +680,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
+		call.emitter.on('ringing', () => this.onRingingCall());
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
@@ -741,6 +742,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private onActiveCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
 		this.onSessionStateChange();
+	}
+
+	private onRingingCall(): void {
+		this.config.logger?.debug('MediaSignalingSession.onRingingCall');
+		this.emit('sessionStateChange');
 	}
 
 	private async onScreenShareRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {
