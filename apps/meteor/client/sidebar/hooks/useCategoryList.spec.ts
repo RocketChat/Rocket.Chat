@@ -2,20 +2,20 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { SIDEBAR_DYNAMIC_GROUP_KEYS, mergeWithSectionsOrder, useCategoryList, withDynamicFirst } from './useCategoryList';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useSetting: jest.fn(),
 	useUserPreference: jest.fn(),
 }));
 
-jest.mock('../../hooks/useHasLicenseModule', () => ({
-	useHasLicenseModule: jest.fn(),
+jest.mock('../../hooks/useIsEnterprise', () => ({
+	useIsEnterprise: jest.fn(),
 }));
 
 const mockedUseSetting = jest.mocked(useSetting);
 const mockedUseUserPreference = jest.mocked(useUserPreference);
-const mockedUseHasLicenseModule = jest.mocked(useHasLicenseModule);
+const mockedUseIsEnterprise = jest.mocked(useIsEnterprise);
 
 const STATIC_KEYS = ['Favorites', 'Teams', 'Discussions', 'Channels', 'Direct_Messages', 'Conversations'] as const;
 const DYNAMIC_KEYS = [...SIDEBAR_DYNAMIC_GROUP_KEYS];
@@ -83,16 +83,16 @@ describe('withDynamicFirst', () => {
 
 describe('useCategoryList', () => {
 	const preferences: Record<string, unknown> = {};
-	let hasLicenseModule = false;
+	let isEnterprise = false;
 
 	beforeEach(() => {
 		for (const key of Object.keys(preferences)) delete preferences[key];
 		Object.assign(preferences, { sidebarGroupByType: false, sidebarShowFavorites: true, sidebarShowUnread: true });
-		hasLicenseModule = false;
+		isEnterprise = false;
 
 		mockedUseUserPreference.mockImplementation((key: string, defaultValue?: unknown) => preferences[key] ?? defaultValue);
 		mockedUseSetting.mockImplementation((_key: string, defaultValue?: unknown) => defaultValue);
-		mockedUseHasLicenseModule.mockImplementation(() => ({ data: hasLicenseModule }) as any);
+		mockedUseIsEnterprise.mockImplementation(() => ({ data: { isEnterprise } }) as any);
 	});
 
 	const categoryList = () => renderHook(() => useCategoryList(false, false)).result.current;
@@ -103,15 +103,8 @@ describe('useCategoryList', () => {
 		expect(categoryList()).toEqual(['Incoming_Calls', 'Unread', 'Favorites', 'Conversations']);
 	});
 
-	it('ignores a stale section key with the license module enabled', () => {
-		hasLicenseModule = true;
-		preferences.sidebarSectionsOrder = ['Incoming_Calls', 'Unread', 'Drafts', 'Favorites', 'Conversations'];
-
-		expect(categoryList()).not.toContain('Drafts');
-	});
-
 	it('ignores a stale entry already persisted in sidebarCategories', () => {
-		hasLicenseModule = true;
+		isEnterprise = true;
 		preferences.sidebarSectionsOrder = ['Incoming_Calls', 'Unread', 'Favorites', 'Conversations'];
 		preferences.sidebarCategories = [
 			{ _id: 'Drafts', name: 'Drafts', default: true },

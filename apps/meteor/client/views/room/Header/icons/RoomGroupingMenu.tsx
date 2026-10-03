@@ -3,18 +3,18 @@ import { memo } from 'react';
 
 import Favorite from './Favorite';
 import RoomHeaderCategoryMenu from './RoomHeaderCategoryMenu';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
 const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f']; category?: ISubscription['category'] } }) => {
 	const subscribed = useUserIsSubscribed();
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	if (!subscribed) {
 		return null;
 	}
 
-	if (hasLicenseModule && !isOmnichannelRoom(room)) {
+	if (isEnterprise && !isOmnichannelRoom(room)) {
 		return <RoomHeaderCategoryMenu room={room} />;
 	}
 
