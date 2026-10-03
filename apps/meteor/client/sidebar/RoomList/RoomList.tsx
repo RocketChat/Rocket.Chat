@@ -88,15 +88,17 @@ const RoomList = () => {
 				bufferSize={bufferSize}
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
-					<RoomListCollapser
-						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
-						onKeyDown={(e) => handleKeyDown(e, group.key)}
-					/>
+					<div role='listitem'>
+						<RoomListCollapser
+							group={group}
+							canMoveUp={canMoveGroup(groups, index, 'up')}
+							canMoveDown={canMoveGroup(groups, index, 'down')}
+							onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
+							onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+							onClick={() => handleClick(group.key)}
+							onKeyDown={(e) => handleKeyDown(e, group.key)}
+						/>
+					</div>
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
 					<RoomListRowWrapper data-index={rowIndex}>
