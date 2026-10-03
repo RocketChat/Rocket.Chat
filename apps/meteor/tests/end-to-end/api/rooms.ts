@@ -1406,6 +1406,20 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('room').and.to.be.an('object');
 		});
 
+		it('should return not allowed when the room does not exist', async () => {
+			const res = await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: `room-that-does-not-exist-${Date.now()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'not-allowed');
+		});
+
 		it('should not return parent & team for room thats not on a team nor is a discussion', async () => {
 			await request
 				.get(api('rooms.info'))
