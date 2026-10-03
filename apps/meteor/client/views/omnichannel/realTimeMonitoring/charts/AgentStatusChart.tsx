@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import Chart from './Chart';
 import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
-import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import { drawDoughnutChart } from '../../chartHandler';
 
 const labels = ['Available', 'Away', 'Busy', 'Offline'];
 

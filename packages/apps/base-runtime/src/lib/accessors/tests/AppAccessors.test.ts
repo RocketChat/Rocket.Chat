@@ -15,7 +15,7 @@ describe('AppAccessors', () => {
 	const senderFn = (r: object) =>
 		Promise.resolve({
 			id: Math.random().toString(36).substring(2),
-			jsonrpc: '2.0',
+			jsonrpc: '2.0' as const,
 			result: r,
 			serialize() {
 				return JSON.stringify(this);

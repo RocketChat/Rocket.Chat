@@ -1,4 +1,4 @@
-import { useStableCallback, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef, useState } from 'react';
 
 const events = ['error', 'stalled', 'play'];
@@ -132,20 +132,18 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 		}
 	});
 
-	const mediaRefCallback = useSafeRefCallback(
-		useCallback(
-			(node: HTMLAudioElement) => {
+	const mediaRefCallback = useCallback(
+		(node: HTMLAudioElement) => {
+			events.forEach((event) => {
+				node.addEventListener(event, handleMediaURLRecovery);
+			});
+			return () => {
 				events.forEach((event) => {
-					node.addEventListener(event, handleMediaURLRecovery);
+					node.removeEventListener(event, handleMediaURLRecovery);
 				});
-				return () => {
-					events.forEach((event) => {
-						node.removeEventListener(event, handleMediaURLRecovery);
-					});
-				};
-			},
-			[handleMediaURLRecovery],
-		),
+			};
+		},
+		[handleMediaURLRecovery],
 	);
 
 	return { mediaRef: mediaRefCallback };

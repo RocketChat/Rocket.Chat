@@ -32,7 +32,7 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 			<CardTitle id={cardId}>{t(title)}</CardTitle>
 			<CardBody>
 				<Box className={clampStyle} id={descriptionId}>
-					{description && i18n.exists(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
+					{description && i18n.exists(description as string) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
 			</CardBody>
 			<CardControls>

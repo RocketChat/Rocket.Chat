@@ -39,7 +39,8 @@ const ActionManagerBusyState = () => {
 				textAlign='center'
 				fontSize='p2'
 				elevation='2'
-				borderRadius='0 0 4px 4px'
+				borderEndStartRadius='medium'
+				borderEndEndRadius='medium'
 				zIndex={99999}
 			>
 				{t('Loading')}

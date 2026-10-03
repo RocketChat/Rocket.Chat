@@ -123,7 +123,11 @@ function ContactTable() {
 				<>
 					<GenericTable aria-label={t('Omnichannel_Contact_Center_Contacts')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.contacts.map((contact) => (
+								<ContactTableRow key={contact._id} {...contact} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

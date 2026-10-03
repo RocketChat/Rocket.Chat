@@ -47,12 +47,34 @@ export class MentionsParser {
 		this.roomTemplate = roomTemplate;
 	}
 
-	get userMentionRegex() {
-		return new RegExp(`(^|\\s|>)@(${this.pattern()}(@(${this.pattern()}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+	// The mention regexes only depend on the configured pattern (a setting that
+	// rarely changes), but these getters are hit multiple times per message;
+	// cache the compiled regexes and rebuild only when the pattern changes.
+	// Sharing the instances is safe because they're only used with
+	// String.prototype.replace/match, which reset lastIndex on each call.
+	private cachedPattern: string | undefined;
+
+	private cachedUserMentionRegex: RegExp | undefined;
+
+	private cachedChannelMentionRegex: RegExp | undefined;
+
+	private updateRegexCache() {
+		const pattern = this.pattern();
+		if (pattern !== this.cachedPattern || !this.cachedUserMentionRegex || !this.cachedChannelMentionRegex) {
+			this.cachedPattern = pattern;
+			this.cachedUserMentionRegex = new RegExp(`(^|\\s|>)@(${pattern}(@(${pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+			this.cachedChannelMentionRegex = new RegExp(`(^|\\s|>)#(${pattern}(@(${pattern}))?)`, 'gm');
+		}
 	}
 
-	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|>)#(${this.pattern()}(@(${this.pattern()}))?)`, 'gm');
+	get userMentionRegex(): RegExp {
+		this.updateRegexCache();
+		return this.cachedUserMentionRegex as RegExp;
+	}
+
+	get channelMentionRegex(): RegExp {
+		this.updateRegexCache();
+		return this.cachedChannelMentionRegex as RegExp;
 	}
 
 	replaceUsers = (msg: string, { mentions, temp }: IMessage, me: string) =>
@@ -103,18 +125,14 @@ export class MentionsParser {
 
 	replaceChannels = (msg: string, { temp, channels }: IMessage) =>
 		msg.replace(/&#39;/g, "'").replace(this.channelMentionRegex, (match, prefix, mention) => {
-			if (
-				!temp &&
-				!channels?.find((c) => {
-					return c.name === mention;
-				})
-			) {
-				return match;
-			}
-
 			const channel = channels?.find(({ name }) => {
 				return name === mention;
 			});
+
+			if (!temp && !channel) {
+				return match;
+			}
+
 			const reference = channel ? channel._id : mention;
 			return this.roomTemplate({ prefix, reference, channel, mention });
 		});

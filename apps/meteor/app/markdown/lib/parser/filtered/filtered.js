@@ -1,3 +1,7 @@
+import { getFilteredLinkRegexes } from '../linkRegexes';
+
+const inlineCodeRegex = /`([^`\r\n]+)\`/gm;
+
 /**
  * Filter markdown tags in message
  * Use case: notifications
@@ -10,21 +14,19 @@ export const filtered = (
 	},
 ) => {
 	const schemes = (options.supportSchemesForLink || 'http,https').split(',').join('|');
+	const linkRegexes = getFilteredLinkRegexes(schemes);
 
 	// Remove block code backticks
 	message = message.replace(/```/g, '');
 
 	// Remove inline code backticks
-	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => match.substr(1, match.length - 2));
+	message = message.replace(inlineCodeRegex, (match) => match.substr(1, match.length - 2));
 
 	// Filter [text](url), ![alt_text](image_url)
-	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${schemes}):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => title);
+	message = message.replace(linkRegexes.link, (match, title) => title);
 
 	// Filter <http://link|Text>
-	message = message.replace(
-		new RegExp(`(?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'),
-		(match, title) => title,
-	);
+	message = message.replace(linkRegexes.pipedLink, (match, title) => title);
 
 	// Filter headings
 	message = message.replace(

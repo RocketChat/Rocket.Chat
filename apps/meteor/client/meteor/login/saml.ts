@@ -63,7 +63,7 @@ Meteor.logout = async function (...args) {
 	if (provider && settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
 		console.info('SAML session terminated via SLO');
 
-		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
+		const { sdk } = await import('../../lib/SDKClient');
 		sdk
 			.call('samlLogout', provider)
 			.then((result) => {

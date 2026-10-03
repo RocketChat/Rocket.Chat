@@ -31,8 +31,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 		pageLivechat1 = new OmnichannelLiveChat(p1, api);
 		pageLivechat2 = new OmnichannelLiveChat(p2, api);
 
-		await pageLivechat1.page.goto('/livechat');
-		await pageLivechat2.page.goto('/livechat');
+		await pageLivechat1.goto();
+		await pageLivechat2.goto();
 	});
 
 	test.afterEach(async () => {

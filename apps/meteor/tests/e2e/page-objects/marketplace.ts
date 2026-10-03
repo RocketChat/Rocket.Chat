@@ -1,10 +1,12 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-export class Marketplace {
-	private readonly page: Page;
+import { RoutedPage } from './routed-page';
 
-	constructor(page: Page) {
-		this.page = page;
+export class Marketplace extends RoutedPage {
+	protected readonly route = '/marketplace/private';
+
+	async waitForReady(): Promise<void> {
+		await this.btnUploadPrivateApp.waitFor({ state: 'visible' });
 	}
 
 	get btnUploadPrivateApp(): Locator {

@@ -10,7 +10,7 @@ export default {
 	component: Extended,
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x300' backgroundColor='dark' borderRadius='x4'>
+			<Box maxWidth='x300' backgroundColor='dark' borderRadius='medium'>
 				{fn()}
 			</Box>
 		),
@@ -27,13 +27,13 @@ const Template: StoryFn<typeof Extended> = (args) => (
 					John Doe: test 123
 				</Box>
 				<Badge
-					{...({
+					{...{
 						style: {
 							backgroundColor: '#6c727a',
 							color: 'var(--rcx-color-surface, white)',
 							flexShrink: 0,
 						},
-					} as any)}
+					}}
 				>
 					99
 				</Badge>

@@ -5,6 +5,7 @@ import { FlexTab } from '../../fragments/flextabs/flextab';
 import { Listbox } from '../../fragments/listbox';
 import { OmnichannelConfirmRemoveChat } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
+import { OmnichannelSectionsHref } from '../omnichannel-admin';
 
 class OmnichannelConversationFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -122,7 +123,7 @@ class OmnichannelContactCenterChatsTable extends Table {
 }
 
 export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
-	protected readonly route = 'current/chats';
+	protected readonly route = OmnichannelSectionsHref.currentChats;
 
 	protected override readonly tableName = 'Omnichannel Contact Center Chats';
 

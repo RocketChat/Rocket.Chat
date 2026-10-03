@@ -3,6 +3,7 @@ import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
+import { addCustomOAuthPremiumAlert } from '../../lib/oauth/addCustomOAuthPremiumAlert';
 import { settings } from '../../settings';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
@@ -98,5 +99,6 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
+		await addCustomOAuthPremiumAlert();
 	});
 };

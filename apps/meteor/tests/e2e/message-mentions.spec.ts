@@ -26,7 +26,7 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
@@ -65,7 +65,7 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
@@ -104,8 +104,7 @@ test.describe.serial('message-mentions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test('expect show "all" and "here" options', async () => {

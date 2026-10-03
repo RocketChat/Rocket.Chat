@@ -132,7 +132,7 @@ test.describe('OC - Monitor Role', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await poOmnichannel.chats.goTo();
+		await poOmnichannel.chats.goto();
 	});
 
 	test('OC - Monitor Role - Basic permissions', async () => {
@@ -157,7 +157,7 @@ test.describe('OC - Monitor Role', () => {
 	test('OC - Monitor Role - Canned responses', async () => {
 		// TODO: move to unit test
 		await test.step('expect not to be able to create public canned responses (administration)', async () => {
-			await poOmnichannel.cannedResponses.goTo();
+			await poOmnichannel.cannedResponses.goto();
 			await poOmnichannel.cannedResponses.btnNew.click();
 			await expect(poOmnichannel.cannedResponses.radioPublic).toBeDisabled();
 		});
@@ -200,7 +200,7 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
-			await poOmnichannel.chats.goTo();
+			await poOmnichannel.chats.goto();
 		});
 
 		await test.step('expect not to be able to remove closed room', async () => {
@@ -214,7 +214,7 @@ test.describe('OC - Monitor Role', () => {
 		const [monitor] = monitors;
 
 		const poContactCenterChats = poOmnichannel.chats;
-		await poContactCenterChats.goTo();
+		await poContactCenterChats.goto();
 
 		await test.step('expect not to be able to see chats from removed department', async () => {
 			await test.step('expect rooms from both departments to be visible', async () => {

@@ -109,7 +109,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	test.beforeEach(async ({ page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
 
-		await page.goto('/omnichannel/current');
+		await poOmnichannel.chats.goto();
 	});
 
 	// Close sessions
@@ -361,7 +361,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 	test.beforeEach(async ({ page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
 
-		await page.goto('/omnichannel/current');
+		await poOmnichannel.chats.goto();
 	});
 
 	// Close sessions

@@ -82,7 +82,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 			is='article'
 			role='listitem'
 			position='relative'
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndStyle='solid'
 			borderBlockEndColor='extra-light'
 			paddingBlockStart={16}

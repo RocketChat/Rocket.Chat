@@ -2,6 +2,7 @@ import { AppBridges } from '@rocket.chat/apps/dist/server/bridges/AppBridges';
 
 import { AppActivationBridge } from './activation';
 import { AppApisBridge } from './api';
+import { AppCallHistoryBridge } from './callHistory';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
 import { AppContactBridge } from './contact';
@@ -61,6 +62,7 @@ export class RealAppBridges extends AppBridges {
 		this._contactBridge = new AppContactBridge(orch);
 		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
 		this._experimentalBridge = new AppExperimentalBridge(orch);
+		this._callHistoryBridge = new AppCallHistoryBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -173,5 +175,9 @@ export class RealAppBridges extends AppBridges {
 
 	getExperimentalBridge() {
 		return this._experimentalBridge;
+	}
+
+	getCallHistoryBridge() {
+		return this._callHistoryBridge;
 	}
 }

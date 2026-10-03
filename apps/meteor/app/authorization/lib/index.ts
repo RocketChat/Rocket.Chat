@@ -10,5 +10,3 @@ export const CONSTANTS = {
 } as const;
 
 export const confirmationRequiredPermissions = ['access-permissions'];
-
-export { AuthorizationUtils } from './AuthorizationUtils';

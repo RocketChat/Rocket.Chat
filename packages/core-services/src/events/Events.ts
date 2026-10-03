@@ -162,6 +162,12 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	/**
+	 * Something about the conference changed: its chat's room, who can read it, or its membership.
+	 *
+	 * One event for all of it, because there is one answer to all of it: read the conference again.
+	 */
+	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:

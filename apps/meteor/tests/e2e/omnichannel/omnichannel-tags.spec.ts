@@ -48,7 +48,7 @@ test.describe('OC - Manage Tags', () => {
 	test('OC - Manage Tags - Create Tag', async () => {
 		const tagName = faker.string.uuid();
 
-		await poOmnichannelTags.goTo();
+		await poOmnichannelTags.goto();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.createNew();
@@ -88,7 +88,7 @@ test.describe('OC - Manage Tags', () => {
 			return tag;
 		});
 
-		await poOmnichannelTags.goTo();
+		await poOmnichannelTags.goto();
 
 		await test.step('expect to add tag departments', async () => {
 			await poOmnichannelTags.search(tag.name);

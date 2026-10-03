@@ -1,6 +1,6 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
+import type { MutableRefObject, RefCallback } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
@@ -23,7 +23,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			items: UseQueryResult<T[]>[];
 			focused: T | undefined;
 			select: (item: T) => void;
-			callbackRef: (node: HTMLElement) => void;
+			callbackRef: RefCallback<HTMLElement>;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
 			filter: unknown;
@@ -33,7 +33,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			option: undefined;
 			items: undefined;
 			focused: undefined;
-			callbackRef: (node: HTMLElement) => void;
+			callbackRef: RefCallback<HTMLElement>;
 			select: undefined;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: undefined;
@@ -235,24 +235,19 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFilter('');
 	});
 
-	const ref = useRef<HTMLElement | null>(null);
 	const callbackRef = useCallback(
-		(node: HTMLElement | null) => {
-			if (ref.current) {
-				ref.current.removeEventListener('input', handleInput);
-				ref.current.removeEventListener('keyup', handleKeyUp);
-				ref.current.removeEventListener('keydown', handleKeyDown);
-				ref.current.removeEventListener('focus', handleFocus);
-				ref.current = null;
-			}
+		(node: HTMLElement) => {
+			node.addEventListener('input', handleInput);
+			node.addEventListener('keyup', handleKeyUp);
+			node.addEventListener('keydown', handleKeyDown);
+			node.addEventListener('focus', handleFocus);
 
-			if (node) {
-				ref.current = node;
-				node.addEventListener('input', handleInput);
-				node.addEventListener('keyup', handleKeyUp);
-				node.addEventListener('keydown', handleKeyDown);
-				node.addEventListener('focus', handleFocus);
-			}
+			return () => {
+				node.removeEventListener('input', handleInput);
+				node.removeEventListener('keyup', handleKeyUp);
+				node.removeEventListener('keydown', handleKeyDown);
+				node.removeEventListener('focus', handleFocus);
+			};
 		},
 		[handleInput, handleKeyUp, handleKeyDown, handleFocus],
 	);
