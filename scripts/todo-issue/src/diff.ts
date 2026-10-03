@@ -3,7 +3,7 @@ import type { Change } from 'parse-diff';
 import type { TodoItem } from './types';
 
 const KEYWORD = 'TODO';
-const EXCLUDE_PATTERN = /(^|\/)node_modules\//;
+const EXCLUDE_PATTERN = /(^|\/)(node_modules|\.git|docs)\/|\.(md|markdown|mdx)$/i;
 const DEFAULT_LABEL = 'todo';
 
 const MENTION_REGEX = /\B@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})/g;
@@ -20,7 +20,10 @@ function extractMentions(text: string): { cleaned: string; mentions: string[] } 
 	}
 	MENTION_REGEX.lastIndex = 0;
 
-	const cleaned = text.replace(MENTION_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+	const cleaned = text
+		.replace(MENTION_REGEX, '')
+		.replace(/\s{2,}/g, ' ')
+		.trim();
 	return { cleaned, mentions };
 }
 
@@ -83,10 +86,12 @@ export function extractTodos(diffText: string): TodoItem[] {
 				const match = regex.exec(raw);
 				if (!match?.groups) continue;
 
+				const prefix = match.groups.prefix;
+				// Skip inline code references where TODO is enclosed in backticks (e.g. `TODO` or `TODO`: ...)
+				if (prefix.trimEnd().endsWith('`') || match.groups.title.trim().startsWith('`')) continue;
+
 				let title = match.groups.title.trim();
 				if (!title) continue;
-
-				const prefix = match.groups.prefix;
 				const body = extractBody(chunk.changes, i, prefix);
 
 				const { cleaned: labelCleaned, labels } = extractLabels(title);
