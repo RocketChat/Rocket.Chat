@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
+import type { APIRequestContext, Page } from '@playwright/test';
+import type { IRoom } from '@rocket.chat/core-typings';
 
-import { DEFAULT_USER_CREDENTIALS, IS_EE } from '../config/constants';
+import { BASE_API_URL, DEFAULT_USER_CREDENTIALS, IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -17,10 +18,35 @@ const settingsList = [
 
 preserveSettings(settingsList);
 
+const createEncryptedGroupAsE2EEUser = async (request: APIRequestContext, createdChannels: string[]): Promise<IRoom> => {
+	const name = faker.string.uuid();
+	const response = await request.post(`${BASE_API_URL}/groups.create`, {
+		headers: { 'X-Auth-Token': Users.userE2EE.data.loginToken, 'X-User-Id': Users.userE2EE.data._id },
+		data: { name, extraData: { encrypted: true } },
+	});
+	expect(response.status()).toBe(200);
+	createdChannels.push(name);
+	return (await response.json()).group;
+};
+
+const waitForRoomKeyReady = async (page: Page, rid: string) => {
+	await expect
+		.poll(
+			() =>
+				page.evaluate(async (rid) => {
+					// eslint-disable-next-line import-x/no-absolute-path
+					const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+					const room = await e2e.getInstanceByRoomId(rid);
+					return room?.getState();
+				}, rid),
+			{ message: 'expect room encryption key to be ready before sending messages' },
+		)
+		.toBe('READY');
+};
+
 test.describe('E2EE Server Settings', () => {
 	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
-	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -34,8 +60,6 @@ test.describe('E2EE Server Settings', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		createE2EEChannel = new CreateE2EEChannel(page);
-		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async () => {
@@ -45,15 +69,13 @@ test.describe('E2EE Server Settings', () => {
 		);
 	});
 
-	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+	test('expect slash commands to be enabled in an e2ee room', async ({ page, request }) => {
 		test.skip(!IS_EE, 'Premium Only');
-		const channelName = faker.string.uuid();
+		const group = await createEncryptedGroupAsE2EEUser(request, createdChannels);
 
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
+		await poHomeChannel.gotoGroup(group.name as string);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await waitForRoomKeyReady(page, group._id);
 
 		await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
@@ -74,12 +96,9 @@ test.describe('E2EE Server Settings', () => {
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
 		test.skip(!IS_EE, 'Premium Only');
 		let poHomeChannel: HomeChannel;
-		let createE2EEChannel: CreateE2EEChannel;
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
-			createE2EEChannel = new CreateE2EEChannel(page);
-			await poHomeChannel.goto();
 		});
 
 		test.beforeAll(async ({ api }) => {
@@ -90,14 +109,12 @@ test.describe('E2EE Server Settings', () => {
 			await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		});
 
-		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
-			const channelName = faker.string.uuid();
+		test('expect slash commands to be disabled in an e2ee room', async ({ page, request }) => {
+			const group = await createEncryptedGroupAsE2EEUser(request, createdChannels);
 
-			await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-			await expect(page).toHaveURL(`/group/${channelName}`);
-
+			await poHomeChannel.gotoGroup(group.name as string);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+			await waitForRoomKeyReady(page, group._id);
 
 			await poHomeChannel.content.sendMessage('This is an encrypted message.');
 

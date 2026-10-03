@@ -100,10 +100,11 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 	// Create sessions
 	test.beforeEach(async ({ browser }) => {
-		sessions = [];
-		for (const user of [Users.user1, Users.user2, Users.admin]) {
-			sessions.push(await createAuxContext(browser, user).then(wrapSession));
-		}
+		sessions = await Promise.all([
+			createAuxContext(browser, Users.user1).then(wrapSession),
+			createAuxContext(browser, Users.user2).then(wrapSession),
+			createAuxContext(browser, Users.admin).then(wrapSession),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {

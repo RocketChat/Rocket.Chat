@@ -213,7 +213,7 @@ test.describe('Apps > Media call events', () => {
 	const placeAndAnswerCall = async (): Promise<void> => {
 		const [user1, user2] = sessions;
 
-		await user1.poHomeChannel.navbar.openChat('user2');
+		await user1.poHomeChannel.gotoDirect('user2');
 		await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 
 		await user1.poHomeChannel.content.btnVoiceCall.click();
@@ -302,7 +302,7 @@ test.describe('Apps > Media call events', () => {
 				getNewestCallHistoryItem(userApis.user2, { direction: 'inbound', filter: 'user1' }),
 			]);
 
-			await user1.poHomeChannel.navbar.openChat('user2');
+			await user1.poHomeChannel.gotoDirect('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 
 			await user1.poHomeChannel.content.btnVoiceCall.click();
@@ -412,7 +412,7 @@ test.describe('Apps > Media call events', () => {
 
 			const previousPreventedCall = await getNewestPreventedCall(connection, appId);
 
-			await user1.poHomeChannel.navbar.openChat('user2');
+			await user1.poHomeChannel.gotoDirect('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 
 			await user1.poHomeChannel.content.btnVoiceCall.click();
@@ -580,7 +580,7 @@ test.describe('Apps > Media call events', () => {
 
 			const previousEnded = await getNewestAppLog(api, appId, 'executePostMediaCallEnded');
 
-			await user1.poHomeChannel.navbar.openChat('user2');
+			await user1.poHomeChannel.gotoDirect('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 
 			await user1.poHomeChannel.content.btnVoiceCall.click();
@@ -606,7 +606,7 @@ test.describe('Apps > Media call events', () => {
 
 			const previousEnded = await getNewestAppLog(api, appId, 'executePostMediaCallEnded');
 
-			await user1.poHomeChannel.navbar.openChat('user2');
+			await user1.poHomeChannel.gotoDirect('user2');
 			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 
 			await user1.poHomeChannel.content.btnVoiceCall.click();

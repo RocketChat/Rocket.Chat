@@ -260,6 +260,23 @@ export default [
 					},
 				},
 			],
+			'no-restricted-syntax': [
+				'warn',
+				{
+					selector: "CallExpression[callee.property.name='waitForTimeout']",
+					message: 'Fixed sleeps slow the suite and hide races. Wait for a state with expect / expect.poll instead.',
+				},
+				{
+					selector:
+						"CallExpression[callee.property.name=/^(beforeEach|beforeAll)$/] CallExpression[callee.property.name='sendMessage'][callee.object.property.name='content']",
+					message: 'Seed messages through the API (sendMessage / sendMessageFromUser), not the composer.',
+				},
+				{
+					selector:
+						'CallExpression[callee.property.name=/^(beforeEach|beforeAll)$/] CallExpression[callee.property.name=/^(createNew|openCreate)$/]',
+					message: 'Create setup rooms through the API (createTarget* helpers), not the Create new modal.',
+				},
+			],
 			'testing-library/no-await-sync-events': 'off',
 			'testing-library/no-container': 'off',
 			'testing-library/no-manual-cleanup': 'off',

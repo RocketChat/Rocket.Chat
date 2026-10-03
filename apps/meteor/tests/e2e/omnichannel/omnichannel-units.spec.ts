@@ -56,11 +56,12 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelUnits = new OmnichannelUnits(page);
-		await poOmnichannelUnits.goto();
 	});
 
 	test('OC - Manage Units - Create Unit', async () => {
 		const unitName = faker.string.uuid();
+
+		await poOmnichannelUnits.goto();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.createNew();
@@ -167,7 +168,7 @@ test.describe('OC - Manage Units', () => {
 			return unit;
 		});
 
-		await page.reload();
+		await poOmnichannelUnits.goto();
 
 		await test.step('expect to add unit departments', async () => {
 			await poOmnichannelUnits.search(unit.name);

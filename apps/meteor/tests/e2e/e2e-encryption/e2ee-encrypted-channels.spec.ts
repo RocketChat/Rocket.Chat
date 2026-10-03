@@ -1,12 +1,16 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { APIRequestContext } from 'playwright-core';
 
-import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
+import { BASE_API_URL, DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { ToastMessages } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { deletePrivateRoomsByName } from '../utils';
+import { deletePrivateRoomsByName, setUserPreferences } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
+import { sendMessageFromUser } from '../utils/sendMessage';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -26,6 +30,38 @@ test.describe('E2EE Encrypted Channels', () => {
 
 	test.use({ storageState: Users.userE2EE.state });
 
+	const createGroupAsE2EEUser = async (request: APIRequestContext, extraData?: { encrypted: boolean }): Promise<IRoom> => {
+		const name = faker.string.uuid();
+		const response = await request.post(`${BASE_API_URL}/groups.create`, {
+			headers: { 'X-Auth-Token': Users.userE2EE.data.loginToken, 'X-User-Id': Users.userE2EE.data._id },
+			data: { name, extraData },
+		});
+		expect(response.status()).toBe(200);
+		createdChannels.push(name);
+		return (await response.json()).group;
+	};
+
+	const openEncryptedGroup = async (request: APIRequestContext, page: Page): Promise<IRoom> => {
+		const group = await createGroupAsE2EEUser(request, { encrypted: true });
+
+		await poHomeChannel.gotoGroup(group.name as string);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect
+			.poll(
+				() =>
+					page.evaluate(async (rid) => {
+						// eslint-disable-next-line import-x/no-absolute-path
+						const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+						const room = await e2e.getInstanceByRoomId(rid);
+						return room?.getState();
+					}, group._id),
+				{ message: 'expect room encryption key to be ready before sending messages' },
+			)
+			.toBe('READY');
+
+		return group;
+	};
+
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
@@ -37,7 +73,6 @@ test.describe('E2EE Encrypted Channels', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		createE2EEChannel = new CreateE2EEChannel(page);
-		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async () => {
@@ -52,6 +87,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		const channelName = faker.string.uuid();
 
+		await poHomeChannel.goto();
 		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
@@ -90,14 +126,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page, request }) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('This is the thread main message.');
 
@@ -120,14 +150,11 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({
+		page,
+		request,
+	}) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
@@ -143,16 +170,9 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 	});
 
-	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.navbar.createNew('Channel', channelName);
-		createE2EEChannel.store(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.toastMessage.waitForDisplay();
-		await poHomeChannel.toastMessage.dismissToast();
+	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page, request }) => {
+		const group = await createGroupAsE2EEUser(request);
+		await poHomeChannel.gotoGroup(group.name as string);
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
@@ -172,14 +192,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect create a encrypted private channel and mention user', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a encrypted private channel and mention user', async ({ page, request }) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('hello @user1');
 
@@ -190,14 +204,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(userMention).toBeVisible();
 	});
 
-	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page, request }) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('Are you in the #general channel?');
 
@@ -212,14 +220,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page).toHaveURL(`/channel/general`);
 	});
 
-	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a encrypted private channel, mention a channel and user', async ({ page, request }) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
 
@@ -237,23 +239,17 @@ test.describe('E2EE Encrypted Channels', () => {
 
 	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
 		page,
+		api,
+		request,
 	}) => {
-		const channelName = faker.string.uuid();
+		await setUserPreferences(api, { sidebarViewMode: 'extended' }, Users.userE2EE.data._id);
 
-		// Enable Sidebar Extended display mode
-		await poHomeChannel.navbar.setDisplayMode('Extended');
+		const group = await createGroupAsE2EEUser(request);
+		const channelName = group.name as string;
+		await sendMessageFromUser(request, Users.userE2EE, group._id, 'first unencrypted message');
+		await sendMessageFromUser(request, Users.userE2EE, group._id, 'second unencrypted message');
 
-		// Create private channel
-		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });
-		createE2EEChannel.store(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-		await poHomeChannel.toastMessage.waitForDisplay();
-		await poHomeChannel.toastMessage.dismissToast();
-
-		// Send Unencrypted Messages
-		await poHomeChannel.content.sendMessage('first unencrypted message');
-		await poHomeChannel.content.sendMessage('second unencrypted message');
+		await poHomeChannel.gotoGroup(channelName);
 
 		// Encrypt channel
 		await poHomeChannel.roomToolbar.openMoreOptions();
@@ -287,14 +283,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(sidebarChannel.getByText(`You: ${encriptedMessage1}`, { exact: true })).toBeVisible();
 	});
 
-	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page, request }) => {
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage('This message should be pinned and stared.');
 
@@ -345,14 +335,11 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 	});
 
-	test('expect to edit encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
+	test('expect to edit encrypted message', async ({ page, request }) => {
 		const originalMessage = 'This is the original encrypted message';
 		const editedMessage = 'This is the edited encrypted message';
 
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage(originalMessage);
 
@@ -369,15 +356,12 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect to edit encrypted message to include mention', async ({ page }) => {
-		const channelName = faker.string.uuid();
+	test('expect to edit encrypted message to include mention', async ({ page, request }) => {
 		const originalMessage = 'This is the original encrypted message';
 		const editedMessage = 'This is the edited encrypted message with a mention to @user1 and #general';
 		const displayedMessage = 'This is the edited encrypted message with a mention to user1 and general';
 
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await openEncryptedGroup(request, page);
 
 		await poHomeChannel.content.sendMessage(originalMessage);
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(originalMessage);

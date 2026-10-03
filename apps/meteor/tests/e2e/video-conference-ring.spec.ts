@@ -15,13 +15,11 @@ test.describe('video conference ringing', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.goto();
 	});
 
 	let auxContext: { page: Page; poHomeChannel: HomeChannel; poAccountProfile: AccountProfile };
 	test.beforeEach(async ({ browser }) => {
-		const { page } = await createAuxContext(browser, Users.user2);
+		const { page } = await createAuxContext(browser, Users.user2, '/direct/user1');
 		auxContext = { page, poHomeChannel: new HomeChannel(page), poAccountProfile: new AccountProfile(page) };
 	});
 
@@ -30,9 +28,9 @@ test.describe('video conference ringing', () => {
 	});
 
 	test('should display call ringing in direct message', async () => {
-		await poHomeChannel.navbar.openChat('user2');
+		await poHomeChannel.gotoDirect('user2');
 
-		await auxContext.poHomeChannel.navbar.openChat('user1');
+		await auxContext.poHomeChannel.content.waitForChannel();
 		await test.step('should user1 calls user2', async () => {
 			await poHomeChannel.content.btnVideoCall.click();
 			await poHomeChannel.content.btnStartVideoCall.click();

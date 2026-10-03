@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { APIRequestContext } from '@playwright/test';
+import type { APIRequestContext, Page } from '@playwright/test';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { BASE_API_URL, DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { deletePrivateRoomsByName } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -34,10 +34,35 @@ const sendEncryptedMessage = async (request: APIRequestContext, rid: string, enc
 	});
 };
 
+const createEncryptedGroupAsE2EEUser = async (request: APIRequestContext, createdChannels: string[]): Promise<IRoom> => {
+	const name = faker.string.uuid();
+	const response = await request.post(`${BASE_API_URL}/groups.create`, {
+		headers: { 'X-Auth-Token': Users.userE2EE.data.loginToken, 'X-User-Id': Users.userE2EE.data._id },
+		data: { name, extraData: { encrypted: true } },
+	});
+	expect(response.status()).toBe(200);
+	createdChannels.push(name);
+	return (await response.json()).group;
+};
+
+const waitForRoomKeyReady = async (page: Page, rid: string) => {
+	await expect
+		.poll(
+			() =>
+				page.evaluate(async (rid) => {
+					// eslint-disable-next-line import-x/no-absolute-path
+					const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+					const room = await e2e.getInstanceByRoomId(rid);
+					return room?.getState();
+				}, rid),
+			{ message: 'expect room encryption key to be ready before sending messages' },
+		)
+		.toBe('READY');
+};
+
 test.describe('E2EE Legacy Format', () => {
 	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
-	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -51,8 +76,6 @@ test.describe('E2EE Legacy Format', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		createE2EEChannel = new CreateE2EEChannel(page);
-		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async () => {
@@ -63,18 +86,11 @@ test.describe('E2EE Legacy Format', () => {
 	});
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
-		const channelName = faker.string.uuid();
+		const { _id: rid, name } = await createEncryptedGroupAsE2EEUser(request, createdChannels);
 
-		await createE2EEChannel.createAndStore(channelName, createdChannels);
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
+		await poHomeChannel.gotoGroup(name as string);
 		await expect(page.getByTitle('Encrypted')).toBeVisible();
-		// TODO: Fix this flakiness
-		await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
-
-		const rid = (await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room')) || '';
-		expect(rid).toBeTruthy();
+		await waitForRoomKeyReady(page, rid);
 
 		const kid = '32c9e7917b78';
 		const encryptedKey =

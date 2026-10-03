@@ -1,10 +1,9 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AccountFeaturePreview, AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
-import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
+import { CreateNewChannelModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -13,10 +12,17 @@ import {
 	setSettingValueById,
 	createTargetDiscussion,
 	deleteRoom,
+	sendMessage,
+	createDirectMessageRoom,
 } from './utils';
 import { preserveSettings } from './utils/preserveSettings';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { setUserPreferences } from './utils/setUserPreferences';
+import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
+
+const getRoomId = async (api: BaseTest['api'], roomName: string): Promise<string> =>
+	(await (await api.get('/rooms.info', { roomName })).json()).room._id;
 
 test.use({ storageState: Users.admin.state });
 
@@ -24,6 +30,7 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
@@ -33,6 +40,7 @@ test.describe.serial('feature preview', () => {
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		targetChannelId = await getRoomId(api, targetChannel);
 		targetDiscussion = await createTargetDiscussion(api);
 
 		await setUserPreferences(api, {
@@ -125,20 +133,18 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should display sidepanel item with the same display preference as the sidebar', async () => {
-			await poHomeChannel.goto();
 			const message = 'hello world';
 
-			await poHomeChannel.navbar.openChat(sidepanelTeam);
+			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
 		});
 
 		test('should escape special characters on item subtitle', async () => {
-			await poHomeChannel.goto();
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
-			await poHomeChannel.navbar.openChat(sidepanelTeam);
+			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 
 			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
@@ -155,40 +161,15 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test.describe('team and channels sorting', () => {
-			let user1Page: Page;
-
-			test.beforeEach(async ({ browser }) => {
-				user1Page = await browser.newPage({ storageState: Users.user1.state });
-			});
-
-			test.afterEach(async () => {
-				await user1Page.close();
-			});
-
-			test('should keep the main room on the top even if child has unread messages', async ({ page }) => {
-				const user1Channel = new HomeChannel(user1Page);
-
+			test('should keep the main room on the top even if child has unread messages', async ({ api, request }) => {
 				const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
 				const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
 
-				await test.step('add the channel to the team', async () => {
-					await poHomeTeam.gotoGroup(sidepanelTeam);
-					await poHomeTeam.headerToolbar.openTeamChannels();
-					await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
-				});
+				await api.post('/teams.addRooms', { teamName: sidepanelTeam, rooms: [targetChannelId] });
+				const channelMessageId = await sendMessage(api, targetChannelId, 'hello channel');
+				await sendMessage(api, await getRoomId(api, sidepanelTeam), 'hello team');
 
-				await test.step('send a message in the channel, then a newer one in the team', async () => {
-					await childChannelLink.click();
-					await expect(page).toHaveURL(`/channel/${targetChannel}`);
-					await poHomeTeam.content.sendMessage('hello channel');
-
-					await expect(async () => {
-						await teamMainRoomLink.focus();
-						await teamMainRoomLink.click();
-						await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
-					}).toPass();
-					await poHomeTeam.content.sendMessage('hello team');
-				});
+				await poHomeTeam.gotoGroup(sidepanelTeam);
 
 				await test.step('open the team filter on the sidepanel', async () => {
 					await poHomeTeam.sidebar.getFilterItemByName(sidepanelTeam).click();
@@ -196,10 +177,7 @@ test.describe.serial('feature preview', () => {
 				});
 
 				await test.step('send a thread message in the channel from another user', async () => {
-					await user1Channel.gotoChannel(targetChannel);
-					await user1Channel.content.openReplyInThread();
-					await user1Channel.content.toggleAlsoSendThreadToChannel(false);
-					await user1Channel.content.sendMessageInThread('hello thread');
+					await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello thread', { tmid: channelMessageId });
 				});
 
 				await test.step('team main room should stay above the channel with newer unread activity', async () => {
@@ -260,17 +238,17 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
 		});
 
-		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({ page }) => {
+		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({
+			page,
+			api,
+		}) => {
 			const poHomeDiscussion = new HomeDiscussion(page);
-			await poHomeChannel.gotoGroup(sidepanelTeam);
-
 			const discussionName = faker.string.uuid();
 
-			await poHomeChannel.composer.btnMenuMoreActions.click();
-			await page.getByRole('menuitem', { name: 'Discussion' }).click();
-			const createDiscussionModal = new CreateNewDiscussionModal(page);
-			await createDiscussionModal.inputName.fill(discussionName);
-			await createDiscussionModal.create();
+			const { discussion } = await (
+				await api.post('/rooms.createDiscussion', { prid: await getRoomId(api, sidepanelTeam), t_name: discussionName })
+			).json();
+			await poHomeChannel.gotoGroup(discussion.name);
 			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 
 			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
@@ -303,17 +281,13 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Discussions')).toBeVisible();
 		});
 
-		test('should show unread filter for thread messages', async ({ browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
-			const user1Channel = new HomeChannel(user1Page);
-
+		test('should show unread filter for thread messages', async ({ api, request }) => {
 			await test.step('mark all rooms as read', async () => {
 				await poHomeChannel.goto();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
-			await poHomeChannel.gotoChannel(targetChannel);
-			await poHomeChannel.content.sendMessage('test thread message');
+			const threadMessageId = await sendMessage(api, targetChannelId, 'test thread message');
 
 			await poHomeChannel.navbar.btnHome.click();
 			await poHomeChannel.sidebar.allTeamCollabFilter.click();
@@ -322,10 +296,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
 
 			await test.step('send a thread message from another user', async () => {
-				await user1Channel.gotoChannel(targetChannel);
-				await user1Channel.content.openReplyInThread();
-				await user1Channel.content.toggleAlsoSendThreadToChannel(false);
-				await user1Channel.content.sendMessageInThread('hello thread');
+				await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello thread', { tmid: threadMessageId });
 			});
 
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
@@ -342,29 +313,16 @@ test.describe.serial('feature preview', () => {
 			).toBeVisible();
 
 			await poHomeChannel.content.openReplyInThread();
-			await user1Page.close();
 		});
 
-		test('unread mentions badges on filters', async ({ browser }) => {
+		test('unread mentions badges on filters', async ({ api, request }) => {
 			test.skip(IS_EE);
 
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
-			const user1Channel = new HomeChannel(user1Page);
+			await api.post('/rooms.favorite', { roomId: targetChannelId, favorite: true });
 
 			await test.step('mark all rooms as read', async () => {
 				await poHomeChannel.goto();
 				await poHomeChannel.content.markAllRoomsAsRead();
-			});
-
-			await test.step('should favorite the target channel', async () => {
-				await poHomeChannel.gotoChannel(targetChannel);
-				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
-
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-
-				await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
-
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			});
 
 			await test.step('unread state should be empty', async () => {
@@ -381,8 +339,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.btnHome.click();
 
 			await test.step('send a mention message from another user', async () => {
-				await user1Channel.gotoChannel(targetChannel);
-				await user1Channel.content.sendMessage(`hello @${Users.admin.data.username}`);
+				await sendMessageFromUser(request, Users.user1, targetChannelId, `hello @${Users.admin.data.username}`);
 			});
 
 			await test.step('unread mentions badge should be visible on all filters', async () => {
@@ -416,8 +373,6 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
 			});
-
-			await user1Page.close();
 		});
 
 		test('should persist sidepanel state after switching admin panel', async ({ page }) => {
@@ -570,26 +525,15 @@ test.describe.serial('feature preview', () => {
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
 
-		test('should display rooms in direct message filter', async ({ page }) => {
+		test('should display rooms in direct message filter', async ({ page, api }) => {
 			const discussionName = faker.string.uuid();
 
-			await test.step('create a direct message with user1', async () => {
-				await poHomeChannel.goto();
+			await test.step('create discussion in a direct message with user1', async () => {
+				const dmRid = await createDirectMessageRoom(api, Users.user1.data.username);
+				const { discussion } = await (await api.post('/rooms.createDiscussion', { prid: dmRid, t_name: discussionName })).json();
+				await sendMessage(api, discussion._id, 'hello');
 
-				await poHomeChannel.navbar.openChat(Users.user1.data.username);
-				await poHomeChannel.content.waitForChannel();
-				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
-			});
-
-			await test.step('create discussion in DM', async () => {
-				await poHomeChannel.composer.btnMenuMoreActions.click();
-				await page.getByRole('menuitem', { name: 'Discussion' }).click();
-				const createDiscussionModal = new CreateNewDiscussionModal(page);
-				await createDiscussionModal.inputName.fill(discussionName);
-				await createDiscussionModal.create();
-				await poHomeChannel.content.waitForChannel();
-				await poHomeChannel.content.sendMessage('hello');
-
+				await poHomeChannel.gotoGroup(discussion.name);
 				await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 			});
 

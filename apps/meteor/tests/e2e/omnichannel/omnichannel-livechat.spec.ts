@@ -265,11 +265,12 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
+	let agentPage: Page;
 
 	test.beforeAll(async ({ api, browser }) => {
 		agent = await createAgent(api, 'user1');
 
-		await createAuxContext(browser, Users.user1, '/', true);
+		({ page: agentPage } = await createAuxContext(browser, Users.user1, '/', true));
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -279,7 +280,7 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	});
 
 	test.afterAll(async () => {
-		await agent.delete();
+		await Promise.all([agent.delete(), agentPage.close()]);
 	});
 
 	test('OC - Livechat - Close Chat', async () => {

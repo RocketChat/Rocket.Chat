@@ -4,7 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { createTargetChannel, sendTargetChannelMessage, setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -26,8 +26,9 @@ test.describe.serial('read-receipts', () => {
 	});
 
 	test.describe('read receipt settings disabled', async () => {
-		test('should not show read receipts item menu', async ({ page }) => {
-			await poHomeChannel.content.sendMessage('hello world');
+		test('should not show read receipts item menu', async ({ api, page }) => {
+			await sendTargetChannelMessage(api, targetChannel, { msg: 'hello world' });
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 			await poHomeChannel.content.openLastMessageMenu();
 			await expect(page.locator('role=menuitem[name="Read receipts"]')).not.toBeVisible();
 		});

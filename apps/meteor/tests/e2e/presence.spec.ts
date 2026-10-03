@@ -29,34 +29,25 @@ test.describe.serial('Presence', () => {
 		const customStatus = faker.string.alpha(10);
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeEach(async () => {
-			await poHomeChannel.goto();
-		});
-
-		test('should user custom status be reactive', async ({ browser }) => {
+		test('should user custom status be reactive', async ({ api }) => {
 			await test.step('user1 custom status should be empty', async () => {
-				await poHomeChannel.navbar.openChat('user1');
+				await poHomeChannel.gotoDirect('user1');
 
 				await expect(poHomeChannel.content.channelHeader).not.toContainText(customStatus);
 			});
 
 			await test.step('update user1 custom status', async () => {
-				const user1Page = await browser.newPage({ storageState: Users.user1.state });
-				const user1Channel = new HomeChannel(user1Page);
-				await user1Channel.goto();
-
-				await user1Channel.navbar.changeUserCustomStatus(customStatus);
-				await user1Page.close();
+				expect((await api.post('/users.setStatus', { status: 'online', message: customStatus, username: 'user1' })).status()).toBe(200);
 			});
 
 			await test.step('should user1 custom status be updated', async () => {
-				await poHomeChannel.navbar.openChat('user1');
-
 				await expect(poHomeChannel.content.channelHeader).toContainText(customStatus);
 			});
 		});
 
 		test('should be able to erase custom status', async ({ page }) => {
+			await poHomeChannel.goto();
+
 			await poHomeChannel.navbar.changeUserCustomStatus(customStatus);
 			await poHomeChannel.navbar.btnUserMenu.click();
 			await expect(poHomeChannel.navbar.userMenu).toContainText(customStatus);
@@ -69,6 +60,8 @@ test.describe.serial('Presence', () => {
 		});
 
 		test('should not save custom status as `undefined` if nothing changes', async ({ page }) => {
+			await poHomeChannel.goto();
+
 			await poHomeChannel.navbar.openEditStatusModal();
 
 			const { editStatusModal } = poHomeChannel.navbar;
@@ -84,6 +77,8 @@ test.describe.serial('Presence', () => {
 		});
 
 		test('should show both Custom Status action and active status row when a custom status is set', async ({ page }) => {
+			await poHomeChannel.goto();
+
 			const text = faker.string.alpha(8);
 
 			await test.step('Custom Status entry visible while no status is set', async () => {

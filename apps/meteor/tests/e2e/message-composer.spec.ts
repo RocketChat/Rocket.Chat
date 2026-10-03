@@ -2,7 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -10,9 +11,12 @@ test.use({ storageState: Users.user1.state });
 test.describe.serial('message-composer', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api, { members: ['rocket.cat'] });
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['rocket.cat', 'user1'] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -22,8 +26,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should have all formatters and the main actions visible on toolbar', async () => {
-		await poHomeChannel.content.sendMessage('hello composer');
-
 		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
 	});
 
@@ -66,8 +68,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer');
-
 		await test.step('mention popup', async () => {
 			await page.keyboard.type('hello composer @all');
 
@@ -100,8 +100,6 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should list popup items correctly', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer');
-
 		await test.step('mention popup', async () => {
 			await page.keyboard.type('hello composer @rocket.cat');
 
@@ -109,8 +107,9 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer @rocket.cat');
+	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page, request }) => {
+		await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello composer @rocket.cat');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
@@ -136,8 +135,9 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test('should close mention popup when canceling a message edit via keyboard', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('hello composer @rocket.cat');
+	test('should close mention popup when canceling a message edit via keyboard', async ({ page, request }) => {
+		await sendMessageFromUser(request, Users.user1, targetChannelId, 'hello composer @rocket.cat');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello composer rocket.cat');
 
 		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');

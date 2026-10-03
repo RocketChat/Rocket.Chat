@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
@@ -7,6 +8,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { closeRoom } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe('OC - Canned Responses Usage', () => {
@@ -75,8 +77,9 @@ test.describe('OC - Canned Responses Usage', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
-	test.afterEach('close livechat conversation', async () => {
-		await poLiveChat.closeChat();
+	test.afterEach('close livechat conversation', async ({ api }) => {
+		const { rooms } = await (await api.get('/livechat/rooms', { roomName: newVisitor.name, open: true })).json();
+		await Promise.all(rooms.map((room: IOmnichannelRoom) => closeRoom(api, { roomId: room._id, visitorToken: room.v.token })));
 	});
 
 	test.afterAll(async ({ api }) => {

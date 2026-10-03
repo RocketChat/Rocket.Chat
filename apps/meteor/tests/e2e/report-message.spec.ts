@@ -4,7 +4,8 @@ import type { Page } from '@playwright/test';
 import { Users } from './fixtures/userStates';
 import { AdminModeration, HomeChannel } from './page-objects';
 import { ReportMessageModal } from './page-objects/fragments';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -13,11 +14,14 @@ test.describe.serial('report message', () => {
 	let poHomeChannel: HomeChannel;
 	let adminHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let adminPage: Page;
 	let reportModal: ReportMessageModal;
 
 	test.beforeAll(async ({ api, browser }) => {
-		targetChannel = await createTargetChannel(api, { members: ['user1', 'admin'] });
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1', 'admin'] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
 		adminPage = await browser.newPage({ storageState: Users.admin.state });
 		reportModal = new ReportMessageModal(adminPage);
 	});
@@ -35,15 +39,12 @@ test.describe.serial('report message', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		adminHomeChannel = new HomeChannel(adminPage);
-
-		await poHomeChannel.gotoChannel(targetChannel);
-		await adminHomeChannel.gotoChannel(targetChannel);
 	});
 
-	test('should show report message option in message menu for other users messages', async () => {
+	test('should show report message option in message menu for other users messages', async ({ request }) => {
 		await test.step('send message as user1', async () => {
-			const testMessage = faker.lorem.sentence();
-			await poHomeChannel.content.sendMessage(testMessage);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, faker.lorem.sentence());
+			await adminHomeChannel.gotoChannel(targetChannel);
 		});
 
 		await test.step('verify report option is visible for the other user', async () => {
@@ -52,10 +53,10 @@ test.describe.serial('report message', () => {
 		});
 	});
 
-	test('should not show report message option in message menu for own messages', async ({ page }) => {
+	test('should not show report message option in message menu for own messages', async ({ page, request }) => {
 		await test.step('send message as user1', async () => {
-			const testMessage = faker.lorem.sentence();
-			await poHomeChannel.content.sendMessage(testMessage);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, faker.lorem.sentence());
+			await poHomeChannel.gotoChannel(targetChannel);
 		});
 
 		await test.step('verify report option is not visible for own message', async () => {
@@ -64,10 +65,10 @@ test.describe.serial('report message', () => {
 		});
 	});
 
-	test('should validate empty report description', async () => {
+	test('should validate empty report description', async ({ request }) => {
 		await test.step('send message as user1', async () => {
-			const testMessage = faker.lorem.sentence();
-			await poHomeChannel.content.sendMessage(testMessage);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, faker.lorem.sentence());
+			await adminHomeChannel.gotoChannel(targetChannel);
 		});
 
 		await test.step('try to submit empty report', async () => {
@@ -77,10 +78,10 @@ test.describe.serial('report message', () => {
 		});
 	});
 
-	test('should be able to cancel reporting a message', async () => {
+	test('should be able to cancel reporting a message', async ({ request }) => {
 		await test.step('send message as user1', async () => {
-			const testMessage = faker.lorem.sentence();
-			await poHomeChannel.content.sendMessage(testMessage);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, faker.lorem.sentence());
+			await adminHomeChannel.gotoChannel(targetChannel);
 		});
 
 		await test.step('open and cancel report modal', async () => {
@@ -90,13 +91,14 @@ test.describe.serial('report message', () => {
 		});
 	});
 
-	test('should successfully report a message and verify its appearance in moderation console', async () => {
+	test('should successfully report a message and verify its appearance in moderation console', async ({ request }) => {
 		let testMessage: string;
 		let reportDescription: string;
 
 		await test.step('send message as user1', async () => {
 			testMessage = faker.lorem.sentence();
-			await poHomeChannel.content.sendMessage(testMessage);
+			await sendMessageFromUser(request, Users.user1, targetChannelId, testMessage);
+			await adminHomeChannel.gotoChannel(targetChannel);
 		});
 
 		await test.step('report message as the other user', async () => {

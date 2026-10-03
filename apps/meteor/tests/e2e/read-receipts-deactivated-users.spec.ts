@@ -5,7 +5,7 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel, setSettingValueById } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel, sendMessage, setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser, loginTestUser } from './utils/user-helpers';
@@ -15,6 +15,7 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('read-receipts-deactivated-users', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let user1Context: { page: Page; poHomeChannel: HomeChannel } | undefined;
 	let user2Context: { page: Page; poHomeChannel: HomeChannel } | undefined;
 	let testUser1: ITestUser;
@@ -29,7 +30,9 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 
 		[testUser1State, testUser2State] = await Promise.all([loginTestUser(api, testUser1), loginTestUser(api, testUser2)]);
 
-		targetChannel = await createTargetChannel(api, { members: [testUser1.data.username, testUser2.data.username] });
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: [testUser1.data.username, testUser2.data.username] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
 		await Promise.all([
 			setSettingValueById(api, 'Message_Read_Receipt_Enabled', true),
 			setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true),
@@ -48,7 +51,6 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.goto();
 	});
 
 	test.afterEach(async () => {
@@ -58,22 +60,23 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	});
 
 	test('should correctly handle read receipts as users are deactivated', async ({ browser, api, page }) => {
-		const { page: page1 } = await createAuxContext(browser, testUser1State);
+		const { page: page1 } = await createAuxContext(browser, testUser1State, `/channel/${targetChannel}`);
 		const user1Ctx = { page: page1, poHomeChannel: new HomeChannel(page1) };
 		user1Context = user1Ctx;
 
-		const { page: page2 } = await createAuxContext(browser, testUser2State);
+		const { page: page2 } = await createAuxContext(browser, testUser2State, `/channel/${targetChannel}`);
 		const user2Ctx = { page: page2, poHomeChannel: new HomeChannel(page2) };
 		user2Context = user2Ctx;
 
 		await Promise.all([
-			poHomeChannel.navbar.openChat(targetChannel),
-			user1Ctx.poHomeChannel.navbar.openChat(targetChannel),
-			user2Ctx.poHomeChannel.navbar.openChat(targetChannel),
+			poHomeChannel.gotoChannel(targetChannel),
+			user1Ctx.poHomeChannel.content.waitForChannel(),
+			user2Ctx.poHomeChannel.content.waitForChannel(),
 		]);
 
 		await test.step('when all users are active', async () => {
-			await poHomeChannel.content.sendMessage('Message 1: All three users active');
+			await sendMessage(api, targetChannelId, 'Message 1: All three users active');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message 1: All three users active');
 
 			await Promise.all([
 				expect(user1Ctx.poHomeChannel.content.lastUserMessage).toBeVisible(),
@@ -91,7 +94,8 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		await test.step('when some users are deactivated', async () => {
 			await api.post('/users.setActiveStatus', { userId: testUser1.data._id, activeStatus: false });
 
-			await poHomeChannel.content.sendMessage('Message 2: User1 deactivated, two active users');
+			await sendMessage(api, targetChannelId, 'Message 2: User1 deactivated, two active users');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message 2: User1 deactivated, two active users');
 
 			await expect(user2Ctx.poHomeChannel.content.lastUserMessage).toBeVisible();
 
@@ -106,7 +110,8 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		await test.step('when only one user remains active (user alone in room)', async () => {
 			await api.post('/users.setActiveStatus', { userId: testUser2.data._id, activeStatus: false });
 
-			await poHomeChannel.content.sendMessage('Message 3: Only admin active');
+			await sendMessage(api, targetChannelId, 'Message 3: Only admin active');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message 3: Only admin active');
 
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 
