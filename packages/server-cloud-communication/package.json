@@ -10,11 +10,12 @@
 	"scripts": {
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

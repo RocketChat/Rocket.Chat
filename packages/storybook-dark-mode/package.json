@@ -23,7 +23,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && tsc -p tsconfig.build.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@storybook/global": "~5.0.0",
@@ -34,7 +35,7 @@
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"storybook": "^9.1.20",
