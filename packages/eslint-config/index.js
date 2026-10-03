@@ -244,9 +244,45 @@ export default defineConfig(
 			'valid-typeof': ['error', { requireStringLiterals: true }],
 		},
 	},
-	// TODO: disable, as they are not available in all environments
 	{
 		name: 'rocket.chat/node-globals',
+		files: [
+			'**/server/**/*.{js,ts,jsx,tsx,mjs,cjs}',
+			'**/*.server.{js,ts}',
+		],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+		},
+	},
+	{
+		name: 'rocket.chat/browser-globals',
+		files: [
+			'**/client/**/*.{js,ts,jsx,tsx,mjs,cjs}',
+			'**/*.client.{js,ts}',
+		],
+		languageOptions: {
+			globals: {
+				...globals.browser,
+			},
+		},
+	},
+	{
+		name: 'rocket.chat/node-config-globals',
+		files: [
+			'**/jest.config.{js,ts}',
+			'**/jest.config.*.{js,ts}',
+			'**/webpack.config.{js,ts}',
+			'**/vite.config.{js,ts}',
+			'**/rollup.config.{js,ts}',
+			'**/playwright.config.{js,ts}',
+			'**/playwright.*.{js,ts,mjs}',
+			'**/.mocharc.{js,ts}',
+			'**/.mocharc.*.{js,ts}',
+			'**/scripts/**/*.{js,ts,mjs,cjs}',
+			'**/.scripts/**/*.{js,ts,mjs,cjs}',
+		],
 		languageOptions: {
 			globals: {
 				...globals.node,
