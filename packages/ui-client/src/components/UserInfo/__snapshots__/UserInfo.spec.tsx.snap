@@ -182,11 +182,7 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -469,11 +465,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -770,11 +762,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div
@@ -1117,11 +1105,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
-                        <div
-                          class="rcx-box rcx-box--full"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
-                        </div>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
                       </div>
                     </div>
                     <div

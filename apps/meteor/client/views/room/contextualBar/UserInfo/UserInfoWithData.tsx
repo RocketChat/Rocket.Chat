@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
+import MarkdownText from '../../../../components/MarkdownText';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
@@ -32,6 +33,8 @@ export type UserInfoWithDataProps = {
 	onClose: () => void;
 	onClickBack?: () => void;
 };
+
+const renderCustomFieldValue = (value: string) => <MarkdownText variant='inline' content={value} />;
 
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
@@ -77,7 +80,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio,
+			bio: bio && <MarkdownText variant='inline' content={bio} />,
 			canViewAllInfo,
 			phone,
 			customFields,
@@ -116,6 +119,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			{!isPending && user && (
 				<UserInfo
 					{...user}
+					renderCustomFieldValue={renderCustomFieldValue}
 					invitationDate={invitationDate}
 					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
 				/>

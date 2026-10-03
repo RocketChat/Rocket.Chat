@@ -2,11 +2,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode, ComponentProps } from 'react';
-import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
 import UserCardActions from './UserCardActions';
 import UserCardDialog from './UserCardDialog';
@@ -48,7 +46,6 @@ const UserCard = ({
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const MarkdownText = useContext(MarkdownTextContext);
 
 	return (
 		<UserCardDialog aria-label={t('User_card')} {...props}>
@@ -76,20 +73,12 @@ const UserCard = ({
 						</Box>
 					)}
 				</Box>
-				{customStatus && (
-					<UserCardInfo marginBlockEnd={16}>
-						{typeof customStatus === 'string' ? (
-							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
-						) : (
-							customStatus
-						)}
-					</UserCardInfo>
-				)}
+				{customStatus && <UserCardInfo marginBlockEnd={16}>{customStatus}</UserCardInfo>}
 				<UserCardRoles>{roles}</UserCardRoles>
 				<UserCardInfo>{localTime}</UserCardInfo>
 				{bio && (
 					<UserCardInfo withTruncatedText={false} className={clampStyle} height='x60'>
-						{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}
+						{bio}
 					</UserCardInfo>
 				)}
 				{onOpenUserInfo && !isLayoutEmbedded && (
