@@ -2,12 +2,12 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import { code } from './code.js';
-import { markdown } from './markdown.js';
+import { code } from './code';
+import { markdown } from './markdown';
 
 export const original = (
-	message,
-	options = {
+	message: any,
+	options: { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string } = {
 		supportSchemesForLink: 'http,https',
 		headers: true,
 	},
