@@ -228,6 +228,8 @@ test.describe.serial('Presence', () => {
 				await poAccountProfile.goto();
 				await poAccountProfile.inputStatusText.fill(text);
 				await poAccountProfile.chooseClearStatusAfter('30 minutes');
+				// A status-only save no longer POSTs users.updateOwnBasicInfo — the
+				// form sends only the fields the user actually changed.
 				await Promise.all([
 					page.waitForResponse((r) => r.url().endsWith('/v1/users.setStatus') && r.ok()),
 					poAccountProfile.btnSaveChanges.click(),

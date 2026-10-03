@@ -25,6 +25,7 @@ export * from './Page';
 export * from './InfoPanel';
 export * from './GenericTable';
 export * from './SidebarToggler';
+export * from './ImageGalleryContext';
 export * from './MarkdownTextContext';
 export * from './UserCard';
 export * from './UserInfo';

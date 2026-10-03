@@ -125,6 +125,16 @@ const useI18next = (lng: string): typeof i18next => {
 			}
 			return capitalize(value);
 		});
+		// The inverse case: a label interpolated mid-sentence (e.g. "Copy
+		// {{field}}") drops its label capitalization in languages that don't
+		// capitalize nouns; locales that do (e.g. German) simply don't use
+		// the formatter in their translation.
+		i18n.services.formatter?.add('lowercase', (value, lng) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return value.toLocaleLowerCase(lng);
+		});
 	}
 
 	useEffect(() => {

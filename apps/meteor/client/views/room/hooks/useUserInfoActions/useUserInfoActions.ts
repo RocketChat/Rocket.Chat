@@ -13,6 +13,7 @@ import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
+import { useEditProfileAction } from './actions/useEditProfileAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
@@ -21,7 +22,7 @@ import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
 
-export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
+export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation' | 'admin';
 
 type UserInfoActionWithOnlyIcon = {
 	type?: UserInfoActionType;
@@ -52,7 +53,7 @@ export type UserMenuAction = {
 }[];
 
 type UserInfoActionsParams = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension' | 'federated'>;
 	rid: IRoom['_id'];
 	reload?: () => void;
 	size?: number;
@@ -80,6 +81,7 @@ export const useUserInfoActions = ({
 	const openModerationConsole = useRedirectModerationConsole(user._id);
 	const changeOwner = useChangeOwnerAction(user, rid);
 	const openDirectMessage = useDirectMessageAction(user, rid);
+	const editProfile = useEditProfileAction(user);
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload, isInvited);
@@ -93,6 +95,7 @@ export const useUserInfoActions = ({
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
+			...(editProfile && { editProfile }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
 			// Menu sections follow the order in which each type first appears here.
@@ -110,6 +113,7 @@ export const useUserInfoActions = ({
 		}),
 		[
 			openDirectMessage,
+			editProfile,
 			isLayoutEmbedded,
 			videoCall,
 			userMediaCall,
