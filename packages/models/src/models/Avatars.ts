@@ -18,7 +18,7 @@ export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 	}
 
 	findOneByUserId(userId: IUser['_id'], options?: FindOptions<IAvatar>) {
-		return this.findOne({ userId }, options);
+		return this.findOne({ userId, complete: true }, options);
 	}
 
 	findOneByETag(etag: string, options?: FindOptions<IAvatar>): Promise<IAvatar | null> {
