@@ -31,14 +31,15 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ExternalLink,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
@@ -539,12 +540,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<span
-														dangerouslySetInnerHTML={{
-															__html: DOMPurify.sanitize(
-																t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy }),
-															),
-														}}
+													<Trans
+														i18nKey='RetentionPolicyRoom_ReadTheDocs'
+														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
 													/>
 												</Callout>
 												<Field>
