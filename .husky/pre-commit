@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+if git diff --cached --name-only | grep -E '\.(js|jsx|ts|tsx|css|scss)$'; then
+  yarn visual-regression
+fi
