@@ -2481,7 +2481,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.find<T, O>(query, options);
+		// Enforce a hard ceiling to prevent unbounded memory allocation.
+		// Callers that pass an explicit limit smaller than this will override it via the spread.
+		const MAX_PRESENCE_USERS = 500;
+		return this.find<T, O>(query, { limit: MAX_PRESENCE_USERS, ...options } as O);
 	}
 
 	countUsersNotOffline(options?: FindOptions<IUser>) {
