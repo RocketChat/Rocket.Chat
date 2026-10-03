@@ -22,9 +22,12 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/frontend/](docs/frontend/) — frontend guidelines, split by topic:
   - [typescript-conventions.md](docs/frontend/typescript-conventions.md) — ES modules, `import type`, `type` vs `interface`, `any` vs `unknown`
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
-  - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
-  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types, no props spread, variants over boolean modes
+  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules and design tokens, Storybook-first, packages and lazy-loaded SDKs
+  - [effects.md](docs/frontend/effects.md) — when not to write `useEffect`: derive, reset during render, `useSyncExternalStore`, `useStableCallback`, TanStack Query for server data
+  - [contexts.md](docs/frontend/contexts.md) — context and provider rules: `undefined` default and throwing hook, memoized split values, providers only provide, mounted low
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
+  - [testing.md](docs/frontend/testing.md) — unit tests and stories: role queries, `mockAppRoot` over `jest.mock`, no global overrides, behaviour over implementation
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
 - [docs/anchor-navigation.md](docs/anchor-navigation.md) — deep-linking to a field via URL hash fragments
