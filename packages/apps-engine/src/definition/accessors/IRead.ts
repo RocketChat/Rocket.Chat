@@ -4,6 +4,7 @@ import type { IContactRead } from './IContactRead';
 import type { IEnvironmentRead } from './IEnvironmentRead';
 import type { IExperimentalRead } from './IExperimentalRead';
 import type { ILivechatRead } from './ILivechatRead';
+import type { IMediaCallRead } from './IMediaCallRead';
 import type { IMessageRead } from './IMessageRead';
 import type { INotifier } from './INotifier';
 import type { IOAuthAppsReader } from './IOAuthAppsReader';
@@ -57,4 +58,6 @@ export interface IRead {
 	getExperimentalReader(): IExperimentalRead;
 
 	getCallHistoryReader(): ICallHistoryRead;
+
+	getMediaCallReader(): IMediaCallRead;
 }
