@@ -27,10 +27,10 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 	if (!data) {
 		return formData;
 	}
-
+	
 	if (typeof data === 'object' && !(data instanceof File)) {
 		Object.keys(data).forEach((key) => {
-			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+			buildFormData(data[key], formData, parentKey ? `${parentKey}[${key}]` : key);
 		});
 	} else {
 		data && parentKey && formData.append(parentKey, data);
