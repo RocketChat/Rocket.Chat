@@ -11,6 +11,34 @@ describe('Router', () => {
 		additionalProperties: true,
 	});
 
+	describe('In-process dispatch', () => {
+		it('should reject requests before the router is mounted', async () => {
+			const api = new Router('/api');
+
+			await expect(api.dispatch(new Request('http://localhost/api/hello'), { incoming: {} as any })).rejects.toThrow(
+				'Router is not mounted',
+			);
+		});
+
+		it('should serve requests through the mounted app and its middlewares', async () => {
+			const api = new Router('/api');
+			const incoming = { socket: { remoteAddress: '192.0.2.1' } } as any;
+
+			api.use(async (c, next) => {
+				c.header('x-seen-address', c.env.incoming.socket.remoteAddress);
+				await next();
+			});
+			api.get('hello', { response: { 200: dummyValidator } }, async () => ({ statusCode: 200, body: { message: 'Hello, World!' } }));
+			void api.router;
+
+			const response = await api.dispatch(new Request('http://localhost/api/hello'), { incoming });
+
+			expect(response.status).toBe(200);
+			expect(response.headers.get('x-seen-address')).toBe('192.0.2.1');
+			await expect(response.json()).resolves.toEqual({ message: 'Hello, World!' });
+		});
+	});
+
 	describe('Basic routing', () => {
 		it('should handle GET requests', async () => {
 			const app = express();
