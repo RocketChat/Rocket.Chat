@@ -157,6 +157,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		async ({
 			hideSysMes,
 			joinCodeRequired,
+			disableLinkPreviews,
 			retentionEnabled,
 			retentionOverrideGlobal,
 			retentionMaxAge,
@@ -172,6 +173,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				await saveAction({
 					rid: room._id,
 					...data,
+					disableLinkPreviews,
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((dirtyFields.hideSysMes || dirtyFields.systemMessages) && {
 						systemMessages: hideSysMes ? (data.systemMessages ?? defaultValues.systemMessages) : [],
