@@ -26,7 +26,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
-	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
 	const {
 		data: isMemberData,
 		refetch,
