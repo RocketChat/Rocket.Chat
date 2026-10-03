@@ -173,6 +173,12 @@ export interface IMessage extends IRocketChatRecord {
 	drid?: IRoom['_id'];
 	tlm?: Date;
 
+	// Edit tracking: present on any message that has been edited (see IEditedMessage,
+	// which narrows these to required). Persisted on the record and consumed by clients
+	// to render the "edited" indicator, so declared optionally on the base type.
+	editedAt?: Date;
+	editedBy?: Pick<IUser, '_id' | 'username'>;
+
 	dcount?: number;
 	tcount?: number;
 	t?: MessageTypesValues;
@@ -287,6 +293,16 @@ export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
 	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
+
+/**
+ * A message as returned by full-text search endpoints (e.g. chat.search). MongoDB attaches a
+ * `$meta: 'textScore'` relevance score on `$text` queries. The score is response-only (it is
+ * never persisted), so it is modeled as a superset of IMessage rather than polluting the base
+ * type. Response schemas that expose search results should reference this type. See #42086.
+ */
+export interface IMessageSearchResult extends IMessage {
+	score?: number;
+}
 
 interface IFederatedMessage extends IMessage {
 	federation: {
