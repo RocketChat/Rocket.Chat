@@ -123,63 +123,82 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreThreads) {
-		const threads = new Set<string>();
+		const threads: string[] = [];
 
 		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
 			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
 			{ projection: { _id: 1 } },
 		).forEach(({ _id }) => {
-			threads.add(_id);
+			threads.push(_id);
 		});
 
-		if (threads.size > 0) {
+		for (let i = 0; i < threads.length; i += FILE_CLEANUP_BATCH_SIZE) {
+			const batch = threads.slice(i, i + FILE_CLEANUP_BATCH_SIZE);
 			const subscriptionIds: string[] = (
-				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
+				await Subscriptions.findUnreadThreadsByRoomId(rid, batch, { projection: { _id: 1 } }).toArray()
 			).map(({ _id }) => _id);
 
-			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, batch);
 			if (modifiedCount) {
 				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
 			}
 		}
 	}
 
-	const selectedMessageIds = limit
-		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
-		: undefined;
-	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
-		rid,
-		excludePinned,
-		ignoreDiscussion,
-		ts,
-		limit,
-		fromUsers,
-		ignoreThreads,
-		selectedMessageIds,
-	);
+	const selectedMessageIds: string[] | undefined = limit ? [] : undefined;
+	let remaining = limit || Infinity;
+	let count = 0;
 
-	if (limit && selectedMessageIds) {
-		await ReadReceipts.removeByMessageIds(selectedMessageIds);
-		await ReadReceiptsArchive.removeByMessageIds(selectedMessageIds);
-	}
+	try {
+		while (remaining > 0) {
+			const batch = await Messages.findByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
+				fromUsers,
+				ignoreThreads,
+			);
+			if (!batch.length) {
+				break;
+			}
 
-	if (count) {
-		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
+			count += await Messages.removeByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				batch.length,
+				fromUsers,
+				ignoreThreads,
+				batch,
+			);
+			selectedMessageIds?.push(...batch);
+			await ReadReceipts.removeByMessageIds(batch);
+			await ReadReceiptsArchive.removeByMessageIds(batch);
 
-		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+			remaining -= batch.length;
+		}
+	} finally {
+		if (count) {
+			const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 
-		await refreshDiscussionMetadataOnParentRoom(rid);
+			await Rooms.resetLastMessageById(rid, lastMessage, -count);
 
-		void notifyOnRoomChangedById(rid);
+			await refreshDiscussionMetadataOnParentRoom(rid);
 
-		void api.broadcast('notify.deleteMessageBulk', rid, {
-			rid,
-			excludePinned,
-			ignoreDiscussion,
-			ts,
-			users: fromUsers,
-			ids: selectedMessageIds,
-		});
+			void notifyOnRoomChangedById(rid);
+
+			void api.broadcast('notify.deleteMessageBulk', rid, {
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				users: fromUsers,
+				ids: selectedMessageIds,
+			});
+		}
 	}
 
 	return count;
