@@ -86,7 +86,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			deserialized.lastMessage._updatedAt = new Date(deserialized.lastMessage._updatedAt);
 		}
 
-		return deserialized;
+		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
 	}
 }
 
