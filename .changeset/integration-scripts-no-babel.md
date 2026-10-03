@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': major
+'@rocket.chat/meteor': patch
 ---
 
 **Breaking:** Stopped transpiling webhook integration scripts with Babel. Scripts now run as-is inside `isolated-vm` (modern V8).
