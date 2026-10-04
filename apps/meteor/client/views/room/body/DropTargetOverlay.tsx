@@ -40,7 +40,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 
 		const files = Array.from(event.dataTransfer.files);
 
-		if (event.dataTransfer.types.includes('text/uri-list') && event.dataTransfer.types.includes('text/html')) {
+		if (files.length === 0 && event.dataTransfer.types.includes('text/uri-list') && event.dataTransfer.types.includes('text/html')) {
 			const fragment = document.createRange().createContextualFragment(event.dataTransfer.getData('text/html'));
 			for await (const { src } of Array.from(fragment.querySelectorAll('img'))) {
 				try {
