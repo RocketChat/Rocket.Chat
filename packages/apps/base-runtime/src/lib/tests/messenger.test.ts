@@ -3,6 +3,8 @@ import { after, beforeEach, describe, it, mock } from 'node:test';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { createMockRequest } from '../../handlers/tests/helpers/mod';
+import { decoder, encoder } from '../codec';
+import { isErrorObject } from '../jsonrpc';
 import * as Messenger from '../messenger';
 import type { RequestContext } from '../requestContext';
 
@@ -75,6 +77,68 @@ describe('Messenger', () => {
 		assert.strictEqual(resp.error.data.logs.entries[0].caller, 'anonymous OR constructor');
 
 		theSpy.mock.restore();
+	});
+
+	for (const { name, data } of [
+		{ name: 'string', data: 'failure details' },
+		{ name: 'empty string', data: '' },
+		{ name: 'number', data: 0 },
+		{ name: 'boolean', data: false },
+		{ name: 'null', data: null },
+		{ name: 'array', data: ['failure details'] },
+		{ name: 'empty array', data: [] },
+	]) {
+		it(`should preserve ${name} error data and logs on the wire`, async (t) => {
+			const spy = mock.method(Messenger.Queue, 'enqueue');
+			t.after(() => spy.mock.restore());
+			const request = createMockRequest({ method: 'test', params: [] });
+			request.context.logger.info('test');
+
+			await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data } }, request);
+
+			assert.strictEqual(spy.mock.calls.length, 1);
+			const [argument] = spy.mock.calls[0].arguments;
+			const response = decoder.decode(encoder.encode(argument));
+			assert.ok(isErrorObject(response));
+			assert.strictEqual(response.id, 'test');
+			assert.strictEqual(response.error.code, -32000);
+			assert.strictEqual(response.error.message, 'test');
+			assert.deepStrictEqual(response.error.data.value, data);
+			assert.deepStrictEqual(response.error.data.logs.entries[0].args, ['test']);
+		});
+	}
+
+	it('should add logs without modifying object error data', async (t) => {
+		const spy = mock.method(Messenger.Queue, 'enqueue');
+		t.after(() => spy.mock.restore());
+		const data = Object.freeze({ reason: 'failure details' });
+		context.context.logger.info('test');
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data } }, context);
+
+		const [argument] = spy.mock.calls[0].arguments;
+		const response = decoder.decode(encoder.encode(argument));
+		assert.ok(isErrorObject(response));
+		assert.strictEqual(response.error.data.reason, data.reason);
+		assert.deepStrictEqual(response.error.data.logs.entries[0].args, ['test']);
+		assert.deepStrictEqual(data, { reason: 'failure details' });
+	});
+
+	it('should preserve error data without a logger or log entries', async (t) => {
+		const spy = mock.method(Messenger.Queue, 'enqueue');
+		t.after(() => spy.mock.restore());
+
+		for (const request of [undefined, context]) {
+			for (const data of ['failure details', 0, false, ['failure details'], { reason: 'failure details' }]) {
+				await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data } }, request);
+				const call = spy.mock.calls.at(-1);
+				assert.ok(call);
+				const [argument] = call.arguments;
+				const response = decoder.decode(encoder.encode(argument));
+				assert.ok(isErrorObject(response));
+				assert.deepStrictEqual(response.error.data, data);
+			}
+		}
 	});
 
 	describe('meta', () => {

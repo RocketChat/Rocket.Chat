@@ -140,7 +140,8 @@ export async function errorResponse(
 	const { logger } = req?.context || {};
 
 	if (logger?.hasEntries()) {
-		data.logs = logger.getLogs();
+		const payload = typeof data === 'object' && data !== null && !Array.isArray(data) ? data : { value: data };
+		data = { ...payload, logs: logger.getLogs() };
 	}
 
 	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
