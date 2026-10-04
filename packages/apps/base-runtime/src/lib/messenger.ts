@@ -3,6 +3,7 @@ import EventEmitter from 'node:events';
 import { encoder } from './codec';
 import * as jsonrpc from './jsonrpc';
 import type { RequestContext } from './requestContext';
+import { isPlainObject } from '../handlers/lib/assertions';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>;
 
@@ -140,7 +141,7 @@ export async function errorResponse(
 	const { logger } = req?.context || {};
 
 	if (logger?.hasEntries()) {
-		const payload = typeof data === 'object' && data !== null && !Array.isArray(data) ? data : { value: data };
+		const payload = isPlainObject(data) ? data : { value: data };
 		data = { ...payload, logs: logger.getLogs() };
 	}
 

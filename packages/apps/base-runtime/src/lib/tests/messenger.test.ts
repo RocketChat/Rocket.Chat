@@ -1,4 +1,5 @@
 import * as assert from 'node:assert';
+import { Buffer } from 'node:buffer';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
@@ -87,6 +88,9 @@ describe('Messenger', () => {
 		{ name: 'null', data: null },
 		{ name: 'array', data: ['failure details'] },
 		{ name: 'empty array', data: [] },
+		{ name: 'Date', data: new Date('2026-10-04T00:00:00Z') },
+		{ name: 'Buffer', data: Buffer.from('failure details') },
+		{ name: 'Uint8Array', data: new Uint8Array([1, 2, 3]) },
 	]) {
 		it(`should preserve ${name} error data and logs on the wire`, async (t) => {
 			const spy = mock.method(Messenger.Queue, 'enqueue');
@@ -139,6 +143,22 @@ describe('Messenger', () => {
 				assert.deepStrictEqual(response.error.data, data);
 			}
 		}
+	});
+
+	it('should preserve null-prototype error object fields', async (t) => {
+		const spy = mock.method(Messenger.Queue, 'enqueue');
+		t.after(() => spy.mock.restore());
+		const data = Object.assign(Object.create(null), { reason: 'failure details' });
+		context.context.logger.info('test');
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data } }, context);
+
+		const [argument] = spy.mock.calls[0].arguments;
+		const response = decoder.decode(encoder.encode(argument));
+		assert.ok(isErrorObject(response));
+		assert.strictEqual(response.error.data.reason, 'failure details');
+		assert.deepStrictEqual(response.error.data.logs.entries[0].args, ['test']);
+		assert.strictEqual(Object.hasOwn(data, 'logs'), false);
 	});
 
 	describe('meta', () => {
