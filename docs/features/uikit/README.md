@@ -1,6 +1,6 @@
 # UiKit
 
-UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the client: message blocks, modals, banners and the contextual bar. It is modelled on Slack's Block Kit, but neither the field names nor the block set are compatible (see [slack-parity.md](slack-parity.md)).
+UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the client: message blocks, modals, banners and the contextual bar.
 
 ## Where it lives
 
@@ -23,8 +23,6 @@ UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the clie
 | [surfaces.md](surfaces.md) | Message, modal, banner, contextual bar and attachment: what each one is for and what its view carries. |
 | [interactions.md](interactions.md) | Round trip from a click or a submit to the app and back. |
 | [adding-a-block.md](adding-a-block.md) | Every place a new block or element has to be wired. |
-| [slack-parity.md](slack-parity.md) | What Block Kit has that UiKit lacks, and what only UiKit has. |
-
 ## Keeping the reference current
 
 `reference.md` and `support-matrix.md` describe the code as of October 2026. Nothing checks them against the code, so update them in the same change whenever you touch a block type, a surface union or a renderer allowlist.

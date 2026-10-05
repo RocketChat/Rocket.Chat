@@ -11,12 +11,12 @@ Do not rely on either behaviour: send `mrkdwn` when formatting is wanted.
 
 ## `mrkdwn`
 
-Despite the name, this is **not** Slack's mrkdwn. It is Rocket.Chat message markdown:
+This is Rocket.Chat message markdown:
 
 - **Fuselage** parses the text with `@rocket.chat/message-parser` and renders the tokens with `@rocket.chat/gazzodown`, the same pipeline as chat messages, with emoticons disabled. See [`MarkdownTextElement.tsx`](../../../packages/fuselage-ui-kit/src/elements/MarkdownTextElement.tsx).
 - **Livechat** renders it with its own `MarkdownBlock`, converts emoji shortnames to unicode and enables emoticons. See [`Mrkdwn/index.tsx`](../../../packages/livechat/src/components/uiKit/message/Mrkdwn/index.tsx).
 
-So `*bold*` and `_italic_` behave as in a Rocket.Chat message, and anything specific to Slack (`<@U123>` mentions, `<!here>`, `<url|label>` links) is not interpreted. `verbatim` is declared but ignored by both renderers.
+So `*bold*`, `_italic_`, mentions and links behave as in a Rocket.Chat message. `verbatim` is declared but ignored by both renderers.
 
 ## `i18n`
 

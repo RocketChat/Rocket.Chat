@@ -36,4 +36,3 @@ A UiKit block or element only works once every layer knows about it. Missing one
 - [ ] Extend `src/surfaces/<surface>/UiKitParser<Surface>.spec.ts` in `ui-kit` and add a component spec in `fuselage-ui-kit`.
 - [ ] Add the block's fields to [reference.md](reference.md) and its surfaces and renderers to [support-matrix.md](support-matrix.md). If the type, the `ui-kit` parser and the renderers do not all agree, list the difference under **Divergences**.
 - [ ] Add a changeset for every published package you touched (`@rocket.chat/ui-kit`, `@rocket.chat/fuselage-ui-kit`, and `@rocket.chat/apps-engine` if its types changed).
-- [ ] Update [slack-parity.md](slack-parity.md) if the block closes a Block Kit gap.
