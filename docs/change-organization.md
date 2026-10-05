@@ -11,7 +11,7 @@ Classify each change before writing it:
 - **feature**: adds behavior.
 - **test / chore / ci**: everything else.
 
-A pull request carries one class and one concern. "While I'm here" edits, flags or conditionals for hypothetical cases, and changes a reviewer would call "not related" go to their own pull request.
+A pull request carries one classification and one concern. "While I'm here" edits, flags or conditionals for hypothetical cases, and changes a reviewer would call "not related" go to their own pull request.
 
 ## Order work as a stack
 
