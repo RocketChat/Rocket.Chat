@@ -99,7 +99,6 @@ export const registerExchangeProviderWatchers = (): void => {
 		try {
 			current = buildExchangeProvider();
 		} catch (err) {
-			// Fail silently
 			current = undefined;
 			logger.error({ msg: 'Could not build the Exchange provider from the current settings', err: scrubForLog(err) });
 		}
