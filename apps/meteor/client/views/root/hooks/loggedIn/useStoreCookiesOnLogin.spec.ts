@@ -39,9 +39,7 @@ describe('useStoreCookiesOnLogin', () => {
 	});
 
 	it('should include secure flag when protocol is HTTPS', () => {
-		const originalLocation = window.location;
-		delete (window as any).location;
-		window.location = { ...originalLocation, protocol: 'https:' } as any;
+		jest.spyOn(window.location, 'protocol', 'get').mockReturnValue('https:');
 
 		renderHook(() => useStoreCookiesOnLogin('user-123'));
 
@@ -49,8 +47,6 @@ describe('useStoreCookiesOnLogin', () => {
 			'rc_uid=user-123; path=/; SameSite=Lax; secure',
 			'rc_token=test-token; path=/; SameSite=Lax; secure',
 		]);
-
-		window.location = originalLocation;
 	});
 
 	it('should not set cookies while isLoggingIn is true', () => {
