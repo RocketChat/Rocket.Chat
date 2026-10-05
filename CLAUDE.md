@@ -8,9 +8,9 @@ Comments state the **intent** of a function, never the mechanism, and never expl
 code that lives in another file — that belongs in `docs/features/`. Full rules:
 [docs/code-comments.md](docs/code-comments.md).
 
-Each pull request carries one concern (fix, refactor or feature) and can be reverted
-alone. Fixes and enabling refactors are their own commits, ordered below the feature
-so they can be extracted, even in a POC. Full rules:
+Each pull request carries one class and one concern, and can be reverted alone.
+Fixes and enabling refactors are their own commits, ordered below the feature so
+they can be extracted, even in a POC. Full rules:
 [docs/change-organization.md](docs/change-organization.md).
 
 ## Documentation index

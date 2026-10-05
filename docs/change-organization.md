@@ -31,9 +31,9 @@ When a large mixed pull request already exists, propose the split before touchin
 
 Pull requests are squash-merged, so a child's history no longer contains its parent's commits once the parent lands:
 
-- When a parent merges, rebase the child onto `develop` from the parent's **old** tip: `git rebase --onto origin/develop <old-parent-tip> <child>`. Merging `develop` into a branch that still carries the parent's original commits produces conflicts (renames, moved files) that have nothing to do with the child.
+- When a parent merges, rebase the child onto `develop` from the parent's **old** tip: `git rebase --onto origin/develop <old-parent-tip> <child>`. Merging `develop` into a branch that still carries the parent's original commits can produce conflicts (renames, moved files) that have nothing to do with the child.
 - When a parent is rewritten, retarget its children (or rebase them) so their diffs show only their own changes.
 - After a rebase that resolved conflicts automatically, check the tree: the pull request's own files are unchanged, and every other file matches the new base. A replayed older commit can silently revert newer base content (dependency bumps, other teams' changes).
 - If `develop` changed one of the pull request's files for an unrelated reason, merge that file three ways (`git merge-file`) instead of copying either side.
-- Force-pushing dismisses approvals. Rebase before asking for review, not after approval.
+- Rebase before asking for review, not after approval: in this repository, branch protection dismisses existing approvals when new commits are pushed, and a rebase is a push.
 - Changesets only for user-visible changes. Check `.changeset/` after every rebase: a rebase can bring back one that was deleted.
