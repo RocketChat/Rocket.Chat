@@ -5,20 +5,24 @@ import type {
 	SearchFilterMeta,
 	SearchFilterSuggestion,
 } from '@rocket.chat/ai-search';
-import { createAppliedFilter, mergeAppliedFilters, parseSearchInput, removeDraftFilter } from '@rocket.chat/ai-search';
+import { createAppliedFilter, mergeAppliedFilters, parseSearchInput, removeAppliedFilter, removeDraftFilter } from '@rocket.chat/ai-search';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 export const useSearchFilters = () => {
 	const { control, getValues, setValue, setFocus } = useFormContext<NavBarSearchFormValues>();
-	const { fields, remove, replace } = useFieldArray({ control, name: 'filters', keyName: 'fieldId' });
+	const filters = useWatch({ control, name: 'filters' });
+
+	const setFilters = useStableCallback((next: AppliedFilter[]) => {
+		setValue('filters', next, { shouldDirty: true });
+	});
 
 	const applyFilters = useStableCallback((incoming: AppliedFilter[]) => {
 		if (!incoming.length) {
 			return;
 		}
 
-		replace(mergeAppliedFilters(getValues('filters'), incoming));
+		setFilters(mergeAppliedFilters(getValues('filters'), incoming));
 	});
 
 	const addFilter = useStableCallback((key: SearchFilterKey, rawValue: string, meta?: SearchFilterMeta) => {
@@ -30,30 +34,25 @@ export const useSearchFilters = () => {
 	});
 
 	const removeFilter = useStableCallback((id: string) => {
-		const index = getValues('filters').findIndex((filter) => filter.id === id);
-
-		if (index !== -1) {
-			remove(index);
-		}
-
+		setFilters(removeAppliedFilter(getValues('filters'), id));
 		setFocus('filterText');
 	});
 
 	const removeLastFilter = useStableCallback(() => {
-		const count = getValues('filters').length;
+		const current = getValues('filters');
 
-		if (count) {
-			remove(count - 1);
+		if (current.length) {
+			setFilters(current.slice(0, -1));
 		}
 	});
 
 	const clearFilters = useStableCallback(() => {
-		replace([]);
+		setFilters([]);
 		setFocus('filterText');
 	});
 
 	const clearQuery = useStableCallback(() => {
-		replace([]);
+		setFilters([]);
 		setValue('filterText', '', { shouldDirty: false });
 	});
 
@@ -73,7 +72,6 @@ export const useSearchFilters = () => {
 
 	const acceptSuggestion = useStableCallback((suggestion: SearchFilterSuggestion) => {
 		const filter = createAppliedFilter(suggestion.filterKey, suggestion.value, suggestion.meta);
-
 		if (!filter) {
 			setFocus('filterText');
 			return;
@@ -85,7 +83,7 @@ export const useSearchFilters = () => {
 	});
 
 	return {
-		filters: fields,
+		filters,
 		addFilter,
 		removeFilter,
 		removeLastFilter,
