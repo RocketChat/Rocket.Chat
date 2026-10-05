@@ -448,20 +448,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
 
-				<Field>
-					<FieldLabel is='span' aria-hidden='true'>
-						{t('Phone_Numbers')}
-					</FieldLabel>
-					<FieldRow is='div'>
-						<PhoneNumberFieldList
-							control={control}
-							name='phones'
-							phones={phoneFields}
-							onAddPhone={appendPhone}
-							onRemovePhone={removePhone}
-						/>
-					</FieldRow>
-				</Field>
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
+				<PhoneNumberFieldList control={control} name='phones' phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
 
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>

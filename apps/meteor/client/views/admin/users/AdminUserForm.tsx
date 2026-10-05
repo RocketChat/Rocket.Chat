@@ -539,20 +539,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 					</Field>
 
-					<Field>
-						<FieldLabel is='span' aria-hidden='true'>
-							{t('Phone_Numbers')}
-						</FieldLabel>
-						<FieldRow is='div'>
-							<PhoneNumberFieldList
-								name='phones'
-								control={control}
-								phones={phoneFields}
-								onAddPhone={appendPhone}
-								onRemovePhone={removePhone}
-							/>
-						</FieldRow>
-					</Field>
+					<PhoneNumberFieldList name='phones' control={control} phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
 					{!!customFieldsMetadata.length && (
 						<>
 							<Button
