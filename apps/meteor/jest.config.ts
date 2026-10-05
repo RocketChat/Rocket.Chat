@@ -29,6 +29,12 @@ export default {
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
 
+			transformIgnorePatterns: [
+				'<rootDir>/node_modules/@babel',
+				'<rootDir>/node_modules/@jest',
+				'/node_modules/(?!(@testing-library|@faker-js)/)',
+			],
+
 			coveragePathIgnorePatterns: ['<rootDir>/tests/', '/node_modules/'],
 		},
 		{
@@ -57,6 +63,11 @@ export default {
 				'<rootDir>/server/lib/integrations/**/*.spec.ts',
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',
 				'<rootDir>/server/services/statusVisibility/*.spec.ts',
+			],
+			transformIgnorePatterns: [
+				'<rootDir>/node_modules/@babel',
+				'<rootDir>/node_modules/@jest',
+				'/node_modules/(?!(@testing-library|@faker-js)/)',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

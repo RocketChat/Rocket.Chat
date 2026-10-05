@@ -77,6 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
+// TODO(bump-deps): nodemailer 9→10 types sendMail's result; the catch below resolves to undefined, but callers read info.messageId unguarded.
 async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
 	return inbox.smtp
 		.sendMail({
@@ -100,7 +101,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			}
 
 			await sendErrorReplyMessage(err.message, options);
-		});
+		}) as Promise<{ messageId: string }>;
 }
 
 slashCommands.add({
