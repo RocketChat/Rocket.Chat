@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
+import MarkdownText from '../../../components/MarkdownText';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
@@ -57,7 +58,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio,
+			bio: bio && <MarkdownText variant='inline' content={bio} />,
 			etag: avatarETag,
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,

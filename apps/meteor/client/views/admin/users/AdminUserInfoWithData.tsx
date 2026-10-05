@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import MarkdownText from '../../../components/MarkdownText';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
@@ -19,6 +20,8 @@ export type AdminUserInfoWithDataProps = {
 	onReload: () => void;
 	tab: AdminUsersTab;
 };
+
+const renderCustomFieldValue = (value: string) => <MarkdownText variant='inline' content={value} />;
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
@@ -76,7 +79,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			username,
 			lastLogin,
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio,
+			bio: bio && <MarkdownText variant='inline' content={bio} />,
 			canViewAllInfo,
 			phone,
 			utcOffset,
@@ -115,6 +118,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 	return (
 		<UserInfo
 			{...user}
+			renderCustomFieldValue={renderCustomFieldValue}
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}

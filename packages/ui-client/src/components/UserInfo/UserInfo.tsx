@@ -2,7 +2,7 @@ import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { memo, useContext, useId } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
@@ -19,7 +19,6 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '../InfoPanel';
-import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
@@ -31,7 +30,6 @@ type UserInfoDataProps = Serialized<
 		| 'name'
 		| 'username'
 		| 'nickname'
-		| 'bio'
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
@@ -45,6 +43,8 @@ type UserInfoDataProps = Serialized<
 >;
 
 export type UserInfoProps = UserInfoDataProps & {
+	bio?: ReactNode;
+	renderCustomFieldValue?: (value: string) => ReactNode;
 	status: ReactNode;
 	customStatus?: ReactNode;
 	email?: string;
@@ -77,13 +77,13 @@ const UserInfo = ({
 	freeSwitchExtension,
 	abacAttributes,
 	invitationDate,
+	renderCustomFieldValue = (value) => value,
 	...props
 }: UserInfoProps) => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
-	const MarkdownText = useContext(MarkdownTextContext);
 
 	const usernameId = useId();
 
@@ -149,9 +149,7 @@ const UserInfo = ({
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
-								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
+							<InfoPanelText withTruncatedText={false}>{bio}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -205,9 +203,7 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
-									<InfoPanelText>
-										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
+									<InfoPanelText>{renderCustomFieldValue(customField.value)}</InfoPanelText>
 								</InfoPanelField>
 							),
 					)}
