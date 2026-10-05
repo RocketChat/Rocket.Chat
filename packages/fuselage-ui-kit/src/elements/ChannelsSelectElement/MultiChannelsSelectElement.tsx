@@ -9,6 +9,7 @@ import { useConversationsData } from './hooks/useConversationsData';
 import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { limitOptions } from '../../utils/limitOptions';
 
 type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement | UiKit.MultiConversationsSelectElement>;
 
@@ -57,7 +58,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 					avatar={<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />}
 				/>
 			)}
-			options={options}
+			options={limitOptions(options, value, block.max_selected_items)}
 		/>
 	);
 };

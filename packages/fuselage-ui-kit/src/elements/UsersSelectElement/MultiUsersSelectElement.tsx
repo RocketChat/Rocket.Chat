@@ -8,6 +8,7 @@ import { useUsersData } from './hooks/useUsersData';
 import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { limitOptions } from '../../utils/limitOptions';
 
 export type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
@@ -31,7 +32,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 		<AutoComplete
 			key={autoCompleteKey}
 			value={value || []}
-			options={data}
+			options={limitOptions(data, value, block.max_selected_items)}
 			placeholder={block.placeholder?.text}
 			disabled={loading}
 			filter={filter}

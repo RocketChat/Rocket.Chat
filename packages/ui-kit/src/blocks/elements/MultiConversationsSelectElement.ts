@@ -7,4 +7,6 @@ export type MultiConversationsSelectElement = Actionable<{
 	placeholder?: PlainText;
 	/** Ids of the rooms selected when the view opens. */
 	initial_conversations?: string[];
+	/** Most conversations that can be selected. */
+	max_selected_items?: number;
 }>;
