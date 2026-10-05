@@ -24,8 +24,6 @@ Which layout blocks each surface accepts, at each layer that decides it. Only th
 - **contextualBar / `callout`**: type rejects it, `ui-kit` parser drops it, Fuselage renders it.
 - **contextualBar / `preview`**: type rejects it, `ui-kit` parser drops it, Fuselage renders it.
 - **contextualBar / `tab_navigation`**: type rejects it, `ui-kit` parser drops it, Fuselage renders it.
-- **element `conversations_select`**: accepted by a block type, but Fuselage has no `conversations_select` method, so it never renders.
-- **element `multi_conversations_select`**: accepted by a block type, but Fuselage has no `multi_conversations_select` method, so it never renders.
 
 ## Layout blocks per surface
 
@@ -120,14 +118,14 @@ Container columns come from the block types; renderer columns tell whether a met
 | `button` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
 | `channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
+| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `icon` | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | ✅ | ✅ |
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
+| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `multi_users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
@@ -138,3 +136,5 @@ Container columns come from the block types; renderer columns tell whether a met
 | `time_picker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+
+Fuselage draws the users, channels and conversations selects (single and multi) only inside an `input` block. In `actions` the types accept them, but the renderer returns nothing.

@@ -23,7 +23,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends ChannelsSelectElement
 		? Option['value']
 		: TElement extends ConversationsSelectElement
-			? unknown
+			? Option['value']
 			: TElement extends DatePickerElement
 				? DatePickerElement['initialDate']
 				: TElement extends LinearScaleElement
@@ -31,7 +31,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 					: TElement extends MultiChannelsSelectElement
 						? Option['value'][]
 						: TElement extends MultiConversationsSelectElement
-							? unknown
+							? Option['value'][]
 							: TElement extends MultiStaticSelectElement
 								? MultiStaticSelectElement['initialValue']
 								: TElement extends MultiUsersSelectElement

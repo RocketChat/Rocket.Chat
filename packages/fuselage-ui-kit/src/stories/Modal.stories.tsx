@@ -130,6 +130,14 @@ export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUser
 	'input-0': 'Error',
 });
 
+export const InputWithConversationsSelect = createStory(payloads.inputWithConversationsSelect, {
+	'input-0': 'Error',
+});
+
+export const InputWithMultiConversationsSelect = createStory(payloads.inputWithMultiConversationsSelect, {
+	'input-0': 'Error',
+});
+
 export const InputWithStaticSelect = createStory(payloads.inputWithStaticSelect, {
 	'input-0': 'Error',
 });
