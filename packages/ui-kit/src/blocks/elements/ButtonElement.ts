@@ -9,5 +9,5 @@ export type ButtonElement = Actionable<{
 	style?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success';
 	secondary?: boolean;
 	/** What assistive technology announces instead of `text`, when the visible text alone is ambiguous. */
-	accessibilityLabel?: string;
+	accessibility_label?: string;
 }>;

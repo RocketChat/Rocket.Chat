@@ -179,7 +179,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ButtonElement.ts`](../../../packag
 | `value` | `string` | no |  |
 | `style` | `'primary' \| 'secondary' \| 'danger' \| 'warning' \| 'success'` | no |  |
 | `secondary` | `boolean` | no |  |
-| `accessibilityLabel` | `string` | no | What assistive technology announces instead of `text`, when the visible text alone is ambiguous. |
+| `accessibility_label` | `string` | no | What assistive technology announces instead of `text`, when the visible text alone is ambiguous. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

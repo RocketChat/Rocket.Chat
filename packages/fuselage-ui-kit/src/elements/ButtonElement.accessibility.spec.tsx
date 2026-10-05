@@ -24,7 +24,7 @@ const renderButton = (overrides: Partial<UiKit.ButtonElement>) => {
 };
 
 it('is announced by its accessibility label when one is set', () => {
-	renderButton({ accessibilityLabel: 'Open the quarterly report' });
+	renderButton({ accessibility_label: 'Open the quarterly report' });
 
 	expect(screen.getByRole('button', { name: 'Open the quarterly report' })).toBeInTheDocument();
 });

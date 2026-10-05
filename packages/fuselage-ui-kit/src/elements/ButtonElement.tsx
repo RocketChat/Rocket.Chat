@@ -9,7 +9,7 @@ export type ButtonElementProps = BlockProps<UiKit.ButtonElement>;
 
 const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
-	const { style, url, text, value, secondary, accessibilityLabel } = block;
+	const { style, url, text, value, secondary } = block;
 
 	const handleClick: MouseEventHandler = (e) => {
 		void action({ target: e.currentTarget });
@@ -22,7 +22,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 				target='_blank'
 				small
 				minWidth='4ch'
-				aria-label={accessibilityLabel}
+				aria-label={block.accessibility_label}
 				disabled={loading}
 				href={url}
 				primary={style === 'primary'}
@@ -41,7 +41,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 		<Button
 			small
 			minWidth='4ch'
-			aria-label={accessibilityLabel}
+			aria-label={block.accessibility_label}
 			disabled={loading}
 			primary={style === 'primary'}
 			danger={style === 'danger'}
