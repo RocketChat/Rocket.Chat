@@ -7,6 +7,7 @@ export const modalSurfaceLayoutBlockTypes = [
 	'callout',
 	'context',
 	'divider',
+	'header',
 	'image',
 	'input',
 	'preview',

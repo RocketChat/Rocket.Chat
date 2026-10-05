@@ -10,7 +10,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `info_card`, `input`, `preview` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
+- **Livechat, message blocks**: `callout`, `header`, `info_card`, `input`, `preview` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 
@@ -24,6 +24,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `callout` | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | `context` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `divider` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `header` | ✅ | — | ✅ | — | ✅ | — |
 | `image` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `info_card` | ✅ | — | — | ✅ | — | — |
 | `input` | ✅ | — | ✅ | ✅ | ✅ | — |

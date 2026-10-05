@@ -5,6 +5,7 @@ import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
+import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
@@ -280,6 +281,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 				<CheckboxElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
+	}
+
+	header(block: UiKit.HeaderBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<HeaderBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
 	}
 
 	callout(block: UiKit.CalloutBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
