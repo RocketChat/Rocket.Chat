@@ -6,8 +6,24 @@ import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
+import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
+import { settings } from '../../../server/settings';
+import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
+import { isLiveKitFullyConfigured } from '../lib/livekit/config';
 import { addSettings } from '../settings/video-conference';
+
+/**
+ * Offers LiveKit as a provider only while it is fully configured and the conference window, where its call renders,
+ * is on: a registered provider is one the camera button offers, and one that cannot connect would fail the call.
+ */
+const refreshLiveKitProviderRegistration = (): void => {
+	if (isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
+		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
+	} else {
+		videoConfProviders.unRegisterProvider('livekit');
+	}
+};
 
 Meteor.startup(async () => {
 	await License.onLicense('videoconference-enterprise', async () => {
@@ -43,6 +59,12 @@ Meteor.startup(async () => {
 
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>
 			VideoConf.addUser(callId, userId),
+		);
+
+		// Inside the EE licence gate already, and every step is idempotent.
+		refreshLiveKitProviderRegistration();
+		settings.watchByRegex(/^VideoConf_(LiveKit_(Enabled|Url|Api_Key|Api_Secret)|Conference_Window_Enabled)$/, () =>
+			refreshLiveKitProviderRegistration(),
 		);
 	});
 });

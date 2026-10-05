@@ -10,8 +10,6 @@ const scrollViewportStyle = {
 	overflow: 'auto',
 } as const;
 
-const firstInGroupStyle = { paddingBlockStart: 4 };
-
 export type SidebarVirtualListGroup<TGroup, TItem> = {
 	key: string;
 	group: TGroup;
@@ -76,11 +74,7 @@ function SidebarVirtualList<TGroup, TItem>({
 
 			const itemKey = getItemKey(row.item, row.itemIndex, row.group, row.groupIndex);
 
-			return (
-				<div key={`item:${String(itemKey)}`} style={row.itemIndex === 0 ? firstInGroupStyle : undefined}>
-					{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}
-				</div>
-			);
+			return <div key={`item:${String(itemKey)}`}>{renderItem(row.item, row.itemIndex, row.group, row.groupIndex, rowIndex)}</div>;
 		},
 		[getItemKey, renderGroup, renderItem],
 	);

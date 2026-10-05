@@ -1,12 +1,12 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
 import { parseDDP } from './sdk/ddpProtocol';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from './sdk/ddpSdk';
 import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
+import { callMethod, callMethodWithoutResult, onRawMessage, subscribeRaw } from '../meteor/connection';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -71,7 +71,7 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		ready: false,
 	};
 
-	const sub = Meteor.connection.subscribe(
+	const sub = subscribeRaw(
 		`stream-${streamName}`,
 		key,
 		{ useCollection: false, args },
@@ -267,7 +267,7 @@ const createStreamManager = () => {
 		// per-stream callbacks fire. With SDK transport on, the frames arrive on
 		// the SDK socket and createNewDdpSdkStream registers its own onCollection
 		// listener instead.
-		Meteor.connection._stream!.on('message', (rawMsg: string) => {
+		onRawMessage((rawMsg: string) => {
 			const msg = parseDDP(rawMsg);
 			if (!isChangedCollectionPayload(msg)) {
 				return;
@@ -398,7 +398,7 @@ const createOnAnyStreamEvent = () => {
 			// while SDK transport is on AND Meteor.connection may still receive
 			// frames during the SDK socket's anonymous window.
 			if (sdkTransportEnabled) {
-				Meteor.connection._stream!.on('message', (rawMsg: string) => {
+				onRawMessage((rawMsg: string) => {
 					let msg: unknown;
 					try {
 						msg = parseDDP(rawMsg);
@@ -436,11 +436,11 @@ export const createSDK = (rest: RestClientInterface) => {
 				void getDdpSdk().client.callAsync(`stream-${name}`, ...args);
 			}
 		: (name: string, args: unknown[]) => {
-				Meteor.call(`stream-${name}`, ...args);
+				callMethodWithoutResult(`stream-${name}`, ...args);
 			};
 
 	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
-		return Meteor.callAsync(method, ...args);
+		return callMethod(method, ...args);
 	};
 
 	return {

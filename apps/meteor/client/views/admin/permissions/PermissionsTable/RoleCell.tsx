@@ -7,7 +7,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
+import { confirmationRequiredPermissions } from '../../../../../lib/authorization';
 
 export type RoleCellProps = {
 	_id: IRole['_id'];

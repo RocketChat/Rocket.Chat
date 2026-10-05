@@ -95,13 +95,14 @@ export const useUserInfoActions = ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
+			// Menu sections follow the order in which each type first appears here.
+			...(isMember && openModerationConsole && { openModerationConsole }),
+			...(isMember && muteUser && { muteUser }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
 			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
-			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
 			...((isMember || isInvited) && banUser && { banUser }),
@@ -149,7 +150,7 @@ export const useUserInfoActions = ({
 				return acc;
 			}
 
-			const newSection = { id: group, title: '', items: [newItem] };
+			const newSection = { id: group, title: group === 'privileges' ? 'Manage_room_roles' : '', items: [newItem] };
 			acc.push(newSection);
 
 			return acc;

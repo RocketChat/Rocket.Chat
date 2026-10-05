@@ -2,21 +2,21 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useUserSidebarCategories } from './useUserSidebarCategories';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
 }));
 
-jest.mock('../../../hooks/useHasLicenseModule', () => ({
-	useHasLicenseModule: jest.fn(),
+jest.mock('../../../hooks/useIsEnterprise', () => ({
+	useIsEnterprise: jest.fn(),
 }));
 
 const mockedUseUserPreference = jest.mocked(useUserPreference);
-const mockedUseHasLicenseModule = jest.mocked(useHasLicenseModule);
+const mockedUseIsEnterprise = jest.mocked(useIsEnterprise);
 
 beforeEach(() => {
-	mockedUseHasLicenseModule.mockReturnValue({ data: true } as any);
+	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: true } } as any);
 });
 
 const ids = (entries: { _id: string }[]) => entries.map(({ _id }) => _id);
@@ -63,8 +63,8 @@ it('only drops entries flagged as system groups, not custom ids that look like o
 	expect(result.current.rawCategories).toEqual(entries);
 });
 
-it('hides custom categories without the license module but keeps the raw entries', () => {
-	mockedUseHasLicenseModule.mockReturnValue({ data: false } as any);
+it('hides custom categories on a non-enterprise workspace but keeps the raw entries', () => {
+	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: false } } as any);
 	mockedUseUserPreference.mockReturnValue([
 		{ _id: 'Favorites', name: 'Favorites', default: true },
 		{ _id: 'Drafts', name: 'Drafts', default: true },

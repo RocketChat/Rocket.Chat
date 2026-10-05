@@ -48,7 +48,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		name: 'realtimeMessageComposer',
 		i18n: 'Realtime_message_composer',
 		description: 'Realtime_message_composer_description',
-		group: 'Message',
+		group: 'Room',
 		value: false,
 		enabled: true,
 	},

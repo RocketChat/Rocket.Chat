@@ -295,6 +295,9 @@ export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode
 
 export const allCapabilities: VideoConferenceCapabilities = { mic: true, cam: true, title: true };
 
+/** A provider that runs the call in this window — the only one the preflight offers device choices for. */
+export const embeddedCapabilities: VideoConferenceCapabilities = { ...allCapabilities, embedded: true };
+
 /** The four states a member of a call can be in. `ringing` needs {@link withLiveRings} to stay one. */
 export const members: Record<'joined' | 'ringing' | 'declined' | 'left', ConferenceMember> = {
 	joined: buildConferenceMember({ _id: 'joined', name: 'Ada Lovelace', username: 'ada' }),

@@ -6,7 +6,6 @@ import {
 	createUpsertDocument,
 } from '@rocket.chat/mongo-adapter';
 import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
-import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions, FilterOperators, Filter, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -131,7 +130,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private deferCallback<TFunction extends (...args: any) => void>(callback: TFunction | undefined | null, ...args: Parameters<TFunction>) {
-		if (callback) Meteor.defer(() => callback(...args));
+		if (callback) setTimeout(() => callback(...args), 0);
 	}
 
 	private _insertInResults(query: Query<T>, doc: T) {

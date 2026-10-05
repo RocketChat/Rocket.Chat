@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';

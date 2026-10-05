@@ -63,6 +63,7 @@ const useCustomTranslations = (i18n: typeof i18next) => {
 };
 
 const localeCache = new Map<string, Promise<string>>();
+const localeFileNamespaces = new Set<string>(availableTranslationNamespaces);
 let isI18nInitialized = false;
 
 const useI18next = (lng: string): typeof i18next => {
@@ -81,7 +82,10 @@ const useI18next = (lng: string): typeof i18next => {
 			},
 			partialBundledLanguages: true,
 			backend: {
-				loadPath: 'i18n/{{lng}}.json',
+				// Other namespaces (apps) never come from the locale files, and i18next requests a namespace
+				// again on every load until it gets a bundle, so they must resolve to an empty one.
+				loadPath: (_languages: string[], namespaces: string[]) =>
+					namespaces.every((namespace) => localeFileNamespaces.has(namespace)) ? 'i18n/{{lng}}.json' : '',
 				parse: (data: string, _lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractTranslationKeys(JSON.parse(data), namespaces),
 				request: (_options: unknown, url: string, _payload: unknown, callback: (error: unknown, data: unknown) => void) => {
@@ -114,13 +118,12 @@ const useI18next = (lng: string): typeof i18next => {
 
 		// In some cases, the language will require a word to be in a different position than the default
 		// This enables the capitalization of words that are moved to the start of the sentence directly in the translation file
-		i18n.on('initialized', () => {
-			i18n.services.formatter?.add('capitalize', (value) => {
-				if (typeof value !== 'string') {
-					return value;
-				}
-				return capitalize(value);
-			});
+		// Registered right after init(), not on 'initialized': with English bundled, init completes synchronously and that event has already fired.
+		i18n.services.formatter?.add('capitalize', (value) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return capitalize(value);
 		});
 	}
 

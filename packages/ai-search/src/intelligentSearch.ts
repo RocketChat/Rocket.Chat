@@ -1,4 +1,4 @@
-import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
+import { CLASSIFICATION_SEARCH_TYPE, MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -312,7 +312,7 @@ export const searchIntelligentPipeline = async ({
 				type: searchType,
 				classification: {
 					classifications,
-					search_type: mode === 'keyword' ? 1 : 2,
+					search_type: CLASSIFICATION_SEARCH_TYPE,
 				},
 				filters: pipelineFilters,
 				params: {

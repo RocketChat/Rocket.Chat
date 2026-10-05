@@ -5,7 +5,7 @@ import { useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { filterMarkdown } from '../../../../../../app/markdown/lib/markdown';
+import { filterMarkdown } from '../../../../../../app/markdown/lib/parser/filtered/filtered';
 import { MentionsParser } from '../../../../../../app/mentions/lib/MentionsParser';
 import { emojiParser } from '../../../../../lib/emoji/emojiParser';
 

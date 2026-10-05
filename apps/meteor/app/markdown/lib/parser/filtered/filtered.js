@@ -51,3 +51,6 @@ export const filtered = (
 
 	return message;
 };
+
+/** @param {string} message */
+export const filterMarkdown = (message) => filtered(message);

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "8.8.1",
+	"version": "8.10.0-develop",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -28,7 +28,7 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},

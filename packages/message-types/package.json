@@ -16,15 +16,15 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"date-fns": "~4.1.0",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.2.0",
-		"moment": "^2.30.1",
+		"moment": "^2.31.0",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
 		"date-fns": "~4.1.0",
-		"moment": "^2.30.1"
+		"moment": "^2.31.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

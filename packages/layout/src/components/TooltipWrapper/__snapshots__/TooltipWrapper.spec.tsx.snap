@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders WithElement without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-describedby="_r_0_"
+      class="rcx-box rcx-box--full"
+      tabindex="0"
+    >
+      Text
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithRenderProp without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-describedby="_r_1_"
+      class="rcx-box rcx-box--full"
+      tabindex="0"
+    >
+      Text
+    </div>
+  </div>
+</body>
+`;

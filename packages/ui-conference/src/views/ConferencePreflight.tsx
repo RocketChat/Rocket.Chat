@@ -1,6 +1,6 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, CheckBox, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, CheckBox } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
@@ -9,14 +9,13 @@ import { useTranslation } from 'react-i18next';
 
 import CallDeviceToggle from '../components/CallDeviceToggle';
 import CallParticipants from '../components/CallParticipants';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
+import type { PreflightMedia } from '../context/definitions';
 import type { CallPreferences } from '../hooks/useCallDevicesInitialState';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
-
-/**
- * How much of the tile's bottom edge the toggles float over. The placeholder centres in what is left above it,
- * or on a short tile the icon and its line of text land underneath the buttons.
- */
-const TOGGLES_ZONE = 60;
+import PreflightDevices from '../preflight/PreflightDevices';
+import PreflightPreview from '../preflight/PreflightPreview';
+import PreviewMediaProvider from '../preflight/PreviewMediaProvider';
 
 /**
  * The camera tile: 16:9, and black, because that is what a camera with nothing to show looks like. Width leads
@@ -50,6 +49,11 @@ type ConferencePreflightProps = {
 	confirming?: boolean;
 	onConfirm: (preferences: CallPreferences, name: string, ring: boolean) => void;
 	onCancel: () => void;
+	/**
+	 * How to open the reader's own camera, or `null` where the application cannot. Used only for a provider that
+	 * runs the call in here, since no other can be told which devices to use.
+	 */
+	media: PreflightMedia | null;
 };
 
 const ConferencePreflight = ({
@@ -64,6 +68,7 @@ const ConferencePreflight = ({
 	confirming = false,
 	onConfirm,
 	onCancel,
+	media,
 }: ConferencePreflightProps) => {
 	const { t } = useTranslation();
 	// `useCallDevicesInitialState` already carries the ring habit — it calls `useCallRingPreference` itself.
@@ -79,7 +84,60 @@ const ConferencePreflight = ({
 	const shortAndWide = useMediaQuery('(max-height: 620px) and (min-width: 700px)');
 	const columns = wideEnough || shortAndWide;
 
+	// Offering the choice to a provider at an address of its own would be a promise this screen cannot keep.
+	const deviceMedia = capabilities.embedded ? media : null;
+
 	const [title, setTitle] = useState(defaultName ?? name);
+
+	const previewColumn = (
+		<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
+			<Box
+				position='relative'
+				width='100%'
+				display='flex'
+				flexDirection='column'
+				alignItems='center'
+				justifyContent='center'
+				borderRadius='large'
+				overflow='hidden'
+				className={previewTileStyle}
+			>
+				{deviceMedia ? (
+					<PreflightPreview />
+				) : (
+					<PreflightCameraPlaceholder
+						cam={preferences.cam}
+						note={preferences.cam ? t('Choose_your_camera_and_microphone_inside_the_call') : undefined}
+					/>
+				)}
+
+				<Box position='absolute' insetBlockEnd={12} display='flex' justifyContent='center'>
+					<ButtonGroup>
+						{capabilities.mic && (
+							<CallDeviceToggle
+								device='mic'
+								on={preferences.mic}
+								label={preferences.mic ? t('Mic_on') : t('Mic_off')}
+								onToggle={() => toggle('mic')}
+							/>
+						)}
+						{capabilities.cam && (
+							<CallDeviceToggle
+								device='cam'
+								on={preferences.cam}
+								label={preferences.cam ? t('Cam_on') : t('Cam_off')}
+								onToggle={() => toggle('cam')}
+							/>
+						)}
+					</ButtonGroup>
+				</Box>
+			</Box>
+
+			{/* Below the preview rather than on it: which device is a setting, not a control reached for mid-thought,
+					    and a device's name needs more room than the tile's corner has. */}
+			{deviceMedia && <PreflightDevices />}
+		</Box>
+	);
 
 	/** Typed from the Box it is given to, which submits its own event type rather than React's. */
 	const handleSubmit: NonNullable<ComponentProps<typeof Box>['onSubmit']> = (event) => {
@@ -119,63 +177,15 @@ const ConferencePreflight = ({
 				flexGrow={1}
 				paddingInline={24}
 				paddingBlock={24}
-				style={{ gap: columns ? 48 : 32 }}
+				gap={columns ? 48 : 32}
 			>
-				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x700' minWidth={0}>
-					<Box
-						position='relative'
-						width='100%'
-						display='flex'
-						flexDirection='column'
-						alignItems='center'
-						justifyContent='center'
-						borderRadius='large'
-						overflow='hidden'
-						className={previewTileStyle}
-					>
-						<Box
-							display='flex'
-							flexDirection='column'
-							alignItems='center'
-							justifyContent='center'
-							width='100%'
-							height='100%'
-							style={{ paddingBlockEnd: TOGGLES_ZONE }}
-						>
-							<Icon name={preferences.cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-							{/* In the future tense: the call is handed to a provider, so there is no camera here yet. */}
-							<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
-								{preferences.cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
-							</Box>
-							{preferences.cam && (
-								<Box fontScale='c1' color='hint' marginBlockStart={4} textAlign='center' paddingInline={24}>
-									{t('Choose_your_camera_and_microphone_inside_the_call')}
-								</Box>
-							)}
-						</Box>
-
-						<Box position='absolute' style={{ bottom: 12 }} display='flex' justifyContent='center'>
-							<ButtonGroup>
-								{capabilities.mic && (
-									<CallDeviceToggle
-										device='mic'
-										on={preferences.mic}
-										label={preferences.mic ? t('Mic_on') : t('Mic_off')}
-										onToggle={() => toggle('mic')}
-									/>
-								)}
-								{capabilities.cam && (
-									<CallDeviceToggle
-										device='cam'
-										on={preferences.cam}
-										label={preferences.cam ? t('Cam_on') : t('Cam_off')}
-										onToggle={() => toggle('cam')}
-									/>
-								)}
-							</ButtonGroup>
-						</Box>
-					</Box>
-				</Box>
+				{deviceMedia ? (
+					<PreviewMediaProvider capabilities={capabilities} media={deviceMedia}>
+						{previewColumn}
+					</PreviewMediaProvider>
+				) : (
+					previewColumn
+				)}
 				<Box display='flex' flexDirection='column' alignItems='center' width='100%' maxWidth='x320' flexShrink={0}>
 					{/* An `h2`, not a `div` at heading size: it is the screen's heading and has to be findable as one. */}
 					<Box is='h2' fontScale='h2' color='default' textAlign='center'>

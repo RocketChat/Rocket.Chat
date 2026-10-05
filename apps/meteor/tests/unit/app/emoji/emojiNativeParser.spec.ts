@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { getEmojiData } from '../../../../app/emoji-native/lib/generateEmojiData';
-import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
-import { shortnameToUnicode } from '../../../../app/emoji-native/lib/shortnameToUnicode';
+import { getEmojiData } from '../../../../lib/emoji-native/generateEmojiData';
+import { getEmojiConfig } from '../../../../lib/emoji-native/getEmojiConfig';
+import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
 
 describe('emoji-native shortcode resolution', () => {
 	describe('shortnameToUnicode', () => {

@@ -5,7 +5,6 @@ import './desktopInjection';
 import './killMeteorStream';
 import './oauthProxy';
 import './oauthRedirectUri';
-import './settings';
 import './stubMeteorStream';
 import './subscribeViaSDK';
 import './totpOnCall';

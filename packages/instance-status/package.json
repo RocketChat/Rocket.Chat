@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.60",
+	"version": "0.1.61-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},

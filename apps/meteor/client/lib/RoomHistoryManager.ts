@@ -1,13 +1,14 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import { differenceInMilliseconds } from 'date-fns/differenceInMilliseconds';
 import { useCallback, useSyncExternalStore } from 'react';
 
+import { sdk } from './SDKClient';
 import { getUserPreference } from './getUserPreference';
+import { onClientMessageReceived } from './onClientMessageReceived';
 import { dispatchToastMessage } from './toast';
 import { Messages, Subscriptions } from '../stores';
-import { sdk } from './SDKClient';
-import { onClientMessageReceived } from './onClientMessageReceived';
 import { getUserId } from './user';
 import { getConfig } from './utils/getConfig';
 import { mapMessageFromApi } from './utils/mapMessageFromApi';
@@ -102,7 +103,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = crypto.randomUUID();
+			const requestId = Random.id();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();

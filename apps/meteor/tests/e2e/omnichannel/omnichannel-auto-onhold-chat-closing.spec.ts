@@ -63,7 +63,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 
 		// expect to see a system message saying the chat was on-hold
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
-			`Chat On Hold: The chat was manually placed On Hold by user1`,
+			`Chat on hold: The chat was manually placed on hold by user1`,
 		);
 		await expect(agent.poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
@@ -77,7 +77,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		// expect to see a system message saying the chat was closed automatically in the closed chat room
 		await agent.page.goto(chatRoomUrl);
 		expect(await agent.poHomeChannel.content.lastSystemMessageBody.innerText()).toBe(
-			'Conversation closed: Closed automatically because chat was On Hold for 5 seconds.',
+			'Conversation closed: Closed automatically because chat was on hold for 5 seconds.',
 		);
 	});
 });

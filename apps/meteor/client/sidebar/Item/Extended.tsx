@@ -9,11 +9,11 @@ import {
 	SidebarItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
+import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
-import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 export type ExtendedProps = {
 	icon?: ReactNode;
@@ -53,7 +53,7 @@ const Extended = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarItem level={2} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarItem href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			<SidebarItemCol>
 				<SidebarItemRow>
