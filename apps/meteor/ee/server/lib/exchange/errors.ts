@@ -21,7 +21,6 @@ export type ExchangeErrorCode =
 export class ExchangeError extends Error {
 	public readonly code: ExchangeErrorCode;
 
-	/** Scrubbed on the way in, so it is always safe to log and to surface to an admin. */
 	public readonly detail?: string;
 
 	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string; cause?: unknown }) {
