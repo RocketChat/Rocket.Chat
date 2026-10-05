@@ -30,8 +30,6 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 		const mailbox = user && resolveMailbox(user);
 
 		if (!mailbox) {
-			// The scheduled run never lands here: its query already requires a verified email, so an
-			// unverified user is simply skipped and never asked about.
 			if (user) {
 				throw new ExchangeError('email-not-verified', 'The user has no verified email address to use as a mailbox');
 			}
@@ -41,8 +39,6 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 
 		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow());
 
-		// Read before the throw below, so a write that committed before the failure still gets its
-		// scheduling and its presence refresh from the `finally`.
 		changed = outcome.changed;
 		removedEvents = outcome.removedEvents;
 
