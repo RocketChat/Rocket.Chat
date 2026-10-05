@@ -17,6 +17,7 @@ import {
 	Button,
 	Callout,
 	Skeleton,
+	Divider,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -578,7 +579,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 					</Field>
 
+					<Divider marginBlockStart={24} marginBlockEnd={0} />
 					<PhoneNumberFieldList name='phones' control={control} phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
+					<Divider marginBlockStart={24} marginBlockEnd={0} />
 					{!!customFieldsMetadata.length && (
 						<>
 							<Button
