@@ -1,5 +1,6 @@
+import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from '@rocket.chat/ui-media';
+
 import type { DeviceSelection } from './DeviceSelectionContext';
-import { SYSTEM_DEFAULT_DEVICE_ID, deviceGroupsOf, deviceName, isSameDevice, orderDevices } from '../call/lib/deviceLabels';
 
 export type DeviceRow = { id: string; name: string; systemDefault: boolean };
 
