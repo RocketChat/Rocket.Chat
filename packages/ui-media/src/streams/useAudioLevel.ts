@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { getAudioLevel, subscribeToAudioLevel } from '../lib/audioLevelStore';
+import { getAudioLevel, subscribeToAudioLevel } from './audioLevelStore';
 
 /** Guarded because callers hand over whatever they have: a preview stream, a stub in a test, nothing at all. */
 const hasAudio = (stream?: MediaStream | null): stream is MediaStream =>

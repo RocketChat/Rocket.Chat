@@ -168,6 +168,7 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@rocket.chat/ui-livekit": "workspace:^",
+		"@rocket.chat/ui-media": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@rocket.chat/ui-voip": "workspace:^",
 		"@rocket.chat/web-ui-registration": "workspace:^",

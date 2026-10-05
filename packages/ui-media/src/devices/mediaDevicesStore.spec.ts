@@ -94,3 +94,50 @@ it('tells nobody when the list read again is the same', async () => {
 	expect(getMediaDevices()).toBe(before);
 	unsubscribe();
 });
+
+// Browsers predating camera and microphone permission queries throw on those names instead of rejecting.
+it('still lists the devices when the browser cannot query a capture permission', async () => {
+	const query = jest.fn(() => {
+		throw new TypeError("'camera' is not a valid PermissionName");
+	});
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: { query } });
+
+	const unsubscribe = subscribeToMediaDevices(jest.fn());
+	await flush();
+
+	expect(getMediaDevices()).toEqual([mic]);
+	unsubscribe();
+
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: undefined });
+});
+
+// Granting a permission names the devices; where the browser announces the grant, the list follows by itself.
+it('reads the list again when a capture permission changes, until the last reader leaves', async () => {
+	const statuses = new Map<string, { addEventListener: jest.Mock; removeEventListener: jest.Mock }>();
+	const query = jest.fn(async ({ name }: { name: string }) => {
+		const status = { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+		statuses.set(name, status);
+		return status;
+	});
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: { query } });
+
+	const listener = jest.fn();
+	const unsubscribe = subscribeToMediaDevices(listener);
+	await flush();
+
+	expect([...statuses.keys()]).toEqual(['microphone', 'camera']);
+
+	// The grant names the devices, so the next read differs and the readers hear of it.
+	enumerateDevices.mockResolvedValue([namedMic]);
+	const [, onChange] = statuses.get('microphone')?.addEventListener.mock.calls[0] ?? [];
+	onChange?.();
+	await flush();
+
+	expect(getMediaDevices()).toEqual([namedMic]);
+	expect(listener).toHaveBeenCalledTimes(2);
+
+	unsubscribe();
+	statuses.forEach((status) => expect(status.removeEventListener).toHaveBeenCalledWith('change', refreshMediaDevices));
+
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: undefined });
+});

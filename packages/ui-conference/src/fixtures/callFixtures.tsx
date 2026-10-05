@@ -1,3 +1,5 @@
+import type { DeviceSelection } from '@rocket.chat/ui-media';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { Decorator } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
@@ -6,8 +8,6 @@ import { action } from 'storybook/actions';
 import { JOHN_DOE_ID } from './storyFixtures';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallStateProvider } from '../call/context';
-import type { DeviceSelection } from '../devices/DeviceSelectionContext';
-import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 
 export const buildCallSelf = (overrides: Partial<CallSelf> = {}): CallSelf => ({
 	id: JOHN_DOE_ID,

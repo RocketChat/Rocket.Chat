@@ -1,8 +1,8 @@
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { Decorator } from '@storybook/react';
 
 import { buildDeviceSelection, fakeDevices } from './callFixtures';
 import { embeddedCapabilities } from './storyFixtures';
-import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import type { PreviewMediaState } from '../preflight/PreviewMediaContext';
 import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext';
 

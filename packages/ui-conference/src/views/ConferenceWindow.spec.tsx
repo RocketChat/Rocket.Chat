@@ -1,4 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { DeviceSelection } from '@rocket.chat/ui-media';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
@@ -7,8 +9,6 @@ import type { CallState } from '../call/context';
 import { CallActionsProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
-import type { DeviceSelection } from '../devices/DeviceSelectionContext';
-import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import { buildConferenceContext } from '../fixtures/storyFixtures';
 
 const callState: CallState = {

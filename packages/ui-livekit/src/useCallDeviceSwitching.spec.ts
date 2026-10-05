@@ -7,8 +7,11 @@ const persist = jest.fn();
 
 jest.mock('@rocket.chat/ui-conference', () => ({
 	callDeviceIdField: { audioinput: 'micId', videoinput: 'camId', audiooutput: 'speakerId' },
-	useMediaDevices: () => ({ devices: [], refresh: jest.fn() }),
 	useUpdateCallPreferences: () => persist,
+}));
+
+jest.mock('@rocket.chat/ui-media', () => ({
+	useMediaDevices: () => ({ devices: [], refresh: jest.fn() }),
 }));
 
 jest.mock('./useActiveDevice', () => ({

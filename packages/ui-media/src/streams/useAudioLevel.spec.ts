@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
+import { getAudioLevel, subscribeToAudioLevel } from './audioLevelStore';
 import { useAudioLevel } from './useAudioLevel';
-import { getAudioLevel, subscribeToAudioLevel } from '../lib/audioLevelStore';
 
 const close = jest.fn(() => Promise.resolve());
 const AudioContextMock = jest.fn(() => ({
@@ -85,7 +85,7 @@ it('stops sampling when the last reader leaves while being told of a reading', (
 		createAnalyser: () => ({
 			fftSize: 4,
 			smoothingTimeConstant: 0,
-			getByteTimeDomainData: (buf: Uint8Array) => buf.fill(255),
+			getByteTimeDomainData: jest.fn((buf: Uint8Array) => buf.fill(255)),
 		}),
 		close,
 	}));
