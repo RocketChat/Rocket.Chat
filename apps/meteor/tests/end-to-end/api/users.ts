@@ -608,7 +608,7 @@ describe('[Users]', () => {
 			});
 
 			it('should create a user with a voice call extension', async () => {
-				const freeSwitchExtension = '888999';
+				const sipExtension = '888999';
 				let user: TestUser<IUser>;
 				await request
 					.post(api('users.create'))
@@ -622,13 +622,13 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', freeSwitchExtension);
+						expect(res.body).to.have.nested.property('user.sipExtension', sipExtension);
 						user = res.body.user;
 					});
 
@@ -638,8 +638,8 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user with a voice call extension that is already in use', async () => {
-				const freeSwitchExtension = '123123';
-				const user = await createUser({ freeSwitchExtension });
+				const sipExtension = '123123';
+				const user = await createUser({ sipExtension });
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -652,7 +652,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -678,7 +678,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension: '999',
+						sipExtension: '999',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -1572,14 +1572,14 @@ describe('[Users]', () => {
 			});
 		});
 
-		(IS_EE ? describe : describe.skip)('querying by freeSwitch extension', () => {
+		(IS_EE ? describe : describe.skip)('querying by SIP extension', () => {
 			let previousVoipSetting: boolean;
 			let targetUser: IUser;
 
 			before(async () => {
 				previousVoipSetting = (await getSettingValueById('VoIP_TeamCollab_SIP_Integration_Enabled')) as boolean;
 				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
-				targetUser = await createUser({ freeSwitchExtension: '123123' });
+				targetUser = await createUser({ sipExtension: '123123' });
 			});
 
 			after(async () => {
@@ -1598,7 +1598,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1606,7 +1606,7 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
 							expect(res.body).to.have.nested.property('user._id', targetUser._id);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 				it('should return an error when user does not exist', async () => {
@@ -1614,7 +1614,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
+							sipExtension: 'this_is_a_fake_extension_that_does_not_exist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -1635,14 +1635,14 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 			});
@@ -3130,13 +3130,13 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+						expect(res.body).to.have.nested.property('user.sipExtension', '999');
 					});
 			});
 
@@ -3147,7 +3147,7 @@ describe('[Users]', () => {
 					.send({
 						userId: targetUser._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(400)
@@ -3165,7 +3165,7 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '9998',
+							sipExtension: '9998',
 						},
 					})
 					.expect(400)
@@ -5391,18 +5391,18 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('items').and.to.be.an('array');
 			});
 
-			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
-				const user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
+			(IS_EE ? it : it.skip)('should return users filtered by sipExtension and display it', async () => {
+				const user = await createUser({ joinDefaultChannels: false, sipExtension: '1234567890' });
 				await request
 					.get(api('users.autocomplete'))
-					.query({ selector: JSON.stringify({ conditions: { freeSwitchExtension: '1234567890' } }) })
+					.query({ selector: JSON.stringify({ conditions: { sipExtension: '1234567890' } }) })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
-						expect(res.body.items[0]).to.have.property('freeSwitchExtension', '1234567890');
+						expect(res.body.items[0]).to.have.property('sipExtension', '1234567890');
 					});
 
 				await deleteUser(user);

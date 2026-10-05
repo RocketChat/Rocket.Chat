@@ -39,7 +39,7 @@ type UserInfoDataProps = Serialized<
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
-		| 'freeSwitchExtension'
+		| 'sipExtension'
 		| 'abacAttributes'
 	>
 >;
@@ -74,7 +74,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
-	freeSwitchExtension,
+	sipExtension,
 	abacAttributes,
 	invitationDate,
 	...props
@@ -186,10 +186,10 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{freeSwitchExtension && (
+					{sipExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
+							<InfoPanelText>{sipExtension}</InfoPanelText>
 						</InfoPanelField>
 					)}
 

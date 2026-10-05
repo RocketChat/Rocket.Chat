@@ -42,7 +42,7 @@ export type UsersFilters = {
 
 export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
-export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
+export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'sipExtension';
 
 const AdminUsersPage = () => {
 	const t = useTranslation();
