@@ -1152,51 +1152,105 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
                       >
                         <ul
-                          class="rcx-box rcx-box--full rcx-css-vhjf5t"
+                          class="rcx-box rcx-box--full rcx-css-1nynsiw"
                         >
                           <li
-                            class="rcx-box rcx-box--full rcx-css-ilfe77"
+                            class="rcx-box rcx-box--full rcx-css-s9e2n2"
                           >
-                            <a
-                              class="rcx-box rcx-box--full rcx-css-1te28na"
-                              href="tel:+5511999999999"
-                              style="text-decoration: none;"
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-g7es8y"
                             >
-                              <span
-                                style="text-decoration: underline;"
+                              <div
+                                class="rcx-box rcx-box--full rcx-css-cpy1g9"
+                              >
+                                Mobile
+                              </div>
+                              <div
+                                class="rcx-box rcx-box--full rcx-css-1dldlmh"
                               >
                                 +55 11 99999-9999
-                              </span>
-                              <span
-                                class="rcx-box rcx-box--full rcx-css-640par"
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1wd7edc"
+                            >
+                              <a
+                                aria-label="Call Mobile"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                href="tel:+5511999999999"
+                                title="Call"
+                                type="button"
                               >
-                                (
-                                Mobile
-                                )
-                              </span>
-                            </a>
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </a>
+                              <button
+                                aria-label="Copy_phone_number Mobile"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                title="Copy_phone_number"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
                           </li>
                           <li
-                            class="rcx-box rcx-box--full rcx-css-ilfe77"
+                            class="rcx-box rcx-box--full rcx-css-s9e2n2"
                           >
-                            <a
-                              class="rcx-box rcx-box--full rcx-css-1te28na"
-                              href="tel:+5511888888888"
-                              style="text-decoration: none;"
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-g7es8y"
                             >
-                              <span
-                                style="text-decoration: underline;"
+                              <div
+                                class="rcx-box rcx-box--full rcx-css-cpy1g9"
+                              >
+                                Work
+                              </div>
+                              <div
+                                class="rcx-box rcx-box--full rcx-css-1dldlmh"
                               >
                                 +5511888888888
-                              </span>
-                              <span
-                                class="rcx-box rcx-box--full rcx-css-640par"
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1wd7edc"
+                            >
+                              <a
+                                aria-label="Call Work"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                href="tel:+5511888888888"
+                                title="Call"
+                                type="button"
                               >
-                                (
-                                Work
-                                )
-                              </span>
-                            </a>
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </a>
+                              <button
+                                aria-label="Copy_phone_number Work"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                title="Copy_phone_number"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
                           </li>
                         </ul>
                       </dd>
