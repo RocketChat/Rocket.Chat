@@ -1,10 +1,15 @@
-import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Item, ItemContent, ItemTitle, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
+
+const wrappedTitle = css`
+	white-space: normal;
+`;
 
 export type AutoCompleteDepartmentProps = {
 	value?: string;
@@ -63,7 +68,15 @@ const AutoCompleteDepartment = ({
 			options={departmentsItems}
 			placeholder={isPending ? t('Loading...') : t('Select_an_option')}
 			endReached={() => fetchNextPage()}
-			renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
+			renderItem={({ label, value: _value, index: _index, selected, focus, ...props }) => (
+				<Item {...props} inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<ItemContent>
+						<Box is={ItemTitle} className={wrappedTitle}>
+							{label}
+						</Box>
+					</ItemContent>
+				</Item>
+			)}
 		/>
 	);
 };
