@@ -21,7 +21,11 @@ const InputBlock = ({ className, block, surfaceRenderer, context }: InputBlockPr
 
 	return (
 		<Field className={className}>
-			{block.label && <FieldLabel>{surfaceRenderer.renderTextObject(block.label, 0, UiKit.BlockContext.NONE)}</FieldLabel>}
+			{block.label && (
+				<FieldLabel htmlFor={block.element.actionId}>
+					{surfaceRenderer.renderTextObject(block.label, 0, UiKit.BlockContext.NONE)}
+				</FieldLabel>
+			)}
 			<FieldRow>{surfaceRenderer.renderInputBlockElement(inputElement, 0)}</FieldRow>
 			{error && <FieldError>{error}</FieldError>}
 			{block.hint && <FieldHint>{surfaceRenderer.renderTextObject(block.hint, 0, UiKit.BlockContext.NONE)}</FieldHint>}
