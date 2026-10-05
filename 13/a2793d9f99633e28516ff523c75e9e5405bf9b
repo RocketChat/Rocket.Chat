@@ -1,0 +1,55 @@
+ee/packages/xmpp-server/docs/compliance.md
+  s_9a0298322eb6a8::t_a306ab51497de4 40
+  s_9a0298322eb6a8::t_07973e57404db9 52
+ee/packages/xmpp-server/docs/intents/security-labels.md
+  s_9a0298322eb6a8::t_ebfa545e29ed9b 6-8
+  s_9a0298322eb6a8::t_11680d94c12ecf 1-5
+  s_9a0298322eb6a8::t_a5d7c6881f0ff6 12-15,21-27,30-32,34,37-39
+  s_9a0298322eb6a8::t_3f0f1763ed1942 9-11,16-20,28-29,33,35-36,40-43
+ee/packages/xmpp-server/docs/intents/federation-authorization.md
+  s_9a0298322eb6a8::t_52c0145cf41f03 1-24,31-62
+  s_9a0298322eb6a8::t_a0dd3f9fff8686 25-27
+  s_9a0298322eb6a8::t_32e4306451cfb9 28-30
+ee/packages/xmpp-server/docs/intents/accreditation-readiness.md
+  s_9a0298322eb6a8::t_25aec0eb276904 1-13
+  s_9a0298322eb6a8::t_bc42269b972b1e 18-41,44-58,60-61
+  s_9a0298322eb6a8::t_a044ed9e2e1bcb 14-16
+  s_9a0298322eb6a8::t_4b5a01bd82dacf 17,42-43,59,62-63
+ee/packages/xmpp-server/docs/intents/interop-certification.md
+  s_9a0298322eb6a8::t_05c6b03ddfa2b3 1-5
+  s_9a0298322eb6a8::t_da7a70295c698f 6-8
+  s_9a0298322eb6a8::t_a6f9251c0f091e 13-16,19-20,22-39,41-42
+  s_9a0298322eb6a8::t_8c0788099890a5 9-12,17-18,21,40,43-44
+ee/packages/xmpp-server/docs/intents/joining-remote-rooms.md
+  s_9a0298322eb6a8::t_c9b86eeda0fa1d 9,11-41
+  s_9a0298322eb6a8::t_61933484b9a733 10
+  s_9a0298322eb6a8::t_bc6c232e926a29 1-5
+  s_9a0298322eb6a8::t_fce0ad4d43ff4a 6-8
+  s_9a0298322eb6a8::t_134f5e5fc3dde4 42-43
+ee/packages/xmpp-server/docs/intents/connection-recovery.md
+  s_9a0298322eb6a8::t_cb38fca041846c 1-41,49-55
+  s_9a0298322eb6a8::t_1e24e7293993d4 42-44
+  s_9a0298322eb6a8::t_442d5c3c6ab59c 45
+  s_9a0298322eb6a8::t_922bd8b28e74d7 46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "13a2793d9f99633e28516ff523c75e9e5405bf9b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9a0298322eb6a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d91ba7d6-5030-4b36-a21a-9b63ab174678",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
