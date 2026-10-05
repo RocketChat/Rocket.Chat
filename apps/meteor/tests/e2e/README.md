@@ -311,10 +311,14 @@ await poHomeChannel.gotoChannel(targetChannel);
 
 Why: searching the navbar couples the navigation to (1) the app shell hydrating, (2) the **search index** having picked up the room — a real lag for a channel created moments earlier via API — and (3) the listbox rendering and the option becoming clickable. Any one stalling makes `searchInput.fill` hang until the test timeout, surfacing as the misleading `Target page, context or browser has been closed`. `gotoChannel` loads `/channel/<name>` and then `waitForChannel()` (main region, heading, message list, `aria-busy` cleared), so it has a proper readiness wait without the search dependency.
 
+Pick the method by room type: `gotoChannel(name)` for public rooms, `gotoGroup(name)` for private rooms and teams created by `createTargetTeam` (they are private), `gotoDirect(username)` for DMs. A discussion takes its parent's type, so a discussion of a public channel opens with `gotoChannel`.
+
 Do **not** apply when:
 - The navbar search is the actual subject of the test.
-- Navigating to a **DM** (`/direct/<username>`) or a **discussion** — `gotoChannel` builds a `/channel/` URL only.
+- Opening a **livechat room** — a cold load of `/live/<rid>` is rejected with `error-no-permission` for the serving agent. Open it through the search with the visitor's name.
+- The page is in, or about to start, a **call** (`voice-calls-ee`, `video-conference-call-window`) — a full page load drops the call and is slower than the in-app navigation.
 - Reaching a channel the user is **not a member of** — the direct URL hits a different preview/join flow; verify the behavior before switching.
+- Replacing a search in a test that first interacts with the home page — keep the `/home` load for it, and never follow `goto()` with a `gotoChannel()` (two full loads).
 
 ## API helpers for state seeding
 
@@ -333,11 +337,28 @@ Prefer these helpers in `beforeAll` / `beforeEach` and in setup `test.step`s. Al
 | Send message to a room               | `sendMessage(api, roomId, msg)`                           | `/chat.sendMessage`       |
 | Send message inside a thread         | `sendMessage(api, roomId, msg, parentMsgId)`              | `/chat.sendMessage`       |
 | Send message as a specific user      | `sendMessageFromUser(request, user, rid, msg)`            | `/chat.postMessage`       |
+| Reply in a thread as a specific user | `sendMessageFromUser(request, user, rid, msg, { tmid })`  | `/chat.postMessage`       |
+| Upload a file (as a specific user)   | `uploadFileToRoom(request, user, rid, fileName, opts)`    | `/rooms.media` + `/rooms.mediaConfirm` |
+| Create livechat conversation         | `createConversation(api, { agentId, departmentId })`      | `/livechat/visitor` + `/livechat/room` |
+| Create / delete omnichannel agent    | `createAgent(api, username)`                              | `/livechat/users/agent`   |
+| Make agent available                 | `makeAgentAvailable(api, agentId)`                        | `/users.setStatus` + `/livechat/agent.status` |
 | Delete channel (by name)             | `deleteChannel(api, roomName)`                            | `/channels.delete`        |
 | Delete room (by id)                  | `deleteRoom(api, roomId)`                                 | `/rooms.delete`           |
 | Delete team                          | `deleteTeam(api, teamName)`                               | `/teams.delete`           |
 
 If the helper you need is missing, add it under `utils/` and re-export it from `utils/index.ts` rather than inlining the REST call in the spec.
+
+## Pitfalls when seeding through the API
+
+Moving setup off the UI changes *when* and *by whom* data is created. These broke in CI when a suite was migrated; check them before switching:
+
+- **Omnichannel routing needs a connected agent.** Create the conversation with `createConversation` only after the agent's page is loaded, or the room is not routed to them and they can neither find nor open it. Agent status set through the API also needs a live session to stick.
+- **E2EE rooms must be created by the user whose page runs the test.** A room created by `admin` through the `api` fixture stays in `WAITING_KEYS` for everyone else. Never upload into an encrypted room through the API — the file would be stored unencrypted.
+- **Messages sent as another user need that user in the room.** Pass `members: [...]` when creating it.
+- **Pages loaded before the data exists show their empty state.** A list or table opened before `createAgent`/`createTarget*` renders "no results" (often without its search box) — seed first, then navigate.
+- **Negative assertions need a sync point.** An API send returns before the client receives the message. Before asserting that something did *not* happen (no sound, no notification), wait for a sign that the message arrived.
+- **API messages render as parsed text.** `@user` becomes a mention, so the message body reads `user`, not `@user`.
+- **Keep UI setup where the DOM is the subject.** Keyboard and focus navigation tests depend on the exact messages and system messages in the list; seeding them differently changes the tab order.
 
 ## Template: optimized `.serial` suite
 
@@ -401,7 +422,10 @@ Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
 
 ## Anti-patterns to flag in review
 
+ESLint warns (`no-restricted-syntax`) on `waitForTimeout`, on `content.sendMessage` inside `beforeEach`/`beforeAll`, and on the Create new modal (`createNew`/`openCreate`) inside those hooks. The rest needs a reviewer:
+
 - `poHomeChannel.content.sendMessage(...)` used inside `beforeEach` or `beforeAll` — that is setup, should be `sendMessage(api, ...)`.
+- `page.waitForTimeout(...)` — wait for the state you need with `expect` / `expect.poll`. Keep a fixed wait only for server-side timers, and say which one.
 - Opening meatball menus or modals purely to create a discussion, thread, or DM as a setup step.
 - `test.describe.serial` that builds a fresh context and navigates in `beforeEach` — both should be shared in `beforeAll`.
 - Any raw `page.goto(...)` in a spec — use the page object's `goto()` (see [Navigation](#navigation-goto-owns-the-wait)).

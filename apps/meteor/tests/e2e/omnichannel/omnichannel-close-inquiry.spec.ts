@@ -4,12 +4,12 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe('Omnichannel close inquiry', () => {
-	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
@@ -21,15 +21,14 @@ test.describe('Omnichannel close inquiry', () => {
 		await api.post('/livechat/users/agent', { username: 'user1' });
 	});
 
-	test.beforeEach(async ({ page, api, browser }) => {
-		poLiveChat = new OmnichannelLiveChat(page, api);
-
+	test.beforeEach(async ({ browser }) => {
 		const { page: auxPage } = await createAuxContext(browser, Users.user1);
 		agent = { page: auxPage, poHomeOmnichannel: new HomeOmnichannel(auxPage) };
 	});
 
 	test.afterEach(async () => {
 		await agent.page.close();
+		await conversation?.delete();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -40,14 +39,8 @@ test.describe('Omnichannel close inquiry', () => {
 		]);
 	});
 
-	test('Receiving a message from visitor', async () => {
-		await test.step('Expect send a message as a visitor', async () => {
-			await poLiveChat.goto();
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-		});
+	test('Receiving a message from visitor', async ({ api }) => {
+		conversation = await createConversation(api, { visitorName: newVisitor.name });
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
 			await agent.poHomeOmnichannel.sidebar.getSidebarItemByName(newVisitor.name).click();

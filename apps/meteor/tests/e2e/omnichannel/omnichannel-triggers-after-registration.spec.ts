@@ -15,7 +15,17 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	let newVisitor: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	test.beforeEach(async ({ api, browser, page }) => {
+	test.beforeAll(async ({ api, browser }) => {
+		await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }),
+			api.post('/livechat/users/manager', { username: 'user1' }),
+		]);
+
+		const { page: agentPage } = await createAuxContext(browser, Users.user1);
+		agent = { page: agentPage, poHomeOmnichannel: new HomeOmnichannel(agentPage) };
+	});
+
+	test.beforeEach(async ({ api, page }) => {
 		newVisitor = createFakeVisitor();
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message after guest registration';
@@ -43,14 +53,6 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 			],
 		});
 
-		await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
-		]);
-
-		const { page: agentPage } = await createAuxContext(browser, Users.user1);
-		agent = { page: agentPage, poHomeOmnichannel: new HomeOmnichannel(agentPage) };
-
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
@@ -60,14 +62,15 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		) as unknown as string[];
 
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
-
-		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
-
-		await agent.page.close();
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1'),
+			api.delete('/livechat/users/manager/user1'),
+			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
+		]);
+		await agent.page.close();
 	});
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {

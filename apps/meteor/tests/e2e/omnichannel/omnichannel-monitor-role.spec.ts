@@ -214,7 +214,6 @@ test.describe('OC - Monitor Role', () => {
 		const [monitor] = monitors;
 
 		const poContactCenterChats = poOmnichannel.chats;
-		await poContactCenterChats.goto();
 
 		await test.step('expect not to be able to see chats from removed department', async () => {
 			await test.step('expect rooms from both departments to be visible', async () => {

@@ -7,7 +7,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
-import { createAgent } from '../utils/omnichannel/agents';
+import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -256,7 +256,7 @@ test.describe('OC - Livechat API', () => {
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
-		test.beforeEach(async ({ browser }, testInfo) => {
+		test.beforeEach(async ({ browser, api }) => {
 			page = await browser.newPage();
 
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
@@ -264,12 +264,7 @@ test.describe('OC - Livechat API', () => {
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 
-			// This is needed since the livechat will not react to online/offline status changes if already loaded in a page
-			if (testInfo.title === 'Expect onOfflineFormSubmit to trigger callback') {
-				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
-			} else {
-				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
-			}
+			await makeAgentAvailable(api, 'user1');
 
 			await poLiveChat.goto();
 		});
@@ -711,7 +706,7 @@ test.describe('OC - Livechat API', () => {
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
-		test.beforeEach(async ({ browser }, testInfo) => {
+		test.beforeEach(async ({ browser, api }, testInfo) => {
 			page = await browser.newPage();
 
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
@@ -720,10 +715,11 @@ test.describe('OC - Livechat API', () => {
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 
 			// This is needed since the livechat will not react to online/offline status changes if already loaded in a page
-			if (testInfo.title === 'Expect onOfflineFormSubmit to trigger callback') {
-				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
+			if (testInfo.title === 'OC - Livechat API - onOfflineFormSubmit') {
+				await api.post('/users.setStatus', { userId: 'user1', message: '', status: 'offline' });
+				await api.post('/livechat/agent.status', { agentId: 'user1', status: 'not-available' });
 			} else {
-				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
+				await makeAgentAvailable(api, 'user1');
 			}
 
 			await poLiveChat.goto();
@@ -863,12 +859,7 @@ test.describe('OC - Livechat API', () => {
 		test('OC - Livechat API - onOfflineFormSubmit', async () => {
 			const newVisitor = createFakeVisitor();
 
-			await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
-			await poAuxContext.poHomeOmnichannel.navbar.switchOmnichannelStatus('offline');
-
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);
-
-			await poLiveChat.page.reload();
 
 			await poLiveChat.page.evaluate(() =>
 				window.RocketChat.livechat.onOfflineFormSubmit(() => {

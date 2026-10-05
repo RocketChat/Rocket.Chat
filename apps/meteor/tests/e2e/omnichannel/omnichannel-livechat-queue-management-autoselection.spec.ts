@@ -1,4 +1,5 @@
 import type { BrowserContext } from '@playwright/test';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
@@ -6,6 +7,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import { closeRoom } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 const firstVisitor = createFakeVisitor();
@@ -68,11 +70,14 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await poLiveChat2.goto();
 		});
 
-		test.afterEach(async () => {
-			await poLiveChat2.closeChat();
-			await liveChat2Context.close();
-			await poLiveChat.closeChat();
-			await liveChatContext.close();
+		test.afterEach(async ({ api }) => {
+			await Promise.all(
+				[firstVisitor.name, secondVisitor.name].map(async (roomName) => {
+					const { rooms } = await (await api.get('/livechat/rooms', { roomName, open: true })).json();
+					await Promise.all(rooms.map((room: IOmnichannelRoom) => closeRoom(api, { roomId: room._id, visitorToken: room.v.token })));
+				}),
+			);
+			await Promise.all([liveChat2Context.close(), liveChatContext.close()]);
 		});
 
 		test('Update user position on Queue', async () => {

@@ -98,11 +98,10 @@ test.describe.serial('abac-classification-banner', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.goto();
 	});
 
 	test('should show the classification banner built from the config in an ABAC room', async ({ page }) => {
-		await poHomeChannel.navbar.openChat(room.name as string);
+		await poHomeChannel.gotoGroup(room.name as string);
 
 		const banner = page.getByRole('region', { name: 'Room attributes' });
 		await expect(banner).toBeVisible();
@@ -113,7 +112,7 @@ test.describe.serial('abac-classification-banner', () => {
 	test('should not show the banner when classification banners are disabled', async ({ page, api }) => {
 		await setSettingValueById(api, 'ABAC_Classification_Banners_Enabled', false);
 
-		await poHomeChannel.navbar.openChat(room.name as string);
+		await poHomeChannel.gotoGroup(room.name as string);
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
 		await expect(page.getByRole('region', { name: 'Room attributes' })).toHaveCount(0);
 	});

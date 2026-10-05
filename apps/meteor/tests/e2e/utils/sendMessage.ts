@@ -4,7 +4,13 @@ import type { BaseTest } from './test';
 import { BASE_API_URL } from '../config/constants';
 import type { IUserState } from '../fixtures/userStates';
 
-export const sendMessageFromUser = async (request: APIRequestContext, user: IUserState, rid: string, message: string) => {
+export const sendMessageFromUser = async (
+	request: APIRequestContext,
+	user: IUserState,
+	rid: string,
+	message: string,
+	options?: { tmid?: string },
+) => {
 	return request
 		.post(`${BASE_API_URL}/chat.postMessage`, {
 			headers: {
@@ -14,6 +20,7 @@ export const sendMessageFromUser = async (request: APIRequestContext, user: IUse
 			data: {
 				roomId: rid,
 				text: message,
+				...options,
 			},
 		})
 		.then((response) => response.json());

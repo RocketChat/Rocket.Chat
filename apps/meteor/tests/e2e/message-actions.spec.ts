@@ -2,18 +2,22 @@ import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
-import { createTargetChannel, createTargetTeam, getPermissionRoles, sendTargetChannelMessage } from './utils';
+import { createTargetChannel, createTargetTeam, getPermissionRoles, sendMessage, sendTargetChannelMessage } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
+import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
+import { uploadFileToRoom } from './utils/uploadFile';
 
 test.use({ storageState: Users.admin.state });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let forwardChannel: string;
 	let forwardTeam: string;
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api, { members: ['user2'] });
+		targetChannelId = (await (await api.get('/channels.info', { roomName: targetChannel })).json()).channel._id;
 		forwardChannel = await createTargetChannel(api);
 		forwardTeam = await createTargetTeam(api);
 	});
@@ -22,8 +26,14 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
-	test('expect reply the message', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('this is a message for reply');
+	const seedMessage = async (api: BaseTest['api'], msg: string) => {
+		const messageId = await sendMessage(api, targetChannelId, msg);
+		await expect(poHomeChannel.content.lastUserMessage).toHaveAttribute('data-mid', messageId);
+		return messageId;
+	};
+
+	test('expect reply the message', async ({ page, api }) => {
+		await seedMessage(api, 'this is a message for reply');
 		await poHomeChannel.content.openReplyInThread();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
@@ -32,12 +42,11 @@ test.describe.serial('message-actions', () => {
 	});
 
 	// with thread open we listen to the subscription and update the collection from there
-	test('expect follow/unfollow message with thread open', async ({ page }) => {
+	test('expect follow/unfollow message with thread open', async ({ api }) => {
 		await test.step('start thread', async () => {
-			await poHomeChannel.content.sendMessage('this is a message for reply');
+			const tmid = await seedMessage(api, 'this is a message for reply');
+			await sendMessage(api, targetChannelId, 'this is a reply message', tmid);
 			await poHomeChannel.content.openReplyInThread();
-			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
-			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
@@ -57,18 +66,10 @@ test.describe.serial('message-actions', () => {
 	});
 
 	// with thread closed we depend on message changed updates
-	test('expect follow/unfollow message with thread closed', async ({ page }) => {
+	test('expect follow/unfollow message with thread closed', async ({ api }) => {
 		await test.step('start thread', async () => {
-			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await poHomeChannel.content.openReplyInThread();
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
-			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
-		});
-
-		await test.step('close thread before testing closed-thread behavior', async () => {
-			await poHomeChannel.btnContextualbarClose.click();
-			await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
+			const tmid = await seedMessage(api, 'this is a message for reply');
+			await sendMessage(api, targetChannelId, 'this is a reply message', tmid);
 		});
 
 		await test.step('unfollow thread', async () => {
@@ -85,8 +86,8 @@ test.describe.serial('message-actions', () => {
 		});
 	});
 
-	test('expect edit the message', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('This is a message to edit');
+	test('expect edit the message', async ({ page, api }) => {
+		await seedMessage(api, 'This is a message to edit');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Edit"]').click();
 		await page.locator('[name="msg"]').fill('this message was edited');
@@ -96,17 +97,17 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 	});
 
-	test('should delete message ', async () => {
-		await poHomeChannel.content.sendMessage('Message to delete');
+	test('should delete message ', async ({ api }) => {
+		await seedMessage(api, 'Message to delete');
 		await poHomeChannel.content.deleteLastMessage();
 
 		await expect(poHomeChannel.content.lastUserMessageBody).not.toHaveText('Message to delete');
 	});
 
-	test('expect quote the message', async ({ page }) => {
+	test('expect quote the message', async ({ page, api }) => {
 		const message = `Message for quote - ${Date.now()}`;
 
-		await poHomeChannel.content.sendMessage(message);
+		await seedMessage(api, message);
 		await poHomeChannel.content.lastUserMessage.hover();
 		await poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Quote' }).click();
 		await page.locator('[name="msg"]').fill('this is a quote message');
@@ -116,11 +117,11 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
-	test('expect create a discussion from message', async ({ page }) => {
+	test('expect create a discussion from message', async ({ page, api }) => {
 		const message = `Message for discussion - ${Date.now()}`;
 		const discussionName = `Discussion Name - ${Date.now()}`;
 
-		await poHomeChannel.content.sendMessage(message);
+		await seedMessage(api, message);
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Start a discussion"]').click();
 		const createDiscussionModal = new CreateNewDiscussionModal(page);
@@ -136,8 +137,8 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
 
-	test('expect star the message', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('Message to star');
+	test('expect star the message', async ({ page, api }) => {
+		await seedMessage(api, 'Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
 		await poHomeChannel.toastMessage.dismissToast();
@@ -146,9 +147,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
 
-	test('expect copy the message content to clipboard', async ({ page, context }) => {
+	test('expect copy the message content to clipboard', async ({ page, context, api }) => {
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-		await poHomeChannel.content.sendMessage('Message to copy');
+		await seedMessage(api, 'Message to copy');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Copy text"]').click();
 
@@ -156,9 +157,9 @@ test.describe.serial('message-actions', () => {
 		expect(clipboardText).toBe('Message to copy');
 	});
 
-	test('expect copy the message link to clipboard', async ({ page, context }) => {
+	test('expect copy the message link to clipboard', async ({ page, context, api }) => {
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-		await poHomeChannel.content.sendMessage('Message to permalink');
+		await seedMessage(api, 'Message to permalink');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Copy link"]').click();
 
@@ -209,8 +210,8 @@ test.describe.serial('message-actions', () => {
 			poHomeChannel = new HomeChannel(page);
 			await poHomeChannel.gotoChannel(targetChannel);
 		});
-		test('expect reply the message in direct', async ({ page }) => {
-			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
+		test('expect reply the message in direct', async ({ page, api }) => {
+			await seedMessage(api, 'this is a message for reply in direct');
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionReplyInDm.click();
 
@@ -218,40 +219,39 @@ test.describe.serial('message-actions', () => {
 		});
 	});
 
-	test('expect forward message to channel', async () => {
+	test('expect forward message to channel', async ({ api }) => {
 		const message = 'this is a message to forward to channel';
-		await poHomeChannel.content.sendMessage(message);
+		await seedMessage(api, message);
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
 		await poHomeChannel.gotoChannel(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
-	test('expect forward message to team', async () => {
+	test('expect forward message to team', async ({ api }) => {
 		const message = 'this is a message to forward to team';
-		await poHomeChannel.content.sendMessage(message);
+		await seedMessage(api, message);
 		await poHomeChannel.content.forwardMessage(forwardTeam);
 
-		await poHomeChannel.navbar.openChat(forwardTeam);
+		await poHomeChannel.gotoGroup(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
-	test('expect forward message to direct message', async () => {
+	test('expect forward message to direct message', async ({ api }) => {
 		const message = 'this is a message to forward to direct message';
 		const direct = 'RocketChat Internal Admin Test';
 
 		// todo: Forward modal is using name as display and the sidebar is using username
-		await poHomeChannel.content.sendMessage(message);
+		await seedMessage(api, message);
 		await poHomeChannel.content.forwardMessage(direct);
 
-		await poHomeChannel.navbar.openChat(ADMIN_CREDENTIALS.username);
+		await poHomeChannel.gotoDirect(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
-	test('expect forward text file to channel', async () => {
+	test('expect forward text file to channel', async ({ request }) => {
 		const filename = 'any_file.txt';
-		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.composer.btnSend.click();
+		await uploadFileToRoom(request, Users.admin, targetChannelId, filename);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -260,10 +260,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
-	test('expect forward image file to channel', async () => {
+	test('expect forward image file to channel', async ({ request }) => {
 		const filename = 'test-image.jpeg';
-		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.composer.btnSend.click();
+		await uploadFileToRoom(request, Users.admin, targetChannelId, filename);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -272,10 +271,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
-	test('expect forward pdf file to channel', async () => {
+	test('expect forward pdf file to channel', async ({ request }) => {
 		const filename = 'test_pdf_file.pdf';
-		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.composer.btnSend.click();
+		await uploadFileToRoom(request, Users.admin, targetChannelId, filename);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -284,10 +282,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
-	test('expect forward audio message to channel', async () => {
+	test('expect forward audio message to channel', async ({ request }) => {
 		const filename = 'sample-audio.mp3';
-		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.composer.btnSend.click();
+		await uploadFileToRoom(request, Users.admin, targetChannelId, filename);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -296,10 +293,9 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
-	test('expect forward video message to channel', async () => {
+	test('expect forward video message to channel', async ({ request }) => {
 		const filename = 'test_video.mp4';
-		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.composer.btnSend.click();
+		await uploadFileToRoom(request, Users.admin, targetChannelId, filename);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);

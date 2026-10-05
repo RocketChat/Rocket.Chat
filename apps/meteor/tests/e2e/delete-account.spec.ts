@@ -1,13 +1,16 @@
+import type { Browser, Page } from '@playwright/test';
+
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { AccountProfile, Authenticated, Login } from './page-objects';
+import { AccountProfile, Login } from './page-objects';
 import { setSettingValueById } from './utils';
+import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
-import { createTestUser, type ITestUser } from './utils/user-helpers';
+import { createTestUser, loginTestUser, type ITestUser } from './utils/user-helpers';
 
 test.describe('Delete Own Account', () => {
 	let poAccountProfile: AccountProfile;
 	let poLogin: Login;
-	let poAuth: Authenticated;
+	let userPage: Page;
 	let userToDelete: ITestUser;
 	let userWithInvalidPassword: ITestUser;
 	let userWithoutPermissions: ITestUser;
@@ -19,11 +22,15 @@ test.describe('Delete Own Account', () => {
 		userWithoutPermissions = await createTestUser(api, { username: 'user-without-permissions' });
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
-		poLogin = new Login(page);
-		poAuth = new Authenticated(page);
-		await poLogin.goto();
+	const openProfileAs = async (browser: Browser, api: BaseTest['api'], user: ITestUser) => {
+		userPage = await browser.newPage({ storageState: (await loginTestUser(api, user)).state });
+		poAccountProfile = new AccountProfile(userPage);
+		poLogin = new Login(userPage);
+		await poAccountProfile.goto();
+	};
+
+	test.afterEach(async () => {
+		await userPage?.close();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -32,14 +39,10 @@ test.describe('Delete Own Account', () => {
 		await userWithoutPermissions.delete();
 	});
 
-	test('should not delete account when invalid password is provided', async () => {
-		await test.step('login with the user to delete', async () => {
-			await poLogin.login(userWithInvalidPassword.data.username, DEFAULT_USER_CREDENTIALS.password);
-			await poAuth.waitForDisplay();
-		});
+	test('should not delete account when invalid password is provided', async ({ browser, api }) => {
+		await openProfileAs(browser, api, userWithInvalidPassword);
 
-		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await poAccountProfile.goto();
+		await test.step('locate Delete My Account button', async () => {
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -59,14 +62,10 @@ test.describe('Delete Own Account', () => {
 		});
 	});
 
-	test('should delete account when valid password is provided and permission is enabled', async () => {
-		await test.step('login with the user to delete', async () => {
-			await poLogin.login(userToDelete.data.username, DEFAULT_USER_CREDENTIALS.password);
-			await poAuth.waitForDisplay();
-		});
+	test('should delete account when valid password is provided and permission is enabled', async ({ browser, api }) => {
+		await openProfileAs(browser, api, userToDelete);
 
-		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await poAccountProfile.goto();
+		await test.step('locate Delete My Account button', async () => {
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -89,14 +88,10 @@ test.describe('Delete Own Account', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('should not show delete account button when permission is disabled', async () => {
-			await test.step('login with the user to delete', async () => {
-				await poLogin.login(userWithoutPermissions.data.username, DEFAULT_USER_CREDENTIALS.password);
-				await poAuth.waitForDisplay();
-			});
+		test('should not show delete account button when permission is disabled', async ({ browser, api }) => {
+			await openProfileAs(browser, api, userWithoutPermissions);
 
-			await test.step('navigate to profile and locate Delete My Account button', async () => {
-				await poAccountProfile.goto();
+			await test.step('locate Delete My Account button', async () => {
 				await expect(poAccountProfile.btnDeleteMyAccount).not.toBeVisible();
 			});
 		});

@@ -1,13 +1,17 @@
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannelAndReturnFullRoom, deleteChannel } from './utils';
+import { sendMessageFromUser } from './utils/sendMessage';
 import { expect, test } from './utils/test';
+import { uploadFileToRoom } from './utils/uploadFile';
 
 test.describe.serial('Image Gallery', async () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelId: string;
 	let targetChannelLargeImage: string;
+	let targetChannelLargeImageId: string;
 	const viewport = {
 		width: 1280,
 		height: 720,
@@ -18,16 +22,14 @@ test.describe.serial('Image Gallery', async () => {
 	test.use({ viewport });
 
 	test.beforeAll(async ({ api, browser }) => {
-		targetChannel = await createTargetChannel(api);
-		targetChannelLargeImage = await createTargetChannel(api);
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
+		const { channel: largeImageChannel } = await createTargetChannelAndReturnFullRoom(api, { members: ['user1'] });
+		targetChannelLargeImage = largeImageChannel.name as string;
+		targetChannelLargeImageId = largeImageChannel._id;
 		const { page } = await createAuxContext(browser, Users.user1);
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.navbar.openChat(targetChannelLargeImage);
-		await poHomeChannel.composer.btnJoinRoom.click();
-
-		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.composer.btnJoinRoom.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -37,19 +39,15 @@ test.describe.serial('Image Gallery', async () => {
 	});
 
 	test.describe('When sending an image as a file', () => {
-		test.beforeAll(async () => {
+		test.beforeAll(async ({ request }) => {
 			const largeFileName = 'test-large-image.jpeg';
 
-			await poHomeChannel.navbar.openChat(targetChannel);
 			for await (const imageName of imageNames) {
-				await poHomeChannel.content.sendFileMessage(imageName);
-				await poHomeChannel.composer.btnSend.click();
-				await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
+				await uploadFileToRoom(request, Users.user1, targetChannelId, imageName);
 			}
+			await uploadFileToRoom(request, Users.user1, targetChannelLargeImageId, largeFileName);
 
-			await poHomeChannel.navbar.openChat(targetChannelLargeImage);
-			await poHomeChannel.content.sendFileMessage(largeFileName);
-			await poHomeChannel.composer.btnSend.click();
+			await poHomeChannel.gotoChannel(targetChannelLargeImage);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(largeFileName);
 
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
@@ -96,7 +94,7 @@ test.describe.serial('Image Gallery', async () => {
 		});
 
 		test('expect successfully move to older images by using the left arrow button', async () => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
 
 			for (let i = 0; i < imageNames.length - 1; i++) {
@@ -124,8 +122,9 @@ test.describe.serial('Image Gallery', async () => {
 	test.describe('When sending an image as a link', () => {
 		const imageLink = 'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png';
 
-		test.beforeAll(async () => {
-			await poHomeChannel.content.sendMessage(imageLink);
+		test.beforeAll(async ({ request }) => {
+			await sendMessageFromUser(request, Users.user1, targetChannelId, imageLink);
+			await poHomeChannel.gotoChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(imageLink);
 

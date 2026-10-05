@@ -1,8 +1,6 @@
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel } from '../page-objects';
-import { Navbar } from '../page-objects/fragments';
 import { OmnichannelContactCenterChats } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
@@ -31,7 +29,6 @@ test.describe('OC - Contact Center', async () => {
 	let tagA: Awaited<ReturnType<typeof createTag>>;
 	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
-	let poNavbar: Navbar;
 	let poOmniChats: OmnichannelContactCenterChats;
 
 	// Allow manual on hold
@@ -169,12 +166,7 @@ test.describe('OC - Contact Center', async () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmniChats = new OmnichannelContactCenterChats(page);
-		poNavbar = new Navbar(page);
-
-		await new HomeOmnichannel(page).goto();
-		await poNavbar.btnContactCenter.click();
-		await poOmniChats.tabChats.click();
-		await page.waitForURL(URL.contactCenterChats);
+		await page.goto(URL.contactCenterChats);
 	});
 
 	test('OC - Contact Center - Filters', async () => {

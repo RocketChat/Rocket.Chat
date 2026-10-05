@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel } from './utils';
+import { createTargetChannel, deleteChannel, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -66,10 +66,12 @@ test.describe('export-messages', () => {
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();
 	});
 
-	test('when trying to send email without filling to users or to additional emails, should mark both fields as invalid', async () => {
+	test('when trying to send email without filling to users or to additional emails, should mark both fields as invalid', async ({
+		api,
+	}) => {
 		const testMessage = uniqueMessage();
 
-		await poHomeChannel.content.sendMessage(testMessage);
+		await sendTargetChannelMessage(api, targetChannel, { msg: testMessage });
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
@@ -104,11 +106,11 @@ test.describe('export-messages', () => {
 		).toBeVisible();
 	});
 
-	test('should be able to send messages after closing export messages', async () => {
+	test('should be able to send messages after closing export messages', async ({ api }) => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.content.sendMessage(message1);
+		await sendTargetChannelMessage(api, targetChannel, { msg: message1 });
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
@@ -119,12 +121,12 @@ test.describe('export-messages', () => {
 		await expect(poHomeChannel.content.getMessageByText(message2)).toBeVisible();
 	});
 
-	test('should be able to select a single message to export', async () => {
+	test('should be able to select a single message to export', async ({ api }) => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.content.sendMessage(message1);
-		await poHomeChannel.content.sendMessage(message2);
+		await sendTargetChannelMessage(api, targetChannel, { msg: message1 });
+		await sendTargetChannelMessage(api, targetChannel, { msg: message2 });
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
@@ -147,8 +149,8 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.content.sendMessage(message1);
-		await poHomeChannel.content.sendMessage(message2);
+		await sendTargetChannelMessage(api, targetChannel, { msg: message1 });
+		await sendTargetChannelMessage(api, targetChannel, { msg: message2 });
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();

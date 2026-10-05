@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 
+import { BASE_API_URL } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetPrivateChannel, createTargetTeam, deleteChannel, deleteTeam } from './utils';
+import { createTargetPrivateChannel, createTargetTeam, deleteChannel, deleteTeam, sendMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -25,13 +26,12 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'mention-all', roles: [] }] })).status()).toBe(200);
+		targetChannel2 = await createTargetPrivateChannel(api);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -46,12 +46,8 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 	test('expect to receive an error as notification when sending @all while permission is disabled', async ({ page }) => {
 		const adminPage = new HomeChannel(page);
 
-		await test.step('create private room', async () => {
-			targetChannel2 = faker.string.uuid();
+		await poHomeChannel.gotoGroup(targetChannel2);
 
-			await poHomeChannel.navbar.createNew('Channel', targetChannel2);
-			await expect(page).toHaveURL(`/group/${targetChannel2}`);
-		});
 		await test.step('receive notify message', async () => {
 			await adminPage.content.sendMessage('@all ', false);
 			await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
@@ -64,13 +60,12 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'mention-here', roles: [] }] })).status()).toBe(200);
+		targetChannel2 = await createTargetPrivateChannel(api);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -85,12 +80,8 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 	test('expect to receive an error as notification when sending here while permission is disabled', async ({ page }) => {
 		const adminPage = new HomeChannel(page);
 
-		await test.step('create private room', async () => {
-			targetChannel2 = faker.string.uuid();
+		await poHomeChannel.gotoGroup(targetChannel2);
 
-			await poHomeChannel.navbar.createNew('Channel', targetChannel2);
-			await expect(page).toHaveURL(`/group/${targetChannel2}`);
-		});
 		await test.step('receive notify message', async () => {
 			await adminPage.content.sendMessage('@here ', false);
 			await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
@@ -103,12 +94,10 @@ test.describe.serial('message-mentions', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-
-		await poHomeChannel.goto();
 	});
 
 	test('expect show "all" and "here" options', async () => {
-		await poHomeChannel.navbar.openChat('general');
+		await poHomeChannel.gotoChannel('general');
 		await poHomeChannel.composer.inputMessage.type('@');
 
 		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="@all"')).toBeVisible();
@@ -131,7 +120,7 @@ test.describe.serial('message-mentions', () => {
 			const mentionText = getMentionText(Users.user1.data.username, 1);
 
 			await test.step('receive bot message', async () => {
-				await adminPage.navbar.openChat(targetChannel);
+				await adminPage.gotoGroup(targetChannel);
 				await adminPage.content.sendMessage(getMentionText(Users.user1.data.username));
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 			});
@@ -169,14 +158,14 @@ test.describe.serial('message-mentions', () => {
 			});
 		});
 
-		test('should show non-member mention warning inside threads', async ({ page }) => {
+		test('should show non-member mention warning inside threads', async ({ page, api }) => {
 			const adminPage = new HomeChannel(page);
 			const mentionText = getMentionText(Users.user2.data.username, 1);
 
 			await test.step('open thread', async () => {
-				await adminPage.navbar.openChat(targetChannel);
-				await adminPage.content.sendMessage('thread parent for non-member mention warning');
-				await adminPage.content.openReplyInThread();
+				const { group } = await (await api.get(`/groups.info?roomName=${targetChannel}`)).json();
+				const tmid = await sendMessage(api, group._id, 'thread parent for non-member mention warning');
+				await page.goto(`/group/${targetChannel}/thread/${tmid}`);
 				await adminPage.content.waitForThread();
 			});
 
@@ -200,7 +189,7 @@ test.describe.serial('message-mentions', () => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('receive bot message', async () => {
-					await userPage.navbar.openChat(targetChannel);
+					await userPage.gotoGroup(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -220,7 +209,6 @@ test.describe.serial('message-mentions', () => {
 				});
 
 				await test.step('receive second bot message', async () => {
-					await userPage.navbar.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -243,19 +231,22 @@ test.describe.serial('message-mentions', () => {
 				).toBe(200);
 			});
 
-			test('dismiss and add users actions', async ({ page }) => {
+			test('dismiss and add users actions', async ({ page, request }) => {
 				const mentionText = getMentionText(Users.user2.data.username, 1);
 				const userPage = new HomeChannel(page);
 
 				await test.step('create private room', async () => {
 					targetChannel2 = faker.string.uuid();
 
-					await poHomeChannel.navbar.createNew('Channel', targetChannel2);
-					await expect(page).toHaveURL(`/group/${targetChannel2}`);
+					const response = await request.post(`${BASE_API_URL}/groups.create`, {
+						headers: { 'X-Auth-Token': Users.user1.data.loginToken, 'X-User-Id': Users.user1.data._id },
+						data: { name: targetChannel2 },
+					});
+					expect(response.status()).toBe(200);
 				});
 
 				await test.step('receive bot message', async () => {
-					await userPage.navbar.openChat(targetChannel2);
+					await userPage.gotoGroup(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -274,7 +265,6 @@ test.describe.serial('message-mentions', () => {
 				});
 
 				await test.step('receive second bot message', async () => {
-					await userPage.navbar.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -286,21 +276,24 @@ test.describe.serial('message-mentions', () => {
 		});
 
 		test.describe(() => {
+			let targetChannel3: string;
 			test.use({ storageState: Users.user2.state });
 			test.beforeAll(async ({ api }) => {
 				expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
+				targetChannel3 = await createTargetPrivateChannel(api, { members: ['user2'] });
 			});
 
 			test.afterAll(async ({ api }) => {
 				expect(
 					(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
 				).toBe(200);
+				await api.post('/groups.delete', { roomName: targetChannel3 });
 			});
 			test('no actions', async ({ page }) => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('receive bot message', async () => {
-					await userPage.navbar.openChat(targetChannel2);
+					await userPage.gotoGroup(targetChannel3);
 					await userPage.content.sendMessage(getMentionText(Users.user3.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(
 						getMentionText(Users.user3.data.username, 2),
@@ -334,7 +327,7 @@ test.describe.serial('message-mentions', () => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('do not receive bot message', async () => {
-					await userPage.navbar.openChat(targetChannel);
+					await userPage.gotoGroup(targetChannel);
 					await userPage.content.sendMessage(getMentionText(team));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).not.toBeVisible();
 				});

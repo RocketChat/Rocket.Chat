@@ -4,6 +4,7 @@ import { resetOwnE2EKey } from './resetOwnE2EKey';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { ADMIN_CREDENTIALS, BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
+import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
@@ -23,6 +24,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	let loginPage: LoginPage;
 	let navbar: Navbar;
 	let encryptedRoomPage: EncryptedRoomPage;
+	let poHomeChannel: HomeChannel;
 	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.admin.state });
@@ -36,6 +38,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		loginPage = new LoginPage(page);
 		navbar = new Navbar(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
+		poHomeChannel = new HomeChannel(page);
 		createE2EEChannel = new CreateE2EEChannel(page);
 
 		await expect(await resetOwnE2EKey(ADMIN_CREDENTIALS)).toBeOK();
@@ -73,7 +76,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		// Navigate to the encrypted channel WITHOUT entering the password
 
-		await navbar.openChat(channelName);
+		await poHomeChannel.gotoGroup(channelName);
 		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).toBeVisible();
 
@@ -150,7 +153,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await expect(navbar.btnCreateNew).toBeVisible();
 
-		await navbar.openChat(channelName);
+		await poHomeChannel.gotoGroup(channelName);
 		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 
 		await expect(encryptedRoomPage.lastNthMessage(1).body).toHaveText(

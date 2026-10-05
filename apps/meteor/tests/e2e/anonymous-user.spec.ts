@@ -20,8 +20,7 @@ test.describe('anonymous-user', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await poHomeChannel.goto();
-		await poHomeChannel.navbar.openChat('general');
+		await poHomeChannel.gotoChannel('general');
 	});
 
 	test('expect to go to the login page as anonymous user', async ({ page }) => {
