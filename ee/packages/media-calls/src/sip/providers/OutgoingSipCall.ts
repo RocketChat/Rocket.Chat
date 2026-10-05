@@ -114,7 +114,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		this.lastCallState = 'ringing';
-		const referredBy = call.parentCallId && this.session.geContactUri(call.createdBy);
+		const referredBy = call.parentCallId && !call.attended && this.session.geContactUri(call.createdBy);
 
 		let hangupReason: CallHangupReason | null = null;
 		try {

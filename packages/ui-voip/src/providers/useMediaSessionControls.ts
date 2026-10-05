@@ -12,6 +12,7 @@ export type MediaSessionControls = {
 	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
+	consultBeforeTransfer: (type: 'user' | 'sip', id: string) => Promise<void>;
 	sendTone: (tone: string) => void;
 	toggleScreenSharing: () => void;
 };
@@ -106,6 +107,18 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			instanceState.call.transfer({ type, id });
 		};
 
+		const consultBeforeTransfer = async (type: 'user' | 'sip', id: string) => {
+			if (!instance) {
+				return;
+			}
+
+			try {
+				await instance.startAttendedTransfer(type, id);
+			} catch (error) {
+				console.error('Error starting attended transfer', error);
+			}
+		};
+
 		const sendTone = (tone: string) => {
 			if (!instance) {
 				return;
@@ -148,6 +161,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			acceptCall,
 			changeDevice,
 			forwardCall,
+			consultBeforeTransfer,
 			sendTone,
 		};
 	}, [instance, requestDevice]);

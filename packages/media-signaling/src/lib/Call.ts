@@ -435,6 +435,26 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
 	}
 
+	/** Requests this call as a consultation with `callee` while the call `heldCallId` is on hold, before an attended transfer */
+	public async requestAttendedTransfer(
+		heldCallId: string,
+		callee: { type: CallActorType; id: string },
+		contactInfo?: CallContact,
+	): Promise<void> {
+		if (this._initialized) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.requestAttendedTransfer', callee);
+
+		this.config.transporter.sendToServer(heldCallId, 'attended-transfer', {
+			requestedCallId: this.callId,
+			to: callee,
+		});
+
+		return this.initializeOutboundCall({ ...contactInfo, ...callee });
+	}
+
 	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
 	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, oldCall?: ClientMediaCall | null): Promise<void> {
 		if (this.hasRemoteData) {
