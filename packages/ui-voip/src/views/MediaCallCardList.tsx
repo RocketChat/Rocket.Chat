@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../components';
 import { useMediaCallView } from '../context';
+import { isExternalPeer } from '../utils/isExternalPeer';
 
 export type MediaCallCardListProps = {
 	shouldWrapCards: boolean;
@@ -29,7 +30,7 @@ const MediaCallCardList = ({ user, shouldWrapCards }: MediaCallCardListProps) =>
 		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
 	};
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
 

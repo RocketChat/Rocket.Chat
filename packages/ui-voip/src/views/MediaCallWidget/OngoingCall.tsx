@@ -47,7 +47,7 @@ const OngoingCall = () => {
 		throw new Error('Peer info is required');
 	}
 
-	const isSip = 'number' in peerInfo;
+	const isSip = isExternalPeer(peerInfo);
 
 	return (
 		<Widget>
