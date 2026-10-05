@@ -23,6 +23,7 @@ describe('LIVECHAT - messages', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 		agent = await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
