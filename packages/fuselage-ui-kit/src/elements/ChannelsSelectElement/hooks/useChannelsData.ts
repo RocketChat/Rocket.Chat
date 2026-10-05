@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 type useChannelsDataProps = {
 	filter: string;
+	enabled?: boolean;
 };
 
 const generateQuery = (
@@ -11,7 +12,7 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-export const useChannelsData = ({ filter }: useChannelsDataProps) => {
+export const useChannelsData = ({ filter, enabled = true }: useChannelsDataProps) => {
 	const getRooms = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
 	const { data } = useQuery({
@@ -29,6 +30,7 @@ export const useChannelsData = ({ filter }: useChannelsDataProps) => {
 		},
 
 		placeholderData: keepPreviousData,
+		enabled,
 	});
 
 	return data;

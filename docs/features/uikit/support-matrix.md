@@ -11,7 +11,6 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 ## Divergences
 
 - **Livechat, message blocks**: `callout`, `info_card`, `input`, `preview` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
-- **element `conversations_select`** and **`multi_conversations_select`**: accepted by `actions` and `input`, but no renderer has a method for them, so they never render.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 
@@ -46,14 +45,14 @@ Container columns come from the block types; renderer columns tell whether a met
 | `button` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
 | `channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
+| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `icon` | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | ✅ | ✅ |
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | — | — |
+| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — (returns `null`) |
 | `multi_users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
@@ -64,3 +63,5 @@ Container columns come from the block types; renderer columns tell whether a met
 | `time_picker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+
+Fuselage draws the users, channels and conversations selects (single and multi) only inside an `input` block. In `actions` the types accept them, but the renderer returns nothing.

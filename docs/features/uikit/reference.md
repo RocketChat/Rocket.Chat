@@ -209,7 +209,8 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'conversations_select'` | yes |  |
+| `type` | `'conversations_select'` | yes | Picks one conversation the user belongs to (channel, private group or direct message); the value is the room id. |
+| `placeholder` | `PlainText` | no |  |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -307,7 +308,8 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'multi_conversations_select'` | yes |  |
+| `type` | `'multi_conversations_select'` | yes | Picks several conversations the user belongs to; the value is the list of room ids. |
+| `placeholder` | `PlainText` | no |  |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

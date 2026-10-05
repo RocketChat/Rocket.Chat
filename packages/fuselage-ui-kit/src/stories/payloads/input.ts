@@ -57,6 +57,40 @@ export const inputWithMultiUsersSelect: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const inputWithConversationsSelect: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'conversations_select',
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
+export const inputWithMultiConversationsSelect: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'multi_conversations_select',
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
 export const inputWithStaticSelect: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'input',
