@@ -18,7 +18,7 @@
 		"@opentelemetry/api": "^1.9.1",
 		"@opentelemetry/exporter-trace-otlp-grpc": "^0.220.0",
 		"@opentelemetry/sdk-node": "^0.220.0",
-		"@opentelemetry/sdk-trace-base": "^2.9.0"
+		"@opentelemetry/sdk-trace-base": "2.9.0"
 	},
 	"devDependencies": {
 		"eslint": "~10.12.0",

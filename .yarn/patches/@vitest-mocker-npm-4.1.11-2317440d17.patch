@@ -1,0 +1,109 @@
+diff --git a/dist/chunk-mocker.js b/dist/chunk-mocker.js
+index a1a06029c958ef7bc6fec0e1b0d9fcbc6e913e3a..07caf062259de5d6a1cc21da174e2f03e6716a6b 100644
+--- a/dist/chunk-mocker.js
++++ b/dist/chunk-mocker.js
+@@ -331,7 +331,9 @@ class ModuleMocker {
+ 	constructor(interceptor, rpc, createMockInstance, config) {
+ 		this.interceptor = interceptor;
+ 		this.rpc = rpc;
+-		this.createMockInstance = createMockInstance;
++		const usesLegacySpyOn = config.root === "";
++		this.createMockInstance = usesLegacySpyOn ? undefined : createMockInstance;
++		this.spyOn = usesLegacySpyOn ? createMockInstance : undefined;
+ 		this.config = config;
+ 	}
+ 	async prepare() {
+@@ -442,6 +444,7 @@ class ModuleMocker {
+ 				RegExp
+ 			},
+ 			createMockInstance: this.createMockInstance,
++			spyOn: this.spyOn,
+ 			type: moduleType
+ 		}, object, mockExports);
+ 		return result;
+diff --git a/dist/index.js b/dist/index.js
+index fc66b3810617c1d58669b05d578d189d90aa8851..9d1d84117fd4cbe5d9e5f8407635484bc5c5876d 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -11,7 +11,46 @@ function mockObject(options, object, mockExports = {}) {
+ 			return false;
+ 		}
+ 	};
+-	const createMock = (currentValue) => {
++	const createMock = (currentValue, mockContainer, mockProperty) => {
++		if (options.spyOn) {
++			const spyOn = options.spyOn;
++			const container = mockContainer ?? { value: currentValue };
++			const property = mockProperty ?? "value";
++			const mock = spyOn(container, property);
++			if (options.type === "automock") {
++				function mockFunction() {
++					if (this instanceof mock) {
++						for (const { key, descriptor } of getAllMockableProperties(this, false, options.globalConstructors)) {
++							if (descriptor.get) {
++								continue;
++							}
++							const value = this[key];
++							const type = getType(value);
++							if (type.includes("Function") && typeof value === "function") {
++								const original = this[key];
++								const instanceMock = spyOn(this, key).mockImplementation(original);
++								const originalMockReset = instanceMock.mockReset;
++								instanceMock.mockRestore = instanceMock.mockReset = () => {
++									originalMockReset.call(instanceMock);
++									instanceMock.mockImplementation(original);
++									return instanceMock;
++								};
++								Object.defineProperty(instanceMock, "length", { value: 0 });
++							}
++						}
++					}
++				}
++				mock.mockImplementation(mockFunction);
++				const originalMockReset = mock.mockReset;
++				mock.mockRestore = mock.mockReset = () => {
++					originalMockReset.call(mock);
++					mock.mockImplementation(mockFunction);
++					return mock;
++				};
++			}
++			Object.defineProperty(mock, "length", { value: 0 });
++			return mock;
++		}
+ 		if (!options.createMockInstance) {
+ 			throw new Error("[@vitest/mocker] `createMockInstance` is not defined. This is a Vitest error. Please open a new issue with reproduction.");
+ 		}
+@@ -31,7 +70,7 @@ function mockObject(options, object, mockExports = {}) {
+ 			// Modules define their exports as getters. We want to process those.
+ 			if (!isModule && descriptor.get) {
+ 				try {
+-					if (options.type === "autospy") {
++					if (options.spyOn || options.type === "autospy") {
+ 						Object.defineProperty(newContainer, property, descriptor);
+ 					} else {
+ 						Object.defineProperty(newContainer, property, {
+@@ -58,7 +97,7 @@ function mockObject(options, object, mockExports = {}) {
+ 			}
+ 			const type = getType(value);
+ 			if (Array.isArray(value)) {
+-				if (options.type === "automock") {
++				if (options.spyOn || options.type === "automock") {
+ 					define(newContainer, property, []);
+ 				} else {
+ 					const array = value.map((value) => {
+@@ -102,11 +141,14 @@ function mockObject(options, object, mockExports = {}) {
+ 				continue;
+ 			}
+ 			if (isFunction) {
+-				const mock = createMock(newContainer[property]);
++				const mock = createMock(newContainer[property], newContainer, property);
+ 				newContainer[property] = mock;
+ 			}
+ 			refs.track(value, newContainer[property]);
+ 			mockPropertiesOf(value, newContainer[property]);
++			if (isFunction && options.spyOn) {
++				Object.defineProperty(newContainer[property], "length", { value: 0 });
++			}
+ 		}
+ 	};
+ 	const mockedObject = mockExports;

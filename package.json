@@ -213,7 +213,7 @@
 		"@types/chart.js/moment": "^2.31.0",
 		"@storybook/builder-webpack5/webpack-dev-middleware": "^7.4.6",
 		"webpack-dev-server/webpack-dev-middleware": "^7.4.6",
-		"storybook/@vitest/mocker": "4.1.11",
+		"storybook/@vitest/mocker": "patch:@vitest/mocker@npm%3A4.1.11#~/.yarn/patches/@vitest-mocker-npm-4.1.11-2317440d17.patch",
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch"
 	},
 	"dependencies": {
