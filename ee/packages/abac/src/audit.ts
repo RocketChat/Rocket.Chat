@@ -28,11 +28,9 @@ export type AbacAuditEventName = AbacAuditServerEventKey;
 export type AbacAuditEventPayload<K extends AbacAuditEventName = AbacAuditEventName> = EventPayload<K>;
 
 async function audit<K extends AbacAuditServerEventKey>(event: K, payload: EventPayload<K>, actor: IAuditServerActor): Promise<void> {
-	try {
-		await ServerEvents.createAuditServerEvent(event, payload, actor);
-	} catch (err) {
-		logger.error({ msg: 'Failed to write ABAC audit event', event, err });
-	}
+	return ServerEvents.createAuditServerEvent(event, payload, actor).catch((err) =>
+		logger.error({ msg: 'Failed to write ABAC audit event', event, err }),
+	);
 }
 
 export const Audit = {

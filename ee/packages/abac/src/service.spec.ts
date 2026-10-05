@@ -97,7 +97,7 @@ jest.mock('@rocket.chat/models', () => ({
 		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
 	ServerEvents: {
-		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
+		createAuditServerEvent: async (...args: any[]) => mockCreateAuditServerEvent(...args),
 	},
 	Settings: {
 		updateValueById: (...args: any[]) => mockSettingsSet(...args),
