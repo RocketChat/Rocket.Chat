@@ -183,7 +183,16 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name: peer.displayName }) });
 		};
 
-		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
+		const onConsult = (kind: 'user' | 'sip', peer: { displayName: string; id: string }) => {
+			offCallback?.();
+			void controls.consultBeforeTransfer(kind, peer.id);
+			setModal(null);
+		};
+
+		const instanceState = instance?.getState();
+		const canHold = instanceState?.confirmed && instanceState.features.includes('hold');
+
+		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} onConsult={canHold ? onConsult : undefined} />);
 	};
 
 	const playTone = useTonePlayer(audioOutput?.id);

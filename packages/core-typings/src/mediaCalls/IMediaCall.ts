@@ -83,6 +83,8 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	callerRequestedId?: string;
 	parentCallId?: string;
+	/** Set on a call placed to consult someone before an attended transfer: its parent call stays alive instead of being replaced */
+	attended?: boolean;
 
 	/** transferred* fields are filled as soon as the transfer is requested, but the old call will only end when the new one is created */
 	transferredBy?: MediaCallSignedContact;

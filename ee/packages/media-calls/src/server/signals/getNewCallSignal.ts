@@ -35,7 +35,7 @@ export function getNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaS
 		self: { ...self },
 		contact: { ...contact },
 		flags,
-		...(call.parentCallId && { replacingCallId: call.parentCallId }),
+		...(call.parentCallId && !call.attended && { replacingCallId: call.parentCallId }),
 		...(transferredBy && { transferredBy }),
 		...(call.callerRequestedId && role === 'caller' && { requestedCallId: call.callerRequestedId }),
 	};

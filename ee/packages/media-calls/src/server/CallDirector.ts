@@ -30,7 +30,7 @@ export type CreateCallParams = InternalCallParams & {
 	sipCallId?: string;
 };
 
-type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
+type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'attended' | 'divertedBy'> & {
 	createdBy: MediaCallContact;
 	service: IMediaCall['service'];
 };
@@ -46,7 +46,7 @@ const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>
  * The fields that identify a call attempt, whether or not the call goes on to happen.
  */
 function getCallIdentity(params: CallIdentityParams) {
-	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
+	const { caller, callee, createdBy, service, requestedCallId, parentCallId, attended, divertedBy } = params;
 
 	return {
 		// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
@@ -68,6 +68,7 @@ function getCallIdentity(params: CallIdentityParams) {
 
 		...(requestedCallId && { callerRequestedId: requestedCallId }),
 		...(parentCallId && { parentCallId }),
+		...(attended && { attended }),
 		...(divertedBy && { divertedBy }),
 	};
 }
