@@ -262,9 +262,9 @@ API.v1.post(
 		// Non-embedded calls are joinable anonymously, as long as the room is accessible (Accounts_AllowAnonymousRead)
 		// Embedded calls only work for logged in users, so `canAccessRoomIdAsync` is a fallback for older providers
 		// and respects the `Accounts_AllowAnonymousRead` setting internally.
-		const canAccessConference = (await VideoConf.listProviderCapabilities(call.providerName)).embedded
+		const canAccessConference = userId
 			? await Authorization.canAccessConference(call, userId)
-			: await canAccessRoomIdAsync(call.rid, userId);
+			: !(await VideoConf.listProviderCapabilities(call.providerName)).embedded && (await canAccessRoomIdAsync(call.rid, userId));
 
 		if (!canAccessConference) {
 			return API.v1.failure('invalid-params');
