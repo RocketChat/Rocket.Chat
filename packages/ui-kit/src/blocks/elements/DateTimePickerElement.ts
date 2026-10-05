@@ -4,5 +4,5 @@ import type { Actionable } from '../Actionable';
 export type DateTimePickerElement = Actionable<{
 	type: 'datetimepicker';
 	initial_date_time?: number;
-	focusOnLoad?: boolean;
+	focus_on_load?: boolean;
 }>;

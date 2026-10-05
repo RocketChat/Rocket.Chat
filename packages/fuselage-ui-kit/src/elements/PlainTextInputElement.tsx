@@ -17,7 +17,7 @@ const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) =
 			<TextAreaInput
 				disabled={loading}
 				id={block.actionId}
-				autoFocus={block.focusOnLoad}
+				autoFocus={block.focus_on_load}
 				name={block.actionId}
 				rows={6}
 				error={error}
@@ -32,7 +32,7 @@ const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) =
 		<TextInput
 			disabled={loading}
 			id={block.actionId}
-			autoFocus={block.focusOnLoad}
+			autoFocus={block.focus_on_load}
 			name={block.actionId}
 			error={error}
 			value={value}

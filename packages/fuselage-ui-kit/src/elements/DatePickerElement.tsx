@@ -19,7 +19,7 @@ const DatePickerElement = ({ block, context }: DatePickerElementProps) => {
 			value={value}
 			disabled={loading}
 			id={actionId}
-			autoFocus={block.focusOnLoad}
+			autoFocus={block.focus_on_load}
 			name={actionId}
 			rows={6}
 			placeholder={fromTextObjectToString(placeholder)}

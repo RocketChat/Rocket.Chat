@@ -9,5 +9,5 @@ export type NumberInputElement = Actionable<{
 	initial_value?: string;
 	min_value?: string;
 	max_value?: string;
-	focusOnLoad?: boolean;
+	focus_on_load?: boolean;
 }>;

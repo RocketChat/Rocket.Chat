@@ -6,5 +6,5 @@ export type UrlTextInputElement = Actionable<{
 	type: 'url_text_input';
 	placeholder?: PlainText;
 	initial_value?: string;
-	focusOnLoad?: boolean;
+	focus_on_load?: boolean;
 }>;

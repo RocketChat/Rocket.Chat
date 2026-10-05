@@ -5,5 +5,5 @@ export type TimePickerElement = Actionable<{
 	type: 'time_picker';
 	placeholder?: TextObject;
 	initialTime?: string;
-	focusOnLoad?: boolean;
+	focus_on_load?: boolean;
 }>;

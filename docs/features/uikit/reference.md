@@ -238,7 +238,7 @@ Source: [`packages/ui-kit/src/blocks/elements/DatePickerElement.ts`](../../../pa
 | `type` | `'datepicker'` | yes |  |
 | `placeholder` | `TextObject` | no |  |
 | `initialDate` | `string` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -253,7 +253,7 @@ Source: [`packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts`](../../.
 | --- | --- | --- | --- |
 | `type` | `'datetimepicker'` | yes | Picks a date and a time together; the value is a Unix timestamp in seconds, shown in the user's time zone. |
 | `initial_date_time` | `number` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -269,7 +269,7 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `type` | `'email_text_input'` | yes | A field for an email address. |
 | `placeholder` | `PlainText` | no |  |
 | `initial_value` | `string` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -405,7 +405,7 @@ Source: [`packages/ui-kit/src/blocks/elements/NumberInputElement.ts`](../../../p
 | `initial_value` | `string` | no |  |
 | `min_value` | `string` | no |  |
 | `max_value` | `string` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -438,7 +438,7 @@ Source: [`packages/ui-kit/src/blocks/elements/PlainTextInputElement.ts`](../../.
 | `multiline` | `boolean` | no |  |
 | `minLength` | `number` | no |  |
 | `maxLength` | `number` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -503,7 +503,7 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 | `type` | `'time_picker'` | yes |  |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -534,7 +534,7 @@ Source: [`packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts`](../../../
 | `type` | `'url_text_input'` | yes | A field for a URL. |
 | `placeholder` | `PlainText` | no |  |
 | `initial_value` | `string` | no |  |
-| `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

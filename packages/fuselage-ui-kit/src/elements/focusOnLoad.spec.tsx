@@ -18,12 +18,12 @@ const renderInputs = (element: UiKit.InputBlock['element']) =>
 		</MockedServerContext>,
 	);
 
-const base = { appId: 'app', blockId: 'focused', actionId: 'focused', focusOnLoad: true } as const;
+const base = { appId: 'app', blockId: 'focused', actionId: 'focused', focus_on_load: true } as const;
 
 it.each([
 	['plain_text_input', { ...base, type: 'plain_text_input' }, 'textbox'],
-	['number_input', { ...base, type: 'number_input', isDecimalAllowed: false }, 'spinbutton'],
-] as const)('focuses a %s marked focusOnLoad', (_type, element, role) => {
+	['number_input', { ...base, type: 'number_input', is_decimal_allowed: false }, 'spinbutton'],
+] as const)('focuses a %s marked focus_on_load', (_type, element, role) => {
 	renderInputs(element);
 
 	expect(screen.getAllByRole(role).at(-1)).toHaveFocus();
