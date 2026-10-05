@@ -35,10 +35,24 @@ const OngoingCall = () => {
 		onMute,
 		onHold,
 		onForward,
+		onCompleteTransfer,
 		onEndCall,
 		onClickDirectMessage,
+		onSwapCalls,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated } = sessionState;
+	const {
+		muted,
+		held,
+		remoteMuted,
+		remoteHeld,
+		peerInfo,
+		connectionState,
+		supportedFeatures,
+		startedAt,
+		escalated,
+		hasAlternateCall,
+		canCompleteTransfer,
+	} = sessionState;
 	const isInline = !useDraggableWidget();
 
 	// The floating widget keeps a collapsible DTMF dialpad in the footer.
@@ -111,6 +125,12 @@ const OngoingCall = () => {
 							onToggle={onHold}
 							disabled={connecting || reconnecting}
 						/>
+					)}
+					{hasAlternateCall && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+					)}
+					{canCompleteTransfer && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 					)}
 					{transferAvailable && (
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
