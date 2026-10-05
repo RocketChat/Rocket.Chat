@@ -1,4 +1,4 @@
-import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -40,23 +40,22 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }) => (
-				<Option
-					key={value}
-					{...props}
-					label={label.name}
-					avatar={
+			renderItem={({ value, label, selected, focus, ...props }) => (
+				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<ItemMedia>
 						<RoomAvatar
-							size='x20'
+							size={ITEM_MEDIA_SIZE.condensed}
 							room={{
 								type: label.type,
 								_id: value,
 								avatarETag: label.avatarETag,
 							}}
-							{...props}
 						/>
-					}
-				/>
+					</ItemMedia>
+					<ItemContent>
+						<ItemTitle>{label.name}</ItemTitle>
+					</ItemContent>
+				</Item>
 			)}
 			options={options}
 		/>
