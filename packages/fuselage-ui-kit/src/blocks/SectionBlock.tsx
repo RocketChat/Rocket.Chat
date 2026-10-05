@@ -22,6 +22,21 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) 
 		[block.appId, block.blockId, block.accessory],
 	);
 
+	// Option lists need the full width; squeezed into the side column their labels wrap letter by letter.
+	if (block.accessory?.type === 'checkbox' || block.accessory?.type === 'radio_button') {
+		return (
+			<Box className={className}>
+				{text && (
+					<Box is='span' fontScale='p2' color='default'>
+						{surfaceRenderer.renderTextObject(text, 0)}
+					</Box>
+				)}
+				{fields && <Fields fields={fields} surfaceRenderer={surfaceRenderer} />}
+				<Box marginBlockStart={4}>{accessoryElement ? surfaceRenderer.renderSectionAccessoryBlockElement(accessoryElement, 0) : null}</Box>
+			</Box>
+		);
+	}
+
 	return (
 		<Grid className={className}>
 			<GridItem>
