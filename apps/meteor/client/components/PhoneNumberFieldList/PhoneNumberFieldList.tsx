@@ -21,6 +21,7 @@ type PhoneNumberFieldListProps<T extends FieldValues> = {
 	control: Control<T>;
 	onAddPhone: (phone: Omit<Required<PhoneFieldType>, 'id'>) => void;
 	onRemovePhone: (index: number) => void;
+	className?: string;
 };
 
 const PhoneNumberFieldList = <T extends FieldValues>({
@@ -29,12 +30,13 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 	control,
 	onAddPhone,
 	onRemovePhone,
+	className,
 }: PhoneNumberFieldListProps<T>) => {
 	const { t } = useTranslation();
 	const { visuallyHiddenProps } = useVisuallyHidden();
 
 	return (
-		<Box is='fieldset' display='flex' flexDirection='column' width='100%'>
+		<Box is='fieldset' className={className} display='flex' flexDirection='column' width='100%'>
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
 			<Box is='ul' id={`${name}-phones-list`} display='flex' flexDirection='column' gap={16}>
 				{phones.map((phone, index) => (
