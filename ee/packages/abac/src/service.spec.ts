@@ -826,11 +826,16 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('unsets every attribute (not single-key removal) when removing the last remaining attribute', async () => {
-			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', name: 'room-one', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 
 			await (service as any).removeRoomAbacAttribute('r1', 'dept', fakeActor);
 
 			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attributes.removed',
+				expect.objectContaining({ room: { _id: 'r1', name: 'room-one' } }),
+				expect.anything(),
+			);
 			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
