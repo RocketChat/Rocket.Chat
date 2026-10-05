@@ -35,6 +35,7 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 	return (
 		<AutoComplete
 			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value}
 			placeholder={block.placeholder?.text}
 			disabled={loading}

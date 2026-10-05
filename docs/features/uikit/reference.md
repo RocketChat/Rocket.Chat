@@ -195,6 +195,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ChannelsSelectElement.ts`](../../.
 | `type` | `'channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
 | `initial_channel` | `string` | no | Id of the room selected when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -210,6 +211,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 | `type` | `'checkbox'` | yes |  |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -227,6 +229,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 | `initial_conversation` | `string` | no | Id of the room selected when the view opens. |
 | `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
 | `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -346,6 +349,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiChannelsSelectElement.ts`](..
 | `placeholder` | `PlainText` | no |  |
 | `initial_channels` | `string[]` | no | Ids of the rooms selected when the view opens. |
 | `max_selected_items` | `number` | no | Most rooms that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -364,6 +368,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `max_selected_items` | `number` | no | Most conversations that can be selected. |
 | `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
 | `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -399,6 +404,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiUsersSelectElement.ts`](../..
 | `placeholder` | `PlainText` | no |  |
 | `initial_users` | `string[]` | no | Usernames of the users selected when the view opens. |
 | `max_selected_items` | `number` | no | Most users that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -466,6 +472,7 @@ Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../p
 | `type` | `'radio_button'` | yes |  |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -562,6 +569,7 @@ Source: [`packages/ui-kit/src/blocks/elements/UsersSelectElement.ts`](../../../p
 | `type` | `'users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
 | `initial_user` | `string` | no | Username of the user selected when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

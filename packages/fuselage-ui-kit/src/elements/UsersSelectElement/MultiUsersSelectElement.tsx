@@ -31,6 +31,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 	return (
 		<AutoComplete
 			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value || []}
 			options={limitOptions(data, value, block.max_selected_items)}
 			placeholder={block.placeholder?.text}

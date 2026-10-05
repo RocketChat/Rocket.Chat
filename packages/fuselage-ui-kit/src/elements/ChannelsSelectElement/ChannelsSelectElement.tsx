@@ -41,6 +41,7 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 	return (
 		<AutoComplete
 			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value}
 			onChange={handleChange}
 			placeholder={block.placeholder?.text}

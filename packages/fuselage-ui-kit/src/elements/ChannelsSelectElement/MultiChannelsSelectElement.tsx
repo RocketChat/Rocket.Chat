@@ -42,6 +42,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 	return (
 		<AutoComplete
 			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value || []}
 			disabled={loading}
 			onChange={handleChange}

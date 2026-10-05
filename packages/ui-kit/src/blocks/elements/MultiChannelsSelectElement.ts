@@ -8,4 +8,5 @@ export type MultiChannelsSelectElement = Actionable<{
 	initial_channels?: string[];
 	/** Most rooms that can be selected. */
 	max_selected_items?: number;
+	focus_on_load?: boolean;
 }>;
