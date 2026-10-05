@@ -29,12 +29,12 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
+import PhoneNumberFieldList, { getPersistedPhones, usePhoneNumberFieldArray } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
 import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
@@ -144,11 +144,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		await queryClient.invalidateQueries({ queryKey: ['users'] });
 	};
 
-	const {
-		fields: phoneFields,
-		append: appendPhone,
-		remove: removePhone,
-	} = useFieldArray<AccountProfileFormValues>({ control, name: 'phones' });
+	const { phones: phoneFields, onAddPhone, onRemovePhone } = usePhoneNumberFieldArray<AccountProfileFormValues>(control, 'phones');
 
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
@@ -188,7 +184,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
-			...(dirtyFields.phones && { phones }),
+			...(dirtyFields.phones && { phones: getPersistedPhones(phones) }),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -482,7 +478,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				</Field>
 
 				<Divider marginBlockStart={24} marginBlockEnd={0} />
-				<PhoneNumberFieldList control={control} name='phones' phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
+				<PhoneNumberFieldList control={control} name='phones' phones={phoneFields} onAddPhone={onAddPhone} onRemovePhone={onRemovePhone} />
 				<Divider marginBlockStart={24} marginBlockEnd={0} />
 
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}

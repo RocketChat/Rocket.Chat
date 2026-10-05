@@ -121,7 +121,7 @@ describe('PhoneNumberFieldList', () => {
 	});
 
 	describe('validation', () => {
-		it('shows a required error for an empty phone number on blur', async () => {
+		it('does not show an error for a single blank row', async () => {
 			render(
 				<TestComponent initialPhones={[{ id: 'phone-1', number: '', label: '' }]} onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />,
 				{ wrapper: appRoot },
@@ -130,7 +130,38 @@ describe('PhoneNumberFieldList', () => {
 			await userEvent.click(input);
 			await userEvent.tab();
 
+			await waitFor(() => expect(input).not.toHaveAccessibleDescription());
+		});
+
+		it('shows a required error for an empty phone number when its label is filled', async () => {
+			render(
+				<TestComponent initialPhones={[{ id: 'phone-1', number: '', label: 'Home' }]} onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />,
+				{ wrapper: appRoot },
+			);
+			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
+			await userEvent.click(input);
+			await userEvent.tab();
+
 			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 1 required'));
+		});
+
+		it('shows a required error for an empty phone number when there are multiple rows', async () => {
+			render(
+				<TestComponent
+					initialPhones={[
+						{ id: 'phone-1', number: '+15551234567', label: '' },
+						{ id: 'phone-2', number: '', label: '' },
+					]}
+					onAddPhone={jest.fn()}
+					onRemovePhone={jest.fn()}
+				/>,
+				{ wrapper: appRoot },
+			);
+			const input = screen.getByRole('textbox', { name: 'Phone number 2' });
+			await userEvent.click(input);
+			await userEvent.tab();
+
+			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 2 required'));
 		});
 
 		it('shows an invalid format error for a non-E164 phone number on blur', async () => {
