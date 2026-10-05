@@ -322,6 +322,26 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return null;
 	}
 
+	conversations_select(block: UiKit.ConversationsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <ChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	multi_conversations_select(
+		block: UiKit.MultiConversationsSelectElement,
+		context: UiKit.BlockContext,
+		index: number,
+	): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
 	multi_users_select(block: UiKit.MultiUsersSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.FORM) {
 			return <MultiUsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;

@@ -5,10 +5,11 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
 import { useChannelsData } from './hooks/useChannelsData';
+import { useConversationsData } from './hooks/useConversationsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
+export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement | UiKit.ConversationsSelectElement>;
 
 const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) => {
 	const [{ value, loading }, action] = useUiKitState(block, context);
@@ -16,7 +17,10 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 
-	const options = useChannelsData({ filter: filterDebounced });
+	const isConversations = block.type === 'conversations_select';
+	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations });
+	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations });
+	const options = isConversations ? conversations : channels;
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
