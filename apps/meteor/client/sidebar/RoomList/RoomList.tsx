@@ -9,6 +9,7 @@ import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import RoomHoverCardProvider from '../RoomHoverCard';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -81,30 +82,32 @@ const RoomList = () => {
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
-		<Box position='relative' overflow='hidden' height='full' ref={ref}>
-			<SidebarVirtualList
-				groups={virtualGroups}
-				as={RoomListWrapper}
-				bufferSize={bufferSize}
-				getItemKey={(item) => item._id}
-				renderGroup={(group, index) => (
-					<RoomListCollapser
-						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
-						onKeyDown={(e) => handleKeyDown(e, group.key)}
-					/>
-				)}
-				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
-					</RoomListRowWrapper>
-				)}
-			/>
-		</Box>
+		<RoomHoverCardProvider>
+			<Box position='relative' overflow='hidden' height='full' ref={ref}>
+				<SidebarVirtualList
+					groups={virtualGroups}
+					as={RoomListWrapper}
+					bufferSize={bufferSize}
+					getItemKey={(item) => item._id}
+					renderGroup={(group, index) => (
+						<RoomListCollapser
+							group={group}
+							canMoveUp={canMoveGroup(groups, index, 'up')}
+							canMoveDown={canMoveGroup(groups, index, 'down')}
+							onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
+							onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+							onClick={() => handleClick(group.key)}
+							onKeyDown={(e) => handleKeyDown(e, group.key)}
+						/>
+					)}
+					renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
+						<RoomListRowWrapper data-index={rowIndex}>
+							<RoomListRow data={itemData} item={item} />
+						</RoomListRowWrapper>
+					)}
+				/>
+			</Box>
+		</RoomHoverCardProvider>
 	);
 };
 
