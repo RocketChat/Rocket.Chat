@@ -52,7 +52,7 @@ export interface IPolicyDecisionPoint {
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<IUser[]>;
 
-	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id'>[]>;
+	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]>;
 
 	evaluateUserRooms(
 		entries: Array<{
