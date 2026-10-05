@@ -1175,7 +1175,7 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                               class="rcx-box rcx-box--full rcx-css-1wd7edc"
                             >
                               <a
-                                aria-label="Call Mobile"
+                                aria-label="Voice_call__user_"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                                 href="tel:+5511999999999"
                                 title="Call"
@@ -1224,7 +1224,7 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                               class="rcx-box rcx-box--full rcx-css-1wd7edc"
                             >
                               <a
-                                aria-label="Call Work"
+                                aria-label="Voice_call__user_"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                                 href="tel:+5511888888888"
                                 title="Call"

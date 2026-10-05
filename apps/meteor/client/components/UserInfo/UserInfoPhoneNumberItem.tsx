@@ -19,7 +19,7 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 
 	const canCallFromWidget = mediaCallState !== 'unavailable' && canMakeExternalCall && isSipEnabled;
 	const callInProgress = mediaCallState !== 'available';
-	const callName = `${t('Call')} ${label || formattedNumber}`;
+	const callName = t('Voice_call__user_', { user: label || formattedNumber });
 
 	return (
 		<Box is='li' display='flex' alignItems='center' justifyContent='space-between' gap={8}>
