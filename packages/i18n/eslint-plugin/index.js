@@ -22,6 +22,7 @@ const reservedOptions = new Set([
 	'joinArrays',
 	'postProcess',
 	'interpolation',
+	'formatParams',
 	'keySeparator',
 	'nsSeparator',
 	'fallbackLng',
