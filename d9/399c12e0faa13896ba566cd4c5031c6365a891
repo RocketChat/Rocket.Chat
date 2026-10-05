@@ -1,0 +1,27 @@
+apps/meteor/package.json
+  s_f98dc0fbfa654b::t_4b4f18fd4e5af5 178
+  s_f98dc0fbfa654b::t_2351cae212b72d 256
+yarn.lock
+  s_f98dc0fbfa654b::t_7dd346ede6f4e9 10406,10500
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d9399c12e0faa13896ba566cd4c5031c6365a891",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_f98dc0fbfa654b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "63bf1510-ded3-4a0c-a323-79e71b81ec9e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
