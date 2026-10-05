@@ -36,6 +36,7 @@ export type { ConditionalBlock } from './blocks/layout/ConditionalBlock';
 export type { ContextBlock } from './blocks/layout/ContextBlock';
 export * from './blocks/layout/PreviewBlock';
 export type { DividerBlock } from './blocks/layout/DividerBlock';
+export type { HeaderBlock } from './blocks/layout/HeaderBlock';
 export type { ImageBlock } from './blocks/layout/ImageBlock';
 export type { InputBlock } from './blocks/layout/InputBlock';
 export type { SectionBlock } from './blocks/layout/SectionBlock';

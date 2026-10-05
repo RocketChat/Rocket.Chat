@@ -7,6 +7,7 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'callout',
 	'context',
 	'divider',
+	'header',
 	'image',
 	'input',
 	'preview',

@@ -64,6 +64,17 @@ Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `header`
+
+Source: [`packages/ui-kit/src/blocks/layout/HeaderBlock.ts`](../../../packages/ui-kit/src/blocks/layout/HeaderBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'header'` | yes | A large title that separates sections of a surface. |
+| `text` | `PlainText` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `image`
 
 Source: [`packages/ui-kit/src/blocks/layout/ImageBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ImageBlock.ts)
