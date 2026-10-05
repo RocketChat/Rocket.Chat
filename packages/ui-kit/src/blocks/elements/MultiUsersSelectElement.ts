@@ -8,4 +8,5 @@ export type MultiUsersSelectElement = Actionable<{
 	initial_users?: string[];
 	/** Most users that can be selected. */
 	max_selected_items?: number;
+	focus_on_load?: boolean;
 }>;

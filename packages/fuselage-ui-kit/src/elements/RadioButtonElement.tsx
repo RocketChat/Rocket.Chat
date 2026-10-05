@@ -13,12 +13,19 @@ const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElem
 
 	return (
 		<Box>
-			{options.map((option: UiKit.Option) => {
+			{options.map((option: UiKit.Option, index) => {
 				const id = `${block.actionId}-${option.value}`;
 
 				return (
 					<Box key={option.value} display='flex' alignItems='flex-start' paddingBlock={4}>
-						<RadioButton id={id} disabled={loading} checked={value === option.value} value={option.value} onChange={action} />
+						<RadioButton
+							id={id}
+							autoFocus={block.focus_on_load && index === 0}
+							disabled={loading}
+							checked={value === option.value}
+							value={option.value}
+							onChange={action}
+						/>
 						<OptionLabel htmlFor={id} option={option} surfaceRenderer={surfaceRenderer} />
 					</Box>
 				);

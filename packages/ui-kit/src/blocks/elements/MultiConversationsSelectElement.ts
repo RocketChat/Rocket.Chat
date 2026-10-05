@@ -14,4 +14,5 @@ export type MultiConversationsSelectElement = Actionable<{
 	default_to_current_conversation?: boolean;
 	/** Which kinds of conversation to list; `im` and `mpim` both cover direct messages. */
 	filter?: ConversationsSelectFilter;
+	focus_on_load?: boolean;
 }>;

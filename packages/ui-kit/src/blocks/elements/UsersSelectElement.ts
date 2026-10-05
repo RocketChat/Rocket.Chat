@@ -6,4 +6,5 @@ export type UsersSelectElement = Actionable<{
 	placeholder?: PlainText;
 	/** Username of the user selected when the view opens. */
 	initial_user?: string;
+	focus_on_load?: boolean;
 }>;

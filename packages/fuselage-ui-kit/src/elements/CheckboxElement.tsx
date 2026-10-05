@@ -13,13 +13,20 @@ const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementPro
 
 	return (
 		<Box>
-			{options.map((option: UiKit.Option) => {
+			{options.map((option: UiKit.Option, index) => {
 				const isChecked = value?.includes(option.value);
 				const id = `${block.actionId}-${option.value}`;
 
 				return (
 					<Box key={option.value} display='flex' alignItems='flex-start' paddingBlock={4}>
-						<CheckBox id={id} disabled={loading} value={option.value} checked={isChecked} onChange={action} />
+						<CheckBox
+							id={id}
+							autoFocus={block.focus_on_load && index === 0}
+							disabled={loading}
+							value={option.value}
+							checked={isChecked}
+							onChange={action}
+						/>
 						<OptionLabel htmlFor={id} option={option} surfaceRenderer={surfaceRenderer} />
 					</Box>
 				);
