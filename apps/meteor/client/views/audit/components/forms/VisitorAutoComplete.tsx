@@ -1,4 +1,4 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
+import { AutoComplete, Item, ItemContent, ItemTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -30,7 +30,13 @@ const VisitorAutoComplete = ({ value, onChange, ...props }: VisitorAutoCompleteP
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { label } }) => <>{label}</>}
-			renderItem={({ value, ...props }) => <Option key={value} {...props} />}
+			renderItem={({ value: _value, label, selected, focus, ...props }) => (
+				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<ItemContent>
+						<ItemTitle>{label}</ItemTitle>
+					</ItemContent>
+				</Item>
+			)}
 			options={options}
 		/>
 	);
