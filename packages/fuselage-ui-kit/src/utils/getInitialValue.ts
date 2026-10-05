@@ -23,6 +23,20 @@ const hasInitialOption = (element: UiKit.ActionableElement): element is UiKit.Ac
 const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialOptions: UiKit.Option[] } =>
 	'initialOptions' in element;
 
+const initialSelectionFields = [
+	'initial_user',
+	'initial_users',
+	'initial_channel',
+	'initial_channels',
+	'initial_conversation',
+	'initial_conversations',
+] as const;
+
+const getInitialSelection = (element: UiKit.ActionableElement) => {
+	const field = initialSelectionFields.find((field) => field in element);
+	return field ? (element as unknown as Record<typeof field, string | string[] | undefined>)[field] : undefined;
+};
+
 export const getInitialValue = (element: UiKit.ActionableElement) =>
 	(hasInitialValue(element) && element.initialValue) ||
 	(hasSnakeCaseInitialValue(element) && element.initial_value) ||
@@ -31,4 +45,5 @@ export const getInitialValue = (element: UiKit.ActionableElement) =>
 	(hasInitialDateTime(element) && element.initial_date_time) ||
 	(hasInitialOption(element) && element.initialOption.value) ||
 	(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
+	getInitialSelection(element) ||
 	undefined;

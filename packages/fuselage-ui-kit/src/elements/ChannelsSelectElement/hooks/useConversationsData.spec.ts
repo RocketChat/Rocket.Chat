@@ -40,6 +40,6 @@ it('matches the filter against the name and the display name, ignoring case', as
 it('fetches nothing while disabled', () => {
 	const { result } = renderHook(() => useConversationsData({ filter: '', enabled: false }), { wrapper });
 
-	expect(result.current).toBeUndefined();
+	expect(result.current).toEqual([]);
 	expect(getSubscriptions).not.toHaveBeenCalled();
 });

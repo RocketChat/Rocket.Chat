@@ -194,6 +194,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ChannelsSelectElement.ts`](../../.
 | --- | --- | --- | --- |
 | `type` | `'channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_channel` | `string` | no | Id of the room selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -223,6 +224,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 | --- | --- | --- | --- |
 | `type` | `'conversations_select'` | yes | Picks one conversation the user belongs to (channel, private group or direct message); the value is the room id. |
 | `placeholder` | `PlainText` | no |  |
+| `initial_conversation` | `string` | no | Id of the room selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -340,6 +342,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiChannelsSelectElement.ts`](..
 | --- | --- | --- | --- |
 | `type` | `'multi_channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_channels` | `string[]` | no | Ids of the rooms selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -354,6 +357,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | --- | --- | --- | --- |
 | `type` | `'multi_conversations_select'` | yes | Picks several conversations the user belongs to; the value is the list of room ids. |
 | `placeholder` | `PlainText` | no |  |
+| `initial_conversations` | `string[]` | no | Ids of the rooms selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -387,6 +391,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiUsersSelectElement.ts`](../..
 | --- | --- | --- | --- |
 | `type` | `'multi_users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_users` | `string[]` | no | Usernames of the users selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -549,6 +554,7 @@ Source: [`packages/ui-kit/src/blocks/elements/UsersSelectElement.ts`](../../../p
 | --- | --- | --- | --- |
 | `type` | `'users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_user` | `string` | no | Username of the user selected when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

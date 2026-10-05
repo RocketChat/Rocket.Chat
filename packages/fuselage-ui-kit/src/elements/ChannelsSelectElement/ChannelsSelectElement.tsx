@@ -8,6 +8,7 @@ import { useChannelsData } from './hooks/useChannelsData';
 import { useConversationsData } from './hooks/useConversationsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { getAutoCompleteKey } from '../../utils/getAutoCompleteKey';
 
 export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement | UiKit.ConversationsSelectElement>;
 
@@ -18,8 +19,8 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 	const filterDebounced = useDebouncedValue(filter, 300);
 
 	const isConversations = block.type === 'conversations_select';
-	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations });
-	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations });
+	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations, selected: value ? [value] : [] });
+	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations, selected: value ? [value] : [] });
 	const options = isConversations ? conversations : channels;
 
 	const handleChange = useCallback(
@@ -31,6 +32,7 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 
 	return (
 		<AutoComplete
+			key={getAutoCompleteKey(value, options)}
 			value={value}
 			onChange={handleChange}
 			disabled={loading}
