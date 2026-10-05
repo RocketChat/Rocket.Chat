@@ -28,6 +28,7 @@
 		"@rocket.chat/styled": "~0.34.1",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:~",
+		"@tanstack/react-query": "~5.65.1",
 		"codemirror": "^6.0.2",
 		"eslint4b-prebuilt": "^6.7.2",
 		"prettier": "~3.9.9",
