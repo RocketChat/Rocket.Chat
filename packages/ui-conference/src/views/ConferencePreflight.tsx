@@ -3,11 +3,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, CheckBox } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { ToggleButton } from '@rocket.chat/ui-voip';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceToggle from '../components/CallDeviceToggle';
 import CallParticipants from '../components/CallParticipants';
 import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
 import type { PreflightMedia } from '../context/definitions';
@@ -75,6 +75,8 @@ const ConferencePreflight = ({
 	// Calling that again here put a second `useLocalStorage` subscriber on the same key, only one of which drove
 	// this screen's state, leaving two sources of truth for one answer.
 	const { preferences, ring, toggle, toggleRing } = useCallDevicesInitialState(capabilities);
+	const micLabel = preferences.mic ? t('Mic_on') : t('Mic_off');
+	const camLabel = preferences.cam ? t('Cam_on') : t('Cam_off');
 
 	// Side by side once there is room for both; stacked below that, with the preview still first. Height as well
 	// as width, because stacking on a landscape phone spends what little height it has on the preview.
@@ -114,18 +116,29 @@ const ConferencePreflight = ({
 				<Box position='absolute' insetBlockEnd={12} display='flex' justifyContent='center'>
 					<ButtonGroup>
 						{capabilities.mic && (
-							<CallDeviceToggle
-								device='mic'
-								on={preferences.mic}
-								label={preferences.mic ? t('Mic_on') : t('Mic_off')}
+							<ToggleButton
+								label={micLabel}
+								icons={['mic', 'mic-off']}
+								titles={[micLabel, micLabel]}
+								pressed={!preferences.mic}
+								// Pressed while the device is on, whichever way it is drawn: a screen reader must not hear a live mic as idle.
+								aria-pressed={preferences.mic}
+								aria-live='assertive'
+								dangerWhenPressed
+								large
 								onToggle={() => toggle('mic')}
 							/>
 						)}
 						{capabilities.cam && (
-							<CallDeviceToggle
-								device='cam'
-								on={preferences.cam}
-								label={preferences.cam ? t('Cam_on') : t('Cam_off')}
+							<ToggleButton
+								label={camLabel}
+								icons={['video', 'video-off']}
+								titles={[camLabel, camLabel]}
+								pressed={!preferences.cam}
+								aria-pressed={preferences.cam}
+								aria-live='assertive'
+								dangerWhenPressed
+								large
 								onToggle={() => toggle('cam')}
 							/>
 						)}
