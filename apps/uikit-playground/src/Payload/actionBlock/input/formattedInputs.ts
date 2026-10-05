@@ -37,7 +37,7 @@ export const inputWithDateTimePicker: readonly LayoutBlock[] = [
 export const inputWithConversationsSelect: readonly LayoutBlock[] = [
 	{
 		type: 'input',
-		element: { ...ids, type: 'conversations_select' },
+		element: { ...ids, type: 'conversations_select', initial_conversation: 'GENERAL' },
 		label: { type: 'plain_text', text: 'Conversation' },
 	},
 ];
@@ -45,7 +45,7 @@ export const inputWithConversationsSelect: readonly LayoutBlock[] = [
 export const inputWithMultiConversationsSelect: readonly LayoutBlock[] = [
 	{
 		type: 'input',
-		element: { ...ids, type: 'multi_conversations_select' },
+		element: { ...ids, type: 'multi_conversations_select', initial_conversations: ['GENERAL', 'd1'] },
 		label: { type: 'plain_text', text: 'Conversations' },
 	},
 ];

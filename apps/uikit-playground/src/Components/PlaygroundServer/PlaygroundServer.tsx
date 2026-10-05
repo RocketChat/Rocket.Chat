@@ -42,6 +42,12 @@ const respond = (pathPattern: string, params: Record<string, unknown> | undefine
 			return { items: rooms.filter(({ name, fname }) => matches(term, name, fname)) };
 		}
 
+		case '/v1/users.info':
+			return { user: users.find(({ username }) => username === params?.username) };
+
+		case '/v1/rooms.info':
+			return { room: [...rooms, ...directMessages].find(({ _id }) => _id === params?.roomId) };
+
 		case '/v1/subscriptions.get':
 			return { update: [...rooms, ...directMessages].map(({ _id, ...room }) => ({ _id: `sub-${_id}`, rid: _id, ...room })), remove: [] };
 

@@ -6,6 +6,7 @@ import { memo, useCallback, useState } from 'react';
 
 import { useChannelsData } from './hooks/useChannelsData';
 import { useConversationsData } from './hooks/useConversationsData';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
@@ -18,9 +19,10 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 	const filterDebounced = useDebouncedValue(filter, 300);
 
 	const isConversations = block.type === 'multi_conversations_select';
-	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations });
-	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations });
+	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations, selected: value ?? [] });
+	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations, selected: value ?? [] });
 	const options = isConversations ? conversations : channels;
+	const autoCompleteKey = useAutoCompleteKey(value, options);
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
@@ -31,6 +33,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 
 	return (
 		<AutoComplete
+			key={autoCompleteKey}
 			value={value || []}
 			disabled={loading}
 			onChange={handleChange}

@@ -27,6 +27,6 @@ export const sectionWithUsersSelect: readonly LayoutBlock[] = [
 	{
 		type: 'section',
 		text: { type: 'mrkdwn', text: 'Who owns this task?' },
-		accessory: { ...ids, type: 'users_select' },
+		accessory: { ...ids, type: 'users_select', initial_user: 'rocket.cat' },
 	},
 ];

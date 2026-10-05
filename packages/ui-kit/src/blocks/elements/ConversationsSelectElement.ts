@@ -5,4 +5,6 @@ import type { PlainText } from '../text/PlainText';
 export type ConversationsSelectElement = Actionable<{
 	type: 'conversations_select';
 	placeholder?: PlainText;
+	/** Id of the room selected when the view opens. */
+	initial_conversation?: string;
 }>;

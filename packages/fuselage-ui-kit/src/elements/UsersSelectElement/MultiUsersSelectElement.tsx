@@ -5,6 +5,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
 import { useUsersData } from './hooks/useUsersData';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
@@ -16,7 +17,8 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 
 	const debouncedFilter = useDebouncedValue(filter, 500);
 
-	const data = useUsersData({ filter: debouncedFilter });
+	const data = useUsersData({ filter: debouncedFilter, selected: value ?? [] });
+	const autoCompleteKey = useAutoCompleteKey(value, data);
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
@@ -27,6 +29,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 
 	return (
 		<AutoComplete
+			key={autoCompleteKey}
 			value={value || []}
 			options={data}
 			placeholder={block.placeholder?.text}
