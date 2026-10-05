@@ -128,6 +128,18 @@ export const InputWithPlainTextInput = createStory(payloads.inputWithPlainTextIn
 	'input-0': 'Error',
 });
 
+export const InputWithNumberInput = createStory(payloads.inputWithNumberInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithEmailTextInput = createStory(payloads.inputWithEmailTextInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithUrlTextInput = createStory(payloads.inputWithUrlTextInput, {
+	'input-0': 'Error',
+});
+
 export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUsersSelect, {
 	'input-0': 'Error',
 });

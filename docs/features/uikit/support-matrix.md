@@ -48,6 +48,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
+| `email_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `icon` | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | ✅ | ✅ |
@@ -56,6 +57,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — (returns `null`) |
 | `multi_users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `number_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
 | `plain_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `radio_button` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
@@ -63,6 +65,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | ✅ | ✅ | — |
 | `time_picker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `url_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 
 Fuselage draws the users, channels and conversations selects (single and multi) only inside an `input` block. In `actions` the types accept them, but the renderer returns nothing.
