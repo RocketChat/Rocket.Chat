@@ -35,7 +35,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -44,7 +44,11 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
+import PhoneNumberFieldList, {
+	getInitialPhones,
+	getPersistedPhones,
+	usePhoneNumberFieldArray,
+} from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
@@ -98,7 +102,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
-	phones: data?.phones ?? [],
+	phones: getInitialPhones(data?.phones),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -140,7 +144,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({ control, name: 'phones' });
+	const { phones: phoneFields, onAddPhone, onRemovePhone } = usePhoneNumberFieldArray<UserFormProps>(control, 'phones');
 
 	const { avatar, username, setRandomPassword, password, name: userFullName, presenceDisabledByAdmin } = watch();
 	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
@@ -192,8 +196,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, ...userFormData } =
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, phones, ...rest } =
 			userFormPayload;
+		const userFormData = { ...rest, phones: getPersistedPhones(phones) };
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
@@ -580,7 +585,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					</Field>
 
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
-					<PhoneNumberFieldList name='phones' control={control} phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
+					<PhoneNumberFieldList
+						name='phones'
+						control={control}
+						phones={phoneFields}
+						onAddPhone={onAddPhone}
+						onRemovePhone={onRemovePhone}
+					/>
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
 					{!!customFieldsMetadata.length && (
 						<>
