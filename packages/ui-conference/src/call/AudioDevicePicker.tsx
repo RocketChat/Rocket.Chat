@@ -1,11 +1,11 @@
 import { useSelectedDevices } from '@rocket.chat/ui-contexts';
+import { refreshMediaDevices } from '@rocket.chat/ui-media';
 import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallDeviceMenuButton from './CallDeviceMenuButton';
 import { useCallState } from './context';
-import { refreshMediaDevices } from './lib/mediaDevicesStore';
 import DeviceMenu from '../devices/DeviceMenu';
 
 /** The microphone and speaker of a call running in this window. */

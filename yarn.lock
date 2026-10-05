@@ -11580,6 +11580,7 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-media": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@storybook/react": "npm:^9.1.20"
@@ -11612,6 +11613,7 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-media": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     react: "*"
@@ -11688,6 +11690,7 @@ __metadata:
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-media": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
@@ -11708,11 +11711,29 @@ __metadata:
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-media": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ui-media@workspace:^, @rocket.chat/ui-media@workspace:packages/ui-media":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-media@workspace:packages/ui-media"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    "@types/react": "npm:~19.2.18"
+    eslint: "npm:~10.7.0"
+    jest: "npm:~30.2.0"
+    react: "npm:~19.2.8"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    react: "*"
   languageName: unknown
   linkType: soft
 

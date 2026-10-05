@@ -1,6 +1,6 @@
+import { useMediaDevices } from '@rocket.chat/ui-media';
 import { useEffect, useState } from 'react';
 
-import { useMediaDevices } from '../call/hooks/useMediaDevices';
 import type { CallDevices, CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 type CallDevicePreview = {

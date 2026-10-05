@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-import { getMediaDevices, getServerMediaDevices, refreshMediaDevices, subscribeToMediaDevices } from '../lib/mediaDevicesStore';
+import { getMediaDevices, getServerMediaDevices, refreshMediaDevices, subscribeToMediaDevices } from './mediaDevicesStore';
 
 /**
  * Every camera, microphone and speaker the browser lists, kept current as devices come and go.

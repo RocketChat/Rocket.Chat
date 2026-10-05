@@ -1,10 +1,10 @@
+import { refreshMediaDevices } from '@rocket.chat/ui-media';
 import { stopTracks } from '@rocket.chat/ui-voip';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallDeviceMenuButton from './CallDeviceMenuButton';
 import { useCallState } from './context';
-import { refreshMediaDevices } from './lib/mediaDevicesStore';
 import DeviceMenu from '../devices/DeviceMenu';
 import { useDeviceSelection } from '../devices/DeviceSelectionContext';
 
