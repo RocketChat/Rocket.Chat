@@ -1,5 +1,224 @@
 # @rocket.chat/meteor
 
+## 8.9.0
+
+### Minor Changes
+
+- ([#41020](https://github.com/RocketChat/Rocket.Chat/pull/41020)) Adds a **Realtime Message Composer**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Message → **Realtime message composer**). While the feature preview is off, the message composer keeps its current plain-text behavior.
+
+- ([#42150](https://github.com/RocketChat/Rocket.Chat/pull/42150)) Adds a new `GET /v1/autotranslate.getProviderUiMetadata` endpoint that lists the registered auto-translate providers and their display names, and deprecates the `autoTranslate.getProviderUiMetadata` real-time API method in its favor. The method keeps working until it is removed in 9.0.0.
+
+- ([#42476](https://github.com/RocketChat/Rocket.Chat/pull/42476)) Deprecates Custom OAuth authentication on workspaces without a Premium plan. Custom OAuth services keep working as they are today, but their admin settings now warn that version 9.0.0 will require a license including the `oauth-enterprise` module, and a warning is logged when an unlicensed workspace authenticates a user through one of them.
+
+- ([#41978](https://github.com/RocketChat/Rocket.Chat/pull/41978)) Deprecates the Gravatar integration. Default avatars fetched from Gravatar on user creation and Gravatar-based avatar suggestions in the profile settings will be removed in a future major release; a warning is now logged when they are used.
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#42102](https://github.com/RocketChat/Rocket.Chat/pull/42102)) Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
+
+- ([#42054](https://github.com/RocketChat/Rocket.Chat/pull/42054)) Improves draft handling by discarding the stored draft as soon as a message is sent, instead of keeping it until the room is changed
+
+- ([#42108](https://github.com/RocketChat/Rocket.Chat/pull/42108)) Improves the sidebar to keep the room currently open listed under its category even while that category is collapsed, so it stays clear which room is being viewed
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#42229](https://github.com/RocketChat/Rocket.Chat/pull/42229)) Adds a read-only call history accessor for apps. An app that declares the new `media-call.history` permission can read a user's call history through `read.getCallHistoryReader()`, which exposes `getById`, `getByCallId` and a paginated `search`.
+
+- ([#40500](https://github.com/RocketChat/Rocket.Chat/pull/40500)) Started storing SIP Call Id on the media calls model
+  Added an endpoint to retrieve media calls data
+- ([#41961](https://github.com/RocketChat/Rocket.Chat/pull/41961)) Adds a new `POST /v1/chat.getMessages` endpoint to fetch several messages at once by id, including messages from different rooms. The request fails if any of the messages belongs to a room the caller cannot read.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/cloud.workspaceRegisterData` endpoint returning the base64 encoded workspace registration payload used by the offline cloud registration flow. It requires the `manage-cloud` permission.
+
+- ([#41991](https://github.com/RocketChat/Rocket.Chat/pull/41991)) Adds an `aroundId` parameter to `GET /v1/rooms.history`, returning a window of messages centered on a given message instead of a page from one end of the room. This is what jumping to a quoted message, a search result or a thread message uses to load the surrounding conversation.
+
+- ([#41947](https://github.com/RocketChat/Rocket.Chat/pull/41947)) Adds a new `GET /v1/rooms.history` endpoint to load a room's message history. Unlike the existing `channels.history`, `groups.history`, `im.history` and `dm.history` endpoints, it works with any room type through a single route, and can be used to read public channels anonymously when `Accounts_AllowAnonymousRead` is enabled.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/setupWizard.parameters` endpoint returning the settings flagged for the setup wizard along with a `serverAlreadyRegistered` flag.
+
+- ([#41088](https://github.com/RocketChat/Rocket.Chat/pull/41088)) Adds a configurable **Room Toolbox Layout**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Room → **Room Toolbox Layout**). While the feature preview is off, the room header toolbox keeps its current behavior and the setting has no effect.
+
+  Admins can define the layout through the new workspace setting **Room Toolbox Layout** (`Room_Toolbox_Layout`) under **Admin → Settings → Layout → Room Header**, which is itself only shown when **Feature Preview** is enabled for the workspace. The setting value is validated against a JSON schema when saved, so a malformed configuration is rejected with an error instead of being silently ignored
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+- ([#41718](https://github.com/RocketChat/Rocket.Chat/pull/41718)) Adds support for federation room version 11 (version 10 remains the default)
+
+### Patch Changes
+
+- ([#42167](https://github.com/RocketChat/Rocket.Chat/pull/42167)) Fixes the message list scroll drifting position after switching channels and returning
+
+- ([#42136](https://github.com/RocketChat/Rocket.Chat/pull/42136)) Fixes the Docker image crashing at boot on arm64 with `Error loading shared library ld-linux-aarch64.so.1` while loading `argon2.node`. The Meteor bundle carries `build/Release` output compiled on the glibc-based CI host, and `node-gyp-build` prefers it over the musl binaries shipped under `prebuilds/` in the same package, so the wrong one was selected at runtime.
+
+- ([#41971](https://github.com/RocketChat/Rocket.Chat/pull/41971)) Fixes auto-translate continuing to translate messages with the previously selected service provider after switching providers, until the server was restarted or the feature was disabled and re-enabled.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#42015](https://github.com/RocketChat/Rocket.Chat/pull/42015)) Fixes the custom emoji picker returning zero emoji on workspaces running with `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS=true`, caused by the client sending an empty `query` string to `emoji-custom.list`
+
+- ([#42065](https://github.com/RocketChat/Rocket.Chat/pull/42065)) Deprecates the `getRoomJoinCode` real-time API method. It has had no caller since the room settings panel stopped revealing join codes, and will be removed in 9.0.0 without a replacement.
+
+- ([#42065](https://github.com/RocketChat/Rocket.Chat/pull/42065)) Deprecates the `raix:push-setuser` real-time API method. It was inherited from the `raix:push` package for Cordova clients and has never been called by Rocket.Chat clients, which bind push tokens to users through `POST /v1/push.token`. It will be removed in 9.0.0 without a replacement.
+
+- ([#41961](https://github.com/RocketChat/Rocket.Chat/pull/41961)) Deprecates the `getMessages` real-time API method in favor of the new `POST /v1/chat.getMessages` endpoint. The method keeps working until it is removed in 9.0.0.
+
+- ([#41947](https://github.com/RocketChat/Rocket.Chat/pull/41947)) Deprecates the `loadHistory` and `loadNextMessages` real-time API methods in favor of the new `GET /v1/rooms.history` endpoint. Both methods keep working until they are removed in 9.0.0.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Migrates the setup wizard off the `getSetupWizardParameters`, `cloud:getWorkspaceRegisterData` and `registerUser` real-time API methods, in favor of `GET /v1/setupWizard.parameters`, `GET /v1/cloud.workspaceRegisterData` and `POST /v1/users.register`. The first two methods are now deprecated and keep working until they are removed in 9.0.0.
+
+- ([#41991](https://github.com/RocketChat/Rocket.Chat/pull/41991)) Deprecates the `loadSurroundingMessages` real-time API method in favor of the `aroundId` parameter of `GET /v1/rooms.history`. The method keeps working until it is removed in 9.0.0.
+
+- ([#40915](https://github.com/RocketChat/Rocket.Chat/pull/40915)) Desktop markdown attachments now open in the desktop document viewer directly instead of relying on download interception
+
+- ([#42016](https://github.com/RocketChat/Rocket.Chat/pull/42016)) Fixes the admin and search directory omitting local users whose documents still carried data from the removed legacy federation, making them unsearchable in Directory > Users while still visible in Spotlight and Administration > Users.
+
+- ([#42029](https://github.com/RocketChat/Rocket.Chat/pull/42029)) Improves the performance of sending and deleting messages in discussions by updating the discussion's message counter incrementally instead of recounting hidden system messages on every message
+
+- ([#41910](https://github.com/RocketChat/Rocket.Chat/pull/41910)) Fixes federated typing indicators being dropped, or attributed to the wrong person, when `UI_Use_Real_Name` is enabled
+
+- ([#42429](https://github.com/RocketChat/Rocket.Chat/pull/42429)) Fixes audio and video attachments served through the Amazon S3 or Google Cloud Storage proxy not showing their duration or progress until playback ended, and not being seekable, by honoring byte-range requests in the proxy.
+
+- ([#42162](https://github.com/RocketChat/Rocket.Chat/pull/42162)) Fixes the user status staying away after the user came back, with the user menu unable to change it. It affected mostly the desktop app and users whose connection had just been re-established, and it only cleared on the next idle period or by reloading the app.
+
+- ([#41783](https://github.com/RocketChat/Rocket.Chat/pull/41783)) Fixes an issue where message attachments lose their collapsed state when scrolled out of view.
+
+- ([#41785](https://github.com/RocketChat/Rocket.Chat/pull/41785)) Fixes federation endpoints rejecting requests that are valid per the Matrix specification:
+
+  - `publicRooms` (GET and POST) required params/fields the spec marks optional
+  - `query/profile` rejected spec-valid profile fields such as `m.tz`
+  - `get_missing_events` required the optional `limit` field and bounded it
+  - `make_join` returned 500 instead of 400 `M_INCOMPATIBLE_ROOM_VERSION` for unsupported room versions
+  - `backfill` rejected spec-valid `limit` values
+  - `send` rejected an entire transaction when a single PDU didn't match a fixed event shape, instead of reporting failures per PDU
+
+  Also links every federation endpoint to its definition in the Matrix specification.
+
+- ([#42222](https://github.com/RocketChat/Rocket.Chat/pull/42222)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#42070](https://github.com/RocketChat/Rocket.Chat/pull/42070)) Fixes long custom statuses being cut off without an ellipsis in the user status menu.
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Fixes the `createdBy` of a voice call being stored with no contact information on it: every call that was not created by a transfer ended up with a `createdBy` carrying only the requester's id, while the caller and callee carried their username and display name. This also affected the `transferredBy` reported to clients.
+
+- ([#41097](https://github.com/RocketChat/Rocket.Chat/pull/41097)) Update Meteor to 3.5.2 and bump Node.js to 24.15.0 to match the new bundled runtime. Also bumps `isolated-vm` to 6.2.0 for Node.js 24 compatibility.
+
+- ([#41127](https://github.com/RocketChat/Rocket.Chat/pull/41127)) Improves the mobile web experience: the page background now follows the active theme so Safari no longer shows white strips in the overscroll/safe-area regions (and tints its toolbar) in dark mode; the login "Welcome to <workspace>" title is scaled down on small screens; focusing a field no longer triggers iOS Safari's auto zoom-in (inputs use a 16px minimum on mobile); the login email/username field no longer auto-capitalizes/auto-corrects; and the connection status bar layout no longer truncates its "Connect" button on narrow screens.
+
+- ([#41156](https://github.com/RocketChat/Rocket.Chat/pull/41156)) Fixes empty notifications when video conferences are created
+
+- ([#41548](https://github.com/RocketChat/Rocket.Chat/pull/41548)) Improves performance of several hot code paths without changing behavior: generates random IDs with a single `crypto.randomBytes` call instead of one per character, caches constant regular expressions used by the markdown/mention/autotranslate parsers instead of recompiling them for every message, skips the channel-mention database query for messages without channel mentions, deduplicates the room member count query when a message contains both `@all` and `@here`, and replaces linear array scans and spread-accumulators with Map/Set lookups in API response shaping (files, DM members, directory search and team listing).
+
+- ([#41931](https://github.com/RocketChat/Rocket.Chat/pull/41931)) Fixes users not being added to the default channels (such as `#general`) when they are assigned their first username, which affected the admin created by the setup wizard on a brand new workspace and OAuth, SAML and LDAP users that pick a username through the "Register Username" screen.
+
+- ([#41897](https://github.com/RocketChat/Rocket.Chat/pull/41897)) Fixes desktop notifications being force-closed 10 seconds after being shown, even though the server never requests a duration for them. The forced close only told the app the notification was finished while the OS could still display and interact with it (for example, quick-replying from a Windows Action Center card), which could cause late replies to be silently dropped. Desktop notifications now only auto-close when the server explicitly provides a duration.
+
+- ([#42360](https://github.com/RocketChat/Rocket.Chat/pull/42360)) Restores the room list sidebar rows and group headers to their previous look, undoing the restyle introduced by the Fuselage upgrade
+
+- ([#41875](https://github.com/RocketChat/Rocket.Chat/pull/41875)) Fixes desktop notification quick replies to thread messages being posted to the main room instead of the thread
+
+- ([#41945](https://github.com/RocketChat/Rocket.Chat/pull/41945)) Shows the loading skeleton instead of flashing the login form while a stored session is being resumed
+
+- ([#42090](https://github.com/RocketChat/Rocket.Chat/pull/42090)) Fixes the removed `Drafts` sidebar group reappearing as an empty category on workspaces upgraded from a build that shipped it
+
+- ([#41808](https://github.com/RocketChat/Rocket.Chat/pull/41808)) Fixes an endless stream of `commands.list` requests when `API_Upper_Count_Limit` is lower than 50. The client paginated the slash command list in steps of 50 regardless of how many items the server actually returned, so the list never reached the reported total and the requests never stopped.
+
+- ([#42041](https://github.com/RocketChat/Rocket.Chat/pull/42041)) Fixes the session left behind when the logged-in user's account is deleted: the browser now logs out cleanly, so logging back in as a recreated user no longer fails on the first attempt nor shows duplicated channels in the sidebar
+
+- ([#42047](https://github.com/RocketChat/Rocket.Chat/pull/42047)) Fixes 'mark as unread' action not available for federated messages
+
+- ([#42104](https://github.com/RocketChat/Rocket.Chat/pull/42104)) Aligns the rate limits of `spotlight`, `directory`, `chat.followMessage` and `chat.unfollowMessage` with the values defined in the DDP methods they replaced. They were falling back to the generic REST default of 10 requests per 60 seconds instead.
+
+- ([#41893](https://github.com/RocketChat/Rocket.Chat/pull/41893)) Fixes team deletion failing when the team's main room no longer exists. Such teams were left orphaned: hidden from the admin UI, still reserving their name, and impossible to remove through any supported path. Deleting a team now completes even when its main room is already gone, so a deletion interrupted midway can be finished by simply retrying it, and the team name becomes available again.
+
+- ([#42018](https://github.com/RocketChat/Rocket.Chat/pull/42018)) Fixes Omnichannel rooms failing to register agent responses (and showing send errors on messages and file uploads that were actually delivered) when the room carried corrupted visitor activity data created by older app integrations
+
+- ([#41914](https://github.com/RocketChat/Rocket.Chat/pull/41914)) Ensures the message composer is cleared after a slash command is executed.
+
+- ([#41944](https://github.com/RocketChat/Rocket.Chat/pull/41944)) Improved the in-call voice widget: media elements no longer detach and re-attach when an unrelated device changes, so a shared screen or camera stops blinking whenever the microphone is muted or a device is switched.
+
+- ([#41690](https://github.com/RocketChat/Rocket.Chat/pull/41690)) Fixes the video conference notification stream being torn down and re-subscribed on every login or connection status update, even when the logged user had not changed
+
+- ([#42019](https://github.com/RocketChat/Rocket.Chat/pull/42019)) Fixes ignored messages from ignored users in threads.
+
+- ([#42099](https://github.com/RocketChat/Rocket.Chat/pull/42099)) Fixes two factor authentication for SAML authentication method.
+
+- ([#41822](https://github.com/RocketChat/Rocket.Chat/pull/41822)) Fixes direct messages addressed by username, such as the ones opened with **Reply in direct message**, not being found on the first lookup — which made opening a conversation cost an extra request and log an avoidable `Invalid Room` error.
+
+- ([#42280](https://github.com/RocketChat/Rocket.Chat/pull/42280)) Fixes the custom scrollbars staying permanently visible on virtualized lists (sidebar room list, message list, thread list, discussions list and other paginated virtual lists) instead of hiding when the pointer is away
+
+- <details><summary>Updated dependencies [3e51ba30e3d48a418adb3bfa1bd41fa69cf636e9, eeca122b913518d2231f9d9568a10873705845ee, 639dcb1a2d2116eeb956c7dfc7890b48cbdf9782, 131bbceaff27f5c3f0156fdb21a4b2a79129c851, 4be043d9356fd50d2e3e1b585008368f90e95505, 75e5b937aab6f6884df522af9e4aee2b6463fdfd, e7fd972c86b04b8cf80e7be8ec825f176939203b, 5b3195460164fb62b19f0eab771937b6e6209954, 1c48beb3300fe2dcbae5094aca4f27ab2ce985e4, 17dfc71b4ad7294655e7fab9043cddbea23cb071, b00940368ed52e9b2959d69381ab260dcb5165bf, 38ea6ba80fd0e8d7c41a44278d54703b5d70da56, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 36e70bb8af4f0350d1244b65a717fbf58f4afc28, 53b519cc692587a63beaeb780e28d368ed70e94c, fa724f8a39af14734242f55ac975dfc565e80d8c, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 356203b9ef1fe1dec13096d0f012e7a72770be0a, 7d7a5c403e175df889afe303c34b9154c4ad6d70, 2f18297792c973da326be7253f497d239ea6f2b0, 4be043d9356fd50d2e3e1b585008368f90e95505, 781a3bccc16378284afabae87abf11897c6e1013, b263243745917337314259cf987c0e989cf0cdc9, 4be043d9356fd50d2e3e1b585008368f90e95505, 6843a962e18a7c37986bc08e8a7cc9bbd8072b77, b7511dff4bbe063810028eaca66796dea7339b6f, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 5e8a7cb1432e5078ca87360a4c0ae83a0f21dd7b, 6b7ce0cc0f32cda7a78b91effaff5fc02aab4340, 509e3d764ea95a910bf7aba899123eec88a8ac8f, 37faaa89ad1b4b721d6054e40a91327bd8140525, 4964afe2dd4301ae02ba0299231fc946920837b9, 694568a9b6b0020d45cfcbb08a0c3f74f65a8d30, e61b41d340e2722037de67551982fd70773d0617]:</summary>
+  - @rocket.chat/media-signaling@1.3.0
+  - @rocket.chat/media-calls@0.7.0
+  - @rocket.chat/ui-voip@25.0.0
+  - @rocket.chat/ui-composer@6.0.0
+  - @rocket.chat/ui-client@35.0.0
+  - @rocket.chat/i18n@4.1.0
+  - @rocket.chat/css-in-js@0.33.2
+  - @rocket.chat/css-supports@0.31.26
+  - @rocket.chat/model-typings@2.6.0
+  - @rocket.chat/models@2.6.0
+  - @rocket.chat/federation-matrix@0.3.0
+  - @rocket.chat/core-services@0.17.0
+  - @rocket.chat/core-typings@8.9.0
+  - @rocket.chat/rest-typings@8.9.0
+  - @rocket.chat/ai-search@0.3.0
+  - @rocket.chat/apps@0.10.0
+  - @rocket.chat/apps-engine@1.67.0
+  - @rocket.chat/web-ui-registration@35.0.0
+  - @rocket.chat/random@1.2.4
+  - @rocket.chat/license@1.2.1
+  - @rocket.chat/stylis-logical-props-middleware@0.31.26
+  - @rocket.chat/ddp-client@1.2.0
+  - @rocket.chat/fuselage-ui-kit@35.0.0
+  - @rocket.chat/ui-kit@1.2.0
+  - @rocket.chat/gazzodown@35.0.0
+  - @rocket.chat/ui-conference@2.0.0
+  - @rocket.chat/ui-video-conf@35.0.0
+  - @rocket.chat/abac@0.3.3
+  - @rocket.chat/network-broker@0.2.40
+  - @rocket.chat/omni-core-ee@0.0.26
+  - @rocket.chat/omnichannel-services@0.3.58
+  - @rocket.chat/presence@0.3.3
+  - @rocket.chat/api-client@0.2.57
+  - @rocket.chat/authorization@0.0.2
+  - @rocket.chat/cron@0.1.61
+  - @rocket.chat/http-router@7.9.24
+  - @rocket.chat/instance-status@0.1.61
+  - @rocket.chat/omni-core@0.1.5
+  - @rocket.chat/server-fetch@0.2.5
+  - @rocket.chat/streamer@0.1.1
+  - @rocket.chat/ui-avatar@31.0.0
+  - @rocket.chat/ui-contexts@35.0.0
+
+  </details>
+
 ## 8.9.0-rc.5
 
 ### Patch Changes

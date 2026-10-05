@@ -1,5 +1,16 @@
 # @rocket.chat/license
 
+## 1.2.1
+
+### Patch Changes
+
+- ([#41548](https://github.com/RocketChat/Rocket.Chat/pull/41548)) Improves performance of several hot code paths without changing behavior: generates random IDs with a single `crypto.randomBytes` call instead of one per character, caches constant regular expressions used by the markdown/mention/autotranslate parsers instead of recompiling them for every message, skips the channel-mention database query for messages without channel mentions, deduplicates the room member count query when a message contains both `@all` and `@here`, and replaces linear array scans and spread-accumulators with Map/Set lookups in API response shaping (files, DM members, directory search and team listing).
+
+- <details><summary>Updated dependencies [17dfc71b4ad7294655e7fab9043cddbea23cb071, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/core-typings@8.9.0
+
+  </details>
+
 ## 1.2.1-rc.0
 
 ### Patch Changes

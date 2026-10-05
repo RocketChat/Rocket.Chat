@@ -1,5 +1,16 @@
 # @rocket.chat/livechat Change Log
 
+## 2.1.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [71cb69992cf9f6a85fff7278dbf5481b64b5c735, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/random@1.2.4
+  - @rocket.chat/ui-kit@1.2.0
+  - @rocket.chat/gazzodown@35.0.0
+
+  </details>
+
 ## 2.1.8-rc.0
 
 ### Patch Changes
