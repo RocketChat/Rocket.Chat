@@ -2,9 +2,10 @@ import type { IStats } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isTelemetryPayload,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { getStatistics, getLastStatistics } from '../../lib/statistics';
@@ -25,9 +26,7 @@ const statisticsListResponseSchema = ajv.compile<{ statistics: IStats[]; count: 
 	type: 'object',
 	properties: {
 		statistics: { type: 'array' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['statistics', 'count', 'offset', 'total', 'success'],

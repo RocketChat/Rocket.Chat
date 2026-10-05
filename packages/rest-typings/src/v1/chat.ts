@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type ChatSendMessage = {
@@ -139,12 +140,7 @@ const ChatGetDiscussionsSchema = {
 		text: {
 			type: 'string',
 		},
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -195,14 +191,7 @@ const ChatGetThreadsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -372,14 +361,7 @@ const ChatSearchSchema = {
 		searchText: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId', 'searchText'],
 	additionalProperties: false,
@@ -545,14 +527,7 @@ const GetStarredMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -578,14 +553,7 @@ const GetPinnedMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -611,14 +579,7 @@ const GetMentionedMessagesSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -694,14 +655,7 @@ const ChatSyncThreadMessagesSchema = {
 			type: 'string',
 			format: 'iso-date-time',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -730,14 +684,7 @@ const ChatGetThreadMessagesSchema = {
 			minLength: 1,
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -766,14 +713,7 @@ const ChatGetDeletedMessagesSchema = {
 			minLength: 1,
 			format: 'iso-date-time',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

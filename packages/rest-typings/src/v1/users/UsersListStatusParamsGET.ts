@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type UsersListStatusParamsGET = PaginatedRequest<{
 	status?: 'active' | 'deactivated';
@@ -39,14 +40,7 @@ const UsersListStatusParamsGetSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		inactiveReason: {
 			type: 'array',
 			items: {

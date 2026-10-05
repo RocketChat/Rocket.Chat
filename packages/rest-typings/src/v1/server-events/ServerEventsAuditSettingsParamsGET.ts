@@ -2,6 +2,7 @@ import type { IAuditServerActor } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type ServerEventsAuditSettingsParamsGET = PaginatedRequest<{
 	start?: string;
@@ -17,14 +18,7 @@ const ServerEventsAuditSettingsParamsGetSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		start: {
 			type: 'string',
 			nullable: true,
