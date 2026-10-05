@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, borderRadius } from '@rocket.chat/fuselage';
-import { ActionButton, ToggleButton } from '@rocket.chat/ui-voip';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import AudioDevicePicker from './AudioDevicePicker';

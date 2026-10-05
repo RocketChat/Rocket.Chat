@@ -1,5 +1,4 @@
-import { DeviceMenu, useDeviceSelection } from '@rocket.chat/ui-media';
-import { DeviceMenuButton, useRevealDeviceLabels } from '@rocket.chat/ui-voip';
+import { DeviceMenu, DeviceMenuButton, useDeviceSelection, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import { useCallState } from './context';

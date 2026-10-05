@@ -1,11 +1,9 @@
 import { useSelectedDevices } from '@rocket.chat/ui-contexts';
 import type { DeviceSelection } from '@rocket.chat/ui-media';
-import { DeviceMenu, DeviceSelectionProvider, useMediaDevices } from '@rocket.chat/ui-media';
+import { DeviceMenu, DeviceMenuButton, DeviceSelectionProvider, useMediaDevices, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import DeviceMenuButton from './DeviceMenuButton';
 import { useMediaCallView } from '../context/MediaCallViewContext';
-import { useRevealDeviceLabels } from '../hooks/useRevealDeviceLabels';
 
 export type DevicePickerProps = { secondary?: boolean };
 

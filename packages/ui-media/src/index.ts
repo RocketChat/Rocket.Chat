@@ -11,3 +11,16 @@ export { usePlayMediaStream } from './streams/usePlayMediaStream';
 export { default as StreamVideo } from './streams/StreamVideo';
 export type { StreamVideoProps } from './streams/StreamVideo';
 export { useAudioLevel } from './streams/useAudioLevel';
+export { default as ActionButton } from './components/ActionButton';
+export type { ActionButtonProps } from './components/ActionButton';
+export { default as ToggleButton } from './components/ToggleButton';
+export type { ToggleButtonProps } from './components/ToggleButton';
+export { default as DeviceMenuButton } from './components/DeviceMenuButton';
+export {
+	useDevicePermissionPrompt2,
+	stopTracks,
+	PermissionRequestCancelledCallRejectedError,
+} from './permissions/useDevicePermissionPrompt';
+export { useRevealDeviceLabels } from './permissions/useRevealDeviceLabels';
+export { default as PermissionFlowModal } from './permissions/PermissionFlow/PermissionFlowModal';
+export type { PermissionFlowModalType } from './permissions/PermissionFlow/PermissionFlowModal';

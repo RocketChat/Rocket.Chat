@@ -1,8 +1,8 @@
 import { useSelectedDevices } from '@rocket.chat/ui-contexts';
-import { refreshMediaDevices } from '@rocket.chat/ui-media';
 import { useCallback } from 'react';
 
 import { stopTracks, useDevicePermissionPrompt2 } from './useDevicePermissionPrompt';
+import { refreshMediaDevices } from '../devices/mediaDevicesStore';
 
 /**
  * For a device menu's `beforeOpen`: asks for the permission that names the devices of the given kinds, unless they

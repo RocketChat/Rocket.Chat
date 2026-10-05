@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, CheckBox } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { ToggleButton } from '@rocket.chat/ui-voip';
+import { ToggleButton } from '@rocket.chat/ui-media';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

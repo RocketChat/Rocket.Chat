@@ -1,17 +1,9 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-	ToggleButton,
-	Timer,
-	DevicePicker,
-	ActionButton,
-	useShouldWrapCards,
-	CARD_LIST_SECTION_MAX_HEIGHT,
-	ActionStrip,
-	ActionToggleChat,
-} from '../../components';
+import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';

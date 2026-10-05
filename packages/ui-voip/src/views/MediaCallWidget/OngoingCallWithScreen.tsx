@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { StreamVideo } from '@rocket.chat/ui-media';
+import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -14,7 +13,6 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
 	useDraggableWidget,
 	CardWidgetContainer,

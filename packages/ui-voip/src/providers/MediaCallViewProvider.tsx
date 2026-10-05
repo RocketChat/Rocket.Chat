@@ -7,6 +7,7 @@ import {
 	useSelectedDevices,
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
+import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-media';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,6 @@ import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
-import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import { isExternalPeer } from '../utils/isExternalPeer';
 import TransferModal from '../views/TransferModal';

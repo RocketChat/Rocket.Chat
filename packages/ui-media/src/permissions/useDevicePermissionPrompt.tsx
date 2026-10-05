@@ -1,9 +1,9 @@
 import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
-import { refreshMediaDevices } from '@rocket.chat/ui-media';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { PermissionFlowModal, type PermissionFlowModalType } from '../views';
+import { refreshMediaDevices } from '../devices/mediaDevicesStore';
+import PermissionFlowModal, { type PermissionFlowModalType } from './PermissionFlow/PermissionFlowModal';
 
 type OnAccept = (stream: MediaStream) => void;
 type OnReject = (error?: DOMException) => void;
