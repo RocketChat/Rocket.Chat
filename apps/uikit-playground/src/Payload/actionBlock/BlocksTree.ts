@@ -35,6 +35,7 @@ import {
 	inputWithConversationsSelect,
 	inputWithMultiConversationsSelect,
 } from './input';
+import { markdown } from './markdown';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
 import {
 	sectionWithPlainText,
@@ -336,6 +337,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Plain',
 				payload: header,
+			},
+		],
+	},
+	{
+		label: 'markdown',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: markdown,
 			},
 		],
 	},

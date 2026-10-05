@@ -113,6 +113,17 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `markdown`
+
+Source: [`packages/ui-kit/src/blocks/layout/MarkdownBlock.ts`](../../../packages/ui-kit/src/blocks/layout/MarkdownBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'markdown'` | yes | A longer piece of formatted text, written in Markdown, rendered like a chat message. |
+| `text` | `string` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `preview`
 
 Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PreviewBlock.ts)

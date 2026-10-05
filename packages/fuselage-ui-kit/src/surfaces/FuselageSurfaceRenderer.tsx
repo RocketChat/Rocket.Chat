@@ -9,6 +9,7 @@ import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
+import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
@@ -323,6 +324,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 				<CheckboxElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
+	}
+
+	markdown(block: UiKit.MarkdownBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<MarkdownBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
 	}
 
 	header(block: UiKit.HeaderBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {

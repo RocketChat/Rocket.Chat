@@ -10,6 +10,7 @@ export const contextualBarSurfaceLayoutBlockTypes = [
 	'header',
 	'image',
 	'input',
+	'markdown',
 	'preview',
 	'section',
 	'tab_navigation',

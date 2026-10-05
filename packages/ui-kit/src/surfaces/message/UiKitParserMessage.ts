@@ -11,6 +11,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'image',
 	'info_card',
 	'input',
+	'markdown',
 	'preview',
 	'section',
 	'video_conf',
