@@ -1,6 +1,9 @@
 import {
 	Box,
 	Button,
+	Field,
+	FieldLabel,
+	FieldRow,
 	Modal,
 	ModalClose,
 	ModalContent,
@@ -8,6 +11,7 @@ import {
 	ModalFooterControllers,
 	ModalHeader,
 	ModalTitle,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,15 +25,19 @@ import { isUnknownPeer } from '../utils/isUnknownPeer';
 export type TransferModalProps = {
 	onCancel(): void;
 	onConfirm(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
+	/** Omitted when the call can't be put on hold, which hides the consultation button */
+	onConsult?(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
 };
 
-const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
+const TransferModal = ({ onCancel, onConfirm, onConsult }: TransferModalProps) => {
 	const { t } = useTranslation();
 
 	const modalId = useId();
 
 	const [peer, setPeer] = useState<PeerInfoType | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
+	const [askFirst, setAskFirst] = useState(false);
+	const askFirstId = useId();
 
 	const autocomplete = usePeerAutocomplete(setPeer, peer);
 
@@ -40,7 +48,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 		autocomplete.onChangeValue(value);
 	};
 
-	const confirm = () => {
+	const submitWith = (callback: TransferModalProps['onConfirm']) => () => {
 		if (!peer) {
 			setError(t('Field_required'));
 			return;
@@ -49,12 +57,12 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 		setError(undefined);
 
 		if (isInternalPeer(peer)) {
-			onConfirm('user', { id: peer.userId, displayName: peer.displayName });
+			callback('user', { id: peer.userId, displayName: peer.displayName });
 			return;
 		}
 
 		if (isExternalPeer(peer)) {
-			onConfirm('sip', { id: peer.number, displayName: peer.number });
+			callback('sip', { id: peer.number, displayName: peer.number });
 			return;
 		}
 
@@ -74,15 +82,29 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 						<PeerInfo {...peer} />
 					</Box>
 				)}
+				{onConsult && (
+					<Field marginBlockStart={16}>
+						<FieldRow>
+							<FieldLabel htmlFor={askFirstId}>{t('Ask_first')}</FieldLabel>
+							<ToggleSwitch id={askFirstId} checked={askFirst} onChange={() => setAskFirst((value) => !value)} />
+						</FieldRow>
+					</Field>
+				)}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm} icon='phone-off'>
-						{t('Hang_up_and_transfer_call')}
-					</Button>
+					{onConsult && askFirst ? (
+						<Button primary onClick={submitWith(onConsult)} icon='pause-shape-unfilled'>
+							{t('Hold_and_consult_before_transferring')}
+						</Button>
+					) : (
+						<Button danger onClick={submitWith(onConfirm)} icon='phone-off'>
+							{t('Hang_up_and_transfer_call')}
+						</Button>
+					)}
 				</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>
