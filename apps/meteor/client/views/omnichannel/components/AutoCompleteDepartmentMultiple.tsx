@@ -1,4 +1,5 @@
-import { CheckOption, Option, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, CheckBox, Item, ItemActions, ItemContent, ItemTitle, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
@@ -6,6 +7,10 @@ import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
+
+const wrappedTitle = css`
+	white-space: normal;
+`;
 
 export type AutoCompleteDepartmentMultipleProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
@@ -66,18 +71,23 @@ const AutoCompleteDepartmentMultiple = ({
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			renderItem={({ label, value, ...props }) => {
-				if (withCheckbox) {
-					return (
-						<CheckOption
-							{...props}
-							label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-							selected={value ? selectedValues.has(value) : false}
-						/>
-					);
-				}
+			renderItem={({ label, value, index: _index, selected, focus, ...props }) => {
+				const isSelected = withCheckbox ? !!value && selectedValues.has(value) : selected;
 
-				return <Option {...props} label={label} />;
+				return (
+					<Item {...props} inset='md' selected={isSelected} focused={focus} aria-selected={isSelected}>
+						<ItemContent>
+							<Box is={ItemTitle} className={wrappedTitle}>
+								{label}
+							</Box>
+						</ItemContent>
+						{withCheckbox && (
+							<ItemActions aria-hidden>
+								<CheckBox checked={isSelected} readOnly tabIndex={-1} />
+							</ItemActions>
+						)}
+					</Item>
+				);
 			}}
 			endReached={() => fetchNextPage()}
 		/>
