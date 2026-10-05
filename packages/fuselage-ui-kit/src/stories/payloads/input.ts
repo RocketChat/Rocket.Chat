@@ -42,9 +42,9 @@ export const inputWithNumberInput: readonly UiKit.LayoutBlock[] = [
 			appId: 'dummy-app-id',
 			blockId: 'dummy-block-id',
 			type: 'number_input',
-			isDecimalAllowed: false,
-			minValue: '1',
-			maxValue: '10',
+			is_decimal_allowed: false,
+			min_value: '1',
+			max_value: '10',
 			actionId: 'input-0',
 		},
 		label: {

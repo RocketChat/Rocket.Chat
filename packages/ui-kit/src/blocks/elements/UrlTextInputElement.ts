@@ -5,6 +5,6 @@ import type { PlainText } from '../text/PlainText';
 export type UrlTextInputElement = Actionable<{
 	type: 'url_text_input';
 	placeholder?: PlainText;
-	initialValue?: string;
+	initial_value?: string;
 	focusOnLoad?: boolean;
 }>;

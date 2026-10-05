@@ -23,9 +23,9 @@ const FormattedTextInputElement = ({ block, context }: FormattedTextInputElement
 				value={value}
 				onChange={action}
 				placeholder={fromTextObjectToString(block.placeholder)}
-				step={block.isDecimalAllowed ? 'any' : 1}
-				min={block.minValue}
-				max={block.maxValue}
+				step={block.is_decimal_allowed ? 'any' : 1}
+				min={block.min_value}
+				max={block.max_value}
 			/>
 		);
 	}

@@ -14,7 +14,7 @@ const renderInput = (element: UiKit.NumberInputElement | UiKit.EmailTextInputEle
 const base = { appId: 'app', blockId: 'block', actionId: 'field' } as const;
 
 it('renders a number input with its bounds and initial value', () => {
-	renderInput({ ...base, type: 'number_input', isDecimalAllowed: false, minValue: '1', maxValue: '10', initialValue: '3' });
+	renderInput({ ...base, type: 'number_input', is_decimal_allowed: false, min_value: '1', max_value: '10', initial_value: '3' });
 
 	const input = screen.getByRole('spinbutton');
 	expect(input).toHaveValue(3);
@@ -24,7 +24,7 @@ it('renders a number input with its bounds and initial value', () => {
 });
 
 it('allows any step when decimals are allowed', () => {
-	renderInput({ ...base, type: 'number_input', isDecimalAllowed: true });
+	renderInput({ ...base, type: 'number_input', is_decimal_allowed: true });
 
 	expect(screen.getByRole('spinbutton')).toHaveAttribute('step', 'any');
 });
@@ -33,7 +33,7 @@ it.each([
 	['email_text_input', 'email'],
 	['url_text_input', 'url'],
 ] as const)('renders %s as an input of type %s', (type, inputType) => {
-	renderInput({ ...base, type, initialValue: 'value' });
+	renderInput({ ...base, type, initial_value: 'value' });
 
 	expect(screen.getByDisplayValue('value')).toHaveAttribute('type', inputType);
 });

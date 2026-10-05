@@ -5,7 +5,10 @@ export type Value = { value: unknown; blockId?: string };
 const hasInitialValue = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialValue: number | string } =>
 	'initialValue' in element;
 
-const hasInitialTime = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialTime: string } =>
+const hasSnakeCaseInitialValue = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initial_value: string } =>
+	'initial_value' in element;
+
+const hasInitialTime =(element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialTime: string } =>
 	'initialTime' in element;
 
 const hasInitialDate = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialDate: string } =>
@@ -22,6 +25,7 @@ const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.A
 
 export const getInitialValue = (element: UiKit.ActionableElement) =>
 	(hasInitialValue(element) && element.initialValue) ||
+	(hasSnakeCaseInitialValue(element) && element.initial_value) ||
 	(hasInitialTime(element) && element.initialTime) ||
 	(hasInitialDate(element) && element.initialDate) ||
 	(hasInitialDateTime(element) && element.initialDateTime) ||

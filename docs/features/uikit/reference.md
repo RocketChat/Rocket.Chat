@@ -268,7 +268,7 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | --- | --- | --- | --- |
 | `type` | `'email_text_input'` | yes | A field for an email address. |
 | `placeholder` | `PlainText` | no |  |
-| `initialValue` | `string` | no |  |
+| `initial_value` | `string` | no |  |
 | `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
@@ -400,11 +400,11 @@ Source: [`packages/ui-kit/src/blocks/elements/NumberInputElement.ts`](../../../p
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'number_input'` | yes | A field that only takes numbers; the value is the number as typed, as a string. |
-| `isDecimalAllowed` | `boolean` | yes |  |
+| `is_decimal_allowed` | `boolean` | yes |  |
 | `placeholder` | `PlainText` | no |  |
-| `initialValue` | `string` | no |  |
-| `minValue` | `string` | no |  |
-| `maxValue` | `string` | no |  |
+| `initial_value` | `string` | no |  |
+| `min_value` | `string` | no |  |
+| `max_value` | `string` | no |  |
 | `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
@@ -533,7 +533,7 @@ Source: [`packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts`](../../../
 | --- | --- | --- | --- |
 | `type` | `'url_text_input'` | yes | A field for a URL. |
 | `placeholder` | `PlainText` | no |  |
-| `initialValue` | `string` | no |  |
+| `initial_value` | `string` | no |  |
 | `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
