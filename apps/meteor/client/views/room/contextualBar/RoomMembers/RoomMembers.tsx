@@ -20,7 +20,7 @@ import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
-import { MembersListDivider } from './MembersListDivider';
+import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
@@ -118,22 +118,22 @@ const RoomMembers = ({
 
 		if (owners.length > 0) {
 			counts.push(owners.length);
-			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+			titles.push(<MembersListGroupHeader title='Owners' count={owners.length} isFirst={titles.length === 0} />);
 		}
 
 		if (leaders.length > 0) {
 			counts.push(leaders.length);
-			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
+			titles.push(<MembersListGroupHeader title='Leaders' count={leaders.length} isFirst={titles.length === 0} />);
 		}
 
 		if (moderators.length > 0) {
 			counts.push(moderators.length);
-			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
+			titles.push(<MembersListGroupHeader title='Moderators' count={moderators.length} isFirst={titles.length === 0} />);
 		}
 
 		if (normalMembers.length > 0) {
 			counts.push(normalMembers.length);
-			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
+			titles.push(<MembersListGroupHeader title='Members' count={normalMembers.length} isFirst={titles.length === 0} />);
 		}
 
 		return { counts, titles };
@@ -180,7 +180,7 @@ const RoomMembers = ({
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
-							<Box paddingInline={24} paddingBlock={12}>
+							<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
 								<Box is='span' color='hint' fontScale='p2'>
 									{t('Showing_current_of_total', { current: members.length, total })}
 								</Box>

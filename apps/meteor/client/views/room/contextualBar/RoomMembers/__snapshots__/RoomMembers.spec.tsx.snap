@@ -129,7 +129,7 @@ exports[`renders Default without crashing 1`] = `
               __count__result_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-nyqak3"
+              class="rcx-box rcx-box--full rcx-css-mmr5oq"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-11p0js0"
@@ -727,7 +727,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
               __count__result_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-nyqak3"
+              class="rcx-box rcx-box--full rcx-css-mmr5oq"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-11p0js0"
@@ -947,7 +947,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
               __count__result_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-nyqak3"
+              class="rcx-box rcx-box--full rcx-css-mmr5oq"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-11p0js0"
