@@ -2,6 +2,8 @@ import rocketChatConfig from '@rocket.chat/eslint-config';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
+import i18nPlugin from './packages/i18n/eslint-plugin/index.js';
+
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	...rocketChatConfig,
@@ -478,6 +480,21 @@ export default [
 		rules: {
 			'@typescript-eslint/naming-convention': 'off',
 			'new-cap': 'off',
+		},
+	},
+	{
+		files: ['@(apps|ee|packages)/**/*.@(ts|tsx|js|jsx)'],
+		ignores: [
+			// Livechat ships its own translation files
+			'packages/livechat/**',
+			'**/*.@(spec|test|tests).@(ts|tsx|js|jsx)',
+			'**/*.@(stories|story).@(ts|tsx|js|jsx)',
+		],
+		plugins: {
+			'rocket.chat-i18n': i18nPlugin,
+		},
+		rules: {
+			'rocket.chat-i18n/valid-translation': 'error',
 		},
 	},
 ];
