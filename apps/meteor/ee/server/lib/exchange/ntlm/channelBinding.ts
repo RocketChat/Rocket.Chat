@@ -30,7 +30,6 @@ const SIGNATURE_OID_TO_HASH: Record<string, string> = {
 
 const DEFAULT_HASH = 'sha256';
 
-/** Returns the length and the offset of the content that follows it. */
 const readDerLength = (der: Buffer, offset: number): { length: number; contentStart: number } => {
 	const first = der[offset];
 
@@ -62,13 +61,6 @@ const decodeOid = (bytes: Buffer): string => {
 	return parts.join('.');
 };
 
-/**
- * `Certificate ::= SEQUENCE { tbsCertificate, signatureAlgorithm, signatureValue }`, so this skips the
- * outer header and tbsCertificate, then reads the AlgorithmIdentifier's first OID.
- *
- * Falls back rather than throwing: a wrong guess is a diagnosable authentication failure, while throwing
- * would take down a sync over an unrecognised certificate.
- */
 const certificateHashAlgorithm = (der: Buffer): string => {
 	try {
 		if (der[0] !== 0x30) {
@@ -101,10 +93,6 @@ const certificateHashAlgorithm = (der: Buffer): string => {
 	}
 };
 
-/**
- * The address fields stay zeroed because `tls-server-end-point` binds to the certificate, not to network
- * addresses. MD5 of the resulting struct is the value MS-NLMP expects.
- */
 export const computeChannelBindingHash = (certificateDer: Buffer): Buffer => {
 	const algorithm = certificateHashAlgorithm(certificateDer);
 	const certificateHash = createHash(algorithm).update(certificateDer).digest();
@@ -118,7 +106,6 @@ export const computeChannelBindingHash = (certificateDer: Buffer): Buffer => {
 	return createHash('md5').update(struct).digest();
 };
 
-/** Placement matters: `MsvAvEOL` has to stay last, and the pair has to be inside the block before hashing. */
 export const withChannelBindings = (targetInfo: Buffer, channelBindingHash: Buffer): Buffer => {
 	const pair = Buffer.alloc(4 + channelBindingHash.length);
 	pair.writeUInt16LE(AV_ID_CHANNEL_BINDINGS, 0);
@@ -128,14 +115,12 @@ export const withChannelBindings = (targetInfo: Buffer, channelBindingHash: Buff
 	const eolOffset = findEolOffset(targetInfo);
 
 	if (eolOffset === -1) {
-		// Append a fresh terminator rather than corrupting the block.
 		return Buffer.concat([targetInfo, pair, Buffer.alloc(4)]);
 	}
 
 	return Buffer.concat([targetInfo.subarray(0, eolOffset), pair, targetInfo.subarray(eolOffset)]);
 };
 
-/** Walks the list rather than assuming the terminator sits at the very end. */
 const findEolOffset = (targetInfo: Buffer): number => {
 	let offset = 0;
 
