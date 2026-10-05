@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 
 import type { ActionThis } from './definition';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../lib/authorization/hasPermission';
@@ -115,4 +116,15 @@ export function parseDeprecation(
 ): void {
 	const infoMessage = alternatives?.length ? ` Please use the alternative(s): ${alternatives.join(',')}` : '';
 	apiDeprecationLogger.endpoint(methodThis.route, version, methodThis.response, infoMessage);
+}
+
+/**
+ * Checks whether the workspace has a valid enterprise license.
+ *
+ * Use this to gate endpoints or features that should only be available in
+ * Enterprise Edition deployments. The equivalent module-level check for the
+ * Hono-based API layer lives in `ee/server/api/v1/middlewares/license.ts`.
+ */
+export function hasEnterpriseLicense(): boolean {
+	return License.hasValidLicense();
 }
