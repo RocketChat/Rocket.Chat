@@ -111,7 +111,6 @@ const collectPages = async (
 		cursor = page.cursor;
 
 		if (!page.hasMore) {
-			// Having reached the end of a read that started from scratch, what we hold is the whole window
 			const readEverything = !startCursor && !partial;
 
 			return {
@@ -130,8 +129,7 @@ const collectPages = async (
 	}
 };
 
-/** What a run removed, kept across the removals so work already committed survives a later failure. */
-type RemovalTally = { changed: boolean; removedEvents: boolean; deleted: number; pruned: number };
+type RemovalResult = { changed: boolean; removedEvents: boolean; deleted: number; pruned: number };
 
 /**
  * The three ways an event leaves: the provider named it, a series came back without it, or the window was
@@ -141,19 +139,19 @@ const applyRemovals = async (
 	uid: IUser['_id'],
 	timeWindow: DateRange,
 	{ upserts, removals, keepExternalIds, resyncedSeries }: Collected,
-	tally: RemovalTally,
+	removalResult: RemovalResult,
 ): Promise<void> => {
 	const options = { deferSideEffects: true } as const;
 
 	const record = (result: CalendarBatchResult): number => {
-		tally.changed = tally.changed || result.changed;
-		tally.removedEvents = tally.removedEvents || result.deleted > 0;
+		removalResult.changed = removalResult.changed || result.changed;
+		removalResult.removedEvents = removalResult.removedEvents || result.deleted > 0;
 
 		return result.deleted;
 	};
 
 	if (removals.size) {
-		tally.deleted = record(await Calendar.deleteImported(uid, [...removals], timeWindow.start, options));
+		removalResult.deleted = record(await Calendar.deleteImported(uid, [...removals], timeWindow.start, options));
 	}
 
 	if (resyncedSeries.length) {
@@ -162,7 +160,7 @@ const applyRemovals = async (
 
 	// Only from a complete set, and only after the upserts landed.
 	if (keepExternalIds) {
-		tally.pruned = record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
+		removalResult.pruned = record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
 	}
 };
 
@@ -185,7 +183,7 @@ export const syncCalendarWindow = async (
 	// Discarding an EWS cursor just because the time window changed would force a useless and expensive full sync.
 	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || provider.id !== 'graph');
 
-	const tally: RemovalTally = { changed: false, removedEvents: false, deleted: 0, pruned: 0 };
+	const removalResult: RemovalResult = { changed: false, removedEvents: false, deleted: 0, pruned: 0 };
 
 	try {
 		const collected = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
@@ -194,19 +192,19 @@ export const syncCalendarWindow = async (
 			[...collected.upserts.values()].map((event) => toCalendarEvent(uid, event)),
 			{ deferSideEffects: true },
 		);
-		tally.changed = imported.changed;
+		removalResult.changed = imported.changed;
 
-		await applyRemovals(uid, timeWindow, collected, tally);
+		await applyRemovals(uid, timeWindow, collected, removalResult);
 
 		await ExchangeCalendarSyncState.saveCursor(uid, identity, collected.cursor, new Date());
 
 		return {
 			upserted: imported.upserted,
 			modified: imported.modified,
-			deleted: tally.deleted,
-			pruned: tally.pruned,
-			changed: tally.changed,
-			removedEvents: tally.removedEvents,
+			deleted: removalResult.deleted,
+			pruned: removalResult.pruned,
+			changed: removalResult.changed,
+			removedEvents: removalResult.removedEvents,
 			failed: false,
 			fatal: false,
 		};
@@ -221,6 +219,13 @@ export const syncCalendarWindow = async (
 
 		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err: scrubForLog(err) });
 
-		return { ...EMPTY, changed: tally.changed, removedEvents: tally.removedEvents, failed: true, fatal: FATAL_CODES.has(code), error: err };
+		return {
+			...EMPTY,
+			changed: removalResult.changed,
+			removedEvents: removalResult.removedEvents,
+			failed: true,
+			fatal: FATAL_CODES.has(code),
+			error: err,
+		};
 	}
 };
