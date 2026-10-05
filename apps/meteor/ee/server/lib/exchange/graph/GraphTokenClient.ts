@@ -39,7 +39,6 @@ export class GraphTokenClient {
 
 	private config: GraphTokenClientConfig;
 
-	/** Serializes concurrent callers onto one in-flight request instead of stampeding the token endpoint. */
 	private inFlight: Promise<string> | null = null;
 
 	constructor(config: GraphTokenClientConfig) {

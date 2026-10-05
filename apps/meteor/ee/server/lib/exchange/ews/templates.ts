@@ -11,9 +11,6 @@ const XML_ESCAPES: Record<string, string> = {
 
 export const escapeXml = (value: string): string => value.replace(/[&<>"']/g, (char) => XML_ESCAPES[char]);
 
-/**
- * `ExchangeImpersonation` is what lets one service account read many mailboxes
- */
 export const envelope = (body: string, impersonatedMailbox?: string): string => {
 	const impersonation = impersonatedMailbox
 		? `<t:ExchangeImpersonation><t:ConnectingSID><t:PrimarySmtpAddress>${escapeXml(
@@ -81,7 +78,6 @@ export const getItemRequest = (mailbox: string, itemIds: string[]): string =>
 		mailbox,
 	);
 
-/** The only operation that carries no impersonation header, so it runs as the service account itself. */
 export const resolveNamesRequest = (mailbox: string): string =>
 	envelope(
 		[

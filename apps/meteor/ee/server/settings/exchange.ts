@@ -151,7 +151,6 @@ export function addSettings(): void {
 						invalidValue: '',
 					});
 
-					// The service account holding `ApplicationImpersonation`, not an end user's account.
 					await this.add('Exchange_EWS_Username', '', {
 						type: 'string',
 						enableQuery: ewsOnly,
@@ -177,7 +176,6 @@ export function addSettings(): void {
 						invalidValue: 'ntlm',
 					});
 
-					// An opt-in for a private authority
 					await this.add('Exchange_EWS_CA_Cert', '', {
 						type: 'string',
 						multiline: true,

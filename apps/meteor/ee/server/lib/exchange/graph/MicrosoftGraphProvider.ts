@@ -57,9 +57,6 @@ export const parseGraphDateTime = (value: GraphDateTimeTimeZone | undefined): Da
 
 const asString = (value: unknown): string | undefined => (typeof value === 'string' && value ? value : undefined);
 
-/** Only `busy` counts, matching the EWS `LegacyFreeBusyStatus` rule so presence behaves the same either way. */
-const isBusy = (showAs: unknown): boolean => showAs === 'busy';
-
 export class MicrosoftGraphProvider implements IExchangeProvider {
 	public readonly id = 'graph' as const;
 
@@ -109,7 +106,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private toExchangeEvent(event: GraphEvent): ExchangeEvent | undefined {
 		const externalId = asString(event.id);
 		if (!externalId) {
-			// No key means we could never update or delete it later.
 			logger.warn({ msg: 'Skipping Graph event without an id' });
 			return undefined;
 		}
@@ -136,7 +132,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			startTime,
 			...(endTime && { endTime }),
 			isCancelled: event.isCancelled === true,
-			busy: isBusy(event.showAs),
+			busy: event.showAs === 'busy',
 			...(meetingUrl && { meetingUrl }),
 			...(typeof event.reminderMinutesBeforeStart === 'number' && {
 				reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
@@ -147,7 +143,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	private async requestJson<T>(url: string, init: Omit<ExtendedFetchOptions, 'ignoreSsrfValidation' | 'allowList'> = {}): Promise<T> {
 		let response = await this.authorizedFetch(url, init);
 
-		// A cached token can still be rejected if the secret was rotated or the grant revoked.
 		if (response.status === 401) {
 			this.tokenClient.invalidate();
 			response = await this.authorizedFetch(url, init);
