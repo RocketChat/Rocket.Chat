@@ -6,4 +6,5 @@ export type EmailTextInputElement = Actionable<{
 	type: 'email_text_input';
 	placeholder?: PlainText;
 	initialValue?: string;
+	focusOnLoad?: boolean;
 }>;

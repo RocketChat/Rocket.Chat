@@ -16,9 +16,10 @@ const DatePickerElement = ({ block, context }: DatePickerElementProps) => {
 		<InputBox
 			type='date'
 			error={error}
-			value={value as string}
+			value={value}
 			disabled={loading}
 			id={actionId}
+			autoFocus={block.focusOnLoad}
 			name={actionId}
 			rows={6}
 			placeholder={fromTextObjectToString(placeholder)}

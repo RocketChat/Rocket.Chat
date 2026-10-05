@@ -19,6 +19,7 @@ const TimePickerElement = ({ block, context }: TimePickerElementProps) => {
 			value={value}
 			disabled={loading}
 			id={actionId}
+			autoFocus={block.focusOnLoad}
 			name={actionId}
 			rows={6}
 			placeholder={fromTextObjectToString(placeholder)}

@@ -34,6 +34,7 @@ const DateTimePickerElement = ({ block, context }: DateTimePickerElementProps) =
 			value={toLocalInputValue(value)}
 			disabled={loading}
 			id={block.actionId}
+			autoFocus={block.focusOnLoad}
 			name={block.actionId}
 			onInput={handleInput}
 		/>
