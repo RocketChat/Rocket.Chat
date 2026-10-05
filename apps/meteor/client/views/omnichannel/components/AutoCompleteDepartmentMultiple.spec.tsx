@@ -26,8 +26,8 @@ it('should render autocomplete with checkbox', async () => {
 	await userEvent.click(screen.getByRole('listbox'));
 
 	await waitFor(() => {
-		const checkbox = within(screen.getByRole('option', { name: 'Test Department' })).getByRole('checkbox');
-		expect(checkbox).toBeInTheDocument();
+		const option = screen.getByRole('option', { name: 'Test Department' });
+		expect(within(option).getByRole('checkbox', { hidden: true })).toBeInTheDocument();
 	});
 });
 
@@ -44,7 +44,7 @@ it('should render autocomplete without checkbox', async () => {
 	await userEvent.click(screen.getByRole('listbox'));
 
 	await waitFor(() => {
-		const checkbox = within(screen.getByRole('option', { name: 'Test Department' })).queryByRole('checkbox');
+		const checkbox = within(screen.getByRole('option', { name: 'Test Department' })).queryByRole('checkbox', { hidden: true });
 		expect(checkbox).not.toBeInTheDocument();
 	});
 });
