@@ -17,6 +17,7 @@ const FormattedTextInputElement = ({ block, context }: FormattedTextInputElement
 			<NumberInput
 				disabled={loading}
 				id={block.actionId}
+				autoFocus={block.focus_on_load}
 				name={block.actionId}
 				error={error}
 				value={value}
@@ -36,6 +37,7 @@ const FormattedTextInputElement = ({ block, context }: FormattedTextInputElement
 		<Input
 			disabled={loading}
 			id={block.actionId}
+			autoFocus={block.focus_on_load}
 			name={block.actionId}
 			error={error}
 			value={value}
