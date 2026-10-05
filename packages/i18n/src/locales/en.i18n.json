@@ -1577,6 +1577,7 @@
   "Copy_link": "Copy link",
   "Copy_password": "Copy password",
   "Copy_phone_number": "Copy phone number",
+  "Copy_phone_number__user_": "Copy {{user}} phone number",
   "Copy_text": "Copy text",
   "COPY_TO_CLIPBOARD": "COPY TO CLIPBOARD",
   "Copy_to_clipboard": "Copy to clipboard",
