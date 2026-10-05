@@ -31,7 +31,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 			: TElement extends DatePickerElement
 				? DatePickerElement['initialDate']
 				: TElement extends DateTimePickerElement
-					? DateTimePickerElement['initialDateTime']
+					? DateTimePickerElement['initial_date_time']
 					: TElement extends LinearScaleElement
 						? LinearScaleElement['initialValue']
 						: TElement extends MultiChannelsSelectElement

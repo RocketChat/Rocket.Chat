@@ -222,7 +222,7 @@ export const inputWithDateTimePicker: readonly UiKit.LayoutBlock[] = [
 			appId: 'dummy-app-id',
 			blockId: 'dummy-block-id',
 			type: 'datetimepicker',
-			initialDateTime: 1791216000,
+			initial_date_time: 1791216000,
 			actionId: 'input-0',
 		},
 		label: {

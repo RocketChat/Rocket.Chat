@@ -252,7 +252,7 @@ Source: [`packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts`](../../.
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'datetimepicker'` | yes | Picks a date and a time together; the value is a Unix timestamp in seconds, shown in the user's time zone. |
-| `initialDateTime` | `number` | no |  |
+| `initial_date_time` | `number` | no |  |
 | `focusOnLoad` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |

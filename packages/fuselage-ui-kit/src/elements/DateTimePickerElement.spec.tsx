@@ -11,7 +11,7 @@ const element: UiKit.DateTimePickerElement = {
 	blockId: 'block',
 	actionId: 'when',
 	// Built from local fields so the expectation holds in any time zone.
-	initialDateTime: new Date(2026, 9, 5, 14, 30).getTime() / 1000,
+	initial_date_time: new Date(2026, 9, 5, 14, 30).getTime() / 1000,
 };
 
 const renderPicker = (updateState = jest.fn()) =>
