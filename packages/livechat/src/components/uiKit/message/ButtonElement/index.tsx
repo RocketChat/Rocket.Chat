@@ -14,7 +14,17 @@ export type ButtonElementProps = uikit.ButtonElement & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 
-const ButtonElement = ({ text, actionId, url, value, style, context, confirm, parser }: ButtonElementProps) => {
+const ButtonElement = ({
+	text,
+	actionId,
+	url,
+	value,
+	style,
+	context,
+	confirm,
+	parser,
+	accessibility_label: accessibilityLabel,
+}: ButtonElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 
 	const handleClick = useCallback(
@@ -49,6 +59,7 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			})}
 			disabled={performingAction}
 			type='button'
+			aria-label={accessibilityLabel}
 			onClick={handleClick}
 			onMouseUp={handleMouseUp}
 		>
