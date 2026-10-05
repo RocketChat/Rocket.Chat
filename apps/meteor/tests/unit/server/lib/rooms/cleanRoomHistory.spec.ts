@@ -73,10 +73,13 @@ describe('cleanRoomHistory', () => {
 		const count = await cleanRoomHistory({ rid: 'rid' });
 
 		expect(count).to.equal(2005);
+		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[4])).to.deep.equal([
+			1000, 1000, 1000,
+		]);
 		expect(modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[7])).to.deep.equal(batches);
 		expect(modelsMock.ReadReceipts.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
 		expect(modelsMock.ReadReceiptsArchive.removeByMessageIds.getCalls().map((call) => call.args[0])).to.deep.equal(batches);
-		expect(broadcastMock.calledOnceWith('notify.deleteMessageBulk', 'rid', sinon.match({ ids: undefined }))).to.be.true;
+		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal(batches);
 	});
 
 	it('never selects more messages than the requested limit', async () => {
@@ -88,7 +91,7 @@ describe('cleanRoomHistory', () => {
 
 		expect(count).to.equal(1500);
 		expect(modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.getCalls().map((call) => call.args[4])).to.deep.equal([1000, 500]);
-		expect(broadcastMock.firstCall.args[2].ids).to.have.lengthOf(1500);
+		expect(broadcastMock.getCalls().map((call) => call.args[2].ids.length)).to.deep.equal([1000, 500]);
 	});
 
 	it('still reflects the batches already deleted when a later batch fails', async () => {
@@ -99,7 +102,7 @@ describe('cleanRoomHistory', () => {
 		await expect(cleanRoomHistory({ rid: 'rid' })).to.be.rejectedWith('database unavailable');
 
 		expect(modelsMock.Rooms.resetLastMessageById.calledOnceWith('rid', sinon.match.any, -2000)).to.be.true;
-		expect(broadcastMock.calledOnceWith('notify.deleteMessageBulk', 'rid')).to.be.true;
+		expect(broadcastMock.getCalls().map((call) => call.args[2].ids)).to.deep.equal([ids('a', 1000), ids('b', 1000)]);
 	});
 
 	it('clears pruned threads from unread lists in bounded batches', async () => {

@@ -106,4 +106,13 @@ describe('deleteMany with a trash collection', () => {
 		expect(deleteMany.mock.calls.map(([filter]) => filter._id.$in.length)).toEqual([1000, 1000, 500]);
 		expect(deletedCount).toBe(2500);
 	});
+
+	it('does not issue an empty delete after a full chunk', async () => {
+		docs = Array.from({ length: 1000 }, (_, i) => ({ _id: `id${i}`, name: `name${i}`, password: 'x' }));
+
+		const { deletedCount } = await new TrashedModel().deleteMany({}, { bulkTrash: true });
+
+		expect(deleteMany).toHaveBeenCalledTimes(1);
+		expect(deletedCount).toBe(1000);
+	});
 });
