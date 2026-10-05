@@ -193,6 +193,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private getMainCall(skipLocal = false): ClientMediaCall | null {
 		let ringingCall: ClientMediaCall | null = null;
 		let pendingCall: ClientMediaCall | null = null;
+		const heldCalls: ClientMediaCall[] = [];
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored || !call.initialized) {
@@ -203,7 +204,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 
 			if (call.busy) {
-				return call;
+				if (!call.held) {
+					return call;
+				}
+				heldCalls.push(call);
+				continue;
 			}
 			if (call.state === 'ringing' && !ringingCall) {
 				ringingCall = call;
@@ -214,7 +219,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				continue;
 			}
 		}
-		return ringingCall || pendingCall;
+		if (ringingCall || pendingCall) {
+			return ringingCall || pendingCall;
+		}
+
+		// With nothing but held calls, keep the one that was already the main call
+		const { mainCall: lastMainCall } = this.lastState;
+		return (lastMainCall && heldCalls.includes(lastMainCall) ? lastMainCall : heldCalls[0]) ?? null;
 	}
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
@@ -295,6 +306,24 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
+	}
+
+	/** Puts the main call on hold and starts a call to `calleeId`, to consult them before transferring the held call to them */
+	public async startAttendedTransfer(
+		calleeType: CallActorType,
+		calleeId: string,
+		params: { contactInfo?: CallContact } = {},
+	): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startAttendedTransfer', calleeId);
+		const heldCall = this.getMainCall(false);
+		if (!heldCall?.busy || heldCall.hidden) {
+			throw new Error('No call to transfer.');
+		}
+
+		heldCall.setHeld(true);
+
+		const call = this.createCall(this.createTemporaryCallId());
+		await call.requestAttendedTransfer(heldCall.callId, { type: calleeType, id: calleeId }, params.contactInfo);
 	}
 
 	public setIceGatheringTimeout(newTimeout: number): void {

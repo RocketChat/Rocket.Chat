@@ -14,6 +14,8 @@ export type InternalCallParams = {
 	requestedCallId?: string;
 	requestedService?: CallService;
 	parentCallId?: string;
+	/** The call is a consultation before an attended transfer, so the parent call is neither replaced nor hung up */
+	attended?: boolean;
 	requestedBy?: MediaCallSignedContact;
 	features: CallFeature[];
 	divertedBy?: MediaCallContact;

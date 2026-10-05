@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
+	ClientMediaSignalAttendedTransfer,
 	ClientMediaSignalTransfer,
 	CallHangupReason,
 	CallRole,
@@ -130,6 +131,8 @@ export class UserActorSignalProcessor {
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
 			case 'transfer':
 				return this.processCallTransfer(signal.to);
+			case 'attended-transfer':
+				return this.processAttendedTransfer(signal.to, signal.requestedCallId);
 			case 'dtmf':
 				return this.processDTMF(signal.dtmf, signal.duration);
 			case 'mute':
@@ -295,6 +298,42 @@ export class UserActorSignalProcessor {
 		};
 
 		return mediaCallDirector.transferCall(this.call, to, self, this.agent);
+	}
+
+	private async processAttendedTransfer(to: ClientMediaSignalAttendedTransfer['to'], requestedCallId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processAttendedTransfer', to, requestedCallId });
+		if (!isBusyState(this.call.state) || this.call.service !== 'webrtc') {
+			return;
+		}
+
+		const self: MediaCallSignedContact = {
+			...this.agent.getMyCallActor(this.call),
+			...this.actor,
+		};
+
+		const rejection = { callId: requestedCallId, toContractId: self.contractId, reason: 'invalid-call-id' } as const;
+
+		// The requestedCallId must never match a real call id
+		if (await MediaCalls.findOneById(requestedCallId, { projection: { _id: 1 } })) {
+			getMediaCallServer().sendSignal(self.id, { type: 'rejected-call-request', ...rejection });
+			return;
+		}
+
+		// A request that was already processed won't create a second call
+		if (await MediaCalls.findOneByCallerRequestedId(requestedCallId, { type: self.type, id: self.id })) {
+			return;
+		}
+
+		await getMediaCallServer().requestCall({
+			caller: self,
+			callee: to,
+			requestedCallId,
+			requestedService: this.call.service,
+			requestedBy: self,
+			parentCallId: this.call._id,
+			attended: true,
+			features: this.call.features as CallFeature[],
+		});
 	}
 
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
