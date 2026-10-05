@@ -1,5 +1,5 @@
-import type { DeviceSelection } from '@rocket.chat/ui-conference';
 import { callDeviceIdField, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import type { DeviceSelection } from '@rocket.chat/ui-media';
 import { useMediaDevices } from '@rocket.chat/ui-media';
 import type { Room } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';

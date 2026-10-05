@@ -76,7 +76,5 @@ export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fix
 export { CallStateProvider, CallActionsProvider } from './call/context';
 export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions } from './call/context';
 // Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
-export { DeviceSelectionProvider } from './devices/DeviceSelectionContext';
-export type { DeviceSelection } from './devices/DeviceSelectionContext';
 export { PreviewVideoContext } from './call/previewVideo';
 export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

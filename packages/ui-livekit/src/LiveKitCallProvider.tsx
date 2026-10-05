@@ -9,8 +9,9 @@ import {
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
-import { CallActionsProvider, CallStateProvider, DeviceSelectionProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import { CallActionsProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { ConnectionState, Room, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
