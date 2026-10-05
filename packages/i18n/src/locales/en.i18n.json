@@ -2798,6 +2798,7 @@
   "Exchange_Mode": "Integration mode",
   "Exchange_Mode_Description": "Legacy asks each user to sign in to Exchange from the desktop app. Server-to-server uses one administrator-configured connection and covers every platform.",
   "Exchange_Mode_Legacy": "Legacy (per user, desktop app only)",
+  "Exchange_Mode_Legacy_Deprecation_Alert": "<strong>Legacy</strong> is deprecated and will be removed in the next major release. Switch to <strong>Server-to-server</strong>, which an administrator configures once and which covers web, mobile and desktop.",
   "Exchange_Mode_Server": "Server-to-server (all platforms)",
   "Exchange_Server_Sync": "Server-to-server (all platforms)",
   "Exchange_Server_Sync_Description": "One administrator-configured connection reads every mailbox, so no user signs in and it works on web, mobile and desktop. Calendars and contacts each sync on their own interval.",
