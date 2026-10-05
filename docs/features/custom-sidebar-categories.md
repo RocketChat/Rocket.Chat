@@ -73,7 +73,7 @@ POST /experimental/rooms.setCategory
 { roomIds: string[], category: string | null }
 ```
 
-- Requires `experimental-enterprise-features` license.
+- Requires an enterprise license (`License.hasValidLicense()`); without one it fails with `error-action-not-allowed`.
 - Rejects system group keys (`SIDEBAR_SYSTEM_GROUP_KEYS`) as the target category.
 - Verifies the target category exists in the user's `sidebarCategories` preference before writing.
 - Writes to `subscription.category` and fires change notifications.
