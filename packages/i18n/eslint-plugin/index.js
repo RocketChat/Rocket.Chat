@@ -57,10 +57,10 @@ const collectStrings = (value) => {
 };
 
 /**
- * Finds every base-language entry a lookup of `key` can resolve to: the entry itself, its plural forms and the
- * namespaced variants. Returns the translations of all of them.
+ * Lists the base-language keys a lookup of `key` can resolve to. The unqualified key only belongs to the `core`
+ * namespace, so it's a candidate only when `core` is being looked up.
  */
-const resolveEntries = (resource, key, namespaces) => {
+const lookupCandidates = (key, namespaces) => {
 	let lookupKey = key;
 	let lookupNamespaces = namespaces;
 
@@ -70,10 +70,16 @@ const resolveEntries = (resource, key, namespaces) => {
 		lookupKey = key.slice(qualifier.length + 1);
 	}
 
-	const candidates = lookupNamespaces.map((ns) => (ns === defaultNamespace ? lookupKey : `${ns}.${lookupKey}`));
+	return lookupNamespaces.map((ns) => (ns === defaultNamespace ? lookupKey : `${ns}.${lookupKey}`));
+};
 
+/**
+ * Finds every base-language entry a lookup of `key` can resolve to: the entry itself, its plural forms and the
+ * namespaced variants. Returns the translations of all of them.
+ */
+const resolveEntries = (resource, key, namespaces) => {
 	const found = [];
-	for (const candidate of candidates) {
+	for (const candidate of lookupCandidates(key, namespaces)) {
 		if (resource.has(candidate)) found.push({ key: candidate, value: resource.get(candidate) });
 		for (const suffix of pluralSuffixes) {
 			const pluralKey = `${candidate}_${suffix}`;
@@ -81,6 +87,20 @@ const resolveEntries = (resource, key, namespaces) => {
 		}
 	}
 	return found;
+};
+
+/** Finds the `${key}_${context}` variants of a key, leaving out its plural forms */
+const resolveContextVariants = (resource, key, namespaces) => {
+	const pluralSuffixPattern = new RegExp(`^(${pluralSuffixes.join('|')})$`);
+	const variants = [];
+	for (const candidate of lookupCandidates(key, namespaces)) {
+		for (const [resourceKey, value] of resource) {
+			if (!resourceKey.startsWith(`${candidate}_`)) continue;
+			if (pluralSuffixPattern.test(resourceKey.slice(candidate.length + 1))) continue;
+			variants.push({ key: resourceKey, value });
+		}
+	}
+	return variants;
 };
 
 const collectPlaceholders = (resource, entries, namespaces, visited = new Set()) => {
@@ -250,13 +270,13 @@ const validTranslation = {
 		const { sourceCode } = context;
 		const resource = loadResource();
 
-		const validate = ({ keyNode, optionsNode, hasExtraArguments, namespaces, explicitCount, reportNode }) => {
+		const validate = ({ keyNode, optionsNode, hasExtraArguments, hasDefaults, namespaces, explicitCount, reportNode }) => {
 			const keys = staticKeys(keyNode);
 			if (!keys) return;
 
 			const parsed = optionsNode?.type === 'ObjectExpression' ? readOptions(optionsNode) : undefined;
 			const hasContext = parsed?.options.has('context') ?? false;
-			const hasDefaultValue = parsed?.options.has('defaultValue') ?? false;
+			const hasDefaultValue = hasDefaults || (parsed?.options.has('defaultValue') ?? false);
 
 			for (const key of keys) {
 				// App translations are registered at runtime and can't be known from the base language
@@ -265,12 +285,20 @@ const validTranslation = {
 				let entries = resolveEntries(resource, key, namespaces);
 				let selectedByContext = false;
 
-				if (!entries.length && hasContext) {
-					selectedByContext = true;
-					// `context` selects among `${key}_${context}` variants
-					entries = [...resource.keys()]
-						.filter((candidate) => candidate.startsWith(`${key}_`))
-						.map((candidate) => ({ key: candidate, value: resource.get(candidate) }));
+				if (hasContext) {
+					// i18next prefers the `${key}_${context}` variant and falls back to the plain key
+					const contextValues = staticKeys(parsed.options.get('context').value);
+					if (contextValues) {
+						const variants = contextValues.flatMap((value) => resolveEntries(resource, `${key}_${value}`, namespaces));
+						if (variants.length) entries = variants;
+					} else {
+						const variants = resolveContextVariants(resource, key, namespaces);
+						if (variants.length) {
+							// Which variant applies is unknown, so params can only be checked for extras
+							selectedByContext = true;
+							entries = [...entries, ...variants];
+						}
+					}
 				}
 
 				if (!entries.length) {
@@ -368,6 +396,9 @@ const validTranslation = {
 				const keyNode = unwrap(attributes.get('i18nKey'));
 				if (!keyNode) return;
 
+				// `defaults` is the fallback text, same as `defaultValue` for `t()`
+				const hasDefaults = attributes.has('defaults');
+
 				const valuesNode = unwrap(attributes.get('values'));
 				const namespaces = staticStrings(unwrap(attributes.get('ns'))) ?? [defaultNamespace];
 
@@ -375,6 +406,7 @@ const validTranslation = {
 					keyNode,
 					// Params can't be verified when they may come from spread props, `tOptions` or a dynamic `values`
 					optionsNode: valuesNode ?? { type: 'ObjectExpression', properties: [] },
+					hasDefaults,
 					hasExtraArguments:
 						hasSpread || attributes.has('tOptions') || attributes.has('context') || (valuesNode && valuesNode.type !== 'ObjectExpression'),
 					namespaces,

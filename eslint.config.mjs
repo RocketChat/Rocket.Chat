@@ -485,8 +485,8 @@ export default [
 	{
 		files: ['@(apps|ee|packages)/**/*.@(ts|tsx|js|jsx)'],
 		ignores: [
-			// Livechat ships its own translation files
-			'packages/livechat/**',
+			// These packages ship their own translation files
+			'packages/@(livechat|onboarding-ui|layout)/**',
 			'**/*.@(spec|test|tests).@(ts|tsx|js|jsx)',
 			'**/*.@(stories|story).@(ts|tsx|js|jsx)',
 		],
