@@ -12,7 +12,6 @@ export interface IExchangeProvider {
 	readonly id: ExchangeProviderId;
 	readonly capabilities: ExchangeProviderCapabilities;
 
-	/** Fails closed, and never falls back to another endpoint: that would break the air gap. */
 	testConnection(): Promise<void>;
 
 	/** `timeWindow` bounds the range, `cursor` is an opaque delta token, omitted for an initial sync. */
