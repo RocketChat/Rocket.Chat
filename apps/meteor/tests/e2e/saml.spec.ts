@@ -315,7 +315,7 @@ test.describe('SAML', () => {
 	const doLogoutStep = async (page: Page) => {
 		await test.step('logout', async () => {
 			await page.getByRole('button', { name: 'User menu' }).click();
-			await page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+			await page.getByRole('menuitem', { name: 'Logout' }).click();
 
 			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
