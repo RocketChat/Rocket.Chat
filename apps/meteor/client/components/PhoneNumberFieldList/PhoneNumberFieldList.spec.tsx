@@ -23,7 +23,8 @@ const appRoot = mockAppRoot()
 		__field__is_invalid: '{{field}} is invalid',
 		Add_number: 'Add number',
 		Remove_number__label__: 'Remove number {{label}}',
-		Phone_number_placeholder: 'Phone number',
+		Label: 'Label',
+		Phone_label_hint: 'Others can see name alongside number',
 		Phone_label_placeholder: 'Label',
 		Label_for_phone_number__label__: 'Label for phone number {{label}}',
 		Max_length_is: 'Max length is %s',
@@ -160,7 +161,7 @@ describe('PhoneNumberFieldList', () => {
 			await waitFor(() => expect(labelInput).toHaveAccessibleDescription(/Max length is/));
 		});
 
-		it('does not show an error when the label is exactly 50 characters', async () => {
+		it('only shows the hint when the label is exactly 50 characters', async () => {
 			render(
 				<TestComponent
 					initialPhones={[{ id: 'phone-1', number: '+15551234567', label: '' }]}
@@ -173,7 +174,7 @@ describe('PhoneNumberFieldList', () => {
 			await userEvent.type(labelInput, 'a'.repeat(50));
 			await userEvent.tab();
 
-			await waitFor(() => expect(labelInput).not.toHaveAccessibleDescription());
+			await waitFor(() => expect(labelInput).toHaveAccessibleDescription('Others can see name alongside number'));
 		});
 	});
 });
