@@ -28,14 +28,14 @@ it('says a member declined, even while their ring window is still open', () => {
 	const now = new Date();
 	renderRow({ ...base, joined: false, ringingAt: now, declined: true, declinedAt: now });
 
-	expect(screen.getByText('Declined')).toBeInTheDocument();
-	expect(screen.queryByText('Ringing')).not.toBeInTheDocument();
+	expect(screen.getByRole('listitem')).toHaveTextContent('Declined');
+	expect(screen.getByRole('listitem')).not.toHaveTextContent('Ringing');
 });
 
 it('says a member is ringing while they have not answered', () => {
 	renderRow({ ...base, joined: false, ringingAt: new Date() });
 
-	expect(screen.getByText('Ringing')).toBeInTheDocument();
+	expect(screen.getByRole('listitem')).toHaveTextContent('Ringing');
 });
 
 // Declined and no longer ringing, so there is something to ring them back for — `getConferenceMemberStatus` is

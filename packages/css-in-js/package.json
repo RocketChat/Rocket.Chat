@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/css-in-js",
-	"version": "0.33.1",
+	"version": "0.33.2-rc.0",
 	"description": "Toolset to transpile and use CSS on runtime",
 	"keywords": [
 		"rocket.chat",
@@ -49,9 +49,9 @@
 		"@rollup/plugin-node-resolve": "~16.0.3",
 		"@rollup/plugin-terser": "~1.0.0",
 		"@rollup/plugin-typescript": "~12.3.0",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
-		"rollup": "~4.62.4",
+		"rollup": "~4.62.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

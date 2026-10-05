@@ -7,6 +7,7 @@ export {
 	usePeekMediaSessionState,
 	usePeekMediaSessionPeerInfo,
 	usePeekMediaSessionFeatures,
+	usePeekMediaSessionHidden,
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
@@ -19,3 +20,7 @@ export * from './definitions/callHistoryContacts';
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 
 export * from './views/MediaCallHistoryTable';
+
+export { ActionButton, ToggleButton } from './components';
+export { useDevicePermissionPrompt2, stopTracks } from './hooks';
+export { usePlayMediaStream } from './providers/usePlayMediaStream';

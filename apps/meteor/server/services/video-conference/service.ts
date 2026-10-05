@@ -212,12 +212,33 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
-			throw new Error(e);
-		});
+		// Only a provider supplied by an app has an app to ask; the apps engine throws for a built-in one.
+		if (!this.isEmbeddedProvider(call.providerName)) {
+			const blocks = await (
+				await this.getProviderManager()
+			)
+				.getVideoConferenceInfo(call.providerName, call, user || undefined)
+				.catch((e) => {
+					throw new Error(e);
+				});
 
-		if (blocks?.length) {
-			return blocks as UiKit.ModalSurfaceLayout;
+			if (blocks?.length) {
+				return blocks as UiKit.ModalSurfaceLayout;
+			}
+		}
+
+		// A call held in our own window has no URL to offer, so it says who is in it instead.
+		if (!call.url) {
+			return [
+				{
+					blockId: 'videoconf-info',
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: i18n.t('__count__people_in_the_call', { count: call.users.filter(isInVideoConference).length }),
+					},
+				},
+			];
 		}
 
 		return [
@@ -1681,7 +1702,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					await this.endCall(call._id);
 				}
 			} catch (err) {
-				// One unreachable provider or one malformed call must not stop the sweep for every other call.
+				// One malformed call must not stop the sweep for every other call.
 				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
 			}
 		}

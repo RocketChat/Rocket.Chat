@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
+import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
@@ -25,7 +26,7 @@ import {
 	useLayout,
 	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -45,6 +46,7 @@ import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
 
@@ -135,6 +137,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
+	// Refresh the user card, full profile and admin panel views of this user.
+	const refreshUserViews = async () => {
+		await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+		await queryClient.invalidateQueries({ queryKey: ['users'] });
+	};
+
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
 			email,
@@ -164,17 +172,26 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomDate ||
 			dirtyFields.statusCustomTime;
 
+		// Untouched fields are left out so a save never rewrites what the user did not change.
+		const emailChanged = Boolean(dirtyFields.email) && (!user || getUserEmailAddress(user) !== email);
+		const basicInfoData = {
+			...(dirtyFields.name && { name }),
+			...(emailChanged && { email }),
+			...(dirtyFields.username && { username }),
+			...(dirtyFields.nickname && { nickname }),
+			...(dirtyFields.bio && { bio }),
+		};
+		const customFieldsDirty = Boolean(dirtyFields.customFields);
+		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
+
 		try {
-			await updateOwnBasicInfo({
-				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					nickname,
-					bio,
-				},
-				customFields,
-			});
+			if (basicInfoDirty) {
+				await updateOwnBasicInfo({
+					data: basicInfoData,
+					...(customFieldsDirty && { customFields }),
+				});
+				await refreshUserViews();
+			}
 
 			if (dirtyFields.statusVisibilityDenied) {
 				await setPreferences({ data: { statusVisibilityDenied } });
@@ -188,9 +205,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				});
 			}
 
-			await updateAvatar();
+			if (dirtyFields.avatar) {
+				await updateAvatar();
+				await refreshUserViews();
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(values);
+			// A submitted avatar must not become the default, or picking another one would not dirty the form.
+			reset({ ...values, avatar: '' as AvatarObject });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

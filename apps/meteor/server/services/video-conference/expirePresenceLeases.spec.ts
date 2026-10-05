@@ -64,14 +64,14 @@ describe('VideoConfService.expirePresenceLeases', () => {
 			VideoConferenceModelMock.setDataById,
 			VideoConferenceModelMock.setStatusById,
 		);
-		// `resetAll` only clears history — restore the behaviours the tests below replace.
+		// `resetAll` only clears history — restore the behaviours that some tests replace.
+		VideoConferenceModelMock.setUserLeftById.resetBehavior();
+		VideoConferenceModelMock.setUserLeftById.callsFake(markMemberLeft);
 		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
 			async *[Symbol.asyncIterator]() {
 				yield cloneFixture(fixture);
 			},
 		}));
-		VideoConferenceModelMock.setUserLeftById.resetBehavior();
-		VideoConferenceModelMock.setUserLeftById.callsFake(markMemberLeft);
 	});
 
 	// The case this exists for: the workspace was down while the call carried on in the provider, so the leave
@@ -120,8 +120,7 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
 	});
 
-	// One call that throws must not stop the sweep before it reaches the next one — otherwise a single bad
-	// record keeps every later call's members present forever, which is the situation the sweep exists to fix.
+	// One bad call must not cost every other call its sweep: the loop catches per call, and this is what says so.
 	it('carries on to the next call when one of them fails', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
 		const second = buildGroupCall([buildMember({ _id: 'gone2', lastSeenAt: at(-PRESENCE_LEASE_MS) })], { _id: 'call2' });
@@ -131,7 +130,7 @@ describe('VideoConfService.expirePresenceLeases', () => {
 				yield cloneFixture(second);
 			},
 		}));
-		VideoConferenceModelMock.setUserLeftById.onFirstCall().rejects(new Error('the write failed'));
+		VideoConferenceModelMock.setUserLeftById.withArgs('call1').rejects(new Error('write failed'));
 
 		await service.expirePresenceLeases(at(0));
 

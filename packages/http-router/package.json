@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.23",
+	"version": "7.9.24-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.20.0",
 		"express": "^4.21.2",
-		"hono": "4.13.5",
+		"hono": "4.13.11",
 		"qs": "^6.15.3"
 	},
 	"devDependencies": {
@@ -31,10 +31,9 @@
 		"@types/express": "^4.17.25",
 		"@types/jest": "~30.0.0",
 		"@types/supertest": "~6.0.3",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"jest": "~30.2.0",
 		"supertest": "~7.1.4",
-		"ts-jest": "~29.4.12",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

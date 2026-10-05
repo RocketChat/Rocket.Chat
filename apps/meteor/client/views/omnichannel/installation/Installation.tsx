@@ -2,8 +2,7 @@ import { Box, CodeSnippet } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl, useSetting } from '@rocket.chat/ui-contexts';
-import DOMPurify from 'dompurify';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const Installation = () => {
 	const { t } = useTranslation();
@@ -26,13 +25,13 @@ const Installation = () => {
 			<PageHeader title={t('Installation')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' alignSelf='center'>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: DOMPurify.sanitize(
-								t('To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site'),
-							),
-						}}
-					/>
+					<p>
+						<Trans
+							i18nKey='To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site'
+							values={{ bodyTag: '</body>' }}
+							components={{ bold: <Box is='span' fontWeight='bold' /> }}
+						/>
+					</p>
 					<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()}>
 						{installString}
 					</CodeSnippet>

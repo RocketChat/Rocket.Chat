@@ -1044,10 +1044,8 @@ describe('[Groups]', () => {
 					.expect(200),
 				updatePermission('kick-user-from-any-p-room', []),
 				updatePermission('remove-user', ['admin', 'owner', 'moderator']),
-				deleteUser(testUserModerator),
-				deleteUser(testUserOwner),
-				deleteUser(testUserMember),
 			]);
+			await Promise.all([deleteUser(testUserModerator), deleteUser(testUserOwner), deleteUser(testUserMember)]);
 		});
 
 		it("should return an error when user is not a member of the group and doesn't have permission", async () => {
@@ -2132,9 +2130,9 @@ describe('[Groups]', () => {
 				}),
 			);
 			await deleteTeam(credentials, team.name);
-			await deleteUser(testUser);
 			await updatePermission('create-c', ['admin', 'user']);
 			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
+			await deleteUser(testUser, { confirmRelinquish: true });
 		});
 
 		it('should change the type of the group to a channel', async () => {
@@ -2466,10 +2464,9 @@ describe('[Groups]', () => {
 			testModeratorTeamGroup = teamModeratorGroupResponse.body.group;
 		});
 		after(async () => {
-			await deleteUser(invitedUser);
-			await deleteUser(moderatorUser);
 			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 			await updatePermission('delete-team-group', ['admin', 'owner', 'moderator']);
+			await Promise.all([deleteUser(invitedUser, { confirmRelinquish: true }), deleteUser(moderatorUser)]);
 		});
 		it('should succesfully delete a group', async () => {
 			await request

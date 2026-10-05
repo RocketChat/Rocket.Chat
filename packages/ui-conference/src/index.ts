@@ -12,6 +12,7 @@ export type {
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,
+	PreflightMedia,
 	UserPickerProps,
 } from './context/definitions';
 
@@ -33,8 +34,14 @@ export { default as ConferenceErrorState } from './components/ConferenceErrorSta
 export { default as OngoingCallsList } from './components/OngoingCalls/OngoingCallsList';
 export { default as SwitchCallModal } from './components/SwitchCallModal';
 
-export { useCallDevicesInitialState, useCallRingPreference, callPreferencesStorageKey } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference } from './hooks/useCallDevicesInitialState';
+export {
+	useCallDevicesInitialState,
+	useCallRingPreference,
+	callPreferencesStorageKey,
+	useUpdateCallPreferences,
+	callDeviceIdField,
+} from './hooks/useCallDevicesInitialState';
+export type { CallPreferences, CallRingPreference, CallDevices } from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -64,3 +71,13 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 
 // Shared with the application's own specs, which build the same calls and members this package's do.
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
+
+// A call running in this window: the provider that runs it fills these, and the window's call parts read them.
+export { CallStateProvider, CallActionsProvider } from './call/context';
+export type { CallState, CallSelf, CallConnectionState, RemoteParticipantInfo, CallActions } from './call/context';
+// Filled by the call with what its room has open, so the in-call device menus switch the room's devices.
+export { DeviceSelectionProvider } from './devices/DeviceSelectionContext';
+export type { DeviceSelection } from './devices/DeviceSelectionContext';
+export { useMediaDevices } from './call/hooks/useMediaDevices';
+export { PreviewVideoContext } from './call/previewVideo';
+export type { PreviewVideo, PreviewVideoProviderProps, PreviewVideoTrack } from './call/previewVideo';

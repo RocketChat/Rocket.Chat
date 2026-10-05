@@ -55,6 +55,30 @@ export function methodCallAnon<TMethodName extends string>(methodName: TMethodNa
 	return api(`method.callAnon/${methodName}`);
 }
 
+/**
+ * Thrown by helpers whose call did not succeed, so the failing request surfaces as the error
+ * instead of as a confusing assertion later on. Negative tests match on `status` and `body`.
+ */
+export class RequestFailedError extends Error {
+	readonly status: number;
+
+	readonly body: unknown;
+
+	constructor(endpoint: string, status: number, body: unknown) {
+		super(`${endpoint} failed with status ${status}: ${JSON.stringify(body)}`);
+		this.name = 'RequestFailedError';
+		this.status = status;
+		this.body = body;
+	}
+}
+
+export function assertSuccess<TResponse extends Response>(endpoint: string, res: TResponse): TResponse {
+	if (res.status !== 200 || res.body?.success !== true) {
+		throw new RequestFailedError(endpoint, res.status, res.body);
+	}
+	return res;
+}
+
 export function log(res: Response) {
 	console.log((res as { req?: any }).req.path); // FIXME
 	console.log({

@@ -1,13 +1,12 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
-import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
@@ -27,7 +26,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
-	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
 	const {
 		data: isMemberData,
 		refetch,
@@ -59,7 +59,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			etag: avatarETag,
-			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
+			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
