@@ -3,9 +3,11 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 import HeaderDivider from './HeaderDivider';
 
-export type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderProps = ComponentPropsWithoutRef<typeof Box> & {
+	divider?: boolean;
+};
 
-const Header = (props: HeaderProps) => (
+const Header = ({ divider = true, ...props }: HeaderProps) => (
 	<Box
 		rcx-room-header
 		is='header'
@@ -28,7 +30,7 @@ const Header = (props: HeaderProps) => (
 			backgroundColor='room'
 			{...props}
 		/>
-		<HeaderDivider />
+		{divider && <HeaderDivider />}
 	</Box>
 );
 
