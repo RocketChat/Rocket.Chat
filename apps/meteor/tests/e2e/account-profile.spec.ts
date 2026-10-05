@@ -102,8 +102,9 @@ test.describe.serial('settings-account-profile', () => {
 			});
 
 			test('should add and persist multiple phones on account profile', async ({ page }) => {
-				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(0);
-				await poAccountProfile.phoneNumber.addPhone('+15554440001', 'Work');
+				await expect(poAccountProfile.phoneNumber.inputPhoneNumber).toHaveCount(1);
+				await expect(poAccountProfile.phoneNumber.getPhoneNumberInput(0)).toHaveValue('');
+				await poAccountProfile.phoneNumber.setPhone(0, '+15554440001', 'Work');
 				await poAccountProfile.phoneNumber.addPhone('+15554440002', 'Home');
 
 				await poAccountProfile.btnSaveChanges.click();

@@ -32,7 +32,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -41,7 +41,11 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import PhoneNumberFieldList from '../../../components/PhoneNumberFieldList';
+import PhoneNumberFieldList, {
+	getInitialPhones,
+	getPersistedPhones,
+	usePhoneNumberFieldArray,
+} from '../../../components/PhoneNumberFieldList';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -87,7 +91,7 @@ const getInitialValue = ({
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
-	phones: data?.phones ?? [],
+	phones: getInitialPhones(data?.phones),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -127,7 +131,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({ control, name: 'phones' });
+	const { phones: phoneFields, onAddPhone, onRemovePhone } = usePhoneNumberFieldArray<UserFormProps>(control, 'phones');
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -176,7 +180,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, phones, ...rest } = userFormPayload;
+		const userFormData = { ...rest, phones: getPersistedPhones(phones) };
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
@@ -541,7 +546,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					</Field>
 
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
-					<PhoneNumberFieldList name='phones' control={control} phones={phoneFields} onAddPhone={appendPhone} onRemovePhone={removePhone} />
+					<PhoneNumberFieldList
+						name='phones'
+						control={control}
+						phones={phoneFields}
+						onAddPhone={onAddPhone}
+						onRemovePhone={onRemovePhone}
+					/>
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
 					{!!customFieldsMetadata.length && (
 						<>

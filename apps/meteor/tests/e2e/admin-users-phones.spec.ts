@@ -89,7 +89,8 @@ test.describe('Admin users phones', () => {
 		await test.step('re-open edit form and verify values persisted', async () => {
 			await poAdmin.userInfo.btnEdit.click();
 			await poAdmin.editUser.waitForDisplay();
-			await expect(poAdmin.editUser.phoneNumber.inputPhoneNumber).toHaveCount(0);
+			await expect(poAdmin.editUser.phoneNumber.inputPhoneNumber).toHaveCount(1);
+			await expect(poAdmin.editUser.phoneNumber.getPhoneNumberInput(0)).toHaveValue('');
 		});
 	});
 });
