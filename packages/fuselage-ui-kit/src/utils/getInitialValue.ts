@@ -8,11 +8,14 @@ const hasInitialValue = (element: UiKit.ActionableElement): element is UiKit.Act
 const hasSnakeCaseInitialValue = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initial_value: string } =>
 	'initial_value' in element;
 
-const hasInitialTime =(element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialTime: string } =>
+const hasInitialTime = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialTime: string } =>
 	'initialTime' in element;
 
 const hasInitialDate = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialDate: string } =>
 	'initialDate' in element;
+
+const hasInitialDateTime = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initial_date_time: number } =>
+	'initial_date_time' in element;
 
 const hasInitialOption = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialOption: UiKit.Option } =>
 	'initialOption' in element;
@@ -21,10 +24,12 @@ const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.A
 	'initialOptions' in element;
 
 export const getInitialValue = (element: UiKit.ActionableElement) =>
-	(hasInitialValue(element) && element.initialValue) ||
-	(hasSnakeCaseInitialValue(element) && element.initial_value) ||
-	(hasInitialTime(element) && element.initialTime) ||
-	(hasInitialDate(element) && element.initialDate) ||
-	(hasInitialOption(element) && element.initialOption.value) ||
-	(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
-	undefined;
+	// Checked first so a timestamp of 0 is kept rather than falling through the chain below.
+	(hasInitialDateTime(element) && typeof element.initial_date_time === 'number' ? element.initial_date_time : undefined) ??
+	((hasInitialValue(element) && element.initialValue) ||
+		(hasSnakeCaseInitialValue(element) && element.initial_value) ||
+		(hasInitialTime(element) && element.initialTime) ||
+		(hasInitialDate(element) && element.initialDate) ||
+		(hasInitialOption(element) && element.initialOption.value) ||
+		(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
+		undefined);

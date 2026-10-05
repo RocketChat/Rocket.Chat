@@ -13,7 +13,7 @@ Source: [`packages/ui-kit/src/blocks/layout/ActionsBlock.ts`](../../../packages/
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'actions'` | yes |  |
-| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
+| `elements` | `readonly ( \| ButtonElement \| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| StaticSelectElement \| UsersSelectElement \| ToggleSwitchElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement )[]` | yes |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -107,7 +107,7 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | --- | --- | --- | --- |
 | `type` | `'input'` | yes |  |
 | `label` | `PlainText` | yes |  |
-| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
+| `element` | `\| ChannelsSelectElement \| ConversationsSelectElement \| DatePickerElement \| DateTimePickerElement \| LinearScaleElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| PlainTextInputElement \| NumberInputElement \| EmailTextInputElement \| UrlTextInputElement \| StaticSelectElement \| UsersSelectElement \| CheckboxElement \| RadioButtonElement \| TimePickerElement \| ToggleSwitchElement` | yes |  |
 | `hint` | `PlainText` | no |  |
 | `optional` | `boolean` | no |  |
 | `appId` | `string` | no |  |
@@ -237,6 +237,20 @@ Source: [`packages/ui-kit/src/blocks/elements/DatePickerElement.ts`](../../../pa
 | `type` | `'datepicker'` | yes |  |
 | `placeholder` | `TextObject` | no |  |
 | `initialDate` | `string` | no |  |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `datetimepicker`
+
+Source: [`packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts`](../../../packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'datetimepicker'` | yes | Picks a date and a time together; the value is a Unix timestamp in seconds, shown in the user's time zone. |
+| `initial_date_time` | `number` | no |  |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
