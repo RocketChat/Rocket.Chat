@@ -1,6 +1,6 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Option, OptionDescription, SelectFiltered } from '@rocket.chat/fuselage';
+import { Item, ItemContent, ItemDescription, ItemTitle, SelectFiltered } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import type { Key, ComponentProps } from 'react';
@@ -32,15 +32,27 @@ const TemplateSelect = ({ templates, value, onChange, ...props }: TemplateSelect
 			value={value}
 			options={options}
 			onChange={onChange}
-			renderItem={({ label, value: templateId, ...props }) => {
+			renderItem={({ label, value: templateId, selected, focus, disabled, ...props }) => {
 				const { language: templateLanguage = '' } = templateMap.get(templateId) || {};
 				const normalizedTemplateLanguage = templateLanguage.replace(/_/g, '-').replace(/en-US/g, 'en');
 				const language = languages.find((lang) => lang.key === normalizedTemplateLanguage);
 
 				return (
-					<Option {...props} label={label}>
-						{language ? <OptionDescription>{language.name}</OptionDescription> : null}
-					</Option>
+					<Item
+						{...props}
+						is='li'
+						inset='md'
+						selected={selected}
+						focused={focus}
+						disabled={disabled}
+						aria-selected={selected}
+						aria-disabled={disabled || undefined}
+					>
+						<ItemContent>
+							<ItemTitle>{label}</ItemTitle>
+							{language ? <ItemDescription>{language.name}</ItemDescription> : null}
+						</ItemContent>
+					</Item>
 				);
 			}}
 		/>
