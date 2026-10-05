@@ -65,4 +65,4 @@ A Block Kit payload therefore cannot be sent to UiKit unchanged, even for blocks
 
 ## Inconsistencies inside UiKit
 
-Independent of Block Kit, the types, the `ui-kit` parsers and the renderers disagree on several surfaces. [support-matrix.md](support-matrix.md#divergences) generates the current list on every change.
+Independent of Block Kit, the types, the `ui-kit` parsers and the renderers disagree on several surfaces. [support-matrix.md](support-matrix.md#divergences) lists them.

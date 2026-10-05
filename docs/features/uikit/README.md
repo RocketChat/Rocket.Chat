@@ -16,8 +16,8 @@ UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the clie
 
 | Page | What it answers |
 | --- | --- |
-| [reference.md](reference.md) | Every block, element, text object, composition object and view, with its fields. **Generated.** |
-| [support-matrix.md](support-matrix.md) | Which blocks each surface accepts and which renderer draws them, plus every place the layers disagree. **Generated.** |
+| [reference.md](reference.md) | Every block, element, text object, composition object and view, with its fields. |
+| [support-matrix.md](support-matrix.md) | Which blocks each surface accepts and which renderer draws them, plus every place the layers disagree. |
 | [rendering.md](rendering.md) | How a list of blocks turns into UI: conditional blocks, allowlists, block contexts, element dispatch. |
 | [text-objects.md](text-objects.md) | `plain_text` and `mrkdwn`, which markdown dialect applies, and `i18n`. |
 | [surfaces.md](surfaces.md) | Message, modal, banner, contextual bar and attachment: what each one is for and what its view carries. |
@@ -25,15 +25,9 @@ UiKit is the JSON block language Rocket.Chat Apps use to draw UI inside the clie
 | [adding-a-block.md](adding-a-block.md) | Every place a new block or element has to be wired. |
 | [slack-parity.md](slack-parity.md) | What Block Kit has that UiKit lacks, and what only UiKit has. |
 
-## Generated pages
+## Keeping the reference current
 
-`reference.md` and `support-matrix.md` are produced from the TypeScript sources by [`packages/ui-kit/scripts/generate-docs.mts`](../../../packages/ui-kit/scripts/generate-docs.mts). Do not edit them by hand. After changing a block type, a surface union or a renderer, regenerate them:
-
-```sh
-yarn workspace @rocket.chat/ui-kit docs
-```
-
-CI runs `yarn workspace @rocket.chat/ui-kit docs:check` in the lint job and fails when the committed pages are stale.
+`reference.md` and `support-matrix.md` describe the code as of October 2026. Nothing checks them against the code, so update them in the same change whenever you touch a block type, a surface union or a renderer allowlist.
 
 ## Experimental and unfinished
 

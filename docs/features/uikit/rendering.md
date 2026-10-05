@@ -41,4 +41,4 @@ As a result the web client and the types disagree about several surfaces. [suppo
 
 ## Other renderers
 
-`apps/meteor/client/views/admin/subscription/surface/UiKitSubscriptionLicenseSurface.tsx` defines `SubscriptionLicenseSurfaceRenderer`, an internal surface built on `FuselageSurfaceRenderer` that apps do not use. The generated matrix leaves it out.
+`apps/meteor/client/views/admin/subscription/surface/UiKitSubscriptionLicenseSurface.tsx` defines `SubscriptionLicenseSurfaceRenderer`, an internal surface built on `FuselageSurfaceRenderer` that apps do not use. The support matrix leaves it out.

@@ -1,6 +1,6 @@
 # Adding a block or element
 
-A UiKit block or element only works once every layer knows about it. Missing one layer usually fails silently: the block is dropped or renders as nothing. Work through the list, then regenerate the docs. The [support matrix](support-matrix.md) shows any layer you missed.
+A UiKit block or element only works once every layer knows about it. Missing one layer usually fails silently: the block is dropped or renders as nothing. Work through the list, then update the docs.
 
 ## 1. Type (`packages/ui-kit`)
 
@@ -34,6 +34,6 @@ A UiKit block or element only works once every layer knows about it. Missing one
 
 - [ ] Add a sample payload in `packages/fuselage-ui-kit/src/stories/payloads/` (export it from `payloads/index.ts`). Add a story in `Message.stories.tsx`, `Modal.stories.tsx` or `Banner.stories.tsx` for each surface that accepts it. The Storybook (`yarn workspace @rocket.chat/fuselage-ui-kit storybook`) is the UiKit playground.
 - [ ] Extend `src/surfaces/<surface>/UiKitParser<Surface>.spec.ts` in `ui-kit` and add a component spec in `fuselage-ui-kit`.
-- [ ] Run `yarn workspace @rocket.chat/ui-kit docs`, and check that the new block has no entry under **Divergences** in [support-matrix.md](support-matrix.md) unless you meant it to.
+- [ ] Add the block's fields to [reference.md](reference.md) and its surfaces and renderers to [support-matrix.md](support-matrix.md). If the type, the `ui-kit` parser and the renderers do not all agree, list the difference under **Divergences**.
 - [ ] Add a changeset for every published package you touched (`@rocket.chat/ui-kit`, `@rocket.chat/fuselage-ui-kit`, and `@rocket.chat/apps-engine` if its types changed).
 - [ ] Update [slack-parity.md](slack-parity.md) if the block closes a Block Kit gap.
