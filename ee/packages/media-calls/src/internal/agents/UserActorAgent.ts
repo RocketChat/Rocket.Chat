@@ -93,7 +93,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
 		await this.sendSignal(getNewCallSignal(call, this.role));
-		if (this.role === 'callee') {
+		if (this.role === 'callee' && !call.replacedCallIds?.length) {
 			this.sendPushNotification({ callId: call._id, event: 'new' });
 		}
 	}

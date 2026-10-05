@@ -112,6 +112,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						startedAt: undefined,
 						supportedFeatures: [],
 						confirmed: instanceState.confirmed,
+						hasAlternateCall: false,
+						canCompleteTransfer: false,
 						escalated: false,
 					},
 				});
@@ -165,6 +167,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					startedAt,
 					supportedFeatures: deriveSupportedFeatures(service, features),
 					confirmed: instanceState.confirmed,
+					hasAlternateCall: instance.hasAlternateCall(),
+					canCompleteTransfer: instance.canCompleteTransfer(),
 					escalated,
 					ringing,
 				},

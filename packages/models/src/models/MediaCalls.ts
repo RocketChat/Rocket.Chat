@@ -189,7 +189,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult> {
+	public async transferCallById(
+		callId: string,
+		params: { by: MediaCallSignedContact; to: MediaCallContact; replacesCallId?: string },
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: callId,
@@ -205,6 +208,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					transferredAt: new Date(),
 					transferredBy: params.by,
 					transferredTo: params.to,
+					...(params.replacesCallId && { transferReplacesCallId: params.replacesCallId }),
 				},
 			},
 		);
@@ -259,17 +263,22 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async setSipDialogById(callId: string, sipDialog: NonNullable<IMediaCall['sipDialog']>): Promise<UpdateResult> {
+		return this.updateOne({ _id: callId }, { $set: { sipDialog } });
+	}
+
 	public async hasUnfinishedCalls(): Promise<boolean> {
 		const count = await this.countDocuments({ ended: false }, { limit: 1 });
 		return count > 0;
 	}
 
-	public async hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean> {
+	public async hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallIds?: string | string[]): Promise<boolean> {
+		const exceptions = [exceptCallIds ?? []].flat();
 		const count = await this.countDocuments(
 			{
 				ended: false,
 				uids: uid,
-				...(exceptCallId && { _id: { $ne: exceptCallId } }),
+				...(exceptions.length && { _id: { $nin: exceptions } }),
 			},
 			{ limit: 1 },
 		);
