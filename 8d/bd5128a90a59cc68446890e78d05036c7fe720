@@ -1,0 +1,2367 @@
+apps/meteor/client/lib/messageStateHandler.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-2,5-6
+apps/meteor/client/views/room/composer/messageBox/MessageBox.spec.tsx
+  ai_agent 150-174
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useMuteUserAction.tsx
+  ai_agent 11,45,104,123,126
+ee/apps/account-service/CHANGELOG.md
+  ai_agent 3-16,31,49,67,85,99,113,127,141,156,170,184,198,212,227,246,260,274,288,302,321,335,349,363,377,391,405,419,433,447,461,475,493,509,523,537,551,565,581,595,609,623,637,651,677,691,705,719,733,747,761,775,789,803,817,831,845,859,886,900,914,941,955,1008,1022,1036,1090,1117,1157,1171,1185,1199,1213,1227,1241,1255,1269,1283,1297,1326,1353,1367,1381,1395,1409,1423,1437,1478,1492,1532,1546,1560,1574,1588,1602,1616,1630,1644,1658,1672,1686,1700,1714,1728,1742,1756,1770,1784,1802,1816,1830,1857,1871,1889,1916,1930,1946,1960,1974,1988,2002,2016,2032,2046,2062,2076,2092,2106,2120,2136,2150,2164,2178,2194,2208,2222,2236,2250,2264,2278,2292,2306,2319,2332,2345,2358,2371,2384,2397,2410,2423,2436,2449,2462,2475,2500,2513,2526,2539,2552,2568,2581,2594,2607,2620,2633,2646,2673,2686,2703,2716,2729,2742,2755,2768,2787,2800,2822,2835,2848,2861,2874,2887,2900,2913,2926,2941,2977,2990,3003,3016,3029,3042,3055,3068,3081,3094,3107,3120,3133,3148,3161,3174,3187
+ee/packages/network-broker/src/moleculer.ts
+  ai_agent 1-155
+apps/meteor/client/views/conference/ConferenceStartPage.tsx
+  ai_agent 8,48
+packages/onboarding-ui/src/pages/AwaitingConfirmationPage/AwaitingConfirmationPage.tsx
+  ai_agent 1-46
+apps/meteor/client/sidebar/categories/hooks/useUserSidebarCategories.spec.ts
+  ai_agent 5,11-12,16,19,66-67
+apps/meteor/vite/native/accounts.ts
+  ai_agent 1-167
+.changeset/calm-admins-read.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+docs/frontend/i18n.md
+  ai_agent 19,44-67,96,99-101
+packages/ui-conference/src/call/context.ts
+  ai_agent 1-44
+apps/meteor/server/lib/auth-providers/apple/appleOauthRegisterService.ts
+  ai_agent 6
+packages/i18n/src/locales/hi-IN.i18n.json
+  ai_agent 53,55,174-175,178-180,182-183,205,1464,1693,4144-4145,4443,5134,5261,5497-5512
+packages/onboarding-ui/.storybook/globals.d.ts
+  ai_agent 1
+apps/meteor/client/meteor/minimongo/DiffSequence.ts
+  ai_agent 102,108
+apps/meteor/client/providers/AuthenticationProvider/AuthenticationProvider.tsx
+  ai_agent 4,13-20,42-46,49-53,72,91,94-97,100-103,111
+apps/meteor/client/views/room/contextualBar/Threads/components/ThreadListMessage.tsx
+  ai_agent 15
+apps/meteor/ee/tests/unit/server/lib/apps/disableAppsWithAddonsCallback.spec.ts
+  ai_agent 4,7
+apps/meteor/client/views/room/providers/UserCardProvider.tsx
+  ai_agent 1-3,7,9,14-21,28-39,59-112,114,118-120,122,129-144
+packages/logger/package.json
+  ai_agent 21
+packages/ui-conference/src/call/tile/ParticipantTile.stories.tsx
+  ai_agent 1-45
+apps/meteor/client/lib/videoConference/embeddedCallProviders.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-27
+packages/ai-search/CHANGELOG.md
+  ai_agent 3-8
+apps/meteor/tests/e2e/page-objects/admin-email-inboxes.ts
+  ai_agent 11
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutCaption.tsx
+  ai_agent 1-22
+packages/web-ui-registration/package.json
+  ai_agent 3,20,26,31-32,41,44-45,50-51,57-58
+packages/layout/src/components/List/ListItem.tsx
+  ai_agent 1-21
+packages/mp3-encoder/src/lame/WavHeader.ts
+  ai_agent 55
+packages/onboarding-ui/src/forms/RegisterServerForm/RegisterServerForm.spec.tsx
+  ai_agent 1-19
+packages/ui-client/src/hooks/useFeaturePreviewList.ts
+  ai_agent 51
+packages/ui-conference/src/call/tile/TilePicture.tsx
+  ai_agent 1-70
+packages/layout/src/jest-setup.ts
+  ai_agent 1-7
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayout.spec.tsx
+  ai_agent 1-19
+apps/meteor/client/components/LocalTime.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutAside.tsx
+  ai_agent 1-15
+packages/ui-livekit/src/callParticipants.spec.ts
+  ai_agent 1-87
+packages/onboarding-ui/src/pages/LoginPage/LoginPage.stories.tsx
+  ai_agent 1-19
+packages/onboarding-ui/src/pages/CreateNewPasswordPage/CreateNewPasswordPage.tsx
+  ai_agent 1-40
+apps/meteor/vite/shims/meteor.ts
+  ai_agent 1-54
+packages/onboarding-ui/src/pages/ResetPasswordConfirmationPage/ResetPasswordConfirmationPage.stories.tsx
+  ai_agent 1-15
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-contact-center/omnichannel-contact-center-chats.ts
+  ai_agent 46,128
+packages/onboarding-ui/src/forms/TotpForm/index.ts
+  ai_agent 1
+packages/onboarding-ui/src/pages/LoginLinkEmailPage/LoginLinkEmailPage.tsx
+  ai_agent 1-45
+packages/release-action/src/index.ts
+  ai_agent 35-39,47,49
+packages/ui-composer/package.json
+  ai_agent 3,26,36,38,41-42,46,55
+apps/meteor/tests/e2e/page-objects/fragments/composer.ts
+  ai_agent 15,47,115
+ee/packages/federation-matrix/src/FederationMatrix.ts
+  ai_agent 50-51,70-76,145-152,201,859-860
+packages/onboarding-ui/src/forms/LoginForm/index.ts
+  ai_agent 1
+packages/layout/src/contexts/LayoutContext.ts
+  ai_agent 1-14
+packages/onboarding-ui/src/common/EmailCodeFallback.tsx
+  ai_agent 1-21
+packages/onboarding-ui/src/forms/CreateFirstMemberForm/index.ts
+  ai_agent 1-6
+packages/onboarding-ui/src/forms/RegisterOfflineForm/RegisterOfflineForm.spec.tsx
+  ai_agent 1-16
+packages/mp3-encoder/src/lame/PsyModel.ts
+  ai_agent 9,521,948,1359,1422
+apps/meteor/client/hooks/useTimeFromNow.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+apps/meteor/client/views/room/composer/messageBox/hooks/useDraft.ts
+  ai_agent 75-76,81
+packages/onboarding-ui/src/pages/LoginLinkEmailPage/LoginLinkEmailPage.spec.tsx
+  ai_agent 1-7
+packages/layout/src/components/TooltipWrapper/index.ts
+  ai_agent 1
+packages/ui-conference/src/devices/DeviceMenu.tsx
+  ai_agent 1-107
+apps/meteor/client/views/room/contextualBar/Info/EditRoomInfo/EditRoomInfo.tsx
+  ai_agent 34,42,543-546
+.changeset/memo-clear-timers.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/views/root/hooks/customOAuth/useAppleOAuth.ts
+  ai_agent 1
+apps/meteor/CHANGELOG.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 3-273,287,468,480,502,687,709,891,903,915,929,941,953,965,1133,1160,1329,1341,1352,1375,1528,1676,1688,1700,1711,1724,1736,1748,1887,1915,1941,2066,2108,2151,2197,2242,2361,2556,2597,2638,2679,2720,2903,2951,3062,3104,3146,3251,3296,3396,3438,3481,3900,3941,3982,4024,4067,4108,4381,4428,4473,4608,4649,4690,4819,4867,4915,5014,5055,5100,5141,5182,5269,5435,5476,5517,5558,5599,5640,5683,5725,5912,6098,6138,6213,6253,6291,6329,6522,6684,6729,6765,6916,6954,6996,7128,7164,7203,7239,7275,7313,7349,7389,7425,7459,7598,7633,7720,7851,7886,7921,7958,7994,8028,8067,8210,8252,8416,8455,8490,8525,8560,8595,8632,8667,8702,8842,8879,9022,9057,9099,9134,9173,9212,9331,9370,9520,9555,9590,9624,9661,9696,9832,9869,9910,9953,10065,10100,10135,10170,10207,10244,10336,10381,10527,10562,10602,10637,10772,10889,10924,10959,10994,11103,11413,11448,11503,11540,11575,11610,11645,11923,12044,12075,12107,12139,12173,12205,12244,12345,12386,12521,12553,12587,12619,12659,12695,12729,12840,12880,12916,13059,13091,13123,13155,13187,13219,13251,13426,13468,13638,13670,13704,13736,13770,13802,13840,13872,14052,14090,14128,14234,14268,14304,14398,14552,14590,14622,14792,14846,15055,15087,15121,15153,15187,15382,15418,15456,15494,15528,15566,15606,15821,15851,15883,15915
+packages/i18n/src/locales/ru.i18n.json
+  ai_agent 34,122-123,136-137,140-141,146,152,158,160,168,172,176,181,183,186,188,191,194-195,646,651,654,922,1014,1345,1544,1858,1999-2000,2521,2523,2664-2665,2710,2833-2838,3041,3549,3551,3558,3753,3761,3836,4074,4076,4095,4326,4432,4618-4623,4714
+packages/i18n/src/locales/zh-TW.i18n.json
+  ai_agent 130,136,144,148,152,155-156,159-160,166-168,171,175,348,391,398,634,742,1231,1295,1368,1408,2932,3471,3746,3930,4025,4187-4189
+packages/layout/src/components/LayoutLogo/LayoutLogo.tsx
+  ai_agent 1-17
+packages/gazzodown-alt/src/sanitizeUrl.spec.ts
+  ai_agent 1-113
+packages/onboarding-ui/src/pages/SomethingWentWrongPage/SomethingWentWrongPage.spec.tsx
+  ai_agent 1-7
+packages/layout/src/components/List/index.ts
+  ai_agent 1-4
+packages/i18n/src/locales/sk-SK.i18n.json
+  ai_agent 778,866,1183,1422,1501,1514,1826-1827,1831,1834,1924-1925,2048,2093,2226,2304,2343,2365,2406,2410,2501-2506
+packages/base64/package.json
+  ai_agent 19
+apps/meteor/client/components/InvitationBadge/InvitationBadge.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 2
+apps/meteor/client/hooks/useUserRolesQuery.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-60
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-sla-policies.ts
+  ai_agent 8,23
+packages/i18n/src/locales/sr.i18n.json
+  ai_agent 761,2155,2218,2311-2315
+packages/onboarding-ui/src/pages/CreateFirstMemberPage/CreateFirstMemberPage.tsx
+  ai_agent 1-25
+packages/rest-typings/src/v1/videoConference/index.ts
+  ai_agent 60-70
+apps/meteor/client/views/admin/users/hooks/useDeleteUserAction.tsx
+  ai_agent 23,52,61
+ee/packages/network-broker/CHANGELOG.md
+  ai_agent 3-11,18,27,36,45,54,63,72,81,90,99,108,117,126,135,146,155,164,173,182,193,202,211,220,229,238,247,256,265,282,291,300,309,318,327,336,345,354,363,372,381,390,414,423,432,441,450,459,468,477,486,495,504,513,522,531,540,549,558,567,576,585,594,627,636,645,654,679,696,712,721,730,739,748,757,766,775,784,793,802,811,854,863,872,881,890,899,932,949,962,971,980,989,998,1007,1016,1025,1034,1047,1056,1065,1074,1083,1092,1101,1110,1127,1138,1147,1156,1173,1182,1193,1210,1219,1228,1237,1246,1255,1264,1273,1282,1291,1300,1309,1318,1327,1336,1345,1354,1363,1372,1381,1390,1399,1408,1417,1426,1435,1444,1453
+packages/layout/src/layouts/HeroLayout/index.ts
+  ai_agent 1-3
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/search-messages-flextab.ts
+  ai_agent 7,14
+packages/media-signaling/src/lib/Call.ts
+  ai_agent 265
+packages/mp3-encoder/package.json
+  ai_agent 44
+ee/packages/abac/src/pdp/LocalPDP.ts
+  ai_agent 54,64,73
+packages/ui-contexts/src/UserCardContext.ts
+  ai_agent 1,6,8-14,19
+apps/meteor/tests/e2e/omnichannel/omnichannel-sla-policies-sidebar.spec.ts
+  ai_agent 94,101,114,121,134,141
+apps/meteor/tests/unit/server/lib/dataExport/exportRoomMessagesToFile.spec.ts
+  ai_agent 8
+packages/fuselage-toastbar/jest.config.ts
+  ai_agent 1-7
+packages/onboarding-ui/src/pages/CreateNewPasswordPage/CreateNewPasswordPage.spec.tsx
+  ai_agent 1-14
+apps/meteor/tests/e2e/federation/page-objects/fragments/home-sidenav.ts
+  ai_agent 19-20
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayout.tsx
+  ai_agent 1-25
+packages/i18n/src/locales/ja.i18n.json
+  ai_agent 839,1233,1370,1410,3557,3872,4115,4216,4394-4396
+packages/onboarding-ui/src/forms/TotpForm/TotpForm.tsx
+  ai_agent 1-81
+apps/meteor/vite/native/connection.ts
+  ai_agent 1-94
+docs/proposals/apps-converters-zod/README.md
+  ai_agent 10,94,227
+packages/ui-livekit/src/useCallDeviceSwitching.ts
+  ai_agent 1-73
+docs/features/video-conference-persistent-chat/README.md
+  ai_agent 268-270,292,506-515,612,1175,1182,1187
+packages/ui-conference/src/hooks/useCallDevicesInitialState.ts
+  ai_agent 14-28,55-61,125-130,138,143-153,168-169,182-186,194-199
+packages/i18n/src/locales/cy.i18n.json
+  ai_agent 96,101,103,107,112-113,116-117,120-121,128,133,137,771,844,861,1088,1582,1670,1816,1853,1944,2046,2116,2296,2335,2398,2493-2500
+.changeset/deprecate-community-custom-oauth.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/pages/CreateNewPasswordPage/CreateNewPasswordPage.stories.tsx
+  ai_agent 1-20
+packages/ui-conference/src/call/CallStageArea.stories.tsx
+  ai_agent 1-34
+apps/meteor/client/views/omnichannel/agents/AgentInfo.tsx
+  ai_agent 7,10-11
+packages/http-router/package.json
+  ai_agent 3,25,34
+packages/layout/src/components/BackgroundLayer/BackgroundLayer.styles.tsx
+  ai_agent 1-28
+packages/layout/src/components/BackgroundLayer/__snapshots__/BackgroundLayer.spec.tsx.snap
+  ai_agent 1-17
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.tsx
+  ai_agent 1-2,4-5,7-11,13-24
+packages/layout/src/components/LayoutLogo/index.ts
+  ai_agent 1
+packages/onboarding-ui/src/pages/LoaderPage/LoaderPage.tsx
+  ai_agent 1-62
+packages/onboarding-ui/src/pages/RegisterOfflinePage/index.ts
+  ai_agent 1
+apps/meteor/tests/end-to-end/api/abac.ts
+  ai_agent 3094-3156
+packages/i18n/src/locales/es.i18n.json
+  ai_agent 865,1278,1419,1465,3251,3725,4184,4324,4435,4641-4645
+apps/meteor/client/lib/normalizeThreadMessage.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 10
+packages/streamer/src/notifications.module.spec.ts
+  ai_agent 1-2,5,11,20-22,32-33,38-39,56-57,164-244
+.github/actions/meteor-build/action.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 133,209
+packages/mp3-encoder/src/lame/arrays.spec.ts
+  ai_agent 1-9
+packages/layout/tsconfig.esm.json
+  ai_agent 1-9
+packages/ddp-client/src/TimeoutControl.ts
+  ai_agent 66-67
+apps/meteor/client/providers/UserProvider/UserProvider.tsx
+  ai_agent 24,162
+packages/onboarding-ui/src/forms/LoginForm/LoginForm.stories.tsx
+  ai_agent 1-15
+apps/meteor/vite/native/getURL.ts
+  ai_agent 1-29
+apps/meteor/tests/e2e/page-objects/admin-settings.ts
+  ai_agent 51,55
+apps/meteor/client/views/omnichannel/components/Info.tsx
+  ai_agent 3
+packages/authorization/CHANGELOG.md
+  ai_agent 1-12
+packages/random/package.json
+  ai_agent 3,21
+apps/meteor/ee/server/lib/livekit/callConfig.spec.ts
+  ai_agent 1-92
+packages/gazzodown-alt/src/sourceLines.ts
+  ai_agent 1-48
+packages/layout/src/components/TooltipWrapper/TooltipWrapper.stories.tsx
+  ai_agent 1-39
+packages/gazzodown-alt/src/sourceOf.ts
+  ai_agent 92-98
+packages/core-services/src/LocalBroker.ts
+  ai_agent 9,15-18,27,37-38,55,67,97,107-112,118,125-127
+packages/onboarding-ui/src/pages/EmailConfirmedPage/EmailConfirmedPage.tsx
+  ai_agent 1-15
+packages/ui-conference/src/call/stage/OverflowTile.spec.tsx
+  ai_agent 1-42
+ee/packages/federation-matrix/tests/end-to-end/ban.spec.ts
+  ai_agent 446
+packages/ai-search/src/constants.ts
+  ai_agent 12
+apps/meteor/client/lib/createRichTextComposerAPI.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 2,63,284,345,356,372,465-489
+apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts
+  ai_agent 211,215,293
+packages/css-in-js/src/sheet.ts
+  ai_agent 145-147
+ee/packages/pdf-worker/package.json
+  ai_agent 25,28,37,41,44
+packages/onboarding-ui/src/forms/RegisterOfflineForm/steps/PasteStep.tsx
+  ai_agent 1-66
+packages/ui-conference/src/lib/createRequiredContext.ts
+  ai_agent 1-17
+apps/meteor/client/lib/utils/normalizeMessagePreview/normalizeMessagePreview.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 5-6
+apps/meteor/tests/end-to-end/api/direct-message.ts
+  ai_agent 1220-1277
+packages/core-services/package.json
+  ai_agent 3,21,36
+packages/layout/src/components/LayoutLogo/__snapshots__/LayoutLogo.spec.tsx.snap
+  ai_agent 1-71
+ee/packages/abac/src/pdp/types.ts
+  ai_agent 55
+apps/meteor/vite/native/overrides.ts
+  ai_agent 1-2
+apps/meteor/tests/e2e/omnichannel/omnichannel-send-pdf-transcript.spec.ts
+  ai_agent 66
+apps/meteor/.meteorignore
+  s_5723a0beb4a36a::t_7cac944b2ba839 4
+apps/meteor/vite/shims/process-browser.d.ts
+  ai_agent 1-4
+packages/eslint-config/package.json
+  ai_agent 35,38
+apps/meteor/server/lib/media/emoji-native/callbacks.ts
+  ai_agent 3
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/admin-flextab-emoji.ts
+  ai_agent 7,13
+.changeset/twelve-brooms-obey.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/tests/unit/server/slashcommands/helpers.ts
+  ai_agent 26-38
+packages/onboarding-ui/tsconfig.cjs.json
+  ai_agent 1-12
+packages/onboarding-ui/src/pages/CreateFirstMemberPage/index.ts
+  ai_agent 1
+apps/meteor/client/hooks/useUserRolesByScope.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 5-9,11-16,18,21,23,26-28,30-33
+packages/onboarding-ui/src/forms/ResetPasswordForm/ResetPasswordForm.tsx
+  ai_agent 1-72
+apps/meteor/server/lib/authorization/upsertPermissions.ts
+  ai_agent 6,53
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.styles.tsx
+  ai_agent 1-30
+packages/cas-validate/package.json
+  ai_agent 22
+packages/memo/tsconfig.json
+  ai_agent 3-4
+packages/onboarding-ui/src/pages/AdminInfoPage/AdminInfoPage.stories.tsx
+  ai_agent 1-36
+packages/onboarding-ui/src/pages/InformationPage/InformationPage.spec.tsx
+  ai_agent 1-7
+apps/meteor/tests/data/users.helper.ts
+  ai_agent 7,106-136,139-142,145-155,157-164
+packages/ui-voip/src/views/MediaCallWidget/IncomingCall.tsx
+  ai_agent 2,5,8-19,24,36,39
+packages/layout/src/components/FormPageLayout/index.ts
+  ai_agent 1-8
+packages/onboarding-ui/src/flows/SelfHostedRegistration/mocks.ts
+  ai_agent 1-87
+packages/web-ui-registration/CHANGELOG.md
+  ai_agent 3-13,21,31,58,85,94,103,112,137,147,156,165,174,183,193,207,216,225,234,243,257,266,275,284,293,302,311,320,329,346,355,369,378,387,396,405,414,428,437,446,455,464,481,498,507,516,525,534,543,552,563,572,581,590,599,608,625,636,645,654,663,672,697,706,715,724,741,750,762,771,780,792,801,810,819,830,839,848,857,866,875,884,893,902,921,938,955,966,975,984,993,1002,1019,1030,1039,1048,1057,1066,1075,1084,1093,1102,1111,1120,1129,1138,1147,1158,1167,1176,1185,1194,1203,1214,1223,1232,1241,1250,1267,1276,1285,1294,1303,1312,1321,1330,1339,1348,1357,1366,1375,1384,1393,1402,1411,1420,1429,1438,1447,1456,1465,1474,1487,1496,1505,1514,1523,1532,1541,1554,1563,1572,1581,1590,1599,1608,1617,1634,1645,1654,1663,1672,1681,1690,1699,1710,1719,1728,1740,1749,1758,1767,1776,1785,1794,1810,1819,1828,1841,1850,1859,1868,1877,1886,1895,1904,1924,1933,1942,1951,1960,1969,1978,1987,1996,2005,2021,2030,2045,2054,2063,2072,2081,2096,2105,2114,2123,2132,2141,2150,2166,2175,2184,2193
+packages/ui-livekit/tsconfig.build.json
+  ai_agent 1-5
+apps/meteor/tests/e2e/page-objects/admin-integrations.ts
+  ai_agent 27
+apps/meteor/client/sidebar/categories/hooks/useUserSidebarCategories.ts
+  ai_agent 6,13,19-20
+packages/http-router/CHANGELOG.md
+  ai_agent 3-12,20,30,40,50,60,70,83,93,103,113,123,136,146,158,168,178,190,200,212,222,232,244,254,265,275,285,295,305,315,326,336,346,356,366,393,403,413,423,433,443,453,463,473,483,493,503,513,523,542,562,584,594,631,641,690,709,719,729,739,749,759,769,779,789,799,809,819,829,839,849,859
+packages/rest-typings/package.json
+  ai_agent 3,31
+packages/onboarding-ui/src/forms/RequestTrialForm/RequestTrialForm.tsx
+  ai_agent 1-167
+apps/meteor/client/lib/emoji/emojiParser.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-23
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomListGroupWrapper.spec.tsx
+  ai_agent 1-44
+apps/meteor/client/views/room/contextualBar/UserInfo/UserInfoWithData.tsx
+  ai_agent 8-12
+packages/fuselage-ui-kit/CHANGELOG.md
+  ai_agent 3-37,49,64,78,92,106,120,135,150,164,177,190,204,217,231,252,265,278,291,304,325,338,352,365,378,392,405,419,432,458,491,504,517,530,543,556,577,590,603,622,635,677,691,705,718,731,744,757,771,787,800,813,826,839,852,865,878,907,920,934,947,985,1010,1024,1074,1088,1101,1115,1129,1142,1155,1169,1182,1196,1209,1222,1235,1248,1261,1274,1300,1314,1339,1352,1366,1379,1392,1405,1443,1457,1470,1483,1496,1509,1522,1535,1548,1561,1575,1588,1604,1617,1631,1644,1657,1670,1686,1699,1717,1730,1743,1768,1781,1799,1812,1825,1838,1854,1867,1880,1893,1906,1919,1935,1948,1970,1983,1999,2012,2032,2046,2059,2072,2085,2099,2118,2131,2144,2157,2170,2183,2196,2215,2236,2249,2262,2275,2288,2301,2314,2335,2348,2364,2377,2390,2403,2428,2441,2457,2470,2483,2501,2514,2527,2540,2553,2566,2579,2597,2618,2631,2651,2664,2677,2690,2703,2716,2729,2742,2773,2786,2799,2819,2832,2845,2865,2883,2899,2911,2946,2960,2972,2984,2996,3008,3022,3033,3044,3055,3066,3077,3088,3103,3114,3125,3136
+apps/meteor/client/hooks/useExpirationText.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+packages/gazzodown/.storybook/preview.tsx
+  ai_agent 4
+packages/layout/src/components/ActionLink/ActionLink.spec.tsx
+  ai_agent 1-19
+packages/memo/package.json
+  ai_agent 38
+apps/meteor/tests/e2e/page-objects/fragments/sidebar.ts
+  ai_agent 107
+packages/stylis-logical-props-middleware/src/operations.spec.ts
+  ai_agent 187-189
+packages/ui-conference/src/components/CallBar.tsx
+  ai_agent 1-36
+packages/omni-core/CHANGELOG.md
+  ai_agent 3-11,18,28,37,46,55,64,73,82,97,106,115,124,133,148,160,169,178,187,196,208,217,226,235,244,253,262,271,280,289,316,325,334,343,352,361,370,379,388,397,406,423,432,441,450,459,468,477,486,495,504,513,522,531,540,549,566,575,584,593,602,611,620,629,638,647,656,665
+packages/gazzodown-alt/tsconfig.json
+  ai_agent 6
+packages/onboarding-ui/src/forms/RegisterOfflineForm/RegisterOfflineForm.tsx
+  ai_agent 1-74
+packages/mongo-adapter/package.json
+  ai_agent 20
+apps/meteor/server/meteor-methods/settings/saveSetting.ts
+  ai_agent 7
+packages/onboarding-ui/src/pages/LoginPage/index.ts
+  ai_agent 1
+packages/sha256/package.json
+  ai_agent 20
+apps/meteor/client/hooks/useUserRolesQuery.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 19,45,59
+packages/mp3-encoder/src/lame/Takehiro.ts
+  ai_agent 9,298,344-346,961
+packages/streamer/package.json
+  ai_agent 3,39-40
+packages/ui-conference/src/call/CallHeader.tsx
+  ai_agent 1-44
+apps/meteor/client/providers/TranslationProvider.tsx
+  ai_agent 66,85-88,121-126
+packages/api-client/CHANGELOG.md
+  ai_agent 3-12,20,30,40,50,60,70,82,92,102,112,122,134,144,154,164,174,184,194,204,214,224,234,244,254,264,274,284,294,304,314,324,334,344,354,373,392,402,412,422,432,442,452,462,472,482,492,502,512,531,551,571,581,618,628,675,685,695,722,732,742,752,762,772,782,792,802,812,822,862,882,892,902,912,922,950,960,979,989,999,1009,1019,1029,1039,1049,1059,1069,1079,1089,1099,1109,1119,1129,1139,1149,1159,1169,1179,1189,1199,1218,1228,1238,1248,1258,1268,1278,1288,1298,1308,1318,1328,1338,1348,1358,1368,1378,1388,1398,1408,1418,1428,1438,1448,1458,1468,1478,1488,1498,1508,1518,1528,1538,1548,1558,1568,1578,1588,1598,1608,1618,1628,1638,1648,1658,1677,1687,1697,1707,1717,1727,1737,1747,1757,1767,1777,1787,1797,1807,1817,1831,1841,1851,1861,1871,1881,1891,1901,1923,1933,1943,1953,1963,1973,1983,1993,2003,2013,2031,2039,2049,2059,2069,2079,2089,2099,2109,2119,2129,2139,2149,2159,2171,2181,2191,2201
+packages/ddp-client/__tests__/Connection.spec.ts
+  ai_agent 131-166
+packages/ui-conference/src/preflight/PreviewMediaProvider.tsx
+  ai_agent 1-53
+apps/meteor/tests/e2e/omnichannel/omnichannel-changing-room-priority-and-sla.spec.ts
+  ai_agent 98
+packages/ui-conference/src/preflight/useCallDevicePreview.spec.ts
+  ai_agent 1-73
+packages/streamer/src/listeners.module.spec.ts
+  ai_agent 1-95
+apps/meteor/tests/unit/server/modules/apps/codecs/rooms.spec.ts
+  ai_agent 1,5-6,8-36,41,43-45,57,65,77-210
+packages/ui-conference/src/call/stage/stageStyles.ts
+  ai_agent 1-70
+apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx
+  ai_agent 2
+apps/meteor/client/lib/RoomHistoryManager.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 3,7,9,106
+apps/meteor/tests/e2e/page-objects/fragments/modals/file-upload-modal.ts
+  ai_agent 7
+packages/mp3-encoder/src/index.ts
+  ai_agent 14-15,17-18,33
+packages/onboarding-ui/src/pages/OauthAuthorizationPage/index.ts
+  ai_agent 1
+packages/onboarding-ui/.i18n/en.i18n.json
+  ai_agent 1-381
+packages/onboarding-ui/src/forms/AwaitConfirmationForm/AwaitConfirmationForm.tsx
+  ai_agent 1-53
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  ai_agent 6,24-25,30-31,143
+apps/meteor/tests/end-to-end/api/livechat/18-rooms-ee.ts
+  ai_agent 294
+apps/meteor/server/api/v1/rooms.ts
+  ai_agent 55,547-553,1776-1778
+packages/onboarding-ui/src/pages/RedirectPage/index.ts
+  ai_agent 1
+docs/adr/0005-stream-fan-out-rides-the-service-broker.md
+  ai_agent 1-83
+packages/layout/src/layouts/HeroLayout/HeroLayout.tsx
+  ai_agent 1-40
+.changeset/memo-clear-types.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/vite/entry.ts
+  ai_agent 1-4
+packages/release-action/src/publishRelease.ts
+  ai_agent 13-21,28,35,130
+.github/actions/update-version-durability/package-lock.json
+  ai_agent 15,327-329,333,702-704
+apps/meteor/tests/e2e/e2e-encryption/e2ee-encrypted-channels.spec.ts
+  ai_agent 320,323,337,340
+apps/meteor/vite/index.html
+  ai_agent 1-14
+ee/packages/federation-matrix/tests/end-to-end/messaging.spec.ts
+  ai_agent 11,88,95,109,116,149,156,185,192,215,225,238,245,288,295,324,331,409,427,461,493,519,536,583,616,717-718,768,795-796,844,871-872,922,949-950,1000,1027-1028,1075,1136-1137,1157,1184-1185,1203,1230-1231,1249,1276-1277,1295,1322-1323,1341
+apps/meteor/client/meteor/login/google.ts
+  ai_agent 44
+docs/features/native-video-conference/README.md
+  ai_agent 1-86
+eslint.config.mjs
+  ai_agent 477
+packages/fuselage-toastbar/.storybook/main.ts
+  ai_agent 1-3
+packages/onboarding-ui/src/pages/InformationPage/index.ts
+  ai_agent 1
+packages/ui-conference/package.json
+  ai_agent 3,24-25,40,43,47-48,55,63,73
+packages/layout/src/components/FormPageLayout/FormTitle.tsx
+  ai_agent 1-13
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  ai_agent 2,28
+turbo.json
+  ai_agent 4,22
+packages/fuselage-toastbar/tsconfig.cjs.json
+  ai_agent 1-14
+apps/meteor/app/utils/rocketchat.info
+  s_5723a0beb4a36a::t_7cac944b2ba839 2
+packages/streamer/CHANGELOG.md
+  ai_agent 1-12
+ee/apps/omnichannel-transcript/package.json
+  ai_agent 3,35,41,57
+apps/meteor/tests/unit/app/markdown/markdown.mocks.ts
+  ai_agent 19,23-28
+packages/ui-voip/src/views/MediaCallWidget/OutgoingCall.tsx
+  ai_agent 2,5,8-19,24,36,39
+packages/i18n/src/locales/da.i18n.json
+  ai_agent 457,466,555,560,676-677,687,748,766,769,817,1126,1247,1286,1651,1668,1929,2072,2093,2123,2142,2153,2155,2167,2378-2379,2507-2508,2543,2641,2677,2742-2743,2745-2746,2749-2750,2795,2863,2879,2886-2889,2891,2944,3050,3057,3062,3106-3107,3188,3206,3263-3264,3277,3287,3317,3322,3326,3338,3342,3432,3490,3507,3543,3582,3588,3619,3664,3682,3735-3738,3785,3898,3916
+packages/onboarding-ui/src/pages/RedirectPage/RedirectPage.tsx
+  ai_agent 1-66
+packages/ui-conference/src/preflight/PreflightPreview.tsx
+  ai_agent 1-64
+apps/meteor/tests/end-to-end/apps/video-conferences.ts
+  ai_agent 372-453
+apps/meteor/client/views/admin/users/AdminUserInfoActions.tsx
+  ai_agent 2
+packages/ui-conference/src/devices/DeviceSelectionContext.ts
+  ai_agent 1-15
+packages/onboarding-ui/src/pages/ConfirmationProcessPage/ConfirmationProcessPage.stories.tsx
+  ai_agent 1-14
+apps/meteor/client/sidebar/categories/hooks/useRoomCategoryItems.spec.tsx
+  ai_agent 8,13,18,27,67-76
+packages/ui-conference/src/call/lib/stageTiles.spec.ts
+  ai_agent 1-117
+packages/core-services/tests/LocalServiceRegistry.test.ts
+  ai_agent 1-81
+apps/meteor/client/views/conference/lib/conferencePreflightMedia.ts
+  ai_agent 1-10
+packages/ui-conference/src/preflight/preflightStories.spec.tsx
+  ai_agent 1-27
+ee/apps/ddp-streamer/src/service.ts
+  ai_agent 7,45
+packages/i18n/src/locales/af.i18n.json
+  ai_agent 87,90,93,95-96,107,114,116-118,120-121,124-126,128-130,133,137,140,214,254-255,279,344,346,409,420,769,772,781,824,840,845,862,883,894,1034,1054,1084,1202,1370,1396,1441,1445,1494,1585-1586,1634,1673,1819,1821,1824,1826-1827,1905,1917-1919,1964,2044,2051,2089-2090,2171,2221,2235,2239,2301,2340,2355,2403,2407,2426,2453,2498-2501,2581
+packages/layout/src/components/List/List.tsx
+  ai_agent 1-24
+packages/emitter/package.json
+  ai_agent 41
+.github/workflows/release.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 77
+apps/meteor/tests/e2e/omnichannel/omnichannel-triggers.spec.ts
+  ai_agent 34
+packages/layout/src/helpers/tokenFontFamilies.ts
+  ai_agent 1-6
+packages/logo/CHANGELOG.md
+  ai_agent 1-143
+packages/ui-conference/src/call/CallControls.tsx
+  ai_agent 1-87
+apps/meteor/client/components/message/variants/RoomMessage.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 80,129,131-132,134-135
+apps/meteor/client/views/room/contextualBar/Threads/hooks/useNormalizedThreadTitleHtml.ts
+  ai_agent 8
+packages/onboarding-ui/src/pages/RegisterOfflinePage/RegisterOfflinePage.stories.tsx
+  ai_agent 1-19
+packages/i18n/src/locales/tr.i18n.json
+  ai_agent 110,114,122,128,132,136,140-141,147,152,909,1012,1042,1329,2446,2636,2774,2856,2976-2979
+apps/meteor/tests/end-to-end/api/teams.ts
+  ai_agent 688-691,950-953,1031-1034,1151-1154,2154
+packages/gazzodown-alt/src/ComposerInlineElements.spec.tsx
+  ai_agent 1-139
+packages/gazzodown-alt/src/testUtils.tsx
+  ai_agent 1-37
+packages/onboarding-ui/src/forms/OrganizationInfoForm/OrganizationInfoForm.tsx
+  ai_agent 1-223
+.changeset/bump-patch-1790891915006.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/server/lib/auth-providers/apple/applePassportOAuth.ts
+  ai_agent 12
+packages/onboarding-ui/src/pages/CreateCloudWorkspacePage/index.ts
+  ai_agent 1
+packages/onboarding-ui/src/pages/RegisterServerPage/RegisterServerPage.tsx
+  ai_agent 1-33
+apps/meteor/package.json
+  ai_agent 3,31,36,83,116-117,120,130,133,147,170,179,186,207,227,231,251,257,260,264-265,299,301,305-306,310,355,357,402,404,420,422,435,447,458,482
+packages/ui-client/src/hooks/useClipboardWithToast.spec.ts
+  ai_agent 1-42
+apps/meteor/tests/unit/app/emoji/helpers.spec.ts
+  ai_agent 2,4-12,14,54-62,71-72,112-251
+apps/meteor/client/views/admin/moderation/UserReports/UserReportInfo.tsx
+  ai_agent 13
+ee/apps/omnichannel-transcript/CHANGELOG.md
+  ai_agent 3-18,33,51,70,90,105,120,135,150,167,182,197,212,227,244,265,280,295,310,325,346,361,377,392,407,423,438,454,469,499,514,532,547,562,577,592,607,625,640,655,671,686,716,731,746,762,777,792,807,822,838,854,869,884,899,914,929,958,974,989,1019,1034,1092,1107,1123,1183,1212,1242,1257,1272,1288,1303,1318,1333,1348,1363,1378,1393,1408,1469,1500,1516,1531,1546,1561,1604,1620,1663,1678,1693,1708,1723,1738,1753,1768,1783,1798,1813,1828,1843,1858,1873,1888,1903,1918,1933,1952,1967,1982,1997,2012,2027,2046,2061,2076,2091,2108,2123,2138,2153,2168,2183,2200,2215,2232,2247,2264,2279,2294,2311,2326,2341,2356,2373,2388,2403,2418,2433,2448,2463,2478,2493,2507,2521,2535,2549,2563,2577,2591,2605,2619,2633,2647,2661,2675,2689,2703,2717,2731,2745,2759,2774,2788,2802,2816,2830,2844,2858,2873,2887,2901,2919,2933,2947,2961,2975,2989,3003,3017,3047,3061,3075,3089,3103,3117,3131,3145,3159,3173,3212,3226,3240,3254,3268,3282,3296,3310,3324,3338,3352,3366,3380,3398,3412,3426,3440
+packages/i18n/src/locales/id.i18n.json
+  ai_agent 52,79,86,90,93,96,101-104,107-110,112-113,118,120-121,123,126,128-130,133-134,137,141,174,279-280,284,341,343,351,389,402,413,763,770,773,787,844,861,881,918,1173,1282,1412,1439,1525,1671-1672,1810,1825-1833,1895,1923-1927,1932-1933,2056,2095,2099-2101,2104,2109,2227,2239,2241,2344,2351-2353,2364,2407,2454,2469,2503-2505
+apps/meteor/tests/unit/app/emoji/emojiNativeParser.spec.ts
+  ai_agent 4-6
+packages/cron/package.json
+  ai_agent 3,26
+packages/i18n/src/locales/be-BY.i18n.json
+  ai_agent 85-86,92-93,96-97,99,101,103,105,111,113-114,116,119,122-123,128,134-135,139-141,143,147,261,296,353,357,365,368,403,406,434,438,791,843,864,881,941,1109,1194,1221,1293,1301,1303,1307,1390,1434,1514-1515,1595,1606,1642,1685,1694,1843,1845-1846,1848,1851,1941-1946,1950,1989,2077-2078,2117,2148,2251,2253,2263,2265,2272,2368,2411,2431,2526-2531
+packages/logo/src/index.ts
+  ai_agent 1-2
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayout.tsx
+  ai_agent 1-40
+packages/layout/.storybook/logo.svg
+  ai_agent 1-68
+packages/onboarding-ui/src/pages/ConfirmationProcessPage/ConfirmationProcessPage.spec.tsx
+  ai_agent 1-7
+packages/ui-kit/CHANGELOG.md
+  ai_agent 3-24
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayoutFooter.tsx
+  ai_agent 1-10
+packages/onboarding-ui/src/pages/CreateFirstMemberPage/TitleCreateFirstMemberPage.tsx
+  ai_agent 1-11
+apps/meteor/client/views/account/profile/AccountProfilePage.spec.tsx
+  ai_agent 1-108
+apps/meteor/server/services/video-conference/expirePresenceLeases.spec.ts
+  ai_agent 67-69,123,133
+apps/meteor/client/views/directory/tabs/channels/ChannelsTable/ChannelsTableRow.tsx
+  ai_agent 22,51
+apps/meteor/tests/unit/server/slashcommands/archive.spec.ts
+  ai_agent 1-126
+packages/onboarding-ui/src/forms/RegisterServerForm/RegisterServerForm.tsx
+  ai_agent 1-161
+packages/i18n/src/locales/th-TH.i18n.json
+  ai_agent 14,66,72,95,110,112,116,120,123,130,253,333,388,761,771,842,859,1029,1080,1100,1109,1406,1485,1576,1810,1818,1908,1912,1955,2039,2087,2176,2209,2211,2227,2236,2366,2388,2483-2485
+packages/onboarding-ui/.jest/setup.ts
+  ai_agent 1-28
+ee/packages/network-broker/package.json
+  ai_agent 3,21,28,31
+packages/onboarding-ui/src/forms/LoginForm/LoginForm.tsx
+  ai_agent 1-102
+packages/onboarding-ui/src/pages/CreateCloudWorkspacePage/TitleCreateCloudPage.tsx
+  ai_agent 1-11
+apps/meteor/client/hooks/useFormattedRelativeTime.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+packages/streamer/src/streamer.module.spec.ts
+  ai_agent 1
+apps/meteor/client/sidebar/categories/hooks/useRoomCategoryItems.tsx
+  ai_agent 10,15,43,57
+packages/onboarding-ui/src/pages/OrganizationInfoPage/OrganizationInfoPage.stories.tsx
+  ai_agent 1-75
+packages/fuselage-toastbar/src/ToastBar.spec.tsx
+  ai_agent 1-69
+packages/onboarding-ui/src/pages/OauthAuthorizationPage/OauthAuthorizationPage.spec.tsx
+  ai_agent 1-16
+ee/packages/federation-matrix/tests/end-to-end/dms.spec.ts
+  ai_agent 8,164,277,612,681-683,799,842,1154,1159-1161,1552,1719-1725,1764-1770,1888
+packages/ui-conference/src/fixtures/storyFixtures.tsx
+  ai_agent 298-300
+apps/meteor/ee/server/lib/livekit/config.ts
+  ai_agent 1-35
+packages/layout/src/components/BackgroundLayer/BackgroundLayer.tsx
+  ai_agent 1-34
+packages/onboarding-ui/src/forms/NewAccountForm/NewAccountForm.spec.tsx
+  ai_agent 1-14
+apps/meteor/client/sidebar/RoomList/RoomListCollapser.tsx
+  ai_agent 6,25,47
+packages/layout/src/components/BackgroundLayer/BackgroundLayer.spec.tsx
+  ai_agent 1-19
+apps/meteor/server/lib/utils/getURL.ts
+  ai_agent 18
+apps/meteor/tests/e2e/messaging.spec.ts
+  ai_agent 7-8,17-26,45-48,50,52-53,55-58,60,62,65-69,71,111-115,118-122,131,140,142-143
+packages/core-services/CHANGELOG.md
+  ai_agent 3-40,54,73,89,105,121,137,149,161,183,195,208,220,232,254,272,284,296,308,320,338,350,371,383,395,416,428,443,456,468,482,494,520,532,544,557,569,581,607,621,633,651,663,692,704,716,728,740,752,764,776,788,802,814,826,838,850,862,885,911,937,948,979,990,1001,1017,1048,1061,1072,1083,1096,1107,1118,1129,1140,1151,1162,1173,1184,1195,1206,1217,1228,1251,1272,1283,1294,1305,1316,1327,1338,1369,1380,1417,1428,1439,1450,1461,1472,1483,1494,1505,1522,1533,1549,1560,1571,1582,1597,1608,1620,1631,1642,1653,1664,1685,1696,1707,1718,1729,1740,1751,1762,1773,1784,1795,1806,1817,1828,1839,1850,1861,1872,1883,1896,1907,1918,1929,1942,1958,1969,1980,1991,2002,2013,2024,2040,2060,2071,2082,2093,2104,2115,2126,2146,2158,2174,2185,2196,2207,2218,2229,2240,2256,2277,2302,2313,2324,2335,2346,2357,2368,2393,2412,2423,2439,2450,2461,2472,2483,2494,2505,2516,2541,2552,2563,2579,2590,2601,2617,2636,2651,2662,2686,2697,2712,2723,2734,2745,2756,2771,2782,2793,2806,2817,2828,2839,2857,2868,2879,2890
+packages/i18n/src/locales/ka-GE.i18n.json
+  ai_agent 130,136,144,993,1144,2759,3148,3235,3373-3376
+packages/ui-conference/src/call/lib/screenShares.spec.ts
+  ai_agent 1-18
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/room-info-flextab.ts
+  ai_agent 99,106
+apps/meteor/client/views/room/body/JumpToRecentMessageButton.tsx
+  ai_agent 18-20,24-27,30-31,33-34,39-45
+apps/meteor/server/publications/settings/index.ts
+  ai_agent 7
+apps/meteor/client/views/marketplace/AppDetailsPage/tabs/AppReleases/AppReleasesItem.tsx
+  ai_agent 2
+apps/meteor/server/lib/media/file-upload/lib/FileUpload.spec.ts
+  ai_agent 1-4,475-574
+apps/meteor/tests/data/messages.helper.ts
+  ai_agent 3,13,15,17,28-30
+ee/packages/pdf-worker/.storybook/preview.tsx
+  ai_agent 4
+packages/ui-conference/src/call/stage/GridLayout.tsx
+  ai_agent 1-93
+packages/onboarding-ui/src/forms/LoginForm/LoginForm.styles.tsx
+  ai_agent 1-14
+packages/onboarding-ui/src/forms/RegisterServerForm/__snapshots__/RegisterServerForm.spec.tsx.snap
+  ai_agent 1-358
+packages/onboarding-ui/src/pages/RequestTrialPage/RequestTrialPage.stories.tsx
+  ai_agent 1-33
+packages/stylis-logical-props-middleware/src/middleware.spec.ts
+  ai_agent 80
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessagesWithData.tsx
+  ai_agent 3
+packages/ui-client/src/lib/index.ts
+  ai_agent 3
+packages/ui-livekit/src/index.ts
+  ai_agent 1-5
+ee/packages/network-broker/src/licenseEnforcement.test.ts
+  ai_agent 1-38
+apps/meteor/tests/end-to-end/api/autotranslate.ts
+  ai_agent 401-402,454-455,563,565
+apps/meteor/client/sidebar/RoomMenu.spec.tsx
+  ai_agent 59
+packages/i18n/src/locales/ug.i18n.json
+  ai_agent 55,160,163,188,269,285-286,307,1045,1078,1118-1121
+ee/packages/federation-matrix/CHANGELOG.md
+  ai_agent 3-34,52,75,93,111,130,144,159,171,184,197,214,229,244,259,274,291,314,329,344,359,374,397,412,429,444,459,476,491,506,521,536,551,566,585,600,615,630,645,660,679,694,709,724,739,768,783,798,813,828,843,858,873,888,903,918,933,948,963,978,993,1008,1023
+packages/ui-livekit/src/useCallDeviceSwitching.spec.ts
+  ai_agent 1-64
+apps/meteor/app/utils/lib/getURL.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 94,106
+packages/desktop-api/CHANGELOG.md
+  ai_agent 3-8
+apps/meteor/tests/e2e/user-card-info-actions-by-member.spec.ts
+  ai_agent 32,63
+apps/meteor/client/sidebar/Item/Extended.tsx
+  ai_agent 12,56
+packages/memo/src/memoize.spec.ts
+  ai_agent 36-45,72,74-82,84-94
+packages/layout/src/components/FormPageLayout/FormFooter.tsx
+  ai_agent 1-13
+apps/meteor/ee/server/lib/livekit/token.ts
+  ai_agent 1-51
+packages/onboarding-ui/.storybook/preview.tsx
+  ai_agent 1-90
+apps/meteor/client/views/room/providers/useHoverCardDismissal.ts
+  ai_agent 1-76
+packages/onboarding-ui/.storybook/main.ts
+  ai_agent 1-38
+packages/onboarding-ui/src/pages/CreateCloudWorkspacePage/Description.tsx
+  ai_agent 1-45
+packages/layout/src/components/FormPageLayout/FormSubtitle.tsx
+  ai_agent 1-13
+.changeset/lucky-jars-repeat.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/ui-conference/src/components/CallMemberItem/CallMemberItem.spec.tsx
+  ai_agent 31-32,38
+packages/api-client/package.json
+  ai_agent 3,35
+packages/onboarding-ui/src/pages/LoginPage/LoginPage.tsx
+  ai_agent 1-59
+packages/ui-composer/CHANGELOG.md
+  ai_agent 3-15,22,31,40,49,58,67,76,85,98,107,116,129
+apps/meteor/vite/dev.mjs
+  ai_agent 1-76
+packages/favicon/package.json
+  ai_agent 17
+apps/meteor/tests/e2e/federation/page-objects/fragments/home-flextab-channels.ts
+  ai_agent 11
+packages/onboarding-ui/src/flows/SelfHostedRegistration/SelfHostedRegistration.stories.tsx
+  ai_agent 1-208
+apps/meteor/client/sidebar/categories/hooks/useCategoryModals.tsx
+  ai_agent 7,15-16
+apps/meteor/client/lib/authorization/liveAuthorizationFunctions.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-2
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/members-flextab.ts
+  ai_agent 27,129
+apps/meteor/client/views/room/body/MediaCallRoom.tsx
+  ai_agent 4-9,35,39
+apps/meteor/tests/e2e/page-objects/login.ts
+  ai_agent 51-55,57-61
+packages/layout/src/components/BackgroundLayer/index.ts
+  ai_agent 1
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-canned-responses.ts
+  ai_agent 8
+packages/onboarding-ui/src/pages/InvalidLinkPage/InvalidLinkPage.tsx
+  ai_agent 1-2,5-7,9,12-25,27,29,31-32,34-36,40
+packages/fuselage-toastbar/src/ToastBarPortal.ts
+  ai_agent 1-63
+packages/ui-conference/src/call/AudioDevicePicker.stories.tsx
+  ai_agent 1-32
+apps/meteor/client/views/admin/moderation/helpers/ContextMessage.tsx
+  ai_agent 19
+apps/meteor/ee/server/lib/livekit/config.spec.ts
+  ai_agent 1-62
+ee/apps/queue-worker/CHANGELOG.md
+  ai_agent 3-16,28,43,61,79,93,107,121,135,149,163,177,191,205,219,237,251,265,279,293,311,325,339,353,367,381,395,409,423,437,451,479,493,507,521,535,549,564,578,592,606,620,647,674,688,702,716,730,744,758,772,786,800,814,828,842,869,883,897,924,938,991,1005,1072,1099,1113,1127,1141,1155,1169,1183,1197,1211,1225,1239,1253,1267,1281,1310,1324,1338,1352,1366,1380,1394,1408,1422,1462,1515,1529,1543,1557,1571,1585,1599,1613,1627,1641,1655,1669,1683,1697,1711,1725,1739,1753,1767,1785,1799,1813,1827,1841,1855,1873,1887,1901,1915,1931,1945,1959,1973,1987,2001,2017,2031,2047,2061,2077,2091,2105,2121,2135,2149,2163,2179,2193,2207,2221,2235,2249,2263,2277,2291,2304,2317,2330,2343,2356,2369,2382,2395,2408,2421,2434,2447,2460,2473,2486,2499,2512,2525,2538,2551,2564,2577,2590,2603,2616,2629,2642,2655,2668,2685,2698,2711,2724,2737,2750,2763,2776,2804,2817,2830,2843,2856,2869,2882,2895,2908,2921,2945,2958,2971,2984,2997,3010,3023,3036,3049,3062,3075,3088,3101,3114,3130,3143,3156,3169
+.changeset/emitter-past-reviews.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-7
+apps/meteor/server/startup/localBroker.ts
+  ai_agent 1-3
+docs/features/ai-search-hybrid.md
+  ai_agent 105-111
+packages/gazzodown/src/mentions/UserMentionElement.tsx
+  ai_agent 17,22,50-51
+apps/meteor/client/views/conference/providers/OngoingCallsProvider.tsx
+  ai_agent 1
+apps/meteor/client/sidebar/RoomMenu.tsx
+  ai_agent 7,24,29
+packages/i18n/src/locales/el.i18n.json
+  ai_agent 19,100-102,106,112,117,121,125,133,138,146,285,340,349,354,779,850,867,1296,1375,1419,1499,1678,1823,1828,1831,1930,1968,2054,2225,2248,2303,2343,2406,2473,2501-2504,2583,2617
+packages/onboarding-ui/src/forms/CreateNewPassword/index.ts
+  ai_agent 1
+packages/storybook-config/CHANGELOG.md
+  ai_agent 3-11
+.yarn/releases/yarn-4.18.1.cjs
+  s_5723a0beb4a36a::t_7cac944b2ba839 4,9,12-21,28-29,32,44,46,53,58-60,94,96,100,103-104,106-107,115,121,132,134-136,141-144,148-150,166,169,171-172,177,182,189-191,193-194,200,204-211,214,217,221,228,236-238,241,245,249,251-254,256,260-261,265,268,271-273,286,288,292,296,300-301,304,310,312-313,317,324,348,365,367,373,375,384,386,390,393,405,409-413,415-417,424,426,428,430,433-434,440,454,456,458,460,474-475,488,496,513-514,522,540,550,552,556,561,565,567,573,575,595,607,611,613-616,619,624,643,645,670,690,701-702,711,713,715-717,719-721,735,737,747,749,751,753,755,757,760,762,766,768,773
+packages/ui-conference/src/call/stage/MainTile.tsx
+  ai_agent 1-29
+packages/layout/src/components/TooltipWrapper/__snapshots__/TooltipWrapper.spec.tsx.snap
+  ai_agent 1-29
+package.json
+  ai_agent 3,26,37-39,54-60,67-71,99,103-109,143-144,220-221,224,227,230,234
+apps/meteor/vite/native/CustomOAuth.ts
+  ai_agent 1-85
+packages/ui-kit/package.json
+  ai_agent 3,25,39
+packages/ui-conference/src/call/lib/mediaDevicesStore.spec.ts
+  ai_agent 1-96
+ee/packages/federation-matrix/docker-compose.test.yml
+  ai_agent 106-108
+packages/onboarding-ui/src/pages/ConfirmationProcessPage/ConfirmationProcessPage.tsx
+  ai_agent 1-16
+packages/i18n/src/locales/lt.i18n.json
+  ai_agent 107,127,137-138,141,144,151-152,160,312,381,824,886,895,912,1271,1464,1513,1544,1635,1869,1899,1967-1969,2014,2100,2139,2267,2270,2329,2389,2397,2404,2422,2454,2549-2554
+apps/meteor/tests/unit/server/modules/apps/converters.lookup.spec.ts
+  ai_agent 1-231
+packages/onboarding-ui/src/pages/EmailConfirmedPage/EmailConfirmedPage.spec.tsx
+  ai_agent 1-7
+apps/meteor/vite/postcss-plugins.d.ts
+  ai_agent 1-14
+ee/packages/abac/src/pdp/VirtruPDP.ts
+  ai_agent 372,375,390,397,411,431,436
+apps/meteor/client/views/room/hooks/useUserInfoActions/useUserInfoActions.ts
+  ai_agent 98-100,153
+packages/ui-livekit/src/useLiveKitTransport.spec.tsx
+  ai_agent 1-53
+ee/packages/presence/CHANGELOG.md
+  ai_agent 3-14,24,36,48,60,75,90,101,112,123,134,145,156,167,178,191,202,213,224,235,248,259,270,281,292,303,314,325,336,357,380,391,402,413,424,435,448,461,472,483,494,515,526,537,548,559,570,581,592,603,614,625,636,647,658,669,690,713,734,745,813,834,845,866,877,888,899,910,921,932,943,954,965,976,986,1008,1019,1044,1055,1066,1077,1088,1119,1130,1161,1172,1183,1194,1205,1216,1227,1238,1249,1260,1271,1282,1293,1304,1315,1326,1337,1348,1359,1370,1381,1392,1413,1424,1435,1456,1467,1478,1489,1500,1511,1522,1533,1544,1555,1566,1577,1588,1599,1610,1621,1632,1643,1654,1665,1676,1687,1698,1709,1720,1731,1742,1753,1764,1775,1786,1797,1808,1819,1830,1841,1852,1863,1874,1885,1896,1907,1918,1929,1940,1951,1962,1975,1986,1997,2008,2019,2030,2041,2054,2073,2084,2099,2110,2121,2132,2143,2154,2165,2176,2200,2211,2222,2233,2244,2255,2266,2281,2296,2307,2327,2338,2349,2360,2371,2382,2393,2404,2415,2426,2437,2448,2459,2470,2483,2494,2505,2516
+packages/ui-conference/src/call/CameraPicker.stories.tsx
+  ai_agent 1-46
+apps/meteor/tests/e2e/admin-users-role-management.spec.ts
+  ai_agent 37,55
+packages/onboarding-ui/src/pages/OrganizationInfoPage/TitleOrganizationInfoPage.tsx
+  ai_agent 1-11
+apps/meteor/server/startup/migrations/xrun.ts
+  ai_agent 6,102
+packages/css-in-js/CHANGELOG.md
+  ai_agent 3-14
+apps/meteor/tests/unit/server/services/ai-search/service.tests.ts
+  ai_agent 242
+packages/ui-conference/src/call/stage/OverflowTile.tsx
+  ai_agent 1-50
+apps/meteor/client/views/room/providers/UserCardProvider.spec.tsx
+  ai_agent 1-397
+apps/meteor/client/views/omnichannel/contactInfo/tabs/ContactInfoDetails/ContactInfoPhoneEntry.tsx
+  ai_agent 3
+apps/meteor/tests/unit/server/modules/apps/converters.messages.spec.ts
+  ai_agent 1-261
+packages/onboarding-ui/src/pages/OrganizationInfoPage/OrganizationInfoPage.tsx
+  ai_agent 1-44
+.changeset/hide-self-moderation-actions.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/memo/src/memoize.ts
+  ai_agent 8,20,31,46-50,55-56
+apps/meteor/client/views/room/contextualBar/Threads/components/ThreadListMetrics.tsx
+  ai_agent 3
+packages/i18n/src/locales/hr.i18n.json
+  ai_agent 99,114,123,127,131,135,140,383,419,466,505,860,869,951,978,1268,1289,1539,1619,1943,1951,1981,2042-2043,2175,2214,2360,2364,2371,2378,2467,2530,2534,2625-2629
+packages/onboarding-ui/src/pages/CreateNewAccountPage/CreateNewAccountPage.stories.tsx
+  ai_agent 1-19
+apps/meteor/client/views/admin/engagementDashboard/users/ContentForDays.tsx
+  ai_agent 4
+packages/ui-voip/src/views/MediaCallWidget/IncomingCallTransfer.stories.tsx
+  ai_agent 4,11,17-18,21-27,29-30,32-38
+apps/meteor/ee/server/api/videoConferenceCallConfig.ts
+  ai_agent 1-66
+.changeset/stream-relay-microservices.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-7
+packages/onboarding-ui/src/pages/CheckYourEmailPage/CheckYourEmailPage.tsx
+  ai_agent 1-35
+apps/meteor/tests/e2e/administration.spec.ts
+  ai_agent 230
+apps/meteor/client/providers/AuthenticationProvider/hooks/useLDAPAndCrowdCollisionWarning.ts
+  ai_agent 4,20
+apps/meteor/client/views/admin/permissions/PermissionsTable/RoleCell.tsx
+  ai_agent 10
+ee/apps/authorization-service/package.json
+  ai_agent 3,33,37,49
+packages/layout/src/components/FormPageLayout/FormSteps.tsx
+  ai_agent 1-19
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutContent.tsx
+  ai_agent 1-9
+packages/onboarding-ui/src/forms/CreateFirstMemberForm/CreateFirstMemberForm.stories.tsx
+  ai_agent 1-25
+packages/onboarding-ui/src/pages/AwaitingConfirmationPage/AwaitingConfirmationPage.spec.tsx
+  ai_agent 1-16
+packages/onboarding-ui/src/pages/InvalidLinkPage/InvalidLinkPage.stories.tsx
+  ai_agent 1-15
+packages/layout/src/components/FormPageLayout/Form.tsx
+  ai_agent 1-13
+packages/ui-conference/src/preflight/PreflightDeviceMenuButton.tsx
+  ai_agent 1-67
+apps/meteor/server/services/video-conference/service.ts
+  ai_agent 215-228,230-241,1705
+.changeset/tender-zebras-smash.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/views/room/composer/messageBox/MessageBoxBase.tsx
+  ai_agent 2,179-182
+apps/meteor/server/lib/media/emoji-native/lib.ts
+  ai_agent 1-2
+.changeset/i18n-formatters-english.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/logo/tsconfig.json
+  ai_agent 1-9
+apps/meteor/tests/e2e/imports.spec.ts
+  ai_agent 95
+packages/ui-client/src/components/UserCard/UserCard.spec.tsx
+  ai_agent 1-23
+packages/onboarding-ui/tsconfig.esm.json
+  ai_agent 1-9
+.changeset/young-parents-smash.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/vite/shims/process.ts
+  ai_agent 1-5
+apps/meteor/client/views/room/UserCard/UserCardWithData.tsx
+  ai_agent 4,29-30,62
+packages/onboarding-ui/src/pages/RequestTrialPage/index.ts
+  ai_agent 1
+packages/ui-client/src/hooks/index.ts
+  ai_agent 1,7,15-18
+packages/onboarding-ui/src/pages/CreateFirstMemberPage/CreateFirstMemberPage.spec.tsx
+  ai_agent 1-22
+.changeset/bump-patch-1790995042820.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useBanUserAction.ts
+  ai_agent 2,25,33,44
+packages/ui-conference/src/call/hooks/useAudioLevel.spec.ts
+  ai_agent 1-113
+packages/i18n/src/locales/bg.i18n.json
+  ai_agent 89,91,96,113,120-121,128,133,137,279,334,354,772,845,862,1175,1286,1289,1412,1491,1816-1817,1824,1914-1915,1917,2046,2218,2230,2335,2398,2493-2496
+packages/core-services/src/types/IApiService.ts
+  ai_agent 24-26
+apps/meteor/tsconfig.json
+  ai_agent 48-50
+packages/onboarding-ui/src/forms/CreateFirstMemberForm/CreateFirstMemberForm.spec.tsx
+  ai_agent 1-22
+packages/tools/src/unescapeHTML.ts
+  ai_agent 20-22,34,39
+packages/ui-livekit/src/usePreviewVideoTrack.spec.ts
+  ai_agent 1-120
+packages/fuselage-toastbar/src/ToastBarZone.tsx
+  ai_agent 1-48
+packages/i18n/src/locales/fa.i18n.json
+  ai_agent 26,419,440,964,1060,1086,2368,2547,2679,2741,2836-2839
+packages/password-policies/src/PasswordPolicy.spec.ts
+  ai_agent 2,190-202,229-289
+.changeset/quiet-users-search.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+apps/meteor/tests/e2e/page-objects/admin-imports.ts
+  ai_agent 15,32
+apps/meteor/tests/e2e/omnichannel/omnichannel-agents.spec.ts
+  ai_agent 79
+CLAUDE.md
+  ai_agent 39
+docs/backend-folder-structure.md
+  ai_agent 22,53,84,123
+packages/layout/src/layouts/HeroLayout/HeroLayout.spec.tsx
+  ai_agent 1-19
+packages/release-changelog/package.json
+  ai_agent 16-17
+packages/logo/src/RocketChatLogo/RocketChatLogo.spec.tsx
+  ai_agent 1-7
+packages/ui-conference/CHANGELOG.md
+  ai_agent 1-15
+apps/meteor/client/views/admin/permissions/hooks/usePermissionsAndRoles.ts
+  ai_agent 6
+packages/onboarding-ui/src/forms/AdminInfoForm/AdminInfoForm.stories.tsx
+  ai_agent 1-25
+ee/packages/federation-matrix/tests/end-to-end/presence.spec.ts
+  ai_agent 7,57,96
+ee/packages/media-calls/package.json
+  ai_agent 3,32
+packages/logo/src/RocketChatLogo/index.ts
+  ai_agent 1
+apps/meteor/client/views/account/profile/AccountProfilePage.tsx
+  ai_agent 34,38,40-41,84
+apps/meteor/tests/e2e/retention-policy.spec.ts
+  ai_agent 115
+apps/meteor/tests/unit/server/slashcommands/messages.spec.ts
+  ai_agent 1-60
+apps/meteor/client/views/admin/permissions/PermissionsTable/PermissionRow.tsx
+  ai_agent 9
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayout.spec.tsx
+  ai_agent 1-19
+packages/onboarding-ui/src/index.ts
+  ai_agent 1-39
+packages/fuselage-ui-kit/src/elements/PlainTextElement.tsx
+  ai_agent 11
+packages/layout/src/components/FormPageLayout/__snapshots__/FormPageLayout.spec.tsx.snap
+  ai_agent 1-45
+packages/onboarding-ui/src/forms/OrganizationInfoForm/OrganizationInfoForm.stories.tsx
+  ai_agent 1-59
+packages/onboarding-ui/src/forms/RegisterServerForm/RegisterServerForm.stories.tsx
+  ai_agent 1-23
+apps/meteor/tests/e2e/page-objects/admin-device-management.ts
+  ai_agent 19
+packages/layout/src/layouts/HorizontalWizardLayout/index.ts
+  ai_agent 1-9
+packages/ui-voip/src/context/index.ts
+  ai_agent 8
+packages/logo/src/RocketChatLogo/RocketChatLogo.tsx
+  ai_agent 1-33
+packages/apps-engine/package.json
+  ai_agent 3,43,72-73
+packages/fuselage-toastbar/src/ToastBarProvider.tsx
+  ai_agent 1-51
+packages/ui-conference/src/preflight/PreviewMediaContext.ts
+  ai_agent 1-11
+packages/i18n/src/locales/de-IN.i18n.json
+  ai_agent 101,127,131,268,271,395,442-444,446,458,480,542,876,997,1190,1254,1260,1346,1465,1656,1660,1813,1915-1916,2053,2287,2340,2555,2596,2676,2786-2789,2803
+packages/i18n/src/locales/ku.i18n.json
+  ai_agent 40,83,87,102,104,107,109-110,112-114,116-117,123-124,126,128-130,137,140,154,156,158,178,253-254,278,283,293,333,340,342-343,351,377,413,444-445,459,461,488,752,772,823,843,853,860,877,1030,1050,1077,1081,1083,1087,1100-1101,1103,1106,1110,1112,1114,1169,1207,1212,1230,1243,1245,1289,1374,1386,1388,1392,1407-1408,1411,1433,1437,1451,1465,1479,1485,1519,1537,1542,1585,1618,1700,1719,1763,1810,1814-1815,1818,1836,1847,1883,1885,1896,1904,1907-1909,1911,1916,1949,1954,1962,2001,2030,2037,2040,2097,2115,2149,2157-2158,2206,2208,2210,2220,2222,2224,2232-2233,2235-2236,2244,2252,2266,2280,2283,2286,2317,2326,2330,2334-2336,2339,2341,2349,2351,2367,2389,2404,2484-2487,2500,2591,2593,2595,2620
+packages/onboarding-ui/src/forms/AdminInfoForm/AdminInfoForm.tsx
+  ai_agent 1-234
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayoutForm.tsx
+  ai_agent 1-10
+apps/meteor/tests/data/rooms.helper.ts
+  ai_agent 2,5,19-22,52,61-62,106-121,124-125,127,149-151,156-157,159,161-162,169,171,173,182-190,194-195,197,199,218-219,222-225,227-228,232,234,238-240,244,246,250-252,256-257,259,274-282,290,292,296-298,301,305,307,311,313,316,318,321,323,327-329
+packages/onboarding-ui/src/pages/InformationPage/InformationPage.stories.tsx
+  ai_agent 1-19
+packages/ui-video-conf/package.json
+  ai_agent 3,26,41-42,47,53
+packages/fuselage-toastbar/src/index.ts
+  ai_agent 1-4
+fuselage.sh
+  ai_agent 112,119
+packages/ui-livekit/src/PreviewVideoProvider.tsx
+  ai_agent 1-16
+packages/css-supports/CHANGELOG.md
+  ai_agent 1-7
+packages/layout/src/DarkModeProvider.tsx
+  ai_agent 1-19
+packages/ui-client/src/components/GenericMenu/GenericMenu.tsx
+  ai_agent 79,98
+packages/ui-conference/src/call/VoiceActivity.tsx
+  ai_agent 1-87
+packages/onboarding-ui/src/pages/AwaitingConfirmationPage/AwaitingConfirmationPage.stories.tsx
+  ai_agent 1-25
+packages/mp3-encoder/src/lame/GainAnalysis.spec.ts
+  ai_agent 1-19
+apps/meteor/tests/unit/server/modules/apps/codecs/settings.spec.ts
+  ai_agent 1-13
+packages/i18n/src/locales/bs.i18n.json
+  ai_agent 92,107,116,120,124,128,133,343,375,409,445,771,780,844,861,1142,1163,1412,1491,1815,1823,1852,1913-1914,2044,2083,2228,2232,2239,2246,2333,2396,2400,2491-2495
+packages/i18n/src/locales/vi-VN.i18n.json
+  ai_agent 117,126-129,135,139,143,147,150,374,444,482,538,555,866,939,956,1584,1919,1956,2017,2149,2231,2318,2320,2332,2338,2398,2437,2502,2598-2600,2694
+packages/onboarding-ui/package.json
+  ai_agent 1-84
+packages/ui-client/src/components/UserCard/UserCardDialog.tsx
+  ai_agent 4,6-20
+packages/ui-voip/src/index.ts
+  ai_agent 10,23-26
+.changeset/tools-string-helpers-edge-cases.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+packages/server-cloud-communication/package.json
+  ai_agent 17
+apps/meteor/client/components/UserAndRoomAutoCompleteMultiple/UserAndRoomAutoCompleteMultiple.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 3,6,29-37,49-61,68-69,75,79-97
+apps/meteor/client/lib/SDKClient.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 9,74,270,401,439,443
+packages/layout/src/components/BackgroundLayer/BackgroundImage.tsx
+  ai_agent 1-73
+packages/onboarding-ui/src/pages/CreateNewAccountPage/index.ts
+  ai_agent 1
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.spec.ts
+  ai_agent 1-146
+packages/gazzodown-alt/src/renderComposerMarkup.tsx
+  ai_agent 4-5,7-12
+packages/gazzodown/src/MarkupInteractionContext.ts
+  ai_agent 3,16,25
+packages/tools/src/toString.ts
+  ai_agent 1-2
+packages/ui-conference/src/call/CallControls.stories.tsx
+  ai_agent 1-41
+apps/meteor/tests/e2e/page-objects/home-channel.ts
+  ai_agent 165,169
+ee/packages/license/package.json
+  ai_agent 3,31
+apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx
+  ai_agent 92,103-106,119
+packages/onboarding-ui/src/pages/RedirectPage/RedirectPage.stories.tsx
+  ai_agent 1-21
+packages/ui-conference/src/call/VoiceActivity.spec.tsx
+  ai_agent 1-69
+packages/layout/src/components/FormPageLayout/FormPageLayout.spec.tsx
+  ai_agent 1-19
+packages/apps/CHANGELOG.md
+  ai_agent 3-19,34,51,70,89,104,119,136,153,164,174,184,195,205,216,229,239,249,259,269,282,292,303,313,323,334,344,355,365,375,386,396,411,421,431,441,451,461,476,486,496,507,517,537,547,558,569,579,589,599,609,620,631,641,651,661,671,681,691,701,712,722,733,744,754,783,802,851,862,872,883,894,904,914,925,935,946,956,966,976,986,996,1006,1038,1066,1077,1087,1097,1107,1126,1136,1147,1157,1168,1183,1193,1203,1213,1223,1233,1243,1253,1263,1278,1288,1303,1313,1324,1334,1344,1354,1369,1379,1396,1406,1416,1435,1445,1462,1472,1482,1492,1503,1513,1523,1533,1543,1553,1564,1574,1585,1595,1606,1616,1627,1638,1648,1658,1668,1679,1690,1700,1710,1720,1730,1740,1750,1766,1776,1786,1796,1806,1816,1826,1836,1846,1856,1866,1876,1886,1896,1906,1916,1926,1936,1946,1956,1968,1978,1988,1998,2008,2018,2028,2040,2058,2068,2082,2092,2102,2112,2122,2134,2144,2154,2176,2186,2196,2206,2216,2226,2236,2250,2264,2274,2301,2311,2321,2331,2341,2351,2361
+packages/message-types/package.json
+  ai_agent 19,22,27
+ee/packages/abac/CHANGELOG.md
+  ai_agent 3-14,27,42,54,66,88,110,124,138,155,167,179,190,201,218,232,243,254,265,276,290,301,312,323,334,345,356,367,378,399,425,436,447,458,469,480,496
+apps/meteor/tests/e2e/message-actions.spec.ts
+  ai_agent 125
+apps/meteor/tests/e2e/team-management.spec.ts
+  ai_agent 146
+.changeset/bump-patch-1790633991897.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/common/InformationTooltipTrigger.tsx
+  ai_agent 1-14
+apps/meteor/tests/e2e/user-card-info-actions-by-room-owner.spec.ts
+  ai_agent 31,63
+apps/meteor/server/startup/localServices.ts
+  ai_agent 1,3,5
+packages/i18n/src/locales/lv.i18n.json
+  ai_agent 94,96,98,102,104,106,108,110-111,113,115,117,119,121,123,125,127,131,133,136,141,144,182,289,359,396,780,851,868,1110-1111,1425,1505,1830-1831,1928-1930,2061,2307,2346,2407,2498-2502
+packages/onboarding-ui/src/common/InformationTooltipTrigger.stories.tsx
+  ai_agent 1-22
+apps/meteor/tests/end-to-end/apps/installation.ts
+  ai_agent 89
+apps/meteor/client/sidebar/hooks/useRoomList.ts
+  ai_agent 10,55,140,142,173,179
+packages/i18n/src/locales/hu.i18n.json
+  ai_agent 1344,1555,3936,4556,4667,4860-4871
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayout.stories.tsx
+  ai_agent 1-188
+apps/meteor/client/components/GazzodownText.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 32,79-92,141
+ee/packages/media-calls/CHANGELOG.md
+  ai_agent 3-26,39,55,65,75,86,97,111,125,142,152,163,173,183,200,218,228,238,248,258,276,286,296,306,316,326,336,346,356,375,402,412,422,433,443,453,471,481,491,508,518,544,563,573,583,593,603,613,623,633,643,653,663,673,683,693,703,713
+packages/layout/src/layouts/VerticalWizardLayout/__snapshots__/VerticalWizardLayout.spec.tsx.snap
+  ai_agent 1-749
+packages/onboarding-ui/src/forms/CreateNewPassword/CreateNewPassword.stories.tsx
+  ai_agent 1-15
+ee/packages/federation-matrix/package.json
+  ai_agent 3,25,46-48
+ee/packages/abac/src/index.ts
+  ai_agent 923
+packages/onboarding-ui/src/pages/SomethingWentWrongPage/SomethingWentWrongPage.tsx
+  ai_agent 1-2,5-7,9,12-25,27,29-33,37
+packages/onboarding-ui/src/forms/RegisterOfflineForm/RegisterOfflineForm.stories.tsx
+  ai_agent 1-18
+packages/streamer/src/streamer.module.ts
+  ai_agent 2,6-16,24,39-40,43,49,248,250,272
+packages/ui-conference/src/call/lib/tileGrid.ts
+  ai_agent 1-97
+packages/i18n/src/locales/ta-IN.i18n.json
+  ai_agent 255,257,773,844,861,1964,2051,2403,2498-2501
+packages/ui-conference/src/call/tile/SelfTile.tsx
+  ai_agent 1-16
+packages/onboarding-ui/src/pages/LoginPage/LoginPage.spec.tsx
+  ai_agent 1-17
+packages/stylis-logical-props-middleware/CHANGELOG.md
+  ai_agent 1-20
+packages/layout/tsconfig.json
+  ai_agent 1-13
+packages/layout/.storybook/DocsContainer.tsx
+  ai_agent 1-21
+packages/onboarding-ui/src/pages/RequestTrialPage/Description.tsx
+  ai_agent 1-30
+packages/ui-voip/src/views/MediaCallWidget/MediaCallWidgetViewRouter.tsx
+  ai_agent 1,7
+apps/meteor/tests/e2e/file-upload.spec.ts
+  ai_agent 125-127,130,132
+apps/meteor/client/startup/index.ts
+  ai_agent 2-3
+packages/emitter/src/index.ts
+  ai_agent 57-61,68,87,95,101,109,121-123,137-141,143,145-146,149-168
+packages/stylis-logical-props-middleware/src/operations.ts
+  ai_agent 51,56,65
+apps/meteor/tests/e2e/page-objects/marketplace.ts
+  ai_agent 21
+.changeset/fuselage-toastbar-monorepo-migration.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/views/room/hooks/useUserInfoActions/useUserInfoActions.spec.ts
+  ai_agent 1-36
+packages/layout/src/index.ts
+  ai_agent 1-7
+apps/meteor/tests/e2e/omnichannel/omnichannel-chat-transfers.spec.ts
+  ai_agent 239,283,462,506
+packages/mp3-encoder/src/lame/Encoder.ts
+  ai_agent 9,277
+.changeset/file-upload-proxy-byte-ranges.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/emitter/src/emitter.spec.ts
+  ai_agent 70-120,135-140
+packages/ui-avatar/package.json
+  ai_agent 3,21,27-28,31
+packages/layout/tsconfig.cjs.json
+  ai_agent 1-12
+.changeset/bump-patch-1790773988351.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/random/CHANGELOG.md
+  ai_agent 3-8
+apps/meteor/tests/e2e/page-objects/account-security.ts
+  ai_agent 51
+packages/release-action/package.json
+  ai_agent 15,24,26
+packages/layout/src/components/ActionLink/ActionLink.stories.tsx
+  ai_agent 1-12
+apps/meteor/tests/end-to-end/apps/app-logs-nested-requests.ts
+  ai_agent 2,6,28-29,31
+.changeset/user-card-context-contract.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+apps/meteor/client/views/oauth/components/CurrentUserDisplay.tsx
+  ai_agent 3,39
+packages/css-supports/package.json
+  ai_agent 3,38
+apps/meteor/client/views/omnichannel/installation/Installation.tsx
+  ai_agent 5,29-33
+apps/meteor/client/meteor/login/ldap.ts
+  ai_agent 1-2,51
+packages/mp3-encoder/src/lame/arrays.ts
+  ai_agent 20
+packages/media-signaling/CHANGELOG.md
+  ai_agent 3-10,27
+packages/layout/src/layouts/HeroLayout/__snapshots__/HeroLayout.spec.tsx.snap
+  ai_agent 1-89
+packages/layout/src/helpers/tokenBreakpoints.ts
+  ai_agent 1-9
+apps/meteor/client/providers/TranslationProvider.spec.tsx
+  ai_agent 1-61
+packages/ui-conference/src/call/lib/tileGrid.spec.ts
+  ai_agent 1-52
+apps/meteor/client/views/room/contextualBar/Threads/hooks/useNormalizedThreadTitleHtml.spec.ts
+  ai_agent 6,8
+apps/meteor/.storybook/preview.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 6
+packages/i18n/src/locales/ar.i18n.json
+  ai_agent 1245,1382,1422,3604,3919,3921,4166,4267,4450-4457
+apps/meteor/client/components/message/hooks/useCollapse.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-50
+ee/apps/ddp-streamer/package.json
+  ai_agent 3,39,46,57,62-63
+.changeset/local-time-utc0.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+packages/onboarding-ui/src/pages/RedirectPage/RedirectPage.spec.tsx
+  ai_agent 1-9
+apps/meteor/client/lib/cachedStores/CachedStore.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 12,243
+packages/storybook-dark-mode/CHANGELOG.md
+  ai_agent 3-10
+apps/meteor/tests/end-to-end/api/livechat/contacts.ts
+  ai_agent 841,850,857,881,890,909,941
+.changeset/layout-monorepo-migration.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/tests/e2e/page-objects/conference-window.ts
+  ai_agent 165
+packages/fuselage-toastbar/src/ToastBarPortal.spec.tsx
+  ai_agent 1-59
+packages/css-in-js/src/tags.ts
+  ai_agent 67-69,83,92-99,118-119,121-122,124,126-129
+apps/meteor/ee/server/configuration/videoConference.ts
+  ai_agent 9,11-13,16-27,63-67
+apps/meteor/client/providers/MeteorProvider.tsx
+  ai_agent 1,23,31-75
+packages/ai-search/src/intelligentSearch.spec.ts
+  ai_agent 397
+apps/meteor/server/services/upload/service.spec.ts
+  ai_agent 1-386
+apps/uikit-playground/CHANGELOG.md
+  ai_agent 3-15,27,41,53,65,77,89,101,113,125,137,149,161,173,185,199,211,223,235,247,261,273,285,297,309,321,333,345,357,369,381,404,416,428,440,452,464,476,488,500,516,528,576,588,600,612,624,636,648,662,674,686,698,710,722,734,746,760,772,795,807,852,864,876,921,944,978,990,1002,1014,1026,1038,1050,1062,1074,1086,1098,1146,1158,1170,1182,1194,1206,1218,1252,1264,1298,1310,1322,1334,1346,1358,1370,1382,1394,1406,1418,1432,1444,1456,1468,1480,1492,1506,1518,1530,1542,1554,1577,1589,1601,1624,1636,1650,1662,1674,1686,1698,1710,1724,1736,1756,1768,1782,1794,1812,1824,1836,1848,1860,1872,1888,1900,1912,1924,1936,1948,1960,1976,1992,2004,2016,2028,2040,2052,2064,2080,2091,2108,2119,2130,2141,2162,2173,2190,2201,2212,2223,2234,2245,2256,2267,2278,2289,2300,2311,2322,2339,2350,2361,2372,2383,2394,2405,2416,2442,2453,2464,2475,2486,2497,2508,2519,2530,2541,2561,2572,2583,2594,2605,2616,2627,2638,2648,2658,2668,2678,2688,2698,2710,2720,2730,2740
+packages/ui-conference/src/call/CameraPicker.tsx
+  ai_agent 1-39
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-contact-center/omnichannel-contact-center.ts
+  ai_agent 6
+packages/onboarding-ui/src/pages/ResetPasswordPage/ResetPasswordPage.spec.tsx
+  ai_agent 1-7
+apps/meteor/client/meteor/login/crowd.ts
+  ai_agent 1-2,48
+ee/apps/ddp-streamer/CHANGELOG.md
+  ai_agent 3-20,37,57,76,95,110,125,140,155,172,187,202,217,232,249,268,283,298,313,328,347,362,377,392,407,422,437,452,467,482,497,512,530,545,560,575,590,605,623,640,655,670,685,714,743,760,775,790,805,820,837,852,867,882,897,912,927,956,971,1014,1029,1086,1101,1174,1203,1247,1262,1279,1294,1309,1324,1339,1356,1371,1386,1401,1432,1461,1478,1493,1508,1523,1538,1553,1568,1597,1612,1655,1670,1685,1700,1715,1730,1745,1760,1775,1790,1805,1820,1835,1850,1865,1880,1895,1910,1925,1944,1959,1974,2003,2018,2037,2066,2081,2098,2113,2128,2143,2158,2173,2190,2205,2222,2237,2254,2269,2284,2301,2316,2331,2346,2363,2380,2395,2410,2427,2442,2457,2472,2487,2501,2515,2529,2543,2557,2571,2585,2599,2613,2627,2641,2655,2669,2683,2697,2711,2725,2740,2755,2772,2787,2802,2817,2832,2847,2862,2879,2902,2917,2936,2951,2966,2981,2996,3011,3026,3041,3073,3088,3103,3118,3133,3148,3163,3182,3201,3216,3244,3259,3278,3293,3308,3323,3340,3357,3372,3387,3402,3417,3434,3449,3469,3484,3499,3514
+packages/ui-conference/src/index.ts
+  ai_agent 15,37-44,74-83
+apps/meteor/tests/unit/server/modules/apps/converters.threads.spec.ts
+  ai_agent 1-170
+apps/meteor/client/components/message/content/attachments/QuoteAttachment.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 4
+apps/meteor/ee/server/lib/livekit/capabilities.spec.ts
+  ai_agent 1-48
+apps/meteor/ee/server/api/index.ts
+  ai_agent 7,12
+apps/meteor/client/meteor/connection.ts
+  ai_agent 1-3,6-11,13,15,17-32
+apps/meteor/client/views/room/contextualBar/UserInfo/UserInfoActions.tsx
+  ai_agent 3
+packages/layout/CHANGELOG.md
+  ai_agent 1-95
+.changeset/quiet-rows-return.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/forms/CreateCloudWorkspaceForm/WorkspaceUrlInput.tsx
+  ai_agent 1-27
+packages/onboarding-ui/src/pages/InformationPage/InformationPage.tsx
+  ai_agent 1-16
+packages/onboarding-ui/src/pages/LoaderPage/LoaderPage.spec.tsx
+  ai_agent 1-16
+packages/onboarding-ui/src/pages/LoginLinkEmailPage/LoginLinkEmailPage.stories.tsx
+  ai_agent 1-15
+packages/ui-client/src/components/GenericMenu/GenericMenuItem.tsx
+  ai_agent 17-21
+packages/ui-conference/src/call/hooks/useTileGridLayout.ts
+  ai_agent 1-28
+packages/gazzodown-alt/src/ComposerMarkup.tsx
+  ai_agent 10-11,36,61,63-64,108,114,124-129
+packages/onboarding-ui/src/forms/OrganizationInfoForm/OrganizationInfoForm.spec.tsx
+  ai_agent 1-17
+ee/packages/abac/src/pdp/VirtruPDP.spec.ts
+  ai_agent 385,390,396-397,408
+packages/ddp-client/package.json
+  ai_agent 3,33-34
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomList.tsx
+  ai_agent 11,70
+ee/apps/presence-service/CHANGELOG.md
+  ai_agent 3-17,32,50,69,88,106,124,138,152,166,180,194,208,222,236,254,268,282,296,310,328,342,356,370,384,398,412,426,440,467,495,509,523,537,551,565,580,594,608,622,636,663,677,691,705,719,733,747,761,775,789,803,817,831,845,859,886,914,942,956,1009,1023,1037,1090,1117,1156,1170,1184,1198,1212,1226,1240,1254,1268,1282,1296,1325,1352,1366,1380,1394,1408,1422,1436,1477,1491,1518,1532,1546,1560,1574,1588,1602,1616,1630,1644,1658,1672,1686,1700,1714,1728,1742,1756,1770,1784,1802,1816,1830,1844,1858,1872,1917,1931,1947,1961,1975,1989,2003,2017,2033,2047,2063,2077,2093,2107,2121,2137,2151,2165,2179,2195,2209,2223,2237,2251,2265,2279,2293,2307,2320,2333,2346,2359,2372,2385,2398,2411,2424,2437,2450,2463,2476,2501,2514,2527,2540,2553,2566,2579,2592,2605,2618,2631,2644,2657,2670,2683,2700,2713,2726,2739,2752,2765,2778,2791,2819,2832,2845,2858,2871,2884,2897,2910,2923,2936,2972,2985,2998,3011,3024,3037,3050,3063,3076,3089,3102,3115,3128,3143,3156,3169,3182
+packages/onboarding-ui/CHANGELOG.md
+  ai_agent 1-213
+packages/livechat/CHANGELOG.md
+  ai_agent 3-13,20,33,43,53,62,71,81,91,101,110,119,128,137,147,165,174,183,192,201,219,228,238,247,256,266,275,285,295,312,321,337,346,355,364,373,382,398,407,416,426,435,453,470,479,488,497,506,515,524,533,542,551,560,569,578,595,613,631,640,673,682,691,716,725,742,758,767,776,790,799,808,817,826,835,844,853,862,918,927,936,945,954,987,996,1012,1021,1030,1039,1048,1057,1066,1075,1084,1093,1102,1120,1129,1138,1147,1156,1165,1183,1192,1203,1212,1221,1238,1247,1258,1267,1276,1285,1298,1307,1316,1325,1334,1343,1356,1365,1382,1391,1400,1409,1426,1443,1452,1461,1470,1487,1499,1508,1517,1526,1535,1544,1553,1565,1582,1591,1600,1609,1618,1627,1636,1651,1661,1673,1682,1691,1700,1709,1718,1727,1739,1748,1757,1777,1786,1795,1804,1813,1822,1831,1858,1868,1882,1891,1900,1909,1918,1927,1936,1945,1972,1981,1990,2004,2013,2022,2036,2054,2063,2072,2097,2106,2158,2169,2180,2189,2198,2246,2255,2266,2275,2284,2293,2304,2323,2332,2341,2350
+packages/jwt/src/index.ts
+  ai_agent 30-60
+packages/onboarding-ui/jest.config.ts
+  ai_agent 1-11
+packages/onboarding-ui/src/Types/FormPageLayoutStyleProps.ts
+  ai_agent 1-8
+packages/onboarding-ui/src/pages/LoaderPage/LoaderPage.stories.tsx
+  ai_agent 1-30
+apps/meteor/tests/e2e/page-objects/fragments/toolbar.ts
+  ai_agent 18,23,39,59,75,79,83,91,146,160,180,184,202
+packages/ui-conference/src/call/hooks/useAudioLevel.ts
+  ai_agent 1-21
+.changeset/abac-audit-room-name.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+.changeset/quiet-lints-align.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/pages/EmailConfirmedPage/index.ts
+  ai_agent 1
+packages/onboarding-ui/src/pages/CreateCloudWorkspacePage/CreateCloudWorkspacePage.tsx
+  ai_agent 1-41
+packages/onboarding-ui/src/pages/ResetPasswordConfirmationPage/index.ts
+  ai_agent 1
+packages/i18n/src/locales/ro.i18n.json
+  ai_agent 73,79,86,90,95-96,102-104,107-109,112-113,116-117,121,123-124,128-129,131,134,137,140-141,214,402,409,420,445,462,773,845,862,1173,1280,1403,1415,1491,1670,1672,1815,1817,1819-1821,1823,1913-1918,1922-1923,1960,2044-2045,2087-2090,2092,2097,2099,2213,2215,2217,2227,2229,2231,2238-2239,2293,2312,2333,2348,2371,2397,2492-2496,2520,2564,2574
+packages/fuselage-ui-kit/src/elements/MarkdownTextElement.tsx
+  ai_agent 15
+apps/meteor/tests/unit/server/slashcommands/topic.spec.ts
+  ai_agent 1-48
+apps/meteor/client/views/room/composer/ComposerUserActionIndicator/ComposerUserActionIndicator.tsx
+  ai_agent 67-83
+apps/meteor/client/components/message/variants/SystemMessage.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 20,50,65-66,91-102,107-113
+apps/meteor/tests/e2e/page-objects/account-tokens.ts
+  ai_agent 8,23
+packages/apps/package.json
+  ai_agent 3,14,37,51,55
+packages/fuselage-toastbar/package.json
+  ai_agent 1-77
+packages/gazzodown-alt/package.json
+  ai_agent 15,19,22-29,34-35
+.yarnrc.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 22
+packages/layout/src/components/TooltipWrapper/TooltipWrapper.tsx
+  ai_agent 1-68
+packages/mp3-encoder/src/lame/Quantize.ts
+  ai_agent 15,57,293
+packages/onboarding-ui/src/forms/CreateNewPassword/CreateNewPassword.tsx
+  ai_agent 1-76
+packages/onboarding-ui/src/forms/RequestTrialForm/RequestTrialForm.stories.tsx
+  ai_agent 1-33
+packages/ui-client/src/components/Wizard/useWizardSteps.spec.ts
+  ai_agent 31,33,35-39,43-48
+apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx
+  ai_agent 21
+packages/onboarding-ui/src/pages/RegisterServerPage/RegisterServerPage.spec.tsx
+  ai_agent 1-7
+packages/i18n/src/locales/sl-SI.i18n.json
+  ai_agent 92,95-96,102,104,107,109,112-113,116-117,120-121,123,128-129,132-133,137,140,213,460,769,857,1091,1482-1483,1818,1909,1913,2040,2124,2330,2393,2488-2493
+packages/ui-conference/src/call/lib/deviceLabels.spec.ts
+  ai_agent 1-121
+packages/ui-livekit/package.json
+  ai_agent 1-59
+packages/i18n/CHANGELOG.md
+  ai_agent 3-42,69,102,267,286,311,334,395,428,561,584
+packages/model-typings/CHANGELOG.md
+  ai_agent 3-43,52,71,90,127,173,186,199,218,251,264,275,294,303,312,321,330,349,364,373,382,391,400,415,424,443,452,461,480,489,504,513,536,545,568,577,586,595,604,613,636,645,654,667,676,697,714,723,732,741,750,759,768,781,790,799,808,817,826,843,865,892,901,934,943,1003,1012,1021,1040,1059,1068,1081,1090,1099,1108,1117,1126,1135,1144,1153,1176,1193,1202,1213,1224,1233,1242,1251,1276,1287,1304,1330,1339,1348,1357,1366,1375,1384,1393,1402,1428,1437,1452,1461,1470,1479,1488,1497,1512,1521,1542,1551,1560,1577,1586,1607,1616,1625,1638,1657,1666,1675,1684,1693,1702,1719,1728,1767,1776,1785,1794,1833,1855,1864,1873,1882,1904,1924,1933,1942,1951,1960,1969,1978,2003,2022,2031,2040,2049,2058,2067,2076,2095,2104,2121,2130,2139,2148,2157,2166,2175,2184,2201,2225,2234,2243,2252,2261,2270,2279,2302,2311,2320,2337,2346,2355,2364,2373,2382,2391,2400,2424,2433,2442,2451,2460,2469,2478,2491,2500,2509,2529,2538,2549,2558,2567,2576,2585,2596,2605,2614,2623,2632,2641,2650,2673,2682,2691,2700
+packages/ui-livekit/tsconfig.json
+  ai_agent 1-10
+apps/meteor/tests/e2e/emojis.spec.ts
+  ai_agent 71
+.changeset/onboarding-ui-monorepo-migration.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+ee/packages/network-broker/src/index.ts
+  ai_agent 1,3
+packages/ui-conference/src/devices/deviceMenuRows.ts
+  ai_agent 1-33
+apps/meteor/client/sidebar/components/SidebarVirtualList/SidebarVirtualList.tsx
+  ai_agent 77
+packages/model-typings/package.json
+  ai_agent 3,21
+packages/patch-injection/package.json
+  ai_agent 23
+packages/i18n/src/locales/de.i18n.json
+  ai_agent 96-97,127,685-686,734,763,1198,1815,2079,2687-2688,2705,4324,5062,5075,5467,6111,6284,6448,6745-6760
+ee/packages/abac/package.json
+  ai_agent 3,43-44
+packages/onboarding-ui/src/pages/RegisterOfflinePage/RegisterOfflinePage.tsx
+  ai_agent 1-30
+.changeset/channel-directory-missing-last-message-ts.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/ui-livekit/src/useLiveKitTransport.ts
+  ai_agent 1-41
+apps/meteor/server/lib/authorization/permissionRole.ts
+  ai_agent 7
+apps/meteor/client/meteor/login/cas.ts
+  ai_agent 3,12,19
+apps/meteor/client/views/account/profile/AccountProfileForm.tsx
+  ai_agent 2,29,47,134-139,169-180,182-188,202-206,208-209
+apps/meteor/client/components/message/content/ThreadMetrics.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 10
+apps/meteor/.mocharc.js
+  s_5723a0beb4a36a::t_7cac944b2ba839 25
+apps/meteor/client/lib/getURL.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1,25
+packages/layout/src/components/ActionLink/index.ts
+  ai_agent 1
+apps/meteor/tests/e2e/omnichannel/omnichannel-auto-onhold-chat-closing.spec.ts
+  ai_agent 66,80
+apps/meteor/client/sidebar/Item/Medium.tsx
+  ai_agent 26
+apps/meteor/client/components/TextCopy.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 2
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  ai_agent 138-148,157-167,176-186,224-231,257,826,928,1063,1228,1329,1462,1622-1627,1632-1637,1714,1750
+packages/fuselage-ui-kit/package.json
+  ai_agent 3,27,47,63,65,67,69,75-76
+packages/fuselage-toastbar/src/ToastBarProvider.spec.tsx
+  ai_agent 1-37
+packages/onboarding-ui/src/pages/CreateFirstMemberPage/CreateFirstMemberPage.stories.tsx
+  ai_agent 1-24
+apps/meteor/tests/end-to-end/api/commands.ts
+  ai_agent 395
+packages/i18n/src/locales/lo.i18n.json
+  ai_agent 57,62,99-102,127,131,134-135,139,147,150,162,164,166,168,188,225,264-265,267,271,287,289-290,294,325,332,337,343,351,364,386,389,394,398,401,418,423,425,428-430,432,434,436,448,458,461-462,471-472,773-774,780,787,790,793,799,801,804,852,857,859,862,879-880,903,940,1065,1078,1081,1111,1118,1120,1122,1137-1138,1140,1143,1146-1147,1149,1151,1158,1167,1171,1205,1207,1234,1239,1282,1292,1305,1311,1314,1316,1320,1323,1327-1328,1331,1430,1440,1449,1453,1465,1467,1477,1480,1495,1499,1504,1529,1581,1589,1592,1594,1608,1621,1628,1635,1652-1653,1665,1670,1700,1708,1736,1740,1762,1765,1801,1812,1853,1858,1861,1880,1923,1928,1935,1939,1948,1951-1956,1960,1993,1998,2032,2048,2056,2077,2084-2085,2118,2120,2123,2130,2140,2162,2204-2205,2211,2215,2221,2229,2255,2257,2267,2269,2271,2278,2280,2282,2285,2333-2334,2352,2372,2376,2379,2382-2383,2392,2394-2398,2400,2410-2412,2415,2435,2481,2485,2488,2496,2502,2530-2532,2546,2556,2561,2575,2582,2586,2601,2615,2664-2665
+packages/i18n/src/locales/mn.i18n.json
+  ai_agent 78,85,88,90,93,96-98,104-107,110-112,114-115,118-121,127,131-133,140,213,255,275,277,332,337,344,349,418,443,767,770,773,779,843,860,1077,1085,1100,1114,1160,1170,1364,1390,1408,1579,1666-1667,1813-1814,1821,1911,1913,1915,1957,2043,2087,2213,2215,2217,2227,2231,2332,2338,2347,2393,2397,2443,2488-2491,2615,2625
+packages/onboarding-ui/.storybook/logo.svg.d.ts
+  ai_agent 1-3
+packages/onboarding-ui/src/forms/AwaitConfirmationForm/index.ts
+  ai_agent 1
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomListGroupWrapper.tsx
+  ai_agent 1-14
+packages/onboarding-ui/src/pages/OrganizationInfoPage/index.ts
+  ai_agent 1
+packages/ui-conference/src/call/lib/stageTiles.ts
+  ai_agent 1-102
+packages/onboarding-ui/src/pages/SomethingWentWrongPage/index.ts
+  ai_agent 1
+packages/i18n/src/locales/fr.i18n.json
+  ai_agent 1248,1386,1427,3593,4042,4163,4265,4448-4452
+apps/meteor/tests/e2e/federation/page-objects/fragments/home-flextab-members.ts
+  ai_agent 23
+packages/layout/src/components/index.ts
+  ai_agent 1-7
+packages/layout/src/components/FormPageLayout/FormHeader.tsx
+  ai_agent 1-13
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutTitle.tsx
+  ai_agent 1-7
+ee/apps/authorization-service/CHANGELOG.md
+  ai_agent 3-18,33,51,70,89,104,119,134,149,168,183,198,213,228,247,266,281,296,311,326,345,360,375,390,405,420,435,450,465,480,495,510,530,545,560,575,590,605,625,639,653,667,681,708,722,736,750,764,778,792,806,820,834,848,862,876,890,904,931,945,959,986,1000,1053,1067,1081,1134,1161,1175,1189,1203,1217,1231,1245,1259,1273,1287,1301,1315,1329,1343,1372,1399,1413,1427,1441,1455,1469,1483,1510,1524,1538,1578,1592,1606,1620,1634,1648,1662,1676,1690,1704,1718,1732,1746,1760,1774,1788,1802,1816,1830,1848,1862,1876,1903,1917,1935,1962,1976,1992,2006,2020,2034,2048,2062,2078,2092,2108,2122,2138,2152,2166,2182,2196,2210,2224,2240,2254,2268,2282,2296,2310,2324,2338,2352,2365,2378,2391,2404,2417,2430,2443,2456,2469,2482,2495,2508,2521,2534,2547,2560,2573,2586,2599,2612,2625,2638,2651,2664,2677,2690,2703,2716,2729,2746,2759,2772,2785,2798,2817,2830,2843,2865,2878,2891,2904,2917,2930,2943,2956,2969,2982,3006,3019,3032,3045,3058,3071,3084,3097,3110,3123,3136,3149,3162,3175,3190,3203,3216,3229
+packages/onboarding-ui/src/pages/ResetPasswordConfirmationPage/ResetPasswordConfirmationPage.tsx
+  ai_agent 1-31
+packages/layout/src/layouts/HeroLayout/HeroLayout.stories.tsx
+  ai_agent 1-17
+packages/instance-status/CHANGELOG.md
+  ai_agent 3-11,18,27,36,45,54,63,72,81,90,99,108,117,126,135,147,156,165,174,183,195,204,213,222,231,240,249,258,267,284,293,302,311,320,329,338,347,356,365,374,383,392,401,410,419,428,437,446,455,464,473,482,491,500,509,518,527,536,553,571,589,598,631,640,649,674,683,700,724,733,742,751,760,769,778,787,796,805,814,833,850,859,868,877,886,895,904,921,930,939,956,965,974,983,992,1001,1010,1019,1028,1037,1046,1055,1064,1073,1082,1091,1100,1109,1118,1127,1136,1145,1154,1163,1172,1181,1190,1199,1208,1217,1226,1235,1244,1253,1262,1271,1280,1289,1304,1313,1322,1331,1346,1355,1364,1373,1382,1391,1400,1409,1418,1427,1436,1445,1454,1463,1472,1481,1490,1499,1508,1517,1526,1535,1544,1553,1562,1571,1580,1589,1598,1607,1616,1625,1635,1644,1653,1662,1671,1680,1689,1706,1716,1725,1738,1747,1756,1765,1774,1783,1792,1801,1821,1830,1839,1848,1857,1866,1875,1884,1893,1902,1911,1920,1929,1938,1947,1956,1965,1974,1983,1992,2001,2010,2019,2028,2037,2048,2057,2066,2075
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutFooter.tsx
+  ai_agent 1-10
+packages/ui-livekit/src/usePreviewVideoTrack.ts
+  ai_agent 1-72
+packages/ui-voip/src/generate-landing-view.tsx
+  ai_agent 114,116
+apps/meteor/tests/e2e/page-objects/fragments/navbar.ts
+  ai_agent 51
+.changeset/federated-typing-microservices.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-8
+packages/fuselage-toastbar/src/ToastBarPersistent.tsx
+  ai_agent 1-14
+packages/ui-voip/CHANGELOG.md
+  ai_agent 3-31,48,72,87,102,121,132,149,168,187,206,218,231,243,255,274,296,308,320,332,344,366,378,392,404,416,430,442,460,472,535,547,559,572,584,596,617,628,639,663,674,685,709,730,747,758,769,780,791,808,827,838,849,860,871,882,903,922,933,954,965,1006,1017,1028,1075,1086,1097,1114,1135,1146,1157,1168,1179,1190,1201,1212,1223,1234,1245,1259,1312,1329,1340,1351,1362,1373,1384,1395,1412,1423,1434,1453,1464,1475,1486,1497,1508,1519,1530,1541,1560,1571,1586,1597,1608,1619,1630,1641,1656,1667,1680,1691,1702,1723,1734,1747,1758,1769,1780,1791,1802,1813,1824,1835,1846,1857,1868,1887,1898,1909,1920,1939,1950,1961,1972,1983,1994,2011,2022,2033,2044,2055,2066,2077,2094
+apps/meteor/app/markdown/lib/parser/filtered/filtered.js
+  s_5723a0beb4a36a::t_7cac944b2ba839 54-56
+packages/onboarding-ui/src/pages/AdminInfoPage/AdminInfoPage.tsx
+  ai_agent 1-36
+packages/release-action/action.yml
+  ai_agent 11-13
+packages/core-services/src/events/Events.ts
+  ai_agent 55-62,65-66,134
+apps/meteor/ee/server/api/v1/omnichannel/tags.ts
+  ai_agent 83,105
+.yarn/patches/eslint-plugin-storybook-npm-9.1.20-b86b9c5e4d.patch
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-119
+packages/streamer/src/StreamPresence.ts
+  ai_agent 9,142,186
+packages/ui-conference/src/components/PreflightCameraPlaceholder.tsx
+  ai_agent 1-43
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useRemoveUserAction.tsx
+  ai_agent 12,42,133,144
+apps/meteor/client/views/room/Header/icons/RoomGroupingMenu.spec.tsx
+  ai_agent 7,13,21,40
+apps/meteor/tests/data/livechat/rooms.ts
+  ai_agent 431-449
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/channels-flextab.ts
+  ai_agent 10,37,45
+packages/onboarding-ui/src/pages/OauthAuthorizationPage/OauthAuthorizationPage.tsx
+  ai_agent 1-56
+packages/ui-conference/src/views/ConferenceWindow.spec.tsx
+  ai_agent 2,6-7,10-11,14-48,70-72,102-171
+packages/ui-voip/src/context/usePeekMediaSessionHidden.ts
+  ai_agent 1-34
+packages/onboarding-ui/src/pages/OauthAuthorizationPage/OauthAuthorizationPage.stories.tsx
+  ai_agent 1-23
+packages/layout/src/components/TooltipWrapper/TooltipWrapper.spec.tsx
+  ai_agent 1-19
+packages/password-policies/package.json
+  ai_agent 23
+.changeset/bump-patch-1790135238850.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-3,5
+packages/rest-typings/CHANGELOG.md
+  ai_agent 3-39,44-48,50-98,100,138,147,195,243,252,261,270,279,288,297,344,376,385,394,403,435,444,462,471,480,497,506,515,547,556,567,576,592,601,610,619,628,644,707,716,725,734,743,806,815,831,840,849,865,874,890,900,911,924,933,984,993,1002,1011,1020,1029,1080,1089,1098,1112,1121,1158,1173,1182,1191,1200,1209,1224,1259,1268,1277,1286,1295,1304,1321,1356,1365,1374,1408,1417,1450,1459,1493,1534,1551,1583,1592,1609,1618,1627,1636,1645,1654,1663,1674,1683,1706,1723,1734,1745,1762,1771,1780,1789,1806,1815,1860,1869,1878,1887,1896,1905,1914,1923,1932,1945,1954,1976,1985,1994,2003,2016,2025,2045,2054,2071,2080,2089,2106,2115,2132,2149,2158,2177,2186,2195,2204,2213,2222,2239,2248,2269,2278,2287,2296,2317,2339,2348,2357,2366,2388,2432,2441,2460,2469,2478,2487,2496,2532,2556,2565,2574,2583,2592,2601,2610,2634,2644,2660,2669,2678,2687,2704,2713,2729,2738,2747,2763,2772,2781,2790,2799,2808,2817,2833,2850,2859,2879,2888,2897,2906,2915,2924,2933,2942,2969,2978,2987,3001,3010,3019,3033,3058,3071,3080,3106,3115,3137,3146,3155,3164,3173,3195,3204,3213,3222,3231,3240,3249,3273,3282,3291,3300
+packages/onboarding-ui/src/forms/LoginForm/LoginForm.spec.tsx
+  ai_agent 1-7
+packages/onboarding-ui/src/pages/CreateCloudWorkspacePage/CreateCloudWorkspacePage.stories.tsx
+  ai_agent 1-28
+packages/storybook-dark-mode/package.json
+  ai_agent 3,36-37
+apps/meteor/client/components/message/variants/RoomMessage.spec.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 33-34
+packages/ui-conference/src/call/stage/ScreenViewer.tsx
+  ai_agent 1-26
+packages/ui-conference/src/call/tile/TileFrame.tsx
+  ai_agent 1-94
+packages/cron/CHANGELOG.md
+  ai_agent 3-13,21,32,42,52,62,72,82,92,102,112,122,132,142,152,167,177,187,197,207,222,232,242,252,262,272,282,292,302,341,351,361,371,381,391,401,411,421,431,441,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600,619,639,659,669,679,707,717,727,746,765,775,785,812,822,832,842,852,862,872,882,892,902,912,952,972,982,992,1002,1012,1040,1050,1069,1079,1089,1099,1109,1119,1129,1139,1149,1159,1169,1179,1189,1199,1209,1219,1229,1239,1249,1259,1269,1279,1289,1308,1318,1328,1338,1348,1358,1368,1378,1388,1398,1408,1418,1428,1438,1448,1458,1468,1478,1488,1498,1508,1518,1528,1538,1548,1558,1568,1578,1588,1598,1608,1618,1628,1638,1648,1658,1668,1678,1688,1698,1708,1718,1728,1738,1748,1758,1768,1778,1788,1798,1808,1818,1828,1838,1848,1858,1868,1878,1888,1898,1908,1922,1932,1942,1952,1962,1972,1982,1992,2014,2024,2034,2044,2054,2064,2074,2085,2095,2105,2124,2134,2145,2155,2165,2175,2185,2196,2206,2216,2226,2236,2246,2256,2270,2280,2290,2300
+apps/meteor/tests/e2e/page-objects/account.manage-devices.ts
+  ai_agent 9
+.changeset/perky-hairs-sort.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/logo/scripts/buildAssets.mjs
+  ai_agent 1-19
+packages/media-signaling/src/definition/call/callStates/ITempMediaCallData.ts
+  ai_agent 6
+packages/core-services/src/types/IBroker.ts
+  ai_agent 75-76
+packages/onboarding-ui/src/pages/AwaitingConfirmationPage/index.ts
+  ai_agent 1
+packages/tools/src/escapeHTML.spec.ts
+  ai_agent 13-14
+packages/ui-conference/src/components/CallTopBar.tsx
+  ai_agent 23-27,36,53-56,59-74
+apps/meteor/server/lib/messaging/emoji.ts
+  ai_agent 1
+apps/meteor/server/settings/lib/saveSettingsBulk.ts
+  ai_agent 9
+packages/ddp-client/src/Connection.ts
+  ai_agent 25-27,45-46,251-252,265
+apps/meteor/tests/end-to-end/api/livechat/24-routing.ts
+  ai_agent 10,54-55,120-121,177-178,279-285,290-291,493,622
+packages/layout/src/layouts/HeroLayout/HeroLayoutSubtitle.tsx
+  ai_agent 1-6
+apps/meteor/tests/e2e/abac-classification-banner.spec.ts
+  ai_agent 107,118
+packages/i18n/src/locales/pt.i18n.json
+  ai_agent 134,142,146,153,339,465,513,585,914,1039,1332,1393,1534,1701,1755,1861,2241-2244,2246,2292,2386,2567,2569,2571,2581,2589,2657-2658,2707,2786,2792-2793,2843,2895-2899
+packages/ui-voip/package.json
+  ai_agent 3,27,34,50,52,55,57,59,66,71
+apps/meteor/ee/server/local-services/instance/service.ts
+  ai_agent 3,32-33,43-53,56,58,97-98,102-103,105,109,187,193-194
+packages/ui-conference/src/views/ConferencePreflight.tsx
+  ai_agent 3,12-13,16-18,52-56,71,87-89,92-141,180,182-188
+packages/ui-conference/src/preflight/useCallDevicePreview.ts
+  ai_agent 1-66
+packages/livechat/package.json
+  ai_agent 3,17,40,51,63,82,88
+packages/ui-conference/src/call/lib/backdropTint.ts
+  ai_agent 1-11
+packages/mp3-encoder/src/lame/GainAnalysis.ts
+  ai_agent 307
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-agents.ts
+  ai_agent 11,52
+.changeset/livekit-server-provider.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-8
+apps/meteor/vite/tsconfig.json
+  ai_agent 1-12
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  ai_agent 48
+.changeset/memo-nan-cache.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/pages/RegisterOfflinePage/RegisterOfflinePage.spec.tsx
+  ai_agent 1-16
+.changeset/logo-monorepo-migration.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/views/room/composer/messageBox/createComposerAPI.ts
+  ai_agent 10,54
+docs/features/video-conference.md
+  ai_agent 185-189
+packages/i18n/src/locales/sq.i18n.json
+  ai_agent 74-76,87,90,94,96-100,105-107,111-122,124-130,132-133,137,140,160,240,279,284,343-344,346,354,402,420,445,763,773,846,863,880-881,1056,1176,1184,1207,1237,1252,1288,1371,1397,1415,1463,1466,1473,1498,1673-1674,1717,1722,1730,1737,1820-1821,1824-1825,1828,1918-1920,1922,1927,1948,2042,2049,2084,2086,2089,2093-2094,2096,2103,2110,2119,2187,2220,2222,2234,2243,2245-2247,2249,2297,2300,2330-2331,2340,2346,2348-2349,2373-2376,2403,2498-2501,2580,2624-2625
+packages/storybook-config/package.json
+  ai_agent 3,31,36,40
+apps/meteor/client/hooks/useUserRolesByScope.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-56
+apps/meteor/tests/unit/server/slashcommands/create.spec.ts
+  ai_agent 1-83
+.github/workflows/ui-preview.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-198
+packages/core-services/src/lib/getInstanceMethods.ts
+  ai_agent 1-9
+packages/i18n/src/locales/az.i18n.json
+  ai_agent 90,94-95,97-99,105,107,111-112,116,119-120,122,124,127-128,133,140,254,257,279,284,334,343,387,403,445,755,772,845,862-863,1086,1100,1106,1115,1165,1175,1260,1370,1405,1414,1417-1418,1574,1585,1621,1673,1821,1823,1829,1920-1923,2054,2093,2124,2239,2241,2243,2250,2305,2344,2359-2360,2407,2411,2502-2505,2584
+.changeset/logo-tokens-dependency.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/logo/tsconfig.esm.json
+  ai_agent 1-4
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/edit-room-flextab.ts
+  ai_agent 56,85,87,91,112
+packages/onboarding-ui/src/common/AgreeTermsField.tsx
+  ai_agent 1-61
+packages/onboarding-ui/src/pages/ResetPasswordPage/ResetPasswordPage.stories.tsx
+  ai_agent 1-19
+apps/meteor/server/lib/premiumAuthDeprecation.ts
+  ai_agent 10
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/prune-messages-flextab.ts
+  ai_agent 21
+apps/meteor/tests/e2e/omnichannel/omnichannel-livechat-api.spec.ts
+  ai_agent 106,112,354,356,363,398,439,441,448,475,482,504,511,523,530,556,571,578,603,605,612,637,639,646,676,687,694
+apps/meteor/tests/e2e/page-objects/home-omnichannel.ts
+  ai_agent 50
+packages/i18n/src/locales/pt-BR.i18n.json
+  ai_agent 309,674,763,1810,2013,2074,2678,2827,4744,4813,5087-5088,5437,5927,6070,6245,6409,6703-6727
+packages/ui-conference/src/call/CallDeviceMenuButton.tsx
+  ai_agent 1-20
+packages/ui-conference/src/components/CallBar.stories.tsx
+  ai_agent 1-29
+packages/ui-conference/src/preflight/PreflightDevices.tsx
+  ai_agent 1-31
+packages/ui-livekit/src/LiveKitCallProvider.tsx
+  ai_agent 1-178
+packages/mock-providers/package.json
+  ai_agent 3,23,33,37-38
+apps/meteor/tests/e2e/saml.spec.ts
+  ai_agent 504,518,544
+apps/meteor/server/api/v1/videoConference.ts
+  ai_agent 256-263
+packages/tools/package.json
+  ai_agent 24
+apps/meteor/ee/server/startup/services.ts
+  ai_agent 5,23
+packages/ui-livekit/src/LiveKitCallProvider.spec.tsx
+  ai_agent 1-110
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/auto-translate-flextab.ts
+  ai_agent 11,15
+packages/onboarding-ui/src/forms/AwaitConfirmationForm/AwaitConfirmationForm.spec.tsx
+  ai_agent 1-16
+apps/meteor/client/hooks/useRoomRolesQuery.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 19,36,45,52,59,82
+packages/onboarding-ui/src/pages/ResetPasswordPage/index.ts
+  ai_agent 1
+apps/meteor/tests/data/api-data.ts
+  ai_agent 58-81
+packages/ui-client/package.json
+  ai_agent 3,21-22,24-25,32,37-38,47,51-52,61-62,68
+packages/css-in-js/rollup.config.mjs
+  ai_agent 1,12-32,34
+apps/meteor/vite/workspacePackages.mjs
+  ai_agent 1-13
+packages/i18n/src/locales/nn.i18n.json
+  ai_agent 175-177,180-181,200,202-203,207,210,218-219,226,229,381,473,476,481,486,516,523,750,758,764,767,772,881,883,981-982,1007,1052,1059,1126,1129,1159,1597,1733,1790,1847,1900,2303,2488,2492,2498,2529,2540,2546,2896,3148,3195,3216,3234,3242,3250,3258,3373,3606,3819,3829-3830,4140,4279-4282,4284,4286,4382,4515,4517,4519,4559,4591,4787,4801,4809,4869,5044,5073,5138,5158,5229,5278,5419,5437-5438,5444,5474,5528,5536,5616,5649,5737-5752,5877,5955,5984
+packages/layout/jest.config.ts
+  ai_agent 1-11
+packages/fuselage-toastbar/tsconfig.json
+  ai_agent 1-9
+.changeset/room-history-insecure-origin.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/tests/data/uploads.helper.ts
+  ai_agent 333-336
+packages/ui-conference/src/call/hooks/useStreamHasLiveVideo.spec.ts
+  ai_agent 1-133
+apps/meteor/client/views/root/hooks/useNativeEmoji.ts
+  ai_agent 4-5
+apps/meteor/server/lib/videoConfProviders.ts
+  ai_agent 5-7
+packages/onboarding-ui/src/forms/CreateCloudWorkspaceForm/index.ts
+  ai_agent 1-6
+apps/meteor/client/lib/messageStateHandler.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+packages/onboarding-ui/src/pages/InvalidLinkPage/index.ts
+  ai_agent 1
+apps/meteor/client/views/conference/providers/ConferenceProvider.tsx
+  ai_agent 2,6,11,24,42,107-116,188,204,218,235-247
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/notification-preferences-flextab.ts
+  ai_agent 10
+packages/i18n/src/locales/en.i18n.json
+  ai_agent 2,47,67-69,71,80-82,87,93,100,118-121,132,136,144-145,150-151,153,161-162,182,186-187,189-191,193-194,196,199,201,203,207-208,211-212,214-215,217,221,223,234,236-238,240-241,243-245,247-255,258,260-262,264,267,269-273,276,278,281,290,292,294-295,299-300,303-304,306-310,313,315-320,325-327,330-332,334-378,380-386,388,391-393,395,397,399,401,403,405,407,410,413-414,416-417,420,422-423,425,428,430-432,434,439,441-442,451-452,454,456-458,460-461,463-471,473,475,495,500,506,512-515,520,523-524,526,528,533,536,538,540,542,544,546,548,551-552,559,569,576-578,585,587,589-590,593,595,598,617-622,627-628,630-631,634,636,641,651,659-660,662,665-667,669,678,686,700,706-707,711-713,715,717,719-721,723,725,727,729,731,733-734,740,745-747,752-753,756-757,759,761,763-764,774-777,779,792,794-795,806,809-810,814,823,833-835,837,844-845,849,852-853,855-856,881,888,892-894,914,917-927,932,935,949-953,955,957,981,983,986-987,992-993,997,1000,1003-1004,1011,1014,1019-1020,1022,1025-1028,1030,1033-1034,1038,1053,1056,1059,1064-1072,1089,1094,1096,1098-1102,1105,1107,1110,1114,1118,1121,1130-1131,1133,1147,1153,1155,1157-1162,1167-1169,1173-1177,1192-1193,1197,1204,1206-1207,1217,1224,1231,1235,1247-1249,1251-1252,1254,1261,1263,1265,1267,1269-1271,1273,1278-1279,1281-1283,1285-1286,1288-1289,1291-1295,1299,1310-1313,1316-1317,1329,1333,1335,1339,1351,1355-1356,1361,1366-1369,1371,1375-1377,1379-1380,1384,1393,1395-1396,1399,1401,1404,1413,1417,1422,1427,1429-1432,1436,1442,1444-1445,1447-1448,1452,1455-1457,1459-1461,1463,1467,1469-1471,1473,1475-1476,1478-1483,1485-1486,1489-1490,1497,1499-1500,1506,1517-1518,1524,1526,1539,1541,1544,1548-1549,1557-1559,1561,1569,1572,1580-1582,1592,1594-1596,1600-1603,1606,1861,1875,1881,1883,1885,1887-1888,1890-1892,1894-1898,1904,1906-1908,1912-1914,1925-1927,1934,1936-1938,1940,1943,1949-1956,1958,1962,1966,1968-1977,1982,1984,1986,1997-2004,2008-2014,2024-2025,2036-2037,2050,2052,2054-2055,2057,2059,2061,2063,2065,2067,2089-2097,2102,2113,2121,2136,2138-2140,2142-2144,2146,2149-2150,2159,2164,2171,2182,2186,2193,2197-2198,2201,2209,2212-2213,2216-2217,2225,2229-2231,2238-2239,2255,2269,2288-2289,2292-2294,2297,2299,2301-2302,2304-2307,2309,2311-2313,2315,2317-2319,2321,2323-2325,2327,2329,2331,2333,2335,2337,2347,2351,2353,2355,2357-2360,2363-2364,2366,2374-2375,2381,2388-2390,2394,2401,2430,2432,2450,2452,2459,2476,2487-2491,2499-2500,2513-2515,2526,2543,2545,2549,2555,2562,2566,2579,2584,2627,2636,2650,2664,2667-2668,2674-2676,2691,2699,2705-2708,2710,2713,2721-2722,2741,2744-2745,2751,2754,2757-2758,2766-2767,2774,2776-2777,2780,2782-2783,2787,2809,2811-2813,2817,2825,2831,2835-2836,2849-2850,2852-2853,2864,2866-2870,2873-2875,2877-2878,2881,2884,2887-2888,2891-2894,2899,2904-2905,2907,2918,2922,2927,2940-2941,2946,2949-2951,2954-2957,2960-2961,2963,2965,2967-2969,2971-2973,2975-2980,2982,2984,2988,2992,2994,2998-3000,3002,3004,3007,3009,3011-3012,3014,3016,3018-3019,3021,3023-3024,3034,3037-3038,3040-3042,3052,3060,3063,3067,3077,3081,3083,3094,3097,3100,3103-3104,3111,3114,3132,3138-3139,3152,3157-3159,3162,3175,3177,3181,3189,3194,3199-3200,3207,3212-3215,3219,3226-3228,3231,3237-3238,3244-3245,3247,3249,3251,3253,3256,3258,3263,3265,3268,3270-3271,3288-3291,3294-3295,3317,3322,3324,3338-3339,3346,3351-3352,3356,3360,3363-3364,3370,3372,3377-3378,3380-3394,3396,3398,3400,3402,3405-3409,3412-3418,3420-3424,3426-3428,3430,3432-3435,3437,3440,3444,3447,3457,3464,3467,3471,3477,3481,3488,3500,3502,3510,3516,3523,3529,3539,3541,3543,3564,3567,3569,3571,3600,3603,3605,3609-3610,3612,3614,3617,3619,3621,3625,3627,3637,3639-3641,3643-3645,3647,3651-3653,3655-3656,3659,3661,3663,3668,3670-3671,3673-3674,3676,3679,3681,3683-3686,3689-3690,3694,3696-3700,3702-3704,3706-3714,3721,3726,3728,3730,3732,3741,3743-3745,3747,3749,3756-3758,3760-3762,3765-3771,3773-3778,3780,3782,3784,3788-3789,3793-3794,3796,3798,3802-3804,3806,3810,3812-3815,3817,3822,3825-3827,3857,3866,3868,3890-3892,3895-3896,3898,3900,3904-3905,3908-3913,3917,3922-3923,3927-3929,3933-3934,3938-3940,3945-3947,3958,3960-3962,3965-3966,3968-3969,3988,3990,3994,3997,3999,4001,4004,4007,4010,4012,4019-4023,4027,4029,4031,4033,4044,4046-4047,4049,4051,4055-4056,4058,4064-4066,4071,4077,4080,4085,4093,4096-4097,4103,4105,4107,4109,4111,4113,4115,4117,4119,4121,4123,4125,4127,4129,4131,4133,4135,4137,4139,4141,4143,4145,4147,4149,4151,4153,4155,4157-4158,4166,4169,4171-4172,4177-4187,4196-4209,4212,4215,4220,4231,4234,4241-4242,4244,4260,4264,4266-4267,4270-4271,4273,4275-4277,4279,4282-4283,4291-4292,4294-4295,4299-4301,4304,4308-4309,4314,4316-4319,4324-4328,4330-4331,4346-4348,4362,4382,4385,4387-4388,4393-4394,4396,4398,4401,4403-4404,4410-4413,4415-4416,4418,4421,4423-4424,4428,4430,4437,4439-4442,4459-4460,4472-4473,4479-4480,4485-4486,4524,4526-4527,4529,4531-4532,4537,4547,4557,4568,4570,4573,4576-4577,4589,4592-4594,4596-4597,4601-4602,4605,4607,4609,4612,4615,4617,4622-4623,4625,4627-4629,4635-4636,4641,4643,4652,4658,4662,4688,4696,4709,4713,4722-4723,4730,4740,4757,4764,4768,4770,4781-4782,4784-4785,4790,4793,4800,4802,4814-4815,4820,4822-4823,4827-4828,4830,4832-4834,4836-4838,4841-4843,4847,4853-4855,4857-4859,4861-4864,4867,4874,4877-4882,4884,4886,4895,4900,4904,4906,4921,4932,4947,4957,4960,4963,4967,4972,4974,4978,4982-4983,4985,4989,4993,5019,5021,5023-5024,5033,5046-5049,5054-5062,5066-5070,5082,5084,5086,5088,5098,5103,5122,5128-5130,5132-5133,5137,5141,5148-5150,5153-5154,5161-5162,5168-5169,5174-5175,5178,5180,5182,5184,5186-5188,5193-5195,5219,5222,5235,5251,5262,5270,5273-5274,5282,5289,5291,5296,5299,5302,5304,5306-5307,5311-5312,5315,5318,5322,5332,5339-5344,5347-5348,5351-5354,5356-5357,5360-5361,5369-5370,5378,5381,5383,5390,5393,5396-5397,5399-5400,5404,5411,5422,5430,5432,5436,5444,5450,5467,5471,5474,5477-5478,5485-5487,5504,5526,5529,5534,5536,5539,5549-5550,5554,5571,5578,5580,5582,5584,5586-5588,5590,5594,5596,5598,5609,5624-5625,5628-5629,5636,5645,5652,5658-5659,5667-5669,5679,5689,5703,5705,5710,5720-5721,5724,5750,5756-5757,5760,5772-5774,5785,5792,5794,5796-5798,5802-5807,5809-5813,5815,5817-5819,5823,5825-5826,5831-5843,5845,5849,5851-5853,5855,5858-5859,5861-5865,5870,5873-5874,5877,5881,5883-5886,5888,5890,5900,5906,5908,5910,5912,5917,5921-5922,5924-5925,5927,5930,5943-5945,5949,5961,5963,5966,5968,5971-5972,5975,5978,5983,5985,5987,6001,6003,6025,6031,6036,6038,6060-6066,6068-6070,6074-6076,6079,6081,6083,6086,6093,6096,6098-6100,6104,6122,6124,6126,6128-6129,6131,6137,6141,6144-6145,6154,6159,6172,6176-6177,6180,6201,6208-6209,6212-6218,6223,6225,6227,6230,6233,6245-6251,6253,6256-6257,6259,6261,6263-6265,6268-6270,6272,6275,6285,6288,6290,6297,6299,6315-6316,6326-6327,6330,6333,6337,6339,6342-6343,6345,6347-6359,6361,6363-6367,6374-6375,6377-6379,6400-6401,6404,6406-6408,6420,6447,6454-6455,6458,6461,6464,6474,6477-6478,6482,6484,6488-6490,6492,6496,6498-6506,6510-6517,6519-6522,6530,6539-6544,6546-6547,6554-6557,6559,6573,6580,6588,6597-6607,6609-6621,6624-6625,6627-6632,6634-6647,6649,6652-6653,6660,6666,6683-6684,6692,6694-6695,6712,6717,6747,6750,6753,6756-6757,6768,6772-6773,6775-6776,6779,6781-6782,6786,6788-6789,6791,6794,6811,6815,6817,6819,6821,6823,6825,6827-6828,6834,6836,6844,6861,6863-6864,6866,6868-6870,6880,6890-6892,6907,6912-6913,6919,6921,6926,6930-6933,6941-6943,6956,6959,6965,6975,6985,6992,6997,7016-7017,7032,7036-7037,7048-7071,7097,7099,7109,7115,7119,7123,7128,7135,7153,7155-7160,7165-7166,7183,7186,7192,7196,7202-7203,7205-7206,7210,7218,7231,7234-7236,7240,7244,7255-7256,7259,7264-7265,7268-7276,7278,7280,7286,7289,7293-7294,7296,7300,7302,7304,7306,7308,7310,7312,7314,7316,7318,7320,7322-7324,7326,7328,7330,7332-7334,7336,7338,7340-7356,7358,7360,7362-7364,7366-7367,7369,7371,7373,7375-7377,7379,7381,7383,7385,7387,7389,7398-7401,7403,7409,7415,7429-7432,7437-7440,7442-7443,7447-7448,7450-7452,7467,7470,7472-7476,7480,7485-7488,7490-7492,7495,7508,7524-7525,7551,7565,7568,7587,7632,7635
+packages/gazzodown-alt/src/index.ts
+  ai_agent 4
+packages/i18n/src/locales/ca.i18n.json
+  ai_agent 136,138,148,152,156,160,167,175,393,560,820,1237,1414,1854,1859,2129,2327,3161,3290,3468,3886,4003,4104,4279-4283
+packages/onboarding-ui/src/forms/NewAccountForm/index.ts
+  ai_agent 1
+packages/css-in-js/package.json
+  ai_agent 3,52,54
+packages/onboarding-ui/src/forms/CreateFirstMemberForm/CreateFirstMemberForm.tsx
+  ai_agent 1-109
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  ai_agent 4,13,38-42,48-73,86
+apps/meteor/client/components/message/MessageHeader.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 13,26-27,38-39,49-50,53-62,65-66
+ee/apps/presence-service/package.json
+  ai_agent 3,32,36,48
+packages/ai-search/src/intelligentSearch.ts
+  ai_agent 1,315
+packages/i18n/src/locales/eo.i18n.json
+  ai_agent 86,97,99,105,107,112,116,122,128,133,141,279,334,772,843,860,1280,1286,1368,1412,1583,1671,1962,2048-2049,2222,2234,2241,2258,2337,2352,2400,2423,2495-2498
+packages/onboarding-ui/src/forms/RegisterOfflineForm/index.ts
+  ai_agent 1
+apps/meteor/tests/e2e/page-objects/fragments/flextabs/user-info-flextab.ts
+  ai_agent 10
+apps/meteor/client/views/room/contextualBar/Discussions/DiscussionsListRow.tsx
+  ai_agent 2
+packages/streamer/src/types.ts
+  ai_agent 67,88-89,107-115,117
+packages/peggy-loader/package.json
+  ai_agent 30,34-35
+apps/meteor/server/lib/oauth/addOAuthService.ts
+  ai_agent 16
+apps/meteor/client/styles/main.css
+  ai_agent 2-6,9-11,14-15
+apps/meteor/client/views/admin/integrations/incoming/IncomingWebhookForm.tsx
+  ai_agent 20
+packages/omni-core/package.json
+  ai_agent 3,29
+packages/onboarding-ui/src/pages/CreateNewPasswordPage/index.ts
+  ai_agent 1
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutDescription.tsx
+  ai_agent 1-9
+packages/ui-contexts/CHANGELOG.md
+  ai_agent 3-14,24,38,49,60,72,84,96,108,120,131,142,153,164,176,193,204,215,226,237,254,265,277,288,299,311,322,334,345,356,368,379,395,406,417,428,439,450,466,477,488,507,518,529,548,559,570,584,595,606,617,628,642,660,671,682,693,704,715,736,754,765,792,803,844,855,882,914,935,966,977,989,1000,1011,1022,1033,1044,1055,1066,1077,1120,1142,1154,1165,1176,1187,1218,1269,1280,1291,1302,1313,1324,1335,1346,1357,1378,1389,1403,1414,1425,1436,1447,1458,1472,1483,1495,1506,1517,1538,1549,1561,1572,1583,1594,1608,1619,1630,1641,1652,1663,1677,1688,1708,1719,1732,1743,1761,1773,1784,1795,1806,1818,1830,1841,1852,1863,1874,1885,1896,1908,1920,1931,1942,1953,1964,1975,1987,1999,2010,2022,2033,2044,2055,2066,2077,2088,2100,2111,2122,2141,2152,2163,2174,2185,2196,2207,2226,2237,2248,2264,2275,2286,2297,2308,2319,2330,2341,2366,2377,2388,2400,2411,2422,2434,2450,2461,2472,2497,2508,2520,2531,2542,2553,2564,2576,2587,2598,2609,2620,2631,2642,2661,2672,2683,2694
+packages/ui-conference/src/call/AudioDevicePicker.tsx
+  ai_agent 1-44
+ee/packages/network-broker/src/licenseEnforcement.ts
+  ai_agent 1-75
+ee/packages/license/CHANGELOG.md
+  ai_agent 3-13,28,45,54,63,72,81,90,99,112,121,130,139,148,161,170,179,188,197,206,215,226,235,254,263,274,283,292,301,310,319,330,339,348,357,366,383,392,401,410,419,428,437,446,455,468,477,486,495,504,513,530,543,552,569,578,611,620,629,654,663,680,689,706,715,724,733,766,783,792,801,810,819,836,845,854,871,880,889,898,907,916,925,934,943,952,961,970,979,988,997,1006,1015,1024,1033,1042,1051,1060,1069,1086,1095,1104,1113,1122,1131,1140,1149,1158,1167,1176,1185,1194,1203,1212,1221,1230,1239,1248,1257,1266,1275,1284,1293,1310,1319,1328,1337,1346,1355,1364,1381,1390,1399,1408,1417,1426,1435,1444,1453,1462,1471,1480,1489,1498,1507,1516,1525,1534,1543,1552,1561,1570,1579,1588,1597,1606,1615,1624,1633,1642,1655,1664,1673,1682,1691,1700,1709,1718,1738,1747,1756,1765,1774,1783,1792,1801,1810,1819,1835,1844,1853,1862,1871,1880,1889,1898,1907,1916,1925,1934,1943,1952,1965,1974,1983,1992
+apps/meteor/ee/server/lib/livekit/callConfig.ts
+  ai_agent 1-64
+apps/meteor/client/components/message/content/DiscussionMetrics.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 9
+packages/fuselage-toastbar/src/ToastBar.stories.tsx
+  ai_agent 1-123
+packages/logo/tsconfig.cjs.json
+  ai_agent 1-12
+packages/ui-conference/src/call/VoiceActivity.stories.tsx
+  ai_agent 1-37
+apps/meteor/client/components/message/variants/ThreadMessage.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 31,57,59-60,62-63
+packages/onboarding-ui/src/pages/LoginLinkEmailPage/index.ts
+  ai_agent 1
+apps/meteor/client/views/admin/subscription/components/cards/PlanCard/PlanCardLicenseDetails.tsx
+  ai_agent 3
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  ai_agent 2731,2741,2756,2762
+apps/meteor/server/api/v1/ai-search.ts
+  ai_agent 16
+apps/meteor/tests/e2e/page-objects/fragments/home-content.ts
+  ai_agent 189,202,279,348,498,502,514,661
+packages/onboarding-ui/src/forms/NewAccountForm/NewAccountForm.tsx
+  ai_agent 1-133
+packages/onboarding-ui/src/forms/OrganizationInfoForm/index.ts
+  ai_agent 1
+packages/ui-conference/src/call/callStories.spec.tsx
+  ai_agent 1-51
+packages/ui-conference/src/call/lib/backdropTint.spec.ts
+  ai_agent 1-14
+apps/meteor/tests/unit/server/slashcommands/msg.spec.ts
+  ai_agent 1-77
+apps/meteor/server/api/experimental/rooms.setCategory.ts
+  ai_agent 2,56-59
+packages/onboarding-ui/src/forms/CreateCloudWorkspaceForm/CreateCloudWorkspaceForm.tsx
+  ai_agent 1-228
+packages/onboarding-ui/src/forms/RegisterServerForm/index.ts
+  ai_agent 1
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-info.ts
+  ai_agent 43
+apps/meteor/tests/unit/server/services/instance/service.tests.ts
+  ai_agent 1,11-12,19-23,33-40,46-49,62,68-69,71-117
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  ai_agent 9
+packages/ui-conference/src/hooks/useCallDevicesInitialState.spec.tsx
+  ai_agent 1-20
+packages/models/CHANGELOG.md
+  ai_agent 3-46,57,83,111,154,208,223,238,263,316,329,354,365,376,386,396,421,444,454,464,474,484,507,517,539,549,559,581,591,609,619,629,647,657,681,691,701,711,721,731,755,765,775,791,801,811,827,837,849,859,869,879,889,899,909,925,935,945,955,965,975,985,995,1011,1021,1049,1059,1096,1106,1125,1172,1182,1192,1232,1242,1258,1268,1278,1288,1298,1308,1318,1328,1338,1365,1384,1394,1406,1424,1434,1444,1454,1473,1483,1501,1520,1551,1561,1571,1581,1591,1601,1611,1621,1631,1662,1672,1692,1702,1712,1722,1736,1746,1764,1774,1796,1806,1816,1835,1845,1867,1886,1900,1919,1929,1939,1949,1959,1969,1986,1995,2010,2019,2030,2039,2052,2061,2070,2079,2088,2097,2111,2120,2129,2138,2147,2156,2165,2179,2192,2201,2210,2219,2228,2237,2246,2259,2268,2277,2286,2295,2304,2313,2322,2331,2340,2349,2358,2372,2381,2390,2399,2408,2417,2439,2454,2467,2476,2485,2494,2503,2512,2521,2530,2550,2559,2568,2577,2586,2595,2604,2613,2622,2631,2647,2656,2667,2676,2685,2694,2703,2714,2725,2734,2743,2752,2761,2770,2781,2790,2799,2808
+packages/release-action/src/utils.ts
+  ai_agent 8,149-154
+.github/workflows/ci-test-e2e.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 219
+packages/desktop-api/package.json
+  ai_agent 4,19,24
+packages/ui-conference/src/call/hooks/useMediaDevices.ts
+  ai_agent 1-15
+packages/ui-conference/src/preflight/PreflightPreview.spec.tsx
+  ai_agent 1-41
+.changeset/fuselage-toastbar-published-files.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  ai_agent 4,145-155,161,196-200,205-212,272,274-281,369-370,424-431,488-498,513-522,528-538,566-576,591-600,628-638,653-662,829,860-867
+packages/layout/.storybook/preview.tsx
+  ai_agent 1-70
+packages/ui-conference/src/context/definitions.ts
+  ai_agent 3,5,156-163
+yarn.lock
+  ai_agent 2527,2863-2869,3940-3941,3949,3952,4016-4041,4151-4152,4156,4246-4248,4250,4258-4260,4262,4270-4272,4274,4279-4281,4286-4288,4293-4295,4300-4302,4307-4309,4314-4316,4321-4323,4328-4330,4335-4337,4342-4344,4349-4351,4353,4361-4363,4365,4373-4375,4377,4385-4387,4389,4397-4399,4401,4409-4411,4413,4421-4423,4425,4433-4435,4437,4445-4447,4450,4454-4456,4458,4463-4465,4470-4472,4477-4479,5396-5398,5401,5434-5485,6119-6121,6124-6127,6130,6144-6153,6165-6167,6169-6170,6172,6190-6196,6240-6242,6244-6245,6249-6251,6253-6257,6259,6295-6303,9174-9175,9201,9206,9209,9225,9238,9253,9269,9285-9286,9306,9312,9316,9344,9348,9351,9373-9374,9388,9399,9411,9423,9439,9458,9464,9479,9481,9494,9511-9512,9542,9547,9550,9555,9563,9576,9589,9612,9615,9626,9639,9646-9647,9650,9668-9670,9684,9714-9716,9718-9732,9734-9736,9742-9743,9759,9776,9778,9780,9782,9788-9789,9833-9854,9859,9862-9869,9874,9885,9899,9904,9906-9907,9917-9919,9925,9928,9950,9952,9967,9991,10008,10026,10033-10057,10060-10061,10063-10064,10079,10100,10126,10128,10138,10153,10180,10186-10188,10190-10204,10208-10209,10224,10239,10251,10264-10265,10285,10288,10292,10317,10352-10353,10356,10367,10371,10386,10411,10420,10422,10468,10470,10486,10488,10501,10503,10514,10542,10549,10564,10568,10591,10597,10600,10605-10606,10633,10656,10658,10662-10663,10667,10702,10729,10733-10734,10739,10755,10777,10789,10807,10822,10826,10828,10846,10864,10889,10892,10924,10929,10934,10949-10951,10953-10973,10975-10977,10988-10989,10997,11011,11024,11043,11047,11051,11054,11059,11069-11070,11103,11107,11110,11133-11134,11155,11159,11162,11182,11195,11197,11199,11214,11216,11233,11244,11260,11276,11287,11299,11302,11314-11328,11336-11337,11365-11366,11374,11391,11407,11421,11439,11445-11446,11449,11462,11467,11472-11473,11476,11484,11488-11491,11500-11501,11506,11527,11537,11539,11542-11543,11547,11555,11568-11569,11584,11587,11591-11592,11599,11606,11616,11631,11642-11643,11649,11670,11680-11718,11726,11741-11742,11747,11752,11775,11793,11795,11798,11800,11802,11809-11810,11814,11837,11841,11843,11847,11854,11857,11859,11865,11879,11884-11885,11894,11897-11899,11904-11905,11910-11911,14098-14100,14110,14171,14222-14224,14229-14231,14236-14239,14243-14246,14250-14252,14257-14259,15466-15468,15471,15484-15486,15489,15674,15702,15760-15762,15764-15765,16064-16066,16069,16082-16090,17072-17074,17076-17079,17217-17220,17944-17946,17951,17955-17957,17960,17963,18579-18599,18650-18652,18656,18660-18662,18665,18669-18671,18674,19608-19614,19966-19969,20110-20116,21539-21541,21547,21845-21848,22732,22744-22755,22882,23334-23342,24509-24512,24831-24834,24998,25010,27553-27559,27581-27583,27589,27593-27595,27600,27732-27738,28091-28094,28098-28100,28102,28104-28106,28110-28113,28313-28332,28573-28579,28710-28716,28744-28746,28748-28749,28753,28755,28758,29163-29165,29191,29379,29607-29609,29692,29705,29712-29718,29882-29890,30156-30163,30254,32267-32277,32349-32351,32354,33169-33171,33178,33191-33193,33209,33415-33417,33421,33432,34214,34216,34220,34283,34406,34641-34647,34877-34879,34882-34906,34963,35541,36854-36855,36867,36889,37000-37006,37073-37082,37098,37263-37274,37448-37451,37884-37894,38512-38517
+packages/onboarding-ui/tsconfig.json
+  ai_agent 1-9
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.ts
+  ai_agent 5,17,375-379
+packages/i18n/src/locales/eu.i18n.json
+  ai_agent 59
+packages/layout/src/components/ActionLink/ActionLink.tsx
+  ai_agent 1-29
+packages/layout/.storybook/logo.svg.d.ts
+  ai_agent 1-3
+packages/ui-client/src/components/Header/HeaderToolbar/HeaderToolbar.spec.tsx
+  ai_agent 1-58
+packages/onboarding-ui/src/common/PlanFeatureIcon.tsx
+  ai_agent 1-7
+apps/meteor/tests/e2e/omnichannel/omnichannel-monitor-role.spec.ts
+  ai_agent 140,142,145,147,188
+ee/packages/omni-core-ee/CHANGELOG.md
+  ai_agent 3-13,22,33,44,55,66,77,88,99,110,121,132,143,154,165,179,190,201,212,223,237,248,259,270,281,292,303,314,325,346,357,369,380,391,402,413,424,436,447,458,469,480,501,512,523,534,545,556,567,578,589,600,611,622,633,644,655,676,687,697,716,726,736,746,756,766,776,786
+packages/i18n/src/locales/nb.i18n.json
+  ai_agent 92,263,293,467,1179,1186,1257,1261,1291,1740,2003,2058,2698,2738,3476,3484,3492,3500,4075,4087,4561,5294,5309,5643,5772,5849,5912,6084,6243,6521-6536
+packages/ui-conference/src/preflight/PreflightDeviceMenu.tsx
+  ai_agent 1-29
+packages/ui-livekit/jest.config.ts
+  ai_agent 1-12
+ee/apps/account-service/package.json
+  ai_agent 3,32,37,50
+packages/server-fetch/package.json
+  ai_agent 3,32
+packages/onboarding-ui/src/forms/TotpForm/TotpForm.spec.tsx
+  ai_agent 1-7
+packages/tools/src/unescapeHTML.spec.ts
+  ai_agent 29-49
+.changeset/user-card-hover.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-7
+packages/ui-conference/src/call/hooks/useTileGridLayout.spec.tsx
+  ai_agent 1-48
+packages/ui-voip/src/views/MediaCallWidget/__snapshots__/MediaCallWidget.spec.tsx.snap
+  ai_agent 354,383,494-652,2053-2212,2241
+apps/meteor/client/lib/createComposerAPICore.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 8,38,75,108,204
+packages/models/package.json
+  ai_agent 3,36
+packages/ui-conference/src/call/lib/deviceLabels.ts
+  ai_agent 1-49
+packages/ui-conference/src/call/CallHeader.stories.tsx
+  ai_agent 1-31
+packages/fuselage-ui-kit/src/elements/TextElement.spec.tsx
+  ai_agent 1-67
+packages/i18n/src/locales/he.i18n.json
+  ai_agent 17,360,380-381,410,1327,1389-1393
+packages/layout/src/components/LayoutLogo/LayoutLogo.stories.tsx
+  ai_agent 1-10
+packages/streamer/src/notifications.module.ts
+  ai_agent 1-2,19,58-84,111-130,284-295,590-591
+.changeset/fuselage-toastbar-stable-context.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/hooks/useRoomRolesQuery.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-57
+apps/meteor/tests/end-to-end/api/groups.ts
+  ai_agent 1048,2135,2469
+packages/onboarding-ui/src/pages/RequestTrialPage/RequestTrialPage.tsx
+  ai_agent 1-31
+apps/meteor/server/services/upload/service.ts
+  ai_agent 188-193,210,212,215
+ee/packages/omnichannel-services/CHANGELOG.md
+  ai_agent 3-17,34,54,68,83,97,111,125,139,156,171,186,201,216,233,253,268,283,298,313,333,348,364,379,394,410,425,441,456,471,487,502,520,535,550,565,580,595,613,628,643,659,674,717,732,748,763,778,793,808,824,840,855,870,885,900,915,944,960,974,1002,1016,1069,1083,1098,1153,1180,1221,1235,1249,1263,1277,1291,1305,1319,1333,1347,1361,1374,1402,1416,1430,1444,1458,1472,1486,1500,1527,1541,1555,1582,1596,1610,1624,1638,1652,1666,1680,1694,1708,1722,1736,1750,1764,1778,1792,1806,1820,1834,1848,1864,1878,1892,1906,1920,1934,1950,1966,1980,1994,2014,2028,2042,2056,2070,2084,2104,2124,2138,2152,2166,2180,2194,2208,2222,2236,2250,2264,2278,2292,2306,2320,2334,2348,2362,2376,2390,2404,2418,2432,2446,2460,2474,2488,2502,2516,2530,2544,2558,2572,2586,2600,2614,2628,2642,2665,2679,2693,2707,2721,2735,2749,2772,2786,2800,2820,2834,2848,2862,2876,2890,2904,2918,2950,2964,2978,2996,3010,3024,3042,3056,3070,3085,3112,3126,3140,3154,3168,3182,3196,3210,3224,3238,3252,3266,3280,3294,3312,3326,3340,3354
+apps/meteor/tests/e2e/page-objects/fragments/modals/confirm-delete-modal.ts
+  ai_agent 37
+packages/message-parser/package.json
+  ai_agent 35,50-51
+apps/meteor/client/sidebar/hooks/useCategoryList.ts
+  ai_agent 6,76,90,171,180,208
+.changeset/fuselage-toastbar-portal-anchor.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/i18n/src/locales/ko.i18n.json
+  ai_agent 146,179,187,355,599,663,684,1117,1242,1280,2254,2729,3040,3469,3563,3715-3717
+packages/onboarding-ui/src/forms/AdminInfoForm/AdminInfoForm.spec.tsx
+  ai_agent 1-17
+apps/meteor/tests/end-to-end/api/rooms.ts
+  ai_agent 33,1620-1767,1787-1788,1795-1797,2977-2980,4631
+packages/i18n/package.json
+  ai_agent 3,40
+packages/ui-conference/src/call/lib/mediaDevicesStore.ts
+  ai_agent 1-61
+packages/ui-conference/src/call/lib/screenShares.ts
+  ai_agent 1-14
+apps/meteor/client/sidebar/hooks/useCategoryList.spec.ts
+  ai_agent 5,12-13,18,86,91,95,107
+apps/meteor/client/views/room/hooks/useMessageListNavigation.spec.tsx
+  ai_agent 1-133
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useRedirectModerationConsole.ts
+  ai_agent 25
+packages/instance-status/package.json
+  ai_agent 3,23
+packages/mp3-encoder/src/lame/BitStream.ts
+  ai_agent 10,325-326,384-385,393,492,496
+packages/streamer/src/listeners.module.ts
+  ai_agent 51-52,169,171,196
+apps/meteor/client/components/message/list/MessageListContext.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 2
+packages/i18n/src/locales/de-AT.i18n.json
+  ai_agent 91,223,257,284,402,409,773,846,864,1446,1586,2050,2338,2401,2425,2497-2500
+apps/meteor/client/lib/RoomHistoryManager.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-99
+apps/meteor/vite/native/login.ts
+  ai_agent 1-6
+packages/layout/.storybook/main.ts
+  ai_agent 1-39
+packages/onboarding-ui/src/pages/SomethingWentWrongPage/SomethingWentWrongPage.stories.tsx
+  ai_agent 1-19
+packages/layout/src/components/List/List.stories.tsx
+  ai_agent 1-16
+apps/meteor/tests/e2e/page-objects/admin-third-party-login.ts
+  ai_agent 11,19,27,35
+packages/onboarding-ui/src/pages/LoaderPage/index.ts
+  ai_agent 1
+packages/onboarding-ui/.storybook/DocsContainer.tsx
+  ai_agent 1-21
+apps/meteor/client/lib/emoji/lib.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 3
+packages/onboarding-ui/src/pages/AdminInfoPage/index.ts
+  ai_agent 1
+apps/meteor/client/lib/messageBoxFormatting.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 69
+apps/meteor/tests/e2e/omnichannel/omnichannel-manager-role.spec.ts
+  ai_agent 107,109,112,114,139
+.changeset/mp3-encoder-past-reviews.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/tests/e2e/page-objects/fragments/modals/omnichannel-return-to-queue-modal.ts
+  ai_agent 7
+apps/meteor/tests/unit/server/modules/apps/codecs/uploads.spec.ts
+  ai_agent 1-51
+apps/meteor/client/providers/AuthorizationProvider.tsx
+  ai_agent 6
+apps/meteor/client/startup/embeddedCallProviders.tsx
+  ai_agent 1-7
+apps/meteor/tests/unit/server/slashcommands/status.spec.ts
+  ai_agent 1-72
+apps/meteor/tests/unit/server/slashcommands/hide.spec.ts
+  ai_agent 1-105
+packages/layout/src/components/TooltipWrapper/InnerTooltip.tsx
+  ai_agent 1-21
+apps/meteor/client/meteor/login/saml.ts
+  ai_agent 5,9
+packages/layout/src/components/ActionLink/__snapshots__/ActionLink.spec.tsx.snap
+  ai_agent 1-27
+packages/onboarding-ui/src/forms/ResetPasswordForm/ResetPasswordForm.stories.tsx
+  ai_agent 1-15
+packages/passport-x/package.json
+  ai_agent 24
+packages/layout/.storybook/globals.d.ts
+  ai_agent 1
+packages/onboarding-ui/src/forms/AdminInfoForm/index.ts
+  ai_agent 1
+apps/meteor/client/lib/renderComposerMarkup.spec.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 1,30,42-57,87,98,100-104,109-120
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-custom-fields.ts
+  ai_agent 27
+packages/layout/src/layouts/HeroLayout/HeroLayoutTitle.tsx
+  ai_agent 1-6
+ee/packages/network-broker/src/EnterpriseCheck.ts
+  ai_agent 3,8-18
+packages/onboarding-ui/src/forms/ResetPasswordForm/index.ts
+  ai_agent 1
+packages/ui-livekit/src/useActiveDevice.spec.ts
+  ai_agent 1-52
+packages/jwt/package.json
+  ai_agent 26
+.changeset/user-actions-menu-groups.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+apps/meteor/client/views/room/contextualBar/RoomMembers/InviteUsers/InviteLink.tsx
+  ai_agent 2
+ee/packages/omnichannel-services/package.json
+  ai_agent 3,31,46
+packages/layout/src/components/LayoutLogo/LayoutLogo.spec.tsx
+  ai_agent 1-19
+packages/onboarding-ui/src/forms/ResetPasswordForm/ResetPasswordForm.spec.tsx
+  ai_agent 1-7
+apps/meteor/tests/e2e/avatar-settings.ts
+  ai_agent 93
+apps/meteor/ee/server/lib/livekit/capabilities.ts
+  ai_agent 1-18
+packages/i18n/src/locales/ms-MY.i18n.json
+  ai_agent 72,78,85,89,95,107,111-112,115-116,119-120,127-128,130,133,136,140,151,159,253,278,283,342,389,401,763,773,846,863,883,920,1104,1171,1282,1286,1412,1524,1583,1598,1713,1827-1835,1925-1929,1934,2058,2195,2227,2229,2231,2241,2243,2337,2347,2353,2362,2373,2386,2410,2505-2507
+apps/meteor/client/hooks/useFormatDateAndTime.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+apps/meteor/client/views/room/Header/icons/RoomGroupingMenu.tsx
+  ai_agent 6,11,17
+packages/gazzodown/CHANGELOG.md
+  ai_agent 3-14,23,34,58,82,93,104,119,134,146,157,168,179,190,202,216,227,238,249,260,274,285,297,308,319,331,342,354,366,387,412,423,434,445,456,467,482,493,504,515,526,547,568,579,590,601,612,623,634,651,662,673,684,695,706,727,744,755,776,787,828,839,850,893,914,927,938,949,960,971,982,993,1004,1015,1026,1037,1048,1059,1080,1101,1112,1123,1136,1147,1158,1169,1200,1213,1234,1245,1256,1267,1278,1289,1300,1311,1322,1333,1344,1355,1369,1380,1391,1402,1413,1424,1438,1449,1460,1471,1482,1503,1514,1525,1536,1547,1558,1569,1580,1591,1602,1613,1624,1635,1646,1663,1674,1685,1696,1713,1724,1735,1746,1757,1768,1783,1794,1805,1816,1827,1838,1849,1864,1880,1890,1901,1912,1923,1934,1945,1961,1973,1986,1997,2008,2019,2030,2041,2052,2065,2086,2097,2108,2119,2130,2141,2152,2163,2174,2185,2196,2213,2224,2235,2246,2257,2268,2279,2290,2316,2327,2338,2349,2360,2371,2382,2394,2405,2416,2437,2448,2460,2471,2482,2493,2504,2516,2527,2538,2549,2560,2571,2582,2597,2608,2619,2630
+packages/logo/package.json
+  ai_agent 1-66
+apps/meteor/client/views/admin/users/AdminUserInfoWithData.tsx
+  ai_agent 4
+apps/meteor/tests/e2e/admin-room.spec.ts
+  ai_agent 48
+packages/onboarding-ui/src/pages/ResetPasswordConfirmationPage/ResetPasswordConfirmationPage.spec.tsx
+  ai_agent 1-7
+packages/onboarding-ui/src/common/FormPageLayout.tsx
+  ai_agent 1-37
+apps/meteor/client/views/conference/hooks/useConferenceEmbedded.ts
+  ai_agent 294-295
+packages/layout/package.json
+  ai_agent 1-72
+packages/agenda/package.json
+  ai_agent 26
+packages/i18n/src/locales/uk.i18n.json
+  ai_agent 123-124,130,132,135,138,145-146,149-150,154,160-161,165,169,319,624,987,1129,1477,1560,1800,1857,1952,2107,2171,2337,2342,2444,2448-2449,2453,2491,2583,2623,2756,2774,2842,2885,2953,3064-3069
+packages/onboarding-ui/src/forms/TotpForm/TotpForm.styles.tsx
+  ai_agent 1-27
+apps/meteor/client/lib/utils/timeAgo.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-2
+apps/meteor/client/sidebar/hooks/useRoomList.spec.tsx
+  ai_agent 121,245,308,324,379
+packages/gazzodown-alt/src/renderComposerMarkup.spec.tsx
+  ai_agent 1-366
+packages/apps-engine/CHANGELOG.md
+  ai_agent 3-10
+packages/i18n/src/locales/gl.i18n.json
+  ai_agent 288
+packages/onboarding-ui/src/forms/TotpForm/Totp.stories.tsx
+  ai_agent 1-15
+packages/ui-client/src/components/index.ts
+  ai_agent 28-31
+packages/ui-conference/src/call/hooks/useStreamHasLiveVideo.ts
+  ai_agent 1-67
+packages/ui-conference/src/call/lib/audioLevelStore.ts
+  ai_agent 1-113
+apps/meteor/client/views/room/composer/messageBox/RichTextMessageBox.tsx
+  ai_agent 146,171,187,221
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardLayoutSubtitle.tsx
+  ai_agent 1-7
+apps/uikit-playground/package.json
+  ai_agent 3,18,21,23,27,33,39,47,49
+apps/meteor/client/lib/createRichTextComposerAPI.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 15,82
+apps/meteor/vite/native/sdkTransportEnabled.ts
+  ai_agent 1-2
+packages/gazzodown-alt/jest.config.ts
+  ai_agent 1-11
+packages/onboarding-ui/src/pages/CheckYourEmailPage/CheckYourEmailPage.stories.tsx
+  ai_agent 1-22
+packages/ui-conference/src/call/CallStageArea.tsx
+  ai_agent 1-43
+packages/gazzodown-alt/src/sourceOf.spec.ts
+  ai_agent 1-161
+packages/onboarding-ui/src/common/InformationTooltipTrigger.spec.tsx
+  ai_agent 1-7
+docs/service-brokers.md
+  ai_agent 1-261
+packages/core-services/src/lib/Api.ts
+  ai_agent 64-67
+packages/fuselage-toastbar/.storybook/preview.tsx
+  ai_agent 1-19
+packages/ui-livekit/src/useActiveDevice.ts
+  ai_agent 1-18
+packages/ui-voip/src/views/MediaCallWidget/MediaCallWidget.stories.tsx
+  ai_agent 12-15,93-100,121-125
+apps/meteor/tests/e2e/federation/page-objects/admin.ts
+  ai_agent 20,76
+ee/packages/omni-core-ee/package.json
+  ai_agent 3,31
+packages/onboarding-ui/src/forms/RequestTrialForm/index.ts
+  ai_agent 1
+apps/meteor/client/meteor/login/meteorDeveloperAccount.ts
+  ai_agent 1
+apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/VideoConfListItem.tsx
+  ai_agent 21
+packages/onboarding-ui/src/forms/NewAccountForm/NewAccountForm.stories.tsx
+  ai_agent 1-21
+packages/ui-conference/src/call/CameraPicker.spec.tsx
+  ai_agent 1-70
+packages/emitter/CHANGELOG.md
+  ai_agent 22,28,34,38,45,49,53,59,65,71,77,87,91,95,109
+apps/meteor/tests/e2e/message-composer.spec.ts
+  ai_agent 27,228
+apps/meteor/vite/vite.config.mts
+  ai_agent 1-264
+packages/authorization/package.json
+  ai_agent 3,31-32
+apps/meteor/vite/native/ddpProtocol.ts
+  ai_agent 1-8
+apps/meteor/client/lib/sdk/ddpSdk.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 6,32-33,55-57,176,328,331
+packages/layout/src/components/List/List.styles.tsx
+  ai_agent 1-18
+packages/layout/src/components/List/__snapshots__/List.spec.tsx.snap
+  ai_agent 1-22
+.changeset/move-user-card-info-ui-client.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-6
+packages/gazzodown/package.json
+  ai_agent 3,25,27,33,47,52-53,62-63,70,73
+packages/ui-conference/src/components/CallMemberItem/CallMemberItem.tsx
+  ai_agent 18,30,63
+packages/onboarding-ui/src/pages/InvalidLinkPage/InvalidLinkPage.spec.tsx
+  ai_agent 1-7
+packages/fuselage-toastbar/src/ToastBarContext.ts
+  ai_agent 1-25
+packages/layout/src/components/FormPageLayout/FormContainer.tsx
+  ai_agent 1-6
+packages/onboarding-ui/src/pages/CreateNewAccountPage/CreateNewAccountPage.tsx
+  ai_agent 1-43
+apps/meteor/client/components/UrlChangeModal.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 3,16-29
+packages/ui-conference/src/views/ConferencePreflight.stories.tsx
+  ai_agent 22
+packages/ui-client/src/components/MarkdownTextContext.tsx
+  ai_agent 1-18
+.github/actions/build-docker/action.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 43,52,59,74,225,231
+packages/ui-conference/src/call/previewVideo.ts
+  ai_agent 1-25
+apps/meteor/tests/e2e/federation/page-objects/fragments/home-flextab.ts
+  ai_agent 32
+apps/meteor/server/api/v1/users.ts
+  ai_agent 733-736
+.changeset/pre.json
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-170
+packages/media-signaling/package.json
+  ai_agent 4,38
+packages/ui-conference/src/call/tile/ParticipantTile.tsx
+  ai_agent 1-16
+apps/meteor/vite/native/meteorBackedSdk.ts
+  ai_agent 1-22
+packages/onboarding-ui/src/pages/CheckYourEmailPage/index.ts
+  ai_agent 1
+packages/ui-conference/src/devices/deviceMenuRows.spec.ts
+  ai_agent 1-61
+packages/onboarding-ui/.storybook/logo.svg
+  ai_agent 1-68
+packages/i18n/src/locales/sv.i18n.json
+  ai_agent 126,308-309,311,313,315,317,323-324,329,331,333-335,339,348,350,358,361,425,546,623,664,914,931,1056,1801,2002,2063,2557,2778,2788,3057,3483,3957,4204,4726,4794,5067-5070,5159,5417,6046,6218,6381,6672-6687,7021,7023
+packages/ui-conference/src/preflight/__snapshots__/preflightStories.spec.tsx.snap
+  ai_agent 1-628
+apps/meteor/client/meteor/login/password.ts
+  ai_agent 1,4-7,12,16-18,21,24,26-34,36,38-50,52
+packages/ui-conference/src/call/__snapshots__/callStories.spec.tsx.snap
+  ai_agent 1-1640
+packages/mp3-encoder/src/lame/WavHeader.spec.ts
+  ai_agent 1-32
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-business-hours.ts
+  ai_agent 9
+packages/onboarding-ui/src/forms/CreateCloudWorkspaceForm/CreateCloudWorkspaceForm.stories.tsx
+  ai_agent 1-67
+apps/meteor/client/components/message/hooks/useCollapse.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 8-10,16-19,23,26-27,29
+packages/ui-avatar/CHANGELOG.md
+  ai_agent 3,8-14,16,18,27,36,45,54,63,72,81,90,99,108,133,144,153,162,171,180,191,200,209,218,227,236,245,254,263,298,307,316,325,334,343,352,361,370,379,388,397,406,415,424,433,442,451,460,469,478,489,498,507,516,525,534,551,571,589,598,631,640,649,674,683,692,701,710,719,728,737,746,755,764,773,782,791,800,809,818,869,878,887,896,905,922,931,940,965,974,983,992,1001,1010,1019,1028,1037,1046,1055,1066,1075,1084,1093,1102,1111,1122,1131,1140,1149,1158,1175,1184,1193,1202,1211,1220,1229,1238,1247,1256,1265,1274,1283,1292,1307,1316,1325,1334,1349,1358,1367,1376,1385,1394,1407,1416,1425,1434,1443,1452,1461,1474,1487,1496,1505,1514,1523,1532,1541,1562,1573,1582,1591,1600,1617,1626,1637,1646,1655,1664,1673,1682,1691,1700,1709,1718,1727,1736,1745,1758,1767,1776,1785,1794,1803,1812,1821,1841,1850,1859,1868,1877,1886,1895,1904,1913,1922,1938,1947,1956,1965,1974,1983,1992,2001
+apps/meteor/client/views/omnichannel/agents/AgentEdit.tsx
+  ai_agent 7,10-11
+packages/ui-livekit/src/callParticipants.ts
+  ai_agent 1-67
+apps/meteor/jest.config.ts
+  ai_agent 19,48
+apps/meteor/tests/end-to-end/api/file-upload-image-rotation.ts
+  ai_agent 60
+packages/ui-conference/src/call/CallStage.tsx
+  ai_agent 1-30
+packages/i18n/src/locales/fi.i18n.json
+  ai_agent 1394,1569,1620,3318,3536,3592,3628,3864,3921,4177,4698,4830,4953,5157-5172
+packages/i18n/src/locales/it.i18n.json
+  ai_agent 139,156,160,164,172,176,320,395,443,445-446,458,506,552,558-559,985,1079,1088,1121,1419,1421,1424,1428,1444,1453,1781,1821,1842,1941,2023,2035,2128-2129,2329,2339,2380,2424,2576,2621,2623,2625,2630,2770,2874-2875,2926,2998,3112-3131,3208
+apps/meteor/server/hooks/messages/sendNotificationsOnMessage.ts
+  ai_agent 15
+apps/meteor/server/lib/media/file-upload/lib/FileUpload.ts
+  ai_agent 699,704-722,729-740,746-747
+packages/core-services/src/lib/LocalServiceRegistry.ts
+  ai_agent 1-63
+packages/mp3-encoder/src/lame/assert.ts
+  ai_agent 1-9
+packages/onboarding-ui/src/forms/RegisterOfflineForm/steps/CopyStep.tsx
+  ai_agent 1-93
+packages/stylis-logical-props-middleware/package.json
+  ai_agent 3,39
+packages/ui-conference/src/views/ConferenceWindow.tsx
+  ai_agent 10-13,131-133,152,168-208,213-218,220-227,231,242-244
+apps/meteor/tests/e2e/page-objects/admin-users.ts
+  ai_agent 7,40
+packages/onboarding-ui/src/forms/CreateNewPassword/CreateNewPassword.spec.tsx
+  ai_agent 1-9
+packages/i18n/src/locales/hi.i18n.json
+  ai_agent 26,28,117-118,121-123,125-126,145
+apps/meteor/ee/server/lib/apps/disableAppsWithAddonsCallback.ts
+  ai_agent 4
+packages/layout/src/layouts/HorizontalWizardLayout/HorizontalWizardTextHighlight.tsx
+  ai_agent 1-11
+packages/logo/src/TaggedRocketChatLogo/index.ts
+  ai_agent 1
+packages/onboarding-ui/src/pages/EmailConfirmedPage/EmailConfirmedPage.stories.tsx
+  ai_agent 1-14
+packages/ui-client/CHANGELOG.md
+  ai_agent 3-45,60,77,91,105,115,125,140,155,169,179,189,199,209,223,235,245,255,265,275,287,297,307,317,327,337,347,363,373,406,426,436,446,456,466,476,496,506,516,532,542,552,568,578,588,600,610,620,630,640,652,670,680,690,700,710,720,739,757,767,795,805,833,843,853,872,882,892,902,912,931,941,960,970,980,990,1000,1010,1020,1030,1040,1050,1060,1087,1108,1118,1132,1142,1152,1162,1172,1191,1213,1247,1257,1267,1277,1287,1297,1307,1317,1327,1352,1362,1374,1384,1394,1404,1414,1424,1436,1446,1458,1468,1478,1497,1507,1519,1529,1539,1549,1561,1571,1581,1591,1601,1611,1623,1633,1653,1663,1675,1685,1703,1713,1723,1733,1743,1753,1771,1781,1791,1801,1811,1821,1831,1849,1869,1879,1889,1899,1909,1923,1941,1950,1961,1970,1979,1988,2005,2014,2025,2034,2043,2058,2067,2076,2085,2094,2103,2112,2127,2136,2145,2158,2167,2176,2185,2194,2203,2212,2221,2241,2250,2259,2268,2277,2286,2295,2304,2313,2322,2336,2345,2354,2363,2372,2381,2390,2399,2408,2417,2426,2435,2444,2453,2472,2481,2490,2499
+packages/layout/src/components/BackgroundLayer/BackgroundLayer.stories.tsx
+  ai_agent 1-18
+ee/packages/presence/package.json
+  ai_agent 3,29-30
+apps/meteor/ee/server/settings/video-conference.ts
+  ai_agent 55-93
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayoutTitle.tsx
+  ai_agent 1-10
+packages/onboarding-ui/.jest/ResizeObserverMock.ts
+  ai_agent 1-121
+apps/meteor/tests/end-to-end/api/channels.ts
+  ai_agent 1197,1532,2111,2319-2337,2529,3611,4564
+packages/layout/src/layouts/VerticalWizardLayout/VerticalWizardLayout.stories.tsx
+  ai_agent 1-175
+packages/mp3-encoder/src/lame/Mp3Encoder.spec.ts
+  ai_agent 29,46,66,83-104
+packages/layout/src/layouts/index.ts
+  ai_agent 1-3
+apps/meteor/client/meteor/minimongo/LocalCollection.ts
+  ai_agent 133
+packages/i18n/src/locales/nl.i18n.json
+  ai_agent 103,129,131-133,135,137-141,143,147-159,161,163,167-171,173-174,353,392,396,403,448,564,668,670,675,825,849,1245,1304,1385,1426,1846,1976,2355,2404,2454,2577,2590,2705,2904,3175,3227,3371,3460,3597,3666,3668,4042,4163,4264,4448-4451
+packages/onboarding-ui/src/pages/CreateNewAccountPage/CreateNewAccountPage.spec.tsx
+  ai_agent 1-15
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-contact-center/omnichannel-contact-center-contacts.ts
+  ai_agent 13
+apps/meteor/client/lib/presence.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 9,17,28
+apps/meteor/client/views/navigation/sidepanel/SidepanelItem/SidepanelItem.tsx
+  ai_agent 12
+packages/logo/jest.config.ts
+  ai_agent 1-7
+apps/meteor/client/lib/normalizeThreadMessage.spec.tsx
+  s_5723a0beb4a36a::t_7cac944b2ba839 8,11
+apps/meteor/client/providers/ServerProvider.tsx
+  ai_agent 22-27,98,105,109,115,117,147-148
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.spec.tsx
+  ai_agent 1-7
+packages/onboarding-ui/src/pages/RegisterServerPage/RegisterServerPage.stories.tsx
+  ai_agent 1-25
+.changeset/shiny-buttons-attack.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/core-services/tests/LocalBroker.test.ts
+  ai_agent 23-92,160-219
+packages/fuselage-toastbar/tsconfig.esm.json
+  ai_agent 1-9
+packages/css-in-js/src/tags.spec.ts
+  ai_agent 67-74,105-119,188-201
+packages/i18n/src/locales/km.i18n.json
+  ai_agent 108,163,436,598,937,1031,1057,1326,1532,2355,2652,2728,2833-2835
+apps/meteor/client/providers/TranslationProvider.formatters.spec.tsx
+  ai_agent 1-41
+docs/features/native-video-conference/deployment.md
+  ai_agent 1-152
+.changeset/cuddly-ghosts-spend.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/client/hooks/useFormatDate.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 1
+apps/meteor/client/views/admin/settings/groups/OAuthGroupPage/OAuthGroupPage.tsx
+  ai_agent 7,119-122
+packages/ui-conference/src/fixtures/callFixtures.tsx
+  ai_agent 1-96
+packages/i18n/src/locales/cs.i18n.json
+  ai_agent 118,120,138,142,146,148-149,157,165,168,318,360,469,619,651,1050,1202,1560,2412,2450,2956,3231,3235,3239,3381,3473,3625-3630
+.github/actions/update-version-durability/action.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 25
+apps/meteor/tests/e2e/page-objects/fragments/modals/omnichannel-delete-contact-modal.ts
+  ai_agent 7,11
+packages/ui-video-conf/CHANGELOG.md
+  ai_agent 3-13,21,32,42,52,62,72,82,92,102,112,122,132,142,152,164,174,184,194,204,216,226,236,246,256,266,276,286,296,315,334,344,354,364,374,384,394,404,414,424,434,444,454,464,474,484,494,504,514,524,534,546,556,566,576,586,596,615,627,637,656,666,694,704,714,724,743,762,772,782,809,819,829,839,849,859,869,879,889,899,909,966,976,986,996,1006,1043,1053,1071,1081,1091,1101,1111,1121,1131,1141,1151,1161,1171,1183,1193,1203,1213,1223,1233,1245,1255,1269,1279,1289,1308,1318,1332,1342,1352,1362,1372,1382,1392,1402,1412,1422,1432,1442,1458,1468,1478,1488,1504,1514,1524,1534,1544,1554,1568,1578,1588,1598,1608,1618,1628,1642,1656,1666,1676,1686,1696,1706,1716,1730,1740,1752,1762,1772,1782,1792,1802,1812,1824,1834,1844,1859,1869,1879,1889,1899,1909,1919,1934,1944,1954,1968,1978,1988,1998,2008,2018,2028,2038,2060,2070,2080,2090,2100,2110,2120,2130,2140,2150,2177,2187,2197,2207,2217,2227,2237,2246,2255,2264,2273,2282,2291,2302,2311,2320,2329
+.github/actions/docker-image-size-tracker/action.yml
+  s_5723a0beb4a36a::t_7cac944b2ba839 60
+.changeset/young-ties-rest.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 6
+packages/ui-voip/src/views/MediaCallWidget/OutgoingCallTransfer.stories.tsx
+  ai_agent 4,11,16-17,20-21,26-27,29-37
+.github/CODEOWNERS
+  s_5723a0beb4a36a::t_7cac944b2ba839 18,23,32-38
+apps/meteor/client/views/room/composer/messageBox/createComposerAPI.spec.ts
+  ai_agent 2-3,13-14,19,65-104
+packages/i18n/src/locales/zh-HK.i18n.json
+  ai_agent 106,127,298,794,865,882,1100,1840,1985,2069,2239,2361,2425,2517-2519
+packages/ui-client/src/components/UserInfo/UserInfo.spec.tsx
+  ai_agent 1-39
+packages/fuselage-toastbar/src/ToastBarTimed.tsx
+  ai_agent 1-31
+packages/onboarding-ui/src/pages/ConfirmationProcessPage/index.ts
+  ai_agent 1
+packages/layout/src/components/FormPageLayout/FormPageLayout.stories.tsx
+  ai_agent 1-36
+packages/server-fetch/CHANGELOG.md
+  ai_agent 3-11,19,29,38,47,56,65,74,83,97,106,115,124,133,147,160,169,178,187,196,209,218,231,240,249,262
+packages/gazzodown-alt/tsconfig.build.json
+  ai_agent 6-7
+packages/layout/src/layouts/HorizontalWizardLayout/__snapshots__/HorizontalWizardLayout.spec.tsx.snap
+  ai_agent 1-741
+packages/ui-contexts/package.json
+  ai_agent 3,26,36-37,43
+.changeset/roles-live-updates.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+packages/onboarding-ui/src/pages/RegisterServerPage/index.ts
+  ai_agent 1
+.github/actions/update-version-durability/package.json
+  s_5723a0beb4a36a::t_7cac944b2ba839 14,22
+packages/onboarding-ui/src/common/FormPageLayout.stories.tsx
+  ai_agent 1-22
+ee/apps/queue-worker/package.json
+  ai_agent 3,31,35,49
+packages/ui-conference/src/preflight/PreflightDevices.stories.tsx
+  ai_agent 1-48
+apps/meteor/tests/e2e/federation/tests/admin/users.spec.ts
+  ai_agent 90,101,111,123
+packages/onboarding-ui/src/pages/ResetPasswordPage/ResetPasswordPage.tsx
+  ai_agent 1-41
+packages/layout/src/components/FormPageLayout/FormPageLayout.styles.tsx
+  ai_agent 1-116
+packages/account-utils/package.json
+  ai_agent 17
+packages/ui-conference/src/views/ConferencePreflight.spec.tsx
+  ai_agent 1-62
+packages/onboarding-ui/src/forms/AwaitConfirmationForm/AwaitConfirmationForm.stories.tsx
+  ai_agent 1-25
+packages/i18n/src/locales/pl.i18n.json
+  ai_agent 404,1379,1542,1591,1921,1991,2055,2059,2086,2095,2287,2592,2674,2676,2688,2692,2757,2775-2776,2815,2821,2972,3390,3437,3470,3474,3688,3714,3716,3743,3948,4031-4032,4055,4293,4300,4302,4319,4568,4587,4606-4607,4609-4610,4623-4624,4679,4870-4881
+apps/meteor/ee/server/index.ts
+  ai_agent 17
+packages/fuselage-toastbar/CHANGELOG.md
+  ai_agent 1-63
+packages/ddp-client/CHANGELOG.md
+  ai_agent 3-34,43,56,67,78,98,118,130,141,153,164,175,187,201,212,223,234,245,259,270,283,294,305,318,329,340,351,362,373,384,417,428,439,451,462,473,506,517,528,540,551,562,574,585,596,607,618,629,640,651,662,673,684,695,706,717,728,749,760,771,792,803,844,855,866,909,920,931,944,955,966,977,988,999,1010,1021,1032,1043,1054,1065,1076,1099,1120,1131,1142,1153,1164,1175,1186,1204,1215,1226,1255,1266,1277,1288,1299,1310,1321,1332,1343,1354,1365,1378,1389,1400,1411,1422,1433,1446,1457,1468,1479,1490,1511,1522,1533,1544,1555,1566,1577,1588,1599,1610,1621,1632,1643,1654,1665,1676,1687,1698,1709,1720,1731,1742,1753,1764,1777,1788,1799,1810,1821,1832,1843,1856,1867,1878,1889,1900,1911,1922,1933,1944,1955,1966,1977,1988,1999,2010,2021,2032,2043,2053,2063,2073,2083,2093,2103,2113,2123,2133,2143,2153,2163,2177,2187,2197,2207,2217,2227,2237,2247,2269,2279,2289,2299,2309,2319,2329,2339,2349,2358,2375,2383,2397,2407,2417,2427,2437,2451,2461,2473,2483,2493,2505,2515,2529,2539,2549,2559
+apps/meteor/tests/e2e/page-objects/admin-rooms.ts
+  ai_agent 11
+packages/onboarding-ui/src/Types/index.ts
+  ai_agent 1-3
+packages/mp3-encoder/src/index.spec.ts
+  ai_agent 1-6,11-39,45-57,60-67,70-78
+apps/meteor/server/lib/oauth/addCustomOAuthPremiumAlert.ts
+  ai_agent 1-9
+packages/i18n/src/locales/zh.i18n.json
+  ai_agent 580,1738,2000,5280,6064,6222,6499-6510
+apps/meteor/client/views/directory/tabs/channels/ChannelsTable/ChannelsTableRow.spec.tsx
+  ai_agent 1-56
+apps/meteor/client/lib/presence.spec.ts
+  s_5723a0beb4a36a::t_7cac944b2ba839 15-18
+packages/mock-providers/CHANGELOG.md
+  ai_agent 3-32,40,51,61,71,81,91,101,111,123,132,141,150,159,171,183,192,201,210,219,231,240,250,259,268,278,287,297,306,324,333,345,354,363,372,381,390,402,411,420,432,441,450,462,471,480,490,499,508,517,526,536,550,559,568,577,586,595,612,626,635,658,667,700,709,724,749,759,776,793,802,811,821,830,839,848,857,866,875,884,893,930,948,958,967,976,985,994,1011,1028,1052,1061,1070,1079,1088,1097,1106,1115,1124,1140,1149,1158,1167,1176,1187,1198,1209,1224,1233,1242,1253,1264,1273,1282,1291,1300,1309,1320,1331,1344,1357,1366,1375,1384,1393,1402,1411,1422
+packages/jest-presets/package.json
+  ai_agent 33,44
+packages/ai-search/package.json
+  ai_agent 3,24
+packages/core-typings/package.json
+  ai_agent 4,16,32
+.changeset/logo-published-files.md
+  s_5723a0beb4a36a::t_7cac944b2ba839 1-5
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-triggers.ts
+  ai_agent 84
+packages/ddp-client/__tests__/DDPSDK.spec.ts
+  ai_agent 206-229
+apps/meteor/tests/e2e/page-objects/omnichannel/omnichannel-livechat.ts
+  ai_agent 86
+apps/meteor/ee/server/startup/federation.ts
+  ai_agent 17
+packages/core-services/src/index.ts
+  ai_agent 75,77,102-104
+packages/core-typings/CHANGELOG.md
+  ai_agent 3-51,83,126,179,234,273,300,325,347,377,396,417,430,439,472,505,526,547,802,827,1036,1077,1094,1123,1132,1159,1198,1220,1250,1286,1322,1343,1362,1383,1410,1437,1468,1497
+apps/meteor/client/meteor/accounts.ts
+  ai_agent 1-78
+packages/onboarding-ui/src/pages/CheckYourEmailPage/CheckYourEmailPage.spec.tsx
+  ai_agent 1-7
+packages/streamer/src/index.ts
+  ai_agent 1,6-17
+packages/tracing/package.json
+  ai_agent 14,23
+packages/ui-conference/src/fixtures/preflightFixtures.tsx
+  ai_agent 1-27
+packages/layout/src/layouts/VerticalWizardLayout/index.ts
+  ai_agent 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "8dbd5128a90a59cc68446890e78d05036c7fe720",
+  "prompts": {},
+  "sessions": {
+    "s_5723a0beb4a36a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7bfa859-fc7b-4da5-a940-6e79d238f9ca",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

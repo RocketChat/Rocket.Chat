@@ -1,0 +1,27 @@
+apps/meteor/server/lib/rooms/cleanRoomHistory.ts
+  ai_agent 176-183,188-190
+packages/models/src/models/BaseRaw.spec.ts
+  s_790b3b5b36f48f::t_0876ebde57bb4d 109-117
+packages/models/src/models/BaseRaw.ts
+  s_790b3b5b36f48f::t_0876ebde57bb4d 453-456
+apps/meteor/tests/unit/server/lib/rooms/cleanRoomHistory.spec.ts
+  ai_agent 76-78,82,94,105
+apps/meteor/server/lib/rooms/retention/cronPruneMessages.ts
+  ai_agent 56,64,81,89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e90b43fce2c751853f289d513911d67ee74e112d",
+  "prompts": {},
+  "sessions": {
+    "s_790b3b5b36f48f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8333cd7e-06ce-491a-84e7-b39ce745a26a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
