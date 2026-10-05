@@ -22,5 +22,5 @@ export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 export * from './views/MediaCallHistoryTable';
 
 export { ActionButton, DeviceMenuButton, ToggleButton } from './components';
-export { useDevicePermissionPrompt2, stopTracks } from './hooks';
+export { useDevicePermissionPrompt2, stopTracks, useRevealDeviceLabels } from './hooks';
 export { usePlayMediaStream } from './providers/usePlayMediaStream';

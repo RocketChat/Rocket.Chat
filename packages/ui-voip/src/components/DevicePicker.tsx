@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import DeviceMenuButton from './DeviceMenuButton';
 import { useMediaCallView } from '../context/MediaCallViewContext';
-import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
+import { useRevealDeviceLabels } from '../hooks/useRevealDeviceLabels';
 
 export type DevicePickerProps = { secondary?: boolean };
 
@@ -15,7 +15,7 @@ const DevicePicker = ({ secondary = false }: DevicePickerProps) => {
 	const { onDeviceChange } = useMediaCallView();
 	const { devices } = useMediaDevices();
 	const selectedDevices = useSelectedDevices();
-	const requestPermission = useDevicePermissionPrompt2();
+	const revealDeviceLabels = useRevealDeviceLabels();
 
 	const selection: DeviceSelection = {
 		devices,
@@ -28,15 +28,13 @@ const DevicePicker = ({ secondary = false }: DevicePickerProps) => {
 		},
 	};
 
-	const askForDevices = () => requestPermission({ actionType: 'device-change' }).then(stopTracks);
-
 	return (
 		<DeviceSelectionProvider value={selection}>
 			<DeviceMenu
 				kinds={['audioinput', 'audiooutput']}
 				title={t('Device_settings_lowercase')}
 				placement='top-end'
-				beforeOpen={askForDevices}
+				beforeOpen={() => revealDeviceLabels(['audioinput', 'audiooutput'], devices)}
 				button={<DeviceMenuButton secondary={secondary} tiny={!secondary} label='customize' menuIcon='customize' />}
 			/>
 		</DeviceSelectionProvider>
