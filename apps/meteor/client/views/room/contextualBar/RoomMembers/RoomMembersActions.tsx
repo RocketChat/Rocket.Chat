@@ -25,7 +25,7 @@ const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, isI
 	if (!menuOptions) {
 		return null;
 	}
-	return <GenericMenu detached title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
+	return <GenericMenu detached tiny title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;
