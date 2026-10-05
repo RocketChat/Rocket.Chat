@@ -28,6 +28,7 @@ export function addSettings(): void {
 					type: 'select',
 					public: true,
 					invalidValue: 'legacy',
+					alert: 'Exchange_Mode_Legacy_Deprecation_Alert',
 					values: [
 						{ key: 'legacy', i18nLabel: 'Exchange_Mode_Legacy' },
 						{ key: 'server', i18nLabel: 'Exchange_Mode_Server' },
