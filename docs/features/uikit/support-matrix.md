@@ -68,5 +68,3 @@ Container columns come from the block types; renderer columns tell whether a met
 | `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `url_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-
-Fuselage draws the users, channels and conversations selects (single and multi) only inside an `input` block. In `actions` the types accept them, but the renderer returns nothing.
