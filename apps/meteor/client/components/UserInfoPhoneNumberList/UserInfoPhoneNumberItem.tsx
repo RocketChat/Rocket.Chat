@@ -50,7 +50,7 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 					small
 					icon='copy'
 					title={t('Copy_phone_number')}
-					aria-label={`${t('Copy_phone_number')} ${label || formattedNumber}`}
+					aria-label={t('Copy_phone_number__user_', { user: label || formattedNumber })}
 					onClick={() => copy()}
 				/>
 			</Box>
