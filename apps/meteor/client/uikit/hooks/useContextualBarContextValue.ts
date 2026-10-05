@@ -14,6 +14,7 @@ type UseContextualBarContextValueParams = {
 			blockId?: string | undefined;
 		};
 	};
+	errors?: { [field: string]: string }[] | { [field: string]: string };
 	updateValues: Dispatch<{
 		actionId: string;
 		payload: {
@@ -27,6 +28,7 @@ type UseContextualBarContextValueReturn = ContextType<typeof UiKitContext>;
 
 export const useContextualBarContextValue = ({
 	view,
+	errors,
 	values,
 	updateValues,
 	rid,
@@ -68,6 +70,7 @@ export const useContextualBarContextValue = ({
 			});
 		},
 		...view,
+		errors,
 		values,
 		viewId: view.id,
 	};

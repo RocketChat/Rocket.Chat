@@ -49,7 +49,7 @@ The app returns one of these from its handler, usually built with `UIKitInteract
 | `banner.update` / `banner.close` | Replaces or disposes the banner (matched by `viewId`). |
 | `contextual_bar.open` | Stores the view and navigates the room to `tab=app&context=<view.id>`. |
 | `contextual_bar.update` / `contextual_bar.close` | Replaces or disposes the contextual bar. |
-| `errors` | Marks fields as invalid. `errors` maps `actionId` to a message. **Only modals display them**; the contextual bar and banner contexts do not pass errors down to their elements. |
+| `errors` | Marks fields as invalid. `errors` maps `actionId` to a message. Modals and the contextual bar display them. Banners do not: a banner closes after every action, so there is nothing left to mark. |
 
 After a `viewSubmit`, the view is disposed unless the response is `errors`, `modal.update` or `contextual_bar.update`. After a `viewClosed`, it is disposed unless the response is `errors`.
 
