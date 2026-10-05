@@ -64,13 +64,13 @@ const resolveEntries = (resource, key, namespaces) => {
 	let lookupKey = key;
 	let lookupNamespaces = namespaces;
 
-	const separatorIndex = key.indexOf(':');
-	if (separatorIndex > 0 && knownNamespaces.includes(key.slice(0, separatorIndex))) {
-		lookupNamespaces = [key.slice(0, separatorIndex)];
-		lookupKey = key.slice(separatorIndex + 1);
+	const qualifier = knownNamespaces.find((ns) => key.startsWith(`${ns}.`));
+	if (qualifier) {
+		lookupNamespaces = [qualifier];
+		lookupKey = key.slice(qualifier.length + 1);
 	}
 
-	const candidates = [lookupKey, ...lookupNamespaces.filter((ns) => ns !== defaultNamespace).map((ns) => `${ns}.${lookupKey}`)];
+	const candidates = lookupNamespaces.map((ns) => (ns === defaultNamespace ? lookupKey : `${ns}.${lookupKey}`));
 
 	const found = [];
 	for (const candidate of candidates) {
