@@ -1189,7 +1189,7 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                                 </i>
                               </a>
                               <button
-                                aria-label="Copy_phone_number Mobile"
+                                aria-label="Copy_phone_number__user_"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                                 title="Copy_phone_number"
                                 type="button"
@@ -1238,7 +1238,7 @@ exports[`renders WithPhoneNumbers without crashing 1`] = `
                                 </i>
                               </a>
                               <button
-                                aria-label="Copy_phone_number Work"
+                                aria-label="Copy_phone_number__user_"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                                 title="Copy_phone_number"
                                 type="button"
