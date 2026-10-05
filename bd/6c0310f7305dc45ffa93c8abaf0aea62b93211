@@ -1,0 +1,124 @@
+ee/packages/xmpp-server/docs/specs/presence.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 93
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 91-92
+ee/packages/xmpp-server/docs/intents/protocol-isolation.md
+  s_9a0298322eb6a8::t_5bcc3e7d4c4eaf 8-16,21,23,25,29-32,39-41,43-45
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 57-65
+  s_9a0298322eb6a8::t_e48aabdf2eb362 1-7,17-20,22,24,26-28,33-38,42,46-56
+ee/packages/xmpp-server/docs/intents/connection-recovery.md
+  s_9a0298322eb6a8::t_922bd8b28e74d7 47-49
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 50-53,56-57
+  s_9a0298322eb6a8::t_1e24e7293993d4 43-45
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 54
+  s_9a0298322eb6a8::t_cb38fca041846c 1-34,38-42,55
+  s_9a0298322eb6a8::t_f5eca5f113a767 35-37
+  s_9a0298322eb6a8::t_442d5c3c6ab59c 46
+ee/packages/xmpp-server/docs/intents/accreditation-readiness.md
+  s_9a0298322eb6a8::t_bc42269b972b1e 18-30,35-37,39-40,50-58
+  s_9a0298322eb6a8::t_380b7f93afe4a3 7-9,31-34,38,43-49
+  s_9a0298322eb6a8::t_a044ed9e2e1bcb 14-16
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 59,65
+  s_9a0298322eb6a8::t_25aec0eb276904 1-6,10-13
+  s_9a0298322eb6a8::t_4b5a01bd82dacf 17,41-42
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 60-64,66-67
+ee/packages/xmpp-server/docs/compliance.md
+  s_9a0298322eb6a8::t_2f8746f7ad6b8e 51
+  s_9a0298322eb6a8::t_07973e57404db9 52
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 99,101
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 80
+ee/packages/xmpp-server/docs/templates/spec.md
+  s_9a0298322eb6a8::t_f911224a1b3fb8 52-53
+ee/packages/xmpp-server/docs/specs/delivery-receipts.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 59-60,62-68
+ee/packages/xmpp-server/docs/intents/joining-remote-rooms.md
+  s_9a0298322eb6a8::t_fce0ad4d43ff4a 6-8
+  s_9a0298322eb6a8::t_c9b86eeda0fa1d 9,11-28,31-39
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 40-43
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 44
+  s_9a0298322eb6a8::t_bc6c232e926a29 1-5
+  s_9a0298322eb6a8::t_61933484b9a733 10
+  s_9a0298322eb6a8::t_76a4e0fd5729a7 29-30
+  s_9a0298322eb6a8::t_134f5e5fc3dde4 45
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 87,89
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 156
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 158-159
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 127-131
+ee/packages/xmpp-server/docs/intents/interop-certification.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 50
+  s_9a0298322eb6a8::t_00f8afa92c493e 7-14,18-22,29-33,42-44,46
+  s_9a0298322eb6a8::t_a6f9251c0f091e 15-17,24,26-28,34,39-41,45,47-49
+  s_9a0298322eb6a8::t_05c6b03ddfa2b3 1-5
+  s_9a0298322eb6a8::t_da7a70295c698f 6
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 51-58
+  s_9a0298322eb6a8::t_718a4ff085e474 23,35-38
+  s_9a0298322eb6a8::t_8c0788099890a5 25
+ee/packages/xmpp-server/docs/intents/message-ordering.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 38-39
+  s_9a0298322eb6a8::t_4a016a1f57a95b 26-27
+  s_9a0298322eb6a8::t_2ced2f2580b860 28-30
+  s_9a0298322eb6a8::t_19f6ff51cc12c3 1-22,31-37,41
+  s_9a0298322eb6a8::t_5f8548b6d30f5a 23-25
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 40
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 75-78
+ee/packages/xmpp-server/docs/intents/federation-authorization.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 57-70
+  s_9a0298322eb6a8::t_52c0145cf41f03 1-24,31-37,46-56
+  s_9a0298322eb6a8::t_a0dd3f9fff8686 25-27
+  s_9a0298322eb6a8::t_32e4306451cfb9 28-30
+  s_9a0298322eb6a8::t_014c81da8a58a0 38-45
+ee/packages/xmpp-server/docs/intents/room-history.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 49,53
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 47-48,51-52
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 75-77,82-86
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 78,80,87
+ee/packages/xmpp-server/docs/specs/chat-states.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 65-68,70-72
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 69
+ee/packages/xmpp-server/docs/intents/scale-and-availability.md
+  s_9a0298322eb6a8::t_d538e0c6817200 40-45
+  s_9a0298322eb6a8::t_ff9ad019029ee4 37-39
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 58-61,64-65
+  s_9a0298322eb6a8::t_84a53dfb05488b 1-36,49-57,63
+  s_9a0298322eb6a8::t_9c28f68bb06912 46-48
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 62
+ee/packages/xmpp-server/docs/specs/message-retraction.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 60-62,66-70,73-80
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 63
+ee/packages/xmpp-server/docs/templates/intent.md
+  s_9a0298322eb6a8::t_13cfeb19df68ec 26-27
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 144-150
+ee/packages/xmpp-server/docs/README.md
+  s_9a0298322eb6a8::t_c6c8fd1f85d5e8 253-257
+ee/packages/xmpp-server/docs/specs/message-corrections.md
+  s_9a0298322eb6a8::t_7ff4bd51ea85ec 111
+  s_9a0298322eb6a8::t_a1a60ba53e1b89 109-110,112-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bd6c0310f7305dc45ffa93c8abaf0aea62b93211",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9a0298322eb6a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d91ba7d6-5030-4b36-a21a-9b63ab174678",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
