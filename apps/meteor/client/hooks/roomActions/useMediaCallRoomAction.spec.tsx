@@ -152,13 +152,14 @@ describe('useMediaCallRoomAction', () => {
 	});
 
 	describe('SIP routing for internal calls (DMV-62)', () => {
+		const SIP_ENABLED_SETTING = 'VoIP_TeamCollab_SIP_Integration_Enabled';
 		const SIP_ROUTING_SETTING = 'VoIP_TeamCollab_SIP_Integration_For_Internal_Calls';
 
 		it('should return undefined when SIP routing is enabled and the peer has no extension', async () => {
 			getUserInfoMocked.mockResolvedValue({ user: createFakeUser({ _id: 'peer-uid', username: 'peer-username' }) });
 
 			const { result } = renderHook(() => useMediaCallRoomAction(), {
-				wrapper: appRoot({ settings: { [SIP_ROUTING_SETTING]: true } }),
+				wrapper: appRoot({ settings: { [SIP_ENABLED_SETTING]: true, [SIP_ROUTING_SETTING]: true } }),
 			});
 
 			// The peer never gains an extension, so the action must stay hidden.
@@ -171,7 +172,7 @@ describe('useMediaCallRoomAction', () => {
 			});
 
 			const { result } = renderHook(() => useMediaCallRoomAction(), {
-				wrapper: appRoot({ settings: { [SIP_ROUTING_SETTING]: true } }),
+				wrapper: appRoot({ settings: { [SIP_ENABLED_SETTING]: true, [SIP_ROUTING_SETTING]: true } }),
 			});
 
 			await waitFor(() => expect(result.current).toMatchObject({ id: 'start-voice-call', icon: 'phone' }));
@@ -181,7 +182,7 @@ describe('useMediaCallRoomAction', () => {
 			getUserInfoMocked.mockResolvedValue({ user: createFakeUser({ _id: 'peer-uid', username: 'peer-username' }) });
 
 			const { result } = renderHook(() => useMediaCallRoomAction(), {
-				wrapper: appRoot({ settings: { [SIP_ROUTING_SETTING]: false } }),
+				wrapper: appRoot({ settings: { [SIP_ENABLED_SETTING]: true, [SIP_ROUTING_SETTING]: false } }),
 			});
 
 			await waitFor(() => expect(result.current).toMatchObject({ id: 'start-voice-call', icon: 'phone' }));
