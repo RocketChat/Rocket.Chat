@@ -251,10 +251,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
-	/**
-	 * Desktop parity: the sync window opens at midnight, so a removal reaches back over the whole of today.
-	 * Earlier days fall outside it and are never reachable.
-	 */
 	public async pruneImportedWindow(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },
@@ -266,7 +262,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
-	/** Graph resends a whole series whenever one of its occurrences changes, and never a deletion for the ones dropped. */
 	public async pruneImportedSeries(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },
