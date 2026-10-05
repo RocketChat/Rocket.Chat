@@ -107,7 +107,6 @@ export const registerExchangeProviderWatchers = () =>
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
 	});
 
-/** Without this a license downgrade leaves a live, credentialed provider behind. */
 export const detachExchangeProvider = (): void => {
 	current = undefined;
 };
