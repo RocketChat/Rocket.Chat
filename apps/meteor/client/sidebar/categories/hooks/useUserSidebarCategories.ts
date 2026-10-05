@@ -3,19 +3,19 @@ import { isStaleSidebarCategory } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 
 export type MovableRoom = { rid: string; name?: string; isFavorite?: boolean; categoryId?: string };
 
 export const FAVORITES_TARGET = 'favorites';
 
 export const useUserSidebarCategories = () => {
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const allEntries = useUserPreference<ISidebarCategory[]>('sidebarCategories');
 
 	return useMemo(() => {
 		const rawCategories = (allEntries ?? []).filter((entry) => !isStaleSidebarCategory(entry));
 		const customCategories = rawCategories.filter((entry) => !entry.default);
-		return hasLicenseModule ? { rawCategories, customCategories } : { rawCategories, customCategories: [] };
-	}, [hasLicenseModule, allEntries]);
+		return isEnterprise ? { rawCategories, customCategories } : { rawCategories, customCategories: [] };
+	}, [isEnterprise, allEntries]);
 };

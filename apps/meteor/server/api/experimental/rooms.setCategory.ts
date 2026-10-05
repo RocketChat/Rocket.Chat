@@ -1,4 +1,5 @@
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -33,7 +34,6 @@ API.experimental.post(
 	'rooms.setCategory',
 	{
 		authRequired: true,
-		license: ['experimental-enterprise-features'],
 		body: isRoomsSetCategoryParamsPOST,
 		response: {
 			200: ajv.compile<void>({
@@ -52,6 +52,11 @@ API.experimental.post(
 	async function action() {
 		const { roomIds, category } = this.bodyParams;
 		const { userId } = this;
+
+		// TODO: implement api helper/api to enforce license
+		if (!License.hasValidLicense()) {
+			return API.experimental.failure('This is an enterprise feature [error-action-not-allowed]', 'error-action-not-allowed');
+		}
 
 		const user = await Users.findOneById(userId, { projection: { 'settings.preferences.sidebarCategories': 1 } });
 		if (!user) {
