@@ -48,6 +48,7 @@ Container columns come from the block types; renderer columns tell whether a met
 | `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
+| `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `icon` | — | — | — | — | — | ✅ | — | — | ✅ | — |
 | `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |

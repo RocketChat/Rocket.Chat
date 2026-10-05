@@ -11,6 +11,9 @@ const hasInitialTime = (element: UiKit.ActionableElement): element is UiKit.Acti
 const hasInitialDate = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialDate: string } =>
 	'initialDate' in element;
 
+const hasInitialDateTime = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialDateTime: number } =>
+	'initialDateTime' in element;
+
 const hasInitialOption = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialOption: UiKit.Option } =>
 	'initialOption' in element;
 
@@ -21,6 +24,7 @@ export const getInitialValue = (element: UiKit.ActionableElement) =>
 	(hasInitialValue(element) && element.initialValue) ||
 	(hasInitialTime(element) && element.initialTime) ||
 	(hasInitialDate(element) && element.initialDate) ||
+	(hasInitialDateTime(element) && element.initialDateTime) ||
 	(hasInitialOption(element) && element.initialOption.value) ||
 	(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
 	undefined;

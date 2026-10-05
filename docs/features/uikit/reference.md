@@ -243,6 +243,20 @@ Source: [`packages/ui-kit/src/blocks/elements/DatePickerElement.ts`](../../../pa
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `datetimepicker`
+
+Source: [`packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts`](../../../packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'datetimepicker'` | yes | Picks a date and a time together; the value is a Unix timestamp in seconds, shown in the user's time zone. |
+| `initialDateTime` | `number` | no |  |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `email_text_input`
 
 Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts)

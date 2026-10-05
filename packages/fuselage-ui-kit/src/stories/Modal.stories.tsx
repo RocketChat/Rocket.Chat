@@ -160,6 +160,10 @@ export const InputWithDatePicker = createStory(payloads.inputWithDatePicker, {
 	'input-0': 'Error',
 });
 
+export const InputWithDateTimePicker = createStory(payloads.inputWithDateTimePicker, {
+	'input-0': 'Error',
+});
+
 export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
