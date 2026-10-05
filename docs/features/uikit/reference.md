@@ -243,6 +243,21 @@ Source: [`packages/ui-kit/src/blocks/elements/DatePickerElement.ts`](../../../pa
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `email_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'email_text_input'` | yes | A field for an email address. |
+| `placeholder` | `PlainText` | no |  |
+| `initialValue` | `string` | no |  |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `icon`
 
 Source: [`packages/ui-kit/src/blocks/elements/IconElement.ts`](../../../packages/ui-kit/src/blocks/elements/IconElement.ts)
@@ -360,6 +375,24 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiUsersSelectElement.ts`](../..
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `number_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/NumberInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/NumberInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'number_input'` | yes | A field that only takes numbers; the value is the number as typed, as a string. |
+| `isDecimalAllowed` | `boolean` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initialValue` | `string` | no |  |
+| `minValue` | `string` | no |  |
+| `maxValue` | `string` | no |  |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `overflow`
 
 Source: [`packages/ui-kit/src/blocks/elements/OverflowElement.ts`](../../../packages/ui-kit/src/blocks/elements/OverflowElement.ts)
@@ -465,6 +498,21 @@ Source: [`packages/ui-kit/src/blocks/elements/ToggleSwitchElement.ts`](../../../
 | `type` | `'toggle_switch'` | yes |  |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `url_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'url_text_input'` | yes | A field for a URL. |
+| `placeholder` | `PlainText` | no |  |
+| `initialValue` | `string` | no |  |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

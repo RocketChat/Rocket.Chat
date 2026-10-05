@@ -35,6 +35,59 @@ export const inputWithPlainTextInput: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const inputWithNumberInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'number_input',
+			isDecimalAllowed: false,
+			minValue: '1',
+			maxValue: '10',
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Seats',
+		},
+	},
+] as const;
+
+export const inputWithEmailTextInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'email_text_input',
+			placeholder: { type: 'plain_text', text: 'name@example.com' },
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Email',
+		},
+	},
+] as const;
+
+export const inputWithUrlTextInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'url_text_input',
+			placeholder: { type: 'plain_text', text: 'https://' },
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Website',
+		},
+	},
+] as const;
+
 export const inputWithMultiUsersSelect: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'input',
