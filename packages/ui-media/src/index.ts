@@ -10,3 +10,4 @@ export { createRequiredContext } from './createRequiredContext';
 export { usePlayMediaStream } from './streams/usePlayMediaStream';
 export { default as StreamVideo } from './streams/StreamVideo';
 export type { StreamVideoProps } from './streams/StreamVideo';
+export { useAudioLevel } from './streams/useAudioLevel';

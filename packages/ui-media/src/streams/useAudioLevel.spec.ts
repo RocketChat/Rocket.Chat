@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
+import { getAudioLevel, subscribeToAudioLevel } from './audioLevelStore';
 import { useAudioLevel } from './useAudioLevel';
-import { getAudioLevel, subscribeToAudioLevel } from '../lib/audioLevelStore';
 
 const close = jest.fn(() => Promise.resolve());
 const AudioContextMock = jest.fn(() => ({
