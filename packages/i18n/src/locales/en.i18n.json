@@ -6930,6 +6930,7 @@
   "Unread_Count": "Unread count",
   "Unread_Count_DM": "Unread count for direct messages",
   "Unread_Count_Omni": "Unread count for omnichannel chats",
+  "Unread_mentions": "Unread mentions",
   "Unread_Messages": "Unread messages",
   "unread_messages_counter": {
     "one": "{{count}} unread message",

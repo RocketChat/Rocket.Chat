@@ -1,8 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { VirtualizerHandle } from 'virtua';
 
+import MoreUnreadsBubble from './MoreUnreadsBubble';
 import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
@@ -14,6 +16,7 @@ import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
@@ -45,6 +48,8 @@ const RoomList = () => {
 	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
+	const virtualizerRef = useRef<VirtualizerHandle>(null);
+	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
@@ -76,6 +81,10 @@ const RoomList = () => {
 		[groups],
 	);
 
+	const scrollToUnread = (index: number) => {
+		virtualizerRef.current?.scrollToIndex(index, { align: 'center', smooth: true });
+	};
+
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
@@ -83,9 +92,11 @@ const RoomList = () => {
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
 			<SidebarVirtualList
+				ref={virtualizerRef}
 				groups={virtualGroups}
 				as={RoomListWrapper}
 				bufferSize={bufferSize}
+				onRangeChange={handleRangeChange}
 				getItemKey={(item) => item._id}
 				renderGroup={(group, index) => (
 					<RoomListCollapser
@@ -104,6 +115,10 @@ const RoomList = () => {
 					</RoomListRowWrapper>
 				)}
 			/>
+			{previousUnread && (
+				<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
+			)}
+			{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
 		</Box>
 	);
 };
