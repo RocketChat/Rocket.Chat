@@ -920,7 +920,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({
-			projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 },
+			projection: { _id: 1, name: 1, t: 1, teamMain: 1, abacAttributes: 1 },
 		}).toArray();
 
 		if (!abacRooms.length) {
