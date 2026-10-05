@@ -2,7 +2,8 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { findOffscreenUnreads, getUnreadRows } from './useOffscreenUnreads';
 
-const room = (props: Partial<SubscriptionWithRoom> = {}) => ({ alert: false, userMentions: 0, ...props }) as SubscriptionWithRoom;
+const room = (props: Partial<SubscriptionWithRoom> = {}) =>
+	({ alert: false, userMentions: 0, groupMentions: 0, ...props }) as SubscriptionWithRoom;
 
 const group = (key: string, rooms: SubscriptionWithRoom[]) => ({ key, rooms });
 
@@ -34,16 +35,17 @@ describe('getUnreadRows', () => {
 		expect(getUnreadRows(groups)).toEqual({ unreads: [], mentions: [] });
 	});
 
-	it('indexes direct and thread mentions of the user', () => {
+	it('indexes direct, thread and group mentions of the user', () => {
 		const groups = [
 			group('Channels', [
 				room({ unread: 2, userMentions: 1 }),
 				room({ unread: 1, tunreadUser: ['tmid'] }),
 				room({ unread: 1, groupMentions: 1 }),
+				room({ unread: 1 }),
 			]),
 		];
 
-		expect(getUnreadRows(groups).mentions).toEqual([1, 2]);
+		expect(getUnreadRows(groups).mentions).toEqual([1, 2, 3]);
 	});
 
 	it('ignores mentions in rooms with the mention status hidden', () => {

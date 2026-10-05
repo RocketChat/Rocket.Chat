@@ -22,9 +22,9 @@ type OffscreenUnreads = {
 	next: OffscreenUnread | undefined;
 };
 
-/** Mentions of the user, directly or in a thread — the ones the room badge flags as a mention. */
+/** Mentions of the user — direct, in a thread, or through @all and @here. */
 const hasUnreadMention = (room: SubscriptionWithRoom): boolean =>
-	!room.hideMentionStatus && Boolean(room.userMentions || room.tunreadUser?.length);
+	!room.hideMentionStatus && Boolean(room.userMentions || room.groupMentions || room.tunreadUser?.length);
 
 /**
  * Row indices of every unread room, and of every room with an unread mention, in the row index space
