@@ -5,7 +5,7 @@ const ids = { appId: 'app-id', blockId: 'block-id', actionId: 'action-id' } as c
 export const inputWithNumberInput: readonly LayoutBlock[] = [
 	{
 		type: 'input',
-		element: { ...ids, type: 'number_input', isDecimalAllowed: false, minValue: '1', maxValue: '10', initialValue: '3' },
+		element: { ...ids, type: 'number_input', is_decimal_allowed: false, min_value: '1', max_value: '10', initial_value: '3' },
 		label: { type: 'plain_text', text: 'Seats' },
 	},
 ];
@@ -29,7 +29,7 @@ export const inputWithUrlInput: readonly LayoutBlock[] = [
 export const inputWithDateTimePicker: readonly LayoutBlock[] = [
 	{
 		type: 'input',
-		element: { ...ids, type: 'datetimepicker', initialDateTime: 1791216000 },
+		element: { ...ids, type: 'datetimepicker', initial_date_time: 1791216000 },
 		label: { type: 'plain_text', text: 'Meeting time' },
 	},
 ];

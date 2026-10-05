@@ -6,7 +6,7 @@ export const actionWithDateTimePicker: readonly LayoutBlock[] = [
 		elements: [
 			{
 				type: 'datetimepicker',
-				initialDateTime: 1791216000,
+				initial_date_time: 1791216000,
 				appId: 'app-id',
 				blockId: 'block-id',
 				actionId: 'action-id',
