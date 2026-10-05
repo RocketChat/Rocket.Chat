@@ -145,7 +145,6 @@ export async function cleanRoomHistory({
 		}
 	}
 
-	const selectedMessageIds: string[] | undefined = limit ? [] : undefined;
 	let remaining = limit || Infinity;
 	let count = 0;
 
@@ -174,11 +173,21 @@ export async function cleanRoomHistory({
 				ignoreThreads,
 				batch,
 			);
-			selectedMessageIds?.push(...batch);
+			void api.broadcast('notify.deleteMessageBulk', rid, {
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				users: fromUsers,
+				ids: batch,
+			});
 			await ReadReceipts.removeByMessageIds(batch);
 			await ReadReceiptsArchive.removeByMessageIds(batch);
 
 			remaining -= batch.length;
+			if (batch.length < FILE_CLEANUP_BATCH_SIZE) {
+				break;
+			}
 		}
 	} finally {
 		if (count) {
@@ -189,15 +198,6 @@ export async function cleanRoomHistory({
 			await refreshDiscussionMetadataOnParentRoom(rid);
 
 			void notifyOnRoomChangedById(rid);
-
-			void api.broadcast('notify.deleteMessageBulk', rid, {
-				rid,
-				excludePinned,
-				ignoreDiscussion,
-				ts,
-				users: fromUsers,
-				ids: selectedMessageIds,
-			});
 		}
 	}
 

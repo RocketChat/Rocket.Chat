@@ -450,6 +450,10 @@ export abstract class BaseRaw<
 			await this.trash?.bulkWrite(trashOperations, { session: options?.session });
 		}
 
+		if (!ids.length) {
+			return { acknowledged: true, deletedCount };
+		}
+
 		if (options) {
 			const result = await this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
 			return { ...result, deletedCount: result.deletedCount + deletedCount };

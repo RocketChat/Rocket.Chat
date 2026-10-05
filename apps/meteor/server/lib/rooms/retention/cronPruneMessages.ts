@@ -28,14 +28,6 @@ const oldest = new Date('0001-01-01T00:00:00Z');
 
 const toDays = (d: number): number => d * 1000 * 60 * 60 * 24;
 
-async function pruneRoom(params: Parameters<typeof cleanRoomHistory>[0]): Promise<void> {
-	try {
-		await cleanRoomHistory(params);
-	} catch (err) {
-		logger.error({ msg: 'Failed to prune room', rid: params.rid, err });
-	}
-}
-
 async function job(): Promise<void> {
 	const now = new Date();
 	const filesOnly = settings.get<boolean>('RetentionPolicy_FilesOnly');
@@ -61,7 +53,7 @@ async function job(): Promise<void> {
 		).toArray();
 
 		for await (const { _id: rid } of rooms) {
-			await pruneRoom({
+			await cleanRoomHistory({
 				rid,
 				latest,
 				oldest,
@@ -69,7 +61,7 @@ async function job(): Promise<void> {
 				excludePinned,
 				ignoreDiscussion,
 				ignoreThreads,
-			});
+			}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 		}
 	}
 
@@ -86,7 +78,7 @@ async function job(): Promise<void> {
 	for await (const { _id: rid, retention } of rooms) {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
-		await pruneRoom({
+		await cleanRoomHistory({
 			rid,
 			latest,
 			oldest,
@@ -94,7 +86,7 @@ async function job(): Promise<void> {
 			excludePinned,
 			ignoreDiscussion,
 			ignoreThreads,
-		});
+		}).catch((err) => logger.error({ msg: 'Failed to prune room', rid, err }));
 	}
 }
 
