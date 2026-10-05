@@ -7,6 +7,7 @@ import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, Ac
 import MediaCallCardList from './MediaCallCardList';
 import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
+import { isExternalPeer } from '../utils/isExternalPeer';
 
 export type MediaCallPopoutViewProps = {
 	user: {
@@ -40,7 +41,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
 

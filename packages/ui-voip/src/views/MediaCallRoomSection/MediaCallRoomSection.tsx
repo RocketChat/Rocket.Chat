@@ -15,6 +15,7 @@ import {
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import { isExternalPeer } from '../../utils/isExternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -73,7 +74,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
 
