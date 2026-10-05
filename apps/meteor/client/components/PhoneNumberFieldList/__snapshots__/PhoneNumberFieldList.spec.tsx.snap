@@ -12,20 +12,30 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
         Phone Numbers
       </legend>
       <ul
-        class="rcx-box rcx-box--full rcx-css-1a22y4u"
+        class="rcx-box rcx-box--full rcx-css-bgtdl9"
         id="phones-phones-list"
       />
-      <button
-        aria-controls="phones-phones-list"
-        class="rcx-box rcx-box--full rcx-button rcx-css-1nmakuf"
-        type="button"
+      <div
+        class="rcx-box rcx-box--full"
       >
-        <span
-          class="rcx-button--content"
+        <button
+          aria-controls="phones-phones-list"
+          class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1fczwx8"
+          type="button"
         >
-          Add number
-        </span>
-      </button>
+          <span
+            class="rcx-button--content"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Add number
+          </span>
+        </button>
+      </div>
     </fieldset>
   </div>
 </body>
@@ -43,147 +53,183 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
         Phone Numbers
       </legend>
       <ul
-        class="rcx-box rcx-box--full rcx-css-1a22y4u"
+        class="rcx-box rcx-box--full rcx-css-bgtdl9"
         id="phones-phones-list"
       >
         <li
-          class="rcx-box rcx-box--full rcx-css-uz5pbi"
+          class="rcx-box rcx-box--full rcx-css-vhjf5t"
           id="mock-phone-0"
         >
           <div
-            class="rcx-box rcx-box--full rcx-field rcx-css-u93tip"
+            class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
               for="react-aria-_r_0_-label"
-              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Phone number 1
+              Phone number
             </label>
-            <input
-              aria-describedby=""
-              aria-invalid="false"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-              id="react-aria-_r_0_-label"
-              name="phones.0.number"
-              placeholder="Phone number"
-              size="1"
-              type="text"
-              value="+15551234567"
-            />
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby=""
+                aria-invalid="false"
+                aria-label="Phone number 1"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_0_-label"
+                name="phones.0.number"
+                size="1"
+                type="text"
+                value="+15551234567"
+              />
+              <button
+                aria-controls="mock-phone-0"
+                aria-label="Remove number Home"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                title="Remove"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </span>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-field rcx-css-x4sk51"
+            class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
               for="react-aria-_r_1_-label"
-              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Label for phone number 1
+              Label
             </label>
-            <input
-              aria-describedby=""
-              aria-invalid="false"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-              id="react-aria-_r_1_-label"
-              name="phones.0.label"
-              placeholder="Label"
-              size="1"
-              type="text"
-              value="Home"
-            />
-          </div>
-          <button
-            aria-controls="mock-phone-0"
-            aria-label="Remove number Home"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
-            title="Remove"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
             >
-              
-            </i>
-          </button>
+              <input
+                aria-describedby="react-aria-_r_1_-hint"
+                aria-invalid="false"
+                aria-label="Label for phone number 1"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_1_-label"
+                name="phones.0.label"
+                placeholder="Label"
+                size="1"
+                type="text"
+                value="Home"
+              />
+            </span>
+            <span
+              class="rcx-box rcx-box--full rcx-field__hint"
+              id="react-aria-_r_1_-hint"
+            >
+              Others can see name alongside number
+            </span>
+          </div>
         </li>
         <li
-          class="rcx-box rcx-box--full rcx-css-uz5pbi"
+          class="rcx-box rcx-box--full rcx-css-vhjf5t"
           id="mock-phone-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-field rcx-css-u93tip"
+            class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
               for="react-aria-_r_2_-label"
-              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Phone number 2
+              Phone number
             </label>
-            <input
-              aria-describedby=""
-              aria-invalid="false"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-              id="react-aria-_r_2_-label"
-              name="phones.1.number"
-              placeholder="Phone number"
-              size="1"
-              type="text"
-              value="+15559876543"
-            />
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby=""
+                aria-invalid="false"
+                aria-label="Phone number 2"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_2_-label"
+                name="phones.1.number"
+                size="1"
+                type="text"
+                value="+15559876543"
+              />
+              <button
+                aria-controls="mock-phone-1"
+                aria-label="Remove number 2"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                title="Remove"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </span>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-field rcx-css-x4sk51"
+            class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
               for="react-aria-_r_3_-label"
-              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              Label for phone number 2
+              Label
             </label>
-            <input
-              aria-describedby=""
-              aria-invalid="false"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-              id="react-aria-_r_3_-label"
-              name="phones.1.label"
-              placeholder="Label"
-              size="1"
-              type="text"
-              value=""
-            />
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby="react-aria-_r_3_-hint"
+                aria-invalid="false"
+                aria-label="Label for phone number 2"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_3_-label"
+                name="phones.1.label"
+                placeholder="Label"
+                size="1"
+                type="text"
+                value=""
+              />
+            </span>
+            <span
+              class="rcx-box rcx-box--full rcx-field__hint"
+              id="react-aria-_r_3_-hint"
+            >
+              Others can see name alongside number
+            </span>
           </div>
-          <button
-            aria-controls="mock-phone-1"
-            aria-label="Remove number 2"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1vd0t3o"
-            title="Remove"
-            type="button"
+        </li>
+      </ul>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <button
+          aria-controls="phones-phones-list"
+          class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-p7cq8l"
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+              class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-1hdf9ok"
             >
-              
+              
             </i>
-          </button>
-        </li>
-      </ul>
-      <button
-        aria-controls="phones-phones-list"
-        class="rcx-box rcx-box--full rcx-button rcx-css-1nmakuf"
-        type="button"
-      >
-        <span
-          class="rcx-button--content"
-        >
-          Add number
-        </span>
-      </button>
+            Add number
+          </span>
+        </button>
+      </div>
     </fieldset>
   </div>
 </body>
