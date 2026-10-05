@@ -6,6 +6,7 @@ import { memo, useCallback, useState } from 'react';
 
 import { useChannelsData } from './hooks/useChannelsData';
 import { useConversationsData } from './hooks/useConversationsData';
+import { useCurrentConversationDefault } from './hooks/useCurrentConversationDefault';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 import { getAutoCompleteKey } from '../../utils/getAutoCompleteKey';
@@ -13,14 +14,20 @@ import { getAutoCompleteKey } from '../../utils/getAutoCompleteKey';
 export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement | UiKit.ConversationsSelectElement>;
 
 const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) => {
-	const [{ value, loading }, action] = useUiKitState(block, context);
+	const element = useCurrentConversationDefault(block);
+	const [{ value, loading }, action] = useUiKitState(element, context);
 
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 
 	const isConversations = block.type === 'conversations_select';
 	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations, selected: value ? [value] : [] });
-	const conversations = useConversationsData({ filter: filterDebounced, enabled: isConversations, selected: value ? [value] : [] });
+	const conversations = useConversationsData({
+		filter: filterDebounced,
+		enabled: isConversations,
+		selected: value ? [value] : [],
+		include: block.type === 'conversations_select' ? block.filter?.include : undefined,
+	});
 	const options = isConversations ? conversations : channels;
 
 	const handleChange = useCallback(

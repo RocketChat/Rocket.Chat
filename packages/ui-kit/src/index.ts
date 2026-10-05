@@ -11,6 +11,7 @@ export type { Conditions } from './rendering/Conditions';
 export type { ButtonElement } from './blocks/elements/ButtonElement';
 export type { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement';
 export type { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement';
+export type { ConversationsSelectFilter } from './blocks/elements/ConversationsSelectFilter';
 export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
 export type { ImageElement } from './blocks/elements/ImageElement';

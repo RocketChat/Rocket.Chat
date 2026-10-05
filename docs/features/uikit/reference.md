@@ -225,6 +225,8 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 | `type` | `'conversations_select'` | yes | Picks one conversation the user belongs to (channel, private group or direct message); the value is the room id. |
 | `placeholder` | `PlainText` | no |  |
 | `initial_conversation` | `string` | no | Id of the room selected when the view opens. |
+| `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -360,6 +362,8 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `placeholder` | `PlainText` | no |  |
 | `initial_conversations` | `string[]` | no | Ids of the rooms selected when the view opens. |
 | `max_selected_items` | `number` | no | Most conversations that can be selected. |
+| `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

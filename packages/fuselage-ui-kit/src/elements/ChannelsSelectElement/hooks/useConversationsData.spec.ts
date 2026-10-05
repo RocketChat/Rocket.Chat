@@ -37,6 +37,20 @@ it('matches the filter against the name and the display name, ignoring case', as
 	await waitFor(() => expect(result.current?.map(({ value }) => value)).toEqual(['dm']));
 });
 
+it.each([
+	[['public'], ['general']],
+	[['private'], ['secret']],
+	[['im', 'mpim'], ['dm']],
+	[
+		['public', 'private'],
+		['general', 'secret'],
+	],
+] as const)('lists only the kinds in filter.include %j', async (include, expected) => {
+	const { result } = renderHook(() => useConversationsData({ filter: '', include: [...include] }), { wrapper });
+
+	await waitFor(() => expect(result.current?.map(({ value }) => value)).toEqual(expected));
+});
+
 it('fetches nothing while disabled', () => {
 	const { result } = renderHook(() => useConversationsData({ filter: '', enabled: false }), { wrapper });
 
