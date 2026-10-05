@@ -1,5 +1,5 @@
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
-import { Field, FieldLabel, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
+import { Field, FieldLabel, FieldError, FieldHint, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useVisuallyHidden } from 'react-aria';
 import type { ArrayPath, Control, FieldValues, Path } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
@@ -36,9 +36,9 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 	return (
 		<Box is='fieldset' display='flex' flexDirection='column' width='100%'>
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
-			<Box is='ul' id={`${name}-phones-list`} display='flex' flexDirection='column' gap={8}>
+			<Box is='ul' id={`${name}-phones-list`} display='flex' flexDirection='column' gap={16}>
 				{phones.map((phone, index) => (
-					<Box is='li' id={phone.id} key={phone.id} display='flex' gap={8} alignItems='start'>
+					<Box is='li' id={phone.id} key={phone.id} display='flex' flexDirection='column' gap={4}>
 						<Controller<T>
 							control={control}
 							name={`${name}.${index}.number` as Path<T>}
@@ -51,9 +51,19 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 							}}
 							// TODO: add back type='tel' to the Input
 							render={({ field, fieldState: { error } }) => (
-								<Field width='auto' flexGrow={1} flexShrink={1} flexBasis='60%'>
-									<FieldLabel {...visuallyHiddenProps}>{`${t('Phone_number')} ${index + 1}`}</FieldLabel>
-									<TextInput {...field} flexGrow={1} error={error?.message} placeholder={t('Phone_number_placeholder')} />
+								<Field>
+									<FieldLabel>{t('Phone_number')}</FieldLabel>
+									<FieldRow>
+										<TextInput {...field} aria-label={`${t('Phone_number')} ${index + 1}`} flexGrow={1} error={error?.message} />
+										<IconButton
+											aria-controls={phone.id}
+											title={t('Remove')}
+											aria-label={t('Remove_number__label__', { label: phone.label || index + 1 })}
+											small
+											icon='trash'
+											onClick={() => onRemovePhone(index)}
+										/>
+									</FieldRow>
 									{error?.message && <FieldError>{error.message}</FieldError>}
 								</Field>
 							)}
@@ -69,29 +79,36 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 								},
 							}}
 							render={({ field, fieldState: { error } }) => (
-								<Field width='auto' flexGrow={1} flexShrink={1} flexBasis='30%'>
-									<FieldLabel {...visuallyHiddenProps}>{`${t('Label_for_phone_number__label__', { label: index + 1 })}`}</FieldLabel>
-									<TextInput {...field} flexGrow={1} error={error?.message} placeholder={t('Phone_label_placeholder')} />
+								<Field>
+									<FieldLabel>{t('Label')}</FieldLabel>
+									<FieldRow>
+										<TextInput
+											{...field}
+											aria-label={t('Label_for_phone_number__label__', { label: index + 1 })}
+											flexGrow={1}
+											error={error?.message}
+											placeholder={t('Phone_label_placeholder')}
+										/>
+									</FieldRow>
+									<FieldHint>{t('Phone_label_hint')}</FieldHint>
 									{error?.message && <FieldError>{error.message}</FieldError>}
 								</Field>
 							)}
 						/>
-
-						<IconButton
-							aria-controls={phone.id}
-							title={t('Remove')}
-							aria-label={t('Remove_number__label__', { label: phone.label || index + 1 })}
-							small
-							marginBlock={6}
-							icon='trash'
-							onClick={() => onRemovePhone(index)}
-						/>
 					</Box>
 				))}
 			</Box>
-			<Button aria-controls={`${name}-phones-list`} onClick={() => onAddPhone({ number: '', label: '' })} marginBlockStart={8}>
-				{t('Add_number')}
-			</Button>
+			<Box>
+				<Button
+					small
+					icon='plus'
+					aria-controls={`${name}-phones-list`}
+					onClick={() => onAddPhone({ number: '', label: '' })}
+					marginBlockStart={phones.length ? 16 : 0}
+				>
+					{t('Add_number')}
+				</Button>
+			</Box>
 		</Box>
 	);
 };
