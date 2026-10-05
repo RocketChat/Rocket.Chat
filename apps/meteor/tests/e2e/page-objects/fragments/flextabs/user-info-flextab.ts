@@ -34,7 +34,10 @@ export class UserInfoFlexTab extends FlexTab {
 	}
 
 	phoneLinkWithLabel(phoneNumber: string, label: string): Locator {
-		return this.root.locator(`a[href="tel:${phoneNumber}"]`, { hasText: label });
+		return this.root
+			.getByRole('listitem')
+			.filter({ has: this.phoneLink(phoneNumber) })
+			.filter({ hasText: label });
 	}
 
 	get phoneLinks(): Locator {
