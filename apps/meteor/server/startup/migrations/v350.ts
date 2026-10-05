@@ -8,19 +8,17 @@ addMigration({
 	version: 350,
 	name: 'Rename users freeSwitchExtension attribute to sipExtension',
 	async up() {
-		const { col } = Users;
-
 		let ids: string[];
 		do {
-			ids = (await col.find({ freeSwitchExtension: { $exists: true } }, { projection: { _id: 1 }, limit: batchSize }).toArray()).map(
-				({ _id }) => _id,
-			);
+			ids = await Users.find({ freeSwitchExtension: { $exists: true } }, { projection: { _id: 1 }, limit: batchSize })
+				.map(({ _id }) => _id)
+				.toArray();
 
 			if (ids.length) {
-				await col.updateMany({ _id: { $in: ids } }, { $rename: { freeSwitchExtension: 'sipExtension' } });
+				await Users.updateMany({ _id: { $in: ids } }, { $rename: { freeSwitchExtension: 'sipExtension' } });
 			}
 		} while (ids.length === batchSize);
 
-		await col.dropIndex('freeSwitchExtension_1').catch(() => undefined);
+		await Users.col.dropIndex('freeSwitchExtension_1').catch(() => undefined);
 	},
 });
