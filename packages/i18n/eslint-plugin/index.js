@@ -374,7 +374,8 @@ const validTranslation = {
 					keyNode,
 					// Params can't be verified when they may come from spread props, `tOptions` or a dynamic `values`
 					optionsNode: valuesNode ?? { type: 'ObjectExpression', properties: [] },
-					hasExtraArguments: hasSpread || attributes.has('tOptions') || attributes.has('context') || (valuesNode && valuesNode.type !== 'ObjectExpression'),
+					hasExtraArguments:
+						hasSpread || attributes.has('tOptions') || attributes.has('context') || (valuesNode && valuesNode.type !== 'ObjectExpression'),
 					namespaces,
 					explicitCount: attributes.has('count'),
 					reportNode: node,
