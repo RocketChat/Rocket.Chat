@@ -39,6 +39,10 @@ There are two families of renderer, and they get their allowlists from different
 
 As a result the web client and the types disagree about several surfaces. [support-matrix.md](support-matrix.md) lists each disagreement.
 
+## Links
+
+`button`, `icon_button` and overflow options open their `url` only when `isSafeUrl` from `@rocket.chat/ui-kit` accepts it: an absolute `http:`, `https:`, `mailto:` or `tel:` URL, or a root-relative path. Any other URL is ignored, and the element behaves as if it had none: it sends its `blockAction` instead of opening a link. Both Fuselage and Livechat apply the same check.
+
 ## Other renderers
 
 `apps/meteor/client/views/admin/subscription/surface/UiKitSubscriptionLicenseSurface.tsx` defines `SubscriptionLicenseSurfaceRenderer`, an internal surface built on `FuselageSurfaceRenderer` that apps do not use. The support matrix leaves it out.
