@@ -1,9 +1,8 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import useClipboardWithToast from '../../hooks/useClipboardWithToast';
 
 export type ContactInfoEntryProps = {
 	text: string;
