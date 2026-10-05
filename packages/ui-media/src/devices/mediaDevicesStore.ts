@@ -38,11 +38,38 @@ export const refreshMediaDevices = (): void => {
 		.catch(() => undefined);
 };
 
+/** Reads the list again whenever a capture permission changes, where the browser announces it (Safari does not). */
+const watchPermissions = (): (() => void) => {
+	let released = false;
+	const statuses: PermissionStatus[] = [];
+
+	(['microphone', 'camera'] as PermissionName[]).forEach((name) => {
+		void navigator.permissions?.query({ name }).then(
+			(status) => {
+				if (released) {
+					return;
+				}
+				status.addEventListener('change', refreshMediaDevices);
+				statuses.push(status);
+			},
+			() => undefined,
+		);
+	});
+
+	return () => {
+		released = true;
+		statuses.forEach((status) => status.removeEventListener('change', refreshMediaDevices));
+	};
+};
+
+let releasePermissions: (() => void) | undefined;
+
 /** Keeps one device list for every reader, listening to the browser only while someone is. */
 export const subscribeToMediaDevices = (listener: () => void): (() => void) => {
 	listeners.add(listener);
 	if (listeners.size === 1) {
 		navigator.mediaDevices?.addEventListener?.('devicechange', refreshMediaDevices);
+		releasePermissions = watchPermissions();
 		refreshMediaDevices();
 	}
 
@@ -50,6 +77,8 @@ export const subscribeToMediaDevices = (listener: () => void): (() => void) => {
 		listeners.delete(listener);
 		if (!listeners.size) {
 			navigator.mediaDevices?.removeEventListener?.('devicechange', refreshMediaDevices);
+			releasePermissions?.();
+			releasePermissions = undefined;
 			devices = NO_DEVICES;
 			generation++;
 		}

@@ -1,4 +1,5 @@
 import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
+import { refreshMediaDevices } from '@rocket.chat/ui-media';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
@@ -85,6 +86,7 @@ export const useDevicePermissionPrompt2 = () => {
 				const resolve = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
+					refreshMediaDevices();
 					void queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
 					_resolve(stream);
 				};

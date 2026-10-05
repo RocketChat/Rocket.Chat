@@ -94,3 +94,25 @@ it('tells nobody when the list read again is the same', async () => {
 	expect(getMediaDevices()).toBe(before);
 	unsubscribe();
 });
+
+// Granting a permission names the devices; where the browser announces the grant, the list follows by itself.
+it('reads the list again when a capture permission changes, until the last reader leaves', async () => {
+	const statuses = new Map<string, { addEventListener: jest.Mock; removeEventListener: jest.Mock }>();
+	const query = jest.fn(async ({ name }: { name: string }) => {
+		const status = { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+		statuses.set(name, status);
+		return status;
+	});
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: { query } });
+
+	const unsubscribe = subscribeToMediaDevices(jest.fn());
+	await flush();
+
+	expect([...statuses.keys()]).toEqual(['microphone', 'camera']);
+	statuses.forEach((status) => expect(status.addEventListener).toHaveBeenCalledWith('change', refreshMediaDevices));
+
+	unsubscribe();
+	statuses.forEach((status) => expect(status.removeEventListener).toHaveBeenCalledWith('change', refreshMediaDevices));
+
+	Object.defineProperty(navigator, 'permissions', { configurable: true, value: undefined });
+});
