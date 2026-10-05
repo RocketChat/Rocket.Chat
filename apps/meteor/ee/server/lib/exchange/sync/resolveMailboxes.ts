@@ -19,11 +19,6 @@ const buildQuery = (lastId?: string): Filter<IUser> => ({
 
 export const resolveMailbox = (user: SyncCandidate): string | undefined => user.emails?.find((email) => email.verified)?.address.trim();
 
-/**
- * Keyset pages rather than one long cursor: each candidate costs minutes of network I/O behind bounded
- * workers, and a cursor idling that long is closed by the server. Sorting by `_id` keeps this on the
- * `_id` index instead of a deepening skip.
- */
 export async function* iterateMailboxCandidates(pageSize = PAGE_SIZE): AsyncGenerator<MailboxCandidate> {
 	let lastId: string | undefined;
 
