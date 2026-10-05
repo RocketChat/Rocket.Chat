@@ -289,6 +289,7 @@ export class ActionManager implements IActionManager {
 			},
 			close: () => {
 				this.viewInstances.delete(view.id);
+				this.closeContextualBarTab(view.id);
 			},
 		});
 
@@ -306,6 +307,25 @@ export class ActionManager implements IActionManager {
 				tab: 'app',
 				context: view.id,
 			},
+		});
+	}
+
+	private closeContextualBarTab(viewId: UiKit.ContextualBarView['id']) {
+		const routeName = this.router.getRouteName();
+		const { tab, context } = this.router.getRouteParameters();
+
+		if (!routeName || tab !== 'app' || context !== viewId) {
+			return;
+		}
+
+		this.router.navigate({
+			name: routeName,
+			params: {
+				...this.router.getRouteParameters(),
+				tab: '',
+				context: '',
+			},
+			search: (({ msg: _, ...rest }) => rest)(this.router.getSearchParameters()),
 		});
 	}
 
