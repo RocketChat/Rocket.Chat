@@ -11,9 +11,10 @@ const RoomHeader = lazy(() => import('./RoomHeader'));
 export type HeaderProps = {
 	room: IRoom;
 	subscription?: ISubscription;
+	divider?: boolean;
 };
 
-const Header = ({ room, subscription }: HeaderProps) => {
+const Header = ({ room, subscription, divider }: HeaderProps) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
@@ -35,7 +36,7 @@ const Header = ({ room, subscription }: HeaderProps) => {
 		return <RoomHeaderE2EESetup room={room} />;
 	}
 
-	return <RoomHeader room={room} />;
+	return <RoomHeader room={room} divider={divider} />;
 };
 
 export default memo(Header);
