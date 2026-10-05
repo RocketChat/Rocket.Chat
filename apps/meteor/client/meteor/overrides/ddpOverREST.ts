@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../lib/SDKClient';
 import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { clearStoredCredentials } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
@@ -15,8 +15,8 @@ const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 	}
 
 	// In microservices CI, ddp-streamer-service registers `login`, `logout`,
-	// `setUserStatus`, and `UserPresence:*` as native methods (configureServer.ts
-	// in ee/apps/ddp-streamer); every other method delegates to the Meteor
+	// `setUserStatus`, and `UserPresence:*` as native methods (see
+	// ee/apps/ddp-streamer/src/methods/); every other method delegates to the Meteor
 	// service via callMethodWithToken (extra hop). Bypassing these to Meteor's
 	// own WS routes them straight to ddp-streamer for the fast path; routing
 	// them through REST would wedge them on the slow rocketchat-main path
@@ -151,7 +151,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 						reason: (e.reason as string) ?? (e.message as string) ?? 'Unknown error',
 						message: (e.message as string) ?? (e.reason as string) ?? 'Unknown error',
 						errorType: 'Meteor.Error',
-					} as unknown as Meteor.Error,
+					},
 				});
 				processResult(errorMessage);
 				console.error(error);

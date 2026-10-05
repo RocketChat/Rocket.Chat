@@ -25,7 +25,7 @@ test.describe('OC - Livechat - Widget logo', async () => {
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelSettings = new OmnichannelSettings(page);
 
-		await page.goto('/admin/settings/Omnichannel');
+		await poOmnichannelSettings.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

@@ -3,17 +3,6 @@ declare module 'meteor/accounts-base' {
 
 	namespace Accounts {
 		const storageLocation: Window['localStorage'];
-		function createUser(
-			options: {
-				username?: string;
-				email?: string;
-				password?: string;
-				profile?: Record<string, unknown>;
-				joinDefaultChannelsSilenced?: boolean;
-				skipEmailValidation?: boolean;
-			},
-			callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): string;
 
 		function _expireTokens(oldestValidDate?: Date, userId?: string): Promise<void>;
 
@@ -31,10 +20,6 @@ declare module 'meteor/accounts-base' {
 
 		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
 
-		function _storedLoginToken(): unknown;
-
-		function _unstoreLoginToken(): void;
-
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 
 		function _checkPasswordAsync(user: Meteor.User, password: Password): Promise<{ userId: string; error?: any }>;
@@ -51,15 +36,9 @@ declare module 'meteor/accounts-base' {
 
 		function config(options: { clientStorage: 'session' | 'local' }): void;
 
-		class ConfigError extends Error {}
-
 		class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
-
-		const USER_ID_KEY: string;
-
-		const LOGIN_TOKEN_KEY: string;
 
 		const _accountData: Record<string, any>;
 
@@ -70,17 +49,6 @@ declare module 'meteor/accounts-base' {
 		}
 
 		export const _options: AccountsServerOptions;
-
-		namespace oauth {
-			function credentialRequestCompleteHandler(
-				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
-				totpCode?: string,
-			): (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
-
-			function registerService(name: string): void;
-
-			function serviceNames(): string[];
-		}
 
 		const connection: {
 			userId(): string | null;

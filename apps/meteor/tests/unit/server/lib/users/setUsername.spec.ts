@@ -28,6 +28,7 @@ describe('setUsername', () => {
 		},
 		callbacks: {
 			run: sinon.stub(),
+			runAsync: sinon.stub(),
 		},
 		checkUsernameAvailability: sinon.stub(),
 		validateUsername: sinon.stub(),
@@ -79,6 +80,7 @@ describe('setUsername', () => {
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();
 		stubs.callbacks.run.reset();
+		stubs.callbacks.runAsync.reset();
 		stubs.checkUsernameAvailability.reset();
 		stubs.validateUsername.reset();
 		stubs.saveUserIdentity.reset();
@@ -193,7 +195,6 @@ describe('setUsername', () => {
 			await setUsernameWithValidation(userId, 'newUsername');
 
 			expect(stubs.saveUserIdentity.calledOnce).to.be.true;
-			expect(stubs.joinDefaultChannels.calledOnceWith(userId, undefined)).to.be.true;
 		});
 	});
 
@@ -257,17 +258,40 @@ describe('setUsername', () => {
 			expect(stubs.api.broadcast.calledOnceWith('user.autoupdate', { user: mockUser }));
 		});
 
-		it('should set avatar if Accounts_SetDefaultAvatar is enabled', async () => {
+		it('should join the default channels and run afterCreateUser on the first username', async () => {
+			const mockUser = { _id: userId, roles: ['user'] };
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+
+			await _setUsername(userId, username, mockUser);
+
+			expect(stubs.joinDefaultChannels.calledOnceWith(userId)).to.be.true;
+			expect(stubs.callbacks.runAsync.calledWith('afterCreateUser')).to.be.true;
+			expect(stubs.callbacks.runAsync.withArgs('afterCreateUser').firstCall.args[1]).to.include({ username });
+		});
+
+		it('should not join the default channels when the username is only being changed', async () => {
+			const mockUser = { _id: userId, username: 'oldUsername', roles: ['user'] };
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+
+			await _setUsername(userId, username, mockUser);
+
+			expect(stubs.joinDefaultChannels.notCalled).to.be.true;
+			expect(stubs.callbacks.runAsync.calledWith('afterCreateUser')).to.be.false;
+		});
+
+		it('should set avatar with the first available suggestion if Accounts_SetDefaultAvatar is enabled', async () => {
 			const mockUser = { _id: userId, username: null };
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
-			stubs.getAvatarSuggestionForUser.resolves({ gravatar: { blob: 'blobData', contentType: 'image/png' } });
+			stubs.getAvatarSuggestionForUser.resolves({ google: { blob: 'blobData', contentType: 'image/png' } });
 
 			await _setUsername(userId, username, mockUser);
 
-			expect(stubs.setUserAvatar.calledOnceWith(mockUser, 'blobData', 'image/png', 'gravatar')).to.be.true;
+			expect(stubs.setUserAvatar.calledOnceWith(mockUser, 'blobData', 'image/png', 'google')).to.be.true;
 		});
 
 		it('should not set avatar if Accounts_SetDefaultAvatar is disabled', async () => {
@@ -301,7 +325,7 @@ describe('setUsername', () => {
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
-			stubs.getAvatarSuggestionForUser.resolves({ gravatar: { blob: 'blobData', contentType: 'image/png' } });
+			stubs.getAvatarSuggestionForUser.resolves({ google: { blob: 'blobData', contentType: 'image/png' } });
 			stubs.Invites.findOneById.resolves({ rid: 'room id' });
 
 			await _setUsername(userId, username, mockUser);

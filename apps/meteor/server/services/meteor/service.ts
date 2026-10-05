@@ -3,6 +3,7 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
+import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,8 +17,6 @@ import { notifyGuestStatusChanged } from '../../lib/omnichannel/guests';
 import { onlineAgents, monitorAgents } from '../../lib/omnichannel/stream/agentStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getURL } from '../../lib/utils/getURL';
-import { ListenersModule } from '../../modules/listeners/listeners.module';
-import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';
 import { settings } from '../../settings';
 import { use } from '../../settings/Middleware';
 import { setValue, updateValue } from '../../settings/raw';
@@ -38,7 +37,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	constructor() {
 		super();
 
-		new ListenersModule(this, notifications);
+		new ListenersModule(this, notifications, settings);
 
 		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			if (sessionId) {

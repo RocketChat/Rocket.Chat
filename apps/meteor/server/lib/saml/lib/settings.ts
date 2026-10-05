@@ -68,6 +68,10 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 	return configs;
 };
 
+export const updateGlobalSettings = function (): void {
+	SAMLUtils.updateGlobalSettings(getSamlConfigs('SAML_Custom_Default'));
+};
+
 const isValidConfiguration = function (key: string, samlConfigs: SAMLConfiguration): boolean {
 	const needsCert = samlConfigs.signatureValidationType !== 'None';
 
@@ -92,8 +96,6 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	} else if (samlConfigs.secret.privateKey || samlConfigs.secret.publicCert) {
 		SAMLUtils.error('SAML Service: You must specify both cert and key files.');
 	}
-
-	SAMLUtils.updateGlobalSettings(samlConfigs);
 
 	return {
 		provider: samlConfigs.clientConfig.provider,

@@ -469,13 +469,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
-		const extraQuery = [
-			{
-				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
-			},
-		];
+		const extraQuery = [{ federated: { $ne: true } }];
 		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
@@ -487,9 +482,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		exceptions?: string[],
 		options?: O,
 		forcedSearchFields?: string[],
-		localDomain?: string,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
-		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
+		const extraQuery = [{ federated: true }];
 		return this.findPaginatedByActiveUsersExcept<T, O>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
@@ -2599,14 +2593,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		return this.countDocuments(query);
-	}
-
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		options?: O,
-	): FindCursor<DocumentWithProjection<T, O>> {
-		const query = { crowd: true };
-
-		return this.find<T, O>(query, options);
 	}
 
 	async getLastLogin(options: FindOptions<IUser> = { projection: { _id: 0, lastLogin: 1 } }) {

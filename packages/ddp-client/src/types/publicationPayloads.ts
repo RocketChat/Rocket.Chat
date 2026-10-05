@@ -121,12 +121,6 @@ export type MovedBeforePayload = {
  * @category incoming
  */
 export type ServerPublicationPayloads =
-	| NosubPayload
-	| AddedPayload
-	| ChangedPayload
-	| RemovedPayload
-	| ReadyPayload
-	| AddedBeforePayload
-	| MovedBeforePayload;
+	NosubPayload | AddedPayload | ChangedPayload | RemovedPayload | ReadyPayload | AddedBeforePayload | MovedBeforePayload;
 
 export type PublicationPayloads = AddedPayload | ChangedPayload | RemovedPayload;

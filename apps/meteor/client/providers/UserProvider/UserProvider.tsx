@@ -5,7 +5,6 @@ import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import type { Filter, ObjectId } from 'mongodb';
 import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
@@ -22,6 +21,7 @@ import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
+import { logout } from '../../meteor/accounts';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
@@ -159,7 +159,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
-			logout: async () => Meteor.logout(),
+			logout: async () => logout(),
 			onLogout: (cb) => {
 				return ee.on('logout', cb);
 			},

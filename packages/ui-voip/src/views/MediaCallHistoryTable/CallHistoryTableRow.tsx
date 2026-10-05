@@ -1,7 +1,7 @@
 import type { CallHistoryItemState } from '@rocket.chat/core-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useLanguage } from '@rocket.chat/ui-contexts';
-import { intlFormatDistance } from 'date-fns';
+import { intlFormatDistance } from 'date-fns/intlFormatDistance';
 import type { ReactNode } from 'react';
 
 import CallHistoryTableDirection from './CallHistoryTableDirection';

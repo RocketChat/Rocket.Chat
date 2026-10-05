@@ -103,12 +103,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				if (!user.username || !user.status || user.username.includes(':')) {
 					return;
 				}
-				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1, federated: 1, federation: 1 } });
-				if (!localUser) {
-					return;
-				}
-
-				if (!isUserNativeFederated(localUser)) {
+				const localUser = await Users.findOneByUsername(user.username, {
+					projection: { _id: 1, username: 1, federated: 1, federation: 1 },
+				});
+				if (!localUser?.username) {
 					return;
 				}
 
@@ -121,10 +119,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
+				const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
+
 				void federationSDK.sendPresenceUpdateToRooms(
 					[
 						{
-							user_id: localUser.federation.mui,
+							user_id: userMui,
 							presence: statusMap[user.status] || 'offline',
 						},
 					],
@@ -838,19 +838,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
+	async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
 		if (!this.processEDUTyping) {
 			return;
 		}
 
-		if (!rid || !user) {
+		if (!rid || !uid) {
 			return;
 		}
 		const room = await Rooms.findOneById(rid, { projection: { _id: 1, federation: 1, federated: 1 } });
 		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
+
+		const localUser = await Users.findOneById(uid, {
 			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
 		});
 
@@ -865,7 +866,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
 
-		void federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
+		await federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
 
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {

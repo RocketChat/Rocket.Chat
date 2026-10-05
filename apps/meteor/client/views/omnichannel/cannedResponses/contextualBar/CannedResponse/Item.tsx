@@ -31,7 +31,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 			paddingBlockEnd={12}
 			paddingInline={24}
 			color='default'
-			borderBlockEndWidth={1}
+			borderBlockEndWidth='default'
 			borderBlockEndColor='light'
 			borderBlockEndStyle='solid'
 			onClick={onClickItem}

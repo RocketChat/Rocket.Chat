@@ -211,12 +211,14 @@ describe('LIVECHAT - Agents', () => {
 	describe('POST livechat/users/:type', () => {
 		describe('with no permission', () => {
 			before(async () => {
-				await updatePermission('view-livechat-manager', []);
+				await removePermissionFromAllRoles('manage-livechat-agents');
+				await removePermissionFromAllRoles('manage-livechat-managers');
 			});
 			after(async () => {
-				await updatePermission('view-livechat-manager', ['admin']);
+				await restorePermissionToRoles('manage-livechat-agents');
+				await restorePermissionToRoles('manage-livechat-managers');
 			});
-			it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			it('should return an "unauthorized error" when adding an agent without manage-livechat-agents', async () => {
 				await request
 					.post(api('livechat/users/agent'))
 					.set(credentials)
@@ -225,6 +227,40 @@ describe('LIVECHAT - Agents', () => {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(403);
+			});
+			it('should return an "unauthorized error" when adding a manager without manage-livechat-managers', async () => {
+				await request
+					.post(api('livechat/users/manager'))
+					.set(credentials)
+					.send({
+						username: 'test-manager',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403);
+			});
+		});
+
+		describe('with only view-livechat-manager permission', () => {
+			before(async () => {
+				await updatePermission('view-livechat-manager', ['admin']);
+				await removePermissionFromAllRoles('manage-livechat-managers');
+			});
+			after(async () => {
+				await restorePermissionToRoles('view-livechat-manager');
+				await restorePermissionToRoles('manage-livechat-managers');
+			});
+			it('should return an "unauthorized error" when adding a manager', async () => {
+				const user = await createUser();
+				await request
+					.post(api('livechat/users/manager'))
+					.set(credentials)
+					.send({
+						username: user.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403);
+
+				await deleteUser(user);
 			});
 		});
 
@@ -372,13 +408,18 @@ describe('LIVECHAT - Agents', () => {
 	describe('DELETE livechat/users/:type/:_id', () => {
 		describe('with no permission', () => {
 			before(async () => {
-				await updatePermission('view-livechat-manager', []);
+				await removePermissionFromAllRoles('manage-livechat-agents');
+				await removePermissionFromAllRoles('manage-livechat-managers');
 			});
 			after(async () => {
-				await updatePermission('view-livechat-manager', ['admin']);
+				await restorePermissionToRoles('manage-livechat-agents');
+				await restorePermissionToRoles('manage-livechat-managers');
 			});
-			it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			it('should return an "unauthorized error" when removing an agent without manage-livechat-agents', async () => {
 				await request.delete(api(`livechat/users/agent/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			}).timeout(5000);
+			it('should return an "unauthorized error" when removing a manager without manage-livechat-managers', async () => {
+				await request.delete(api(`livechat/users/manager/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			}).timeout(5000);
 		});
 

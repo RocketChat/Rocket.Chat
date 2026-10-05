@@ -1,10 +1,11 @@
-import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
+import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
 
@@ -36,7 +37,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const audioCallback = useCallback((node: HTMLAudioElement | null) => {
 		audioRef.current = node;
 	}, []);
-	const setAudioRef = useMergedRefs(audioCallback, mediaRef);
+	const setAudioRef = useMergedRefsV2(audioCallback, mediaRef);
 
 	const play = useStableCallback((next: PersistentAudioTrack) => {
 		const audio = audioRef.current;

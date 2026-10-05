@@ -7,7 +7,7 @@ import { Modal } from '../modals/modal';
 
 class AddExistingChannelModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Add Existing Channels' }));
+		super(page.getByRole('dialog', { name: 'Add existing channels' }));
 	}
 
 	get inputChannels(): Locator {
@@ -34,7 +34,7 @@ export class ChannelsFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Team Channels' }));
+		super(page.getByRole('dialog', { name: 'Team channels' }));
 		this.confirmRemoveModal = new ConfirmRemoveModal(page.getByRole('dialog', { name: 'Are you sure?' }));
 		this.confirmDeleteModal = new ConfirmDeleteRoomModal(page);
 		this.addExistingChannelModal = new AddExistingChannelModal(page);
@@ -42,7 +42,7 @@ export class ChannelsFlexTab extends FlexTab {
 	}
 
 	get btnAddExisting(): Locator {
-		return this.root.getByRole('button', { name: 'Add Existing', exact: true });
+		return this.root.getByRole('button', { name: 'Add existing', exact: true });
 	}
 
 	get btnCreateNew(): Locator {

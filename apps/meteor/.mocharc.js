@@ -41,5 +41,7 @@ module.exports = {
 		'server/lib/omnichannel/**/*.spec.ts',
 		'server/lib/notifications/push/**/*.spec.ts',
 		'server/lib/utils/**/*.spec.ts',
+		'lib/videoConference/*.spec.ts',
+		'server/services/video-conference/**/*.spec.ts',
 	],
 };

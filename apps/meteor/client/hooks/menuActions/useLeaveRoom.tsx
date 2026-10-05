@@ -4,9 +4,9 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
 import WarningModal from '../../components/WarningModal';
+import { LegacyRoomManager } from '../../lib/LegacyRoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const leaveEndpoints = {

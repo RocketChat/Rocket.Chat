@@ -5,11 +5,15 @@ import NavBarItemOmnichannelContact from './NavBarItemOmnichannelContact';
 import NavBarItemOmnichannelLivechatToggle from './NavBarItemOmnichannelLivechatToggle';
 import NavBarItemOmnichannelQueue from './NavBarItemOmnichannelQueue';
 
-const NavBarOmnichannelGroup = () => {
+export type NavBarOmnichannelGroupProps = {
+	vertical?: boolean;
+};
+
+const NavBarOmnichannelGroup = ({ vertical }: NavBarOmnichannelGroupProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<NavBarGroup aria-label={t('Omnichannel')}>
+		<NavBarGroup vertical={vertical} aria-label={t('Omnichannel')}>
 			<NavBarItemOmnichannelQueue />
 			<NavBarItemOmnichannelContact />
 			<NavBarItemOmnichannelLivechatToggle />

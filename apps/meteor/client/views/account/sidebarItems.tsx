@@ -1,6 +1,6 @@
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
 
-import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 import { settings } from '../../lib/settings';
 
@@ -29,12 +29,6 @@ export const {
 			(settings.peek('Accounts_TwoFactorAuthentication_Enabled') ?? true) ||
 			(settings.peek('E2E_Enable') ?? false) ||
 			(settings.peek('Accounts_AllowPasswordChange') ?? true),
-	},
-	{
-		href: '/account/integrations',
-		i18nLabel: 'Integrations',
-		icon: 'code',
-		permissionGranted: (): boolean => settings.peek('Webdav_Integration_Enabled') ?? false,
 	},
 	{
 		href: '/account/tokens',

@@ -4,6 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
+import { RoomHeader } from './room-header';
 import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
@@ -16,6 +17,8 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
+	readonly header: RoomHeader;
+
 	readonly composer: RoomComposer;
 
 	protected readonly threadComposer: ThreadComposer;
@@ -24,10 +27,11 @@ export class HomeContent {
 		this.page = page;
 		this.composer = new RoomComposer(page);
 		this.threadComposer = new ThreadComposer(page);
+		this.header = new RoomHeader(page.locator('main header'));
 	}
 
 	get channelHeader(): Locator {
-		return this.page.locator('main header');
+		return this.header.root;
 	}
 
 	get burgerButton(): Locator {
@@ -48,6 +52,11 @@ export class HomeContent {
 
 	get threadMessageList(): Locator {
 		return this.page.getByRole('list', { name: 'Thread message list', exact: true });
+	}
+
+	/** The open room, matched by id. Use it to assert a permalink landed in the room it should. */
+	getRoomById(roomId: string): Locator {
+		return this.page.locator(`[data-qa-rc-room="${roomId}"]`);
 	}
 
 	get messageListItems(): Locator {
@@ -90,6 +99,11 @@ export class HomeContent {
 		return this.messageListItems.nth(index);
 	}
 
+	/** One message of the list, by its id, for a message whose id is known from elsewhere. */
+	messageById(mid: string): Locator {
+		return this.mainMessageList.locator(`[role="listitem"][data-mid="${mid}"]`);
+	}
+
 	get lastUserMessageBody(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
@@ -108,6 +122,14 @@ export class HomeContent {
 
 	get lastIgnoredUserMessage(): Locator {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
+	}
+
+	get lastIgnoredThreadMessage(): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name: 'This message was ignored' });
+	}
+
+	get ignoredThreadMessages(): Locator {
+		return this.threadMessageListItems.getByRole('button', { name: 'This message was ignored' });
 	}
 
 	async joinRoomIfNeeded(): Promise<void> {
@@ -164,7 +186,7 @@ export class HomeContent {
 		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
+		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
@@ -177,7 +199,7 @@ export class HomeContent {
 	}
 
 	private get fileUploadModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'File Upload' });
+		return this.page.getByRole('dialog', { name: 'File upload' });
 	}
 
 	get btnModalConfirm(): Locator {
@@ -254,7 +276,7 @@ export class HomeContent {
 	}
 
 	get linkPreview(): Locator {
-		return this.lastUserMessage.getByText('Link Preview');
+		return this.lastUserMessage.getByText('Link preview');
 	}
 
 	quotedLinkText(name: string): Locator {
@@ -323,7 +345,7 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.getByRole('button', { name: 'User Info' });
+		return this.page.getByRole('button', { name: 'User info' });
 	}
 
 	get btnContactInfoVoiceCall(): Locator {
@@ -415,6 +437,19 @@ export class HomeContent {
 		}
 	}
 
+	async sendMultipleFilesMessage(fileNames: string[], { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		await this.page
+			.getByLabel('Room composer')
+			.locator('input[type=file]')
+			.setInputFiles(fileNames.map((name) => getFilePath(name)));
+
+		if (!waitForResponse) {
+			return;
+		}
+
+		await expect(this.composer.btnSend).toBeEnabled();
+	}
+
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
@@ -460,11 +495,11 @@ export class HomeContent {
 	}
 
 	get primaryRoomActionsToolbar(): Locator {
-		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
+		return this.page.getByRole('toolbar', { name: 'Primary room actions' });
 	}
 
 	get btnVideoCall(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
 	get btnToolbarOptions(): Locator {
@@ -476,7 +511,7 @@ export class HomeContent {
 	}
 
 	get starredMessagesMenuOption(): Locator {
-		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
+		return this.optionsMenu.getByRole('menuitem', { name: 'Starred messages', exact: true });
 	}
 
 	getVideoConfPopup(name?: string): Locator {
@@ -501,10 +536,6 @@ export class HomeContent {
 
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
-	}
-
-	get btnAnonymousTalk(): Locator {
-		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 
 	get nextSlideButton(): Locator {
@@ -544,6 +575,11 @@ export class HomeContent {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
 	}
 
+	/** Thread replies carry `aria-roledescription="thread message"`, so `getMessageById` skips them. */
+	getThreadMessageById(id: string): Locator {
+		return this.threadMessageList.locator(`[role="listitem"][id="${id}"]`);
+	}
+
 	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {
 		const scroller = this.mainMessageListScroller;
 		const delta = direction === 'up' ? -400 : 400;
@@ -556,13 +592,22 @@ export class HomeContent {
 		return messageLocator;
 	}
 
+	get btnJoinChannel(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Join channel', exact: true });
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
-		await messageList.waitFor();
 
-		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+		// a room the user cannot preview renders a join screen instead of the header and message list
+		await this.mainMessageList.or(this.btnJoinChannel).first().waitFor();
+
+		if (await this.btnJoinChannel.isVisible()) {
+			return;
+		}
+
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await expect(this.mainMessageList).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async waitForThread(): Promise<void> {
@@ -609,7 +654,7 @@ export class HomeContent {
 	}
 
 	get btnOptionStartDiscussion(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+		return this.page.getByRole('menuitem', { name: 'Start a discussion' });
 	}
 
 	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {

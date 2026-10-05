@@ -12,8 +12,8 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 		<Box
 			display='flex'
 			flexDirection='column'
-			borderWidth={1}
-			borderRadius='x4'
+			borderWidth='default'
+			borderRadius='medium'
 			borderColor='extra-light'
 			maxWidth='345px'
 			backgroundColor='surface-tint'

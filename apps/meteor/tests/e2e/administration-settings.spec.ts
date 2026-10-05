@@ -19,8 +19,8 @@ test.describe.parallel('administration-settings', () => {
 	});
 
 	test.describe('Settings Page', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/settings');
+		test.beforeEach(async () => {
+			await poAdminSettings.goto();
 		});
 
 		test('should display settings list', async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe.parallel('administration-settings', () => {
 				await poLoginPage.loginByUserState(Users.admin);
 
 				await navbar.openAdminPanel();
-				const settingsButton = await poAdminSettings.adminSectionButton(AdminSectionsHref.Settings);
+				const settingsButton = await poAdminSettings.adminSectionButton(AdminSectionsHref.settings);
 				await settingsButton.click();
 
 				await expect(page.getByText('No results found')).not.toBeVisible();
@@ -50,8 +50,8 @@ test.describe.parallel('administration-settings', () => {
 			inputSiteURLSetting = (await getSettingValueById(api, 'Site_Url')) as string;
 		});
 
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/settings/General');
+		test.beforeEach(async () => {
+			await poAdminSettings.gotoGeneral();
 		});
 
 		test('should be able to reset a setting after a change', async () => {
@@ -69,8 +69,8 @@ test.describe.parallel('administration-settings', () => {
 	});
 
 	test.describe('Layout', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/settings/Layout');
+		test.beforeEach(async () => {
+			await poAdminSettings.gotoLayout();
 		});
 
 		test.afterAll(async ({ api }) => setSettingValueById(api, 'theme-custom-css', ''));

@@ -4,9 +4,27 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-vdozx2"
       role="button"
       tabindex="0"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1n09zs3"
+      >
+        Announcement
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders NotClickable without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-h1m43b rcx-css-vdozx2"
+      role="banner"
+      tabindex="-1"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1n09zs3"
@@ -22,7 +40,7 @@ exports[`renders WithLink without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-vdozx2"
       role="button"
       tabindex="0"
     >

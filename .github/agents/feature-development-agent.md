@@ -65,6 +65,13 @@ The agent must **focus only on the specified feature scope** and avoid scope cre
 
 ---
 
+## Comment Discipline
+
+Comments: see [docs/code-comments.md](../../docs/code-comments.md). Intent, not
+mechanism; nothing explaining code in another file; no analysis or summary files.
+
+---
+
 ## Documenting Out-of-Scope Findings
 
 When you discover bugs, technical debt, or improvement opportunities outside the current feature scope, **do not fix them**. Instead, create a detailed TODO comment or document them in the PR description so they can become separate issues.
@@ -215,7 +222,6 @@ For each implementation increment:
 
 Document the new feature:
 
-- **Code Comments**: Complex logic explanation
 - **JSDoc/TSDoc**: Public APIs and functions
 - **README Updates**: If feature affects setup/usage
 - **API Documentation**: New endpoints (if applicable)

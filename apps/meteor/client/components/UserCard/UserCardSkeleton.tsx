@@ -7,10 +7,10 @@ const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
 	return (
 		<UserCardDialog {...props}>
 			<Box>
-				<Skeleton borderRadius='x4' width='x124' height='x124' variant='rect' />
+				<Skeleton borderRadius='medium' width='x124' height='x124' variant='rect' />
 				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
 					{Array.from({ length: 3 }).map((_, i) => (
-						<Skeleton key={i} variant='rect' height='x28' width='x28' borderRadius='x4' marginInline={2} />
+						<Skeleton key={i} variant='rect' height='x28' width='x28' borderRadius='medium' marginInline={2} />
 					))}
 				</Box>
 			</Box>

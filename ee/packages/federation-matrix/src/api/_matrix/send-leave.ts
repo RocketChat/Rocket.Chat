@@ -42,7 +42,7 @@ const isSendLeaveBodyProps = ajv.compile({
 			const: 'm.room.member',
 		},
 	},
-	required: ['content', 'depth', 'origin', 'origin_server_ts', 'sender', 'state_key', 'type'],
+	required: ['content', 'depth', 'origin_server_ts', 'sender', 'state_key', 'type'],
 });
 const isSendLeaveSuccessResponseProps = ajv.compile({
 	type: 'object',
@@ -58,6 +58,8 @@ const isSendLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixSendLeaveRoutes = () => {
+	// PUT /_matrix/federation/v2/send_leave/{roomId}/{eventId}
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2send_leaveroomideventid
 	return new Router('/federation').put(
 		'/v2/send_leave/:roomId/:eventId',
 		{

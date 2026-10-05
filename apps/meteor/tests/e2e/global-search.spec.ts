@@ -64,11 +64,10 @@ test.describe.serial('Global Search', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.gotoGroup(targetGroup.name);
 	});
 
 	test('should open the correct message when jumping from global search in group to channel thread', async () => {
-		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
 		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true });
@@ -79,7 +78,6 @@ test.describe.serial('Global Search', () => {
 	});
 
 	test('should open the correct message when jumping from global search in group to channel message', async () => {
-		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
 		await poHomeChannel.tabs.searchMessages.search(regularMessage.msg.slice(10), { global: true });

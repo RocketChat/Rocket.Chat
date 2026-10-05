@@ -12,7 +12,6 @@ import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -21,6 +20,7 @@ import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
+import { initializeLivechatInquiryStream } from '../lib/omnichannel/queueManager';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -42,7 +42,7 @@ export type OmnichannelProviderProps = {
 };
 
 const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
-	const omniChannelEnabled = useSetting('Livechat_enabled', true);
+	const omniChannelEnabled = useSetting('Livechat_enabled', false);
 	const omnichannelRouting = useSetting('Livechat_Routing_Method', 'Auto_Selection');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link', false);
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0);

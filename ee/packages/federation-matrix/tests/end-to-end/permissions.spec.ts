@@ -1,6 +1,5 @@
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
-import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import {
 	addUserToRoomViaMethod,
@@ -18,7 +17,10 @@ import { SynapseClient } from '../helper/synapse-client';
 (IS_EE ? describe : describe.skip)('Federation Permissions', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1User1RequestConfig: IRequestConfig;
+	let rc1User1: TestUser<IUser>;
 	let hs1AdminApp: SynapseClient;
+
+	const rc1User1Name = `fed-permissions-user-${Date.now()}`;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -28,12 +30,18 @@ import { SynapseClient } from '../helper/synapse-client';
 			federationConfig.rc1.adminPassword,
 		);
 
-		// Create user1 request config for RC1
-		rc1User1RequestConfig = await getRequestConfig(
-			federationConfig.rc1.url,
-			federationConfig.rc1.additionalUser1.username,
-			federationConfig.rc1.additionalUser1.password,
+		// Create user1 in RC1 and its request config
+		rc1User1 = await createUser(
+			{
+				username: rc1User1Name,
+				password: 'random',
+				email: `${rc1User1Name}@rocket.chat`,
+				name: rc1User1Name,
+			},
+			rc1AdminRequestConfig,
 		);
+
+		rc1User1RequestConfig = await getRequestConfig(federationConfig.rc1.url, rc1User1Name, 'random');
 
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
@@ -46,17 +54,27 @@ import { SynapseClient } from '../helper/synapse-client';
 			.expect(200);
 	});
 
-	afterAll(async () =>
+	afterAll(async () => {
+		if (!rc1AdminRequestConfig) {
+			return;
+		}
+
 		// Add permissions for access-federation to any user but admin
-		rc1AdminRequestConfig.request
+		await rc1AdminRequestConfig.request
 			.post(api('permissions.update'))
 			.set(rc1AdminRequestConfig.credentials)
 			.send({ permissions: [{ _id: 'access-federation', roles: ['admin', 'user'] }] })
 			.expect('Content-Type', 'application/json')
-			.expect(200),
-	);
+			.expect(200);
+	});
 
-	afterAll(async () => hs1AdminApp.close());
+	afterAll(async () => hs1AdminApp?.close());
+
+	afterAll(async () => {
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		}
+	});
 
 	describe('Access Federation Permission', () => {
 		describe('Users without access-federation permission', () => {
