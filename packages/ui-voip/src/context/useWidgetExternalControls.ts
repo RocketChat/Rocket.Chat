@@ -20,5 +20,5 @@ export const useWidgetExternalControls = () => {
 
 	const endCall = useCallback(() => getEndCall(instance)(), [instance]);
 
-	return { toggleWidget, endCall };
+	return { toggleWidget, endCall, openWidget };
 };

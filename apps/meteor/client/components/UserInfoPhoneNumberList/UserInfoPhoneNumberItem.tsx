@@ -13,7 +13,7 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 	const { copy } = useClipboardWithToast(number);
 
 	const mediaCallState = usePeekMediaSessionState();
-	const { toggleWidget } = useWidgetExternalControls();
+	const { openWidget } = useWidgetExternalControls();
 	const canMakeExternalCall = usePermission('allow-external-voice-calls');
 	const isSipEnabled = useSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 
@@ -41,7 +41,7 @@ const UserInfoPhoneNumberItem = ({ number, label }: IUserPhoneNumber) => {
 						disabled={callInProgress}
 						title={callInProgress ? t('Call_in_progress') : t('Call')}
 						aria-label={callName}
-						onClick={() => toggleWidget({ number })}
+						onClick={() => openWidget({ number })}
 					/>
 				) : (
 					<IconButton is='a' small icon='phone' href={`tel:${number}`} title={t('Call')} aria-label={callName} />
