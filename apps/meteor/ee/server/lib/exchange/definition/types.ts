@@ -45,9 +45,8 @@ export type ExchangeEventUpsert = {
 export type ExchangeEvent = ExchangeEventUpsert | ExchangeEventDeletion;
 
 /**
- * Graph reports a recurring series as a whole: any change to it resends the master together with the
- * occurrences that survive, and never a deletion for the ones that went. `resyncedSeries` names the series
- * whose expansion this page carries in full, so whatever is stored for them and missing from it is gone.
+ * `resyncedSeries` names the series whose expansion this page carries in full, so whatever is
+ * stored for them and missing from it is gone.
  */
 export type EventPage = Page<ExchangeEvent> & { resyncedSeries?: string[] };
 
